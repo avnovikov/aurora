@@ -57,7 +57,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       readiness: options.planned.readiness,
       planned: options.planned,
       log: state.log,
-      phase: state.phase === "rest" ? "work" : state.phase === "warmup" ? "warmup" : "work",
+      phase: phaseForPersist(state.phase),
       warmupIndex: state.warmupIndex,
       workIndex: state.workIndex,
       setIndex: state.setIndex,
@@ -352,13 +352,45 @@ function shellHtml(planned: PlannedSession, state: ViewState): string {
   `;
 }
 
+function phaseForPersist(phase: Phase): "warmup" | "work" {
+  if (phase === "warmup") {
+    return "warmup";
+  }
+  if (phase === "rest") {
+    return "work";
+  }
+  return phase === "done" ? "work" : phase;
+}
+
+function warmupChalkClass(state: ViewState, warmupLength: number): string {
+  if (state.phase === "warmup") {
+    return "active";
+  }
+  if (state.warmupIndex >= warmupLength) {
+    return "done";
+  }
+  return "";
+}
+
+function workChalkClass(active: boolean, done: boolean): string {
+  if (active) {
+    return "active";
+  }
+  if (done) {
+    return "done";
+  }
+  return "";
+}
+
 function chalkHtml(planned: PlannedSession, state: ViewState): string {
+  const warmupClass = warmupChalkClass(state, planned.warmup.length);
   const notches = [
-    `<li class="${state.phase === "warmup" ? "active" : state.warmupIndex >= planned.warmup.length ? "done" : ""}">Warmup · 10 min</li>`,
+    `<li class="${warmupClass}">Warmup · 10 min</li>`,
     ...planned.work.map((item, index) => {
       const active = state.phase !== "warmup" && state.workIndex === index;
       const done = state.workIndex > index;
-      return `<li class="${active ? "active" : done ? "done" : ""}">${item.label}</li>`;
+      const cssClass = workChalkClass(active, done);
+      return `<li class="${cssClass}">${item.label}</li>`;
     }),
   ];
   return `<ol class="chalk">${notches.join("")}</ol>`;
@@ -400,11 +432,14 @@ function warmupHtml(planned: PlannedSession, state: ViewState): string {
   `;
 }
 
+function cuesListHtml(cues: string[]): string {
+  const items = cues.map((cue) => `<li>${cue}</li>`).join("");
+  return `<ul class="cues">${items}</ul>`;
+}
+
 function workHtml(item: PlannedWorkItem, state: ViewState): string {
   const reps = state.workState ? prescribedForNextSet(state.workState) : item.dose.reps;
-  const cues = state.showingCues
-    ? `<ul class="cues">${item.cues.map((cue) => `<li>${cue}</li>`).join("")}</ul>`
-    : "";
+  const cues = state.showingCues ? cuesListHtml(item.cues) : "";
   const media = item.doodlePath
     ? `<img class="doodle" src="${item.doodlePath}" alt="Doodle for ${item.exerciseName}" />`
     : "";
