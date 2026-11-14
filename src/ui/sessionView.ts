@@ -1,4 +1,5 @@
 import { clearSession, saveSession } from "../session/storage";
+import { speakCoachLine } from "../voice/coachVoice";
 import {
   shouldShoutPulseLost,
   shoutPulseNotReadable,
@@ -55,6 +56,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     }
     state.phase = "done";
     clearSession();
+    void speakCoachLine("session_done");
     root.innerHTML = doneShellHtml(state.log.entries.length);
     root.querySelector("[data-home]")?.addEventListener("click", options.onDone);
   };
@@ -66,6 +68,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       state.workIndex = 0;
       state.setIndex = 1;
       state.workState = syncWorkState(options.planned, state);
+      void speakCoachLine("warmup_done");
       paint();
       return;
     }

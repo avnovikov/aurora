@@ -1,6 +1,6 @@
-import { speakCue } from "./restCue";
+import { speakCoachLine } from "./coachVoice";
 
-export const PULSE_NOT_READABLE = "Pulse not readable";
+export const PULSE_NOT_READABLE = "Pulse not readable, mate.";
 
 export interface PulseWatchState {
   connected: boolean;
@@ -29,5 +29,5 @@ export function shouldShoutPulseLost(
 }
 
 export function shoutPulseNotReadable(): void {
-  speakCue(PULSE_NOT_READABLE, true);
+  void speakCoachLine("pulse_not_readable", { louder: true });
 }

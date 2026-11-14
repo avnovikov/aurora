@@ -1,4 +1,5 @@
-import { cueSchedule, speakCue } from "../voice/restCue";
+import { speakExactLine } from "../voice/coachVoice";
+import { cueSchedule } from "../voice/restCue";
 import type { ViewState } from "./sessionTypes";
 
 export function formatRestLabel(
@@ -22,7 +23,11 @@ export function speakDueCues(
     return;
   }
   spoken.add(left);
-  speakCue(due.text);
+  void speakExactLine({
+    id: due.lineId,
+    assetKey: due.assetKey,
+    text: due.text,
+  });
 }
 
 export interface RestTimerHandle {

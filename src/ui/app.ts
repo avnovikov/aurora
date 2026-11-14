@@ -1,5 +1,6 @@
 import { planSession } from "../rules/planSession";
 import { loadSession } from "../session/storage";
+import { speakCoachLine } from "../voice/coachVoice";
 import { renderCheckIn } from "./checkIn";
 import { renderSessionView } from "./sessionView";
 
@@ -19,6 +20,7 @@ export function bootApp(root: HTMLElement): void {
 function showCheckIn(root: HTMLElement): void {
   renderCheckIn(root, {
     onStart: (readiness) => {
+      void speakCoachLine("session_start");
       const planned = planSession(readiness);
       renderSessionView(root, {
         planned,
