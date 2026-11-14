@@ -47,95 +47,124 @@ function pickWeakLink(
   return forExercise.find((w) => w.region === "");
 }
 
+function result(
+  exerciseId: string,
+  dose: Dose,
+  ruleIds: RuleId[],
+  reason: string,
+  insertedWeakLinkExerciseId?: string,
+): ResolveResult {
+  return { exerciseId, dose, ruleIds, reason, insertedWeakLinkExerciseId };
+}
+
+function tryAdvance(
+  exercise: Exercise,
+  dose: Dose,
+  memory: ResolveInput["memory"],
+  graph: Record<string, Exercise>,
+  ruleIds: RuleId[],
+): ResolveResult | null {
+  if (memory.sessionsAtStandard < 2 || !exercise.harderId) {
+    return null;
+  }
+  const harder = graph[exercise.harderId];
+  if (!harder) {
+    return null;
+  }
+  return result(
+    harder.id,
+    { ...dose, reps: Math.min(dose.reps, 3) },
+    [...ruleIds, "advance"],
+    `Advanced to ${harder.name} after two sessions at standard`,
+  );
+}
+
+function tryStall(
+  exercise: Exercise,
+  dose: Dose,
+  input: ResolveInput,
+  ruleIds: RuleId[],
+): ResolveResult | null {
+  if (input.memory.sessionsBelowFloor < 2) {
+    return null;
+  }
+  const weak = pickWeakLink(
+    exercise.id,
+    input.weakLinks,
+    input.lastFailRegion,
+  );
+  if (weak && input.memory.weakLinkSessionsRemaining <= 0) {
+    return result(
+      exercise.id,
+      { ...dose, sets: Math.max(1, dose.sets - 1) },
+      [...ruleIds, "stall_weak_link"],
+      "Stall; insert weak-link accessory",
+      weak.componentExerciseId,
+    );
+  }
+  if (!exercise.easierId) {
+    return null;
+  }
+  const easier = input.graph[exercise.easierId];
+  if (!easier) {
+    return null;
+  }
+  return result(
+    easier.id,
+    dose,
+    [...ruleIds, "stall_regress"],
+    `Regressed to ${easier.name} after stall`,
+  );
+}
+
 /**
  * Resolves one slot: pain → pin → light day → advance → stall → hold.
  * Pure; no DOM or Bluetooth.
  */
 export function resolveSlot(input: ResolveInput): ResolveResult {
-  const rules: RuleId[] = [];
-  let exercise = input.exercise;
+  const ruleIds: RuleId[] = [];
+  const exercise = input.exercise;
   let dose: Dose = { ...input.dose };
 
   const swap = painSwap(exercise, input.readiness.painJoints, input.graph);
   if (swap) {
-    rules.push("pain");
-    return {
-      exerciseId: swap.id,
-      dose,
-      ruleIds: rules,
-      reason: `Pain on loaded joint; swapped to ${swap.name}`,
-    };
+    return result(swap.id, dose, ["pain"], `Pain on loaded joint; swapped to ${swap.name}`);
   }
 
   if (input.pinned) {
-    rules.push("pin");
+    ruleIds.push("pin");
   }
 
   const light = isLightDay(input.readiness);
   if (light) {
-    rules.push("light_day");
+    ruleIds.push("light_day");
     dose = applyLightDayDose(dose);
   }
 
   if (input.pinned) {
-    return {
-      exerciseId: exercise.id,
-      dose,
-      ruleIds: rules,
-      reason: light
-        ? "Pinned exercise; light-day dose only"
-        : "Pinned exercise; dose unchanged",
-    };
-  }
-
-  if (!light && input.memory.sessionsAtStandard >= 2 && exercise.harderId) {
-    const harder = input.graph[exercise.harderId];
-    if (harder) {
-      rules.push("advance");
-      return {
-        exerciseId: harder.id,
-        dose: { ...dose, reps: Math.min(dose.reps, 3), sets: dose.sets },
-        ruleIds: rules,
-        reason: `Advanced to ${harder.name} after two sessions at standard`,
-      };
-    }
-  }
-
-  if (!light && input.memory.sessionsBelowFloor >= 2) {
-    const weak = pickWeakLink(
+    return result(
       exercise.id,
-      input.weakLinks,
-      input.lastFailRegion,
+      dose,
+      ruleIds,
+      light ? "Pinned exercise; light-day dose only" : "Pinned exercise; dose unchanged",
     );
-    if (weak && input.memory.weakLinkSessionsRemaining <= 0) {
-      rules.push("stall_weak_link");
-      return {
-        exerciseId: exercise.id,
-        dose: { ...dose, sets: Math.max(1, dose.sets - 1) },
-        ruleIds: rules,
-        reason: "Stall; insert weak-link accessory",
-        insertedWeakLinkExerciseId: weak.componentExerciseId,
-      };
+  }
+
+  if (!light) {
+    const advanced = tryAdvance(exercise, dose, input.memory, input.graph, ruleIds);
+    if (advanced) {
+      return advanced;
     }
-    if (exercise.easierId) {
-      const easier = input.graph[exercise.easierId];
-      if (easier) {
-        rules.push("stall_regress");
-        return {
-          exerciseId: easier.id,
-          dose,
-          ruleIds: rules,
-          reason: `Regressed to ${easier.name} after stall`,
-        };
-      }
+    const stalled = tryStall(exercise, dose, input, ruleIds);
+    if (stalled) {
+      return stalled;
     }
   }
 
-  rules.push("hold");
-  return {
-    exerciseId: exercise.id,
+  return result(
+    exercise.id,
     dose,
-    ruleIds: rules,
-    reason: light ? "Hold exercise with light-day dose" : "Hold prescription",
-  };
+    [...ruleIds, "hold"],
+    light ? "Hold exercise with light-day dose" : "Hold prescription",
+  );
 }

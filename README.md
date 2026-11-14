@@ -12,12 +12,24 @@ You write the week as slots. The app picks exercise and dose from sleep, pulse, 
 ```bash
 npm install
 npm test
+npm run smell   # ESLint + SonarJS: cyclomatic ≤10, cognitive ≤15, smells
 npm run dev
 ```
 
+## Smell / complexity
+
+HotspotTriage here is Python-oriented, so TypeScript uses **ESLint + eslint-plugin-sonarjs**:
+
+- `complexity` (cyclomatic) max **10**
+- `sonarjs/cyclomatic-complexity` threshold **10**
+- `sonarjs/cognitive-complexity` max **15**
+- SonarJS recommended smell rules
+
+Run `npm run smell` before larger commits.
+
 ## Stack
 
-TypeScript, Vite, Vitest. Rule engine is pure (no DOM / Bluetooth). Hosted later on AWS Lightsail (separate from KS `ks-ui-app`).
+TypeScript, Vite, Vitest, ESLint/SonarJS. Rule engine is pure (no DOM / Bluetooth). Hosted later on AWS Lightsail (separate from KS `ks-ui-app`).
 
 ## Licence
 
