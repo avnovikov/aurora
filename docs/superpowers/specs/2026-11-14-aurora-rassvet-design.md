@@ -93,8 +93,8 @@ Patterns: horizontal/vertical push & pull, squat, hinge, core compression, core 
 
 ### 5.3 Program / slot / week setup
 
-- **Session template** — named day plan (e.g. `Legs`, `Handstand`) made of ordered slots. Each template has its own focus; levels live on **exercise memory**, so Legs squat progress does not move Handstand wall-hold progress.
-- **Week template** — maps weekdays → session template or rest. Example: Mon/Wed/Fri → Legs; Sat → Handstand; other days → rest. One **active** week template in v1; others can be saved and switched later.
+- **Session template** — named day plan you author freely (starter examples: `Legs`, `Handstand`, **`Full body`**, plus any custom name). Ordered slots; focus is whatever you put in those slots. Levels live on **exercise memory**, so a Legs squat level does not move a Handstand wall-hold level; Full body simply pulls several patterns into one day and still advances each exercise on its own memory.
+- **Week template** — maps weekdays → session template or rest. Examples: Mon/Wed/Fri → Legs + Sat → Handstand; **or** Mon/Thu → Full body + Sat → Handstand; or three Full body days. One **active** week template in v1; others can be saved and switched later.
 - **Today** — resolves from today’s weekday → that day’s session template → slots → rule engine. Opening Today on a rest day shows rest / optional mobility, not a forced Legs session.
 - Slot: pattern, attribute, chain, prescription mode, dose policy, role (`main` | `skill` | `accessory` | `conditioning`), optional pin.
 
