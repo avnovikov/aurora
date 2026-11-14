@@ -145,7 +145,7 @@ Dropping kg to hit reps is not an advance.
 | wger | CC0 / CC-BY-SA text + licensed images; BW/bar/rings/parallettes/barbell/dumbbell |
 | free-exercise-db | Unlicense text only; **no** images |
 | MuscleWiki | Text, muscles, branded videos + link; non-profit only; no maps/tools/image files |
-| Hugging Face calisthenics set | Progression steps; media only if `links[].license` is CC-BY-SA / CC-BY-SA-3.0 / public-domain; **no** unlicensed descriptions |
+| [Martjn/calisthenics_exercises](https://huggingface.co/datasets/Martjn/calisthenics_exercises) | **Dataset license: Apache-2.0 (open).** Import names, descriptions, categories, primary muscles, and three-step progressions under Apache-2.0 with attribution. External `links[]` keep their own licenses — import media only when `license` is `CC-BY-SA`, `CC-BY-SA-3.0`, or `public-domain`; skip empty/`null` licenses. free-exercise-db images stay out (origin unclear). MuscleWiki media only via MuscleWiki notice, not via this file’s bare page links. |
 | User JSON | Own notes; refuse records with no license when claimed as third-party |
 
 Starter seed: legs + handstand doodles and chains; four core chains so rules run before full import.
