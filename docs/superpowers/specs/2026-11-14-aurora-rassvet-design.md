@@ -91,10 +91,16 @@ Patterns: horizontal/vertical push & pull, squat, hinge, core compression, core 
 - Not auto-filled from secondary muscles; only when a source names the limiter.
 - Imports leave this empty.
 
-### 5.3 Program / slot
+### 5.3 Program / slot / week setup
 
-- Week of sessions; one active program.
+- **Session template** — named day plan (e.g. `Legs`, `Handstand`) made of ordered slots. Each template has its own focus; levels live on **exercise memory**, so Legs squat progress does not move Handstand wall-hold progress.
+- **Week template** — maps weekdays → session template or rest. Example: Mon/Wed/Fri → Legs; Sat → Handstand; other days → rest. One **active** week template in v1; others can be saved and switched later.
+- **Today** — resolves from today’s weekday → that day’s session template → slots → rule engine. Opening Today on a rest day shows rest / optional mobility, not a forced Legs session.
 - Slot: pattern, attribute, chain, prescription mode, dose policy, role (`main` | `skill` | `accessory` | `conditioning`), optional pin.
+
+### 5.3.1 App shell (approved direction)
+
+Tabs: **Today** | **Library** (search) | **Progress** (chain map) | **Body** (muscle heat by period) | **Week** (week + session templates).
 
 **Modes**
 
