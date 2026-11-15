@@ -46,7 +46,7 @@ describe("Today page", () => {
   });
 
   it("puts the check-in in its own panel after the reading area, then Coming up and the override", () => {
-    expect(html).toMatch(/<section[^>]*aria-label="Check-in"><div data-checkin><\/div><\/section>/);
+    expect(html).toMatch(/<section[^>]*aria-label="Check-in">[\s\S]*data-today-pulse[\s\S]*<div data-checkin><\/div>\s*<\/section>/);
     expect(html.indexOf("today-read")).toBeLessThan(html.indexOf("today-act"));
     const withOverride = todayHomeHtml(model({ overrideHtml: "<details data-override-controls></details>" }));
     expect(withOverride.indexOf("data-checkin")).toBeLessThan(withOverride.indexOf("data-forecast"));
@@ -64,6 +64,11 @@ describe("Today page", () => {
   it("keeps the warm-up and cool-down preview from #38 in the card", () => {
     expect(html).toMatch(/data-warmup-preview>Warm-up · beginner · \d+ min/);
     expect(html.indexOf("data-warmup-preview")).toBeLessThan(html.indexOf("data-checkin"));
+  });
+
+  it("places the pulse row above check-in so the strap connects before Start", () => {
+    expect(html).toContain("data-today-pulse");
+    expect(html.indexOf("data-today-pulse")).toBeLessThan(html.indexOf("data-checkin"));
   });
 
   it("shows the warm-up level picked for today", () => {

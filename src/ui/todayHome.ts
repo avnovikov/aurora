@@ -6,6 +6,7 @@ import { warmupCooldownLabel } from "../rules/sessionDuration";
 import { deloadNoteHtml } from "./deloadNote";
 import { comingUpHtml, templateHitsCore } from "./comingUp";
 import { templateDurationLabel, templateTargetsLabel } from "./formatTemplate";
+import { todayPulseHtml } from "./todayPulse";
 
 export interface TodayHomeModel {
   /** Today's session (the queue head, or the override). */
@@ -52,7 +53,10 @@ export function todayHomeHtml(model: TodayHomeModel): string {
             ${deloadNoteHtml(model.deloadActive)}
           </section>
         </section>
-        <section class="today-act" aria-label="Check-in"><div data-checkin></div></section>
+        <section class="today-act" aria-label="Check-in">
+          ${todayPulseHtml()}
+          <div data-checkin></div>
+        </section>
       </div>
       <div class="today-rest">
         ${comingUpHtml(model.upcoming)}
