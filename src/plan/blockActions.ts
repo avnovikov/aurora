@@ -1,5 +1,7 @@
 import type { PlanQueue, SessionTemplate } from "../domain/program";
 import { generateBlock, type BlockInput } from "./generateBlock";
+import { generateJointCareDay } from "./jointCareDay";
+import type { StepContext } from "./ladderSteps";
 import { savePlanDays } from "./planDays";
 
 /** Sessions left between the days of one block, so an area is not trained back to back. */
@@ -40,4 +42,15 @@ export function addBlockToPlan(input: BlockInput & { queue: PlanQueue; index: nu
   const queue = placeBlock(input.queue, days.map((day) => day.id), input.index);
   savePlanDays(days);
   return { days, queue };
+}
+
+/**
+ * Generate a Joint care day, store it, and return the queue with it at
+ * `index` (the end by default). The caller saves the queue.
+ */
+export function addJointCareDay(input: { queue: PlanQueue; context: StepContext; index?: number; newId?: () => string }): AddBlockResult {
+  const day = generateJointCareDay(input.context, input.newId);
+  const queue = placeBlock(input.queue, [day.id], input.index ?? input.queue.items.length);
+  savePlanDays([day]);
+  return { days: [day], queue };
 }

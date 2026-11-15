@@ -38,6 +38,7 @@ export interface ListActions {
   onPanelToggle: (panel: FilterPanelId, open: boolean) => void;
   /** Reset every filter to its default (search text is kept). */
   onClearFilters: () => void;
+  onExcludedOnly: (on: boolean) => void;
 }
 
 /** Fills every optional field, so the markup and wiring read one complete state. */
@@ -45,16 +46,25 @@ function withListDefaults(query: ListQueryState): Required<ListQueryState> {
   return { ...DEFAULT_FILTERS, hiddenStretches: 0, openPanels: [], ...query };
 }
 
-export function mountLibraryList(
-  root: HTMLElement,
-  results: SeedExercise[],
-  targetIds: ReadonlySet<string>,
-  query: ListQueryState,
-  actions: ListActions,
-  jointHistory: readonly JointHistoryEntry[] = [],
-): void {
+/** Who is looking: decides the joint badges, the Excluded mark and which filters are offered. */
+export interface ListViewer {
+  jointHistory?: readonly JointHistoryEntry[];
+  /** Ids the user excluded ("not for me"). */
+  excluded?: ReadonlySet<string>;
+}
+
+export interface MountLibraryListOptions extends ListViewer {
+  results: SeedExercise[];
+  targetIds: ReadonlySet<string>;
+  query: ListQueryState;
+  actions: ListActions;
+}
+
+export function mountLibraryList(root: HTMLElement, options: MountLibraryListOptions): void {
+  const { results, targetIds, query, actions } = options;
   const state = withListDefaults(query);
-  root.innerHTML = listHtml(results, targetIds, state, jointHistory);
+  root.innerHTML = listHtml(results, targetIds, state, options);
+  onToggleClick(root, "excluded-only", () => actions.onExcludedOnly(!state.excludedOnly));
 
   onToggleClick(root, "for-joints", () => actions.onForJoints(!state.forJoints));
   onToggleClick(root, "only-gear", () => actions.onOnlyGear(!state.onlyGear));
@@ -97,11 +107,12 @@ export function listHtml(
   results: SeedExercise[],
   targetIds: ReadonlySet<string>,
   query: ListQueryState,
-  jointHistory: readonly JointHistoryEntry[] = [],
+  viewer: ListViewer = {},
 ): string {
+  const { jointHistory = [], excluded = new Set<string>() } = viewer;
   const q = withListDefaults(query);
   const items = results
-    .map((exercise) => listItemHtml(exercise, targetIds, jointHistory))
+    .map((exercise) => listItemHtml(exercise, targetIds, jointHistory, excluded.has(exercise.id)))
     .join("");
 
   return `
@@ -111,7 +122,7 @@ export function listHtml(
       <input class="search" type="search" placeholder="Search exercises" value="${escapeHtml(q.text)}" data-search />
       ${resultCountHtml(results.length, hasActiveFilters(q))}
       ${stretchHintHtml(q.hiddenStretches)}
-      ${filterPanelsHtml(q, jointHistory.length > 0)}
+      ${filterPanelsHtml(q, { hasJointHistory: jointHistory.length > 0, hasExcluded: excluded.size > 0 })}
       <ul class="lib-list">
         ${items}
       </ul>
@@ -133,15 +144,20 @@ function listItemHtml(
   exercise: SeedExercise,
   targetIds: ReadonlySet<string>,
   history: readonly JointHistoryEntry[],
+  isExcluded: boolean,
 ): string {
   const target = isTemplateTarget(exercise.id, targetIds)
     ? `<span class="lib-badge inline">Target</span> `
     : "";
+  // An excluded move is never planned, so the joint badge would only repeat that.
+  const badge = isExcluded
+    ? `<span class="lib-badge inline avoid">Excluded by you</span> `
+    : jointBadgeHtml(exercise, history);
   const description = exercise.description ?? exercise.cues[0] ?? "";
   return `
     <li>
       <button type="button" class="lib-row" data-exercise-id="${escapeHtml(exercise.id)}">
-        <strong>${target}${jointBadgeHtml(exercise, history)}${escapeHtml(exercise.name)}</strong>
+        <strong>${target}${badge}${escapeHtml(exercise.name)}</strong>
         <span class="lib-meta">${escapeHtml(exerciseMetaLine(exercise))}</span>
         <span class="lib-desc">${escapeHtml(description)}</span>
       </button>

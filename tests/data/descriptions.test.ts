@@ -56,7 +56,7 @@ describe("curated descriptions", () => {
 
   it("render as summary, how-to, cues and sources on the detail page", () => {
     const pistol = LIBRARY_CATALOGUE.find((item) => item.id === "pistol_squat")!;
-    const html = detailHtml(pistol, new Set(), {});
+    const html = detailHtml(pistol);
     expect(html).toContain("lib-summary");
     expect(html).toContain("How to");
     expect(html).toContain("Text adapted from");

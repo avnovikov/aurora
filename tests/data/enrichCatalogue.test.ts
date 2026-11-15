@@ -119,7 +119,7 @@ describe("enriched library", () => {
   });
 
   it("shows level and safety notes on the detail page", () => {
-    const html = detailHtml(byName("Bench Dip"), new Set(), byId);
+    const html = detailHtml(byName("Bench Dip"), { catalogueById: byId });
     expect(html).toMatch(/class="lib-meta">[^<]*Beginner/);
     expect(html).toContain("Safety");
   });

@@ -1,4 +1,4 @@
-import { EXERCISE_GRAPH } from "../data/exerciseGraph";
+import { requireExercise } from "../data/exerciseGraph";
 import type { SeedExercise } from "../data/seed";
 import type { PlanQueue } from "../domain/program";
 import { substitutesFor } from "../safety/suitableExercise";
@@ -10,14 +10,6 @@ import { getPlanDay, replaceDaySlotExercise } from "./planDays";
 import { setSlotExercise } from "./templates";
 
 const SWAP_CHOICES = 8;
-
-function requireExercise(exerciseId: string): SeedExercise {
-  const exercise = EXERCISE_GRAPH[exerciseId];
-  if (!exercise) {
-    throw new Error(`Unknown exercise: ${exerciseId}`);
-  }
-  return exercise;
-}
 
 /** Moves offered when swapping one out, best first (same ladder, nearest level, never harder first). */
 export function swapChoices(exerciseId: string, state: AthleteState, dayExerciseIds: readonly string[] = []): SeedExercise[] {

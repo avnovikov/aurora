@@ -1,9 +1,10 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { SESSION_TEMPLATES } from "../../src/data/seed";
 import { checkInHtml } from "../../src/ui/checkIn";
 import { comingUpHtml } from "../../src/ui/comingUp";
 import { overrideControlsHtml } from "../../src/ui/overrideControls";
 import { todayHomeHtml } from "../../src/ui/todayHome";
+import { useMemoryStorage } from "../helpers/storage";
 
 const legs = SESSION_TEMPLATES.find((t) => t.name === "Legs")!;
 const bars = SESSION_TEMPLATES.find((t) => t.name === "Bars")!;
@@ -91,14 +92,7 @@ describe("coming up", () => {
 });
 
 describe("train something else today", () => {
-  beforeEach(() => {
-    const store = new Map<string, string>([["aurora.poc.planQueue.v1", JSON.stringify({ items: [legs.id] })]]);
-    globalThis.localStorage = {
-      getItem: (k: string) => store.get(k) ?? null,
-      setItem: (k: string, v: string) => void store.set(k, v),
-      removeItem: (k: string) => void store.delete(k),
-    } as unknown as Storage;
-  });
+  useMemoryStorage(() => ({ "aurora.poc.planQueue.v1": JSON.stringify({ items: [legs.id] }) }));
 
   it("is a collapsed panel with short chips, minus today's own session", () => {
     const html = overrideControlsHtml(null);

@@ -32,6 +32,8 @@ export interface FilterPanelState {
   forJoints: boolean;
   /** Hide moves that need gear the user does not have. */
   onlyGear: boolean;
+  /** Show only the moves the user excluded ("not for me"), to review or restore them. */
+  excludedOnly: boolean;
   /** Panels the user has opened; an active panel is always open. */
   openPanels: readonly FilterPanelId[];
 }
@@ -46,6 +48,7 @@ export const DEFAULT_FILTERS: Readonly<FilterValues> = {
   stretch: DEFAULT_STRETCH,
   forJoints: false,
   onlyGear: false,
+  excludedOnly: false,
 };
 
 /** True when any filter differs from its default (search text not included). */
@@ -81,15 +84,24 @@ function panelHtml(
   return `<details class="lib-filters" data-panel="${id}"${open}><summary>${summary}</summary>${body}</details>`;
 }
 
-function showPanelHtml(state: FilterPanelState, hasJointHistory: boolean, opened: boolean): string {
+/** What the Show panel can offer beyond the fixed choices. */
+export interface ShowOptions {
+  hasJointHistory: boolean;
+  /** The user has excluded at least one move (or is viewing them). */
+  hasExcluded: boolean;
+}
+
+function showPanelHtml(state: FilterPanelState, options: ShowOptions, opened: boolean): string {
   const parts = [
     state.forJoints ? "my joints" : "",
     state.onlyGear ? "my gear" : "",
+    state.excludedOnly ? "excluded" : "",
     state.stretch === DEFAULT_STRETCH ? "" : labelOf(STRETCH_FILTERS, state.stretch).toLowerCase(),
   ].filter(Boolean);
   const toggles = [
-    hasJointHistory ? toggleHtml("for-joints", "For my joints", state.forJoints) : "",
+    options.hasJointHistory ? toggleHtml("for-joints", "For my joints", state.forJoints) : "",
     toggleHtml("only-gear", "Only my gear", state.onlyGear),
+    options.hasExcluded || state.excludedOnly ? toggleHtml("excluded-only", "Excluded by me", state.excludedOnly) : "",
   ].join("");
   const body =
     `<p class="chip-row-label">Limit to</p><div class="row wrap">${toggles}</div>` +
@@ -122,10 +134,10 @@ function levelPanelHtml(state: FilterPanelState, opened: boolean): string {
   return panelHtml("level", "Level", parts, opened, body);
 }
 
-export function filterPanelsHtml(state: FilterPanelState, hasJointHistory: boolean): string {
+export function filterPanelsHtml(state: FilterPanelState, options: ShowOptions): string {
   const opened = (id: FilterPanelId): boolean => state.openPanels.includes(id);
   return [
-    showPanelHtml(state, hasJointHistory, opened("show")),
+    showPanelHtml(state, options, opened("show")),
     bodyPanelHtml(state, opened("body")),
     levelPanelHtml(state, opened("level")),
   ].join("");

@@ -10,6 +10,7 @@ import {
   effectiveLabel,
 } from "./skillPresent";
 import type { SkillTier } from "../domain/types";
+import { toggleHtml } from "./chips";
 import { exerciseMetaLine } from "./metaLine";
 import { escapeHtml, formatMuscles } from "./present";
 import {
@@ -29,6 +30,8 @@ export interface DetailActions {
   onDeclareTier?: (exerciseId: string, tier: SkillTier) => void;
   onGeneratePlan?: () => void;
   onAddToPlan?: () => void;
+  /** Exclude this move from every session, or restore it. */
+  onToggleExcluded?: (exclude: boolean) => void;
 }
 
 export interface DetailMemoryView {
@@ -37,41 +40,40 @@ export interface DetailMemoryView {
   bestReps?: number;
 }
 
-export interface MountLibraryDetailOptions {
-  exercise: SeedExercise;
-  targetIds: ReadonlySet<string>;
-  catalogueById: Record<string, SeedExercise>;
-  actions: DetailActions;
+/** Everything the detail page shows besides the exercise itself; all optional. */
+export interface DetailView {
+  /** Exercises that are a plan target (shown with a Target badge). */
+  targetIds?: ReadonlySet<string>;
+  /** Lookup for progression links. */
+  catalogueById?: Record<string, SeedExercise>;
   memory?: DetailMemoryView;
   jointHistory?: readonly JointHistoryEntry[];
   planStatus?: string | null;
   /** Short note after a declare raised related family levels. */
   cascadeHint?: string | null;
+  /** The user excluded this move ("not for me"). */
+  excluded?: boolean;
+}
+
+export interface MountLibraryDetailOptions extends DetailView {
+  exercise: SeedExercise;
+  actions: DetailActions;
+}
+
+function wireExcludeToggle(root: HTMLElement, actions: DetailActions, excluded: boolean): void {
+  root.querySelector("[data-exclude-toggle]")?.addEventListener("click", () => {
+    actions.onToggleExcluded?.(!excluded);
+  });
 }
 
 export function mountLibraryDetail(
   root: HTMLElement,
   options: MountLibraryDetailOptions,
 ): void {
-  const {
-    exercise,
-    targetIds,
-    catalogueById,
-    actions,
-    memory = {},
-    jointHistory = [],
-    planStatus = null,
-    cascadeHint = null,
-  } = options;
-  root.innerHTML = detailHtml(
-    exercise,
-    targetIds,
-    catalogueById,
-    memory,
-    jointHistory,
-    planStatus,
-    cascadeHint,
-  );
+  const { exercise, actions, excluded = false } = options;
+  root.innerHTML = detailHtml(exercise, options);
+
+  wireExcludeToggle(root, actions, excluded);
 
   root.querySelector<HTMLButtonElement>("[data-lib-back]")?.addEventListener("click", () => {
     actions.onBack();
@@ -102,15 +104,16 @@ export function mountLibraryDetail(
   });
 }
 
-export function detailHtml(
-  exercise: SeedExercise,
-  targetIds: ReadonlySet<string>,
-  catalogueById: Record<string, SeedExercise> = {},
-  memory: DetailMemoryView = {},
-  jointHistory: readonly JointHistoryEntry[] = [],
-  planStatus: string | null = null,
-  cascadeHint: string | null = null,
-): string {
+export function detailHtml(exercise: SeedExercise, view: DetailView = {}): string {
+  const {
+    targetIds = new Set<string>(),
+    catalogueById = {},
+    memory = {},
+    jointHistory = [],
+    planStatus = null,
+    cascadeHint = null,
+    excluded = false,
+  } = view;
   const targetBadge = isTemplateTarget(exercise.id, targetIds)
     ? `<p class="lib-badge">Target</p>`
     : "";
@@ -130,8 +133,9 @@ export function detailHtml(
       <p class="lib-meta">Muscles: ${escapeHtml(formatMuscles(exercise.muscles))}</p>
       ${summaryHtml(exercise)}
       ${planActions}
+      ${excludedHtml(excluded)}
       ${mediaHtml(exercise)}
-      ${safetyHtml(exercise, jointHistory)}
+      ${safetyHtml(exercise, jointHistory, excluded)}
       ${jointLoadHtml(exercise, jointHistory)}
       ${stepsHtml(exercise)}
       ${cuesHtml(exercise)}
@@ -141,6 +145,18 @@ export function detailHtml(
       ${chain}
       ${sourcesHtml(exercise)}
     </main>
+  `;
+}
+
+/** The user's own "not for me" switch: an excluded move is never planned until restored. */
+function excludedHtml(excluded: boolean): string {
+  const note = excluded
+    ? "Excluded: Aurora never plans this move. Untick to restore it."
+    : "Tick to keep this move out of all your sessions.";
+  return `
+    <p class="eyebrow">Your sessions</p>
+    <div class="row wrap">${toggleHtml("exclude-toggle", "Not for me", excluded)}</div>
+    <p class="hint" data-excluded-note>${note}</p>
   `;
 }
 
@@ -167,6 +183,14 @@ function planStatusHtml(planStatus: string | null): string {
 }
 
 
+/** What the joint verdict means for the user's sessions; an excluded move is out regardless. */
+function jointLead(avoid: boolean, excluded: boolean): string {
+  if (excluded) {
+    return "You excluded this move, so Aurora does not plan it.";
+  }
+  return avoid ? "Aurora skips this move in your sessions." : "Allowed in your sessions, with care.";
+}
+
 function bulletItemsHtml(notes: readonly string[]): string {
   return notes.map((note) => `<li>${escapeHtml(note)}</li>`).join("");
 }
@@ -175,7 +199,7 @@ function bulletItemsHtml(notes: readonly string[]): string {
  * One safety block. With a joint verdict it leads with what that means for
  * the user, then the general notes; otherwise just the general notes.
  */
-function safetyHtml(exercise: SeedExercise, history: readonly JointHistoryEntry[]): string {
+function safetyHtml(exercise: SeedExercise, history: readonly JointHistoryEntry[], excluded = false): string {
   const verdict = assessExercise(exercise.name, history);
   const general = exercise.cautions ?? [];
   if (verdict.cautions.length === 0) {
@@ -183,9 +207,7 @@ function safetyHtml(exercise: SeedExercise, history: readonly JointHistoryEntry[
       ? `<p class="eyebrow">Safety</p><ul class="lib-cautions">${bulletItemsHtml(general)}</ul>`
       : "";
   }
-  const lead = verdict.avoid
-    ? "Aurora skips this move in your sessions."
-    : "Allowed in your sessions, with care.";
+  const lead = jointLead(verdict.avoid, excluded);
   const generalBlock =
     general.length > 0
       ? `<p class="eyebrow">General safety</p><ul class="cues">${bulletItemsHtml(general)}</ul>`

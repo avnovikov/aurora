@@ -13,6 +13,7 @@ import {
 } from "../plan/pathPlanActions";
 import { loadPlanQueue, savePlanQueue } from "../plan/queue";
 import { dayTitle } from "../plan/dayKinds";
+import { excludeExercise, isExcluded, loadExcluded, restoreExercise } from "../plan/exclusions";
 import { listAllTemplates, resolveTemplate } from "../plan/templates";
 import {
   declareSkillTier,
@@ -129,7 +130,16 @@ export function renderLibraryView(root: HTMLElement): void {
           pickingPlanForId = exerciseId;
           paint();
         },
+        onToggleExcluded: (exclude) => {
+          if (exclude) {
+            excludeExercise(exerciseId);
+          } else {
+            restoreExercise(exerciseId);
+          }
+          paint();
+        },
       },
+      excluded: isExcluded(exerciseId),
       jointHistory,
       memory: {
         skillTier: memory.skillTier,
@@ -142,7 +152,8 @@ export function renderLibraryView(root: HTMLElement): void {
   };
 
   const paintList = (): void => {
-    const { forJoints, onlyGear, ...query } = filters;
+    const { forJoints, onlyGear, excludedOnly, ...query } = filters;
+    const excluded = loadExcluded();
     const { results, hiddenStretches } = selectLibraryResults({
       catalogue: LIBRARY_CATALOGUE,
       query,
@@ -150,13 +161,15 @@ export function renderLibraryView(root: HTMLElement): void {
       onlyGear,
       jointHistory,
       equipment,
+      excludedOnly: excludedOnly ? excluded : undefined,
     });
-    mountLibraryList(
-      root,
+    mountLibraryList(root, {
       results,
       targetIds,
-      { ...filters, hiddenStretches, openPanels },
-      {
+      query: { ...filters, hiddenStretches, openPanels },
+      jointHistory,
+      excluded: new Set(excluded),
+      actions: {
         onSearch: (next) => {
           setFilter("text", next);
           focusSearchInput(root);
@@ -167,6 +180,7 @@ export function renderLibraryView(root: HTMLElement): void {
         onStretch: (next) => setFilter("stretch", next),
         onForJoints: (on) => setFilter("forJoints", on),
         onOnlyGear: (on) => setFilter("onlyGear", on),
+        onExcludedOnly: (on) => setFilter("excludedOnly", on),
         onClearFilters: () => {
           Object.assign(filters, DEFAULT_FILTERS);
           paint();
@@ -181,8 +195,7 @@ export function renderLibraryView(root: HTMLElement): void {
           paint();
         },
       },
-      jointHistory,
-    );
+    });
   };
 
   paint();

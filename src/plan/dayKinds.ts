@@ -6,6 +6,9 @@ export type AreaKind = Extract<DayKind, "upper" | "lower" | "core" | "full">;
 
 export const AREA_KINDS: readonly AreaKind[] = ["upper", "lower", "core", "full"];
 
+/** The seed Mobility day: also lends its warm-up, dose convention and time band to Joint care. */
+export const MOBILITY_TEMPLATE_ID = "tmpl_mobility";
+
 export const DAY_KIND_LABELS: Record<DayKind, string> = {
   upper: "Upper body",
   lower: "Lower body",

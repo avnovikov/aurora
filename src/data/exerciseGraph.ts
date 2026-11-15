@@ -22,6 +22,15 @@ export const EXERCISE_GRAPH: Readonly<Record<string, SeedExercise>> = {
   ...BY_ID,
 };
 
+/** The Library exercise with this id; throws for an unknown id. */
+export function requireExercise(exerciseId: string): SeedExercise {
+  const exercise = EXERCISE_GRAPH[exerciseId];
+  if (!exercise) {
+    throw new Error(`Unknown exercise: ${exerciseId}`);
+  }
+  return exercise;
+}
+
 /**
  * Work moves the planner may put in a slot: they need tier standards to dose,
  * and are not band moves (those are prehab with no ladder). Gear the user

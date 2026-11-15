@@ -59,7 +59,7 @@ describe("Library flags for the user's joints", () => {
       [find("Skin the Cat"), find("Parallel Bar Dip"), find("Standard Push-Up")],
       new Set(),
       query,
-      [SHOULDER],
+      { jointHistory: [SHOULDER] },
     );
     expect(html).toContain("Skipped for your joints");
     expect(html).toContain("Mind your joints");
@@ -67,15 +67,15 @@ describe("Library flags for the user's joints", () => {
   });
 
   it("offers the joints filter only when history exists", () => {
-    expect(listHtml([], new Set(), query, [])).not.toContain("data-for-joints");
-    expect(listHtml([], new Set(), query, [KNEES])).toContain("data-for-joints");
+    expect(listHtml([], new Set(), query)).not.toContain("data-for-joints");
+    expect(listHtml([], new Set(), query, { jointHistory: [KNEES] })).toContain("data-for-joints");
   });
 
   it("explains the verdict on the detail page", () => {
-    const html = detailHtml(find("Cossack squat"), new Set(), {}, {}, [KNEES]);
+    const html = detailHtml(find("Cossack squat"), { jointHistory: [KNEES] });
     expect(html).toContain("For your joints");
     expect(html).toContain("skips this move");
-    expect(detailHtml(find("Standard Push-Up"), new Set(), {}, {}, [KNEES])).not.toContain(
+    expect(detailHtml(find("Standard Push-Up"), { jointHistory: [KNEES] })).not.toContain(
       "For your joints",
     );
   });

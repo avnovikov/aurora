@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { EXERCISE_GRAPH } from "../../src/data/exerciseGraph";
 import { templateToStarter } from "../../src/data/seed";
 import type { JointHistoryEntry } from "../../src/domain/program";
@@ -12,6 +12,7 @@ import { resolveTemplate } from "../../src/plan/templates";
 import { planSession } from "../../src/rules/planSession";
 import { buildPlanModel, type PlanUiState } from "../../src/ui/planModel";
 import { planPageHtml } from "../../src/ui/planPage";
+import { useMemoryStorage } from "../helpers/storage";
 
 const KNEES: JointHistoryEntry[] = [{ joint: "knee", side: "both", kind: "ligament" }];
 const state = (over: Partial<AthleteState> = {}): AthleteState => ({
@@ -27,14 +28,7 @@ const ui = (over: Partial<PlanUiState> = {}): PlanUiState => ({ openDays: new Se
 const legs = () => resolveTemplate("tmpl_legs");
 const count = (html: string, needle: string) => html.split(needle).length - 1;
 
-beforeEach(() => {
-  const store = new Map<string, string>();
-  globalThis.localStorage = {
-    getItem: (k: string) => store.get(k) ?? null,
-    setItem: (k: string, v: string) => void store.set(k, v),
-    removeItem: (k: string) => void store.delete(k),
-  } as unknown as Storage;
-});
+useMemoryStorage();
 
 describe("day preview", () => {
   it("is the planner's real session for a normal morning, not the stored defaults", () => {
@@ -60,7 +54,8 @@ describe("day preview", () => {
 
   it("explains a move the planner changed, and stays quiet otherwise", () => {
     const swapped = previewDay(legs(), state({ excluded: ["nordic_curl"] }), false).find((item) => item.note);
-    expect(swapped?.note).toMatch(/Excluded by you: swapped Nordic curl/);
+    expect(swapped?.note).toMatch(/^Excluded by you: swapped Nordic curl for /);
+    expect(swapped?.note).not.toMatch(/prescription|dose/);
     expect(previewDay(legs(), state(), false).every((item) => item.note === undefined)).toBe(true);
   });
 
@@ -144,11 +139,15 @@ describe("Plan page", () => {
     const m = model();
     expect(m.makeOptions.filter((o) => o.type === "kind").map((o) => o.label)).toEqual(["Upper body", "Lower body", "Core", "Full body"]);
     expect(m.makeOptions.some((o) => o.type === "skill" && o.label === "Skill: Pistol squat")).toBe(true);
-    expect(m.addOptions.at(-1)).toEqual({ value: "tmpl_mobility", label: "Mobility", type: "seed" });
+    expect(m.addOptions.slice(-2)).toEqual([
+      { value: "tmpl_mobility", label: "Mobility", type: "seed" },
+      { value: "care", label: "Joint care", type: "care" },
+    ]);
     const html = planPageHtml(m);
     expect(html).toContain('data-make-kind="upper"');
     expect(html).toContain('data-add-kind="core"');
     expect(html).toContain('data-add-seed="tmpl_mobility"');
+    expect(html).toContain('data-add-care="care"');
   });
 
   it("shows swap choices only for the slot being swapped, in the Library's words", () => {

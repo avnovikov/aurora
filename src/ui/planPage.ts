@@ -3,10 +3,10 @@ import type { PreviewItem } from "../plan/dayPreview";
 
 /** One choice in "Make this day" / "Add days": an area, a named skill, or a single seed day. */
 export interface DayOption {
-  /** `data-*` value: an area kind, an exercise id (skill) or a template id (seed). */
+  /** `data-*` value: an area kind, an exercise id (skill), a template id (seed) or "care". */
   value: string;
   label: string;
-  type: "kind" | "skill" | "seed";
+  type: "kind" | "skill" | "seed" | "care";
 }
 
 export interface SwapOption {
@@ -114,8 +114,9 @@ function dayHtml(day: PlanDayView, total: number, makeOptions: readonly DayOptio
 }
 
 function addPanelHtml(model: PlanPageModel): string {
-  const blocks = model.addOptions.filter((option) => option.type !== "seed");
-  const singles = model.addOptions.filter((option) => option.type === "seed");
+  const isSingle = (option: DayOption): boolean => option.type === "seed" || option.type === "care";
+  const blocks = model.addOptions.filter((option) => !isSingle(option));
+  const singles = model.addOptions.filter(isSingle);
   const single =
     singles.length > 0
       ? `<p class="chip-row-label">One day</p><div class="row wrap" role="group" aria-label="Add one day">${singles.map((option) => optionHtml("add", option)).join("")}</div>`

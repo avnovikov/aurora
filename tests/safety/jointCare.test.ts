@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import type { JointHistoryEntry } from "../../src/domain/program";
 import { planSession } from "../../src/rules/planSession";
 import { assessExercise } from "../../src/safety/jointCare";
@@ -6,6 +6,7 @@ import { chooseSuitableExercise } from "../../src/safety/suitableExercise";
 import { movementRisks } from "../../src/safety/movementRisk";
 import { loadProfile, saveProfile } from "../../src/settings/profile";
 import { describeEntry, toggleJoint, updateEntry } from "../../src/settings/jointHistory";
+import { useMemoryStorage } from "../helpers/storage";
 
 const SHOULDER: JointHistoryEntry = { joint: "shoulder", side: "left", kind: "dislocation" };
 const KNEES: JointHistoryEntry = { joint: "knee", side: "both", kind: "other" };
@@ -81,13 +82,7 @@ describe("planSession with joint history", () => {
 });
 
 describe("joint history editing and storage", () => {
-  beforeEach(() => {
-    const store = new Map<string, string>();
-    globalThis.localStorage = {
-      getItem: (k: string) => store.get(k) ?? null,
-      setItem: (k: string, v: string) => void store.set(k, v),
-    } as unknown as Storage;
-  });
+  useMemoryStorage();
 
   it("toggles and updates entries", () => {
     let entries = toggleJoint([], "shoulder");

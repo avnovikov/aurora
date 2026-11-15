@@ -69,7 +69,7 @@ describe("list rows (#37)", () => {
 });
 
 describe("filter clarity and accessibility (#37)", () => {
-  const html = listHtml([], new Set(), base, KNEES);
+  const html = listHtml([], new Set(), base, { jointHistory: KNEES });
 
   it("labels each chip row", () => {
     for (const label of ["Limit to", "Stretches", "Area", "Primary muscle"]) {
@@ -109,7 +109,7 @@ describe("filter clarity and accessibility (#37)", () => {
 
 describe("detail page (#37)", () => {
   it("merges the joint verdict and the general safety notes into one block", () => {
-    const html = detailHtml(find("Cossack squat"), new Set(), {}, {}, KNEES);
+    const html = detailHtml(find("Cossack squat"), { jointHistory: KNEES });
     expect(html.match(/class="joint-caution"/g)).toHaveLength(1);
     expect(html).toContain("For your joints");
     expect(html).toContain("General safety");
@@ -117,19 +117,19 @@ describe("detail page (#37)", () => {
   });
 
   it("keeps a plain Safety block when the move is fine for the user", () => {
-    const html = detailHtml(find("Bench Dip"), new Set(), {}, {}, []);
+    const html = detailHtml(find("Bench Dip"));
     expect(html).toMatch(/<p class="eyebrow">Safety<\/p>/);
     expect(html).not.toContain("joint-caution");
   });
 
   it("uses the list vocabulary and drops Pattern and Regions", () => {
-    const html = detailHtml(find("Pull-up"), new Set(), {}, {}, []);
+    const html = detailHtml(find("Pull-up"));
     expect(html).toMatch(/class="lib-meta">Upper body · Back/);
     expect(html).not.toMatch(/Pattern:|Regions:/);
   });
 
   it("shows plan actions right after the summary, before media and how-to", () => {
-    const html = detailHtml(find("Pistol squat"), new Set(), {}, {}, []);
+    const html = detailHtml(find("Pistol squat"));
     const plan = html.indexOf("data-generate-plan");
     expect(plan).toBeGreaterThan(-1);
     expect(plan).toBeLessThan(html.indexOf("How to"));

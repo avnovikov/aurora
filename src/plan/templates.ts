@@ -43,7 +43,7 @@ export function setSlotExercise(
   slotId: string,
   exerciseId: string,
 ): SessionTemplate {
-  assertKnownTemplate(templateId);
+  assertSeedTemplate(templateId);
   assertKnownExercise(exerciseId);
   const overrides = loadTemplateOverrides();
   const current = overrides[templateId] ?? {};
@@ -62,7 +62,7 @@ export function setTemplateTarget(
   templateId: string,
   targetExerciseId: string,
 ): SessionTemplate {
-  assertKnownTemplate(templateId);
+  assertSeedTemplate(templateId);
   assertKnownExercise(targetExerciseId);
   const overrides = loadTemplateOverrides();
   const current = overrides[templateId] ?? {};
@@ -89,6 +89,13 @@ export function findTemplate(templateId: string): SessionTemplate | undefined {
 
 export function isKnownTemplate(templateId: string): boolean {
   return findTemplate(templateId) !== undefined;
+}
+
+/** Throws unless the id is a seed template or a generated day still stored. */
+export function assertKnownTemplate(templateId: string): void {
+  if (!isKnownTemplate(templateId)) {
+    throw new Error(`Unknown template: ${templateId}`);
+  }
 }
 
 export function resolveTemplate(templateId: string): SessionTemplate {
@@ -141,7 +148,7 @@ function applySlotOverride(
   };
 }
 
-function assertKnownTemplate(templateId: string): void {
+function assertSeedTemplate(templateId: string): void {
   if (!TEMPLATE_BY_ID[templateId]) {
     throw new Error(`Unknown template: ${templateId}`);
   }
