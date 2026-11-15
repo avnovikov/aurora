@@ -100,22 +100,36 @@ function invertedRow(top: boolean, oneArm: boolean): Pose {
 
 // ---------------------------------------------------------------- bodyweight mid row (knees hooked over a high bar)
 
-const MID_BAR: Point = [0, -210];
+/** Bar low enough that the hanging head clears the floor by a little (keeps the framing tight). */
+const MID_BAR: Point = [0, -168];
+const MID_KNEE: Point = [MID_BAR[0] + 2, MID_BAR[1]];
+/** Face up, so the head is on the left: the hands grip the bar to the left of the knees. */
+const MID_HAND: Point = [MID_BAR[0] - 92, MID_BAR[1]];
 
-/** Hanging face up under the bar from the hands and the hooked knees; `top` pulls the chest up to the bar. */
+/**
+ * Hanging face up under the bar from the hands and the hooked knees.
+ * Bottom: arms straight down from the bar. Top: elbows bent and driven down, chest up to the bar.
+ */
 function midRow(top: boolean): Pose {
-  const knee: Point = [MID_BAR[0] - 2, MID_BAR[1]];
-  const pelvis = along(knee, top ? 82 : 90, 88);
-  const chest = along(pelvis, top ? -142 : -170, 80);
-  const thigh = angle(pelvis, knee);
+  // Top: chest at the bar, the shoulders just past the hands so the elbows drive down towards the feet.
+  const shoulder: Point = top ? [MID_HAND[0] - 22, MID_BAR[1] + 30] : [MID_HAND[0], round(MID_BAR[1] + ARM_REACH + 0.4)];
+  // Thighs hang from the hooked knees; the pelvis sits a torso from the shoulder.
+  const pelvis = meet(MID_KNEE, 88, shoulder, SHOULDER_REACH, -1);
+  const chest = along(pelvis, angle(pelvis, shoulder), 80);
+  // Shins fold back over the bar and hang down behind it.
+  const shin = angle(MID_KNEE, pelvis) - 50;
+  const farKnee: Point = along(pelvis, angle(pelvis, MID_KNEE) + 2, 88);
   return {
     pelvis,
     chest,
-    hands: { near: [MID_BAR[0] + 4, MID_BAR[1]], far: [MID_BAR[0], MID_BAR[1]] },
-    elbows: { near: { bend: 1 }, far: { bend: 1 } },
-    knees: { near: { at: knee }, far: { at: [knee[0] - 3, knee[1]] } },
-    feet: { near: along(knee, thigh + 125, 86), far: along([knee[0] - 3, knee[1]], thigh + 125, 86) },
-    toes: { near: thigh + 160, far: thigh + 160 },
+    hands: { near: MID_HAND, far: [MID_HAND[0] + 3, MID_HAND[1]] },
+    // Bottom: elbows pinned on the hand-shoulder line so the arms hang dead straight.
+    elbows: top
+      ? { near: { bend: 1 }, far: { bend: 1 } }
+      : { near: { at: along(shoulder, -90, 60) }, far: { at: along(shoulder, angle(shoulder, [MID_HAND[0] + 3, MID_HAND[1]]), 60) } },
+    knees: { near: { at: MID_KNEE }, far: { at: farKnee } },
+    feet: { near: along(MID_KNEE, shin, 86), far: along(farKnee, shin, 86) },
+    toes: { near: shin - 60, far: shin - 60 },
   };
 }
 
@@ -147,74 +161,53 @@ function hipThrust(top: boolean, singleLeg: boolean): Pose {
 
 // ---------------------------------------------------------------- tibialis raise
 
-const TIB_WALL_X = -30;
-const TIB_WALL: Prop = { kind: "box", x: TIB_WALL_X - 14, y: -360, w: 14, h: 360 };
+/** Body one straight line leaning back 15° from the ankles; only the head and upper back reach the wall. */
+const TIB_ANKLE: Point = [0, -6];
+const TIB_LEAN = -105;
+const TIB_SHOULDER = along(TIB_ANKLE, TIB_LEAN, BODY_REACH);
+const TIB_WALL_X = round(TIB_SHOULDER[0] - 14);
+const TIB_NECK = along(TIB_ANKLE, TIB_LEAN, LEG_REACH + 100);
+/** Head resting on the wall face. */
+const TIB_HEAD: Point = [TIB_WALL_X + 26, round(TIB_NECK[1] - Math.sqrt(36 ** 2 - (TIB_WALL_X + 26 - TIB_NECK[0]) ** 2))];
+const TIB_WALL: Prop = { kind: "box", x: TIB_WALL_X - 14, y: round(TIB_HEAD[1] - 50), w: 14, h: round(50 - TIB_HEAD[1]) };
 
-/** Back against the wall, legs straight with the feet a step forward; `up` lifts the toes, heels down. */
+/** Legs straight, heels down; `up` pulls the toes hard towards the shins (exaggerated so it reads at phone size). */
 function tibialisRaise(up: boolean): Pose {
-  const pelvis: Point = [TIB_WALL_X + 12, -172.5];
-  const ankle: Point = [round(pelvis[0] + 50), round(pelvis[1] + Math.sqrt(LEG_REACH ** 2 - 50 ** 2))];
+  // Arms hang along the sides, hands resting on the thighs.
+  const arm = TIB_LEAN + 180 - 8;
   return {
-    pelvis,
-    chest: [TIB_WALL_X + 18, pelvis[1] - 80],
-    head: [TIB_WALL_X + 25, pelvis[1] - 134],
-    hands: { near: [TIB_WALL_X + 30, -150], far: [TIB_WALL_X + 26, -150] },
+    ...straightBody(TIB_ANKLE, TIB_LEAN),
+    head: TIB_HEAD,
+    hands: { near: along(TIB_SHOULDER, arm, 124), far: along(TIB_SHOULDER, arm + 2, 124) },
     elbows: { near: { bend: 1 }, far: { bend: 1 } },
-    feet: { near: ankle, far: [ankle[0] - 4, ankle[1]] },
-    toes: { near: up ? -38 : 0, far: up ? -38 : 0 },
+    feet: { near: TIB_ANKLE, far: [TIB_ANKLE[0] - 4, TIB_ANKLE[1]] },
+    toes: { near: up ? -52 : 0, far: up ? -52 : 0 },
   };
 }
 
 // ---------------------------------------------------------------- wall handstand push-up
 
-const HSPU_WALL: Prop = { kind: "box", x: 17, y: -440, w: 14, h: 440 };
-const HSPU_HAND: Point = [64, 0];
-const HSPU_HEEL_X = 32.5;
+const HSPU_WALL: Prop = { kind: "box", x: 17, y: -420, w: 14, h: 420 };
+/** Hands well out from the wall so the body leans off it and only the heels touch. */
+const HSPU_HAND: Point = [140, 0];
+const HSPU_HEEL_X = 33;
 
 /** Inverted with the heels on the wall; `down` bends the elbows until the head nearly touches the floor in front of the hands. */
 function wallHspu(down: boolean): Pose {
   // At the bottom the forearms stay near vertical and the shoulders travel forward of the hands.
-  const shoulder: Point = down ? [108, -70] : [64, -126];
+  const shoulder: Point = down ? [HSPU_HAND[0] + 44, -70] : [HSPU_HAND[0], -126];
   // Lean so the heels stay on the wall face.
   const dir = (Math.acos((HSPU_HEEL_X - shoulder[0]) / BODY_REACH) * -180) / Math.PI;
   const pelvis = along(shoulder, dir, SHOULDER_REACH);
   return {
     pelvis,
     chest: along(pelvis, dir + 180, 80),
-    head: down ? [122, -37] : [87, -97],
+    head: down ? [HSPU_HAND[0] + 58, -37] : [HSPU_HAND[0] + 23, -97],
     hands: { near: HSPU_HAND, far: [HSPU_HAND[0] - 2, 0] },
     elbows: { near: { bend: 1 }, far: { bend: 1 } },
     feet: { near: along(pelvis, dir, LEG_REACH), far: along(pelvis, dir, LEG_REACH) },
-    toes: { near: -75, far: -75 },
-  };
-}
-
-// ---------------------------------------------------------------- archer push-up (seen from above)
-
-/** Top-down plank, head to the right; `shift` moves the chest over the near (+1) or far (-1) hand. */
-const ARCHER_FEET: Point = [-230, -170];
-const ARCHER_HANDS: Record<"near" | "far", Point> = { near: [42, -296], far: [42, -44] };
-
-function archer(shift: -1 | 0 | 1): Pose {
-  const deg = shift * -9;
-  const body = straightBody(ARCHER_FEET, deg);
-  const pelvis = body.pelvis as Point;
-  const shoulder = along(ARCHER_FEET, deg, BODY_REACH);
-  // The straight arm slides out to stay long; the working arm bends.
-  const slide = (side: "near" | "far"): Point => {
-    const hand = ARCHER_HANDS[side];
-    const straight = (side === "near" && shift === -1) || (side === "far" && shift === 1) || shift === 0;
-    if (!straight) return hand;
-    const sideShoulder: Point = [shoulder[0], shoulder[1] + (side === "near" ? -22 : 22)];
-    return along(sideShoulder, side === "near" ? -90 : 90, ARM_REACH);
-  };
-  return {
-    ...body,
-    hands: { near: slide("near"), far: slide("far") },
-    elbows: { near: { bend: -1 }, far: { bend: 1 } },
-    // Feet stay under the hips (spread 8 either side of the spine).
-    feet: { near: along(along(pelvis, deg - 90, 8), deg + 180, LEG_REACH), far: along(along(pelvis, deg + 90, 8), deg + 180, LEG_REACH) },
-    toes: { near: 180, far: 180 },
+    // Feet flexed, heels against the wall, toes pointing away from it.
+    toes: { near: -60, far: -60 },
   };
 }
 
@@ -273,20 +266,13 @@ function inclineClose(shoulderY: number): Pose {
   };
 }
 
-// ---------------------------------------------------------------- towel dead hang
+// ---------------------------------------------------------------- towel dead hang (front)
 
-const TOWEL_BAR = -490;
-
-function towelHang(sway: number): Pose {
-  const pelvis: Point = [sway, -196];
-  return {
-    pelvis,
-    head: [34 + sway, -318],
-    hands: { near: [4, -420], far: [0, -420] },
-    feet: { near: along(pelvis, 88, 173.6), far: along(pelvis, 87, 173.4) },
-    toes: { near: 75, far: 75 },
-  };
-}
+/** Bar above the grip; a towel strip hangs from it to each hand. */
+const TOWEL_BAR = -500;
+const TOWEL_GRIP = 56;
+const TOWEL_W = 14;
+const towelStrip = (x: number): Prop => ({ kind: "box", x: x - TOWEL_W / 2, y: TOWEL_BAR, w: TOWEL_W, h: -420 - TOWEL_BAR });
 
 // ---------------------------------------------------------------- wall push-up
 
@@ -330,7 +316,7 @@ export const BATCH_A_SPECS: DoodleSpec[] = [
     id: "fedb_bodyweight_mid_row",
     slug: "bodyweight-mid-row",
     title: "Bodyweight Mid Row",
-    props: [{ kind: "bar", y: MID_BAR[1], x1: -40, x2: 40, grips: [MID_BAR[0]] }],
+    props: [{ kind: "bar", y: MID_BAR[1], x1: MID_HAND[0] - 30, x2: 40, grips: [MID_BAR[0], MID_HAND[0]] }],
     transition: 1,
     frames: [
       { hold: 0.5, pose: midRow(false) },
@@ -404,19 +390,6 @@ export const BATCH_A_SPECS: DoodleSpec[] = [
     ],
   },
   {
-    id: "hf_6",
-    slug: "archer-push-up",
-    title: "Archer Push-Up",
-    view: "front",
-    transition: 1,
-    frames: [
-      { hold: 0.3, pose: archer(0) },
-      { hold: 0.5, pose: archer(1) },
-      { hold: 0.3, pose: archer(0) },
-      { hold: 0.5, pose: archer(-1) },
-    ],
-  },
-  {
     id: "wger_1282",
     slug: "chin-up-hold",
     title: "Chin-up Isometric Hold",
@@ -456,14 +429,13 @@ export const BATCH_A_SPECS: DoodleSpec[] = [
     id: "wger_2732",
     slug: "towel-grip-dead-hang",
     title: "Towel Grip Dead Hang",
-    props: [
-      { kind: "bar", y: TOWEL_BAR, x1: -110, x2: 110 },
-      { kind: "box", x: -4, y: TOWEL_BAR, w: 10, h: 70 },
-    ],
-    transition: 1.6,
+    view: "front",
+    props: [{ kind: "bar", y: TOWEL_BAR, x1: -150, x2: 150 }, towelStrip(-TOWEL_GRIP), towelStrip(TOWEL_GRIP)],
+    transition: 1.8,
     frames: [
-      { hold: 1.2, pose: towelHang(0) },
-      { hold: 1.2, pose: towelHang(2) },
+      // Dead hang from the towel ends, arms long; the straight legs drift together a little.
+      { hold: 1.6, pose: frontBarHang(-201, TOWEL_GRIP, 174.9) },
+      { hold: 1.6, pose: { ...frontBarHang(-201, TOWEL_GRIP, 174.9), feet: { near: [-11, -27.2], far: [11, -27.2] } } },
     ],
   },
   {

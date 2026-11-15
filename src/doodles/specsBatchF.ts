@@ -103,16 +103,33 @@ function hollow(legs: number, arms: number, lift: number): Pose {
 
 // ---------------------------------------------------------------- elevated pike
 
+const PIKE_ANKLE: Point = [-107, -123];
+
+/** The upper of the two points `ra` from `a` and `rb` from `b`. */
+function meetUp(a: Point, ra: number, b: Point, rb: number): Point {
+  const d = Math.hypot(b[0] - a[0], b[1] - a[1]);
+  const x = (ra * ra - rb * rb + d * d) / (2 * d);
+  const h = Math.sqrt(Math.max(0, ra * ra - x * x));
+  const ux = (b[0] - a[0]) / d;
+  const uy = (b[1] - a[1]) / d;
+  const candidates: Point[] = [
+    [round(a[0] + ux * x + uy * h), round(a[1] + uy * x - ux * h)],
+    [round(a[0] + ux * x - uy * h), round(a[1] + uy * x + ux * h)],
+  ];
+  return candidates[0][1] < candidates[1][1] ? candidates[0] : candidates[1];
+}
+
 function elevatedPike(bottom: boolean): Pose {
   const hands = { near: [66, 0] as Point, far: [60, 0] as Point };
-  const feet = { near: [-107, -123] as Point, far: [-104, -123] as Point };
+  const feet = { near: PIKE_ANKLE, far: [PIKE_ANKLE[0] + 3, PIKE_ANKLE[1]] as Point };
   const toes = { near: 0, far: 0 };
   // Hips stacked high over the shoulders, legs straight back to the box.
   if (!bottom) return { pelvis: [40, -217], chest: [68, -142], head: along([68, -142], 48, 54), hands, feet, toes };
-  // Elbows bend back, the top of the head lowers to the floor ahead of the hands.
-  const pelvis: Point = [45, -206];
-  const chest = chestToward(pelvis, [86, -62]);
-  return { pelvis, chest, head: along(chest, angle(pelvis, chest) - 2, 54), hands, feet, toes };
+  // Elbows bend back, the top of the head lowers to just above the floor ahead of the hands.
+  const shoulder: Point = [90, -54];
+  const pelvis = meetUp(PIKE_ANKLE, 173.9, shoulder, 98);
+  const chest = chestToward(pelvis, shoulder);
+  return { pelvis, chest, head: [114, -27], hands, feet, toes, elbows: { near: { bend: 1 }, far: { bend: 1 } } };
 }
 
 // ---------------------------------------------------------------- bar hangs
@@ -216,42 +233,6 @@ function handstandHold(sway: number): Pose {
     toes: { near: -90, far: -90 },
   };
 }
-
-// ---------------------------------------------------------------- muscle-up (side view)
-
-const MU_HANDS = { near: [2, -420] as Point, far: [0, -420] as Point };
-
-/**
- * Muscle-up pose from the shoulder: `torso` is the pelvis→shoulder direction,
- * `legs` the hip→ankle direction, `nod` turns the head off the spine line, and
- * `elbows` picks which way the arms fold.
- */
-function muscleUp(shoulder: Point, torso: number, legs: number, nod: number, elbows: 1 | -1): Pose {
-  const pelvis = along(shoulder, torso + 180, 98);
-  const chest = along(pelvis, torso, 80);
-  return {
-    pelvis,
-    chest,
-    head: along(along(pelvis, torso, 100), torso + nod, 36),
-    hands: MU_HANDS,
-    elbows: { near: { bend: elbows }, far: { bend: elbows } },
-    feet: { near: along(pelvis, legs, 173.6), far: along(pelvis, legs + 2, 173.4) },
-    toes: { near: legs - 10, far: legs - 8 },
-  };
-}
-
-/** Dead hang: arms long, body under the bar. */
-const muHang = (): Pose => muscleUp([0, -294.3], -90, 88, -36, 1);
-/** Halfway up: head tipped back behind the arms, eyes on the bar. */
-const muHalf = (): Pose => muscleUp([-18, -334], -93, 80, -26, 1);
-/** Chest to the bar: elbows driven down, hips swing forward. */
-const muPull = (): Pose => muscleUp([-34, -372], -96, 70, -15, 1);
-/** Transition: chest goes over the bar, shoulders level with it behind the hands, torso tipped forward. */
-const muTurn = (): Pose => muscleUp([-40, -428], -58, 98, 10, 1);
-/** Bottom of the dip on top of the bar: shoulders over and ahead of the hands, elbows back. */
-const muDip = (): Pose => muscleUp([14, -462], -62, 104, 0, 1);
-/** Locked out above the bar, hips against it. */
-const muLockout = (): Pose => muscleUp([6, -545.6], -78, 98, 0, 1);
 
 export const BATCH_F_SPECS: DoodleSpec[] = [
   {
@@ -377,28 +358,6 @@ export const BATCH_F_SPECS: DoodleSpec[] = [
       // Exit: step the push leg back down the way it came.
       { hold: 0.05, pose: kickScissor() },
       { hold: 0.05, pose: kickHandsDown() },
-    ],
-  },
-  {
-    id: "muscle_up",
-    slug: "muscle-up",
-    title: "Muscle-up",
-    replaces: true,
-    // Side view: the bar runs forward from the grip, so the legs pass behind it at the top.
-    props: [{ kind: "bar", y: -420, x1: -8, x2: 130, grips: [0] }],
-    transition: 0.7,
-    frames: [
-      { hold: 0.5, pose: muHang() },
-      { hold: 0.05, pose: muHalf() },
-      { hold: 0.05, pose: muPull() },
-      { hold: 0.05, pose: muTurn() },
-      { hold: 0.05, pose: muDip() },
-      { hold: 0.6, pose: muLockout() },
-      // Lower back through the transition with control.
-      { hold: 0.05, pose: muDip() },
-      { hold: 0.05, pose: muTurn() },
-      { hold: 0.05, pose: muPull() },
-      { hold: 0.05, pose: muHalf() },
     ],
   },
 ];

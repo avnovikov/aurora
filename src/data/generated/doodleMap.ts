@@ -80,7 +80,6 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "wger_1913": "/doodles/doodle-unilateral-hip-thrust.svg",
   "hf_20": "/doodles/doodle-wall-handstand-push-up.svg",
   "hf_40": "/doodles/doodle-wide-grip-inverted-row.svg",
-  "hf_6": "/doodles/doodle-archer-push-up.svg",
   "wger_1282": "/doodles/doodle-chin-up-hold.svg",
   "hf_108": "/doodles/doodle-dragon-flag.svg",
   "fedb_incline_push_up_close_grip": "/doodles/doodle-incline-push-up-close-grip.svg",
@@ -139,9 +138,8 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "pullup_dead_hang": "/doodles/doodle-dead-hang.svg",
   "scapular_pull": "/doodles/doodle-scapular-pull.svg",
   "pullup": "/doodles/doodle-pullup.svg",
-  "freestanding_hs": "/doodles/doodle-freestanding-hs.svg",
-  "muscle_up": "/doodles/doodle-muscle-up.svg"
+  "freestanding_hs": "/doodles/doodle-freestanding-hs.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
-export const REPLACED_DOODLE_IDS: readonly string[] = ["wall_handstand","pulse_raiser_march","hip_circles","ankle_rocks","glute_bridge","wrist_load","scap_pushup","bodyweight_squat","bulgarian_split","calf_raise","single_leg_calf_raise","cossack_squat","pistol_squat","shrimp_squat","step_up","reverse_lunge","hip_hinge","nordic_curl","dead_bug","hollow_hold","elevated_pike","hanging_knee_raise","pullup_dead_hang","scapular_pull","pullup","freestanding_hs","muscle_up"];
+export const REPLACED_DOODLE_IDS: readonly string[] = ["wall_handstand","pulse_raiser_march","hip_circles","ankle_rocks","glute_bridge","wrist_load","scap_pushup","bodyweight_squat","bulgarian_split","calf_raise","single_leg_calf_raise","cossack_squat","pistol_squat","shrimp_squat","step_up","reverse_lunge","hip_hinge","nordic_curl","dead_bug","hollow_hold","elevated_pike","hanging_knee_raise","pullup_dead_hang","scapular_pull","pullup","freestanding_hs"];
