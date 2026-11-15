@@ -40,11 +40,22 @@ export interface PlannedSession {
   warmup: WarmupStep[];
   work: PlannedWorkItem[];
   lightDay: boolean;
+  /** True when a manual deload week shaped this session. */
+  deload: boolean;
 }
 
 export interface PlanSessionOptions {
   history?: readonly HistoryEntry[];
   focus?: SessionFocus;
+  /** Manual deload week: light-day dose, no progression advance. */
+  deloadActive?: boolean;
+}
+
+/** Inputs shared by every slot in one planned session. */
+interface SlotContext {
+  readiness: Readiness;
+  memories: Record<string, ExerciseMemory>;
+  deloadActive: boolean;
 }
 
 function emptyMemory(exerciseId: string): ExerciseMemory {
@@ -80,8 +91,7 @@ function warmupPool(program: StarterProgram): SeedExercise[] {
 function planWorkItem(
   slot: SeedSlot,
   exerciseId: string,
-  readiness: Readiness,
-  memories: Record<string, ExerciseMemory>,
+  context: SlotContext,
   varietyReason?: string,
 ): PlannedWorkItem {
   const exercise = SEED_GRAPH[exerciseId];
@@ -90,12 +100,13 @@ function planWorkItem(
   }
   const resolved = resolveSlot({
     exercise,
-    memory: memories[exerciseId] ?? emptyMemory(exerciseId),
-    readiness,
+    memory: context.memories[exerciseId] ?? emptyMemory(exerciseId),
+    readiness: context.readiness,
     dose: { ...slot.dose },
     pinned: slot.pinned,
     weakLinks: [],
     graph: SEED_GRAPH,
+    deloadActive: context.deloadActive,
   });
   const chosen = SEED_GRAPH[resolved.exerciseId] ?? exercise;
   const reason = varietyReason
@@ -117,13 +128,12 @@ function planWorkItem(
 
 function planWorkWithVariety(
   program: StarterProgram,
-  readiness: Readiness,
-  memories: Record<string, ExerciseMemory>,
+  context: SlotContext,
   previousExerciseIds: readonly string[] | null,
 ): PlannedWorkItem[] {
   if (!previousExerciseIds || previousExerciseIds.length === 0) {
     return program.slots.map((slot) =>
-      planWorkItem(slot, slot.exerciseId, readiness, memories),
+      planWorkItem(slot, slot.exerciseId, context),
     );
   }
 
@@ -138,8 +148,7 @@ function planWorkWithVariety(
     return planWorkItem(
       slot,
       pick.exerciseId,
-      readiness,
-      memories,
+      context,
       pick.swapped ? pick.reason : undefined,
     );
   });
@@ -160,10 +169,10 @@ export function planSession(
     focus && options.history
       ? lastConsecutiveSameZone(options.history, focus)
       : null;
+  const deloadActive = options.deloadActive === true;
   const work = planWorkWithVariety(
     program,
-    readiness,
-    memories,
+    { readiness, memories, deloadActive },
     previous?.exerciseIds ?? null,
   );
   const warmup = planWarmup({
@@ -177,5 +186,6 @@ export function planSession(
     warmup,
     work,
     lightDay: work.some((item) => item.ruleIds.includes("light_day")),
+    deload: deloadActive,
   };
 }

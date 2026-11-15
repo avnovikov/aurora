@@ -141,12 +141,15 @@ export interface ResolveInput {
   weakLinks: WeakLink[];
   lastFailRegion?: FailRegion;
   graph: Record<string, Exercise>;
+  /** Manual deload week: light-day dose, no progression advance. */
+  deloadActive?: boolean;
 }
 
 export type RuleId =
   | "pain"
   | "pin"
   | "light_day"
+  | "deload"
   | "skill_dose"
   | "advance"
   | "stall_weak_link"

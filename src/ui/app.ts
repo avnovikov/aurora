@@ -14,10 +14,12 @@ import {
   saveMemories,
 } from "../session/history";
 import { loadSession } from "../session/storage";
+import { loadDeloadActive } from "../settings/deload";
 import { loadProfile } from "../settings/profile";
 import { speakCoachLine, unlockCoachAudio } from "../voice/coachVoice";
 import { renderBodyView } from "./bodyView";
 import { renderCheckIn } from "./checkIn";
+import { deloadNoteHtml } from "./deloadNote";
 import { renderEvaluationView } from "./evaluationView";
 import { forecastStripHtml } from "./forecastStrip";
 import { renderLibraryView } from "./libraryView";
@@ -91,6 +93,7 @@ function showTodayHome(root: HTMLElement): void {
                 .join(", ")}`
             : ""
         }</p>
+        ${deloadNoteHtml(loadDeloadActive())}
         ${forecast}
         <div data-checkin></div>
       </main>
@@ -109,7 +112,11 @@ function showTodayHome(root: HTMLElement): void {
         readiness,
         templateToStarter(template),
         loadMemories(),
-        { history: loadHistory(), focus: template.focus },
+        {
+          history: loadHistory(),
+          focus: template.focus,
+          deloadActive: loadDeloadActive(),
+        },
       );
       renderSessionView(root, {
         planned,
