@@ -26,16 +26,16 @@ export interface CoachLine {
 }
 
 const GET_READY: CoachLine[] = [
-  { id: "get_ready", assetKey: "get_ready", text: "Get ready, mate." },
+  { id: "get_ready", assetKey: "get_ready", text: "Get ready..." },
   {
     id: "get_ready",
     assetKey: "get_ready_b",
-    text: "Nearly on, la. Get ready.",
+    text: "Get ready, mate.",
   },
   {
     id: "get_ready",
     assetKey: "get_ready_c",
-    text: "Ten seconds. Shake it out, mate.",
+    text: "Nearly on, la. Get ready.",
   },
 ];
 

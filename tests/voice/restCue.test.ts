@@ -2,23 +2,32 @@ import { describe, expect, it } from "vitest";
 import { cueSchedule } from "../../src/voice/restCue";
 
 describe("cueSchedule", () => {
-  it("includes Get ready when rest is at least ten seconds", () => {
+  it("says Get ready at five seconds instead of Five", () => {
     const events = cueSchedule(90, () => 0);
     const getReady = events.find((event) => event.kind === "get_ready");
 
-    expect(getReady?.atSecondsLeft).toBe(10);
-    expect(getReady?.kind).toBe("get_ready");
-    expect(getReady?.text).toMatch(/mate|Get ready/i);
+    expect(getReady?.atSecondsLeft).toBe(5);
+    expect(getReady?.text).toBe("Get ready...");
     expect(getReady?.assetKey).toBeTruthy();
+    expect(events.map((event) => event.atSecondsLeft)).toEqual([
+      5, 4, 3, 2, 1, 0,
+    ]);
+    expect(events.some((event) => event.lineId === "five")).toBe(false);
     expect(events.at(-1)?.kind).toBe("go");
-    expect(events.at(-1)?.text).toMatch(/mate|Go|pop/i);
   });
 
-  it("skips Get ready when rest is shorter than ten seconds", () => {
-    const events = cueSchedule(8, () => 0);
+  it("skips Get ready when rest is shorter than five seconds", () => {
+    const events = cueSchedule(4, () => 0);
 
     expect(events.some((event) => event.kind === "get_ready")).toBe(false);
-    expect(events.map((event) => event.atSecondsLeft)).toEqual([5, 4, 3, 2, 1, 0]);
+    expect(events.map((event) => event.atSecondsLeft)).toEqual([4, 3, 2, 1, 0]);
+  });
+
+  it("stops the countdown for timed next exercises", () => {
+    const events = cueSchedule(90, { timedNext: true, random: () => 0 });
+
+    expect(events.map((event) => event.kind)).toEqual(["get_ready", "go"]);
+    expect(events.map((event) => event.atSecondsLeft)).toEqual([5, 0]);
   });
 
   it("rejects negative or non-finite remaining time", () => {

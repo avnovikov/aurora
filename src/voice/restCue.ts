@@ -11,47 +11,65 @@ export interface RestCueEvent {
   assetKey: string;
 }
 
+export interface CueScheduleOptions {
+  /**
+   * Next work is a timed hold (or a timed station). Skip 4–1 countdown —
+   * only "Get ready..." then "Go".
+   */
+  timedNext?: boolean;
+  random?: () => number;
+}
+
 const COUNT_IDS: Record<number, CoachLineId> = {
-  5: "five",
   4: "four",
   3: "three",
   2: "two",
   1: "one",
 };
 
+/** Spoken + on-screen line at the old "five" mark. */
+const GET_READY_AT_FIVE = "Get ready...";
+
 /**
- * Pure schedule for rest end cues. Rest < 10s skips "Get ready".
- * get_ready / go text picked once so on-screen matches the spoken line.
+ * Pure schedule for rest end cues.
+ * At 5s: "Get ready..." (not "Five."). Timed next → no 4–1 counts.
  */
 export function cueSchedule(
   remainingSeconds: number,
-  random: () => number = Math.random,
+  options: CueScheduleOptions | (() => number) = {},
 ): RestCueEvent[] {
+  const opts: CueScheduleOptions =
+    typeof options === "function" ? { random: options } : options;
+  const random = opts.random ?? Math.random;
+  const timedNext = opts.timedNext === true;
+
   if (!Number.isFinite(remainingSeconds) || remainingSeconds < 0) {
     throw new Error(`remainingSeconds must be >= 0; got ${remainingSeconds}`);
   }
   const events: RestCueEvent[] = [];
-  if (remainingSeconds >= 10) {
+  if (remainingSeconds >= 5) {
     const ready = pickLine("get_ready", random);
     events.push({
-      atSecondsLeft: 10,
+      atSecondsLeft: 5,
       kind: "get_ready",
-      text: ready.text,
+      text: GET_READY_AT_FIVE,
       lineId: ready.id,
       assetKey: ready.assetKey,
     });
   }
-  const countFrom = Math.min(5, Math.floor(remainingSeconds));
-  for (let n = countFrom; n >= 1; n -= 1) {
-    const lineId = COUNT_IDS[n];
-    const line = pickLine(lineId, () => 0);
-    events.push({
-      atSecondsLeft: n,
-      kind: "count",
-      text: line.text.replace(/\.$/, ""),
-      lineId,
-      assetKey: line.assetKey,
-    });
+  if (!timedNext) {
+    const countFrom = Math.min(4, Math.floor(remainingSeconds));
+    for (let n = countFrom; n >= 1; n -= 1) {
+      const lineId = COUNT_IDS[n];
+      const line = pickLine(lineId, () => 0);
+      events.push({
+        atSecondsLeft: n,
+        kind: "count",
+        text: line.text.replace(/\.$/, ""),
+        lineId,
+        assetKey: line.assetKey,
+      });
+    }
   }
   const go = pickLine("go", random);
   events.push({

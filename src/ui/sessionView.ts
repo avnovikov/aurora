@@ -9,10 +9,14 @@ import {
 } from "../voice/pulseAlert";
 import { shellHtml } from "./sessionChalk";
 import { wireSessionControls, type SessionControlHandlers } from "./sessionControls";
+import { EXERCISE_GRAPH } from "../data/exerciseGraph";
+import { resolveExerciseTiming } from "../domain/timing";
+import type { PlannedWorkItem } from "../rules/planSession";
 import { startRestTimer, type RestTimerHandle } from "./sessionRest";
 import {
   advanceCooldown,
   cooldownSteps,
+  currentWork,
   enterDone,
   enterWorkAfterWarmup,
   initialState,
@@ -155,14 +159,32 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
         void speakCoachLine("change_side");
       },
       onRestGap: (_gap, resume) => {
-        startRest(resume, isWarmup);
+        // Warm-up / cool-down stations are timed holds — no 4–1 countdown.
+        startRest(resume, isWarmup, true);
       },
     });
   };
 
-  const startRest = (onDoneRest: () => void, withVoice: boolean): void => {
+  const startRest = (
+    onDoneRest: () => void,
+    withVoice: boolean,
+    timedNext = false,
+  ): void => {
     clearWorkTimers();
-    restHandle = startRestTimer(root, state, withVoice, onDoneRest);
+    restHandle = startRestTimer(root, state, withVoice, onDoneRest, {
+      timedNext,
+    });
+  };
+
+  const timedWorkItem = (item: PlannedWorkItem | null): boolean => {
+    if (!item) {
+      return false;
+    }
+    const exercise = EXERCISE_GRAPH[item.exerciseId];
+    if (!exercise) {
+      return false;
+    }
+    return resolveExerciseTiming(exercise).effort === "hold";
   };
 
   const finishExercise = (): void => {
@@ -184,7 +206,8 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
 
   const handlers: SessionControlHandlers = {
     onPaint: paint,
-    onStartRest: (withVoice, onDone) => startRest(onDone, withVoice),
+    onStartRest: (withVoice, onDone) =>
+      startRest(onDone, withVoice, timedWorkItem(currentWork(options.planned, state))),
     onFinishExercise: finishExercise,
     onFinishAll: finishAll,
     onStartCooldown: () => {
