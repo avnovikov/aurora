@@ -1,5 +1,5 @@
 import { clearSession, saveSession } from "../session/storage";
-import { sessionClockSnapshot } from "../session/sessionClock";
+import { formatClock, sessionClockSnapshot } from "../session/sessionClock";
 import { startWakeLock } from "../session/wakeLock";
 import { speakCoachLine } from "../voice/coachVoice";
 import { disconnectHeartRate } from "../pulse/hrMonitor";
@@ -69,6 +69,13 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       state.plannedTotalSeconds,
       Date.now(),
     );
+    const elapsed = node.querySelector("[data-session-elapsed]");
+    const left = node.querySelector("[data-session-left]");
+    if (elapsed && left) {
+      elapsed.textContent = formatClock(clock.elapsedSeconds);
+      left.textContent = formatClock(clock.remainingSeconds);
+      return;
+    }
     node.textContent = clock.label;
   };
 

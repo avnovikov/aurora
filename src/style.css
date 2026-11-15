@@ -133,53 +133,6 @@ button:disabled {
   margin-top: 0.5rem;
 }
 
-.session-clock {
-  margin: 0 0 0.5rem;
-  font-family: "Arial Narrow", "Helvetica Condensed", Impact, sans-serif;
-  font-size: 0.95rem;
-  letter-spacing: 0.04em;
-  color: var(--muted);
-}
-
-.chalk-head {
-  margin: 0 0 0.75rem;
-}
-
-.chalk-now {
-  margin: 0 0 0.4rem;
-  color: var(--muted);
-  font-size: 0.85rem;
-  line-height: 1.3;
-}
-
-.chalk-rail {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.35rem;
-  margin: 0;
-  padding: 0;
-}
-
-.chalk-rail li {
-  width: 0.45rem;
-  height: 0.45rem;
-  padding: 0;
-  border-radius: 1px;
-  background: var(--edge);
-}
-
-.chalk-rail li.active {
-  width: 0.7rem;
-  height: 0.7rem;
-  background: var(--brass);
-}
-
-.chalk-rail li.done {
-  background: var(--control-edge);
-}
-
 .reps {
   font-family: "Arial Narrow", "Helvetica Condensed", Impact, sans-serif;
   font-size: 5rem;
@@ -272,55 +225,6 @@ button:disabled {
   color: var(--muted);
   font-size: 0.72rem;
   line-height: 1.35;
-}
-
-.pulse-row {
-  display: flex;
-  gap: 0.65rem;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-bottom: 0.75rem;
-  color: var(--muted);
-  font-size: 0.8rem;
-}
-
-.pulse-chip {
-  letter-spacing: 0.02em;
-}
-
-.pulse-more summary {
-  cursor: pointer;
-  list-style: none;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.pulse-more summary::-webkit-details-marker {
-  display: none;
-}
-
-.pulse-more[open] {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  align-items: center;
-}
-
-.pulse-more button {
-  padding: 0.35rem 0.55rem;
-  font-size: 0.75rem;
-}
-
-.pulse-row.pulse-lost {
-  color: var(--coral);
-}
-
-.session.light-day h1,
-.session.light-day h2,
-.session.light-day .reps,
-.session.light-day .chalk-rail li.active {
-  color: var(--silver);
 }
 
 .session .lib-summary {
