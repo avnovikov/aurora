@@ -23,6 +23,7 @@ import {
 } from "./detailSections";
 import { personalBestHeroHtml, personalBestUnit } from "./personalBest";
 import { isTemplateTarget } from "./targets";
+import "../styles/exercise.css";
 
 export interface DetailActions {
   onBack: () => void;
@@ -117,10 +118,7 @@ export function detailHtml(exercise: SeedExercise, view: DetailView = {}): strin
   const targetBadge = isTemplateTarget(exercise.id, targetIds)
     ? `<p class="lib-badge">Target</p>`
     : "";
-  const chain = chainLinksHtml(exercise, catalogueById);
-  const standards = standardsHtml(exercise);
-  const skill = skillPickerHtml(exercise, memory, cascadeHint);
-  const planActions = planActionsHtml(exercise, planStatus);
+  const tier = currentTier(memory);
 
   return `
     <main class="shell lib-detail">
@@ -128,24 +126,53 @@ export function detailHtml(exercise: SeedExercise, view: DetailView = {}): strin
       ${targetBadge}
       <p class="eyebrow">Exercise</p>
       <h1>${escapeHtml(exercise.name)}</h1>
+      <div class="ex-meta">
+        <p class="lib-meta">${escapeHtml(exerciseMetaLine(exercise))}</p>
+        <p class="lib-meta">Muscles: ${escapeHtml(formatMuscles(exercise.muscles))}</p>
+      </div>
       ${personalBestHeroHtml(memory.bestReps, personalBestUnit(exercise))}
-      <p class="lib-meta">${escapeHtml(exerciseMetaLine(exercise))}</p>
-      <p class="lib-meta">Muscles: ${escapeHtml(formatMuscles(exercise.muscles))}</p>
+      ${mediaRowHtml(exercise)}
       ${summaryHtml(exercise)}
-      ${planActions}
-      ${excludedHtml(excluded)}
-      ${mediaHtml(exercise)}
-      ${safetyHtml(exercise, jointHistory, excluded)}
-      ${jointLoadHtml(exercise, jointHistory)}
-      ${stepsHtml(exercise)}
-      ${cuesHtml(exercise)}
-      ${mistakesHtml(exercise)}
-      ${skill}
-      ${standards}
-      ${chain}
+      ${sectionHtml(safetyHtml(exercise, jointHistory, excluded))}
+      ${sectionHtml(jointLoadHtml(exercise, jointHistory))}
+      ${sectionHtml(stepsHtml(exercise), "ex-steps")}
+      ${cuesAndMistakesHtml(exercise)}
+      ${standardsHtml(exercise, tier)}
+      ${skillPickerHtml(exercise, memory, cascadeHint)}
+      <div class="ex-tray">
+        ${planActionsHtml(exercise, planStatus)}
+        ${chainLinksHtml(exercise, catalogueById)}
+        ${excludedHtml(excluded)}
+      </div>
       ${sourcesHtml(exercise)}
     </main>
   `;
+}
+
+/** The tier the level select shows: declared first, then the logged one. */
+function currentTier(memory: DetailMemoryView): SkillTier {
+  return memory.declaredTier ?? memory.skillTier ?? "beginner";
+}
+
+/** The doodle (or licensed photos) in its own full-width row; its markup is untouched. */
+function mediaRowHtml(exercise: SeedExercise): string {
+  const media = mediaHtml(exercise);
+  return media ? `<div class="ex-media">${media}</div>` : "";
+}
+
+/** Wraps one titled block in a section; nothing when the block is empty. */
+function sectionHtml(body: string, cls = ""): string {
+  if (!body) {
+    return "";
+  }
+  const classes = ["ex-section", cls].filter(Boolean).join(" ");
+  return `<section class="${classes}">${body}</section>`;
+}
+
+function cuesAndMistakesHtml(exercise: SeedExercise): string {
+  const cues = sectionHtml(cuesHtml(exercise));
+  const mistakes = sectionHtml(mistakesHtml(exercise));
+  return cues || mistakes ? `<div class="ex-pair">${cues}${mistakes}</div>` : "";
 }
 
 /** The user's own "not for me" switch: an excluded move is never planned until restored. */
@@ -154,9 +181,11 @@ function excludedHtml(excluded: boolean): string {
     ? "Excluded: Aurora never plans this move. Untick to restore it."
     : "Tick to keep this move out of all your sessions.";
   return `
-    <p class="eyebrow">Your sessions</p>
-    <div class="row wrap">${toggleHtml("exclude-toggle", "Not for me", excluded)}</div>
-    <p class="hint" data-excluded-note>${note}</p>
+    <section class="ex-section ex-exclude">
+      <p class="eyebrow">Your sessions</p>
+      ${toggleHtml("exclude-toggle", "Not for me", excluded)}
+      <p class="hint" data-excluded-note>${note}</p>
+    </section>
   `;
 }
 
@@ -165,13 +194,15 @@ function planActionsHtml(exercise: SeedExercise, planStatus: string | null): str
     return "";
   }
   return `
-    <p class="eyebrow">Plan</p>
-    <div class="row wrap lib-plan-actions">
-      <button type="button" class="cta" data-generate-plan>Generate plan</button>
-      <button type="button" data-add-to-plan>Add to the plan</button>
-    </div>
-    <p class="hint">Generate builds a whole day toward this skill. Add inserts your current-level step into an existing day until you outgrow it.</p>
-    ${planStatusHtml(planStatus)}
+    <section class="ex-section">
+      <p class="eyebrow">Plan</p>
+      <div class="lib-plan-actions">
+        <button type="button" class="cta" data-generate-plan>Generate plan</button>
+        <button type="button" data-add-to-plan>Add to the plan</button>
+      </div>
+      <p class="hint">Generate builds a whole day toward this skill. Add inserts your current-level step into an existing day until you outgrow it.</p>
+      ${planStatusHtml(planStatus)}
+    </section>
   `;
 }
 
@@ -239,7 +270,7 @@ function skillPickerHtml(
   if (!exercise.standards) {
     return "";
   }
-  const current = memory.declaredTier ?? memory.skillTier ?? "beginner";
+  const current = currentTier(memory);
   const options = SKILL_TIERS.map((tier) => {
     const selected = tier === current ? "selected" : "";
     return `<option value="${tier}" ${selected}>${SKILL_TIER_LABELS[tier]}</option>`;
@@ -252,29 +283,35 @@ function skillPickerHtml(
       ? `<p class="hint">Set your starting level; logged sets refine it.</p>`
       : `<p class="hint">Effective level · ${escapeHtml(effectiveLabel(memory.skillTier ?? current))}</p>`;
   return `
-    <p class="eyebrow">Your level</p>
-    <label class="field">
-      <span class="visually-hidden">Skill tier</span>
-      <select data-skill-tier aria-label="Skill tier for ${escapeHtml(exercise.name)}">
+    <div class="ex-level">
+      <label for="ex-tier" class="eyebrow">Your level</label>
+      <select id="ex-tier" data-skill-tier aria-label="Skill tier for ${escapeHtml(exercise.name)}">
         ${options}
       </select>
-    </label>
-    ${levelHint}
-    ${cascade}
+      ${levelHint}
+      ${cascade}
+    </div>
   `;
 }
 
-function standardsHtml(exercise: SeedExercise): string {
+/** Full-bleed scale, one column per tier; the user's tier is marked. */
+function standardsHtml(exercise: SeedExercise, mine: SkillTier): string {
   if (!exercise.standards) {
     return "";
   }
-  const unit = exercise.effort === "hold" ? "s" : "";
+  const unit = exercise.effort === "hold" ? "<small>s</small>" : "";
   const cells = SKILL_TIERS.map((tier) => {
-    return `<li><span>${SKILL_TIER_LABELS[tier]}</span><strong>${exercise.standards![tier]}${unit}</strong></li>`;
+    const label = `<span>${SKILL_TIER_LABELS[tier]}</span>`;
+    const value = `<strong>${exercise.standards![tier]}${unit}</strong>`;
+    return tier === mine
+      ? `<li class="mine"><span class="you">Your level</span>${label}${value}</li>`
+      : `<li>${label}${value}</li>`;
   }).join("");
   return `
-    <p class="eyebrow">Standards</p>
-    <ul class="skill-standards">${cells}</ul>
+    <section class="ex-section ex-standards">
+      <p class="eyebrow">Standards</p>
+      <ul class="skill-standards">${cells}</ul>
+    </section>
   `;
 }
 
@@ -299,8 +336,10 @@ function chainLinksHtml(
     return "";
   }
   return `
-    <p class="eyebrow">Progression</p>
-    <div class="row wrap lib-chain">${links.join("")}</div>
+    <section class="ex-section">
+      <p class="eyebrow">Progression</p>
+      <div class="lib-chain">${links.join("")}</div>
+    </section>
   `;
 }
 
