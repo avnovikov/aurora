@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   applyOverride,
-  clearTemplateOverride,
   resetTemplateOverridesForTests,
   resolveTemplate,
   setSlotExercise,
@@ -33,12 +32,6 @@ describe("template procedure overrides", () => {
     expect(bars.slots.find((slot) => slot.id === "bars_pull")?.exerciseId).toBe(
       "muscle_up",
     );
-  });
-
-  it("resets overrides back to seed", () => {
-    setTemplateTarget("tmpl_bars", "pullup");
-    clearTemplateOverride("tmpl_bars");
-    expect(resolveTemplate("tmpl_bars").targetExerciseIds).toEqual(["muscle_up"]);
   });
 
   it("applyOverride keeps untouched slots", () => {

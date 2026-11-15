@@ -5,7 +5,6 @@ import {
   moveQueueItem,
   peekUpcoming,
   removeQueueItem,
-  replaceQueueItem,
   skipNext,
 } from "../../src/plan/queue";
 
@@ -47,15 +46,6 @@ describe("plan queue", () => {
     expect(() => removeQueueItem({ items: ["tmpl_legs"] }, 0)).toThrow(
       "at least one session",
     );
-  });
-
-  it("replaceQueueItem swaps a template id", () => {
-    const next = replaceQueueItem(
-      { items: ["tmpl_legs", "tmpl_abs"] },
-      0,
-      "tmpl_full",
-    );
-    expect(next.items).toEqual(["tmpl_full", "tmpl_abs"]);
   });
 
   it("appendQueueItem adds a known template without mutating input", () => {

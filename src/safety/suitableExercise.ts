@@ -1,4 +1,5 @@
 import { EXERCISE_GRAPH, plannableByPattern } from "../data/exerciseGraph";
+import type { SeedExercise } from "../data/seed";
 import type { EquipmentId, JointHistoryEntry } from "../domain/program";
 import { tierIndex } from "../domain/skillTier";
 import type { Pattern } from "../domain/types";
@@ -66,6 +67,48 @@ function compareTuples(a: readonly number[], b: readonly number[]): number {
   return 0;
 }
 
+interface Scored {
+  candidate: SeedExercise;
+  cautions: string[];
+}
+
+/** Same-pattern plannable moves the athlete can do: not excluded, gear owned, no joint avoid. */
+function usableAlternatives(
+  exercise: Candidate,
+  history: readonly JointHistoryEntry[],
+  equipment: readonly EquipmentId[] | undefined,
+  excluded: readonly string[],
+): Scored[] {
+  const pool = plannableByPattern().get(exercise.pattern) ?? [];
+  return pool
+    .filter((candidate) => candidate.id !== exercise.id && !excluded.includes(candidate.id))
+    .filter((candidate) => missingGear(candidate.requires, equipment).length === 0)
+    .map((candidate) => ({ candidate, verdict: assessExercise(candidate.name, history) }))
+    .filter(({ verdict }) => !verdict.avoid)
+    .map(({ candidate, verdict }) => ({ candidate, cautions: verdict.cautions }));
+}
+
+const byCautions = (a: Scored, b: Scored): number => a.cautions.length - b.cautions.length;
+
+/**
+ * Substitutes for a move the athlete does not want, best first: same ladder,
+ * nearest difficulty, never harder while an equal or easier move exists.
+ */
+export function substitutesFor(
+  exercise: Candidate,
+  history: readonly JointHistoryEntry[],
+  equipment?: readonly EquipmentId[],
+  excluded: readonly string[] = [],
+): SeedExercise[] {
+  return usableAlternatives(exercise, history, equipment, excluded)
+    .sort(
+      (a, b) =>
+        compareTuples(exclusionOrder(exercise, a.candidate), exclusionOrder(exercise, b.candidate)) ||
+        byCautions(a, b),
+    )
+    .map(({ candidate }) => candidate);
+}
+
 /**
  * Keeps the move when it suits this history, equipment and exclusions;
  * otherwise picks a plannable move of the same pattern that is not excluded,
@@ -89,17 +132,7 @@ export function chooseSuitableExercise(
     return { id: exercise.id, name: exercise.name, cautions: own.cautions };
   }
   const cause = causeOf(isExcluded, own.avoid);
-  const pool = plannableByPattern().get(exercise.pattern) ?? [];
-  const candidates = pool
-    .filter((candidate) => candidate.id !== exercise.id && !excluded.includes(candidate.id))
-    .filter((candidate) => missingGear(candidate.requires, equipment).length === 0)
-    .map((candidate) => ({
-      candidate,
-      verdict: assessExercise(candidate.name, history),
-    }))
-    .filter(({ verdict }) => !verdict.avoid);
-  const byCautions = (a: (typeof candidates)[number], b: (typeof candidates)[number]): number =>
-    a.verdict.cautions.length - b.verdict.cautions.length;
+  const candidates = usableAlternatives(exercise, history, equipment, excluded);
   const safe =
     cause === "excluded"
       ? [...candidates].sort(
@@ -119,6 +152,6 @@ export function chooseSuitableExercise(
     swappedFrom: exercise.name,
     cause,
     reason: `${labelOf(cause, missing)}: swapped ${exercise.name} for ${safe.candidate.name}`,
-    cautions: safe.verdict.cautions,
+    cautions: safe.cautions,
   };
 }

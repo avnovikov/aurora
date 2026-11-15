@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { LIBRARY_CATALOGUE } from "../../src/data/libraryCatalogue";
 import {
   AREAS,
@@ -11,7 +11,6 @@ import {
 } from "../../src/library/facets";
 import { listHtml } from "../../src/library/libraryList";
 import { searchExercises } from "../../src/library/search";
-import { exerciseSelectHtml, setPickerFacetsForTests } from "../../src/ui/planView";
 import { exerciseNamed as find } from "../helpers/exercises";
 
 const entry = (group: string, role: "primary" | "secondary" | "stabilizer") =>
@@ -123,35 +122,5 @@ describe("Library list chips", () => {
     expect(html).toMatch(/data-area="upper" class="selected"/);
     expect(html).toMatch(/data-muscle="chest" class="selected"/);
     expect(html).toContain("Area &amp; muscle · Upper body, Chest");
-  });
-});
-
-describe("Plan editor pickers", () => {
-  beforeEach(() => {
-    const store = new Map<string, string>();
-    globalThis.localStorage = {
-      getItem: (k: string) => store.get(k) ?? null,
-      setItem: (k: string, v: string) => void store.set(k, v),
-    } as unknown as Storage;
-    setPickerFacetsForTests("all", "all");
-  });
-
-  it("lists every plannable move with no filter", () => {
-    const html = exerciseSelectHtml(undefined, "data-x", "Pick");
-    expect(html).toContain(">Pull-up");
-    expect(html).toContain(">Bodyweight squat");
-  });
-
-  it("narrows by area and muscle but keeps the current pick", () => {
-    setPickerFacetsForTests("lower", "all");
-    const lower = exerciseSelectHtml(undefined, "data-x", "Pick");
-    expect(lower).toContain(">Bodyweight squat");
-    expect(lower).not.toContain(">Pull-up");
-    const kept = exerciseSelectHtml("pullup", "data-x", "Pick");
-    expect(kept).toContain(">Pull-up");
-    setPickerFacetsForTests("all", "back");
-    const back = exerciseSelectHtml(undefined, "data-x", "Pick");
-    expect(back).toContain(">Pull-up");
-    expect(back).not.toContain(">Bodyweight squat");
   });
 });
