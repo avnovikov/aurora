@@ -30,6 +30,16 @@ npm run dev -- --host
 4. Optional: Chrome menu → **Install app** (manifest is present).
 5. Voice + wake lock work best; **Web Bluetooth needs HTTPS** (use deploy below for the strap).
 
+#### Wake lock smoke check
+
+The screen stays awake during a session (`src/session/wakeLock.ts`, Screen Wake Lock API).
+
+1. Start a session on the phone and leave it untouched past the screen timeout — the screen should not dim.
+2. Switch to another app/tab and back — the lock is released while hidden and re-acquired on return.
+3. Finish the session — the lock is released and normal timeout resumes.
+
+Unsupported browsers (or plain-HTTP origins that deny it) silently skip the lock.
+
 ### Preview production build locally
 
 ```bash
