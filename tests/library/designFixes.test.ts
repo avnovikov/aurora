@@ -1,13 +1,14 @@
 import { describe, expect, it } from "vitest";
 import type { JointHistoryEntry } from "../../src/domain/program";
 import { MUSCLE_BUCKETS } from "../../src/library/facets";
-import { DEFAULT_FILTERS, hasActiveFilters, resultCountHtml } from "../../src/library/filterPanels";
+import { clearFiltersHtml, countHtml, DEFAULT_FILTERS, hasActiveFilters } from "../../src/library/filterPanels";
 import { detailHtml } from "../../src/library/libraryDetail";
 import { listHtml } from "../../src/library/libraryList";
 import { exerciseMetaLine } from "../../src/library/metaLine";
 import { searchExercises } from "../../src/library/search";
 import { LIBRARY_CATALOGUE } from "../../src/data/libraryCatalogue";
 import { exerciseNamed as find } from "../helpers/exercises";
+import { textOf } from "../helpers/libraryFilters";
 
 const KNEES: JointHistoryEntry[] = [{ joint: "knee", side: "both", kind: "other" }];
 const base = { text: "", level: "all" as const };
@@ -15,14 +16,14 @@ const defaults = { ...DEFAULT_FILTERS };
 
 describe("result count and Clear filters (#37)", () => {
   it("counts the rows shown, singular for one", () => {
-    expect(resultCountHtml(38, false)).toContain("38 exercises");
-    expect(resultCountHtml(1, false)).toContain("1 exercise<");
-    expect(resultCountHtml(38, false)).toContain('aria-live="polite"');
+    expect(textOf(countHtml(38))).toBe("38 exercises");
+    expect(textOf(countHtml(1))).toBe("1 exercise");
+    expect(countHtml(38)).toContain('aria-live="polite"');
   });
 
   it("offers Clear filters only while a filter differs from its default", () => {
     expect(hasActiveFilters(defaults)).toBe(false);
-    expect(resultCountHtml(5, false)).not.toContain("data-clear-filters");
+    expect(clearFiltersHtml(false)).toBe("");
     for (const change of [
       { level: "beginner" as const },
       { area: "upper" as const },
@@ -33,13 +34,13 @@ describe("result count and Clear filters (#37)", () => {
     ]) {
       expect(hasActiveFilters({ ...defaults, ...change }), JSON.stringify(change)).toBe(true);
     }
-    expect(resultCountHtml(5, true)).toContain("data-clear-filters");
+    expect(clearFiltersHtml(true)).toContain("data-clear-filters");
   });
 
   it("puts the count above the filter panels, so it stays in view while tapping chips", () => {
     const results = searchExercises(LIBRARY_CATALOGUE, { stretch: "hide" });
     const html = listHtml(results, new Set(), { ...base, area: "upper" });
-    expect(html).toContain(`${results.length} exercises`);
+    expect(textOf(html)).toContain(`${results.length} exercises`);
     expect(html.indexOf("lib-count")).toBeLessThan(html.indexOf('data-panel="show"'));
     expect(html).toContain("data-clear-filters");
   });
@@ -128,12 +129,13 @@ describe("detail page (#37)", () => {
     expect(html).not.toMatch(/Pattern:|Regions:/);
   });
 
-  it("shows plan actions right after the summary, before media and how-to", () => {
+  it("shows plan actions in the action tray, after how-to and the level (mock 2205)", () => {
     const html = detailHtml(find("Pistol squat"));
     const plan = html.indexOf("data-generate-plan");
     expect(plan).toBeGreaterThan(-1);
-    expect(plan).toBeLessThan(html.indexOf("How to"));
-    expect(html.indexOf("lib-summary")).toBeLessThan(plan);
+    expect(html.indexOf("How to")).toBeLessThan(plan);
+    expect(html.indexOf("data-skill-tier")).toBeLessThan(plan);
+    expect(plan).toBeLessThan(html.indexOf("data-exclude-toggle"));
   });
 });
 

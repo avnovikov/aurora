@@ -1,6 +1,7 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import { stationsFor } from "../data/warmupStations";
 import { resolveExerciseTiming } from "../domain/timing";
+import { holdRepeats, pyramidSetSeconds } from "./doseCaps";
 import type {
   SessionDurationTarget,
   SessionTemplate,
@@ -52,6 +53,10 @@ function estimateSetWorkSeconds(
   exercise: Exercise,
 ): number {
   assertDose(dose);
+  const repeats = holdRepeats(exercise, dose.sets, dose.reps);
+  if (repeats) {
+    return repeats.reduce((sum, count) => sum + pyramidSetSeconds(count, dose.reps), 0);
+  }
   const timing = resolveExerciseTiming(exercise);
   const unitSeconds =
     timing.effort === "hold" ? dose.reps : dose.reps * timing.secondsPerRep;
