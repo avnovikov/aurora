@@ -1,4 +1,5 @@
 import { clearSession, saveSession } from "../session/storage";
+import { startWakeLock } from "../session/wakeLock";
 import { speakCoachLine } from "../voice/coachVoice";
 import {
   shouldShoutPulseLost,
@@ -18,6 +19,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   let restHandle: RestTimerHandle | null = null;
   let warmupHandle: WarmupTimerHandle | null = null;
   let pulseTimer: number | null = null;
+  const wakeLock = startWakeLock();
 
   const clearWorkTimers = (): void => {
     restHandle?.clear();
@@ -57,6 +59,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     if (pulseTimer !== null) {
       window.clearInterval(pulseTimer);
     }
+    void wakeLock.stop();
     state.phase = "done";
     clearSession();
     void speakCoachLine("session_done");
@@ -128,24 +131,9 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   }
 
   pulseTimer = window.setInterval(maybePulseShout, 2000);
-  void requestWakeLock();
 
   paint();
   if (state.phase === "warmup") {
     runWarmupHold();
-  }
-}
-
-async function requestWakeLock(): Promise<void> {
-  const nav = navigator as Navigator & {
-    wakeLock?: { request: (type: "screen") => Promise<unknown> };
-  };
-  if (!nav.wakeLock) {
-    return;
-  }
-  try {
-    await nav.wakeLock.request("screen");
-  } catch {
-    // Browser may deny wake lock without HTTPS or visibility.
   }
 }
