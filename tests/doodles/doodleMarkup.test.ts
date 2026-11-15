@@ -1,5 +1,4 @@
 import { describe, expect, it, vi } from "vitest";
-import { EXERCISE_GRAPH } from "../../src/data/exerciseGraph";
 import { GENERATED_DOODLES } from "../../src/data/generated/doodleMap";
 import { FOCUS_BY_ID } from "../../src/doodles/focus";
 import * as rig from "../../src/doodles/rig";
@@ -15,9 +14,8 @@ function bareHex(svg: string): string[] {
 const ids = (html: string): string[] => [...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);
 
 const withInset = DOODLE_SPECS.filter((spec) => FOCUS_BY_ID[spec.id]?.zoom);
-const jpgOnly = Object.values(EXERCISE_GRAPH).find(
-  (exercise) => exercise.doodlePath?.endsWith(".jpg") && !GENERATED_DOODLES[exercise.id],
-)!;
+/** A hand-drawn file with no spec behind it (no exercise uses it any more). */
+const JPG_ONLY_PATH = "/doodles/doodle-wall-hspu.jpg";
 
 describe("palette-aware doodle SVG", () => {
   it("has no bare hex colours, only var(--doodle-…) fallbacks", () => {
@@ -47,10 +45,10 @@ describe("doodleMarkup", () => {
     expect(doodleMarkup(GENERATED_DOODLES.hf_44, "Chin-up")).toBe(doodleMarkup("hf_44", "Chin-up"));
   });
 
-  it("keeps an <img> for a hand-drawn (JPG-only) doodle", () => {
-    const html = doodleMarkup(jpgOnly.id, jpgOnly.name);
-    expect(html).toBe(`<img class="doodle" src="${jpgOnly.doodlePath}" alt="Doodle for ${jpgOnly.name}" />`);
-    expect(doodleMarkup(jpgOnly.doodlePath, jpgOnly.name)).toBe(html);
+  it("keeps an <img> for a hand-drawn doodle with no spec", () => {
+    expect(doodleMarkup(JPG_ONLY_PATH, "Wall HSPU")).toBe(
+      `<img class="doodle" src="${JPG_ONLY_PATH}" alt="Doodle for Wall HSPU" />`,
+    );
   });
 
   it("returns nothing when there is no doodle", () => {

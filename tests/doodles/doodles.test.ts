@@ -1,3 +1,4 @@
+import { doodleFor } from "../../src/data/doodles";
 import { existsSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { EXERCISE_GRAPH } from "../../src/data/exerciseGraph";
@@ -34,7 +35,7 @@ describe("animated doodles", () => {
   });
 
   it("keep hand-drawn doodles unless a spec explicitly replaces them", () => {
-    expect(EXERCISE_GRAPH.bodyweight_squat.doodlePath).toBe("/doodles/doodle-bodyweight-squat.jpg");
+    expect(doodleFor("no_spec_move", "/doodles/hand-drawn.jpg")).toBe("/doodles/hand-drawn.jpg");
     for (const id of REPLACED_DOODLE_IDS) {
       expect(EXERCISE_GRAPH[id]?.doodlePath, id).toBe(GENERATED_DOODLES[id]);
     }
