@@ -11,6 +11,7 @@ export type CoachLineId =
   | "two"
   | "one"
   | "go"
+  | "halfway"
   | "pulse_not_readable"
   | "session_start"
   | "warmup_done"
@@ -67,6 +68,16 @@ const PULSE: CoachLine[] = [
     id: "pulse_not_readable",
     assetKey: "pulse_not_readable_b",
     text: "Can't see your pulse. Tighten the band.",
+  },
+];
+
+const HALFWAY: CoachLine[] = [
+  { id: "halfway", assetKey: "halfway", text: "Halfway there, mate." },
+  { id: "halfway", assetKey: "halfway_b", text: "That's half — hold it there." },
+  {
+    id: "halfway",
+    assetKey: "halfway_c",
+    text: "Halfway, love. Nice and steady.",
   },
 ];
 
@@ -142,6 +153,7 @@ export const ALL_COACH_LINES: CoachLine[] = [
   ...GET_READY,
   ...COUNTS,
   ...GO,
+  ...HALFWAY,
   ...PULSE,
   ...SESSION,
 ];

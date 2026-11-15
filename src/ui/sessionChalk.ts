@@ -200,6 +200,7 @@ function stationHtml(eyebrow: string, step: WarmupStep): string {
     : "";
   const dose = `
       <p class="session-dose"><span class="session-dose-q">${escapeHtml(step.region)} <span aria-hidden="true">·</span></span> ${doseFigureHtml(`<span data-warmup-left>${step.holdSeconds}</span>`, SECONDS_UNIT_HTML)}</p>
+      <p class="rest-cue" data-hold-cue aria-live="polite"></p>
       ${sideSwitchHtml(step)}`;
   const move = displayExerciseName(step.name);
   return `
