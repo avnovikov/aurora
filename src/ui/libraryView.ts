@@ -1,70 +1,64 @@
-import { SEED_EXERCISES, type LoadRegion } from "../data/seed";
-import { LIBRARY_REGIONS, searchExercises } from "../library/search";
+import {
+  SEED_GRAPH,
+  SEED_EXERCISES,
+  SESSION_TEMPLATES,
+  type LoadRegion,
+} from "../data/seed";
+import { mountLibraryDetail } from "../library/libraryDetail";
+import { focusSearchInput, mountLibraryList } from "../library/libraryList";
+import { searchExercises } from "../library/search";
+import { collectTemplateTargetIds } from "../library/targets";
 
 export function renderLibraryView(root: HTMLElement): void {
   let text = "";
   let region: LoadRegion | "all" = "all";
+  let selectedId: string | null = null;
+  const targetIds = collectTemplateTargetIds(SESSION_TEMPLATES);
 
   const paint = (): void => {
-    const results = searchExercises(SEED_EXERCISES, { text, region });
-    root.innerHTML = `
-      <main class="shell">
-        <p class="eyebrow">Library</p>
-        <h1>Exercises</h1>
-        <p class="tagline">Core is an area filter — abs, hollow, anti-extension, and friends.</p>
-        <input class="search" type="search" placeholder="Search exercises" value="${escapeAttr(text)}" data-search />
-        <div class="row wrap" data-regions>
-          ${LIBRARY_REGIONS.map(
-            (item) =>
-              `<button type="button" data-region="${item}" class="${item === region ? "selected" : ""}">${labelRegion(item)}</button>`,
-          ).join("")}
-        </div>
-        <ul class="lib-list">
-          ${results
-            .map(
-              (exercise) => `
-            <li class="${exercise.regions.includes("core") ? "core-hit" : ""}">
-              <strong>${exercise.name}</strong>
-              <span>${exercise.pattern} · ${exercise.regions.join(", ")}</span>
-              <p class="hint">${exercise.cues[0] ?? ""}</p>
-            </li>`,
-            )
-            .join("")}
-        </ul>
-      </main>
-    `;
-
-    root.querySelector<HTMLInputElement>("[data-search]")?.addEventListener("input", (event) => {
-      text = (event.target as HTMLInputElement).value;
-      paint();
-      const input = root.querySelector<HTMLInputElement>("[data-search]");
-      if (input) {
-        input.focus();
-        input.selectionStart = input.selectionEnd = input.value.length;
-      }
-    });
-
-    root.querySelectorAll<HTMLButtonElement>("[data-region]").forEach((button) => {
-      button.addEventListener("click", () => {
-        region = button.dataset.region as LoadRegion | "all";
+    if (selectedId) {
+      const exercise = SEED_GRAPH[selectedId];
+      if (!exercise) {
+        selectedId = null;
         paint();
+        return;
+      }
+      mountLibraryDetail(root, exercise, targetIds, {
+        onBack: () => {
+          selectedId = null;
+          paint();
+        },
+        onOpenExercise: (id) => {
+          selectedId = id;
+          paint();
+        },
       });
-    });
+      return;
+    }
+
+    const results = searchExercises(SEED_EXERCISES, { text, region });
+    mountLibraryList(
+      root,
+      results,
+      targetIds,
+      { text, region },
+      {
+        onSearch: (next) => {
+          text = next;
+          paint();
+          focusSearchInput(root);
+        },
+        onRegion: (next) => {
+          region = next;
+          paint();
+        },
+        onSelect: (id) => {
+          selectedId = id;
+          paint();
+        },
+      },
+    );
   };
 
   paint();
-}
-
-function labelRegion(region: LoadRegion | "all"): string {
-  if (region === "all") {
-    return "All";
-  }
-  if (region === "core") {
-    return "Core";
-  }
-  return region.charAt(0).toUpperCase() + region.slice(1);
-}
-
-function escapeAttr(value: string): string {
-  return value.replaceAll('"', "&quot;");
 }
