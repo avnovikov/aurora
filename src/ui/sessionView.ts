@@ -1,5 +1,5 @@
 import { clearSession, saveSession } from "../session/storage";
-import { sessionClockSnapshot } from "../session/sessionClock";
+import { formatClock, sessionClockSnapshot } from "../session/sessionClock";
 import { startWakeLock } from "../session/wakeLock";
 import { speakCoachLine } from "../voice/coachVoice";
 import {
@@ -64,8 +64,9 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   };
 
   const paintClock = (): void => {
-    const node = root.querySelector<HTMLElement>("[data-session-clock]");
-    if (!node) {
+    const elapsed = root.querySelector("[data-session-clock] [data-session-elapsed]");
+    const left = root.querySelector("[data-session-clock] [data-session-left]");
+    if (!elapsed || !left) {
       return;
     }
     const clock = sessionClockSnapshot(
@@ -73,7 +74,8 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       state.plannedTotalSeconds,
       Date.now(),
     );
-    node.textContent = clock.label;
+    elapsed.textContent = formatClock(clock.elapsedSeconds);
+    left.textContent = formatClock(clock.remainingSeconds);
   };
 
   const paint = (): void => {
