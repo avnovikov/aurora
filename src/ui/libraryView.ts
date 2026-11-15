@@ -6,7 +6,7 @@ import {
 } from "../data/seed";
 import { mountLibraryDetail } from "../library/libraryDetail";
 import { focusSearchInput, mountLibraryList } from "../library/libraryList";
-import { searchExercises } from "../library/search";
+import { searchExercises, type LevelFilter } from "../library/search";
 import { missingGear } from "../safety/gear";
 import { prehabFor } from "../safety/prehab";
 import { loadProfile } from "../settings/profile";
@@ -25,6 +25,7 @@ const CATALOGUE_BY_ID: Record<string, SeedExercise> = Object.fromEntries(
 export function renderLibraryView(root: HTMLElement): void {
   let text = "";
   let region: LoadRegion | "all" = "all";
+  let level: LevelFilter = "all";
   let forJoints = false;
   let onlyGear = false;
   let selectedId: string | null = null;
@@ -72,12 +73,12 @@ export function renderLibraryView(root: HTMLElement): void {
     const gearPool = onlyGear
       ? pool.filter((item) => missingGear(item.requires, equipment).length === 0)
       : pool;
-    const results = searchExercises(gearPool, { text, region });
+    const results = searchExercises(gearPool, { text, region, level });
     mountLibraryList(
       root,
       results,
       targetIds,
-      { text, region, forJoints, onlyGear },
+      { text, region, level, forJoints, onlyGear },
       {
         onSearch: (next) => {
           text = next;
@@ -86,6 +87,10 @@ export function renderLibraryView(root: HTMLElement): void {
         },
         onRegion: (next) => {
           region = next;
+          paint();
+        },
+        onLevel: (next) => {
+          level = next;
           paint();
         },
         onSelect: (id) => {

@@ -1,14 +1,17 @@
 import type { LoadRegion, SeedExercise } from "../data/seed";
 import type { JointHistoryEntry } from "../domain/program";
+import { SKILL_TIER_LABELS, SKILL_TIERS } from "../domain/skillTier";
+import type { SkillTier } from "../domain/types";
 import { assessExercise } from "../safety/jointCare";
-import { SKILL_TIER_LABELS } from "../domain/skillTier";
-import { LIBRARY_REGIONS } from "./search";
+import { LIBRARY_REGIONS, type LevelFilter } from "./search";
 import { escapeHtml, formatPattern } from "./present";
 import { isTemplateTarget } from "./targets";
 
 export interface ListQueryState {
   text: string;
   region: LoadRegion | "all";
+  /** Catalogue difficulty; "all" shows every level. */
+  level: LevelFilter;
   /** Show only prehab moves for the joints in the user's history. */
   forJoints?: boolean;
   /** Hide moves that need gear the user does not have. */
@@ -18,6 +21,7 @@ export interface ListQueryState {
 export interface ListActions {
   onSearch: (text: string) => void;
   onRegion: (region: LoadRegion | "all") => void;
+  onLevel: (level: LevelFilter) => void;
   onSelect: (exerciseId: string) => void;
   onForJoints?: (on: boolean) => void;
   onOnlyGear?: (on: boolean) => void;
@@ -50,6 +54,12 @@ export function mountLibraryList(
     });
   });
 
+  root.querySelectorAll<HTMLButtonElement>("[data-level]").forEach((button) => {
+    button.addEventListener("click", () => {
+      actions.onLevel(button.dataset.level as LevelFilter);
+    });
+  });
+
   root.querySelectorAll<HTMLButtonElement>("[data-exercise-id]").forEach((button) => {
     button.addEventListener("click", () => {
       const id = button.dataset.exerciseId;
@@ -79,6 +89,7 @@ export function listHtml(
     (item) =>
       `<button type="button" data-region="${item}" class="${item === query.region ? "selected" : ""}">${labelRegion(item)}</button>`,
   ).join("");
+  const levels = levelFilterButtonsHtml(query.level);
 
   const items = results
     .map((exercise) => listItemHtml(exercise, targetIds, jointHistory))
@@ -96,11 +107,23 @@ export function listHtml(
         ${forJoints}
         <button type="button" data-only-gear class="${query.onlyGear ? "selected" : ""}">Only my gear</button>
       </div>
+      <div class="row wrap lib-levels" data-levels aria-label="Skill level">
+        ${levels}
+      </div>
       <ul class="lib-list">
         ${items}
       </ul>
     </main>
   `;
+}
+
+function levelFilterButtonsHtml(selected: LevelFilter): string {
+  const all = `<button type="button" data-level="all" class="${selected === "all" ? "selected" : ""}">All levels</button>`;
+  const tiers = SKILL_TIERS.map(
+    (tier: SkillTier) =>
+      `<button type="button" data-level="${tier}" class="${tier === selected ? "selected" : ""}">${SKILL_TIER_LABELS[tier]}</button>`,
+  ).join("");
+  return `${all}${tiers}`;
 }
 
 function forJointsButtonHtml(hasHistory: boolean, on: boolean): string {

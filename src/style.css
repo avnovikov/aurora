@@ -375,6 +375,15 @@ button:disabled {
   font: inherit;
 }
 
+.lib-levels {
+  margin-top: 0;
+}
+
+.lib-levels button {
+  font-size: 0.8rem;
+  padding: 0.45rem 0.7rem;
+}
+
 .lib-list,
 .queue-list {
   list-style: none;
