@@ -4,7 +4,7 @@ import {
   shouldShoutPulseLost,
   shoutPulseNotReadable,
 } from "../voice/pulseAlert";
-import { doneShellHtml, shellHtml } from "./sessionChalk";
+import { shellHtml } from "./sessionChalk";
 import { wireSessionControls, type SessionControlHandlers } from "./sessionControls";
 import { startRestTimer, type RestTimerHandle } from "./sessionRest";
 import { initialState, persistPhase, syncWorkState } from "./sessionState";
@@ -57,8 +57,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     state.phase = "done";
     clearSession();
     void speakCoachLine("session_done");
-    root.innerHTML = doneShellHtml(state.log.entries.length);
-    root.querySelector("[data-home]")?.addEventListener("click", options.onDone);
+    options.onDone(state.log.entries.length);
   };
 
   const advanceWarmup = (): void => {
@@ -126,9 +125,24 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   }
 
   pulseTimer = window.setInterval(maybePulseShout, 2000);
+  void requestWakeLock();
 
   paint();
   if (state.phase === "warmup") {
     runWarmupHold();
+  }
+}
+
+async function requestWakeLock(): Promise<void> {
+  const nav = navigator as Navigator & {
+    wakeLock?: { request: (type: "screen") => Promise<unknown> };
+  };
+  if (!nav.wakeLock) {
+    return;
+  }
+  try {
+    await nav.wakeLock.request("screen");
+  } catch {
+    // Browser may deny wake lock without HTTPS or visibility.
   }
 }

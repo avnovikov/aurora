@@ -6,7 +6,7 @@ import type { PulseWatchState } from "../voice/pulseAlert";
 export interface SessionViewOptions {
   planned: PlannedSession;
   resume?: PersistedSession;
-  onDone: () => void;
+  onDone: (setCount: number) => void;
 }
 
 export type Phase = "warmup" | "work" | "rest" | "done";

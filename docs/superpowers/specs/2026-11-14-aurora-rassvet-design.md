@@ -95,13 +95,13 @@ Patterns: horizontal/vertical push & pull, squat, hinge, core compression, core 
 
 - **Session template** — named day plan you author freely. Starter catalogue is open-ended, not a closed enum — e.g. `Legs`, `Full body`, **`Abs` / core**, **`Upper body`**, **`Bars`**, `Skill` / `Mobility`, plus any custom name. **Handstand is not a template type** — it is a **Target** (see below). Ordered slots; focus is whatever you put in those slots. Levels live on **exercise memory** per exercise.
 - **Target (program goal)** — each session template may name one (or a short list of) **target** exercises: the hard end-goal on that path. Examples: **freestanding handstand** (or wall HS → freestanding as the chain peak), pistol squat, muscle-up, front lever, human flag. The target is the *north star* for Progress UI and chain display; Today still resolves from slots + memory (you train the current step toward the target, not the target every session). Targets are chosen from the library / graph (including “top difficulty” nodes); they do not invent exercises outside the catalogue.
-- **Week template** — maps weekdays → session template or rest. Examples: Mon/Wed/Fri → Legs (target: pistol); Sat → Skill / Upper body (target: **handstand**); Tue → Abs; Fri → Bars (target: muscle-up). One **active** week template in v1; others can be saved and switched later.
-- **Today** — resolves from today’s weekday → that day’s session template → slots → rule engine. Opening Today on a rest day shows rest / optional mobility, not a forced Legs session.
+- **Plan queue (not a hard calendar)** — ordered list of upcoming session templates. Today always runs the **next** item; finishing a session advances the queue (repeating templates can re-append). No forced Mon=Legs schedule; override = reorder or skip next. Example queue: Legs → Legs → Legs → Skill(target: handstand) → Abs → Bars(target: muscle-up).
+- **Core as a library area** — `core` is a training region / filter in Library (abdominals, lower back, `coreAction` tags), not a vague product bucket. Abs/core session templates pull from that area.
 - Slot: pattern, attribute, chain, prescription mode, dose policy, role (`main` | `skill` | `accessory` | `conditioning`), optional pin.
 
 ### 5.3.1 App shell (approved direction)
 
-Tabs: **Today** | **Library** (search) | **Progress** (chain map) | **Body** (muscle heat by period) | **Week** (week + session templates).
+Tabs: **Today** | **Library** (search + areas incl. Core) | **Progress** (chain map / target distance) | **Body** (muscle heat by period) | **Plan** (session queue) | **Settings** (equipment, bodyweight, mute, export).
 
 **Modes**
 

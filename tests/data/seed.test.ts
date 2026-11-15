@@ -2,25 +2,39 @@ import { describe, expect, it } from "vitest";
 import {
   doodleFor,
   SEED_GRAPH,
+  SESSION_TEMPLATES,
   STARTER_PROGRAM,
 } from "../../src/data/seed";
 
+describe("SESSION_TEMPLATES", () => {
+  it("includes Legs, Abs/Core, Skill, Bars, and Full body", () => {
+    const names = SESSION_TEMPLATES.map((template) => template.name);
+    expect(names).toEqual(
+      expect.arrayContaining(["Legs", "Abs / Core", "Skill", "Bars", "Full body"]),
+    );
+  });
+
+  it("treats freestanding handstand as a Skill target", () => {
+    const skill = SESSION_TEMPLATES.find((template) => template.id === "tmpl_skill_hs");
+    expect(skill?.targetExerciseIds).toContain("freestanding_hs");
+  });
+});
+
 describe("STARTER_PROGRAM", () => {
-  it("defines the morning legs and handstand programme", () => {
-    expect(STARTER_PROGRAM.id).toBe("morning_legs_handstand");
+  it("aliases the Legs template for older callers", () => {
+    expect(STARTER_PROGRAM.id).toBe("tmpl_legs");
     expect(STARTER_PROGRAM.warmupExerciseIds.length).toBeGreaterThan(0);
-    expect(STARTER_PROGRAM.slots).toHaveLength(3);
     expect(STARTER_PROGRAM.slots.map((slot) => slot.label)).toEqual([
       "Squat",
       "Hinge",
-      "Handstand",
     ]);
   });
 });
 
 describe("SEED_GRAPH", () => {
-  it("indexes every seed exercise by id", () => {
-    expect(SEED_GRAPH.bodyweight_squat?.name).toBe("Bodyweight squat");
+  it("indexes core and bar exercises", () => {
+    expect(SEED_GRAPH.hollow_hold?.regions).toContain("core");
+    expect(SEED_GRAPH.pullup?.regions).toContain("pull");
     expect(SEED_GRAPH.wall_handstand?.pattern).toBe("skill");
   });
 });

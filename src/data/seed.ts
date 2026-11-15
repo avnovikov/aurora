@@ -1,3 +1,4 @@
+import type { PlanQueue, SessionTemplate } from "../domain/program";
 import type { Dose, Exercise, Pattern } from "../domain/types";
 
 export type LoadRegion = "legs" | "push" | "pull" | "core" | "skill" | "general";
@@ -243,53 +244,279 @@ export const SEED_EXERCISES: SeedExercise[] = [
     doodlePath: "/doodles/doodle-glute-bridge.jpg",
     cues: ["Ribs down", "Squeeze at the top", "No overarching"],
   }),
+  ex({
+    id: "dead_bug",
+    name: "Dead bug",
+    pattern: "core_anti_extension",
+    type: "dynamic",
+    muscles: [{ group: "abdominals", role: "primary" }],
+    joints: ["lumbar"],
+    role: "work",
+    regions: ["core"],
+    cues: ["Low back glued down", "Opposite arm and leg", "Slow breath out"],
+  }),
+  ex({
+    id: "hollow_hold",
+    name: "Hollow body hold",
+    pattern: "core_anti_extension",
+    type: "isometric",
+    muscles: [{ group: "abdominals", role: "primary" }],
+    joints: ["lumbar"],
+    easierId: "dead_bug",
+    harderId: "hanging_knee_raise",
+    role: "work",
+    regions: ["core"],
+    cues: ["Ribs down", "Arms by ears if you can", "Lower back pressed"],
+  }),
+  ex({
+    id: "hanging_knee_raise",
+    name: "Hanging knee raise",
+    pattern: "core_compression",
+    type: "dynamic",
+    muscles: [{ group: "abdominals", role: "primary" }],
+    joints: ["lumbar", "shoulder"],
+    easierId: "hollow_hold",
+    role: "work",
+    regions: ["core", "pull"],
+    cues: ["Dead hang first", "Knees up without swinging", "Control the lower"],
+  }),
+  ex({
+    id: "pullup_dead_hang",
+    name: "Dead hang",
+    pattern: "vertical_pull",
+    type: "isometric",
+    muscles: [
+      { group: "lats", role: "primary" },
+      { group: "forearms", role: "secondary" },
+    ],
+    joints: ["shoulder", "elbow", "wrist"],
+    harderId: "scapular_pull",
+    role: "work",
+    regions: ["pull"],
+    cues: ["Shoulders packed", "Quiet legs", "Breathe"],
+  }),
+  ex({
+    id: "scapular_pull",
+    name: "Scapular pull-up",
+    pattern: "vertical_pull",
+    type: "dynamic",
+    muscles: [
+      { group: "lats", role: "primary" },
+      { group: "traps", role: "secondary" },
+    ],
+    joints: ["shoulder"],
+    easierId: "pullup_dead_hang",
+    harderId: "pullup",
+    role: "work",
+    regions: ["pull"],
+    cues: ["Arms stay straight", "Depress the scapulae", "Pause at the top"],
+  }),
+  ex({
+    id: "pullup",
+    name: "Pull-up",
+    pattern: "vertical_pull",
+    type: "dynamic",
+    muscles: [
+      { group: "lats", role: "primary" },
+      { group: "biceps", role: "secondary" },
+    ],
+    joints: ["shoulder", "elbow"],
+    easierId: "scapular_pull",
+    role: "work",
+    regions: ["pull"],
+    cues: ["Chest to bar path", "No kip for strength sets", "Full hang between reps"],
+  }),
 ];
 
 export const SEED_GRAPH: Record<string, SeedExercise> = Object.fromEntries(
   SEED_EXERCISES.map((exercise) => [exercise.id, exercise]),
 );
 
+export const SESSION_TEMPLATES: SessionTemplate[] = [
+  {
+    id: "tmpl_legs",
+    name: "Legs",
+    focus: "legs",
+    targetExerciseIds: ["pistol_squat"],
+    repeat: true,
+    warmupExerciseIds: [
+      "pulse_raiser_march",
+      "hip_circles",
+      "ankle_rocks",
+      "glute_bridge",
+    ],
+    slots: [
+      {
+        id: "legs_squat",
+        label: "Squat",
+        exerciseId: "bodyweight_squat",
+        pattern: "squat",
+        dose: { sets: 3, reps: 8, targetRir: 2, addedLoadKg: 0 },
+        restSeconds: 90,
+        pinned: false,
+      },
+      {
+        id: "legs_hinge",
+        label: "Hinge",
+        exerciseId: "hip_hinge",
+        pattern: "hinge",
+        dose: { sets: 3, reps: 8, targetRir: 2, addedLoadKg: 0 },
+        restSeconds: 90,
+        pinned: false,
+      },
+    ],
+  },
+  {
+    id: "tmpl_abs",
+    name: "Abs / Core",
+    focus: "abs",
+    targetExerciseIds: ["hanging_knee_raise"],
+    repeat: true,
+    warmupExerciseIds: ["pulse_raiser_march", "hip_circles"],
+    slots: [
+      {
+        id: "core_hollow",
+        label: "Hollow",
+        exerciseId: "hollow_hold",
+        pattern: "core_anti_extension",
+        dose: { sets: 3, reps: 20, targetRir: 2, addedLoadKg: 0 },
+        restSeconds: 60,
+        pinned: false,
+      },
+      {
+        id: "core_dead_bug",
+        label: "Dead bug",
+        exerciseId: "dead_bug",
+        pattern: "core_anti_extension",
+        dose: { sets: 3, reps: 8, targetRir: 2, addedLoadKg: 0 },
+        restSeconds: 45,
+        pinned: false,
+      },
+    ],
+  },
+  {
+    id: "tmpl_skill_hs",
+    name: "Skill",
+    focus: "skill",
+    targetExerciseIds: ["freestanding_hs"],
+    repeat: true,
+    warmupExerciseIds: ["wrist_load", "scap_pushup"],
+    slots: [
+      {
+        id: "skill_wall_hs",
+        label: "Wall HS",
+        exerciseId: "wall_handstand",
+        pattern: "skill",
+        dose: { sets: 4, reps: 20, targetRir: 3, addedLoadKg: 0 },
+        restSeconds: 60,
+        pinned: false,
+      },
+      {
+        id: "skill_pike",
+        label: "Pike",
+        exerciseId: "elevated_pike",
+        pattern: "vertical_push",
+        dose: { sets: 3, reps: 6, targetRir: 2, addedLoadKg: 0 },
+        restSeconds: 90,
+        pinned: false,
+      },
+    ],
+  },
+  {
+    id: "tmpl_bars",
+    name: "Bars",
+    focus: "bars",
+    targetExerciseIds: ["pullup"],
+    repeat: true,
+    warmupExerciseIds: ["pulse_raiser_march", "scap_pushup"],
+    slots: [
+      {
+        id: "bars_hang",
+        label: "Hang",
+        exerciseId: "pullup_dead_hang",
+        pattern: "vertical_pull",
+        dose: { sets: 3, reps: 20, targetRir: 2, addedLoadKg: 0 },
+        restSeconds: 60,
+        pinned: false,
+      },
+      {
+        id: "bars_scap",
+        label: "Scap pull",
+        exerciseId: "scapular_pull",
+        pattern: "vertical_pull",
+        dose: { sets: 3, reps: 6, targetRir: 2, addedLoadKg: 0 },
+        restSeconds: 90,
+        pinned: false,
+      },
+    ],
+  },
+  {
+    id: "tmpl_full",
+    name: "Full body",
+    focus: "full_body",
+    targetExerciseIds: ["pistol_squat", "pullup", "freestanding_hs"],
+    repeat: true,
+    warmupExerciseIds: [
+      "pulse_raiser_march",
+      "hip_circles",
+      "wrist_load",
+      "scap_pushup",
+    ],
+    slots: [
+      {
+        id: "full_squat",
+        label: "Squat",
+        exerciseId: "bodyweight_squat",
+        pattern: "squat",
+        dose: { sets: 2, reps: 8, targetRir: 2, addedLoadKg: 0 },
+        restSeconds: 75,
+        pinned: false,
+      },
+      {
+        id: "full_pull",
+        label: "Pull",
+        exerciseId: "scapular_pull",
+        pattern: "vertical_pull",
+        dose: { sets: 2, reps: 6, targetRir: 2, addedLoadKg: 0 },
+        restSeconds: 75,
+        pinned: false,
+      },
+      {
+        id: "full_core",
+        label: "Core",
+        exerciseId: "hollow_hold",
+        pattern: "core_anti_extension",
+        dose: { sets: 2, reps: 20, targetRir: 2, addedLoadKg: 0 },
+        restSeconds: 45,
+        pinned: false,
+      },
+    ],
+  },
+];
+
+export const TEMPLATE_BY_ID: Record<string, SessionTemplate> = Object.fromEntries(
+  SESSION_TEMPLATES.map((template) => [template.id, template]),
+);
+
+/** Default queue: Legs ×3, Skill (handstand target), Abs/Core, Bars */
+export const DEFAULT_PLAN_QUEUE: PlanQueue = {
+  items: [
+    "tmpl_legs",
+    "tmpl_legs",
+    "tmpl_legs",
+    "tmpl_skill_hs",
+    "tmpl_abs",
+    "tmpl_bars",
+  ],
+};
+
+/** @deprecated Prefer queue + SESSION_TEMPLATES — kept for older tests */
 export const STARTER_PROGRAM: StarterProgram = {
-  id: "morning_legs_handstand",
-  name: "Morning legs + handstand",
+  id: "tmpl_legs",
+  name: "Legs",
   sessionLabel: "Today",
-  warmupExerciseIds: [
-    "pulse_raiser_march",
-    "hip_circles",
-    "ankle_rocks",
-    "glute_bridge",
-    "wrist_load",
-    "scap_pushup",
-  ],
-  slots: [
-    {
-      id: "slot_squat",
-      label: "Squat",
-      exerciseId: "bodyweight_squat",
-      pattern: "squat",
-      dose: { sets: 3, reps: 8, targetRir: 2, addedLoadKg: 0 },
-      restSeconds: 90,
-      pinned: false,
-    },
-    {
-      id: "slot_hinge",
-      label: "Hinge",
-      exerciseId: "hip_hinge",
-      pattern: "hinge",
-      dose: { sets: 3, reps: 8, targetRir: 2, addedLoadKg: 0 },
-      restSeconds: 90,
-      pinned: false,
-    },
-    {
-      id: "slot_handstand",
-      label: "Handstand",
-      exerciseId: "wall_handstand",
-      pattern: "skill",
-      dose: { sets: 4, reps: 20, targetRir: 3, addedLoadKg: 0 },
-      restSeconds: 60,
-      pinned: false,
-    },
-  ],
+  warmupExerciseIds: SESSION_TEMPLATES[0].warmupExerciseIds,
+  slots: SESSION_TEMPLATES[0].slots,
 };
 
 export function doodleFor(exerciseId: string): string | undefined {
@@ -298,4 +525,14 @@ export function doodleFor(exerciseId: string): string | undefined {
 
 export function cuesFor(exerciseId: string): string[] {
   return SEED_GRAPH[exerciseId]?.cues ?? [];
+}
+
+export function templateToStarter(template: SessionTemplate): StarterProgram {
+  return {
+    id: template.id,
+    name: template.name,
+    sessionLabel: template.name,
+    warmupExerciseIds: template.warmupExerciseIds,
+    slots: template.slots,
+  };
 }
