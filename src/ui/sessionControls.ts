@@ -16,9 +16,11 @@ import {
 import {
   connectHeartRate,
   disconnectHeartRate,
+  PULSE_STRAP_DISCONNECTED,
 } from "../pulse/hrMonitor";
 import type { PlannedSession } from "../rules/planSession";
 import { pulseConnectedAt, pulseLostSim } from "./pulseState";
+import { applyConnectHeartRateResult } from "./sessionPulse";
 import type { ViewState } from "./sessionTypes";
 import { currentWork } from "./sessionState";
 import { wireSwipe } from "./sessionSwipe";
@@ -85,21 +87,18 @@ function wirePulseConnectButtons(
   handlers: SessionControlHandlers,
 ): void {
   root.querySelector("[data-pulse-connect]")?.addEventListener("click", () => {
+    // Stable handler refs: Set-based subscribe must not stack duplicates.
     void connectHeartRate(
-      (bpm) => handlers.onPulseBpm(bpm),
-      () => handlers.onPulseDisconnected(),
+      handlers.onPulseBpm,
+      handlers.onPulseDisconnected,
     ).then((result) => {
-      state.pulseStatus = result.message;
-      if (result.ok) {
-        state.pulse = pulseConnectedAt(state.pulse, Date.now());
-      }
-      handlers.onPaint();
+      applyConnectHeartRateResult(state, result, handlers.onPaint);
     });
   });
   root.querySelector("[data-pulse-disconnect]")?.addEventListener("click", () => {
     void disconnectHeartRate().then(() => {
       handlers.onPulseDisconnected();
-      state.pulseStatus = "Pulse strap disconnected.";
+      state.pulseStatus = PULSE_STRAP_DISCONNECTED;
       handlers.onPaint();
     });
   });

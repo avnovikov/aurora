@@ -2,7 +2,10 @@ import { clearSession, saveSession } from "../session/storage";
 import { sessionClockSnapshot } from "../session/sessionClock";
 import { startWakeLock } from "../session/wakeLock";
 import { speakCoachLine } from "../voice/coachVoice";
-import { disconnectHeartRate } from "../pulse/hrMonitor";
+import {
+  disconnectHeartRate,
+  PULSE_STRAP_DISCONNECTED,
+} from "../pulse/hrMonitor";
 import {
   shouldShoutPulseLost,
   shoutPulseNotReadable,
@@ -25,6 +28,7 @@ import {
   syncWorkState,
 } from "./sessionState";
 import { pulseConnectedAt, pulseDisconnected } from "./pulseState";
+import { attachSessionPulse } from "./sessionPulse";
 import type { SessionViewOptions } from "./sessionTypes";
 import { startStationHold, type WarmupTimerHandle } from "./sessionWarmup";
 
@@ -228,7 +232,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     onPulseDisconnected: () => {
       state.pulse = pulseDisconnected(state.pulse);
       state.bpm = null;
-      state.pulseStatus = "Pulse strap disconnected.";
+      state.pulseStatus = PULSE_STRAP_DISCONNECTED;
       paint();
     },
   };
@@ -248,6 +252,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   pulseTimer = window.setInterval(maybePulseShout, 2000);
   clockTimer = window.setInterval(paintClock, 1000);
 
+  attachSessionPulse(state, handlers);
   paint();
   if (state.phase === "warmup") {
     runStationHold("warmup");
