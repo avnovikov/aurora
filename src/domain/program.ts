@@ -1,3 +1,4 @@
+import type { PaletteKey } from "../brand/palettes";
 import type { Dose, Pattern } from "./types";
 
 export type SessionFocus =
@@ -121,6 +122,8 @@ export interface UserProfile {
   jointHistory: JointHistoryEntry[];
   /** First-run setup (joint history question) has been answered. */
   setupDone: boolean;
+  /** Colour palette chosen in Settings; see src/brand/palettes.ts. */
+  palette: PaletteKey;
 }
 
 export type SessionEvaluation = "easy" | "on_target" | "failed" | "wiped";
