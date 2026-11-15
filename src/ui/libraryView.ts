@@ -6,10 +6,9 @@ import {
 } from "../data/seed";
 import { mountLibraryDetail } from "../library/libraryDetail";
 import { focusSearchInput, mountLibraryList } from "../library/libraryList";
-import type { AreaFilter, MuscleFilter } from "../library/facets";
-import { searchExercises, type LevelFilter } from "../library/search";
-import { missingGear } from "../safety/gear";
-import { prehabFor } from "../safety/prehab";
+import type { AreaFilter, MuscleFilter, StretchFilter } from "../library/facets";
+import { selectLibraryResults } from "../library/results";
+import type { LevelFilter } from "../library/search";
 import { loadProfile } from "../settings/profile";
 import { collectTemplateTargetIds } from "../library/targets";
 import {
@@ -29,6 +28,7 @@ export function renderLibraryView(root: HTMLElement): void {
   let level: LevelFilter = "all";
   let area: AreaFilter = "all";
   let muscle: MuscleFilter = "all";
+  let stretch: StretchFilter = "hide";
   let forJoints = false;
   let onlyGear = false;
   let selectedId: string | null = null;
@@ -72,16 +72,19 @@ export function renderLibraryView(root: HTMLElement): void {
       return;
     }
 
-    const pool = forJoints ? prehabFor(jointHistory, LIBRARY_CATALOGUE, equipment) : LIBRARY_CATALOGUE;
-    const gearPool = onlyGear
-      ? pool.filter((item) => missingGear(item.requires, equipment).length === 0)
-      : pool;
-    const results = searchExercises(gearPool, { text, region, level, area, muscle });
+    const { results, hiddenStretches } = selectLibraryResults({
+      catalogue: LIBRARY_CATALOGUE,
+      query: { text, region, level, area, muscle, stretch },
+      forJoints,
+      onlyGear,
+      jointHistory,
+      equipment,
+    });
     mountLibraryList(
       root,
       results,
       targetIds,
-      { text, region, level, area, muscle, forJoints, onlyGear },
+      { text, region, level, area, muscle, stretch, hiddenStretches, forJoints, onlyGear },
       {
         onSearch: (next) => {
           text = next;
@@ -102,6 +105,10 @@ export function renderLibraryView(root: HTMLElement): void {
         },
         onMuscle: (next) => {
           muscle = next;
+          paint();
+        },
+        onStretch: (next) => {
+          stretch = next;
           paint();
         },
         onSelect: (id) => {

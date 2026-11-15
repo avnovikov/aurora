@@ -82,6 +82,44 @@ const MIN_FACET_TEXT = 3;
 
 type WithMuscles = Pick<SeedExercise, "muscles">;
 
+/** hide = training moves and mobility drills only; only = stretches; all = everything. */
+export type StretchFilter = "hide" | "only" | "all";
+
+export const STRETCH_FILTERS: ReadonlyArray<{ id: StretchFilter; label: string }> = [
+  { id: "hide", label: "No stretches" },
+  { id: "only", label: "Stretches only" },
+  { id: "all", label: "Everything" },
+];
+
+/** Static holds that are strengthening, neck or balance drills, not stretches. */
+const NOT_A_STRETCH = /wrist load|isometric neck|chin tuck|head (tilts|turns)|pelvic tilt|balance|deep squat hold/;
+
+/**
+ * A stretch is a mobility move that is a static hold, or that says "stretch"
+ * in its name (dynamic stretches included). Dynamic drills such as circles,
+ * CARs and leg swings are mobility, not stretches, and stay visible.
+ */
+export function isStretch(exercise: Pick<SeedExercise, "pattern" | "type" | "name">): boolean {
+  if (exercise.pattern !== "mobility") {
+    return false;
+  }
+  const name = exercise.name.toLowerCase();
+  if (name.includes("stretch")) {
+    return true;
+  }
+  return exercise.type === "isometric" && !NOT_A_STRETCH.test(name);
+}
+
+export function matchesStretchFilter(
+  exercise: Pick<SeedExercise, "pattern" | "type" | "name">,
+  filter: StretchFilter,
+): boolean {
+  if (filter === "all") {
+    return true;
+  }
+  return isStretch(exercise) === (filter === "only");
+}
+
 export function primaryBuckets(exercise: WithMuscles): MuscleBucket[] {
   const buckets = exercise.muscles
     .filter((entry) => entry.role === "primary")

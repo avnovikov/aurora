@@ -1,4 +1,4 @@
-# Library facets: area, muscle bucket, muscle search
+# Library facets: area, muscle bucket, muscle search, stretch filter
 
 The Library's `regions` chips (core, legs, push, pull, skill, general) mix three axes: body area, movement and type. They stay as they are, because the planner's variety rotation reads `regions`. Three Library-only facets are derived from each move's **primary** muscles (`src/library/facets.ts`) and never change `regions`.
 
@@ -18,6 +18,17 @@ The Library's `regions` chips (core, legs, push, pull, skill, general) mix three
 ## Text search
 
 The search box also matches primary muscle names, the bucket labels, the area labels ("upper body") and a few aliases (abs, lats, delts, glutes, hamstrings, …), for queries of three or more characters, so "ab" does not match every core move.
+
+## Stretches (hidden by default)
+
+The Library hides stretches by default. A row of three chips controls it: **No stretches** (default), **Stretches only**, **Everything**.
+
+- **Definition** (`isStretch`, `src/library/facets.ts`): a mobility move that is a static hold, or any mobility move with "stretch" in its name (dynamic stretches such as World's Greatest Stretch included). Static holds that are really strengthening, neck or balance work are excluded by a short name list: wrist load, neck isometrics, chin tuck, head tilts and turns, pelvic tilts, single-leg balance, deep squat hold. Currently 149 of 609 moves.
+- **Mobility drills stay visible** (hip circles, CARs, leg swings, cat-cow, thoracic rotation) and so do mobility moves used as prehab (side-lying external rotation, band pull-apart with external rotation). Only stretches are hidden.
+- **Searching never dead-ends:** while stretches are hidden and a search has hidden matches, a line under the chips reads "N stretches match — show".
+- **"For my joints" ignores the filter:** that list is curated and deliberately includes stretches (for example the serratus wall slide stretch).
+- **Plan editor:** unaffected, since mobility moves are never plannable.
+- The logic lives in `src/library/results.ts` (`selectLibraryResults`), a pure function that the view calls and the tests cover.
 
 ## Known limits
 

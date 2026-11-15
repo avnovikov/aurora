@@ -932,3 +932,11 @@ button:disabled {
   font-weight: 600;
   margin-bottom: 0.4rem;
 }
+.lib-link {
+  background: none;
+  border: none;
+  padding: 0;
+  text-decoration: underline;
+  cursor: pointer;
+  color: inherit;
+}

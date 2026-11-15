@@ -3,7 +3,14 @@ import type { JointHistoryEntry } from "../domain/program";
 import { SKILL_TIER_LABELS, SKILL_TIERS } from "../domain/skillTier";
 import type { SkillTier } from "../domain/types";
 import { assessExercise } from "../safety/jointCare";
-import { AREAS, MUSCLE_BUCKETS, type AreaFilter, type MuscleFilter } from "./facets";
+import {
+  AREAS,
+  MUSCLE_BUCKETS,
+  STRETCH_FILTERS,
+  type AreaFilter,
+  type MuscleFilter,
+  type StretchFilter,
+} from "./facets";
 import { LIBRARY_REGIONS, type LevelFilter } from "./search";
 import { escapeHtml, formatPattern } from "./present";
 import { isTemplateTarget } from "./targets";
@@ -17,6 +24,10 @@ export interface ListQueryState {
   area?: AreaFilter;
   /** Rolled-up primary muscle; "all" shows every muscle. */
   muscle?: MuscleFilter;
+  /** Stretch handling; the Library defaults to hiding stretches. */
+  stretch?: StretchFilter;
+  /** Stretches matching the search that are currently hidden. */
+  hiddenStretches?: number;
   /** Show only prehab moves for the joints in the user's history. */
   forJoints?: boolean;
   /** Hide moves that need gear the user does not have. */
@@ -29,6 +40,7 @@ export interface ListActions {
   onLevel: (level: LevelFilter) => void;
   onArea?: (area: AreaFilter) => void;
   onMuscle?: (muscle: MuscleFilter) => void;
+  onStretch?: (stretch: StretchFilter) => void;
   onSelect: (exerciseId: string) => void;
   onForJoints?: (on: boolean) => void;
   onOnlyGear?: (on: boolean) => void;
@@ -70,6 +82,12 @@ export function mountLibraryList(
   root.querySelectorAll<HTMLButtonElement>("[data-area]").forEach((button) => {
     button.addEventListener("click", () => {
       actions.onArea?.(button.dataset.area as AreaFilter);
+    });
+  });
+
+  root.querySelectorAll<HTMLButtonElement>("[data-stretch]").forEach((button) => {
+    button.addEventListener("click", () => {
+      actions.onStretch?.(button.dataset.stretch as StretchFilter);
     });
   });
 
@@ -129,12 +147,26 @@ export function listHtml(
       <div class="row wrap lib-levels" data-levels aria-label="Skill level">
         ${levels}
       </div>
+      ${stretchFilterHtml(query.stretch ?? "all", query.hiddenStretches ?? 0)}
       ${bodyFiltersHtml(query.area ?? "all", query.muscle ?? "all")}
       <ul class="lib-list">
         ${items}
       </ul>
     </main>
   `;
+}
+
+function stretchFilterHtml(selected: StretchFilter, hidden: number): string {
+  const chips = STRETCH_FILTERS.map(
+    (option) =>
+      `<button type="button" data-stretch="${option.id}" class="${option.id === selected ? "selected" : ""}">${option.label}</button>`,
+  ).join("");
+  const noun = hidden === 1 ? "stretch" : "stretches";
+  const note =
+    hidden > 0
+      ? `<p class="hint"><button type="button" data-stretch="all" class="lib-link">${hidden} ${noun} match — show</button></p>`
+      : "";
+  return `<div class="row wrap" data-stretches aria-label="Stretches">${chips}</div>${note}`;
 }
 
 function chipRowHtml(
