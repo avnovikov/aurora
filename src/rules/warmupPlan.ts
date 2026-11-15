@@ -2,7 +2,7 @@ import type { LoadRegion } from "../data/seed";
 import type { WarmupStation } from "../data/warmupStations";
 
 /**
- * One station in today's warmup mini-session (not a work exercise prescription).
+ * One station in the prebuilt warmup view (not a work exercise prescription).
  */
 export interface WarmupStep {
   stationId: string;
@@ -14,22 +14,14 @@ export interface WarmupStep {
   cues: string[];
 }
 
-export interface WarmupPlanInput {
-  stations: WarmupStation[];
-  focusRegions: LoadRegion[];
-  targetSeconds?: number;
-}
-
-const DEFAULT_TARGET_SECONDS = 600;
 /** Fallback when a station omits holdSeconds (10–15s band). */
 const DEFAULT_HOLD_SECONDS = 12;
-/** Fixed break between every warmup station: 5…1 → Go. */
+/** Fixed break between consecutive stations. */
 const SAME_AREA_GAP = 5;
 const CROSS_AREA_GAP = 5;
 
-function primaryRegion(station: WarmupStation, focus: LoadRegion[]): LoadRegion {
-  const match = station.regions.find((region) => focus.includes(region));
-  return match ?? station.regions[0] ?? "general";
+function displayRegion(station: WarmupStation): LoadRegion {
+  return station.regions[0] ?? "general";
 }
 
 function sameArea(a: LoadRegion, b: LoadRegion): boolean {
@@ -39,69 +31,59 @@ function sameArea(a: LoadRegion, b: LoadRegion): boolean {
   return a === b;
 }
 
-function gapBetween(previous: LoadRegion | null, next: LoadRegion): number {
-  if (previous === null) {
-    return 0;
-  }
+function gapBetween(previous: LoadRegion, next: LoadRegion): number {
   return sameArea(previous, next) ? SAME_AREA_GAP : CROSS_AREA_GAP;
 }
 
-function sortStations(
-  stations: WarmupStation[],
-  focus: LoadRegion[],
-): WarmupStation[] {
-  const focused = stations.filter((item) =>
-    item.regions.some((region) => focus.includes(region)),
-  );
-  const general = stations.filter((item) => !focused.includes(item));
-  return [...focused, ...general];
-}
-
 /**
- * Builds today's warmup mini-session (~10 min) from dedicated stations.
+ * Materialise a prebuilt warmup sequence for the session view.
+ * Each station once, in template order — no fill-to-target planner.
  */
-export function planWarmup(input: WarmupPlanInput): WarmupStep[] {
-  const target = input.targetSeconds ?? DEFAULT_TARGET_SECONDS;
-  assertWarmupInput(input, target);
+export function buildWarmupView(stations: WarmupStation[]): WarmupStep[] {
+  if (stations.length === 0) {
+    throw new Error("Warmup sequence must not be empty");
+  }
 
-  const ordered = sortStations(input.stations, input.focusRegions);
-  const steps: WarmupStep[] = [];
-  let elapsed = 0;
-  let previousRegion: LoadRegion | null = null;
-  let index = 0;
-  const maxSteps = Math.ceil(target / DEFAULT_HOLD_SECONDS) + ordered.length;
-
-  while (elapsed < target && ordered.length > 0 && index < maxSteps) {
-    const station = ordered[index % ordered.length];
-    const region = primaryRegion(station, input.focusRegions);
-    const holdSeconds = station.holdSeconds > 0 ? station.holdSeconds : DEFAULT_HOLD_SECONDS;
-    const gap = gapBetween(previousRegion, region);
-    steps.push({
+  const steps: WarmupStep[] = stations.map((station) => {
+    assertStation(station);
+    const holdSeconds =
+      station.holdSeconds > 0 ? station.holdSeconds : DEFAULT_HOLD_SECONDS;
+    return {
       stationId: station.id,
       name: station.name,
-      region,
+      region: displayRegion(station),
       holdSeconds,
-      gapSecondsAfter: gap,
+      gapSecondsAfter: 0,
       doodlePath: station.doodlePath,
       cues: [...station.cues],
-    });
-    elapsed += holdSeconds + gap;
-    previousRegion = region;
-    index += 1;
+    };
+  });
+
+  for (let index = 0; index < steps.length - 1; index += 1) {
+    const current = steps[index];
+    const next = steps[index + 1];
+    current.gapSecondsAfter = gapBetween(current.region, next.region);
   }
 
-  if (steps.length > 0) {
-    steps[steps.length - 1].gapSecondsAfter = 0;
-  }
   return steps;
 }
 
-function assertWarmupInput(input: WarmupPlanInput, target: number): void {
-  if (input.stations.length === 0) {
-    throw new Error("Warmup station pool must not be empty");
+/** Total wall-clock seconds for a materialised warmup view. */
+export function warmupViewSeconds(steps: readonly WarmupStep[]): number {
+  return steps.reduce(
+    (sum, step) => sum + step.holdSeconds + step.gapSecondsAfter,
+    0,
+  );
+}
+
+function assertStation(station: WarmupStation): void {
+  if (!station.id || !station.name) {
+    throw new Error("Warmup station requires id and name");
   }
-  if (target <= 0) {
-    throw new Error(`Warmup targetSeconds must be positive; got ${target}`);
+  if (!Number.isFinite(station.holdSeconds) || station.holdSeconds < 0) {
+    throw new Error(
+      `Warmup station ${station.id} holdSeconds must be non-negative; got ${station.holdSeconds}`,
+    );
   }
 }
 

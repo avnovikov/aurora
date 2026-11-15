@@ -1,7 +1,6 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import {
   STARTER_PROGRAM,
-  type LoadRegion,
   type SeedSlot,
   type StarterProgram,
 } from "../data/seed";
@@ -22,7 +21,7 @@ import {
   pickSlotExerciseForVariety,
 } from "./consecutiveVariety";
 import { resolveSlot } from "./resolveSlot";
-import { planWarmup, type WarmupStep } from "./warmupPlan";
+import { buildWarmupView, type WarmupStep } from "./warmupPlan";
 
 export interface PlannedWorkItem {
   slotId: string;
@@ -67,19 +66,6 @@ interface SlotContext {
   readiness: Readiness;
   memories: Record<string, ExerciseMemory>;
   deloadActive: boolean;
-}
-
-function focusRegionsFromSlots(program: StarterProgram): LoadRegion[] {
-  const regions = new Set<LoadRegion>();
-  for (const slot of program.slots) {
-    const exercise = EXERCISE_GRAPH[slot.exerciseId];
-    exercise?.regions.forEach((region) => {
-      if (region !== "general") {
-        regions.add(region);
-      }
-    });
-  }
-  return [...regions];
 }
 
 function warmupStationsFor(program: StarterProgram): WarmupStation[] {
@@ -175,10 +161,7 @@ export function planSession(
     { readiness, memories, deloadActive },
     previous?.exerciseIds ?? null,
   );
-  const warmup = planWarmup({
-    stations: warmupStationsFor(program),
-    focusRegions: focusRegionsFromSlots(program),
-  });
+  const warmup = buildWarmupView(warmupStationsFor(program));
   return {
     programId: program.id,
     sessionLabel: program.sessionLabel,

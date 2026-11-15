@@ -86,12 +86,21 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     });
   };
 
+  let finished = false;
   const finishAll = (): void => {
+    if (finished || state.phase === "done") {
+      return;
+    }
+    finished = true;
     dispose();
     state.phase = "done";
     clearSession();
     void speakCoachLine("session_done");
-    options.onDone(state.log.entries.length);
+    // Defer so the Log-set / swipe pointer event cannot click through
+    // into the evaluation buttons that replace this view.
+    window.setTimeout(() => {
+      options.onDone(state.log.entries.length);
+    }, 0);
   };
 
   const advanceWarmup = (): void => {

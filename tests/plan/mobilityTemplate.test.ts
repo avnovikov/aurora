@@ -49,8 +49,8 @@ describe("tmpl_mobility", () => {
     expect(mobility().slots.every((slot) => slot.pinned)).toBe(true);
   });
 
-  it("estimates 15–25 minutes", () => {
-    expect(mobility().targetMinutes).toEqual({ minMinutes: 15, maxMinutes: 25 });
+  it("estimates 10–20 minutes", () => {
+    expect(mobility().targetMinutes).toEqual({ minMinutes: 10, maxMinutes: 20 });
     const estimate = estimateSessionDuration(mobility());
     expect(estimate.withinTarget).toBe(true);
   });

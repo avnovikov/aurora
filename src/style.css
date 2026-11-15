@@ -719,7 +719,7 @@ button:disabled {
   max-height: 12rem;
 }
 
-/* Progress chain map (chalk line, brass marks current) */
+/* Progress: compact exercise block — current + next only */
 .chain-card {
   margin-top: 1.25rem;
   padding-bottom: 0.75rem;
@@ -733,42 +733,37 @@ button:disabled {
   text-transform: uppercase;
 }
 
-.chain-map {
-  list-style: none;
+.exercise-block {
   margin: 0 0 0.5rem;
-  padding: 0 0 0 1rem;
-  border-left: 2px solid #3a3a3e;
+  padding: 0.65rem 0.75rem;
+  border-left: 2px solid var(--brass);
+  background: linear-gradient(90deg, rgba(196, 165, 116, 0.08), transparent);
 }
 
-.chain-node {
-  position: relative;
-  padding: 0.35rem 0 0.35rem 0.75rem;
-  color: #6b6b72;
-  font-size: 0.9rem;
-}
-
-.chain-node::before {
-  content: "";
-  position: absolute;
-  left: -1.2rem;
-  top: 0.7rem;
-  width: 0.55rem;
-  height: 0.55rem;
-  border-radius: 1px;
-  background: #3a3a3e;
-}
-
-.chain-node.chain-current {
+.exercise-current {
+  margin: 0;
   color: var(--brass);
-  font-size: 1rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
-.chain-node.chain-current::before {
-  background: var(--brass);
-  width: 0.75rem;
-  height: 0.75rem;
-  top: 0.55rem;
-  left: -1.3rem;
+.exercise-next {
+  margin: 0.35rem 0 0;
+  color: #8a8a92;
+  font-size: 0.85rem;
+}
+
+.exercise-next-label {
+  margin-right: 0.35rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  color: #6b6b72;
+}
+
+.exercise-next.is-end {
+  font-style: italic;
 }
 
 .chain-reason {

@@ -86,9 +86,10 @@ function assertSeedExercise(exercise: SeedExercise): void {
   }
 }
 
-const SESSION_BAND = { minMinutes: 30, maxMinutes: 45 } as const;
-/** Short optional prehab session (includes the default warmup budget). */
-const MOBILITY_BAND = { minMinutes: 15, maxMinutes: 25 } as const;
+/** Work-heavy band; prebuilt warmup is a short fixed sequence, not a 10 min fill. */
+const SESSION_BAND = { minMinutes: 25, maxMinutes: 45 } as const;
+/** Short optional prehab session (prebuilt warmup + pinned mobility). */
+const MOBILITY_BAND = { minMinutes: 10, maxMinutes: 20 } as const;
 
 /** Rep or hold-second floors by skill tier (literature-inspired). */
 function std(
@@ -558,7 +559,8 @@ for (let i = 0; i < SEED_EXERCISES.length; i += 1) {
 }
 
 /**
- * Strength templates sized for ~30–45 min wall-clock (≈10 min warmup + work + ACSM/NSCA rests).
+ * Strength templates sized for ~30–45 min wall-clock
+ * (prebuilt warmup sequence + work + ACSM/NSCA rests).
  * Strength compounds use 90–120 s rest; core/accessory 45–60 s.
  */
 export const SESSION_TEMPLATES: SessionTemplate[] = [
@@ -631,7 +633,12 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     targetExerciseIds: ["hanging_knee_raise"],
     repeat: true,
     targetMinutes: SESSION_BAND,
-    warmupStationIds: ["pulse_raiser_march", "hip_circles"],
+    warmupStationIds: [
+      "pulse_raiser_march",
+      "hip_circles",
+      "glute_bridge",
+      "ankle_rocks",
+    ],
     slots: [
       {
         id: "core_dead_bug",
@@ -688,7 +695,12 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     targetExerciseIds: ["freestanding_hs"],
     repeat: true,
     targetMinutes: SESSION_BAND,
-    warmupStationIds: ["wrist_load", "scap_pushup"],
+    warmupStationIds: [
+      "pulse_raiser_march",
+      "wrist_load",
+      "scap_pushup",
+      "hip_circles",
+    ],
     slots: [
       {
         id: "skill_wall_hs",
@@ -737,7 +749,12 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     targetExerciseIds: ["muscle_up"],
     repeat: true,
     targetMinutes: SESSION_BAND,
-    warmupStationIds: ["pulse_raiser_march", "scap_pushup"],
+    warmupStationIds: [
+      "pulse_raiser_march",
+      "scap_pushup",
+      "wrist_load",
+      "hip_circles",
+    ],
     slots: [
       {
         id: "bars_hang",
@@ -858,7 +875,12 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     // Optional one-off; completing it drops it from the queue.
     repeat: false,
     targetMinutes: MOBILITY_BAND,
-    warmupStationIds: ["pulse_raiser_march", "hip_circles"],
+    warmupStationIds: [
+      "pulse_raiser_march",
+      "hip_circles",
+      "ankle_rocks",
+      "wrist_load",
+    ],
     // Every slot is pinned: resolveSlot never advances / regresses these
     // exercises, and the variety rule never swaps them for strength work.
     slots: [
