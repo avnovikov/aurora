@@ -600,3 +600,66 @@ button:disabled {
   overflow: auto;
   max-height: 12rem;
 }
+
+/* Progress chain map (chalk line, brass marks current) */
+.chain-card {
+  margin-top: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--edge);
+}
+
+.chain-title {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.chain-map {
+  list-style: none;
+  margin: 0 0 0.5rem;
+  padding: 0 0 0 1rem;
+  border-left: 2px solid #3a3a3e;
+}
+
+.chain-node {
+  position: relative;
+  padding: 0.35rem 0 0.35rem 0.75rem;
+  color: #6b6b72;
+  font-size: 0.9rem;
+}
+
+.chain-node::before {
+  content: "";
+  position: absolute;
+  left: -1.2rem;
+  top: 0.7rem;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 1px;
+  background: #3a3a3e;
+}
+
+.chain-node.chain-current {
+  color: var(--brass);
+  font-size: 1rem;
+}
+
+.chain-node.chain-current::before {
+  background: var(--brass);
+  width: 0.75rem;
+  height: 0.75rem;
+  top: 0.55rem;
+  left: -1.3rem;
+}
+
+.chain-reason {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #8a8a92;
+}
+
+.chain-reason.chain-advance,
+.chain-reason.chain-stall {
+  color: var(--brass);
+}

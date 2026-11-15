@@ -1,92 +1,65 @@
 import { SEED_GRAPH, SESSION_TEMPLATES } from "../data/seed";
-import type { SessionTemplate } from "../domain/program";
-import type { ExerciseMemory } from "../domain/types";
-import { SKILL_TIER_LABELS } from "../domain/skillTier";
-import { distanceToTarget, type TargetDistance } from "../progress/targetDistance";
-import { shouldAdvanceProgression } from "../rules/skillDose";
+import {
+  buildChainMap,
+  KEY_CHAIN_ROOT_IDS,
+  listChainRootIds,
+  type ChainMap,
+  type ChainNode,
+  type LastResolveSignal,
+} from "../progress/chainMap";
+import { loadSession } from "../session/storage";
 import { loadMemories } from "../session/history";
 
-export function renderProgressView(root: HTMLElement): void {
-  const memories = loadMemories();
-  const rows = SESSION_TEMPLATES.flatMap((template) =>
-    template.targetExerciseIds.map((targetId) =>
-      progressRowHtml(template, targetId, memories),
-    ),
-  );
+const NO_HR_HISTORY_NOTE = "Resting HR trend: no HR history yet";
 
+export function renderProgressView(root: HTMLElement): void {
+  const chains = buildProgressChains();
   root.innerHTML = `
     <main class="shell">
       <p class="eyebrow">Progress</p>
-      <h1>Targets</h1>
-      <p class="tagline">Handstand and the other hard skills are goals. History guesses the next level.</p>
-      <ul class="lib-list">${rows.join("")}</ul>
+      <h1>Chains</h1>
+      <p class="tagline">Harder skills are goals. The chalk line shows where you are, with easier and harder neighbours.</p>
+      ${chains.map(chainHtml).join("")}
+      <p class="hint">${NO_HR_HISTORY_NOTE}</p>
     </main>
   `;
 }
 
-function progressRowHtml(
-  template: SessionTemplate,
-  targetId: string,
-  memories: Record<string, ExerciseMemory>,
-): string {
-  const currentId = template.slots[0]?.exerciseId ?? targetId;
-  const distance = distanceToTarget(currentId, targetId);
+function buildProgressChains(): ChainMap[] {
+  const memories = loadMemories();
+  const planExerciseIds = SESSION_TEMPLATES.flatMap((template) =>
+    template.slots.map((slot) => slot.exerciseId),
+  );
+  const lastResolveFor = lastResolveLookup();
+  return listChainRootIds(SESSION_TEMPLATES, KEY_CHAIN_ROOT_IDS, SEED_GRAPH).map(
+    (rootId) =>
+      buildChainMap(rootId, planExerciseIds, memories, SEED_GRAPH, lastResolveFor),
+  );
+}
+
+/** Reads rule ids for exercises in the last saved session plan. */
+function lastResolveLookup(): (
+  exerciseId: string,
+) => LastResolveSignal | undefined {
+  const workItems = loadSession()?.planned.work ?? [];
+  return (exerciseId) => {
+    const item = workItems.find((work) => work.exerciseId === exerciseId);
+    return item ? { ruleIds: item.ruleIds } : undefined;
+  };
+}
+
+function chainHtml(chain: ChainMap): string {
+  const nodes = chain.nodes.map(nodeHtml).join("");
   return `
-    <li>
-      <strong>${template.name}</strong>
-      <span>Target: ${distance.targetName}</span>
-      <span>Now: ${distance.currentName}</span>
-      <span>${formatDistance(distance)}</span>
-      <p class="hint">${formatGuess(currentId, memories[currentId])}</p>
-    </li>
+    <section class="chain-card" data-chain="${chain.rootId}">
+      <h2 class="chain-title">${chain.label}</h2>
+      <ol class="chain-map">${nodes}</ol>
+      <p class="chain-reason chain-${chain.status.kind}">${chain.status.reason}</p>
+    </section>
   `;
 }
 
-function formatDistance(distance: TargetDistance): string {
-  if (distance.reachable && distance.stepsToTarget !== null) {
-    return `${distance.stepsToTarget} steps on primary chain`;
-  }
-  return "Off primary chain / unknown";
-}
-
-function formatGuess(
-  currentId: string,
-  memory: ExerciseMemory | undefined,
-): string {
-  if (!memory) {
-    return "No history yet — set a level in Library or log a session";
-  }
-  const tierLabel = tierLabelFor(memory);
-  const next = nextProgressionHint(currentId, memory);
-  if (next) {
-    return `${tierLabel} · next: ${next}`;
-  }
-  return `${tierLabel}${bestRepsHint(memory)} · at standard ×${memory.sessionsAtStandard}`;
-}
-
-function tierLabelFor(memory: ExerciseMemory): string {
-  const tier = memory.skillTier ?? memory.declaredTier;
-  return tier ? SKILL_TIER_LABELS[tier] : "Unset";
-}
-
-function bestRepsHint(memory: ExerciseMemory): string {
-  if (memory.bestReps === undefined) {
-    return "";
-  }
-  return ` · best ${memory.bestReps}`;
-}
-
-function nextProgressionHint(
-  currentId: string,
-  memory: ExerciseMemory,
-): string | null {
-  const exercise = SEED_GRAPH[currentId];
-  const harder = exercise?.harderId;
-  if (!exercise || !harder) {
-    return null;
-  }
-  if (!shouldAdvanceProgression(exercise, memory)) {
-    return null;
-  }
-  return SEED_GRAPH[harder]?.name ?? harder;
+function nodeHtml(node: ChainNode): string {
+  const marker = node.position === "current" ? ' aria-current="step"' : "";
+  return `<li class="chain-node chain-${node.position}"${marker}>${node.name}</li>`;
 }
