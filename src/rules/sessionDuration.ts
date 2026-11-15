@@ -31,7 +31,7 @@ export interface SessionDurationEstimate {
   target: SessionDurationTarget;
 }
 
-export function estimateSetWorkSeconds(
+function estimateSetWorkSeconds(
   dose: Dose,
   exercise: Exercise,
 ): number {

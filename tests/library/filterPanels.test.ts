@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { JointHistoryEntry } from "../../src/domain/program";
-import { filterPanelsHtml, stretchHintHtml } from "../../src/library/filterPanels";
+import {
+  filterPanelsHtml,
+  stretchHintHtml,
+  withPanelState,
+} from "../../src/library/filterPanels";
 import { listHtml } from "../../src/library/libraryList";
 
 const base = { text: "", level: "all" as const };
@@ -105,5 +109,41 @@ describe("hidden-stretch hint", () => {
   it("is empty with nothing hidden and singular for one", () => {
     expect(stretchHintHtml(0)).toBe("");
     expect(stretchHintHtml(1)).toContain("1 stretch match — show");
+  });
+});
+
+describe("withPanelState", () => {
+  it("adds an opened panel once and keeps the others", () => {
+    expect(withPanelState([], "show", true)).toEqual(["show"]);
+    expect(withPanelState(["show"], "level", true)).toEqual(["show", "level"]);
+    expect(withPanelState(["show", "level"], "show", true)).toEqual(["level", "show"]);
+  });
+
+  it("removes a closed panel and ignores one that was not open", () => {
+    expect(withPanelState(["show", "level"], "show", false)).toEqual(["level"]);
+    expect(withPanelState(["level"], "body", false)).toEqual(["level"]);
+  });
+
+  it("does not mutate its input", () => {
+    const open = ["show"] as const;
+    withPanelState(open, "level", true);
+    expect(open).toEqual(["show"]);
+  });
+
+  it("keeps a typed-into search from collapsing an opened panel (the render reads this state)", () => {
+    const afterOpen = withPanelState([], "body", true);
+    const html = filterPanelsHtml(
+      {
+        level: "all",
+        area: "all",
+        muscle: "all",
+        stretch: "hide",
+        forJoints: false,
+        onlyGear: false,
+        openPanels: afterOpen,
+      },
+      false,
+    );
+    expect(html).toMatch(/data-panel="body" open/);
   });
 });

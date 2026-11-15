@@ -30,7 +30,7 @@ export interface WakeLockHandle {
 
 const NOOP_HANDLE: WakeLockHandle = { stop: async () => {} };
 
-export function browserWakeLockEnvironment(): WakeLockEnvironment {
+function browserWakeLockEnvironment(): WakeLockEnvironment {
   const nav = navigator as Navigator & { wakeLock?: WakeLockApi };
   return {
     wakeLock: nav.wakeLock,

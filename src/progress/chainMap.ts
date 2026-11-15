@@ -270,7 +270,7 @@ function nameOf(
 }
 
 /** Display label for a chain, falling back to the root exercise name. */
-export function chainLabelFor(rootId: string, graph: ChainGraph): string {
+function chainLabelFor(rootId: string, graph: ChainGraph): string {
   return CHAIN_LABELS[rootId] ?? graph[rootId]?.name ?? rootId;
 }
 

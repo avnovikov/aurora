@@ -51,7 +51,7 @@ export function wgerAttribution(record: Pick<WgerExerciseRecord, "id" | "license
   return `${WGER_SOURCE} exercise ${record.id} (${record.license}${author})`;
 }
 
-export function wgerExerciseId(id: number): string {
+function wgerExerciseId(id: number): string {
   if (!Number.isInteger(id) || id < 1) {
     throw new Error(`Invalid wger exercise id: ${id}`);
   }

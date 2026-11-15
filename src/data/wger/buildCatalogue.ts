@@ -1,49 +1,24 @@
-import { checkDuplicate, exerciseNameKey } from "../nameKey";
+import { buildSourceCatalogue, type SourceBuildResult } from "../buildSourceCatalogue";
 import { serialiseCatalogueModule } from "../serialiseCatalogue";
 import type { SeedExercise } from "../seed";
 import { cleanWgerName, mapWgerExerciseRecord } from "./mapWgerExercise";
 import { WGER_SAME_AS_EXISTING, isWgerCandidate } from "./selection";
 import type { WgerExerciseRecord } from "./types";
 
-export interface WgerBuildResult {
-  catalogue: SeedExercise[];
-  skippedDuplicates: string[];
-  /** Skipped records and the library id they duplicate (for merging text). */
-  duplicates: Array<{ record: WgerExerciseRecord; intoId: string }>;
-}
+export type WgerBuildResult = SourceBuildResult<WgerExerciseRecord>;
 
 /** Bodyweight subset of wger, minus names already in `existing` (or repeated in wger). */
 export function buildWgerCatalogue(
   records: WgerExerciseRecord[],
   existing: SeedExercise[],
 ): WgerBuildResult {
-  const taken = new Map(existing.map((item) => [exerciseNameKey(item.name), item.id]));
-  const catalogue: SeedExercise[] = [];
-  const skippedDuplicates: string[] = [];
-  const duplicates: Array<{ record: WgerExerciseRecord; intoId: string }> = [];
-  const ordered = [...records].sort((a, b) => a.id - b.id);
-
-  for (const record of ordered) {
-    if (!isWgerCandidate(record)) {
-      continue;
-    }
-    const key = exerciseNameKey(cleanWgerName(record.name));
-    const alias = WGER_SAME_AS_EXISTING[record.name];
-    const { duplicate, intoId } = checkDuplicate(taken, key, alias);
-    if (duplicate) {
-      skippedDuplicates.push(record.name);
-      if (intoId) {
-        duplicates.push({ record, intoId });
-      }
-      continue;
-    }
-    const mapped = mapWgerExerciseRecord(record);
-    taken.set(key, mapped.id);
-    catalogue.push(mapped);
-  }
-
-  catalogue.sort((a, b) => a.name.localeCompare(b.name));
-  return { catalogue, skippedDuplicates, duplicates };
+  const byId = [...records].sort((a, b) => a.id - b.id);
+  return buildSourceCatalogue(byId, existing, {
+    isCandidate: isWgerCandidate,
+    map: mapWgerExerciseRecord,
+    aliases: WGER_SAME_AS_EXISTING,
+    displayName: (record) => cleanWgerName(record.name),
+  });
 }
 
 interface WgerApiExercise {

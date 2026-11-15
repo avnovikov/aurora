@@ -9,30 +9,23 @@ import {
   type MuscleFilter,
   type StretchFilter,
 } from "./facets";
-import { filterPanelsHtml, stretchHintHtml, type FilterPanelId } from "./filterPanels";
+import {
+  filterPanelsHtml,
+  stretchHintHtml,
+  type FilterPanelId,
+  type FilterPanelState,
+} from "./filterPanels";
 import { escapeHtml, formatPattern } from "./present";
 import type { LevelFilter } from "./search";
 import { isTemplateTarget } from "./targets";
 
-export interface ListQueryState {
-  text: string;
-  /** Catalogue difficulty; "all" shows every level. */
-  level: LevelFilter;
-  /** Upper / lower / core / full body; "all" shows every area. */
-  area?: AreaFilter;
-  /** Rolled-up primary muscle; "all" shows every muscle. */
-  muscle?: MuscleFilter;
-  /** Stretch handling; the Library defaults to hiding stretches. */
-  stretch?: StretchFilter;
-  /** Stretches matching the search that are currently hidden. */
-  hiddenStretches?: number;
-  /** Show only prehab moves for the joints in the user's history. */
-  forJoints?: boolean;
-  /** Hide moves that need gear the user does not have. */
-  onlyGear?: boolean;
-  /** Filter panels the user has opened (active ones are always open). */
-  openPanels?: readonly FilterPanelId[];
-}
+/** The search text and filters behind the list; only text and level are required. */
+export type ListQueryState = Pick<FilterPanelState, "level"> &
+  Partial<Omit<FilterPanelState, "level">> & {
+    text: string;
+    /** Stretches matching the search that are currently hidden. */
+    hiddenStretches?: number;
+  };
 
 export interface ListActions {
   onSearch: (text: string) => void;

@@ -6,7 +6,7 @@ import {
 } from "../data/seed";
 import { mountLibraryDetail } from "../library/libraryDetail";
 import { DEFAULT_STRETCH } from "../library/facets";
-import type { FilterPanelId } from "../library/filterPanels";
+import { withPanelState, type FilterPanelId } from "../library/filterPanels";
 import { focusSearchInput, mountLibraryList, type ListQueryState } from "../library/libraryList";
 import { mountPlanDayPicker } from "../library/libraryPlanPick";
 import { selectLibraryResults } from "../library/results";
@@ -175,7 +175,7 @@ export function renderLibraryView(root: HTMLElement): void {
         onForJoints: (on) => setFilter("forJoints", on),
         onOnlyGear: (on) => setFilter("onlyGear", on),
         onPanelToggle: (panel, open) => {
-          openPanels = open ? [...new Set([...openPanels, panel])] : openPanels.filter((id) => id !== panel);
+          openPanels = withPanelState(openPanels, panel, open);
         },
         onSelect: (id) => {
           selectedId = id;

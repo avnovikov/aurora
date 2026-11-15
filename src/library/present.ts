@@ -22,7 +22,7 @@ function muscleRoleLabel(role: MuscleEntry["role"]): string {
   return "stabiliser";
 }
 
-export function formatMuscleEntry(entry: MuscleEntry): string {
+function formatMuscleEntry(entry: MuscleEntry): string {
   return `${entry.group} (${muscleRoleLabel(entry.role)})`;
 }
 

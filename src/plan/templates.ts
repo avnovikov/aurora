@@ -12,7 +12,7 @@ export interface TemplateOverride {
 
 export type TemplateOverrideMap = Record<string, TemplateOverride>;
 
-export function loadTemplateOverrides(): TemplateOverrideMap {
+function loadTemplateOverrides(): TemplateOverrideMap {
   const raw = store.read();
   if (!raw) {
     return {};
@@ -28,7 +28,7 @@ export function loadTemplateOverrides(): TemplateOverrideMap {
   }
 }
 
-export function saveTemplateOverrides(overrides: TemplateOverrideMap): void {
+function saveTemplateOverrides(overrides: TemplateOverrideMap): void {
   store.write(JSON.stringify(overrides));
 }
 

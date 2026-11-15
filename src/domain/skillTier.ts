@@ -46,7 +46,7 @@ export function nextSkillTier(tier: SkillTier): SkillTier | null {
   return SKILL_TIERS[index + 1];
 }
 
-export function tierRank(tier: SkillTier): number {
+function tierRank(tier: SkillTier): number {
   const index = SKILL_TIERS.indexOf(tier);
   if (index < 0) {
     throw new Error(`Unknown skill tier: ${tier}`);

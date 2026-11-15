@@ -13,7 +13,7 @@ const BOILERPLATE = [
 ];
 
 /** Normalise one imported instruction line; empty when it is pure filler. */
-export function cleanSentence(raw: string): string {
+function cleanSentence(raw: string): string {
   const text = decodeEntities(stripTags(raw))
     .replaceAll(/\s+/g, " ")
     .replace(/^\s*(\d+[.)]|[-•*])\s*/, "")

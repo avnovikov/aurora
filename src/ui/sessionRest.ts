@@ -17,7 +17,7 @@ export function restCueText(
   return cueAt(left, schedule)?.text ?? null;
 }
 
-export function speakDueCues(
+function speakDueCues(
   left: number,
   schedule: readonly RestCueEvent[],
   spoken: Set<number>,

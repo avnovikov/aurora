@@ -20,7 +20,7 @@ export function isCoachMuted(): boolean {
   return muted;
 }
 
-export function stopCoachVoice(): void {
+function stopCoachVoice(): void {
   if (lastAudio) {
     lastAudio.pause();
     lastAudio = null;

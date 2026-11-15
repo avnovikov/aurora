@@ -35,7 +35,7 @@ export function shellHtml(planned: PlannedSession, state: ViewState): string {
   `;
 }
 
-export function sessionClockHtml(state: ViewState, nowMs: number = Date.now()): string {
+function sessionClockHtml(state: ViewState, nowMs: number = Date.now()): string {
   const clock = sessionClockSnapshot(
     state.startedAtMs,
     state.plannedTotalSeconds,

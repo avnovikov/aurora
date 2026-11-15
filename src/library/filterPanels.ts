@@ -20,14 +20,30 @@ import type { LevelFilter } from "./search";
 export type FilterPanelId = "show" | "body" | "level";
 
 export interface FilterPanelState {
+  /** Catalogue difficulty; "all" shows every level. */
   level: LevelFilter;
+  /** Upper / lower / core / full body; "all" shows every area. */
   area: AreaFilter;
+  /** Rolled-up primary muscle; "all" shows every muscle. */
   muscle: MuscleFilter;
+  /** Stretch handling; the Library defaults to hiding stretches. */
   stretch: StretchFilter;
+  /** Show only prehab moves for the joints in the user's history. */
   forJoints: boolean;
+  /** Hide moves that need gear the user does not have. */
   onlyGear: boolean;
   /** Panels the user has opened; an active panel is always open. */
   openPanels: readonly FilterPanelId[];
+}
+
+/** The panels the user has open after one of them is opened or closed. */
+export function withPanelState(
+  openPanels: readonly FilterPanelId[],
+  panel: FilterPanelId,
+  open: boolean,
+): FilterPanelId[] {
+  const others = openPanels.filter((id) => id !== panel);
+  return open ? [...others, panel] : others;
 }
 
 function labelOf(options: readonly ChipOption[], id: string): string {
