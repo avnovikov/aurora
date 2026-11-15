@@ -2,7 +2,7 @@ import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import { onChipClick } from "../library/chips";
 import { addBlockToPlan, addJointCareDay } from "../plan/blockActions";
 import { DAY_KIND_LABELS, skillTitle } from "../plan/dayKinds";
-import { excludeFromDay, makeDay, setDayExercise } from "../plan/dayEdits";
+import { easierInDay, excludeFromDay, makeDay, setDayExercise, undoExclude, type ExcludeUndo } from "../plan/dayEdits";
 import type { BlockKind } from "../plan/generateBlock";
 import { isGeneralCare } from "../plan/jointCareDay";
 import { PLAN_LEVELS, savePlanLevel, type PlanLevel } from "../plan/planLevel";
@@ -29,6 +29,8 @@ interface Ui {
   addOpen: boolean;
   levelOpen: boolean;
   status?: string;
+  /** The row "Not for me" just changed, and how to put it back. */
+  undo?: (NonNullable<PlanUiState["undo"]> & { token: ExcludeUndo }) | null;
 }
 
 /** What every group of handlers needs: the page, its state, and how to run an edit. */
@@ -89,14 +91,67 @@ function remake(ui: Ui, index: number, kind: BlockKind, target?: string): string
   return `This day is now ${kind === "skill" ? skillTitle(target) : DAY_KIND_LABELS[kind]}; two more follow later in the plan.`;
 }
 
-function excludeSlot(element: HTMLElement): string {
-  const dayExerciseIds = Array.from(
+/** The moves the day shows now, so an edit never repeats one. */
+function dayExerciseIdsOf(element: HTMLElement): string[] {
+  return Array.from(
     element.closest("[data-day]")!.querySelectorAll<HTMLElement>("[data-exercise]"),
     (row) => row.dataset.exercise!,
   );
-  const result = excludeFromDay({ ...slotOf(element), state: loadAthleteState(), dayExerciseIds });
+}
+
+/** "Not for me": the row shows what happened with an Undo; the page status stays quiet. */
+function excludeSlot(ui: Ui, element: HTMLElement): void {
+  const slot = slotOf(element);
+  const result = excludeFromDay({ ...slot, state: loadAthleteState(), dayExerciseIds: dayExerciseIdsOf(element) });
   const now = result.substituteName ? ` Now: ${result.substituteName}.` : " No substitute fits, so the slot is unchanged.";
-  return `Excluded ${result.excludedName} from all your sessions.${now} Restore it in the Library.`;
+  ui.undo = {
+    index: slot.index,
+    slotId: slot.slotId,
+    name: result.excludedName,
+    message: `Excluded ${result.excludedName} from all your sessions.${now} Restore it in the Library.`,
+    token: result.undo,
+  };
+}
+
+function easierSlot(element: HTMLElement): string {
+  const result = easierInDay({ ...slotOf(element), state: loadAthleteState(), dayExerciseIds: dayExerciseIdsOf(element) });
+  return `Easier: ${result.fromName} → ${result.toName}`;
+}
+
+/**
+ * Open or close a row's ⋯ menu in place (no repaint), one menu at a time.
+ * `focus` moves focus into the opened menu, or back to ⋯ when it closes.
+ */
+function setMenu(root: HTMLElement, more: HTMLElement, { open, focus }: { open: boolean; focus: boolean }): void {
+  if (open) {
+    root.querySelectorAll<HTMLElement>('[data-more][aria-expanded="true"]').forEach((other) => {
+      if (other !== more) {
+        setMenu(root, other, { open: false, focus: false });
+      }
+    });
+  }
+  const menu = root.querySelector<HTMLElement>(`#${more.getAttribute("aria-controls")}`);
+  if (!menu) {
+    return;
+  }
+  menu.hidden = !open;
+  more.setAttribute("aria-expanded", String(open));
+  if (focus) {
+    (open ? menu.querySelector<HTMLElement>('[role="menuitem"]') : more)?.focus();
+  }
+}
+
+function wireMenus(root: HTMLElement): void {
+  on(root, "[data-more]", (more) => setMenu(root, more, { open: more.getAttribute("aria-expanded") !== "true", focus: true }));
+  root.querySelectorAll<HTMLElement>(".plan-ex-menu").forEach((menu) => {
+    menu.addEventListener("keydown", (event) => {
+      const more = root.querySelector<HTMLElement>(`[aria-controls="${menu.id}"]`);
+      if (event.key === "Escape" && more) {
+        event.preventDefault();
+        setMenu(root, more, { open: false, focus: true });
+      }
+    });
+  });
 }
 
 function wireDayEdits({ root, ui, act }: PlanController): void {
@@ -149,7 +204,19 @@ function wireExerciseEdits({ root, ui, act, paint }: PlanController): void {
       return `Swapped in ${EXERCISE_GRAPH[pick]?.name ?? pick}.`;
     }),
   );
-  on(root, "[data-not-for-me]", (el) => act(() => excludeSlot(el)));
+  on(root, "[data-easier]", (el) => {
+    if (el.getAttribute("aria-disabled") !== "true") {
+      act(() => easierSlot(el));
+    }
+  });
+  on(root, "[data-not-for-me]", (el) => act(() => excludeSlot(ui, el)));
+  on(root, "[data-undo]", () => {
+    const pending = ui.undo;
+    if (pending) {
+      act(() => `${undoExclude(pending.token).restoredName} is back in your sessions.`);
+    }
+  });
+  wireMenus(root);
 }
 
 function wireAdd({ root, act }: PlanController): void {
@@ -218,6 +285,7 @@ export function renderPlanView(root: HTMLElement): void {
     root,
     ui,
     act: (edit) => {
+      ui.undo = null;
       try {
         const result = edit();
         ui.status = typeof result === "string" ? result : undefined;

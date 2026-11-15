@@ -58,6 +58,25 @@ export function setSlotExercise(
   return resolveTemplate(templateId);
 }
 
+/** The saved edit for one seed-day slot, if there is one (undefined: the slot uses its seed move). */
+export function slotExerciseOverride(templateId: string, slotId: string): string | undefined {
+  assertSeedTemplate(templateId);
+  return loadTemplateOverrides()[templateId]?.slotExerciseIds?.[slotId];
+}
+
+/** Drop the saved edit for one seed-day slot, so it uses its seed move again. */
+export function clearSlotExercise(templateId: string, slotId: string): SessionTemplate {
+  assertSeedTemplate(templateId);
+  const overrides = loadTemplateOverrides();
+  const current = overrides[templateId];
+  if (current?.slotExerciseIds?.[slotId] !== undefined) {
+    const rest = Object.fromEntries(Object.entries(current.slotExerciseIds).filter(([id]) => id !== slotId));
+    overrides[templateId] = { ...current, slotExerciseIds: rest };
+    saveTemplateOverrides(overrides);
+  }
+  return resolveTemplate(templateId);
+}
+
 export function setTemplateTarget(
   templateId: string,
   targetExerciseId: string,

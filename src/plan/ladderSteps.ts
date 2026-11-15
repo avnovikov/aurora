@@ -49,6 +49,19 @@ function inFamilyArea(familyId: string, exercise: SeedExercise): boolean {
   return wanted === "core" && primaryBuckets(exercise).includes("core");
 }
 
+/** Whether this athlete may be given a move at all: plannable, gear owned, no joint avoid, not excluded. */
+export function canBeGiven(
+  exercise: SeedExercise,
+  ctx: Pick<StepContext, "equipment" | "jointHistory" | "excluded">,
+): boolean {
+  return (
+    isPlannable(exercise) &&
+    !ctx.excluded.includes(exercise.id) &&
+    missingGear(exercise.requires, ctx.equipment).length === 0 &&
+    !assessExercise(exercise.name, ctx.jointHistory).avoid
+  );
+}
+
 /**
  * Plannable members of a ladder this athlete may be given (gear owned, no
  * joint avoid, not excluded, in the ladder's area), easiest first. Within a
@@ -59,14 +72,7 @@ export function usableMembers(familyId: string, ctx: StepContext): LadderMember[
   const members: LadderMember[] = [];
   for (const entry of index.byFamily.get(familyId) ?? []) {
     const exercise = EXERCISE_GRAPH[entry.id];
-    const usable =
-      exercise !== undefined &&
-      isPlannable(exercise) &&
-      inFamilyArea(familyId, exercise) &&
-      !ctx.excluded.includes(exercise.id) &&
-      missingGear(exercise.requires, ctx.equipment).length === 0 &&
-      !assessExercise(exercise.name, ctx.jointHistory).avoid;
-    if (usable) {
+    if (exercise !== undefined && inFamilyArea(familyId, exercise) && canBeGiven(exercise, ctx)) {
       members.push({ exercise, rank: entry.rank });
     }
   }
