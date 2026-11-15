@@ -22,9 +22,18 @@ export const EXERCISE_GRAPH: Readonly<Record<string, SeedExercise>> = {
   ...BY_ID,
 };
 
-/** Work moves the planner may put in a slot: they need tier standards to dose. */
+/**
+ * Work moves the planner may put in a slot: they need tier standards to dose,
+ * and are not band moves (those are prehab with no ladder). Gear the user
+ * lacks is filtered at planning time, not here.
+ */
 export function isPlannable(exercise: SeedExercise): boolean {
-  return exercise.role === "work" && exercise.pattern !== "mobility" && Boolean(exercise.standards);
+  return (
+    exercise.role === "work" &&
+    exercise.pattern !== "mobility" &&
+    Boolean(exercise.standards) &&
+    !exercise.requires?.includes("band")
+  );
 }
 
 export const PLANNABLE_EXERCISES: readonly SeedExercise[] = LIBRARY_CATALOGUE.filter(isPlannable);

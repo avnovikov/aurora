@@ -11894,5 +11894,143 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
       "Shoulders relaxed"
     ],
     "mistakes": []
+  },
+  "wger_578": {
+    "id": "wger_578",
+    "summary": "A light, slow rotation lying on your side that works the small rotator-cuff muscles at the back of the shoulder.",
+    "steps": [
+      "Lie on your side with your knees slightly bent and a small rolled towel between your elbow and ribs.",
+      "Hold a very light weight, or nothing at all, in your top hand with the elbow bent to 90 degrees.",
+      "Keep the elbow pinned to your side and rotate the forearm up toward the ceiling.",
+      "Lower slowly under control to the start, then repeat and switch sides."
+    ],
+    "cues": [
+      "Elbow stays on the towel",
+      "Light weight, slow tempo",
+      "Rotate, don't lift the arm"
+    ],
+    "mistakes": [
+      "Using a heavy weight that makes the shoulder hike or the elbow lift",
+      "Letting the elbow drift away from the side so the arm rises out to the side"
+    ]
+  },
+  "wger_1380": {
+    "id": "wger_1380",
+    "summary": "A standing band drill that pulls the arms apart at chest height to wake up the upper back and rear shoulders.",
+    "steps": [
+      "Stand tall holding a light resistance band in both hands, arms straight out in front at shoulder height.",
+      "Keep a slight bend in the elbows and hold them fixed.",
+      "Spread your arms apart until the band touches or nears your chest, squeezing the shoulder blades together.",
+      "Return slowly, keeping tension on the band all the way."
+    ],
+    "cues": [
+      "Shoulders down, away from ears",
+      "Squeeze shoulder blades",
+      "Slow on the way back"
+    ],
+    "mistakes": [
+      "Using a band so strong that the shoulders shrug",
+      "Arching the lower back to finish the pull",
+      "Letting the band snap back instead of controlling it"
+    ]
+  },
+  "wger_1826": {
+    "id": "wger_1826",
+    "summary": "A band drill with the elbows glued to your sides that rotates the hands outward to train the rotator cuff and upper back.",
+    "steps": [
+      "Stand tall holding a light band in both hands, palms up, elbows bent to 90 degrees and tucked against your ribs.",
+      "Set the hands close together with a little tension already on the band.",
+      "Rotate your hands outward and apart, squeezing the shoulder blades back and down.",
+      "Stop where you can go without the elbows leaving your sides, and hold for one to two seconds.",
+      "Bring the hands back slowly under control."
+    ],
+    "cues": [
+      "Elbows glued to your sides",
+      "Rotate, don't pull back",
+      "Slow and smooth"
+    ],
+    "mistakes": [
+      "Letting the elbows drift away from the ribs",
+      "Using a heavy band that turns it into a shrug",
+      "Pushing past a comfortable range of rotation"
+    ]
+  },
+  "wger_1877": {
+    "id": "wger_1877",
+    "summary": "A single-arm band pull that draws the elbow back to train the muscles between the shoulder blades.",
+    "steps": [
+      "Anchor a resistance band at shoulder height on a wall or upright and loop it around the upper arm just above the elbow.",
+      "Step back until the band is taut and the arm is straight.",
+      "Pull the elbow back and the shoulder blade toward your spine against the band.",
+      "Return slowly, then switch arms."
+    ],
+    "cues": [
+      "Lead with the elbow",
+      "Shoulder blade back and down",
+      "Torso stays still"
+    ],
+    "mistakes": [
+      "Twisting the torso to get the band back",
+      "Letting the shoulder roll forward on the return"
+    ]
+  },
+  "wger_2635": {
+    "id": "wger_2635",
+    "summary": "A seated row with a band looped around your feet that trains the upper back from a supported, upright position.",
+    "steps": [
+      "Sit on the floor with your legs straight and your back tall, knees slightly bent.",
+      "Loop a resistance band around both soles and hold one end in each hand, arms extended.",
+      "Drive the elbows straight back, pulling the band toward your lower ribs and squeezing the shoulder blades together.",
+      "Extend the arms slowly to return."
+    ],
+    "cues": [
+      "Chest up, torso still",
+      "Elbows straight back",
+      "Slow on the return"
+    ],
+    "mistakes": [
+      "Rocking backward to move the band",
+      "Shrugging the shoulders toward the ears"
+    ]
+  },
+  "wger_2494": {
+    "id": "wger_2494",
+    "summary": "A banded end-range knee straightening drill that strengthens the front thigh muscles in the last few degrees of extension.",
+    "steps": [
+      "Loop a resistance band behind one knee and anchor the other end to something stable in front of you.",
+      "Stand in a split stance with the banded knee bent and in front.",
+      "Straighten the knee against the band and squeeze the thigh muscle.",
+      "Hold the contraction for up to five seconds, then release slowly.",
+      "Finish your reps, then switch legs."
+    ],
+    "cues": [
+      "Squeeze the thigh at the top",
+      "Knee over the middle toes",
+      "Slow release"
+    ],
+    "mistakes": [
+      "Locking the knee back hard at the top",
+      "Letting the knee collapse inward as you straighten",
+      "Rushing the hold"
+    ]
+  },
+  "wger_1842": {
+    "id": "wger_1842",
+    "summary": "A side-plank variation with a band above the knees where you open the top knee to train the outer hip.",
+    "steps": [
+      "Set up in a side plank on your forearm with the legs slightly bent and a doubled-up band stretched around the thighs just above the knees.",
+      "Keep the feet together and the hips stacked.",
+      "Lift the top knee like a shell opening, without rolling the hips backward.",
+      "Lower slowly to the start and repeat, then switch sides."
+    ],
+    "cues": [
+      "Feet stay together",
+      "Hips stay stacked",
+      "Open the knee, not the pelvis"
+    ],
+    "mistakes": [
+      "Rolling the hips backward to lift the knee higher",
+      "Letting the lower hip sag toward the floor"
+    ]
   }
 };

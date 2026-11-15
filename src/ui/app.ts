@@ -33,6 +33,7 @@ import { advancePlanAfterSession, renderPlanView } from "./planView";
 import { renderProgressView } from "./progressView";
 import { renderSessionView } from "./sessionView";
 import { renderSettingsView } from "./settingsView";
+import { renderSetupView } from "./setupView";
 import { renderShell, type AppTab } from "./shell";
 
 const PANEL_RENDERERS: Partial<
@@ -46,7 +47,7 @@ const PANEL_RENDERERS: Partial<
 };
 
 export function bootApp(root: HTMLElement): void {
-  loadProfile();
+  const profile = loadProfile();
   const resume = loadSession();
   if (resume) {
     renderSessionView(root, {
@@ -54,6 +55,10 @@ export function bootApp(root: HTMLElement): void {
       resume,
       onDone: (setCount) => showEvaluation(root, setCount, resume.planned),
     });
+    return;
+  }
+  if (!profile.setupDone) {
+    renderSetupView(root, () => showTab(root, "today"));
     return;
   }
   showTab(root, "today");
@@ -124,6 +129,8 @@ function showTodayHome(root: HTMLElement): void {
           history: loadHistory(),
           focus: template.focus,
           deloadActive: loadDeloadActive(),
+          jointHistory: loadProfile().jointHistory,
+          equipment: loadProfile().equipment,
         },
       );
       renderSessionView(root, {

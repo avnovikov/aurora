@@ -8,7 +8,13 @@ import {
   requireWarmupStation,
   type WarmupStation,
 } from "../data/warmupStations";
-import type { HistoryEntry, SessionFocus } from "../domain/program";
+import type {
+  HistoryEntry,
+  EquipmentId,
+  JointHistoryEntry,
+  SessionFocus,
+} from "../domain/program";
+import { chooseSafeExercise } from "../safety/jointCare";
 import type {
   Dose,
   ExerciseMemory,
@@ -37,6 +43,8 @@ export interface PlannedWorkItem {
   /** One-line description and how-to steps from the curated Library text. */
   summary?: string;
   steps?: string[];
+  /** Past-injury notes to keep in mind on this move (may be empty). */
+  cautions: string[];
 }
 
 export interface PlannedSession {
@@ -59,6 +67,10 @@ export interface PlanSessionOptions {
   focus?: SessionFocus;
   /** Manual deload week: light-day dose, no progression advance. */
   deloadActive?: boolean;
+  /** Past joint injuries; unsafe moves are swapped, risky ones flagged. */
+  jointHistory?: readonly JointHistoryEntry[];
+  /** Gear the user owns; moves needing other gear are swapped out. */
+  equipment?: readonly EquipmentId[];
 }
 
 /** Inputs shared by every slot in one planned session. */
@@ -66,6 +78,8 @@ interface SlotContext {
   readiness: Readiness;
   memories: Record<string, ExerciseMemory>;
   deloadActive: boolean;
+  jointHistory: readonly JointHistoryEntry[];
+  equipment?: readonly EquipmentId[];
 }
 
 function warmupStationsFor(program: StarterProgram): WarmupStation[] {
@@ -92,10 +106,17 @@ function planWorkItem(
     graph: EXERCISE_GRAPH,
     deloadActive: context.deloadActive,
   });
-  const chosen = EXERCISE_GRAPH[resolved.exerciseId] ?? exercise;
-  const reason = varietyReason
+  const resolvedExercise = EXERCISE_GRAPH[resolved.exerciseId] ?? exercise;
+  const care = chooseSafeExercise(resolvedExercise, context.jointHistory, context.equipment);
+  const chosen = EXERCISE_GRAPH[care.id] ?? resolvedExercise;
+  const baseReason = varietyReason
     ? `${resolved.reason} · ${varietyReason}`
     : resolved.reason;
+  const reason = care.swappedFrom
+    ? `${baseReason} · ${care.reason}`
+    : baseReason;
+  const swapRule = care.cause === "gear" ? ("equipment" as const) : ("joint_history" as const);
+  const ruleIds = care.swappedFrom ? [...resolved.ruleIds, swapRule] : resolved.ruleIds;
   return {
     slotId: slot.id,
     label: slot.label,
@@ -103,12 +124,13 @@ function planWorkItem(
     exerciseName: chosen.name,
     dose: resolved.dose,
     restSeconds: slot.restSeconds,
-    ruleIds: resolved.ruleIds,
+    ruleIds,
     reason,
     doodlePath: chosen.doodlePath,
     cues: chosen.cues,
     summary: chosen.description,
     steps: chosen.steps,
+    cautions: care.cautions,
   };
 }
 
@@ -158,7 +180,13 @@ export function planSession(
   const deloadActive = options.deloadActive === true;
   const work = planWorkWithVariety(
     program,
-    { readiness, memories, deloadActive },
+    {
+      readiness,
+      memories,
+      deloadActive,
+      jointHistory: options.jointHistory ?? [],
+      equipment: options.equipment,
+    },
     previous?.exerciseIds ?? null,
   );
   const warmup = buildWarmupView(warmupStationsFor(program));

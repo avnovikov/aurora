@@ -1933,5 +1933,26 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   ],
   "wger_2686": [
     "wger.de exercise 2686 (CC-BY-SA-4.0, tobias08)"
+  ],
+  "wger_578": [
+    "wger.de exercise 578 (CC-BY-SA-4.0, apeschel)"
+  ],
+  "wger_1380": [
+    "wger.de exercise 1380 (CC-BY-SA-4.0, schwolfar)"
+  ],
+  "wger_1826": [
+    "wger.de exercise 1826 (CC-BY-SA-4.0, beagle)"
+  ],
+  "wger_1877": [
+    "wger.de exercise 1877 (CC-BY-SA-4.0, hurr99)"
+  ],
+  "wger_2635": [
+    "wger.de exercise 2635 (CC-BY-SA-4.0, trs1800)"
+  ],
+  "wger_2494": [
+    "wger.de exercise 2494 (CC-BY-SA-4.0, Rehab Hero)"
+  ],
+  "wger_1842": [
+    "wger.de exercise 1842 (CC-BY-SA-4.0, Croak6728)"
   ]
 };

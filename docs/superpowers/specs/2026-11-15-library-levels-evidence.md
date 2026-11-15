@@ -124,3 +124,64 @@ Attribution for each exercise is computed from its bundle, not written by hand, 
 
   A swap may only be the same level or one easier.
 - The Plan editor lists every plannable move, grouped by pattern and labelled with its level.
+
+## 7. Joint history: Library flags, cautions and prehab (2026-11-15)
+
+The Library now reads the profile's joint history ([joint-history spec](2026-11-15-joint-history.md)): list rows get a "Skipped for your joints" / "Mind your joints" badge, the detail page explains why, and a **For my joints** filter lists prehab moves (`src/safety/prehab.ts`) for each declared joint.
+
+### New safety notes (`cautions.ts`)
+
+| Move | Note | Evidence |
+|---|---|---|
+| Skin the cat, German hang, shoulder dislocate | Skip with instability, hypermobility or past dislocation | Overview of shoulder instability, Open Orthop J 2013;7:338 (anterior instability shows in abducted + externally rotated positions) [S]. **No study of these moves exists**; the rule is inferred from mechanism. |
+| Dead hang, one-handed hang | Hang active, step up to the bar, stop when tired | Swinburne University explainer, 2023 (opinion-level) [conv] |
+| Lateral lunge, Cossack, skater, curtsy, shuffle | Gradual load; frontal-plane work is held back after knee ligament injury | MCL return-to-play commentary (Sportsmith) [conv]; ACL return-to-cutting risk, PMC10929313 [S] |
+
+### Prehab list: what each pick rests on
+
+| Joint | Moves | Evidence |
+|---|---|---|
+| Shoulder | Scapular push-up, scapular pull-up, Y-T-W, serratus wall slide, scapular retraction, ring face pull | Serratus activity highest in push-up plus and dynamic hug, Decker 1999, AJSM 27(6):784 [V]; trapezius/serratus exercises, Ekstrom 2003, JOSPT 33(5):247 [S]. Scapular stabilisation helps rotator-cuff and impingement pain (13-RCT meta-analysis, 690 participants); for *instability* the evidence is weak and dated (nonoperative-management systematic review) [S]. |
+| Shoulder | Side-lying external rotation (**new, wger #578, CC-BY-SA-4.0**) | Elbow-at-side rotator-cuff staple, kept out of the abducted/externally rotated provoking position [conv]. Reinold 2004, JOSPT 34(7):385 compared external-rotation variants; I could not verify its side-lying result. |
+| Knee / hip | Copenhagen, side-lying hip abduction, clamshell, glute bridge | Copenhagen raises eccentric adductor strength and reduces groin symptoms (2021 and 2025 systematic reviews; injury-prevention link still needs more trials) [S]. Hip-abductor strengthening raises strength but did **not** significantly change knee valgus (RCT, PMC4424529) [S]. |
+| Knee | Single-leg soft-landing holds, deficit step-down, tibialis raise | Landing and step-down control are standard rehab tests/drills [conv]; no outcome trial found. |
+
+### Looked for, not added
+
+- **Spanish squat, terminal knee extension, reverse Nordic as evidence-backed moves:** searches returned no trial evidence. Reverse Nordic is already in the Library (wger) but is deliberately not on the prehab list.
+- **Prone external rotation at 90° abduction** (high rotator-cuff EMG in Reinold 2004): left out because it is the abducted + externally rotated position that provokes anterior instability.
+- **Face pulls with a band:** left out (and "Ring Face Pull" removed from the shoulder prehab list). They finish with the elbows high and the arm externally rotated, the position unstable shoulders should avoid.
+- **Monster walks, lateral band steps, quadruped hip abduction (band optional):** left out; sideways stepping is the load the knee rules steer away from, and the last is a bodyweight move.
+- **Band-assisted pull-up, banded front raise, banded shoulder drills (a video link only), band dorsiflexion (no instructions):** not imported.
+- **Cable moves:** no cable equipment.
+- **Dumbbell rotator-cuff rows in wger** (#406, #1715): the same movement as side-lying external rotation; not imported as duplicates.
+- The raw wger and free-exercise-db dumps were already well mined; one gap (side-lying external rotation) was found.
+
+### Bands (`requires: ["band"]`)
+
+`band` is now an equipment option. Six wger band moves are imported (CC-BY-SA-4.0, author credited): band pull-aparts, band pull-apart with external rotation, banded scapular retraction, seated band row, band terminal knee extension, banded clamshell. They carry `requires: ["band"]`, appear in the Library with "Needs: band", and show in "For my joints" only when the profile has a band.
+
+Gear-dependent moves are **never auto-planned and never placed on a progression ladder**: before this rule, "retraction" and "row" keywords made a band move the *easier* step of the seed Scapular push-up. 
+Terminal knee extension and the seated row rest on convention: no trial evidence was found.
+
+### Joint load per exercise (`src/safety/jointLoad.ts`)
+
+The Library detail page lists which joints a move stresses and why. For a joint in the user's history with no avoid rule, a *high* load becomes a caution (never an avoid).
+
+| Joint | Evidence found | Strength |
+|---|---|---|
+| Wrist | Press-to-handstand wrist moments ~40% of body weight; chronic wrist pain common in adult handstand practitioners (PMC12550924); adolescent gymnast wrist pain pooled prevalence 53% (PMC12804664, meta-analysis) | [S]; no data for plank or push-up wrist load |
+| Knee | One-legged squats load the patellofemoral joint more than two-legged at every angle tested (IJSPT 2025); long-stride lunges raise posterior cruciate force and lunge patellofemoral load depends on angle (Escamilla, IJSPT); cruciate shear low in the first 60° of bend, compressive load rises with depth (Escamilla 2001, MSSE) | [S]; **no force data for pistol squat or step-up** |
+| Shoulder | Dips reach the end of extension range (McKenzie 2022); pull-up impingement risk peaks at the bottom, pronated grip may help (secondary source) | [S] / [conv] |
+| Elbow | Static holds, levers and planche load the elbow flexors and forearm tendons; workload spikes linked to overuse | **Blog and forum level only; no controlled study found** [conv] |
+| Lumbar | Repeated flexion (Callaghan & McGill 2001, already §3) | [S]; nothing found on hanging leg raises or L-sits |
+| Hip, ankle | Not researched yet | none |
+
+### Equipment is enforced (`src/data/enrich/equipment.ts`, `src/safety/gear.ts`)
+
+Every Library move gets `requires` from its name: **bar** (pull-ups, hangs, levers, inverted rows, muscle-ups, toes-to-bar), **rings** (ring and suspension/TRX moves, crosses), **parallettes** (parallel-bar dips and holds), plus **band** from the wger tags. Benches, chairs, walls and the floor are assumed. The rules are ordered regexes with explicit exclusions for look-alikes (hamstring, elbow lever, chin tuck, hip dips); a test pins them. Count at time of writing: 52 bar, 30 rings, 7 parallettes, 6 band, 514 none.
+
+- **Planner:** a move needing gear missing from the profile is swapped for the first same-pattern plannable move with no missing gear and no joint avoid flag (rule id `equipment`, reason shown). If none exists (e.g. every vertical pull needs a bar), the move is kept with a "Needs bar" note on the card.
+- **Library:** an **Only my gear** chip hides moves needing gear you lack; detail pages say "Needs: …".
+- **Plan editor:** the exercise pickers list only moves you have the gear for (the current pick always stays).
+- Not enforced: the variety rotation can still propose a gear move, but the final swap step catches it; warmup stations are not gated.

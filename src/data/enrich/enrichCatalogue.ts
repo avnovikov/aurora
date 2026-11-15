@@ -6,6 +6,7 @@ import { isSeedId } from "../sourceRank";
 import { DESCRIPTION_SOURCES } from "../generated/descriptionSources";
 import { DESCRIPTIONS } from "../generated/descriptions";
 import { cautionsFor } from "./cautions";
+import { requiresFor } from "./equipment";
 import { placeOnLadder, type LadderPlacement } from "./ladder";
 import { wireLadderProgressions, type Placed } from "./progressions";
 import { standardsFor } from "./standards";
@@ -60,7 +61,9 @@ export function enrichCatalogue(catalogue: SeedExercise[]): SeedExercise[] {
   const placements = new Map<string, LadderPlacement>();
   const placed: Placed[] = [];
   for (const exercise of catalogue) {
-    const placement = placeOnLadder(exercise.name);
+    // Gear-dependent moves stay off the ladders: nobody should be advanced or
+    // regressed into a move they cannot do without the gear.
+    const placement = exercise.requires?.includes("band") ? undefined : placeOnLadder(exercise.name);
     if (placement) {
       placements.set(exercise.id, placement);
       placed.push({ exercise, placement });
@@ -99,6 +102,10 @@ export function enrichCatalogue(catalogue: SeedExercise[]): SeedExercise[] {
     };
     if (cautions.length > 0) {
       enriched.cautions = cautions;
+    }
+    const requires = requiresFor(exercise.name, exercise.requires);
+    if (requires.length > 0) {
+      enriched.requires = requires;
     }
     if (wantsStandards(exercise, placement)) {
       const { effort } = resolveExerciseTiming(exercise);

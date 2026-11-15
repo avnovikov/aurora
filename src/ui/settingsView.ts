@@ -1,4 +1,5 @@
 import type { EquipmentId } from "../domain/program";
+import { mountJointHistoryEditor } from "./jointHistoryEditor";
 import { loadDeloadActive, saveDeloadActive } from "../settings/deload";
 import {
   ALL_EQUIPMENT,
@@ -26,6 +27,8 @@ export function renderSettingsView(root: HTMLElement): void {
               `<button type="button" data-eq="${item}" class="${profile.equipment.includes(item) ? "selected" : ""}">${item}</button>`,
           ).join("")}
         </div>
+        <p class="tagline">Past joint injuries</p>
+        <div data-joint-editor></div>
         <label class="field row">
           <input type="checkbox" data-mute ${profile.voiceMuted ? "checked" : ""} />
           Mute coach voice
@@ -51,6 +54,14 @@ export function renderSettingsView(root: HTMLElement): void {
         paint();
       });
     });
+
+    mountJointHistoryEditor(
+      root.querySelector<HTMLElement>("[data-joint-editor]")!,
+      profile.jointHistory,
+      (next) => {
+        profile.jointHistory = next;
+      },
+    );
 
     root.querySelector("[data-save]")?.addEventListener("click", () => {
       const bw = root.querySelector<HTMLInputElement>("[data-bw]")!;

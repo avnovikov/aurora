@@ -84,6 +84,14 @@ function chalkHtml(planned: PlannedSession, state: ViewState): string {
   return `<ol class="chalk">${notches.join("")}</ol>`;
 }
 
+function jointCautionHtml(cautions: string[]): string {
+  if (cautions.length === 0) {
+    return "";
+  }
+  const items = cautions.map((note) => `<li>${escapeHtml(note)}</li>`).join("");
+  return `<div class="joint-caution"><p class="eyebrow">Heads up</p><ul class="cues">${items}</ul></div>`;
+}
+
 function cuesListHtml(cues: string[]): string {
   if (cues.length === 0) {
     return "";
@@ -151,6 +159,7 @@ function workHtml(item: PlannedWorkItem, state: ViewState): string {
       <p class="reps">${reps}</p>
       <p class="reason">${escapeHtml(item.reason)}</p>
       ${media}
+      ${jointCautionHtml(item.cautions)}
       ${howToHtml(item)}
       ${cues}
       <div class="row">

@@ -53,12 +53,35 @@ export type EquipmentId =
   | "bar"
   | "rings"
   | "parallettes"
-  | "dumbbell";
+  | "dumbbell"
+  | "band";
+
+export type JointId =
+  | "shoulder"
+  | "elbow"
+  | "wrist"
+  | "hip"
+  | "knee"
+  | "ankle"
+  | "lumbar";
+export type JointSide = "left" | "right" | "both";
+export type InjuryKind = "dislocation" | "ligament" | "surgery" | "other";
+
+/** A past injury the planner must respect (asked once at setup). */
+export interface JointHistoryEntry {
+  joint: JointId;
+  side: JointSide;
+  kind: InjuryKind;
+}
 
 export interface UserProfile {
   bodyweightKg: number;
   equipment: EquipmentId[];
   voiceMuted: boolean;
+  /** Past joint injuries; empty means none declared. */
+  jointHistory: JointHistoryEntry[];
+  /** First-run setup (joint history question) has been answered. */
+  setupDone: boolean;
 }
 
 export type SessionEvaluation = "easy" | "on_target" | "failed" | "wiped";

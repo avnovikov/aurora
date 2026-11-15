@@ -3,6 +3,7 @@ import type { ExerciseMedia, LoadRegion, SeedExercise } from "../seed";
 import { hasKeyword } from "../enrich/keywords";
 import { decodeEntities, stripTags } from "../enrich/stripTags";
 import { patternFromName, regionsForPattern } from "../enrich/patternByName";
+import { BAND_EQUIPMENT } from "./selection";
 import { WGER_SOURCE, type WgerExerciseRecord } from "./types";
 
 /** wger muscle ids → our 17-group vocabulary. */
@@ -101,6 +102,7 @@ export function mapWgerExerciseRecord(record: WgerExerciseRecord): SeedExercise 
     description: cues.length > 0 ? cues.join(" ") : undefined,
     media: media.length > 0 ? media : undefined,
     attribution: wgerAttribution(record),
+    ...(record.equipment.includes(BAND_EQUIPMENT) ? { requires: ["band" as const] } : {}),
   };
 }
 

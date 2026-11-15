@@ -1,4 +1,4 @@
-import type { PlanQueue, SessionTemplate } from "../domain/program";
+import type { EquipmentId, PlanQueue, SessionTemplate } from "../domain/program";
 import type { Dose, Exercise, ExerciseStandards, Pattern, SkillTier } from "../domain/types";
 
 export type LoadRegion = "legs" | "push" | "pull" | "core" | "skill" | "general";
@@ -22,6 +22,8 @@ export interface SeedExercise extends Exercise {
   difficulty?: SkillTier;
   /** Evidence-based safety notes shown in the Library. */
   cautions?: string[];
+  /** Gear this move needs beyond bodyweight (Library only; never auto-planned). */
+  requires?: EquipmentId[];
   /** How-to steps (curated house style). */
   steps?: string[];
   /** Common faults to avoid. */

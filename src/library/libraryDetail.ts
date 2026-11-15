@@ -1,4 +1,8 @@
 import type { SeedExercise } from "../data/seed";
+import type { JointHistoryEntry } from "../domain/program";
+import { assessExercise } from "../safety/jointCare";
+import { jointLoadsFor } from "../safety/jointLoad";
+import { JOINT_LABEL } from "../settings/jointHistory";
 import {
   SKILL_TIERS,
   SKILL_TIER_LABELS,
@@ -34,6 +38,7 @@ export interface MountLibraryDetailOptions {
   catalogueById: Record<string, SeedExercise>;
   actions: DetailActions;
   memory?: DetailMemoryView;
+  jointHistory?: readonly JointHistoryEntry[];
 }
 
 export function mountLibraryDetail(
@@ -46,8 +51,9 @@ export function mountLibraryDetail(
     catalogueById,
     actions,
     memory = {},
+    jointHistory = [],
   } = options;
-  root.innerHTML = detailHtml(exercise, targetIds, catalogueById, memory);
+  root.innerHTML = detailHtml(exercise, targetIds, catalogueById, memory, jointHistory);
 
   root.querySelector<HTMLButtonElement>("[data-lib-back]")?.addEventListener("click", () => {
     actions.onBack();
@@ -76,6 +82,7 @@ export function detailHtml(
   targetIds: ReadonlySet<string>,
   catalogueById: Record<string, SeedExercise> = {},
   memory: DetailMemoryView = {},
+  jointHistory: readonly JointHistoryEntry[] = [],
 ): string {
   const targetBadge = isTemplateTarget(exercise.id, targetIds)
     ? `<p class="lib-badge">Target</p>`
@@ -94,8 +101,11 @@ export function detailHtml(
       <p class="tagline">Pattern: ${escapeHtml(formatPattern(exercise.pattern))}</p>
       <p class="tagline">Muscles: ${escapeHtml(formatMuscles(exercise.muscles))}</p>
       <p class="tagline">Regions: ${escapeHtml(exercise.regions.join(", "))}</p>
+      ${requiresHtml(exercise)}
       ${summaryHtml(exercise)}
       ${mediaHtml(exercise)}
+      ${jointNotesHtml(exercise, jointHistory)}
+      ${jointLoadHtml(exercise, jointHistory)}
       ${cautionsHtml(exercise)}
       ${stepsHtml(exercise)}
       ${cuesHtml(exercise)}
@@ -106,6 +116,41 @@ export function detailHtml(
       ${sourcesHtml(exercise)}
     </main>
   `;
+}
+
+function requiresHtml(exercise: SeedExercise): string {
+  return exercise.requires?.length
+    ? `<p class="tagline">Needs: ${escapeHtml(exercise.requires.join(", "))}</p>`
+    : "";
+}
+
+/** What the user's own injury history means for this move. */
+function jointNotesHtml(exercise: SeedExercise, history: readonly JointHistoryEntry[]): string {
+  const verdict = assessExercise(exercise.name, history);
+  if (verdict.cautions.length === 0) {
+    return "";
+  }
+  const lead = verdict.avoid
+    ? "Aurora skips this move in your sessions."
+    : "Allowed in your sessions, with care.";
+  const items = verdict.cautions.map((note) => `<li>${escapeHtml(note)}</li>`).join("");
+  return `<div class="joint-caution"><p class="eyebrow">For your joints</p><p>${lead}</p><ul class="cues">${items}</ul></div>`;
+}
+
+/** Which joints this move stresses (impersonal), marking the user's own. */
+function jointLoadHtml(exercise: SeedExercise, history: readonly JointHistoryEntry[]): string {
+  const loads = jointLoadsFor(exercise.name);
+  if (loads.length === 0) {
+    return "";
+  }
+  const mine = new Set(history.map((entry) => entry.joint));
+  const items = loads
+    .map((load) => {
+      const you = mine.has(load.joint) ? " (your joint)" : "";
+      return `<li><strong>${JOINT_LABEL[load.joint]}${you} · ${load.level}:</strong> ${escapeHtml(load.note)}</li>`;
+    })
+    .join("");
+  return `<p class="eyebrow">Joint load</p><ul class="cues lib-joint-load">${items}</ul>`;
 }
 
 function skillPickerHtml(

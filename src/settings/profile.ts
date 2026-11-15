@@ -1,5 +1,6 @@
 import type { EquipmentId, UserProfile } from "../domain/program";
 import { loadDeloadActive } from "./deload";
+import { isJointHistory } from "./jointHistory";
 import { isCoachMuted, setCoachMuted } from "../voice/coachVoice";
 
 const KEY = "aurora.poc.profile.v1";
@@ -8,20 +9,31 @@ const DEFAULT_PROFILE: UserProfile = {
   bodyweightKg: 78,
   equipment: ["body", "bar"],
   voiceMuted: false,
+  jointHistory: [],
+  setupDone: false,
 };
+
+function freshDefault(): UserProfile {
+  return {
+    ...DEFAULT_PROFILE,
+    equipment: [...DEFAULT_PROFILE.equipment],
+    jointHistory: [],
+  };
+}
 
 export function loadProfile(): UserProfile {
   const raw = localStorage.getItem(KEY);
   if (!raw) {
-    return { ...DEFAULT_PROFILE, equipment: [...DEFAULT_PROFILE.equipment] };
+    return freshDefault();
   }
   try {
-    const parsed = JSON.parse(raw) as UserProfile;
+    // Profiles saved before joint history existed lack the new fields.
+    const parsed = { ...freshDefault(), ...JSON.parse(raw) } as UserProfile;
     assertProfile(parsed);
     setCoachMuted(parsed.voiceMuted);
     return parsed;
   } catch {
-    return { ...DEFAULT_PROFILE, equipment: [...DEFAULT_PROFILE.equipment] };
+    return freshDefault();
   }
 }
 
@@ -53,6 +65,7 @@ export const ALL_EQUIPMENT: EquipmentId[] = [
   "rings",
   "parallettes",
   "dumbbell",
+  "band",
 ];
 
 function assertProfile(profile: UserProfile): void {
@@ -61,5 +74,8 @@ function assertProfile(profile: UserProfile): void {
   }
   if (!Array.isArray(profile.equipment)) {
     throw new Error("equipment must be an array");
+  }
+  if (!isJointHistory(profile.jointHistory)) {
+    throw new Error("jointHistory is invalid");
   }
 }

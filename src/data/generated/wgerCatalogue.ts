@@ -425,6 +425,174 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1005 (CC-BY-SA-4.0)"
   },
   {
+    "id": "wger_1826",
+    "name": "Band pull-apart with external rotation",
+    "pattern": "mobility",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "warmup",
+    "regions": [
+      "general"
+    ],
+    "cues": [
+      "Stand tall with your feet shoulder-width apart, chest out, and shoulders back.",
+      "Hold the resistance band with both hands, palms facing up or facing each other, depending on the band type.",
+      "Bend your elbows at a 90-degree angle and glue your upper arms to your sides.",
+      "The band should have some tension in the starting position, with your hands closer together in front of your stomach.",
+      "Rotate Outward: While keeping your elbows tucked into your sides, slowly move your hands away from each other, stretching the band.",
+      "Squeeze: Squeeze your shoulder blades together and down as you rotate your hands outward.",
+      "Range of Motion: Rotate your hands as far outward as you comfortably can without allowing your elbows to leave your sides.",
+      "Hold: Hold the end position for 1–2 seconds to maximize muscle engagement.",
+      "Return: Slowly and with control, bring your hands back to the starting position."
+    ],
+    "description": "Stand tall with your feet shoulder-width apart, chest out, and shoulders back. Hold the resistance band with both hands, palms facing up or facing each other, depending on the band type. Bend your elbows at a 90-degree angle and glue your upper arms to your sides. The band should have some tension in the starting position, with your hands closer together in front of your stomach. Rotate Outward: While keeping your elbows tucked into your sides, slowly move your hands away from each other, stretching the band. Squeeze: Squeeze your shoulder blades together and down as you rotate your hands outward. Range of Motion: Rotate your hands as far outward as you comfortably can without allowing your elbows to leave your sides. Hold: Hold the end position for 1–2 seconds to maximize muscle engagement. Return: Slowly and with control, bring your hands back to the starting position.",
+    "attribution": "wger.de exercise 1826 (CC-BY-SA-4.0, beagle)",
+    "requires": [
+      "band"
+    ]
+  },
+  {
+    "id": "wger_1380",
+    "name": "Band pull-aparts",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "lats",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Hold the band with your arms extended in front of you at shoulder height.",
+      "Keep your elbows slightly bent but fixed throughout the movement.",
+      "Pull the band apart by spreading your arms until the band touches or comes close to your chest.",
+      "Slowly bring your arms back to the starting position, controlling the tension on the band."
+    ],
+    "description": "Hold the band with your arms extended in front of you at shoulder height. Keep your elbows slightly bent but fixed throughout the movement. Pull the band apart by spreading your arms until the band touches or comes close to your chest. Slowly bring your arms back to the starting position, controlling the tension on the band.",
+    "attribution": "wger.de exercise 1380 (CC-BY-SA-4.0, schwolfar)",
+    "requires": [
+      "band"
+    ]
+  },
+  {
+    "id": "wger_2494",
+    "name": "Band Terminal Knee extension",
+    "pattern": "squat",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "This is an end range strengthening exercise for the knee extensors. Start by looping a band around the back of one knee and anchoring the other end to a stable surface in front of you. Stand in a split stance with the banded knee bent and placed as the front leg. Straighten the knee to pull against the bands resistance and maintain a contraction in your quadriceps for up to 5 seconds before releasing."
+    ],
+    "description": "This is an end range strengthening exercise for the knee extensors. Start by looping a band around the back of one knee and anchoring the other end to a stable surface in front of you. Stand in a split stance with the banded knee bent and placed as the front leg. Straighten the knee to pull against the bands resistance and maintain a contraction in your quadriceps for up to 5 seconds before releasing.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/2494/02f1ae86-d374-4b5a-b314-a76c487ea1e9.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / Knickers1833",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/2494/2213ff47-94e8-4884-919f-5af8a2fe9c0f.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / Knickers1833",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 2494 (CC-BY-SA-4.0, Rehab Hero)",
+    "requires": [
+      "band"
+    ]
+  },
+  {
+    "id": "wger_1842",
+    "name": "Banded Clamshell",
+    "pattern": "hinge",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Position",
+      "Side plank with the elbow and the forearm on the ground and the legs slightly bent. Stretch a doubled-up resistance band between your thighs, just above the knee.",
+      "Execution",
+      "Lift",
+      "your upper knee while keeping your feet close together, like a “shell",
+      "opening,” then slowly return to the starting position. Keep your core",
+      "stable and your hips aligned."
+    ],
+    "description": "Position Side plank with the elbow and the forearm on the ground and the legs slightly bent. Stretch a doubled-up resistance band between your thighs, just above the knee. Execution Lift your upper knee while keeping your feet close together, like a “shell opening,” then slowly return to the starting position. Keep your core stable and your hips aligned.",
+    "attribution": "wger.de exercise 1842 (CC-BY-SA-4.0, Croak6728)",
+    "requires": [
+      "band"
+    ]
+  },
+  {
+    "id": "wger_1877",
+    "name": "Banded Scapular Retraction",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "traps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Attach one end of resistance band to wall/upright/... at shoulder height. Insert arm into the loop, at the tricep. Step back until band is pulled straight. Pull back elbow and shoulder against the resistance of the band."
+    ],
+    "description": "Attach one end of resistance band to wall/upright/... at shoulder height. Insert arm into the loop, at the tricep. Step back until band is pulled straight. Pull back elbow and shoulder against the resistance of the band.",
+    "attribution": "wger.de exercise 1877 (CC-BY-SA-4.0, hurr99)",
+    "requires": [
+      "band"
+    ]
+  },
+  {
     "id": "wger_57",
     "name": "Bear Walk 2",
     "pattern": "conditioning",
@@ -4069,6 +4237,39 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1207 (CC-BY-SA-4.0, lxmx)"
   },
   {
+    "id": "wger_2635",
+    "name": "Seated Band Row",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "lats",
+        "role": "primary"
+      },
+      {
+        "group": "biceps",
+        "role": "secondary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Sit on the floor with your legs straight out in front of you and your back tall. Loop a resistance band around the soles of both feet and hold one end in each hand, arms extended and a slight bend in the knees. Pull the band toward your lower ribs by driving your elbows straight back and squeezing your shoulder blades together. Keep your chest up and your torso still rather than rocking backward to move the band. Extend the arms slowly to return. Because the torso stays upright and supported, this is a useful row when a bent-over position is uncomfortable, and it needs no anchor point."
+    ],
+    "description": "Sit on the floor with your legs straight out in front of you and your back tall. Loop a resistance band around the soles of both feet and hold one end in each hand, arms extended and a slight bend in the knees. Pull the band toward your lower ribs by driving your elbows straight back and squeezing your shoulder blades together. Keep your chest up and your torso still rather than rocking backward to move the band. Extend the arms slowly to return. Because the torso stays upright and supported, this is a useful row when a bent-over position is uncomfortable, and it needs no anchor point.",
+    "attribution": "wger.de exercise 2635 (CC-BY-SA-4.0, trs1800)",
+    "requires": [
+      "band"
+    ]
+  },
+  {
     "id": "wger_1477",
     "name": "Seated Corkscrew",
     "pattern": "core_compression",
@@ -4625,6 +4826,29 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "-start in push up position -lean the body weight to the right side, and complete a push up with the chest over the right hand -come back to the centered position -on rep 2, lean to the left side",
     "attribution": "wger.de exercise 583 (CC-BY-SA-4.0, nate303303)"
+  },
+  {
+    "id": "wger_578",
+    "name": "Side-lying External Rotation",
+    "pattern": "mobility",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "warmup",
+    "regions": [
+      "general"
+    ],
+    "cues": [
+      "With a weight in one hand, lie on your side opposite the weight. Keep your knees slightly bent. Hold your elbow against your side, and extend your upper arm straight ahead of you. While continuing to hold your elbow against your side, rotate your upper arm 90 degrees upwards.",
+      "It is helpful to place a towel under your armpit to help with the form on this exercise. Placing a support under your head for the duration of the exercise is also a good idea."
+    ],
+    "description": "With a weight in one hand, lie on your side opposite the weight. Keep your knees slightly bent. Hold your elbow against your side, and extend your upper arm straight ahead of you. While continuing to hold your elbow against your side, rotate your upper arm 90 degrees upwards. It is helpful to place a towel under your armpit to help with the form on this exercise. Placing a support under your head for the duration of the exercise is also a good idea.",
+    "attribution": "wger.de exercise 578 (CC-BY-SA-4.0, apeschel)"
   },
   {
     "id": "wger_1393",

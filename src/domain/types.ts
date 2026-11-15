@@ -149,6 +149,8 @@ export interface ResolveInput {
 
 export type RuleId =
   | "pain"
+  | "joint_history"
+  | "equipment"
   | "pin"
   | "light_day"
   | "deload"

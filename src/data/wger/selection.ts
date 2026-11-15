@@ -1,6 +1,9 @@
 import { stripTags } from "../enrich/stripTags";
 import type { WgerExerciseRecord } from "./types";
 
+/** wger equipment name for resistance bands. */
+export const BAND_EQUIPMENT = "Resistance band";
+
 /** Equipment we assume a calisthenics athlete has (wger equipment names). */
 const ALLOWED_EQUIPMENT = new Set([
   "none (bodyweight exercise)",
@@ -26,10 +29,25 @@ export const WGER_ALLOW_UNTAGGED: readonly string[] = [
   "Roll-overs into V-sits",
   "Serratus Wall Slide Stretch",
   "Side to Side Push Ups",
+  "Side-lying External Rotation",
   "Snap Down",
   "Squat Sky Reach Stretch",
   "Towel Superman",
   "Tyson push-ups",
+];
+
+/**
+ * Resistance-band moves worth having: scapular, rotator-cuff (elbow at side),
+ * and hip/knee stability. Face pulls are left out: they finish in the
+ * abducted + externally rotated position unstable shoulders should avoid.
+ */
+export const WGER_ALLOW_BAND: readonly string[] = [
+  "Band pull-aparts",
+  "Band pull-apart with external rotation",
+  "Banded Scapular Retraction",
+  "Seated Band Row",
+  "Band Terminal Knee extension",
+  "Banded Clamshell",
 ];
 
 /** Tagged bodyweight but machines, cardio kit, rehab tools, or not training. */
@@ -118,6 +136,9 @@ export function isWgerCandidate(record: WgerExerciseRecord): boolean {
   }
   if (record.equipment.length === 0) {
     return WGER_ALLOW_UNTAGGED.includes(record.name);
+  }
+  if (record.equipment.length === 1 && record.equipment[0] === BAND_EQUIPMENT) {
+    return WGER_ALLOW_BAND.includes(record.name);
   }
   return record.equipment.every((item) => ALLOWED_EQUIPMENT.has(item));
 }

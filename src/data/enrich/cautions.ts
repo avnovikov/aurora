@@ -41,6 +41,18 @@ const RULES: readonly CautionRule[] = [
     note: "Skip with shoulder instability or pain; stop short of end range (Kolber 2010).",
   },
   {
+    keywords: ["skin the cat", "german hang", "shoulder dislocate"],
+    note: "Takes the shoulder to an end-range overhead / behind-the-body position: skip with shoulder instability, hypermobility or a past dislocation. No trial data on this move; reasoned from instability mechanics (Open Orthop J 2013;7:338).",
+  },
+  {
+    keywords: ["dead hang", "one handed hang"],
+    note: "Hang with the shoulder muscles switched on, not limp; step up to the bar instead of jumping; stop when tired. Passive hanging stretches the shoulder capsule, so go gently with hypermobility or past instability (Swinburne 2023 explainer; opinion-level).",
+  },
+  {
+    keywords: ["lateral lunge", "side lunge", "cossack", "skater squat", "curtsy", "lateral shuffle"],
+    note: "Sideways load on the knee: build range and load gradually. After a knee ligament injury (esp. MCL) rehab programmes hold frontal-plane work back until laxity settles; check with a physio (commentary-level evidence).",
+  },
+  {
     keywords: ["depth jump", "depth drop"],
     note: "Master landings, squat jumps and box jumps first (NSCA plyometric guidance).",
   },

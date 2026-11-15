@@ -800,3 +800,16 @@ button:disabled {
   width: 100%;
   margin-top: 0.5rem;
 }
+
+.joint-caution {
+  margin: 0.5rem 0;
+  padding: 0.5rem 0.75rem;
+  border-left: 3px solid #d98e04;
+  background: rgba(217, 142, 4, 0.1);
+  border-radius: 4px;
+}
+.hj-detail {
+  margin: 0.5rem 0 1rem;
+}
+.lib-badge.avoid { background: rgba(200, 60, 60, 0.18); }
+.lib-badge.caution { background: rgba(217, 142, 4, 0.2); }

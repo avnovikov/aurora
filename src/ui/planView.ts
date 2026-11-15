@@ -1,5 +1,7 @@
 import { EXERCISE_GRAPH, PLANNABLE_EXERCISES, plannableByPattern } from "../data/exerciseGraph";
 import { SESSION_TEMPLATES } from "../data/seed";
+import { missingGear } from "../safety/gear";
+import { loadProfile } from "../settings/profile";
 import { SKILL_TIER_LABELS } from "../domain/skillTier";
 import { escapeHtml, formatPattern } from "../library/present";
 import {
@@ -140,13 +142,19 @@ function procedureBlockHtml(templateId: string): string {
 }
 
 /**
- * Every plannable Library move, grouped by movement pattern with its level.
+ * Every plannable Library move the user has the gear for, grouped by pattern with its level.
  * A current pick outside that set (e.g. a Mobility warmup-role slot) stays selectable.
  */
 function exerciseSelectHtml(selected: string | undefined, attrs: string, label: string): string {
-  const groups = [...plannableByPattern()].map(([pattern, exercises]) => {
-    const options = exercises.map((exercise) => optionHtml(exercise.id, selected)).join("");
-    return `<optgroup label="${escapeHtml(formatPattern(pattern))}">${options}</optgroup>`;
+  const { equipment } = loadProfile();
+  const usable = (id: string, requires: Parameters<typeof missingGear>[0]): boolean =>
+    id === selected || missingGear(requires, equipment).length === 0;
+  const groups = [...plannableByPattern()].flatMap(([pattern, exercises]) => {
+    const options = exercises
+      .filter((exercise) => usable(exercise.id, exercise.requires))
+      .map((exercise) => optionHtml(exercise.id, selected))
+      .join("");
+    return options ? [`<optgroup label="${escapeHtml(formatPattern(pattern))}">${options}</optgroup>`] : [];
   });
   const isListed = PLANNABLE_EXERCISES.some((exercise) => exercise.id === selected);
   const current = selected && !isListed ? optionHtml(selected, selected) : "";
