@@ -65,6 +65,41 @@ describe("decideSwipeRelease", () => {
       decideSwipeRelease({ deltaX: 100, velocityPxPerMs: 0, width: 0 }),
     ).toThrow(/positive/);
   });
+
+  describe("commitDirections: right", () => {
+    it("cancels a left drag past the threshold", () => {
+      expect(
+        decideSwipeRelease({
+          deltaX: -threshold,
+          velocityPxPerMs: 0,
+          width,
+          commitDirections: "right",
+        }),
+      ).toEqual({ action: "cancel" });
+    });
+
+    it("cancels a left flick", () => {
+      expect(
+        decideSwipeRelease({
+          deltaX: -20,
+          velocityPxPerMs: -SWIPE_FLICK_PX_PER_MS,
+          width,
+          commitDirections: "right",
+        }),
+      ).toEqual({ action: "cancel" });
+    });
+
+    it("still commits a right drag past the threshold", () => {
+      expect(
+        decideSwipeRelease({
+          deltaX: threshold,
+          velocityPxPerMs: 0,
+          width,
+          commitDirections: "right",
+        }),
+      ).toEqual({ action: "commit", direction: "right" });
+    });
+  });
 });
 
 describe("exitOffsetPx", () => {

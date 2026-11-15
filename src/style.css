@@ -371,17 +371,20 @@ button:disabled {
   font-size: 1.25rem;
 }
 
-.work-stage {
+.work-stage,
+.rest-stage {
   touch-action: pan-y;
   will-change: transform, opacity;
 }
 
-.work-stage.is-swiping {
+.work-stage.is-swiping,
+.rest-stage.is-swiping {
   user-select: none;
   cursor: grabbing;
 }
 
-.work-stage.is-swipe-exit {
+.work-stage.is-swipe-exit,
+.rest-stage.is-swipe-exit {
   pointer-events: none;
 }
 

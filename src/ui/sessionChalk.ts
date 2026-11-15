@@ -262,13 +262,14 @@ function restHtml(planned: PlannedSession, state: ViewState): string {
     ? `<p class="tagline">Easy rest after the ramp: walk, breathe, stay warm.</p>`
     : "";
   return `
-    <div class="rest-stage">
+    <div class="rest-stage" data-swipe-stage>
       <p class="eyebrow">${getReady ? "Get ready" : "Rest"} · ${nextLine}</p>
       <p class="reps" data-rest-left>${state.restLeft}</p>
       <p class="rest-cue" data-rest-cue></p>
       ${getReadyNote}
       <p class="tagline">Next set reps</p>
       ${repsStepperHtml(reps, "reps-edit", "rest-reps-row")}
+      <p class="hint">Swipe right to start</p>
     </div>
   `;
 }

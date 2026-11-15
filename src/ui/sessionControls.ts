@@ -32,6 +32,8 @@ export type SetStopReason = Extract<
 export interface SessionControlHandlers {
   onPaint: () => void;
   onStartRest: (withVoice: boolean, onDone: () => void) => void;
+  /** Leave rest / Get ready and show the next work set (timer or swipe). */
+  onLeaveRest: () => void;
   onFinishExercise: () => void;
   onFinishAll: () => void;
   onStartCooldown: () => void;
@@ -66,17 +68,24 @@ export function wireSessionControls(
   }
   wirePulseSimButtons(root, state, handlers);
   wirePulseConnectButtons(root, state, handlers);
-  wireStageSwipe(root, handlers);
+  wireStageSwipe(root, state, handlers);
 }
 
+/** Rest: swipe right starts the set. Work: either direction finishes. */
 function wireStageSwipe(
   root: HTMLElement,
+  state: ViewState,
   handlers: SessionControlHandlers,
 ): void {
   const stage = root.querySelector<HTMLElement>("[data-swipe-stage]");
-  if (stage) {
-    wireSwipe(stage, handlers.onFinishExercise);
+  if (!stage) {
+    return;
   }
+  if (state.phase === "rest") {
+    wireSwipe(stage, handlers.onLeaveRest, { commitDirections: "right" });
+    return;
+  }
+  wireSwipe(stage, handlers.onFinishExercise);
 }
 
 function wirePulseConnectButtons(
@@ -199,8 +208,5 @@ export function completeSet(
   state.phase = "rest";
   state.restLeft = item.restSeconds;
   handlers.onPaint();
-  handlers.onStartRest(true, () => {
-    state.phase = "work";
-    handlers.onPaint();
-  });
+  handlers.onStartRest(true, handlers.onLeaveRest);
 }

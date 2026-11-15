@@ -125,10 +125,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       void speakCoachLine("warmup_done");
       paint();
       if (getReady > 0) {
-        startRest(() => {
-          state.phase = "work";
-          paint();
-        }, true);
+        startRest(leaveRest, true);
       }
       return;
     }
@@ -204,10 +201,19 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     paint();
   };
 
+  /** Stop any rest timer and show the queued work set. */
+  const leaveRest = (): void => {
+    clearWorkTimers();
+    state.restLeft = 0;
+    state.phase = "work";
+    paint();
+  };
+
   const handlers: SessionControlHandlers = {
     onPaint: paint,
     onStartRest: (withVoice, onDone) =>
       startRest(onDone, withVoice, timedWorkItem(currentWork(options.planned, state))),
+    onLeaveRest: leaveRest,
     onFinishExercise: finishExercise,
     onFinishAll: finishAll,
     onStartCooldown: () => {

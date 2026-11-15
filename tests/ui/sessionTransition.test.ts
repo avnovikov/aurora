@@ -61,6 +61,20 @@ describe("warm-up → work transition", () => {
     expect(shellHtml(planned, state)).toContain("Rest · next");
   });
 
+  it("offers swipe-right on Rest and Get ready to start the set", () => {
+    const planned = plan("tmpl_legs");
+    const getReady = afterLastStation(planned);
+    enterWorkAfterWarmup(planned, getReady);
+    const getReadyHtml = shellHtml(planned, getReady);
+    expect(getReadyHtml).toContain("data-swipe-stage");
+    expect(getReadyHtml).toContain("Swipe right to start");
+
+    getReady.setIndex = 2;
+    const restHtml = shellHtml(planned, getReady);
+    expect(restHtml).toContain("data-swipe-stage");
+    expect(restHtml).toContain("Swipe right to start");
+  });
+
   it("counts the Get ready rest in the planned session estimate", () => {
     const legs = plan("tmpl_legs");
     const mobility = plan("tmpl_mobility");

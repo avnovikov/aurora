@@ -40,10 +40,14 @@ function workState(planned: PlannedSession): ViewState {
   return state;
 }
 
-function handlers(): SessionControlHandlers {
+function handlers(state: ViewState): SessionControlHandlers {
   return {
     onPaint: vi.fn(),
     onStartRest: vi.fn((_voice, onDone) => onDone()),
+    onLeaveRest: vi.fn(() => {
+      state.restLeft = 0;
+      state.phase = "work";
+    }),
     onFinishExercise: vi.fn(),
     onFinishAll: vi.fn(),
     onStartCooldown: vi.fn(),
@@ -86,7 +90,7 @@ describe("completeSet sticky reps", () => {
     state.workState = editNextReps(state.workState!, item.dose.reps - 2);
     state.workState = { ...state.workState, addedLoadKg: DEFAULT_ADDED_LOAD_KG };
     const loggedReps = item.dose.reps - 2;
-    const h = handlers();
+    const h = handlers(state);
 
     completeSet(planned, state, "completed", h);
 
@@ -105,7 +109,7 @@ describe("completeSet sticky reps", () => {
     const planned = planLegs();
     const state = workState(planned);
     const before = state.workState!.prescribedReps;
-    const h = handlers();
+    const h = handlers(state);
 
     completeSet(planned, state, "skipped", h);
 

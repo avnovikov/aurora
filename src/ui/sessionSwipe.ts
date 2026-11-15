@@ -9,6 +9,9 @@ export const SWIPE_BACK_MS = 280;
 
 export type SwipeDirection = "left" | "right";
 
+/** Which horizontal commits are allowed. Rest uses `"right"` only. */
+export type CommitDirections = "both" | "right";
+
 export type SwipeDecision =
   | { action: "commit"; direction: SwipeDirection }
   | { action: "cancel" };
@@ -17,24 +20,41 @@ export function decideSwipeRelease(input: {
   deltaX: number;
   velocityPxPerMs: number;
   width: number;
+  commitDirections?: CommitDirections;
 }): SwipeDecision {
-  const width = input.width;
-  assertPositiveWidth(width);
-  const threshold = width * SWIPE_COMMIT_RATIO;
-  const flick = Math.abs(input.velocityPxPerMs) >= SWIPE_FLICK_PX_PER_MS;
-  if (flick) {
-    return {
-      action: "commit",
-      direction: input.velocityPxPerMs < 0 ? "left" : "right",
-    };
+  assertPositiveWidth(input.width);
+  const direction = resolveCommitDirection(input);
+  const allowed = input.commitDirections ?? "both";
+  if (!direction || !isDirectionAllowed(direction, allowed)) {
+    return { action: "cancel" };
   }
-  if (Math.abs(input.deltaX) >= threshold) {
-    return {
-      action: "commit",
-      direction: input.deltaX < 0 ? "left" : "right",
-    };
+  return { action: "commit", direction };
+}
+
+/** Flick wins over distance; otherwise commit only past the width threshold. */
+function resolveCommitDirection(input: {
+  deltaX: number;
+  velocityPxPerMs: number;
+  width: number;
+}): SwipeDirection | undefined {
+  if (Math.abs(input.velocityPxPerMs) >= SWIPE_FLICK_PX_PER_MS) {
+    return directionFromSign(input.velocityPxPerMs);
   }
-  return { action: "cancel" };
+  if (Math.abs(input.deltaX) >= input.width * SWIPE_COMMIT_RATIO) {
+    return directionFromSign(input.deltaX);
+  }
+  return undefined;
+}
+
+function directionFromSign(value: number): SwipeDirection {
+  return value < 0 ? "left" : "right";
+}
+
+function isDirectionAllowed(
+  direction: SwipeDirection,
+  allowed: CommitDirections,
+): boolean {
+  return allowed === "both" || direction === "right";
 }
 
 export function exitOffsetPx(width: number, direction: SwipeDirection): number {
@@ -49,6 +69,10 @@ function assertPositiveWidth(width: number): void {
   }
 }
 
+function swipeStageWidth(stage: HTMLElement): number {
+  return Math.max(stage.offsetWidth, 1);
+}
+
 function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
@@ -57,12 +81,26 @@ function isInteractiveTarget(target: EventTarget | null): boolean {
   return target instanceof Element && target.closest("button, a, input") !== null;
 }
 
+function motionDurationMs(ms: number): number {
+  return prefersReducedMotion() ? 0 : ms;
+}
+
+export interface WireSwipeOptions {
+  commitDirections?: CommitDirections;
+}
+
 /**
- * Horizontal swipe on the work stage finishes the exercise.
+ * Horizontal swipe on a stage. Work uses both directions to finish;
+ * rest uses right-only to start the next set.
  * Tracks 1:1 while the pointer is down, then animates off-screen
  * (or snaps back) so the gesture is visible before advancing.
  */
-export function wireSwipe(stage: HTMLElement, onFinish: () => void): void {
+export function wireSwipe(
+  stage: HTMLElement,
+  onCommit: () => void,
+  options: WireSwipeOptions = {},
+): void {
+  const commitDirections = options.commitDirections ?? "both";
   let pointerId: number | null = null;
   let startX = 0;
   let lastX = 0;
@@ -77,7 +115,7 @@ export function wireSwipe(stage: HTMLElement, onFinish: () => void): void {
 
   const applyDrag = (x: number): void => {
     stage.style.transform = `translateX(${x}px)`;
-    const width = Math.max(stage.offsetWidth, 1);
+    const width = swipeStageWidth(stage);
     const fade = Math.min(1, Math.abs(x) / (width * 0.85));
     stage.style.opacity = String(1 - fade * 0.35);
   };
@@ -89,36 +127,55 @@ export function wireSwipe(stage: HTMLElement, onFinish: () => void): void {
     stage.classList.remove("is-swiping", "is-swipe-exit");
   };
 
+  const afterMotion = (duration: number, then: () => void): void => {
+    window.setTimeout(then, duration);
+  };
+
+  const animateTo = (
+    transform: string,
+    opacity: string,
+    duration: number,
+    easing: "ease-out" | "ease-in",
+  ): void => {
+    stage.style.transition = `transform ${duration}ms ${easing}, opacity ${duration}ms ${easing}`;
+    stage.style.transform = transform;
+    stage.style.opacity = opacity;
+  };
+
+  const snapBack = (): void => {
+    const duration = motionDurationMs(SWIPE_BACK_MS);
+    animateTo("translateX(0)", "1", duration, "ease-out");
+    afterMotion(duration, () => {
+      resetVisual();
+      settling = false;
+    });
+  };
+
+  const exitAndCommit = (direction: SwipeDirection): void => {
+    const duration = motionDurationMs(SWIPE_EXIT_MS);
+    stage.classList.add("is-swipe-exit");
+    animateTo(
+      `translateX(${exitOffsetPx(swipeStageWidth(stage), direction)}px)`,
+      "0",
+      duration,
+      "ease-in",
+    );
+    afterMotion(duration, () => {
+      onCommit();
+      // paint() replaces the stage; still clear in case commit is a no-op.
+      resetVisual();
+      settling = false;
+    });
+  };
+
   const settle = (decision: SwipeDecision): void => {
     settling = true;
     stage.classList.remove("is-swiping");
-    const width = Math.max(stage.offsetWidth, 1);
-    const reduced = prefersReducedMotion();
-
     if (decision.action === "cancel") {
-      const duration = reduced ? 0 : SWIPE_BACK_MS;
-      stage.style.transition = `transform ${duration}ms ease-out, opacity ${duration}ms ease-out`;
-      stage.style.transform = "translateX(0)";
-      stage.style.opacity = "1";
-      window.setTimeout(() => {
-        resetVisual();
-        settling = false;
-      }, duration);
+      snapBack();
       return;
     }
-
-    const target = exitOffsetPx(width, decision.direction);
-    const duration = reduced ? 0 : SWIPE_EXIT_MS;
-    stage.classList.add("is-swipe-exit");
-    stage.style.transition = `transform ${duration}ms ease-in, opacity ${duration}ms ease-in`;
-    stage.style.transform = `translateX(${target}px)`;
-    stage.style.opacity = "0";
-    window.setTimeout(() => {
-      onFinish();
-      // paint() replaces the stage; still clear in case finish is a no-op.
-      resetVisual();
-      settling = false;
-    }, duration);
+    exitAndCommit(decision.direction);
   };
 
   stage.addEventListener("pointerdown", (event) => {
@@ -161,12 +218,12 @@ export function wireSwipe(stage: HTMLElement, onFinish: () => void): void {
     } catch {
       // Already released.
     }
-    const width = Math.max(stage.offsetWidth, 1);
     settle(
       decideSwipeRelease({
         deltaX,
         velocityPxPerMs: velocity,
-        width,
+        width: swipeStageWidth(stage),
+        commitDirections,
       }),
     );
   };
