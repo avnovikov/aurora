@@ -167,7 +167,6 @@ function cooldownHtml(planned: PlannedSession, state: ViewState): string {
   `;
 }
 
-/** One timed station (warm-up or cool-down) with its evidence citation in small text. */
 /** Hidden banner the station timer shows during the halfway change-side pause. */
 function sideSwitchHtml(step: WarmupStep): string {
   if (step.perSide !== true) {
@@ -176,15 +175,16 @@ function sideSwitchHtml(step: WarmupStep): string {
   return `<p class="side-switch" data-side-switch hidden>Change side · <span data-side-switch-left>${SIDE_SWITCH_SECONDS}</span></p>`;
 }
 
+/** One timed station (warm-up or cool-down) with its evidence citation in small text. */
 function stationHtml(eyebrow: string, step: WarmupStep): string {
   const source = step.source
     ? `<p class="station-source">${escapeHtml(step.source)}</p>`
     : "";
   const dose = `
-      <p class="session-dose"><span class="session-dose-q">${escapeHtml(step.region)} <span aria-hidden="true">·</span></span> <span class="session-dose-fig"><span data-warmup-left>${step.holdSeconds}</span><span class="session-dose-unit" aria-hidden="true">s</span><span class="visually-hidden">seconds</span></span></p>
+      <p class="session-dose"><span class="session-dose-q">${escapeHtml(step.region)} <span aria-hidden="true">·</span></span> ${doseFigureHtml(`<span data-warmup-left>${step.holdSeconds}</span>`, SECONDS_UNIT_HTML)}</p>
       ${sideSwitchHtml(step)}`;
   return `
-    ${heroHtml(eyebrow, step.name, dose, doodleHtml(step.doodlePath, step.name))}
+    ${heroHtml({ phase: eyebrow, move: step.name, dose, doodle: doodleHtml(step.doodlePath, step.name) })}
     <section class="session-read">
       ${summaryHtml(EXERCISE_GRAPH[step.stationId]?.description)}
       ${attentionHtml(step.cues)}
@@ -193,13 +193,24 @@ function stationHtml(eyebrow: string, step: WarmupStep): string {
   `;
 }
 
+interface HeroParts {
+  /** Phase eyebrow, already safe HTML ("Warmup", "Set 2 of 3"). */
+  phase: string;
+  /** Move name, escaped here. */
+  move: string;
+  /** Dose markup: the big figure and anything that belongs with it. */
+  dose: string;
+  /** Doodle markup from doodleHtml, or "" for none. */
+  doodle: string;
+}
+
 /** Phase eyebrow, move name, the dose as the hero, then the doodle in its own full-width row. */
-function heroHtml(eyebrow: string, name: string, dose: string, doodle = ""): string {
+function heroHtml({ phase, move, dose, doodle }: HeroParts): string {
   const frame = doodle ? `<div class="session-frame">${doodle}</div>` : "";
   return `
     <section class="session-hero">
-      <p class="eyebrow session-phase">${eyebrow}</p>
-      <h1 class="session-move">${escapeHtml(name)}</h1>
+      <p class="eyebrow session-phase">${phase}</p>
+      <h1 class="session-move">${escapeHtml(move)}</h1>
       ${dose}
       ${frame}
     </section>`;
@@ -239,14 +250,22 @@ function nextSetReps(state: ViewState, fallback: number): number {
   return state.workState ? prescribedForNextSet(state.workState) : fallback;
 }
 
-/** Shared − / value / + stepper used on work and rest. */
-function repsStepperHtml(reps: number, valueClass: string, rowClass: string): string {
+/** Shared − / value / + stepper: the work hero and the rest "Next set reps" row. */
+function repsStepperHtml(rowClass: string, valueHtml: string): string {
   return `
       <div class="row ${rowClass}">
         <button type="button" class="rest-step" data-reps-minus>−</button>
-        <span class="${valueClass}">${reps}</span>
+        ${valueHtml}
         <button type="button" class="rest-step" data-reps-plus>+</button>
       </div>`;
+}
+
+/** Spoken as "seconds", shown as a small "s". */
+const SECONDS_UNIT_HTML = `<span class="session-dose-unit" aria-hidden="true">s</span><span class="visually-hidden">seconds</span>`;
+
+/** The big dose number followed by its unit. */
+function doseFigureHtml(valueHtml: string, unitHtml: string): string {
+  return `<span class="session-dose-fig">${valueHtml}${unitHtml}</span>`;
 }
 
 /** "s" for a timed hold, "reps" otherwise; the same rule the plan preview uses. */
@@ -257,12 +276,8 @@ function workUnit(item: PlannedWorkItem): string {
 
 /** The work dose as the hero: − / big number + unit / +. */
 function workDoseHtml(reps: number, unit: string): string {
-  return `
-      <div class="row session-dose work-reps-row">
-        <button type="button" class="rest-step" data-reps-minus>−</button>
-        <span class="session-dose-fig"><span class="reps">${reps}</span><span class="session-dose-unit">${unit}</span></span>
-        <button type="button" class="rest-step" data-reps-plus>+</button>
-      </div>`;
+  const figure = doseFigureHtml(`<span class="reps">${reps}</span>`, `<span class="session-dose-unit">${unit}</span>`);
+  return repsStepperHtml("session-dose work-reps-row", figure);
 }
 
 function workHtml(item: PlannedWorkItem, state: ViewState): string {
@@ -272,7 +287,12 @@ function workHtml(item: PlannedWorkItem, state: ViewState): string {
       ${weightControlsHtml(loadKg)}`;
   return `
     <div class="work-stage" data-swipe-stage>
-      ${heroHtml(`Set ${state.setIndex} of ${item.dose.sets}`, item.exerciseName, dose, doodleHtml(item.doodlePath, item.exerciseName))}
+      ${heroHtml({
+        phase: `Set ${state.setIndex} of ${item.dose.sets}`,
+        move: item.exerciseName,
+        dose,
+        doodle: doodleHtml(item.doodlePath, item.exerciseName),
+      })}
       <section class="session-read">
         ${summaryHtml(item.summary)}
         ${attentionHtml(item.cues, item.cautions)}
@@ -308,13 +328,13 @@ function restHtml(planned: PlannedSession, state: ViewState): string {
     <div class="rest-stage">
       <section class="session-hero">
         <p class="eyebrow session-phase">${getReady ? "Get ready" : "Rest"} · ${nextLine}</p>
-        <p class="session-dose"><span class="session-dose-fig"><span class="reps" data-rest-left>${state.restLeft}</span><span class="session-dose-unit" aria-hidden="true">s</span><span class="visually-hidden">seconds</span></span></p>
+        <p class="session-dose">${doseFigureHtml(`<span class="reps" data-rest-left>${state.restLeft}</span>`, SECONDS_UNIT_HTML)}</p>
         <p class="rest-cue" data-rest-cue></p>
         ${getReadyNote}
       </section>
       <section class="session-read">
         <p class="tagline">Next set reps</p>
-        ${repsStepperHtml(reps, "reps-edit", "rest-reps-row")}
+        ${repsStepperHtml("rest-reps-row", `<span class="reps-edit">${reps}</span>`)}
       </section>
     </div>
   `;

@@ -3,7 +3,8 @@ import { EXERCISE_GRAPH } from "../../src/data/exerciseGraph";
 import { SESSION_TEMPLATES, templateToStarter } from "../../src/data/seed";
 import type { Readiness } from "../../src/domain/types";
 import { resolveExerciseTiming } from "../../src/domain/timing";
-import { planSession, type PlannedSession } from "../../src/rules/planSession";
+import { escapeHtml } from "../../src/library/present";
+import { planSession, type PlannedSession, type PlannedWorkItem } from "../../src/rules/planSession";
 import { formatClock } from "../../src/session/sessionClock";
 import { createEmptyLog } from "../../src/session/setLog";
 import { shellHtml } from "../../src/ui/sessionChalk";
@@ -17,9 +18,18 @@ useMemoryStorage();
 
 const readiness: Readiness = { sleepQuality: "good", restingHrBpm: 58, painJoints: [] };
 
-function planLegs(): PlannedSession {
-  const template = SESSION_TEMPLATES.find((item) => item.id === "tmpl_legs")!;
+function planTemplate(templateId: string): PlannedSession {
+  const template = SESSION_TEMPLATES.find((item) => item.id === templateId)!;
   return planSession(readiness, templateToStarter(template), {});
+}
+
+function planLegs(): PlannedSession {
+  return planTemplate("tmpl_legs");
+}
+
+function isHoldMove(item: PlannedWorkItem): boolean {
+  const exercise = EXERCISE_GRAPH[item.exerciseId];
+  return exercise !== undefined && resolveExerciseTiming(exercise).effort === "hold";
 }
 
 function warmupView(planned: PlannedSession): ViewState {
@@ -80,7 +90,8 @@ describe("session header", () => {
     expect(rail).toContain('aria-label="Stations"');
     expect(rail.match(/<li/g)).toHaveLength(notches.length);
     expect(rail.match(/aria-current="step"/g)).toHaveLength(1);
-    expect(rail).toMatch(/<li class="active" aria-current="step"><span class="visually-hidden">/);
+    const current = notches.find((notch) => notch.className === "active")!;
+    expect(slice(rail, 'aria-current="step"', "</li>")).toContain(escapeHtml(current.title));
     expect(html).not.toContain("chalk-rail");
   });
 
@@ -100,8 +111,8 @@ describe("dose as hero", () => {
     const step = planned.warmup[0]!;
     const html = shellHtml(planned, warmupView(planned));
     const hero = slice(html, '<section class="session-hero"', "</section>");
-    expect(hero).toMatch(/<p class="eyebrow session-phase">Warmup<\/p>/);
-    expect(hero).toMatch(/<h1 class="session-move">/);
+    expect(hero).toContain(">Warmup</p>");
+    expect(hero).toContain(`>${escapeHtml(step.name)}</h1>`);
     const dose = slice(hero, '<p class="session-dose"', "</p>");
     expect(dose).toContain(step.region);
     expect(dose).toContain(`<span data-warmup-left>${step.holdSeconds}</span>`);
@@ -139,20 +150,13 @@ describe("dose as hero", () => {
     expect(dose).toContain("data-reps-minus");
     expect(dose).toContain("data-reps-plus");
     expect(dose).toContain(`<span class="reps">${item.dose.reps}</span>`);
-    const exercise = EXERCISE_GRAPH[item.exerciseId]!;
-    const unit = resolveExerciseTiming(exercise).effort === "hold" ? "s" : "reps";
-    expect(dose).toContain(`class="session-dose-unit">${unit}<`);
+    expect(dose).toContain(`class="session-dose-unit">${isHoldMove(item) ? "s" : "reps"}<`);
   });
 
   it("uses seconds for a timed work move", () => {
-    const planned = planLegs();
-    const index = planned.work.findIndex((item) => {
-      const exercise = EXERCISE_GRAPH[item.exerciseId];
-      return exercise !== undefined && resolveExerciseTiming(exercise).effort === "hold";
-    });
-    if (index === -1) {
-      return;
-    }
+    const planned = planTemplate("tmpl_abs");
+    const index = planned.work.findIndex(isHoldMove);
+    expect(index).toBeGreaterThan(-1);
     const html = shellHtml(planned, workView(planned, index));
     expect(html).toContain(`<span class="reps">${planned.work[index]!.dose.reps}</span>`);
     expect(html).toContain('class="session-dose-unit">s<');

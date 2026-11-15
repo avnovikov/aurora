@@ -60,8 +60,9 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   };
 
   const paintClock = (): void => {
-    const node = root.querySelector<HTMLElement>("[data-session-clock]");
-    if (!node) {
+    const elapsed = root.querySelector("[data-session-clock] [data-session-elapsed]");
+    const left = root.querySelector("[data-session-clock] [data-session-left]");
+    if (!elapsed || !left) {
       return;
     }
     const clock = sessionClockSnapshot(
@@ -69,14 +70,8 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       state.plannedTotalSeconds,
       Date.now(),
     );
-    const elapsed = node.querySelector("[data-session-elapsed]");
-    const left = node.querySelector("[data-session-left]");
-    if (elapsed && left) {
-      elapsed.textContent = formatClock(clock.elapsedSeconds);
-      left.textContent = formatClock(clock.remainingSeconds);
-      return;
-    }
-    node.textContent = clock.label;
+    elapsed.textContent = formatClock(clock.elapsedSeconds);
+    left.textContent = formatClock(clock.remainingSeconds);
   };
 
   const paint = (): void => {

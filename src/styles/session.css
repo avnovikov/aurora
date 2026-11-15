@@ -27,7 +27,6 @@
   justify-content: space-between;
   align-items: baseline;
   gap: 8px;
-  margin: 0;
   font-variant-numeric: tabular-nums;
 }
 
@@ -136,14 +135,6 @@
   white-space: nowrap;
 }
 
-.session-dose-fig .reps {
-  margin: 0;
-  min-width: 0;
-  color: inherit;
-  font: inherit;
-  letter-spacing: inherit;
-}
-
 .session-dose-unit {
   margin-left: 4px;
   color: var(--muted);
@@ -156,7 +147,6 @@
 .session-dose.work-reps-row {
   flex-wrap: nowrap;
   align-items: center;
-  justify-content: flex-start;
   gap: 16px;
   margin: 24px 0 0;
 }
@@ -219,8 +209,7 @@
   padding: 32px 24px;
 }
 
-.session .session-read > p,
-.session .session-read .session-summary {
+.session .session-read > p {
   margin: 0;
 }
 
@@ -315,7 +304,6 @@
 }
 
 .session-read .tagline {
-  margin: 0;
   font-size: 16px;
   line-height: 24px;
 }
@@ -383,10 +371,6 @@
   font-weight: 600;
 }
 
-.session-bar .strap {
-  display: block;
-}
-
 .session-bar .strap summary {
   display: inline-flex;
   align-items: center;
@@ -445,8 +429,7 @@
 
 /* Light day / deload: the dose and the current station step back from the accent. */
 .session.light-day h2,
-.session.light-day .session-dose-fig,
-.session.light-day .session-rail li.active {
+.session.light-day .session-dose-fig {
   color: var(--muted);
 }
 
