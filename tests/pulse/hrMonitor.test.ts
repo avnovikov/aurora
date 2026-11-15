@@ -4,7 +4,9 @@ import {
   disconnectHeartRate,
   HEART_RATE_MEASUREMENT,
   HEART_RATE_SERVICE,
+  isHeartRateConnected,
   setBleHeartRateClientForTests,
+  unsubscribeHeartRate,
   type BleHeartRateClient,
 } from "../../src/pulse/hrMonitor";
 
@@ -24,6 +26,31 @@ function mockClient(overrides: Partial<BleHeartRateClient> = {}): BleHeartRateCl
     stopNotifications: vi.fn(async () => undefined),
     disconnect: vi.fn(async () => undefined),
     ...overrides,
+  };
+}
+
+/** Client that keeps the notify callback so tests can emit later BPM. */
+function mockClientDeferredNotify(): {
+  client: BleHeartRateClient;
+  emit: (bpm: number) => void;
+  dropLink: () => void;
+} {
+  let notify: ((value: DataView) => void) | null = null;
+  let onDisconnect: ((id: string) => void) | undefined;
+  const client = mockClient({
+    startNotifications: vi.fn(async (_id, _s, _c, callback) => {
+      notify = callback;
+    }),
+    connect: vi.fn(async (_id, disconnect) => {
+      onDisconnect = disconnect;
+    }),
+  });
+  return {
+    client,
+    emit: (bpm: number) => {
+      notify?.(new DataView(Uint8Array.from([0x00, bpm]).buffer));
+    },
+    dropLink: () => onDisconnect?.("strap-1"),
   };
 }
 
@@ -60,9 +87,71 @@ describe("connectHeartRate", () => {
     const client = mockClient();
     setBleHeartRateClientForTests(client);
     await connectHeartRate(vi.fn());
+    expect(isHeartRateConnected()).toBe(true);
     const second = await connectHeartRate(vi.fn());
     expect(second.ok).toBe(true);
     expect(second.message).toMatch(/already connected/i);
+    expect(client.requestDevice).toHaveBeenCalledTimes(1);
+  });
+
+  it("forwards later BPM to a second subscriber without re-pairing", async () => {
+    const { client, emit } = mockClientDeferredNotify();
+    setBleHeartRateClientForTests(client);
+    const first = vi.fn();
+    const second = vi.fn();
+    await connectHeartRate(first);
+    await connectHeartRate(second);
+    emit(88);
+    expect(first).toHaveBeenCalledWith(88);
+    expect(second).toHaveBeenCalledWith(88);
+    expect(client.requestDevice).toHaveBeenCalledTimes(1);
+  });
+
+  it("notifies every disconnect listener when the link drops", async () => {
+    const { client, dropLink } = mockClientDeferredNotify();
+    setBleHeartRateClientForTests(client);
+    const firstGone = vi.fn();
+    const secondGone = vi.fn();
+    await connectHeartRate(vi.fn(), firstGone);
+    await connectHeartRate(vi.fn(), secondGone);
+    dropLink();
+    expect(firstGone).toHaveBeenCalledTimes(1);
+    expect(secondGone).toHaveBeenCalledTimes(1);
+    expect(isHeartRateConnected()).toBe(false);
+  });
+
+  it("stops delivering BPM after unsubscribe", async () => {
+    const { client, emit } = mockClientDeferredNotify();
+    setBleHeartRateClientForTests(client);
+    const onBpm = vi.fn();
+    const onGone = vi.fn();
+    await connectHeartRate(onBpm, onGone);
+    unsubscribeHeartRate(onBpm, onGone);
+    emit(90);
+    expect(onBpm).not.toHaveBeenCalled();
+  });
+
+  it("shares one in-flight connect so a second caller does not re-pair", async () => {
+    let finishRequest!: (device: { deviceId: string }) => void;
+    const client = mockClient({
+      requestDevice: vi.fn(
+        () =>
+          new Promise<{ deviceId: string }>((resolve) => {
+            finishRequest = resolve;
+          }),
+      ),
+      startNotifications: vi.fn(async () => undefined),
+    });
+    setBleHeartRateClientForTests(client);
+    const first = connectHeartRate(vi.fn());
+    await vi.waitFor(() => {
+      expect(client.requestDevice).toHaveBeenCalledTimes(1);
+    });
+    const second = connectHeartRate(vi.fn());
+    finishRequest({ deviceId: "strap-1" });
+    const [a, b] = await Promise.all([first, second]);
+    expect(a.ok).toBe(true);
+    expect(b.ok).toBe(true);
     expect(client.requestDevice).toHaveBeenCalledTimes(1);
   });
 

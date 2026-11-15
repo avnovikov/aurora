@@ -14,6 +14,7 @@ import {
 } from "./sessionChalkStrip";
 import { cooldownSteps, currentWork, isGetReadyRest } from "./sessionState";
 import type { ViewState } from "./sessionTypes";
+import { doseNoteHtml } from "./sessionDoseNote";
 import { weightControlsHtml } from "./sessionWeightControls";
 
 export function shellHtml(planned: PlannedSession, state: ViewState): string {
@@ -228,6 +229,7 @@ function workHtml(item: PlannedWorkItem, state: ViewState): string {
       <p class="eyebrow">Set ${state.setIndex} of ${item.dose.sets}</p>
       <h2>${escapeHtml(item.exerciseName)}</h2>
       ${repsStepperHtml(reps, "reps", "work-reps-row")}
+      ${doseNoteHtml(item, state.setIndex, reps)}
       ${weightControlsHtml(loadKg)}
       ${doodleHtml(item.doodlePath, item.exerciseName)}
       ${summaryHtml(item.summary)}
