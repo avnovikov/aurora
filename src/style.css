@@ -194,6 +194,21 @@ button:disabled {
 }
 
 /* Evidence citation on a warm-up / cool-down station. */
+.side-switch {
+  margin: 0.5rem 0;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--brass);
+  border-radius: 0.6rem;
+  color: var(--brass);
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.side-switch[hidden] {
+  display: none;
+}
+
 .station-source {
   margin: 0.25rem 0 0.75rem;
   color: var(--muted);

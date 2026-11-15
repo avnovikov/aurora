@@ -151,6 +151,9 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     warmupHandle = startStationHold(root, step, state, kind, {
       onPaint: paint,
       onAdvance: isWarmup ? advanceWarmup : advanceCooldownStep,
+      onSideSwitch: () => {
+        void speakCoachLine("change_side");
+      },
       onRestGap: (_gap, resume) => {
         startRest(resume, isWarmup);
       },

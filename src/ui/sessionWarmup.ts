@@ -1,4 +1,4 @@
-import type { WarmupStep } from "../rules/warmupPlan";
+import { SIDE_SWITCH_SECONDS, type WarmupStep } from "../rules/warmupPlan";
 import type { ViewState } from "./sessionTypes";
 
 export interface WarmupTimerHandle {
@@ -9,11 +9,31 @@ export interface WarmupRunnerCallbacks {
   onRestGap: (gapSeconds: number, resumeStations: () => void) => void;
   onAdvance: () => void;
   onPaint: () => void;
+  /** Halfway through a per-side station: cue "change side" (voice). */
+  onSideSwitch?: () => void;
+}
+
+/** Hold second (counting down) at which a per-side station changes side. */
+export function sideSwitchAt(step: WarmupStep): number | null {
+  return step.perSide === true ? Math.floor(step.holdSeconds / 2) : null;
+}
+
+function showSideSwitch(root: HTMLElement, secondsLeft: number | null): void {
+  const banner = root.querySelector<HTMLElement>("[data-side-switch]");
+  if (!banner) {
+    return;
+  }
+  banner.hidden = secondsLeft === null;
+  const count = banner.querySelector("[data-side-switch-left]");
+  if (count && secondsLeft !== null) {
+    count.textContent = String(secondsLeft);
+  }
 }
 
 /**
  * Run one timed station (warm-up or cool-down): count the hold down, then
  * take the gap as a short rest and come back to `stationPhase` to advance.
+ * A per-side station stops the clock halfway for a short "Change side" pause.
  */
 export function startStationHold(
   root: HTMLElement,
@@ -27,26 +47,51 @@ export function startStationHold(
     return null;
   }
   let left = step.holdSeconds;
-  const timerId = window.setInterval(() => {
+  const switchAt = sideSwitchAt(step);
+  let switchLeft = 0;
+
+  const finishHold = (): void => {
+    const gap = step.gapSecondsAfter;
+    if (gap > 0) {
+      state.phase = "rest";
+      state.restLeft = gap;
+      callbacks.onPaint();
+      callbacks.onRestGap(gap, () => {
+        state.phase = stationPhase;
+        callbacks.onAdvance();
+      });
+    } else {
+      callbacks.onAdvance();
+    }
+  };
+
+  const tickSwitch = (): void => {
+    switchLeft -= 1;
+    showSideSwitch(root, switchLeft > 0 ? switchLeft : null);
+  };
+
+  const tickHold = (): boolean => {
     left -= 1;
     const countdown = root.querySelector("[data-warmup-left]");
     if (countdown) {
       countdown.textContent = String(Math.max(left, 0));
     }
-    if (left <= 0) {
+    if (left === switchAt && left > 0) {
+      switchLeft = SIDE_SWITCH_SECONDS;
+      showSideSwitch(root, switchLeft);
+      callbacks.onSideSwitch?.();
+    }
+    return left <= 0;
+  };
+
+  const timerId = window.setInterval(() => {
+    if (switchLeft > 0) {
+      tickSwitch();
+      return;
+    }
+    if (tickHold()) {
       window.clearInterval(timerId);
-      const gap = step.gapSecondsAfter;
-      if (gap > 0) {
-        state.phase = "rest";
-        state.restLeft = gap;
-        callbacks.onPaint();
-        callbacks.onRestGap(gap, () => {
-          state.phase = stationPhase;
-          callbacks.onAdvance();
-        });
-      } else {
-        callbacks.onAdvance();
-      }
+      finishHold();
     }
   }, 1000);
 

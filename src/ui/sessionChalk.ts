@@ -5,7 +5,7 @@ import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
 import { sessionClockSnapshot } from "../session/sessionClock";
 import { prescribedForNextSet } from "../session/setLog";
 import { cooldownOfferLabel } from "../rules/sessionDuration";
-import { warmupViewSeconds, type WarmupStep } from "../rules/warmupPlan";
+import { SIDE_SWITCH_SECONDS, warmupViewSeconds, type WarmupStep } from "../rules/warmupPlan";
 import {
   chalkNowLabel,
   chalkRailNotches,
@@ -153,6 +153,14 @@ function cooldownHtml(planned: PlannedSession, state: ViewState): string {
 }
 
 /** One timed station (warm-up or cool-down) with its evidence citation in small text. */
+/** Hidden banner the station timer shows during the halfway change-side pause. */
+function sideSwitchHtml(step: WarmupStep): string {
+  if (step.perSide !== true) {
+    return "";
+  }
+  return `<p class="side-switch" data-side-switch hidden>Change side · <span data-side-switch-left>${SIDE_SWITCH_SECONDS}</span></p>`;
+}
+
 function stationHtml(eyebrow: string, step: WarmupStep): string {
   const source = step.source
     ? `<p class="station-source">${escapeHtml(step.source)}</p>`
@@ -161,6 +169,7 @@ function stationHtml(eyebrow: string, step: WarmupStep): string {
     <p class="eyebrow">${eyebrow}</p>
     <h2>${escapeHtml(step.name)}</h2>
     <p class="tagline">${escapeHtml(step.region)} · <span data-warmup-left>${step.holdSeconds}</span>s</p>
+    ${sideSwitchHtml(step)}
     ${doodleHtml(step.doodlePath, step.name)}
     ${summaryHtml(EXERCISE_GRAPH[step.stationId]?.description)}
     ${attentionHtml(step.cues)}
