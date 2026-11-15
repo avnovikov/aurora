@@ -1,6 +1,11 @@
 import { SEED_GRAPH, templateToStarter } from "../data/seed";
 import type { SessionEvaluation } from "../domain/program";
-import { loadPlanQueue, peekNextTemplate, peekUpcoming } from "../plan/queue";
+import {
+  loadPlanQueue,
+  peekNextTemplate,
+  peekUpcomingWithOverride,
+} from "../plan/queue";
+import { loadScheduleOverride } from "../plan/scheduleOverride";
 import { planSession } from "../rules/planSession";
 import {
   estimateSessionDuration,
@@ -21,6 +26,7 @@ import { renderCheckIn } from "./checkIn";
 import { renderEvaluationView } from "./evaluationView";
 import { forecastStripHtml } from "./forecastStrip";
 import { renderLibraryView } from "./libraryView";
+import { overrideControlsHtml, wireOverrideControls } from "./overrideControls";
 import { advancePlanAfterSession, renderPlanView } from "./planView";
 import { renderProgressView } from "./progressView";
 import { renderSessionView } from "./sessionView";
@@ -72,8 +78,9 @@ function showTab(root: HTMLElement, tab: AppTab): void {
 
 function showTodayHome(root: HTMLElement): void {
   const queue = loadPlanQueue();
-  const upcoming = peekUpcoming(queue, 3);
-  const next = peekNextTemplate(queue);
+  const override = loadScheduleOverride();
+  const upcoming = peekUpcomingWithOverride(queue, 3, override);
+  const next = peekNextTemplate(queue, override);
   const forecast = forecastStripHtml(upcoming);
   const duration = formatDurationLabel(estimateSessionDuration(next));
 
@@ -84,7 +91,7 @@ function showTodayHome(root: HTMLElement): void {
       <main class="shell">
         <p class="eyebrow">Aurora · Rassvet</p>
         <h1>Today</h1>
-        <p class="tagline">Next in queue: <strong>${next.name}</strong> · ${duration}${
+        <p class="tagline">${override ? "Today instead" : "Next in queue"}: <strong>${next.name}</strong> · ${duration}${
           next.targetExerciseIds.length
             ? ` → ${next.targetExerciseIds
                 .map((id) => SEED_GRAPH[id]?.name ?? id)
@@ -93,18 +100,23 @@ function showTodayHome(root: HTMLElement): void {
         }</p>
         ${forecast}
         <div data-checkin></div>
+        ${overrideControlsHtml(override)}
       </main>
     </div>`,
     (tab) => showTab(root, tab),
   );
 
+  wireOverrideControls(root, () => showTodayHome(root));
   renderCheckIn(root.querySelector("[data-checkin]")!, {
     onStart: (readiness) => {
       void (async () => {
         await unlockCoachAudio();
         await speakCoachLine("session_start");
       })();
-      const template = peekNextTemplate(loadPlanQueue());
+      const template = peekNextTemplate(
+        loadPlanQueue(),
+        loadScheduleOverride(),
+      );
       const planned = planSession(
         readiness,
         templateToStarter(template),
