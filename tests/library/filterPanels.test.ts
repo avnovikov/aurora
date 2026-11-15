@@ -21,9 +21,9 @@ describe("filter panels", () => {
 
   it("has three panels in order: aux, area & muscle, level", () => {
     expect(panelIds(html)).toEqual(["show", "body", "level"]);
-    expect(html).toMatch(/<summary>Show<\/summary>/);
-    expect(html).toMatch(/<summary>Area &amp; muscle<\/summary>/);
-    expect(html).toMatch(/<summary>Level<\/summary>/);
+    expect(html).toContain('<span class="t-label">Show</span>');
+    expect(html).toContain('<span class="t-label">Area &amp; muscle</span>');
+    expect(html).toContain('<span class="t-label">Level</span>');
   });
 
   it("no longer shows the region chips", () => {
@@ -50,12 +50,12 @@ describe("filter panels", () => {
   });
 
   it("gives every panel the same markup shape", () => {
-    expect(html.match(/<details class="lib-filters" data-panel="\w+"( open)?><summary>/g)).toHaveLength(3);
+    expect(html.match(/<details class="lib-filters" data-panel="\w+" name="lib-filter"( open)?><summary>/g)).toHaveLength(3);
     expect(html.match(/<\/details>/g)).toHaveLength(3);
   });
 
   it("collapses all three by default, even with the stretch default selected", () => {
-    expect(html).not.toMatch(/data-panel="\w+" open/);
+    expect(html).not.toMatch(/data-panel="\w+"[^>]* open/);
     expect(html).toMatch(/data-stretch="hide" class="selected"/);
   });
 
@@ -76,33 +76,31 @@ describe("panel summaries and open state", () => {
     openPanels: [] as never[],
   };
 
-  it("names what is active and opens that panel", () => {
+  it("names what is active on the trigger, without opening the sheet over the list", () => {
     const html = filterPanelsHtml(
       { ...state, forJoints: true, onlyGear: true, stretch: "only", level: "beginner" },
       SHOW_ALL,
     );
-    expect(html).toContain("Show · my joints, my gear, only stretches");
-    expect(html).toContain("Level · Beginner");
-    expect(html).toMatch(/data-panel="show" open/);
-    expect(html).toMatch(/data-panel="level" open/);
-    expect(html).not.toMatch(/data-panel="body" open/);
+    expect(html).toContain('<span class="t-val">My joints · My gear · Only stretches</span>');
+    expect(html).toContain('<span class="t-val">Beginner</span>');
+    expect(html).not.toMatch(/data-panel="\w+"[^>]* open/);
   });
 
-  it("treats every stretch choice but the default as active", () => {
-    expect(filterPanelsHtml({ ...state, stretch: "all" }, SHOW_NONE)).toContain("Show · include stretches");
-    expect(filterPanelsHtml({ ...state, stretch: "hide" }, SHOW_NONE)).toContain("<summary>Show</summary>");
+  it("always names the stretch choice, the default included", () => {
+    expect(filterPanelsHtml({ ...state, stretch: "all" }, SHOW_NONE)).toContain('<span class="t-val">Include stretches</span>');
+    expect(filterPanelsHtml({ ...state, stretch: "hide" }, SHOW_NONE)).toContain('<span class="t-val">Hide stretches</span>');
   });
 
   it("keeps a panel the user opened open, even when nothing is active", () => {
     const html = filterPanelsHtml({ ...state, openPanels: ["level"] as never[] }, SHOW_NONE);
-    expect(html).toMatch(/data-panel="level" open/);
-    expect(html).toContain("<summary>Level</summary>");
-    expect(html).not.toMatch(/data-panel="show" open/);
+    expect(html).toMatch(/data-panel="level"[^>]* open/);
+    expect(html).toContain('<span class="t-val">All levels</span>');
+    expect(html).not.toMatch(/data-panel="show"[^>]* open/);
   });
 });
 
 describe("hidden-stretch hint", () => {
-  it("sits under the search box, outside the collapsed panels", () => {
+  it("sits in the dock under the search box, outside the collapsed panels", () => {
     const html = listHtml([], new Set(), { ...base, hiddenStretches: 2 });
     expect(html).toContain("2 stretches match — show");
     expect(html.indexOf("match — show")).toBeLessThan(html.indexOf('data-panel="show"'));
@@ -148,6 +146,6 @@ describe("withPanelState", () => {
       },
       SHOW_NONE,
     );
-    expect(html).toMatch(/data-panel="body" open/);
+    expect(html).toMatch(/data-panel="body"[^>]* open/);
   });
 });

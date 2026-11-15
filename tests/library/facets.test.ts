@@ -113,14 +113,13 @@ describe("Library list chips", () => {
     const html = listHtml([], new Set(), base);
     expect(html).toContain('data-area="upper"');
     expect(html).toContain('data-muscle="glutes_hips"');
-    expect(html).not.toMatch(/data-panel="body" open/);
+    expect(html).not.toMatch(/data-panel="body"[^>]* open/);
   });
 
-  it("opens the panel and marks the choice while a facet is active", () => {
+  it("names the choice on the trigger and marks it while a facet is active", () => {
     const html = listHtml([], new Set(), { ...base, area: "upper", muscle: "chest" });
-    expect(html).toMatch(/data-panel="body" open/);
     expect(html).toMatch(/data-area="upper" class="selected"/);
     expect(html).toMatch(/data-muscle="chest" class="selected"/);
-    expect(html).toContain("Area &amp; muscle · Upper body, Chest");
+    expect(html).toContain('<span class="t-val">Upper body · Chest</span>');
   });
 });

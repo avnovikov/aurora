@@ -143,7 +143,7 @@ describe("Library exclusions", () => {
     expect(listHtml([], new Set(), base)).not.toContain("data-excluded-only");
     expect(listHtml([], new Set(), base, { excluded: new Set(["x"]) })).toContain("data-excluded-only");
     const on = filterPanelsHtml({ ...DEFAULT_FILTERS, excludedOnly: true, openPanels: [] }, { hasJointHistory: false, hasExcluded: false });
-    expect(on).toContain("Show · excluded");
+    expect(on).toContain('<span class="t-val">Excluded by me · Hide stretches</span>');
     expect(on).toMatch(/data-excluded-only class="selected" data-kind="toggle" aria-pressed="true"/);
     expect(hasActiveFilters({ ...DEFAULT_FILTERS, excludedOnly: true })).toBe(true);
   });
