@@ -5,10 +5,7 @@ import {
   type SeedSlot,
   type StarterProgram,
 } from "../data/seed";
-import {
-  requireWarmupStation,
-  type WarmupStation,
-} from "../data/warmupStations";
+import { stationsFor, type WarmupStation } from "../data/warmupStations";
 import type {
   EquipmentId,
   HistoryEntry,
@@ -29,7 +26,7 @@ import {
   pickSlotExerciseForVariety,
 } from "./consecutiveVariety";
 import { resolveSlot } from "./resolveSlot";
-import { buildWarmupView, type WarmupStep } from "./warmupPlan";
+import { buildCooldownView, buildWarmupView, type WarmupStep } from "./warmupPlan";
 
 export interface PlannedWorkItem {
   slotId: string;
@@ -59,6 +56,11 @@ export interface PlannedSession {
    */
   warmup: WarmupStep[];
   work: PlannedWorkItem[];
+  /**
+   * Optional cool-down stretches offered after the last work item (may be empty).
+   * Older persisted sessions may lack it.
+   */
+  cooldown?: WarmupStep[];
   lightDay: boolean;
   /** True when a manual deload week shaped this session. */
   deload: boolean;
@@ -85,7 +87,11 @@ interface SlotContext {
 }
 
 function warmupStationsFor(program: StarterProgram): WarmupStation[] {
-  return program.warmupStationIds.map((id) => requireWarmupStation(id));
+  return stationsFor(program.warmupStationIds, program.warmupHoldSeconds);
+}
+
+function cooldownStationsFor(program: StarterProgram): WarmupStation[] {
+  return stationsFor(program.cooldownStationIds ?? []);
 }
 
 /** What joint and gear care did to a resolved move: the final move, why, and notes. */
@@ -217,12 +223,14 @@ export function planSession(
     previous?.exerciseIds ?? null,
   );
   const warmup = buildWarmupView(warmupStationsFor(program));
+  const cooldown = buildCooldownView(cooldownStationsFor(program));
   return {
     programId: program.id,
     sessionLabel: program.sessionLabel,
     readiness,
     warmup,
     work,
+    cooldown,
     lightDay: work.some((item) => item.ruleIds.includes("light_day")),
     deload: deloadActive,
   };

@@ -10,10 +10,18 @@ import {
 import { shellHtml } from "./sessionChalk";
 import { wireSessionControls, type SessionControlHandlers } from "./sessionControls";
 import { startRestTimer, type RestTimerHandle } from "./sessionRest";
-import { initialState, persistPhase, syncWorkState } from "./sessionState";
+import {
+  advanceCooldown,
+  cooldownSteps,
+  enterDone,
+  initialState,
+  persistPhase,
+  startCooldown,
+  syncWorkState,
+} from "./sessionState";
 import { pulseConnectedAt, pulseDisconnected } from "./pulseState";
 import type { SessionViewOptions } from "./sessionTypes";
-import { startWarmupHold, type WarmupTimerHandle } from "./sessionWarmup";
+import { startStationHold, type WarmupTimerHandle } from "./sessionWarmup";
 
 export type { SessionViewOptions } from "./sessionTypes";
 
@@ -68,17 +76,19 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     persist();
   };
 
+  let finished = false;
   const persist = (): void => {
-    if (state.phase === "done") {
+    if (finished) {
       return;
     }
     saveSession({
       readiness: options.planned.readiness,
       planned: options.planned,
       log: state.log,
-      phase: persistPhase(state),
+      phase: persistPhase(options.planned, state),
       warmupIndex: state.warmupIndex,
       workIndex: state.workIndex,
+      cooldownIndex: state.cooldownIndex,
       setIndex: state.setIndex,
       nextRepsOverride: state.workState?.nextRepsOverride,
       startedAt: new Date(state.startedAtMs).toISOString(),
@@ -86,9 +96,9 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     });
   };
 
-  let finished = false;
+  /** End the session (after the work, a finished cool-down, or a skip) and hand off. */
   const finishAll = (): void => {
-    if (finished || state.phase === "done") {
+    if (finished) {
       return;
     }
     finished = true;
@@ -120,11 +130,33 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
 
   const runWarmupHold = (): void => {
     clearWorkTimers();
-    warmupHandle = startWarmupHold(root, options.planned, state, {
+    const step = options.planned.warmup[state.warmupIndex];
+    warmupHandle = startStationHold(root, step, state, "warmup", {
       onPaint: paint,
       onAdvance: advanceWarmup,
       onRestGap: (_gap, resumeWarmup) => {
         startRest(resumeWarmup, true);
+      },
+    });
+  };
+
+  const advanceCooldownStep = (): void => {
+    if (advanceCooldown(options.planned, state) === "finish") {
+      finishAll();
+      return;
+    }
+    paint();
+    runCooldownHold();
+  };
+
+  const runCooldownHold = (): void => {
+    clearWorkTimers();
+    const step = cooldownSteps(options.planned)[state.cooldownIndex];
+    warmupHandle = startStationHold(root, step, state, "cooldown", {
+      onPaint: paint,
+      onAdvance: advanceCooldownStep,
+      onRestGap: (_gap, resumeCooldown) => {
+        startRest(resumeCooldown, false);
       },
     });
   };
@@ -139,7 +171,11 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     state.setIndex = 1;
     state.workState = null;
     if (state.workIndex >= options.planned.work.length) {
-      finishAll();
+      if (enterDone(options.planned, state) === "finish") {
+        finishAll();
+        return;
+      }
+      paint();
       return;
     }
     state.workState = syncWorkState(options.planned, state);
@@ -152,6 +188,15 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     onStartRest: (withVoice, onDone) => startRest(onDone, withVoice),
     onFinishExercise: finishExercise,
     onFinishAll: finishAll,
+    onStartCooldown: () => {
+      startCooldown(options.planned, state);
+      paint();
+      runCooldownHold();
+    },
+    onSkipCooldown: () => {
+      clearWorkTimers();
+      finishAll();
+    },
     onPulseLostSim: maybePulseShout,
     onPulseBpm: (bpm) => {
       state.bpm = bpm;
@@ -184,5 +229,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   paint();
   if (state.phase === "warmup") {
     runWarmupHold();
+  } else if (state.phase === "cooldown") {
+    runCooldownHold();
   }
 }

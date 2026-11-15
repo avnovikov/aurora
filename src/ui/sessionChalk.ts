@@ -3,12 +3,15 @@ import { isNativePulseAvailable } from "../pulse/hrMonitor";
 import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
 import { sessionClockSnapshot } from "../session/sessionClock";
 import { prescribedForNextSet } from "../session/setLog";
+import { cooldownOfferLabel } from "../rules/sessionDuration";
+import { warmupViewSeconds, type WarmupStep } from "../rules/warmupPlan";
 import {
   chalkNowLabel,
   chalkRailNotches,
+  isCooldownSurface,
   isWarmupSurface,
 } from "./sessionChalkStrip";
-import { currentWork } from "./sessionState";
+import { cooldownSteps, currentWork } from "./sessionState";
 import type { ViewState } from "./sessionTypes";
 
 export function shellHtml(planned: PlannedSession, state: ViewState): string {
@@ -121,6 +124,12 @@ function bodyHtml(planned: PlannedSession, state: ViewState): string {
   if (isWarmupSurface(planned, state)) {
     return warmupHtml(planned, state);
   }
+  if (isCooldownSurface(planned, state)) {
+    return cooldownHtml(planned, state);
+  }
+  if (state.phase === "done") {
+    return doneHtml(planned, state);
+  }
   if (state.phase === "rest" && state.workState) {
     return restHtml(planned, state);
   }
@@ -136,12 +145,62 @@ function warmupHtml(planned: PlannedSession, state: ViewState): string {
   if (!step) {
     return `<p class="tagline">Warmup complete</p>`;
   }
+  return stationHtml("Warmup", step);
+}
+
+function cooldownHtml(planned: PlannedSession, state: ViewState): string {
+  const step = cooldownSteps(planned)[state.cooldownIndex];
+  if (!step) {
+    return `<p class="tagline">Cool-down complete</p>`;
+  }
   return `
-    <p class="eyebrow">Warmup</p>
+    ${stationHtml("Cool-down", step)}
+    <div class="work-actions-secondary">
+      <button type="button" class="btn-quiet" data-cooldown-skip>End cool-down</button>
+    </div>
+  `;
+}
+
+/** One timed station (warm-up or cool-down) with its evidence citation in small text. */
+function stationHtml(eyebrow: string, step: WarmupStep): string {
+  const source = step.source
+    ? `<p class="station-source">${escapeHtml(step.source)}</p>`
+    : "";
+  return `
+    <p class="eyebrow">${eyebrow}</p>
     <h2>${escapeHtml(step.name)}</h2>
     <p class="tagline">${escapeHtml(step.region)} · <span data-warmup-left>${step.holdSeconds}</span>s</p>
     ${doodleHtml(step.doodlePath, step.name)}
     ${cuesBlockHtml(step.cues)}
+    ${source}
+  `;
+}
+
+/** Done screen: the work is over; offer the optional cool-down (start or skip). */
+function doneHtml(planned: PlannedSession, state: ViewState): string {
+  const steps = cooldownSteps(planned);
+  const sets = `${state.log.entries.length} sets logged.`;
+  if (steps.length === 0) {
+    return `
+      <p class="eyebrow">Session done</p>
+      <p class="tagline">${sets}</p>
+      <button type="button" class="cta" data-cooldown-skip>Finish</button>
+    `;
+  }
+  const names = steps.map((step) => escapeHtml(step.name)).join(" · ");
+  return `
+    <div class="cooldown-offer" data-cooldown-offer>
+      <p class="eyebrow">Session done · ${sets}</p>
+      <h2>${escapeHtml(cooldownOfferLabel(warmupViewSeconds(steps)))}</h2>
+      <p class="tagline">Optional stretches for range: ${names}.</p>
+      <p class="station-source">Builds range, not a soreness or injury fix (Garber 2011; Herbert 2011; Lauersen 2014).</p>
+      <div class="work-actions">
+        <button type="button" class="cta" data-cooldown-start>Start</button>
+        <div class="work-actions-secondary">
+          <button type="button" class="btn-quiet" data-cooldown-skip>Skip</button>
+        </div>
+      </div>
+    </div>
   `;
 }
 

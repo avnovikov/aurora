@@ -26,6 +26,7 @@ import { forecastStripHtml } from "./forecastStrip";
 import {
   templateDurationLabel,
   templateTargetsLabel,
+  templateWarmupLabel,
 } from "./formatTemplate";
 import { renderLibraryView } from "./libraryView";
 import { overrideControlsHtml, wireOverrideControls } from "./overrideControls";
@@ -104,6 +105,7 @@ function showTodayHome(root: HTMLElement): void {
         <p class="tagline">${todayLabel}: <strong>${next.name}</strong> · ${duration}${
           targets ? ` → ${targets}` : ""
         }</p>
+        <p class="hint" data-warmup-preview>${templateWarmupLabel(next)}</p>
         ${deloadNoteHtml(loadDeloadActive())}
         ${forecast}
         <div data-checkin></div>

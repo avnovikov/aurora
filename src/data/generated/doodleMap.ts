@@ -23,5 +23,21 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "hf_91": "/doodles/doodle-deficit-step-down.svg",
   "hf_72": "/doodles/doodle-skater-squat.svg",
   "wger_1948": "/doodles/doodle-one-leg-box-squat.svg",
-  "hf_75": "/doodles/doodle-archer-squat.svg"
+  "hf_75": "/doodles/doodle-archer-squat.svg",
+  "hf_122": "/doodles/doodle-lying-leg-raise.svg",
+  "hf_119": "/doodles/doodle-reverse-crunch.svg",
+  "ntc_floor_windshield_wiper": "/doodles/doodle-floor-windshield-wiper.svg",
+  "hf_110": "/doodles/doodle-hanging-leg-raise.svg",
+  "hf_111": "/doodles/doodle-windshield-wiper.svg",
+  "wger_1529": "/doodles/doodle-toes-to-bar.svg",
+  "wall_handstand": "/doodles/doodle-wall-handstand.svg",
+  "pulse_raiser_march": "/doodles/doodle-march-in-place.svg",
+  "hip_circles": "/doodles/doodle-hip-circles.svg",
+  "ankle_rocks": "/doodles/doodle-ankle-rocks.svg",
+  "glute_bridge": "/doodles/doodle-glute-bridge.svg",
+  "wrist_load": "/doodles/doodle-wrist-load.svg",
+  "scap_pushup": "/doodles/doodle-scap-pushup.svg"
 };
+
+/** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
+export const REPLACED_DOODLE_IDS: readonly string[] = ["wall_handstand","pulse_raiser_march","hip_circles","ankle_rocks","glute_bridge","wrist_load","scap_pushup"];

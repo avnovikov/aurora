@@ -35,6 +35,7 @@ import {
 import {
   exerciseName,
   templateDurationLabel,
+  templateWarmupLabel,
   templateTargetsLabel,
 } from "./formatTemplate";
 
@@ -107,7 +108,7 @@ function queueItemHtml(id: string, index: number, total: number): string {
   const template = resolveTemplate(id);
   const isNext = index === 0;
   const targetNames = templateTargetsLabel(template.targetExerciseIds);
-  const duration = templateDurationLabel(template);
+  const duration = `${templateDurationLabel(template)} · ${templateWarmupLabel(template)}`;
   const replaceOptions = SESSION_TEMPLATES.map(
     (item) =>
       `<option value="${item.id}" ${item.id === id ? "selected" : ""}>${item.name}</option>`,

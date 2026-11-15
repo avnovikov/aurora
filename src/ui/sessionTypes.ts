@@ -9,12 +9,17 @@ export interface SessionViewOptions {
   onDone: (setCount: number) => void;
 }
 
-export type Phase = "warmup" | "work" | "rest" | "done";
+/**
+ * warmup → work ↔ rest → done; from done the optional cool-down can run
+ * (done → cooldown → done). `rest` also covers the gaps between stations.
+ */
+export type Phase = "warmup" | "work" | "rest" | "cooldown" | "done";
 
 export interface ViewState {
   phase: Phase;
   warmupIndex: number;
   workIndex: number;
+  cooldownIndex: number;
   setIndex: number;
   log: WorkoutLog;
   workState: ActiveWorkState | null;

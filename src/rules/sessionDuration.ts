@@ -1,5 +1,5 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
-import { requireWarmupStation } from "../data/warmupStations";
+import { stationsFor } from "../data/warmupStations";
 import { resolveExerciseTiming } from "../domain/timing";
 import type {
   SessionDurationTarget,
@@ -9,6 +9,7 @@ import type {
 import type { Dose, Exercise } from "../domain/types";
 import type { PlannedSession } from "./planSession";
 import {
+  buildCooldownView,
   buildWarmupView,
   warmupViewSeconds,
   WARMUP_GAPS,
@@ -22,12 +23,22 @@ export const DEFAULT_SESSION_TARGET: SessionDurationTarget = {
   maxMinutes: 45,
 };
 
+/**
+ * Hard ceiling for warm-up + work (minutes). The template band is a soft
+ * target shown in the label; only this cap is enforced. The optional
+ * cool-down is not counted.
+ */
+export const SESSION_HARD_CAP_MINUTES = 60;
+
 export interface SessionDurationEstimate {
   warmupSeconds: number;
   workSeconds: number;
   totalSeconds: number;
   totalMinutesRounded: number;
+  /** Soft: inside the template's displayed band. */
   withinTarget: boolean;
+  /** Hard: at or under `SESSION_HARD_CAP_MINUTES`. */
+  withinHardCap: boolean;
   target: SessionDurationTarget;
 }
 
@@ -75,6 +86,7 @@ export function estimateSessionDuration(
     totalSeconds,
     totalMinutesRounded,
     withinTarget,
+    withinHardCap: totalMinutesRounded <= SESSION_HARD_CAP_MINUTES,
     target,
   };
 }
@@ -114,12 +126,41 @@ export function warmupMinutesLabel(warmupSeconds: number): string {
   return `Warmup · ${minutes} min`;
 }
 
-function estimateTemplateWarmupSeconds(template: SessionTemplate): number {
+export function estimateTemplateWarmupSeconds(template: SessionTemplate): number {
   if (template.warmupStationIds.length === 0) {
     return DEFAULT_WARMUP_SECONDS;
   }
-  const stations = template.warmupStationIds.map((id) => requireWarmupStation(id));
+  const stations = stationsFor(template.warmupStationIds, template.warmupHoldSeconds);
   return warmupViewSeconds(buildWarmupView(stations));
+}
+
+/** Seconds of the template's optional cool-down (0 when it has none). */
+export function estimateTemplateCooldownSeconds(template: SessionTemplate): number {
+  return warmupViewSeconds(buildCooldownView(stationsFor(template.cooldownStationIds)));
+}
+
+/** Whole minutes for a station sequence label (at least 1 when non-empty). */
+export function stationMinutes(seconds: number): number {
+  assertWarmupSeconds(seconds);
+  return seconds === 0 ? 0 : Math.max(1, Math.round(seconds / 60));
+}
+
+/** Done-screen offer copy, e.g. "Cool-down · ~4 min". */
+export function cooldownOfferLabel(cooldownSeconds: number): string {
+  return `Cool-down · ~${stationMinutes(cooldownSeconds)} min`;
+}
+
+/**
+ * Preview copy for Today / Plan: warm-up length (counted in the session
+ * estimate) plus the optional cool-down shown separately.
+ */
+export function warmupCooldownLabel(template: SessionTemplate): string {
+  const warmup = `Warm-up ${stationMinutes(estimateTemplateWarmupSeconds(template))} min`;
+  const cooldownSeconds = estimateTemplateCooldownSeconds(template);
+  if (cooldownSeconds === 0) {
+    return warmup;
+  }
+  return `${warmup} · +${stationMinutes(cooldownSeconds)} min cool-down`;
 }
 
 export { WARMUP_GAPS };
