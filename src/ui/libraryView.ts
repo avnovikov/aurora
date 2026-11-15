@@ -10,6 +10,7 @@ import { searchExercises } from "../library/search";
 import { collectTemplateTargetIds } from "../library/targets";
 import {
   declareSkillTier,
+  emptyMemory,
   loadMemories,
   saveMemories,
 } from "../session/history";
@@ -32,7 +33,7 @@ export function renderLibraryView(root: HTMLElement): void {
         paint();
         return;
       }
-      const memory = loadMemories()[selectedId] ?? {};
+      const memory = loadMemories()[selectedId] ?? emptyMemory(selectedId);
       mountLibraryDetail(
         root,
         exercise,
