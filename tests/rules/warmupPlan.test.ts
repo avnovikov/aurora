@@ -8,23 +8,37 @@ import {
 
 function station(
   partial: Pick<WarmupStation, "id" | "name"> &
-    Partial<Pick<WarmupStation, "regions" | "holdSeconds" | "cues">>,
+    Partial<Pick<WarmupStation, "regions" | "holdSeconds" | "cues" | "perSide">>,
 ): WarmupStation {
   return {
     regions: partial.regions ?? ["legs"],
     holdSeconds: partial.holdSeconds ?? 12,
     cues: partial.cues ?? ["Cue"],
+    perSide: partial.perSide ?? false,
     ...partial,
   };
 }
 
 describe("WARMUP_GAPS", () => {
-  it("exposes short default holds with 5s breaks between stations", () => {
+  it("exposes short default holds, 10 s breaks and a 5 s side switch", () => {
     expect(WARMUP_GAPS).toEqual({
-      sameArea: 5,
-      crossArea: 5,
+      sameArea: 10,
+      crossArea: 10,
       holdSeconds: 12,
+      sideSwitch: 5,
     });
+  });
+});
+
+describe("per-side stations", () => {
+  it("carries perSide into the view and counts the 5 s switch", () => {
+    const steps = buildWarmupView([
+      station({ id: "a", name: "A", holdSeconds: 30, perSide: true }),
+      station({ id: "b", name: "B", holdSeconds: 20 }),
+    ]);
+    expect(steps.map((step) => step.perSide)).toEqual([true, false]);
+    // 30 + 5 switch + 10 gap + 20
+    expect(warmupViewSeconds(steps)).toBe(65);
   });
 });
 

@@ -16,13 +16,17 @@ export interface WarmupStep {
   gapSecondsAfter: number;
   doodlePath?: string;
   cues: string[];
+  /** One side then the other: the hold pauses halfway to change side (older sessions lack it). */
+  perSide?: boolean;
 }
 
 /** Fallback when a station omits holdSeconds (10–15s band). */
 const DEFAULT_HOLD_SECONDS = 12;
 /** Fixed break between consecutive stations. */
-const SAME_AREA_GAP = 5;
-const CROSS_AREA_GAP = 5;
+const SAME_AREA_GAP = 10;
+const CROSS_AREA_GAP = 10;
+/** Pause at the halfway point of a per-side station to change side. */
+export const SIDE_SWITCH_SECONDS = 5;
 
 function displayRegion(station: WarmupStation): LoadRegion {
   return station.regions[0] ?? "general";
@@ -62,6 +66,7 @@ export function buildWarmupView(stations: WarmupStation[]): WarmupStep[] {
       gapSecondsAfter: 0,
       doodlePath: station.doodlePath,
       cues: [...station.cues],
+      perSide: station.perSide,
     };
   });
 
@@ -93,10 +98,15 @@ export function warmupTransitionSeconds(
   return steps.some((step) => step.phase === "potentiate") ? WARMUP_TRANSITION_REST_SECONDS : 0;
 }
 
+/** Extra pause a station takes to change side halfway (0 when not per side). */
+function sideSwitchSeconds(step: Pick<WarmupStep, "perSide">): number {
+  return step.perSide === true ? SIDE_SWITCH_SECONDS : 0;
+}
+
 /** Total wall-clock seconds for a materialised warmup view. */
 export function warmupViewSeconds(steps: readonly WarmupStep[]): number {
   return steps.reduce(
-    (sum, step) => sum + step.holdSeconds + step.gapSecondsAfter,
+    (sum, step) => sum + step.holdSeconds + sideSwitchSeconds(step) + step.gapSecondsAfter,
     0,
   );
 }
@@ -116,4 +126,5 @@ export const WARMUP_GAPS = {
   sameArea: SAME_AREA_GAP,
   crossArea: CROSS_AREA_GAP,
   holdSeconds: DEFAULT_HOLD_SECONDS,
+  sideSwitch: SIDE_SWITCH_SECONDS,
 } as const;

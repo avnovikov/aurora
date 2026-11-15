@@ -14,6 +14,7 @@ export type CoachLineId =
   | "pulse_not_readable"
   | "session_start"
   | "warmup_done"
+  | "change_side"
   | "set_logged"
   | "session_done";
 
@@ -84,6 +85,11 @@ const SESSION: CoachLine[] = [
     id: "warmup_done",
     assetKey: "warmup_done",
     text: "Warmup done. Time for the real work, mate.",
+  },
+  {
+    id: "change_side",
+    assetKey: "change_side",
+    text: "Change side, mate.",
   },
   {
     id: "set_logged",

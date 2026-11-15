@@ -80,13 +80,13 @@ describe("estimateSessionDuration", () => {
 
   it("labels warm-up and cool-down for the Today / Plan preview", () => {
     const legs = SESSION_TEMPLATES.find((t) => t.id === "tmpl_legs")!;
-    expect(warmupCooldownLabel(legs)).toBe("Warm-up · beginner · 7 min · +4 min cool-down");
+    expect(warmupCooldownLabel(legs)).toBe("Warm-up · beginner · 8 min · +5 min cool-down");
     expect(warmupCooldownLabel(legs, "intermediate")).toBe(
-      "Warm-up · intermediate · 9 min · +4 min cool-down",
+      "Warm-up · intermediate · 9 min · +5 min cool-down",
     );
     const mobility = SESSION_TEMPLATES.find((t) => t.id === "tmpl_mobility")!;
     // One list for every level, so no level in the label.
-    expect(warmupCooldownLabel(mobility, "advanced")).toBe("Warm-up · 7 min");
+    expect(warmupCooldownLabel(mobility, "advanced")).toBe("Warm-up · 8 min");
     expect(cooldownOfferLabel(255)).toBe("Cool-down · ~4 min");
   });
 
