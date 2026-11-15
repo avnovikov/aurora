@@ -19,7 +19,8 @@
     "import:fedb": "tsx scripts/import-free-exercise-db.ts",
     "import:wger": "tsx scripts/import-wger.ts",
     "descriptions:bundle": "tsx scripts/build-description-bundles.ts",
-    "descriptions:compile": "tsx scripts/compile-descriptions.ts"
+    "descriptions:compile": "tsx scripts/compile-descriptions.ts",
+    "doodles": "tsx scripts/generate-doodles.ts"
   },
   "devDependencies": {
     "@capacitor/android": "^8.6.2",

@@ -9,7 +9,7 @@ import { normaliseForKeywords } from "./keywords";
  */
 const RULES: ReadonlyArray<readonly [RegExp, readonly EquipmentId[]]> = [
   // Floor or stretch moves that share a name with a gear move.
-  [/bent knee iron cross|iron crosses stretch|chin tuck|chin to chest|elbow lever/, []],
+  [/bent knee iron cross|iron crosses stretch|chin tuck|chin to chest|elbow lever|floor windshield/, []],
   [/\brings?\b|\btrx\b|suspended|suspension|iron cross|maltese cross|victorian|pelican|ice cream/, ["rings"]],
   [/dumbbell|kettlebell/, ["dumbbell"]],
   [/bench dip|chair dip|floor dip|between two benches/, []],

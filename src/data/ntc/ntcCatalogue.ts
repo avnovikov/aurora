@@ -234,6 +234,18 @@ const CORE: SeedExercise[] = [
     regions: ["core", "push"],
     cues: ["Tabletop with hips high", "Kick and reach to the opposite toe", "Alternate sides"],
   }),
+  ntc({
+    id: "ntc_floor_windshield_wiper",
+    name: "Floor windshield wiper",
+    pattern: "core_compression",
+    type: "dynamic",
+    muscles: [p("abdominals"), s("abductors")],
+    joints: ["lumbar", "hip"],
+    regions: ["core"],
+    easierId: "hf_122",
+    harderId: "hf_111",
+    cues: ["Shoulders pinned to the floor", "Legs together, lower with control", "Stop before the shoulders lift"],
+  }),
 ];
 
 const LOWER: SeedExercise[] = [
