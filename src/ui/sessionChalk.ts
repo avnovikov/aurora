@@ -5,7 +5,7 @@ import type { ViewState } from "./sessionTypes";
 import { currentWork } from "./sessionState";
 
 export function shellHtml(planned: PlannedSession, state: ViewState): string {
-  const light = planned.lightDay ? "light-day" : "";
+  const light = planned.lightDay || planned.deload ? "light-day" : "";
   const pulseClass = state.pulse.connected && state.bpm === null ? "pulse-lost" : "";
   return `
     <main class="shell session ${light}">

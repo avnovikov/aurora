@@ -1,4 +1,5 @@
 import type { EquipmentId, UserProfile } from "../domain/program";
+import { loadDeloadActive } from "./deload";
 import { isCoachMuted, setCoachMuted } from "../voice/coachVoice";
 
 const KEY = "aurora.poc.profile.v1";
@@ -39,6 +40,7 @@ export function exportBackupJson(): string {
       history: localStorage.getItem("aurora.poc.history.v1"),
       memory: localStorage.getItem("aurora.poc.memory.v1"),
       muted: isCoachMuted(),
+      deloadActive: loadDeloadActive(),
     },
     null,
     2,

@@ -131,31 +131,70 @@ function tryStall(
   );
 }
 
+interface DoseModifiers {
+  dose: Dose;
+  /** Readiness (sleep, HR, wiped) called for a lighter day. */
+  light: boolean;
+  /** Manual deload week is active. */
+  deload: boolean;
+}
+
+/** Light-day signals and manual deload share one dose cut; it is applied once. */
 function applyReadinessDose(
   dose: Dose,
-  readiness: ResolveInput["readiness"],
+  input: ResolveInput,
   ruleIds: RuleId[],
-): { dose: Dose; light: boolean } {
-  const light = isLightDay(readiness);
-  if (!light) {
-    return { dose, light: false };
+): DoseModifiers {
+  const light = isLightDay(input.readiness);
+  const deload = input.deloadActive === true;
+  if (light) {
+    ruleIds.push("light_day");
   }
-  ruleIds.push("light_day");
-  return { dose: applyLightDayDose(dose), light: true };
+  if (deload) {
+    ruleIds.push("deload");
+  }
+  if (!light && !deload) {
+    return { dose, light, deload };
+  }
+  return { dose: applyLightDayDose(dose), light, deload };
+}
+
+/** Light days and deload weeks hold the exercise: no advance, no stall move. */
+function holdsProgression(modifiers: DoseModifiers): boolean {
+  return modifiers.light || modifiers.deload;
+}
+
+function describeHold(modifiers: DoseModifiers, tierNote: string): string {
+  if (modifiers.deload) {
+    return "Deload week: hold exercise with light-day dose, no advance";
+  }
+  if (modifiers.light) {
+    return "Hold exercise with light-day dose";
+  }
+  return `Hold prescription${tierNote}`;
+}
+
+function describePinned(modifiers: DoseModifiers): string {
+  if (modifiers.deload) {
+    return "Pinned exercise; deload dose only";
+  }
+  if (modifiers.light) {
+    return "Pinned exercise; light-day dose only";
+  }
+  return "Pinned exercise; dose unchanged";
 }
 
 function applyUnpinnedResolution(
   input: ResolveInput,
-  dose: Dose,
+  modifiers: DoseModifiers,
   ruleIds: RuleId[],
-  light: boolean,
 ): ResolveResult {
-  const skilled = applySkillDose(dose, input.exercise, input.memory);
+  const skilled = applySkillDose(modifiers.dose, input.exercise, input.memory);
   const nextDose = skilled.dose;
   if (skilled.applied) {
     ruleIds.push("skill_dose");
   }
-  if (!light) {
+  if (!holdsProgression(modifiers)) {
     const advanced = tryAdvance(
       input.exercise,
       nextDose,
@@ -176,14 +215,12 @@ function applyUnpinnedResolution(
     input.exercise.id,
     nextDose,
     [...ruleIds, "hold"],
-    light
-      ? "Hold exercise with light-day dose"
-      : `Hold prescription${tierNote}`,
+    describeHold(modifiers, tierNote),
   );
 }
 
 /**
- * Resolves one slot: pain → pin → light day → skill dose → advance → stall → hold.
+ * Resolves one slot: pain → pin → light day / deload → skill dose → advance → stall → hold.
  * Pure; no DOM or Bluetooth.
  */
 export function resolveSlot(input: ResolveInput): ResolveResult {
@@ -204,22 +241,15 @@ export function resolveSlot(input: ResolveInput): ResolveResult {
     ruleIds.push("pin");
   }
 
-  const readiness = applyReadinessDose(doseStart, input.readiness, ruleIds);
+  const modifiers = applyReadinessDose(doseStart, input, ruleIds);
   if (input.pinned) {
     return result(
       input.exercise.id,
-      readiness.dose,
+      modifiers.dose,
       ruleIds,
-      readiness.light
-        ? "Pinned exercise; light-day dose only"
-        : "Pinned exercise; dose unchanged",
+      describePinned(modifiers),
     );
   }
 
-  return applyUnpinnedResolution(
-    input,
-    readiness.dose,
-    ruleIds,
-    readiness.light,
-  );
+  return applyUnpinnedResolution(input, modifiers, ruleIds);
 }

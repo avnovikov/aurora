@@ -1,4 +1,5 @@
 import type { EquipmentId } from "../domain/program";
+import { loadDeloadActive, saveDeloadActive } from "../settings/deload";
 import {
   ALL_EQUIPMENT,
   exportBackupJson,
@@ -10,6 +11,7 @@ export function renderSettingsView(root: HTMLElement): void {
   const profile = loadProfile();
 
   const paint = (): void => {
+    const deloadActive = loadDeloadActive();
     root.innerHTML = `
       <main class="shell">
         <p class="eyebrow">Settings</p>
@@ -27,6 +29,10 @@ export function renderSettingsView(root: HTMLElement): void {
         <label class="field row">
           <input type="checkbox" data-mute ${profile.voiceMuted ? "checked" : ""} />
           Mute coach voice
+        </label>
+        <label class="field row">
+          <input type="checkbox" data-deload ${deloadActive ? "checked" : ""} />
+          Deload week (light dose, no level-ups)
         </label>
         <button type="button" class="cta" data-save>Save</button>
         <button type="button" data-export>Export backup JSON</button>
@@ -53,6 +59,11 @@ export function renderSettingsView(root: HTMLElement): void {
       profile.voiceMuted = mute.checked;
       saveProfile(profile);
     });
+
+    root.querySelector<HTMLInputElement>("[data-deload]")?.addEventListener(
+      "change",
+      (event) => saveDeloadActive((event.target as HTMLInputElement).checked),
+    );
 
     root.querySelector("[data-export]")?.addEventListener("click", () => {
       const out = root.querySelector<HTMLElement>("[data-export-out]")!;
