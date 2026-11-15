@@ -80,6 +80,19 @@ export const FOCUS_BY_ID: Readonly<Record<string, Focus>> = {
     zoom: 2,
     label: "ankle",
   }, // Single-leg balance
+  // Calf raises: the heel drop and rise on the step edge
+  calf_raise: {
+    joints: ["ankle.near", "toe.near"],
+    highlight: ["shin.near", "foot.near"],
+    zoom: 3.2,
+    label: "heels",
+  },
+  single_leg_calf_raise: {
+    joints: ["ankle.near", "toe.near"],
+    highlight: ["shin.near", "foot.near"],
+    zoom: 3.2,
+    label: "heel",
+  },
   // Hips
   fedb_kneeling_hip_flexor: { joints: [], highlight: ["thigh.far", "pelvis"] },
   wger_1202: { joints: [], highlight: ["thigh.far", "pelvis"] }, // Side-lying hip abduction

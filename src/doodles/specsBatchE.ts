@@ -74,8 +74,11 @@ function bulgarian(pelvis: Point, rearKneeBend: 1 | -1): Pose {
 // ---------------------------------------------------------------- calf raises
 
 /** Calf raises on the edge of a step: the balls of the feet on the edge, heels free to drop. */
-const CALF_STEP = { kind: "box" as const, x: 0, y: -40, w: 100, h: 40 };
-const CALF_WALL = { kind: "box" as const, x: 100, y: -380, w: 14, h: 380 };
+const CALF_STEP_TOP = -80;
+const CALF_STEP = { kind: "box" as const, x: 0, y: CALF_STEP_TOP, w: 100, h: -CALF_STEP_TOP };
+const CALF_WALL = { kind: "box" as const, x: 100, y: -420, w: 14, h: 420 };
+/** Floor line, so the step reads as standing on the floor rather than floating. */
+const calfFloor = (x2: number) => ({ kind: "bar" as const, y: 0, x1: -120, x2 });
 
 /**
  * Ankle and foot angle on the step edge: `raised` stands tall on the toes,
@@ -84,10 +87,10 @@ const CALF_WALL = { kind: "box" as const, x: 100, y: -380, w: 14, h: 380 };
 function calfFoot(raised: boolean): { ankle: Point; toe: number } {
   if (raised) {
     // Toe tip on the step top just past the edge, foot steep.
-    return { ankle: along([6, -41.5], 250, 20), toe: 70 };
+    return { ankle: along([6, CALF_STEP_TOP - 1.5], 252, 20), toe: 72 };
   }
   // Ball of the foot just above the edge, heel dropped, forefoot tilted up.
-  return { ankle: along([0, -42], 150, 14), toe: -30 };
+  return { ankle: along([0, CALF_STEP_TOP - 2], 142, 14), toe: -38 };
 }
 
 function calfRaise(raised: boolean): Pose {
@@ -148,10 +151,12 @@ function cossack(shift: -1 | 0 | 1): Pose {
 // ---------------------------------------------------------------- pistol squat
 
 function pistol(depth: 0 | 1): Pose {
-  const pelvis: Point = depth ? [-44, -64] : [-4, -172];
-  const spine = depth ? -58 : -88;
+  // Bottom: full depth, hip just behind and above the heel, chest well forward.
+  const pelvis: Point = depth ? [-16, -38] : [-4, -172];
+  const spine = depth ? -52 : -88;
   const s = shoulderAt(pelvis, spine);
-  const leg = depth ? -4 : 66;
+  // Free leg: hanging slightly forward at the top, held straight out in front at the bottom.
+  const leg = depth ? -6 : 66;
   return {
     pelvis,
     chest: along(pelvis, spine, 80),
@@ -296,7 +301,7 @@ export const BATCH_E_SPECS: DoodleSpec[] = [
     slug: "calf-raise",
     title: "Calf raise",
     replaces: true,
-    props: [CALF_STEP],
+    props: [CALF_STEP, calfFloor(170)],
     transition: 0.9,
     frames: [
       { hold: 0.4, pose: calfRaise(false) },
@@ -308,7 +313,7 @@ export const BATCH_E_SPECS: DoodleSpec[] = [
     slug: "single-leg-calf-raise",
     title: "Single-leg calf raise",
     replaces: true,
-    props: [CALF_STEP, CALF_WALL],
+    props: [CALF_STEP, CALF_WALL, calfFloor(100)],
     transition: 0.9,
     frames: [
       { hold: 0.4, pose: singleCalfRaise(false) },
