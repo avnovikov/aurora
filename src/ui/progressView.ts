@@ -8,6 +8,7 @@ import type { LastResolveSignal } from "../progress/chainMap";
 import { listResolvedTemplates } from "../plan/templates";
 import { loadSession } from "../session/storage";
 import { loadMemories } from "../session/history";
+import { personalBestProgressHtml } from "../library/personalBest";
 import { escapeHtml } from "../library/present";
 import type { AppTab } from "./shell";
 
@@ -103,6 +104,7 @@ function notStartedBlockHtml(card: PlanProgressCard): string {
     <div class="exercise-block">
       <p class="exercise-current" aria-current="step">${escapeHtml(card.currentName)}</p>
       <p class="hint">Suggested start on this path</p>
+      ${pathPersonalBestHtml(card)}
       ${next}
     </div>
   `;
@@ -115,9 +117,17 @@ function activeBlockHtml(card: PlanProgressCard): string {
   return `
     <div class="exercise-block">
       <p class="exercise-current" aria-current="step">${escapeHtml(card.currentName)}</p>
+      ${pathPersonalBestHtml(card)}
       ${next}
     </div>
   `;
+}
+
+function pathPersonalBestHtml(card: PlanProgressCard): string {
+  return personalBestProgressHtml(
+    card.personalBestReps,
+    card.personalBestIsHold ? "s" : "reps",
+  );
 }
 
 function pathPreviewHtml(steps: readonly PathPreviewStep[]): string {
