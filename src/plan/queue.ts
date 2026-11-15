@@ -149,18 +149,6 @@ export function removeQueueItem(queue: PlanQueue, index: number): PlanQueue {
   return { items };
 }
 
-export function replaceQueueItem(
-  queue: PlanQueue,
-  index: number,
-  templateId: string,
-): PlanQueue {
-  assertIndex(queue, index);
-  assertKnownTemplate(templateId);
-  const items = [...queue.items];
-  items[index] = templateId;
-  return { items };
-}
-
 /** Append a known template id without mutating the loaded queue. */
 export function appendQueueItem(queue: PlanQueue, templateId: string): PlanQueue {
   assertKnownTemplate(templateId);

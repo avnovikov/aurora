@@ -80,7 +80,11 @@ Seed days keep their ids and work untouched; `dayTitle` shows them under area na
 
 **Exclusions** are a third reason a move is swapped out in `chooseSuitableExercise` (with joint avoid and missing gear), and a filter in generation. Joint and gear swaps keep their original rule exactly; only an excluded move uses a ladder-aware order (same ladder, nearest difficulty, never harder when an equal or easier move exists). Excluding from the plan also writes the list, so the Library shows the same state.
 
-**Plan page (part 2):** a timeline of days; tapping a day expands the planner's real output for it (not template defaults), with per-exercise "Not for me" (exclude and substitute) and "Swap"; "Make this day…" and "Add a block" pick an area and generate. Same look as the Library and Today: panels, chips, toggles, labelled groups, 44px targets.
+**Plan page (part 2), as built:** "Coming up", a list of day panels in the Library's panel style. Today is open by default; opening a day shows the planner's real session for a normal morning (`previewDay` calls `planSession`, so level, joint, gear, exclusion, deload and variety rules are all applied), not template defaults. Per exercise: **Swap** (up to eight choices, same ladder and nearest level first, described in the Library's words) and **Not for me** (adds the move to the exclusion list and puts the best substitute in the slot at once). Per day: **Make this day** (an area or a named skill: the day becomes a new block's first day and the other two are spaced after it), Earlier, Later, To the end (today only), Remove. **Add days** adds a block after today, or one Mobility day at the end. The last action is reported in a status line.
+
+Removed with the old editor: the per-template "Procedure" editor, its 42 dropdowns of 335 options each, the area and muscle picker filters, "Reset to default" and the per-day type dropdown. Editing a seed day's move changes every day of that seed type (they share one list); generated days are edited individually.
+
+Measured in Chrome at 390×844: page height 2,524px before, 1,694px after with today open; dropdowns 42 before, none after; every control at least 44px tall (queue controls were 40px).
 
 **Library and Joint care (part 3):** Excluded mark and Exclude / Restore; an Excluded choice in the Show panel; the Joint care day generated from `prehabFor`, 10–15 minutes at light dose.
 

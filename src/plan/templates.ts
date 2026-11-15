@@ -33,16 +33,6 @@ function saveTemplateOverrides(overrides: TemplateOverrideMap): void {
   store.write(JSON.stringify(overrides));
 }
 
-export function clearTemplateOverride(templateId: string): void {
-  const overrides = loadTemplateOverrides();
-  delete overrides[templateId];
-  if (Object.keys(overrides).length === 0) {
-    store.clear();
-    return;
-  }
-  saveTemplateOverrides(overrides);
-}
-
 /** Test helper — wipe persisted procedure edits. */
 export function resetTemplateOverridesForTests(): void {
   store.clear();
