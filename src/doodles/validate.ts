@@ -249,15 +249,20 @@ export function validateSpec(spec: DoodleSpec): SpecReport {
   const torsoRange: [number, number] = [Math.min(...torsos), Math.max(...torsos)];
   const maxBoneLengthError = Math.max(...keyframes.map((k) => k.boneLengthError));
   const maxBoneLengthErrorAllSamples = round(Math.max(...timeline.poses.map(boneLengthError)), 4);
-  const transitionAnatomy = [
+  const between = (check: (pose: Solved) => string[]): string[] => [
     ...new Set(
       timeline.poses.flatMap((pose, i) =>
         timeline.keyframeIndex.includes(i)
           ? []
-          : anatomy(pose, spec.view).map((issue) => `between keyframes (t=${round(timeline.keyTimes[i] * timeline.duration, 1)}s): ${issue}`),
+          : check(pose).map((issue) => `between keyframes (t=${round(timeline.keyTimes[i] * timeline.duration, 1)}s): ${issue}`),
       ),
     ),
   ];
+  const transitionAnatomy = between((pose) => anatomy(pose, spec.view));
+  // A limb sweeping through a prop between keyframes is as visible as one at a keyframe.
+  const transitionPropCrossings = between((pose) =>
+    propCrossings(spec, pose).map((c) => `${c.segment} crosses prop ${c.prop}`),
+  );
   const transitionSamplesBelowFloor = timeline.poses.filter(
     (pose, i) => !timeline.keyframeIndex.includes(i) && belowFloor(pose).length > 0,
   ).length;
@@ -272,7 +277,7 @@ export function validateSpec(spec: DoodleSpec): SpecReport {
     for (const c of k.propCrossings) errors.push(`frame ${k.index}: ${c.segment} crosses prop ${c.prop}`);
     for (const a of k.anatomy) errors.push(`frame ${k.index}: ${a}`);
   }
-  errors.push(...transitionAnatomy);
+  errors.push(...transitionAnatomy, ...transitionPropCrossings);
 
   return {
     slug: spec.slug,

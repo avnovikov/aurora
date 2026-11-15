@@ -1,3 +1,5 @@
+import { STRETCH_SPECS } from "./specsStretch";
+import { WARMUP_DRILL_SPECS } from "./specsWarmup";
 import { solvePose } from "./rig";
 import type { DoodleSpec, Point, Pose } from "./rig";
 
@@ -87,7 +89,7 @@ const KR_PELVIS: Point = [-25, -240];
 /** Raised thigh angle for the knee raise (above the hip). */
 const KR_THIGH = -42;
 
-export const DOODLE_SPECS: DoodleSpec[] = [
+const SESSION_MOVE_SPECS: DoodleSpec[] = [
   {
     id: "hf_19",
     slug: "pike-pushup-floor",
@@ -274,7 +276,7 @@ export const DOODLE_SPECS: DoodleSpec[] = [
     id: "fedb_knee_hip_raise_on_parallel_bars",
     slug: "parallel-bar-knee-raise",
     title: "Knee raise on parallel bars",
-    props: [{ kind: "parallelBars", y: -216, x1: 32, x2: 110 }],
+    props: [{ kind: "parallelBars", y: -216, x1: -40, x2: 170 }], // uprights clear of the knee swing
     frames: [
       {
         hold: 0.4,
@@ -769,6 +771,9 @@ export const DOODLE_SPECS: DoodleSpec[] = [
     ],
   },
 ];
+
+/** Session moves, then warm-up drills, then cool-down stretches. */
+export const DOODLE_SPECS: DoodleSpec[] = [...SESSION_MOVE_SPECS, ...WARMUP_DRILL_SPECS, ...STRETCH_SPECS];
 
 /** Lying on the back, straight legs pivoting at the hips; `deg` is the leg angle (-88 up, -6 near the floor). */
 function lyingLegs(deg: number): Pose {
