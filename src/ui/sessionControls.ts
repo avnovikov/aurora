@@ -47,6 +47,20 @@ export function wireSessionControls(
   state: ViewState,
   handlers: SessionControlHandlers,
 ): void {
+  wireSetOutcomeButtons(root, planned, state, handlers);
+  wireRepAndLoadControls(root, state, handlers);
+  wireCooldownButtons(root, handlers);
+  wirePulseSimButtons(root, state, handlers);
+  wirePulseConnectButtons(root, state, handlers);
+  wireStageSwipe(root, handlers);
+}
+
+function wireSetOutcomeButtons(
+  root: HTMLElement,
+  planned: PlannedSession,
+  state: ViewState,
+  handlers: SessionControlHandlers,
+): void {
   root.querySelector("[data-log-set]")?.addEventListener("click", () => {
     completeSet(planned, state, "completed", handlers);
   });
@@ -56,6 +70,13 @@ export function wireSessionControls(
   root.querySelector("[data-skip]")?.addEventListener("click", () => {
     completeSet(planned, state, "skipped", handlers);
   });
+}
+
+function wireRepAndLoadControls(
+  root: HTMLElement,
+  state: ViewState,
+  handlers: SessionControlHandlers,
+): void {
   root.querySelector("[data-reps-minus]")?.addEventListener("click", () => {
     adjustNextReps(state, -1, handlers);
   });
@@ -66,23 +87,32 @@ export function wireSessionControls(
     adjustAddedLoad(state, DEFAULT_ADDED_LOAD_KG, handlers);
   });
   root.querySelector("[data-load-minus]")?.addEventListener("click", () => {
-    adjustAddedLoadDelta(state, -1, handlers);
+    adjustAddedLoadBy(state, -1, handlers);
   });
   root.querySelector("[data-load-plus]")?.addEventListener("click", () => {
-    adjustAddedLoadDelta(state, 1, handlers);
+    adjustAddedLoadBy(state, 1, handlers);
   });
+}
+
+function wireCooldownButtons(
+  root: HTMLElement,
+  handlers: SessionControlHandlers,
+): void {
   root.querySelector("[data-cooldown-start]")?.addEventListener("click", () => {
     handlers.onStartCooldown();
   });
   root.querySelector("[data-cooldown-skip]")?.addEventListener("click", () => {
     handlers.onSkipCooldown();
   });
-  wirePulseSimButtons(root, state, handlers);
-  wirePulseConnectButtons(root, state, handlers);
+}
 
+function wireStageSwipe(
+  root: HTMLElement,
+  handlers: SessionControlHandlers,
+): void {
   const stage = root.querySelector<HTMLElement>("[data-swipe-stage]");
   if (stage) {
-    wireSwipe(stage, () => handlers.onFinishExercise());
+    wireSwipe(stage, handlers.onFinishExercise);
   }
 }
 
@@ -144,14 +174,13 @@ function adjustAddedLoad(
   updateWorkState(state, ["work"], (work) => editAddedLoad(work, kg), handlers);
 }
 
-function adjustAddedLoadDelta(
+function adjustAddedLoadBy(
   state: ViewState,
   delta: number,
   handlers: SessionControlHandlers,
 ): void {
   updateWorkState(state, ["work"], (work) => {
-    const next = Math.max(0, work.addedLoadKg + delta);
-    return editAddedLoad(work, next);
+    return editAddedLoad(work, Math.max(0, work.addedLoadKg + delta));
   }, handlers);
 }
 
