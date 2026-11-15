@@ -16,7 +16,8 @@ export interface WarmupPlanInput {
 }
 
 const DEFAULT_TARGET_SECONDS = 600;
-const HOLD_SECONDS = 40;
+/** Short stations (10–15s band); 12s is the default sweet spot. */
+const HOLD_SECONDS = 12;
 const SAME_AREA_GAP = 5;
 const CROSS_AREA_GAP = 10;
 
@@ -48,7 +49,8 @@ function sortPool(pool: SeedExercise[], focus: LoadRegion[]): SeedExercise[] {
 }
 
 /**
- * Builds a continuous warmup list (~10 min) with 5s same-area / 10s cross-area gaps.
+ * Builds a continuous warmup list (~10 min) of short 10–15s stations
+ * with 5s same-area / 10s cross-area gaps.
  */
 export function planWarmup(input: WarmupPlanInput): WarmupStep[] {
   const target = input.targetSeconds ?? DEFAULT_TARGET_SECONDS;
@@ -59,8 +61,9 @@ export function planWarmup(input: WarmupPlanInput): WarmupStep[] {
   let elapsed = 0;
   let previousRegion: LoadRegion | null = null;
   let index = 0;
+  const maxSteps = Math.ceil(target / HOLD_SECONDS) + ordered.length;
 
-  while (elapsed < target && ordered.length > 0) {
+  while (elapsed < target && ordered.length > 0 && index < maxSteps) {
     const exercise = ordered[index % ordered.length];
     const region = primaryRegion(exercise, input.focusRegions);
     const gap = gapBetween(previousRegion, region);
@@ -76,9 +79,6 @@ export function planWarmup(input: WarmupPlanInput): WarmupStep[] {
     elapsed += HOLD_SECONDS + gap;
     previousRegion = region;
     index += 1;
-    if (index > ordered.length * 4) {
-      break;
-    }
   }
 
   if (steps.length > 0) {

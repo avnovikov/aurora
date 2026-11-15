@@ -30,12 +30,14 @@ function planWithPool(
 }
 
 describe("WARMUP_GAPS", () => {
-  it("exposes 5s same-area and 10s cross-area spacing", () => {
+  it("exposes short 10–15s holds with 5s/10s gaps", () => {
     expect(WARMUP_GAPS).toEqual({
       sameArea: 5,
       crossArea: 10,
-      holdSeconds: 40,
+      holdSeconds: 12,
     });
+    expect(WARMUP_GAPS.holdSeconds).toBeGreaterThanOrEqual(10);
+    expect(WARMUP_GAPS.holdSeconds).toBeLessThanOrEqual(15);
   });
 });
 

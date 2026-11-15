@@ -94,7 +94,7 @@ function warmupHtml(planned: PlannedSession, state: ViewState): string {
   return `
     <p class="eyebrow">Warmup</p>
     <h2>${step.name}</h2>
-    <p class="tagline">${step.region} · hold <span data-warmup-left>${step.holdSeconds}</span>s</p>
+    <p class="tagline">${step.region} · <span data-warmup-left>${step.holdSeconds}</span>s</p>
     ${media}
     <p class="reason">Continuous block · 5s same area · 10s cross area</p>
   `;
