@@ -14,8 +14,8 @@ import type { LevelFilter } from "./search";
 
 /**
  * The Library's filters live in three panels that look and behave alike:
- * a collapsed `<details>` whose summary names what is active, chips inside,
- * and an "All …" chip wherever a single choice can be cleared.
+ * a collapsed `<details>` whose summary shows the panel's current value,
+ * chips inside, and an "All …" chip wherever a single choice can be cleared.
  */
 export type FilterPanelId = "show" | "body" | "level";
 
@@ -34,7 +34,7 @@ export interface FilterPanelState {
   onlyGear: boolean;
   /** Show only the moves the user excluded ("not for me"), to review or restore them. */
   excludedOnly: boolean;
-  /** Panels the user has opened; an active panel is always open. */
+  /** Panels the user has opened (the summaries already show what is active). */
   openPanels: readonly FilterPanelId[];
 }
 
@@ -67,21 +67,33 @@ export function withPanelState(
   return open ? [...others, panel] : others;
 }
 
+/** Joins the parts of a trigger's value, e.g. "Upper body · Chest". */
+const VALUE_SEPARATOR = " · ";
+
 function labelOf(options: readonly ChipOption[], id: string): string {
   return options.find((option) => option.id === id)?.label ?? id;
 }
 
-function panelHtml(
-  id: FilterPanelId,
-  title: string,
-  activeParts: readonly string[],
-  userOpened: boolean,
-  body: string,
-): string {
-  const open = activeParts.length > 0 || userOpened ? " open" : "";
-  const detail = activeParts.length > 0 ? ` · ${activeParts.join(", ")}` : "";
-  const summary = escapeHtml(`${title}${detail}`);
-  return `<details class="lib-filters" data-panel="${id}"${open}><summary>${summary}</summary>${body}</details>`;
+interface PanelParts {
+  id: FilterPanelId;
+  title: string;
+  /** The panel's current value, shown on the trigger. */
+  value: string;
+  /** The user opened this panel. */
+  opened: boolean;
+  /** The chips inside the sheet. */
+  body: string;
+}
+
+/**
+ * One filter panel: the summary is a trigger naming the panel and its current
+ * value; the chips sit in a sheet that opens above the dock. Panels share a
+ * `name`, so opening one closes the others.
+ */
+function panelHtml({ id, title, value, opened, body }: PanelParts): string {
+  const open = opened ? " open" : "";
+  const summary = `<summary><span class="t-label">${escapeHtml(title)}</span><span class="t-val">${escapeHtml(value)}</span></summary>`;
+  return `<details class="lib-filters" data-panel="${id}" name="lib-filter"${open}>${summary}<div class="lib-sheet">${body}</div></details>`;
 }
 
 /** What the Show panel can offer beyond the fixed choices. */
@@ -92,12 +104,14 @@ export interface ShowOptions {
 }
 
 function showPanelHtml(state: FilterPanelState, options: ShowOptions, opened: boolean): string {
-  const parts = [
-    state.forJoints ? "my joints" : "",
-    state.onlyGear ? "my gear" : "",
-    state.excludedOnly ? "excluded" : "",
-    state.stretch === DEFAULT_STRETCH ? "" : labelOf(STRETCH_FILTERS, state.stretch).toLowerCase(),
-  ].filter(Boolean);
+  const value = [
+    state.forJoints ? "My joints" : "",
+    state.onlyGear ? "My gear" : "",
+    state.excludedOnly ? "Excluded by me" : "",
+    labelOf(STRETCH_FILTERS, state.stretch),
+  ]
+    .filter(Boolean)
+    .join(VALUE_SEPARATOR);
   const toggles = [
     options.hasJointHistory ? toggleHtml("for-joints", "For my joints", state.forJoints) : "",
     toggleHtml("only-gear", "Only my gear", state.onlyGear),
@@ -106,21 +120,21 @@ function showPanelHtml(state: FilterPanelState, options: ShowOptions, opened: bo
   const body =
     `<p class="chip-row-label">Limit to</p><div class="row wrap">${toggles}</div>` +
     chipRowHtml("stretch", "Stretches", state.stretch, STRETCH_FILTERS, { label: "Stretches" });
-  return panelHtml("show", "Show", parts, opened, body);
+  return panelHtml({ id: "show", title: "Show", value, opened, body });
 }
 
 function bodyPanelHtml(state: FilterPanelState, opened: boolean): string {
-  const parts = [
-    state.area === "all" ? "" : labelOf(AREAS, state.area),
-    state.muscle === "all" ? "" : labelOf(MUSCLE_BUCKETS, state.muscle),
-  ].filter(Boolean);
+  const value = [
+    state.area === "all" ? "All areas" : labelOf(AREAS, state.area),
+    state.muscle === "all" ? "All muscles" : labelOf(MUSCLE_BUCKETS, state.muscle),
+  ].join(VALUE_SEPARATOR);
   const body =
     chipRowHtml("area", "Body area", state.area, AREAS, { allLabel: "All areas", label: "Area" }) +
     chipRowHtml("muscle", "Primary muscle", state.muscle, MUSCLE_BUCKETS, {
       allLabel: "All muscles",
       label: "Primary muscle",
     });
-  return panelHtml("body", "Area & muscle", parts, opened, body);
+  return panelHtml({ id: "body", title: "Area & muscle", value, opened, body });
 }
 
 function levelPanelHtml(state: FilterPanelState, opened: boolean): string {
@@ -129,9 +143,9 @@ function levelPanelHtml(state: FilterPanelState, opened: boolean): string {
     id: tier,
     label: SKILL_TIER_LABELS[tier],
   }));
-  const parts = state.level === "all" ? [] : [labelOf(options, state.level)];
+  const value = state.level === "all" ? "All levels" : labelOf(options, state.level);
   const body = chipRowHtml("level", "Skill level", state.level, options, { allLabel: "All levels" });
-  return panelHtml("level", "Level", parts, opened, body);
+  return panelHtml({ id: "level", title: "Level", value, opened, body });
 }
 
 export function filterPanelsHtml(state: FilterPanelState, options: ShowOptions): string {
@@ -143,16 +157,18 @@ export function filterPanelsHtml(state: FilterPanelState, options: ShowOptions):
   ].join("");
 }
 
-/** "38 exercises", plus a Clear filters button while any filter is active. */
-export function resultCountHtml(count: number, filtered: boolean): string {
+/** "38 exercises", the number set apart as the screen's accent figure. */
+export function countHtml(count: number): string {
   const noun = count === 1 ? "exercise" : "exercises";
-  const clear = filtered
-    ? ` <button type="button" class="lib-link" data-clear-filters>Clear filters</button>`
-    : "";
-  return `<p class="lib-count" aria-live="polite">${count} ${noun}${clear}</p>`;
+  return `<p class="lib-count" aria-live="polite"><span class="n">${count}</span> ${noun}</p>`;
 }
 
-/** Shown under the search box while stretches are hidden but match the search. */
+/** A Clear filters button while any filter is active, else nothing. */
+export function clearFiltersHtml(filtered: boolean): string {
+  return filtered ? `<button type="button" class="lib-link" data-clear-filters>Clear filters</button>` : "";
+}
+
+/** Shown in the dock, under the search box, while stretches are hidden but match the search. */
 export function stretchHintHtml(hidden: number): string {
   if (hidden <= 0) {
     return "";

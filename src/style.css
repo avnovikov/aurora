@@ -317,16 +317,6 @@ button:disabled {
   color: var(--brass);
 }
 
-.search {
-  width: 100%;
-  margin: 0.75rem 0;
-  padding: 0.75rem;
-  background: var(--panel);
-  border: 1px solid var(--control-edge);
-  color: var(--foreground);
-  font: inherit;
-}
-
 .lib-list,
 .queue-list {
   list-style: none;
@@ -334,7 +324,6 @@ button:disabled {
   padding: 0;
 }
 
-.lib-list li,
 .queue-list li {
   padding: 0.75rem 0;
   border-bottom: 1px solid var(--edge);
@@ -357,23 +346,6 @@ button:disabled {
 
 .body-row.core-spark span:first-child {
   color: var(--brass);
-}
-
-.lib-row {
-  width: 100%;
-  text-align: left;
-  border: 0;
-  background: transparent;
-  padding: 0;
-  color: inherit;
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.lib-row strong {
-  color: var(--foreground);
-  font-size: 1.05rem;
 }
 
 /* Motivational personal best on Library detail. */
@@ -419,13 +391,6 @@ button:disabled {
   margin: 0.15rem 0 0;
 }
 
-.lib-desc {
-  color: var(--foreground-soft);
-  font-size: 0.95rem;
-  line-height: 1.4;
-  margin-top: 0.3rem;
-}
-
 .lib-count {
   color: var(--muted);
   font-size: 0.85rem;
@@ -451,13 +416,6 @@ button:disabled {
   font-size: 0.7rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-}
-
-.lib-badge.inline {
-  margin: 0 0.35rem 0 0;
-  vertical-align: middle;
-  font-size: 0.6rem;
-  padding: 0.15rem 0.35rem;
 }
 
 .lib-summary {
@@ -801,8 +759,6 @@ button:disabled {
 .hj-detail {
   margin: 0.5rem 0 1rem;
 }
-.lib-badge.avoid { background: color-mix(in srgb, var(--alert) 18%, transparent); }
-.lib-badge.caution { background: color-mix(in srgb, var(--caution) 20%, transparent); }
 
 .lib-filters {
   margin: 0.5rem 0;

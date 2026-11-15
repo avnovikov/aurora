@@ -1,0 +1,308 @@
+/* Library list: a calm header, compact scan-line rows, and a thumb dock
+   (search + three filter triggers) pinned just above the tab bar. */
+
+.library {
+  /* The fixed tab bar's height (48px buttons + 1px top edge). */
+  --lib-tab-bar: 49px;
+  /* Fill the screen above the tab bar, so a short list still leaves the dock at the bottom. */
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - var(--lib-tab-bar));
+  min-height: calc(100dvh - var(--lib-tab-bar));
+  padding: 0;
+  /* Let the dock meet the tab bar at the end of the list too (.app-shell pads 4.5rem). */
+  margin-bottom: calc(var(--lib-tab-bar) - 4.5rem);
+  font-family: var(--font-body, "IBM Plex Sans", Roboto, sans-serif);
+  color: var(--foreground);
+}
+
+/* Header: read only */
+.library .lib-head {
+  padding: 24px 16px 12px;
+}
+
+.library .eyebrow {
+  margin: 0;
+  font-size: 13px;
+  line-height: 16px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.library .lib-titlerow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.library h1 {
+  margin: 0;
+  font-family: var(--font-display, "IBM Plex Sans Condensed", "Roboto Condensed", sans-serif);
+  font-weight: 600;
+  font-size: 39px;
+  line-height: 44px;
+  color: var(--foreground);
+}
+
+.library .lib-count {
+  margin: 0;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 24px;
+  white-space: nowrap;
+}
+
+.library .lib-count .n {
+  font-family: var(--font-display, "IBM Plex Sans Condensed", "Roboto Condensed", sans-serif);
+  font-weight: 600;
+  font-size: 25px;
+  line-height: 24px;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+/* List: scan lines */
+.library .lib-list {
+  flex: 1 0 auto;
+  margin: 0;
+  border-top: 1px solid var(--edge);
+}
+
+.library .lib-list > li {
+  border-bottom: 1px solid var(--edge);
+}
+
+.library .lib-row {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 12px 16px;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  color: var(--foreground);
+  font: inherit;
+  cursor: pointer;
+}
+
+.library .lib-row strong {
+  display: block;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.library .lib-meta {
+  display: block;
+  margin: 2px 0 0;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--muted);
+}
+
+.library .lib-meta .lvl {
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+.library .lib-desc {
+  display: block;
+  margin: 0;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--muted);
+}
+
+.library .lib-row .lib-badge.inline {
+  display: inline-block;
+  vertical-align: 1px;
+  margin: 0 4px 0 0;
+  padding: 2px 6px;
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid var(--control-edge);
+  border-radius: 4px;
+  color: var(--foreground);
+  background: transparent;
+}
+
+.library .lib-row .lib-badge.avoid {
+  border-color: var(--alert);
+  background: color-mix(in srgb, var(--alert) 18%, transparent);
+}
+
+.library .lib-row .lib-badge.caution {
+  border-color: var(--caution);
+  background: color-mix(in srgb, var(--caution) 20%, transparent);
+}
+
+/* Dock: everything the thumb touches, pinned above the tab bar */
+.library .lib-dock {
+  position: sticky;
+  bottom: var(--lib-tab-bar);
+  z-index: 10;
+  padding: 8px 16px;
+  background: var(--background);
+  border-top: 1px solid var(--edge);
+}
+
+.library .search {
+  display: block;
+  width: 100%;
+  height: 48px;
+  margin: 0;
+  padding: 0 12px;
+  background: var(--surface);
+  color: var(--foreground);
+  border: 1px solid var(--control-edge);
+  border-radius: 4px;
+  font: inherit;
+  font-size: 16px;
+  appearance: none;
+}
+
+.library .search::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+.library .lib-dock-note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.library .lib-dock-note .hint {
+  margin: 0;
+}
+
+.library .lib-dock-note .lib-link {
+  min-height: 44px;
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--foreground);
+}
+
+.library .lib-dock-note .lib-link[data-clear-filters] {
+  margin-left: auto;
+}
+
+.library .lib-triggers {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* Each <details> is a trigger; its sheet opens upward over the list. */
+.library .lib-filters {
+  margin: 0;
+  border: 0;
+  background: transparent;
+  min-width: 0;
+}
+
+.library .lib-filters summary {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100%;
+  min-height: 64px;
+  padding: 8px 12px;
+  background: var(--surface);
+  border: 1px solid var(--control-edge);
+  border-radius: 4px;
+  list-style: none;
+  cursor: pointer;
+}
+
+.library .lib-filters summary::-webkit-details-marker {
+  display: none;
+}
+
+.library .lib-filters[open] summary {
+  border-color: var(--foreground);
+}
+
+/* Small uppercase labels: the trigger names and the row labels in a sheet. */
+.library .t-label,
+.library .lib-sheet .chip-row-label {
+  font-size: 13px;
+  line-height: 16px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.library .t-label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 400;
+}
+
+.library .t-val {
+  display: block;
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.library .lib-sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 16px 12px;
+  background: var(--surface);
+  border-top: 1px solid var(--control-edge);
+  border-radius: 4px 4px 0 0;
+}
+
+.library .lib-sheet .chip-row-label {
+  margin: 0 0 8px;
+}
+
+.library .lib-sheet .row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+
+.library .lib-sheet .row:last-child {
+  margin-bottom: 0;
+}
+
+.library .lib-sheet button {
+  min-height: 44px;
+  padding: 0 16px;
+  background: var(--surface);
+  color: var(--foreground);
+  border: 1px solid var(--control-edge);
+  border-radius: 4px;
+  font: inherit;
+  font-size: 16px;
+}
+
+.library .lib-sheet button[aria-pressed="true"] {
+  background: var(--foreground);
+  color: var(--background);
+  border-color: var(--foreground);
+  font-weight: 600;
+}
+
+.library .lib-sheet button[data-kind="toggle"][aria-pressed="true"]::before {
+  box-shadow: inset 0 0 0 2px var(--foreground);
+}
