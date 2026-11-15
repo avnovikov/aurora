@@ -30,10 +30,10 @@ function planWithPool(
 }
 
 describe("WARMUP_GAPS", () => {
-  it("exposes short 10–15s holds with 5s/10s gaps", () => {
+  it("exposes short 10–15s holds with 5s breaks between stations", () => {
     expect(WARMUP_GAPS).toEqual({
       sameArea: 5,
-      crossArea: 10,
+      crossArea: 5,
       holdSeconds: 12,
     });
     expect(WARMUP_GAPS.holdSeconds).toBeGreaterThanOrEqual(10);

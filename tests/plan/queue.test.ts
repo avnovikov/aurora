@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { completeNext, peekUpcoming, skipNext } from "../../src/plan/queue";
+import {
+  completeNext,
+  moveQueueItem,
+  peekUpcoming,
+  removeQueueItem,
+  replaceQueueItem,
+  skipNext,
+} from "../../src/plan/queue";
 
 describe("plan queue", () => {
   it("peekUpcoming returns templates in order", () => {
@@ -19,5 +26,34 @@ describe("plan queue", () => {
   it("skipNext rotates head to the tail", () => {
     const next = skipNext({ items: ["tmpl_legs", "tmpl_abs", "tmpl_bars"] });
     expect(next.items).toEqual(["tmpl_abs", "tmpl_bars", "tmpl_legs"]);
+  });
+
+  it("moveQueueItem rearranges by index", () => {
+    const next = moveQueueItem(
+      { items: ["tmpl_legs", "tmpl_abs", "tmpl_bars"] },
+      2,
+      0,
+    );
+    expect(next.items).toEqual(["tmpl_bars", "tmpl_legs", "tmpl_abs"]);
+  });
+
+  it("removeQueueItem deletes a slot and keeps at least one", () => {
+    const next = removeQueueItem(
+      { items: ["tmpl_legs", "tmpl_abs", "tmpl_bars"] },
+      1,
+    );
+    expect(next.items).toEqual(["tmpl_legs", "tmpl_bars"]);
+    expect(() => removeQueueItem({ items: ["tmpl_legs"] }, 0)).toThrow(
+      "at least one session",
+    );
+  });
+
+  it("replaceQueueItem swaps a template id", () => {
+    const next = replaceQueueItem(
+      { items: ["tmpl_legs", "tmpl_abs"] },
+      0,
+      "tmpl_full",
+    );
+    expect(next.items).toEqual(["tmpl_full", "tmpl_abs"]);
   });
 });

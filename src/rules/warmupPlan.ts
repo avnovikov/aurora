@@ -18,8 +18,9 @@ export interface WarmupPlanInput {
 const DEFAULT_TARGET_SECONDS = 600;
 /** Short stations (10–15s band); 12s is the default sweet spot. */
 const HOLD_SECONDS = 12;
+/** Fixed break between every warmup station: 5…1 → Go. */
 const SAME_AREA_GAP = 5;
-const CROSS_AREA_GAP = 10;
+const CROSS_AREA_GAP = 5;
 
 function primaryRegion(exercise: SeedExercise, focus: LoadRegion[]): LoadRegion {
   const match = exercise.regions.find((region) => focus.includes(region));

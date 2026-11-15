@@ -81,7 +81,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       onPaint: paint,
       onAdvance: advanceWarmup,
       onRestGap: (_gap, resumeWarmup) => {
-        startRest(resumeWarmup, false);
+        startRest(resumeWarmup, true);
       },
     });
   };

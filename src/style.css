@@ -266,6 +266,39 @@ button:disabled {
   gap: 0.2rem;
 }
 
+.queue-edit-row {
+  display: grid !important;
+  grid-template-columns: 2.5rem 1fr auto auto auto;
+  grid-template-rows: auto auto;
+  gap: 0.35rem 0.4rem;
+  align-items: center;
+}
+
+.queue-edit-row .queue-pos {
+  color: var(--brass);
+  font-size: 0.75rem;
+}
+
+.queue-edit-row select {
+  grid-column: 2 / -1;
+  width: 100%;
+  padding: 0.45rem;
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  color: #e8e8ea;
+  font: inherit;
+}
+
+.queue-edit-row .hint {
+  grid-column: 2 / -1;
+  margin: 0;
+}
+
+.queue-edit-row button {
+  padding: 0.4rem 0.55rem;
+  font-size: 0.8rem;
+}
+
 .lib-list li.core-hit,
 .forecast-card.core-spark,
 .body-row.core-spark span:first-child {

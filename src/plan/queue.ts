@@ -73,6 +73,53 @@ export function skipNext(queue: PlanQueue): PlanQueue {
   return { items: [...rest, head] };
 }
 
+export function moveQueueItem(
+  queue: PlanQueue,
+  fromIndex: number,
+  toIndex: number,
+): PlanQueue {
+  assertIndex(queue, fromIndex);
+  if (!Number.isInteger(toIndex) || toIndex < 0 || toIndex >= queue.items.length) {
+    throw new Error(`toIndex out of range: ${toIndex}`);
+  }
+  if (fromIndex === toIndex) {
+    return { items: [...queue.items] };
+  }
+  const items = [...queue.items];
+  const [moved] = items.splice(fromIndex, 1);
+  items.splice(toIndex, 0, moved);
+  return { items };
+}
+
+export function removeQueueItem(queue: PlanQueue, index: number): PlanQueue {
+  assertIndex(queue, index);
+  if (queue.items.length <= 1) {
+    throw new Error("Plan queue must keep at least one session");
+  }
+  const items = queue.items.filter((_, i) => i !== index);
+  return { items };
+}
+
+export function replaceQueueItem(
+  queue: PlanQueue,
+  index: number,
+  templateId: string,
+): PlanQueue {
+  assertIndex(queue, index);
+  if (!TEMPLATE_BY_ID[templateId]) {
+    throw new Error(`Unknown template: ${templateId}`);
+  }
+  const items = [...queue.items];
+  items[index] = templateId;
+  return { items };
+}
+
+function assertIndex(queue: PlanQueue, index: number): void {
+  if (!Number.isInteger(index) || index < 0 || index >= queue.items.length) {
+    throw new Error(`queue index out of range: ${index}`);
+  }
+}
+
 function assertPositiveCount(count: number): void {
   if (!Number.isInteger(count) || count < 1) {
     throw new Error(`count must be a positive integer; got ${count}`);
