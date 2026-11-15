@@ -44,6 +44,8 @@ export interface MountLibraryDetailOptions {
   memory?: DetailMemoryView;
   jointHistory?: readonly JointHistoryEntry[];
   planStatus?: string | null;
+  /** Short note after a declare raised related family levels. */
+  cascadeHint?: string | null;
 }
 
 export function mountLibraryDetail(
@@ -58,6 +60,7 @@ export function mountLibraryDetail(
     memory = {},
     jointHistory = [],
     planStatus = null,
+    cascadeHint = null,
   } = options;
   root.innerHTML = detailHtml(
     exercise,
@@ -66,6 +69,7 @@ export function mountLibraryDetail(
     memory,
     jointHistory,
     planStatus,
+    cascadeHint,
   );
 
   root.querySelector<HTMLButtonElement>("[data-lib-back]")?.addEventListener("click", () => {
@@ -104,13 +108,14 @@ export function detailHtml(
   memory: DetailMemoryView = {},
   jointHistory: readonly JointHistoryEntry[] = [],
   planStatus: string | null = null,
+  cascadeHint: string | null = null,
 ): string {
   const targetBadge = isTemplateTarget(exercise.id, targetIds)
     ? `<p class="lib-badge">Target</p>`
     : "";
   const chain = chainLinksHtml(exercise, catalogueById);
   const standards = standardsHtml(exercise);
-  const skill = skillPickerHtml(exercise, memory);
+  const skill = skillPickerHtml(exercise, memory, cascadeHint);
   const planActions = planActionsHtml(exercise, planStatus);
 
   return `
@@ -205,6 +210,7 @@ function jointLoadHtml(exercise: SeedExercise, history: readonly JointHistoryEnt
 function skillPickerHtml(
   exercise: SeedExercise,
   memory: DetailMemoryView,
+  cascadeHint: string | null = null,
 ): string {
   if (!exercise.standards) {
     return "";
@@ -215,6 +221,9 @@ function skillPickerHtml(
     return `<option value="${tier}" ${selected}>${SKILL_TIER_LABELS[tier]}</option>`;
   }).join("");
   const best = bestRepsHintHtml(exercise, memory, current);
+  const cascade = cascadeHint
+    ? `<p class="hint" data-cascade-hint>${escapeHtml(cascadeHint)}</p>`
+    : "";
   return `
     <p class="eyebrow">Your level</p>
     <label class="field">
@@ -224,6 +233,7 @@ function skillPickerHtml(
       </select>
     </label>
     ${best}
+    ${cascade}
   `;
 }
 

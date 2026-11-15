@@ -2,6 +2,7 @@ import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import { maxTier } from "../domain/skillTier";
 import type { Exercise, ExerciseMemory, SkillTier } from "../domain/types";
 import type { HistoryEntry, SessionEvaluation } from "../domain/program";
+import { cascadeFamilyTiers } from "../progress/cascadeFamilyTiers";
 import { effectiveSkillTier } from "../rules/skillDose";
 
 const HISTORY_KEY = "aurora.poc.history.v1";
@@ -61,22 +62,38 @@ export function applyEvaluationToMemory(
   return next;
 }
 
+export interface DeclareSkillTierResult {
+  memories: Record<string, ExerciseMemory>;
+  /** Related family moves whose floor rose (not the exercise you picked). */
+  cascadedCount: number;
+}
+
 /**
- * Manual tier pick from Library (option C declare path).
+ * Manual tier pick from Library, then raise same-or-easier family floors.
+ * Session logging can call `cascadeFamilyTiers` later with the same math.
  */
 export function declareSkillTier(
   memories: Record<string, ExerciseMemory>,
   exerciseId: string,
   tier: SkillTier,
-): Record<string, ExerciseMemory> {
+): DeclareSkillTierResult {
   const current = memories[exerciseId] ?? emptyMemory(exerciseId);
-  return {
+  const withSource: Record<string, ExerciseMemory> = {
     ...memories,
     [exerciseId]: {
       ...current,
       declaredTier: tier,
       skillTier: maxTier(current.skillTier ?? tier, tier),
     },
+  };
+  const { memories: cascadedMemories, raisedIds } = cascadeFamilyTiers({
+    memories: withSource,
+    sourceId: exerciseId,
+    declaredTier: tier,
+  });
+  return {
+    memories: cascadedMemories,
+    cascadedCount: raisedIds.length,
   };
 }
 

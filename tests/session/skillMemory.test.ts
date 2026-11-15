@@ -9,8 +9,8 @@ import {
 describe("skill memory", () => {
   it("stores a declared tier from Library", () => {
     const next = declareSkillTier({}, "pullup", "intermediate");
-    expect(next.pullup?.declaredTier).toBe("intermediate");
-    expect(next.pullup?.skillTier).toBe("intermediate");
+    expect(next.memories.pullup?.declaredTier).toBe("intermediate");
+    expect(next.memories.pullup?.skillTier).toBe("intermediate");
   });
 
   it("raises bestReps and skillTier from a logged set", () => {
