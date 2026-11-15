@@ -37,10 +37,9 @@ import { renderSetupView } from "./setupView";
 import { renderShell, type AppTab } from "./shell";
 
 const PANEL_RENDERERS: Partial<
-  Record<Exclude<AppTab, "today">, (panel: HTMLElement) => void>
+  Record<Exclude<AppTab, "today" | "progress">, (panel: HTMLElement) => void>
 > = {
   library: renderLibraryView,
-  progress: renderProgressView,
   body: renderBodyView,
   plan: renderPlanView,
   settings: renderSettingsView,
@@ -69,14 +68,18 @@ function showTab(root: HTMLElement, tab: AppTab): void {
     showTodayHome(root);
     return;
   }
-  const renderPanel = PANEL_RENDERERS[tab];
-  if (!renderPanel) {
-    throw new Error(`No panel renderer for tab: ${tab}`);
-  }
   renderShell(root, tab, `<div data-panel></div>`, (next) => showTab(root, next));
   const panel = root.querySelector<HTMLElement>("[data-panel]");
   if (!panel) {
     throw new Error("Expected [data-panel] after shell render");
+  }
+  if (tab === "progress") {
+    renderProgressView(panel, { onJumpTab: (next) => showTab(root, next) });
+    return;
+  }
+  const renderPanel = PANEL_RENDERERS[tab];
+  if (!renderPanel) {
+    throw new Error(`No panel renderer for tab: ${tab}`);
   }
   renderPanel(panel);
 }
