@@ -711,6 +711,9 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
     "NTC-style bodyweight move (cues written in-house)",
     "wger.de exercise 1823 (CC-BY-SA-4.0, teus_ergaster)"
   ],
+  "ntc_assisted_pistol": [
+    "NTC-style bodyweight move (cues written in-house)"
+  ],
   "ntc_knee_push_up": [
     "NTC-style bodyweight move (cues written in-house)",
     "wger.de exercise 1218 (CC-BY-SA-4.0, PaukOne)"
@@ -746,6 +749,15 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
     "NTC-style bodyweight move (cues written in-house)",
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
+  "ntc_wall_walk_up": [
+    "NTC-style bodyweight move (cues written in-house)"
+  ],
+  "ntc_push_up_plus": [
+    "NTC-style bodyweight move (cues written in-house)"
+  ],
+  "ntc_chest_to_wall_handstand": [
+    "NTC-style bodyweight move (cues written in-house)"
+  ],
   "ntc_downward_dog": [
     "NTC-style bodyweight move (cues written in-house)"
   ],
@@ -773,6 +785,18 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
     "wger.de exercise 1670 (CC-BY-SA-4.0, Jhonatan)"
   ],
   "ntc_walking_knee_hug": [
+    "NTC-style bodyweight move (cues written in-house)"
+  ],
+  "ntc_toy_soldiers": [
+    "NTC-style bodyweight move (cues written in-house)"
+  ],
+  "ntc_reach_and_touch": [
+    "NTC-style bodyweight move (cues written in-house)"
+  ],
+  "ntc_downdog_updog_switch": [
+    "NTC-style bodyweight move (cues written in-house)"
+  ],
+  "ntc_single_leg_balance": [
     "NTC-style bodyweight move (cues written in-house)"
   ],
   "fedb_3_4_sit_up": [

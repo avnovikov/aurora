@@ -11,7 +11,7 @@ import {
   isCooldownSurface,
   isWarmupSurface,
 } from "./sessionChalkStrip";
-import { cooldownSteps, currentWork } from "./sessionState";
+import { cooldownSteps, currentWork, isGetReadyRest } from "./sessionState";
 import type { ViewState } from "./sessionTypes";
 
 export function shellHtml(planned: PlannedSession, state: ViewState): string {
@@ -237,11 +237,16 @@ function restHtml(planned: PlannedSession, state: ViewState): string {
   const nextLine = item
     ? `next ${escapeHtml(item.exerciseName)} · Set ${state.setIndex} of ${item.dose.sets}`
     : "next set";
+  const getReady = isGetReadyRest(state);
+  const getReadyNote = getReady
+    ? `<p class="tagline">Easy rest after the ramp: walk, breathe, stay warm.</p>`
+    : "";
   return `
     <div class="rest-stage">
-      <p class="eyebrow">Rest · ${nextLine}</p>
+      <p class="eyebrow">${getReady ? "Get ready" : "Rest"} · ${nextLine}</p>
       <p class="reps" data-rest-left>${state.restLeft}</p>
       <p class="rest-cue" data-rest-cue></p>
+      ${getReadyNote}
       <p class="tagline">Next set reps</p>
       <div class="row rest-reps-row">
         <button type="button" class="rest-step" data-reps-minus>−</button>

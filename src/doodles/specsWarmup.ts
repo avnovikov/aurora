@@ -390,6 +390,206 @@ function wgsHamstring(): Pose {
 // ---------------------------------------------------------------- specs
 
 /** Warm-up drills (RAMP raise / mobilise / activate / potentiate stations). Import only from ./rig — never from ./specs (that would be circular). */
+// ---------------------------------------------------------------- toy soldiers
+
+/** Walking straight-leg kick: the kicking leg stays straight toward hip height, the opposite hand reaches for the toes. */
+function toySoldier(kick: "near" | "far" | null): Pose {
+  const pelvis: Point = [0, -172];
+  if (!kick) {
+    return {
+      pelvis,
+      chest: [0, -252],
+      feet: { near: [0, 0], far: [0, 0] },
+      toes: { near: 0, far: 0 },
+      hands: { near: [70, -214], far: [-30, -170] },
+      elbows: { near: { bend: 1 }, far: { bend: 1 } },
+    };
+  }
+  const other = kick === "near" ? "far" : "near";
+  return {
+    pelvis,
+    chest: along(pelvis, -65, 80),
+    feet: { [kick]: along(pelvis, -25, 173.9), [other]: [0, 0] },
+    toes: { [kick]: -30, [other]: 0 },
+    hands: { [other]: [166, -252], [kick]: [-46, -192] },
+    elbows: { near: { bend: 1 }, far: { bend: 1 } },
+  };
+}
+
+// ---------------------------------------------------------------- reach and touch
+
+/** Standing: arms overhead with a slight lean back, or hinged forward with the hands near the toes. */
+function reachTouch(mode: "up" | "high" | "front" | "down"): Pose {
+  if (mode === "high" || mode === "front") {
+    const pelvis: Point = [-3, -172];
+    return {
+      pelvis,
+      chest: [-3, -252],
+      hands: mode === "high" ? { near: [70, -345], far: [66, -343] } : { near: [112, -258], far: [108, -256] },
+      feet: { near: [0, 0], far: [0, 0] },
+      toes: { near: 0, far: 0 },
+    };
+  }
+  if (mode === "down") {
+    const pelvis: Point = [-30, -170];
+    return {
+      pelvis,
+      chest: along(pelvis, 10, 80),
+      hands: { near: [78, -34], far: [74, -30] },
+      knees: { near: { bend: -1 }, far: { bend: -1 } },
+      feet: { near: [0, 0], far: [0, 0] },
+      toes: { near: 0, far: 0 },
+    };
+  }
+  const pelvis: Point = [-6, -172];
+  return {
+    pelvis,
+    chest: along(pelvis, -100, 80),
+    head: [-47, -298],
+    hands: { near: [15.9, -388.6], far: [11.6, -389.6] },
+    feet: { near: [0, 0], far: [0, 0] },
+    toes: { near: 0, far: 0 },
+  };
+}
+
+// ---------------------------------------------------------------- downward dog / upward dog
+
+const DOG_HANDS: Point = [70, 0];
+
+/** Downward dog: hips high, arms and legs straight, heels toward the floor. */
+function downDog(): Pose {
+  return {
+    pelvis: [-75, -164],
+    chest: [-10, -118],
+    head: [45.4, -110.1],
+    hands: { near: DOG_HANDS, far: [DOG_HANDS[0] - 2, 0] },
+    feet: { near: [-160, -20], far: [-160, -20] },
+    toes: { near: 62, far: 62 },
+  };
+}
+
+/** Between the dogs: high plank on straight arms, feet slid back. */
+function dogPlank(): Pose {
+  return {
+    pelvis: [-19.4, -86.7],
+    chest: [53, -120],
+    head: [106, -134],
+    hands: { near: DOG_HANDS, far: [DOG_HANDS[0] - 2, 0] },
+    feet: { near: [-180, -19], far: [-180, -19] },
+    toes: { near: 62, far: 62 },
+  };
+}
+
+/** Upward dog: arms straight, chest up, hips near the floor, tops of the feet down. */
+function upDog(): Pose {
+  return {
+    pelvis: [16, -42],
+    chest: [58, -110],
+    spine: { bend: 1 },
+    head: [74, -163],
+    hands: { near: DOG_HANDS, far: [DOG_HANDS[0] - 2, 0] },
+    feet: { near: [-153, -4], far: [-153, -4] },
+    toes: { near: 180, far: 180 },
+  };
+}
+
+// ---------------------------------------------------------------- wall walk-up
+
+const WALL_FEET_X = -194;
+
+/** Plank with the feet on a wall behind them; `theta` is the shoulder-to-feet line above horizontal (-23 = plank). */
+function wallWalk(theta: number): Pose {
+  const t = (theta * Math.PI) / 180;
+  const u: Point = [Math.cos(t), Math.sin(t)];
+  const hx = WALL_FEET_X + 272 * u[0];
+  const shoulder: Point = [hx, -126];
+  const from = (back: number): Point => [round(shoulder[0] - back * u[0]), round(shoulder[1] - back * u[1])];
+  const chest = from(18);
+  const flat = theta < -20;
+  return {
+    pelvis: from(98),
+    chest,
+    head: along(chest, Math.min(theta + 10, 40), 56),
+    hands: { near: [round(hx), 0], far: [round(hx - 1), 0] },
+    feet: { near: flat ? [-193, -17.5] : from(272), far: flat ? [-193, -17.5] : from(272) },
+    toes: { near: flat ? 62 : -90, far: flat ? 62 : -90 },
+    knees: { near: { bend: -1 }, far: { bend: -1 } },
+  };
+}
+
+// ---------------------------------------------------------------- push-up plus
+
+/** High plank, arms locked; the upper back rounds as the floor is pushed away, then the chest sinks between the blades. */
+function pushUpPlus(plus: boolean): Pose {
+  return {
+    pelvis: [-30, -91.5],
+    chest: plus ? [41, -123] : [43, -116],
+    spine: { bend: plus ? -1 : 1 },
+    head: plus ? [96, -119.5] : [96, -129.5],
+    hands: { near: [60, 0], far: [59, 0] },
+    feet: { near: [-189, -22], far: [-189, -22] },
+    toes: { near: 62, far: 62 },
+  };
+}
+
+// ---------------------------------------------------------------- assisted pistol
+
+/** Standing on the near leg holding a post behind; the free leg stays straight out in front. */
+function assistedPistol(depth: 0 | 1): Pose {
+  const pelvis: Point = depth ? [-34, -112] : [-14, -172];
+  const chest: Point = depth ? along(pelvis, -68, 80) : [pelvis[0] + 4, pelvis[1] - 80];
+  return {
+    pelvis,
+    chest,
+    hands: { near: [-106, -200], far: [depth ? 70 : 84, depth ? -150 : -226] },
+    elbows: { near: { bend: 1 }, far: { bend: 1 } },
+    feet: { near: [10, 0], far: along(pelvis, depth ? -4 : 65, 172) },
+    toes: { near: 0, far: -70 },
+  };
+}
+
+// ---------------------------------------------------------------- chest-to-wall handstand
+
+const CTW_WALL_X = 34;
+
+/** Handstand facing the wall: hands 28 units off it, chest and toes lightly on its face. */
+function chestToWall(sway: 0 | 1): Pose {
+  const hand: Point = [6, 0];
+  const shoulder: Point = sway ? [24, -124] : [26, -124];
+  const dir = sway ? -89.2 : -89.6;
+  const pelvis = along(shoulder, dir, 98);
+  const chest = along(pelvis, dir + 180, 80);
+  return {
+    pelvis,
+    chest,
+    head: sway ? [-4, -96] : [-5, -98],
+    hands: { near: hand, far: [hand[0] - 2, 0] },
+    feet: { near: along(pelvis, dir, 174), far: along(pelvis, dir, 174) },
+    toes: { near: -72, far: -72 },
+  };
+}
+
+// ---------------------------------------------------------------- single-leg balance, eyes open
+
+const BALANCE_STEPS = [
+  { pelvis: [1, -168], thigh: 45, shin: 120, toe: 30, near: [120, -268], far: [-120, -268] },
+  { pelvis: [-2, -169], thigh: 24, shin: 32, toe: 10, near: [118, -246], far: [-118, -286] },
+  { pelvis: [1, -168], thigh: 100, shin: 150, toe: 120, near: [112, -296], far: [-122, -240] },
+] as const;
+
+function balanceOpen(step: 0 | 1 | 2): Pose {
+  const { pelvis, thigh, shin, toe, near, far } = BALANCE_STEPS[step];
+  const knee = along(pelvis, thigh, 88);
+  return {
+    pelvis,
+    chest: [pelvis[0], pelvis[1] - 80],
+    hands: { near, far },
+    knees: { far: { at: knee } },
+    feet: { near: [0, 0], far: along(knee, shin, 86) },
+    toes: { near: 0, far: toe },
+  };
+}
+
 export const WARMUP_DRILL_SPECS: DoodleSpec[] = [
   {
     id: "ntc_jumping_jacks",
@@ -417,7 +617,7 @@ export const WARMUP_DRILL_SPECS: DoodleSpec[] = [
     id: "hf_157",
     slug: "deep-squat-hold",
     title: "Deep Squat Hold",
-    transition: 1.4,
+    transition: 0.7,
     frames: [
       { hold: 0.6, pose: deepSquat(-36) },
       { hold: 0.6, pose: deepSquat(-28) },
@@ -577,4 +777,100 @@ export const WARMUP_DRILL_SPECS: DoodleSpec[] = [
       { hold: 0.5, pose: wgsHamstring() },
     ],
   },
+  {
+    id: "ntc_toy_soldiers",
+    slug: "toy-soldiers",
+    title: "Toy soldiers",
+    transition: 0.35,
+    frames: [
+      { hold: 0.15, pose: toySoldier("far") },
+      { hold: 0.05, pose: toySoldier(null) },
+      { hold: 0.15, pose: toySoldier("near") },
+      { hold: 0.05, pose: toySoldier(null) },
+    ],
+  },
+  {
+    id: "ntc_reach_and_touch",
+    slug: "reach-and-touch",
+    title: "Reach and touch",
+    transition: 0.5,
+    frames: [
+      { hold: 0.1, pose: reachTouch("up") },
+      { hold: 0, pose: reachTouch("high") },
+      { hold: 0, pose: reachTouch("front") },
+      { hold: 0.1, pose: reachTouch("down") },
+      { hold: 0, pose: reachTouch("front") },
+      { hold: 0, pose: reachTouch("high") },
+    ],
+  },
+  {
+    id: "ntc_downdog_updog_switch",
+    slug: "downdog-updog-switch",
+    title: "Downdog/updog switch",
+    transition: 1.4,
+    frames: [
+      { hold: 0.5, pose: downDog() },
+      { hold: 0, pose: dogPlank() },
+      { hold: 0.5, pose: upDog() },
+      { hold: 0, pose: dogPlank() },
+    ],
+  },
+  {
+    id: "ntc_wall_walk_up",
+    slug: "wall-walk-up",
+    title: "Wall walk-up",
+    props: [{ kind: "box", x: -222, y: -470, w: 14, h: 470 }],
+    transition: 1.1,
+    frames: [
+      { hold: 0.4, pose: wallWalk(-23) },
+      { hold: 0.2, pose: wallWalk(20) },
+      { hold: 0.6, pose: wallWalk(60) },
+      { hold: 0.2, pose: wallWalk(20) },
+    ],
+  },
+  {
+    id: "ntc_push_up_plus",
+    slug: "push-up-plus",
+    title: "Push-up plus",
+    transition: 0.8,
+    frames: [
+      { hold: 0.4, pose: pushUpPlus(true) },
+      { hold: 0.4, pose: pushUpPlus(false) },
+    ],
+  },
+  {
+    id: "ntc_assisted_pistol",
+    slug: "assisted-pistol",
+    title: "Assisted pistol squat",
+    props: [{ kind: "box", x: -126, y: -470, w: 14, h: 470 }],
+    transition: 1.3,
+    frames: [
+      { hold: 0.4, pose: assistedPistol(0) },
+      { hold: 0.5, pose: assistedPistol(1) },
+    ],
+  },
+  {
+    id: "ntc_chest_to_wall_handstand",
+    slug: "chest-to-wall-handstand",
+    title: "Chest-to-wall handstand",
+    props: [{ kind: "box", x: CTW_WALL_X, y: -470, w: 14, h: 470 }],
+    transition: 1.8,
+    frames: [
+      { hold: 1, pose: chestToWall(0) },
+      { hold: 1, pose: chestToWall(1) },
+    ],
+  },
+  {
+    id: "ntc_single_leg_balance",
+    slug: "single-leg-balance",
+    title: "Single-leg balance",
+    transition: 1,
+    frames: [
+      { hold: 0.4, pose: balanceOpen(0) },
+      { hold: 0.4, pose: balanceOpen(1) },
+      { hold: 0.4, pose: balanceOpen(0) },
+      { hold: 0.4, pose: balanceOpen(2) },
+    ],
+  },
 ];
+

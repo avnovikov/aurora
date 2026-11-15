@@ -37,8 +37,14 @@ describe("Today page", () => {
   });
 
   it("keeps the warm-up and cool-down preview from #38 in the card", () => {
-    expect(html).toMatch(/data-warmup-preview>Warm-up \d+ min/);
+    expect(html).toMatch(/data-warmup-preview>Warm-up · beginner · \d+ min/);
     expect(html.indexOf("data-warmup-preview")).toBeLessThan(html.indexOf("data-checkin"));
+  });
+
+  it("shows the warm-up level picked for today", () => {
+    expect(todayHomeHtml(model({ warmupLevel: "intermediate" }))).toMatch(
+      /data-warmup-preview>Warm-up · intermediate · \d+ min/,
+    );
   });
 
   it("labels an override as today instead", () => {

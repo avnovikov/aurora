@@ -2042,6 +2042,169 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
       "Rushing and losing control"
     ]
   },
+  "ntc_toy_soldiers": {
+    "id": "ntc_toy_soldiers",
+    "summary": "A walking warm-up of straight-leg kicks with the opposite hand reaching for the toe, raising body temperature while loosening the hamstrings.",
+    "steps": [
+      "Stand tall with your arms reaching forward at shoulder height.",
+      "Step forward and kick one straight leg up in front of you.",
+      "Reach the opposite hand toward the toes of the kicking leg.",
+      "Lower the leg, step through and kick the other leg.",
+      "Keep walking and let the kicks grow higher as you loosen up."
+    ],
+    "cues": [
+      "Kicking leg stays straight",
+      "Opposite hand to the toe",
+      "Tall chest, steady rhythm"
+    ],
+    "mistakes": [
+      "Rounding the back to reach the toe",
+      "Kicking hard before the hamstrings are warm"
+    ]
+  },
+  "ntc_reach_and_touch": {
+    "id": "ntc_reach_and_touch",
+    "summary": "A flowing standing drill that reaches both arms overhead with a slight lean back, then hinges to touch toward the toes.",
+    "steps": [
+      "Stand with your feet hip-width apart and your arms by your sides.",
+      "Reach both arms overhead and lean back slightly, opening the chest.",
+      "Hinge at the hips and reach down toward your toes, knees soft.",
+      "Roll back up and reach overhead again in one smooth motion.",
+      "Keep the movement flowing without pausing at either end."
+    ],
+    "cues": [
+      "Reach long overhead",
+      "Small lean back, ribs controlled",
+      "Hinge from the hips"
+    ],
+    "mistakes": [
+      "Bouncing at the bottom",
+      "Leaning far back into the lower back"
+    ]
+  },
+  "ntc_downdog_updog_switch": {
+    "id": "ntc_downdog_updog_switch",
+    "summary": "A yoga-style flow from downward dog forward into upward dog and back, mobilising the shoulders, spine, hips and hamstrings.",
+    "steps": [
+      "Start in downward dog with your hips high and your arms long.",
+      "Shift forward, lowering your hips toward the floor.",
+      "Lift your chest into upward dog with your arms straight and shoulders down.",
+      "Push back through your hands to return to downward dog.",
+      "Flow between the two positions at a steady, easy pace."
+    ],
+    "cues": [
+      "Arms stay straight",
+      "Chest up, shoulders down in updog",
+      "Hips high in downdog"
+    ],
+    "mistakes": [
+      "Shrugging the shoulders into the ears",
+      "Bending the elbows on the way forward"
+    ]
+  },
+  "ntc_wall_walk_up": {
+    "id": "ntc_wall_walk_up",
+    "summary": "A partial handstand drill that walks the feet up a wall from a plank to about a 60 degree body angle, loading the shoulders and wrists.",
+    "steps": [
+      "Start in a high plank with your feet against the base of a wall.",
+      "Walk your feet a few steps up the wall while your hands walk back toward it.",
+      "Stop when your body is at about 60 degrees, arms straight and core tight.",
+      "Pause briefly, then walk your hands out and your feet down to the plank.",
+      "Move slowly and stay well within what feels easy."
+    ],
+    "cues": [
+      "Arms locked, push the floor away",
+      "Ribs down, body straight",
+      "Small steps up and down"
+    ],
+    "mistakes": [
+      "Walking up past what you can control",
+      "Letting the lower back sag",
+      "Bending the elbows"
+    ]
+  },
+  "ntc_push_up_plus": {
+    "id": "ntc_push_up_plus",
+    "summary": "A high-plank drill that pushes the floor away so the shoulder blades spread around the ribs, training the serratus anterior for overhead and handstand work.",
+    "steps": [
+      "Set up in a high plank with your hands under your shoulders and your arms locked.",
+      "Let your chest sink a little so the shoulder blades draw together.",
+      "Push the floor away until your upper back rounds slightly and the shoulder blades spread apart.",
+      "Hold the top for a moment, then lower slowly back to the middle.",
+      "Keep your arms straight and your body in one line throughout."
+    ],
+    "cues": [
+      "Arms stay locked",
+      "Push the floor away at the top",
+      "Ribs down, glutes tight"
+    ],
+    "mistakes": [
+      "Bending the elbows so it turns into a push-up",
+      "Letting the hips sag while the shoulders move"
+    ]
+  },
+  "ntc_assisted_pistol": {
+    "id": "ntc_assisted_pistol",
+    "summary": "A single-leg squat to partial depth while holding a doorframe or post, building pistol strength, balance and range with support.",
+    "steps": [
+      "Stand on one leg beside a doorframe or sturdy post and hold it lightly with one or both hands.",
+      "Reach the free leg forward, just off the floor.",
+      "Sit your hips back and down on the standing leg to a depth you control.",
+      "Use the support only as much as you need to stay balanced.",
+      "Drive through the whole foot to stand up, then switch legs."
+    ],
+    "cues": [
+      "Knee tracks over the toes",
+      "Heel stays down",
+      "Hands guide, legs do the work"
+    ],
+    "mistakes": [
+      "Pulling yourself up with the arms",
+      "Letting the knee cave inward",
+      "Going deeper than you can control"
+    ]
+  },
+  "ntc_chest_to_wall_handstand": {
+    "id": "ntc_chest_to_wall_handstand",
+    "summary": "A handstand facing the wall with chest and toes lightly touching it, training a straight body line and shoulder strength for the freestanding handstand.",
+    "steps": [
+      "Place your hands shoulder-width apart, about 20–30 cm from the wall, with the fingers spread.",
+      "Walk your feet up the wall as you walk your hands closer to it.",
+      "Stop when your chest and toes touch the wall lightly and your body is straight.",
+      "Push the floor away with straight arms and keep the ribs tucked.",
+      "Walk the hands out and the feet down to come out of it with control."
+    ],
+    "cues": [
+      "Push tall through the shoulders",
+      "Ribs in, glutes tight",
+      "Toes only brush the wall"
+    ],
+    "mistakes": [
+      "Arching the lower back into a banana shape",
+      "Placing the hands too far from the wall",
+      "Holding to failure instead of stopping with form intact"
+    ]
+  },
+  "ntc_single_leg_balance": {
+    "id": "ntc_single_leg_balance",
+    "summary": "Standing on one leg with the eyes open while making small reaches with the free arm and leg, training ankle and hip control that lowers injury risk.",
+    "steps": [
+      "Stand tall on one leg with a soft knee and your eyes looking ahead.",
+      "Find your balance with your hands on your hips.",
+      "Make small, slow reaches with the free leg forward, to the side and back.",
+      "Add reaches with the arms while the standing foot stays planted.",
+      "Switch legs halfway through."
+    ],
+    "cues": [
+      "Grip the floor with the whole foot",
+      "Hips stay level",
+      "Small, slow reaches"
+    ],
+    "mistakes": [
+      "Locking the standing knee",
+      "Letting the hip drop on the free-leg side"
+    ]
+  },
   "hf_78": {
     "id": "hf_78",
     "summary": "A seated hold with your back against a wall that builds endurance in the quadriceps and glutes.",

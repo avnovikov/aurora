@@ -5,12 +5,15 @@ import type {
   SessionDurationTarget,
   SessionTemplate,
   TemplateSlot,
+  WarmupLevel,
 } from "../domain/program";
 import type { Dose, Exercise } from "../domain/types";
 import type { PlannedSession } from "./planSession";
+import { DEFAULT_WARMUP_LEVEL } from "./warmupLevel";
 import {
   buildCooldownView,
   buildWarmupView,
+  warmupTransitionSeconds,
   warmupViewSeconds,
   WARMUP_GAPS,
 } from "./warmupPlan";
@@ -32,6 +35,8 @@ export const SESSION_HARD_CAP_MINUTES = 60;
 
 export interface SessionDurationEstimate {
   warmupSeconds: number;
+  /** Easy "Get ready" rest between the warm-up ramp and the first work set. */
+  transitionSeconds: number;
   workSeconds: number;
   totalSeconds: number;
   totalMinutesRounded: number;
@@ -62,9 +67,11 @@ export function estimateSlotSeconds(
   return work + restGaps;
 }
 
+/** Estimate for one warm-up level (unknown level → beginner). */
 export function estimateSessionDuration(
   template: SessionTemplate,
-  warmupSeconds: number = estimateTemplateWarmupSeconds(template),
+  level: WarmupLevel = DEFAULT_WARMUP_LEVEL,
+  warmupSeconds: number = estimateTemplateWarmupSeconds(template, level),
 ): SessionDurationEstimate {
   assertWarmupSeconds(warmupSeconds);
   const target = template.targetMinutes ?? DEFAULT_SESSION_TARGET;
@@ -74,7 +81,9 @@ export function estimateSessionDuration(
     (sum, slot) => sum + estimateSlotSeconds(slot),
     0,
   );
-  const totalSeconds = warmupSeconds + workSeconds;
+  const transitionSeconds =
+    template.slots.length === 0 ? 0 : warmupTransitionSeconds(templateWarmupStations(template, level));
+  const totalSeconds = warmupSeconds + transitionSeconds + workSeconds;
   const totalMinutesRounded = Math.round(totalSeconds / 60);
   const withinTarget =
     totalMinutesRounded >= target.minMinutes &&
@@ -82,6 +91,7 @@ export function estimateSessionDuration(
 
   return {
     warmupSeconds,
+    transitionSeconds,
     workSeconds,
     totalSeconds,
     totalMinutesRounded,
@@ -100,10 +110,13 @@ export function formatDurationLabel(estimate: SessionDurationEstimate): string {
 }
 
 /**
- * Wall-clock estimate for today's resolved plan (warmup stations + work + rests).
+ * Wall-clock estimate for today's resolved plan (warmup stations, the
+ * warm-up → work rest, work + rests).
  */
 export function estimatePlannedSessionSeconds(planned: PlannedSession): number {
-  const warmupSeconds = warmupViewSeconds(planned.warmup);
+  const transitionSeconds =
+    planned.work.length === 0 ? 0 : warmupTransitionSeconds(planned.warmup);
+  const warmupSeconds = warmupViewSeconds(planned.warmup) + transitionSeconds;
   const workSeconds = planned.work.reduce((sum, item) => {
     const exercise = EXERCISE_GRAPH[item.exerciseId];
     if (!exercise) {
@@ -126,12 +139,26 @@ export function warmupMinutesLabel(warmupSeconds: number): string {
   return `Warmup · ${minutes} min`;
 }
 
-function estimateTemplateWarmupSeconds(template: SessionTemplate): number {
-  if (template.warmupStationIds.length === 0) {
+function templateWarmupStations(template: SessionTemplate, level: WarmupLevel) {
+  return stationsFor(template.warmupByLevel[level], template.warmupHoldSeconds);
+}
+
+/** Seconds of the template's warm-up stations at one level (transition rest excluded). */
+export function estimateTemplateWarmupSeconds(
+  template: SessionTemplate,
+  level: WarmupLevel = DEFAULT_WARMUP_LEVEL,
+): number {
+  if (template.warmupByLevel[level].length === 0) {
     return DEFAULT_WARMUP_SECONDS;
   }
-  const stations = stationsFor(template.warmupStationIds, template.warmupHoldSeconds);
-  return warmupViewSeconds(buildWarmupView(stations));
+  return warmupViewSeconds(buildWarmupView(templateWarmupStations(template, level)));
+}
+
+/** True when the template's warm-up differs by level (Mobility has one list). */
+export function hasTieredWarmup(template: SessionTemplate): boolean {
+  const { beginner, intermediate, advanced } = template.warmupByLevel;
+  const key = (ids: readonly string[]) => ids.join(",");
+  return key(beginner) !== key(intermediate) || key(beginner) !== key(advanced);
 }
 
 /** Seconds of the template's optional cool-down (0 when it has none). */
@@ -151,11 +178,17 @@ export function cooldownOfferLabel(cooldownSeconds: number): string {
 }
 
 /**
- * Preview copy for Today / Plan: warm-up length (counted in the session
- * estimate) plus the optional cool-down shown separately.
+ * Preview copy for Today / Plan, e.g. "Warm-up · intermediate · 8 min · +4 min
+ * cool-down": the level (when the warm-up has levels), its length (counted in
+ * the session estimate) and the optional cool-down shown separately.
  */
-export function warmupCooldownLabel(template: SessionTemplate): string {
-  const warmup = `Warm-up ${stationMinutes(estimateTemplateWarmupSeconds(template))} min`;
+export function warmupCooldownLabel(
+  template: SessionTemplate,
+  level: WarmupLevel = DEFAULT_WARMUP_LEVEL,
+): string {
+  const minutes = stationMinutes(estimateTemplateWarmupSeconds(template, level));
+  const levelPart = hasTieredWarmup(template) ? ` · ${level}` : "";
+  const warmup = `Warm-up${levelPart} · ${minutes} min`;
   const cooldownSeconds = estimateTemplateCooldownSeconds(template);
   if (cooldownSeconds === 0) {
     return warmup;

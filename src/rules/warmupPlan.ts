@@ -79,6 +79,20 @@ export function buildCooldownView(stations: WarmupStation[]): WarmupStep[] {
   return stations.length === 0 ? [] : buildWarmupView(stations);
 }
 
+/**
+ * Easy "Get ready" rest between the end of the warm-up and the first work set:
+ * enough to recover from the submaximal ramp without losing temperature
+ * (1–2 min; McGowan 2015). Only after a warm-up that ends on a ramp.
+ */
+export const WARMUP_TRANSITION_REST_SECONDS = 75;
+
+/** Seconds of the warm-up → work rest (0 when the warm-up has no ramp). */
+export function warmupTransitionSeconds(
+  steps: readonly { phase?: StationPhase }[],
+): number {
+  return steps.some((step) => step.phase === "potentiate") ? WARMUP_TRANSITION_REST_SECONDS : 0;
+}
+
 /** Total wall-clock seconds for a materialised warmup view. */
 export function warmupViewSeconds(steps: readonly WarmupStep[]): number {
   return steps.reduce(

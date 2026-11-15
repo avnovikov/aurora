@@ -51,14 +51,23 @@ export interface SessionDurationTarget {
   maxMinutes: number;
 }
 
+/** Warm-up level: the athlete's tier in the session's target family, in three bands. */
+export type WarmupLevel = "beginner" | "intermediate" | "advanced";
+
+/** Warm-up station ids per level (Mobility repeats one list). */
+export type WarmupLists = Readonly<Record<WarmupLevel, readonly string[]>>;
+
 export interface SessionTemplate {
   id: string;
   name: string;
   focus: SessionFocus;
   /** North-star hard skills (e.g. freestanding_hs, pistol_squat) */
   targetExerciseIds: string[];
-  /** Warm-up stations in RAMP order (see `WARMUP_STATIONS`). */
-  warmupStationIds: string[];
+  /**
+   * Warm-up stations per level, each in RAMP order (see `WARMUP_STATIONS`).
+   * The level comes from the athlete's tier in the target family (`warmupLevelFor`).
+   */
+  warmupByLevel: WarmupLists;
   /** Optional cool-down stretches offered after the work (may be empty). */
   cooldownStationIds: string[];
   /** Per-template warm-up hold overrides (seconds) by station id. */

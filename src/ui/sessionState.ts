@@ -1,5 +1,5 @@
 import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
-import type { WarmupStep } from "../rules/warmupPlan";
+import { warmupTransitionSeconds, type WarmupStep } from "../rules/warmupPlan";
 import { estimatePlannedSessionSeconds } from "../rules/sessionDuration";
 import { createEmptyLog, type ActiveWorkState } from "../session/setLog";
 import { INITIAL_PULSE } from "./pulseState";
@@ -68,6 +68,26 @@ export function persistPhase(planned: PlannedSession, state: ViewState): Persist
     return "warmup";
   }
   return state.workIndex >= planned.work.length ? "cooldown" : "work";
+}
+
+/**
+ * After the last warm-up station: point at the first work set and return the
+ * "Get ready" rest to run first (0 = go straight to work). During that rest
+ * the state is `rest` with the first set's work state.
+ */
+export function enterWorkAfterWarmup(planned: PlannedSession, state: ViewState): number {
+  state.workIndex = 0;
+  state.setIndex = 1;
+  state.workState = syncWorkState(planned, state);
+  const rest = state.workState === null ? 0 : warmupTransitionSeconds(planned.warmup);
+  state.phase = rest > 0 ? "rest" : "work";
+  state.restLeft = rest;
+  return rest;
+}
+
+/** True during the warm-up → work rest (the only rest before a first set). */
+export function isGetReadyRest(state: ViewState): boolean {
+  return state.phase === "rest" && state.workState !== null && state.workIndex === 0 && state.setIndex === 1;
 }
 
 /** Cool-down stations (sessions saved before the cool-down existed have none). */
