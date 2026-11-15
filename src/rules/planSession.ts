@@ -2,10 +2,13 @@ import {
   SEED_GRAPH,
   STARTER_PROGRAM,
   type LoadRegion,
-  type SeedExercise,
   type SeedSlot,
   type StarterProgram,
 } from "../data/seed";
+import {
+  requireWarmupStation,
+  type WarmupStation,
+} from "../data/warmupStations";
 import type { HistoryEntry, SessionFocus } from "../domain/program";
 import type {
   Dose,
@@ -38,6 +41,10 @@ export interface PlannedSession {
   programId: string;
   sessionLabel: string;
   readiness: Readiness;
+  /**
+   * One-tap warmup mini-session (own stations + timings).
+   * Not work prescriptions; runs before `work`.
+   */
   warmup: WarmupStep[];
   work: PlannedWorkItem[];
   lightDay: boolean;
@@ -72,10 +79,8 @@ function focusRegionsFromSlots(program: StarterProgram): LoadRegion[] {
   return [...regions];
 }
 
-function warmupPool(program: StarterProgram): SeedExercise[] {
-  return program.warmupExerciseIds
-    .map((id) => SEED_GRAPH[id])
-    .filter((item): item is SeedExercise => Boolean(item));
+function warmupStationsFor(program: StarterProgram): WarmupStation[] {
+  return program.warmupStationIds.map((id) => requireWarmupStation(id));
 }
 
 function planWorkItem(
@@ -166,7 +171,7 @@ export function planSession(
     previous?.exerciseIds ?? null,
   );
   const warmup = planWarmup({
-    pool: warmupPool(program),
+    stations: warmupStationsFor(program),
     focusRegions: focusRegionsFromSlots(program),
   });
   return {

@@ -36,7 +36,7 @@ export interface StarterProgram {
   name: string;
   sessionLabel: string;
   slots: SeedSlot[];
-  warmupExerciseIds: string[];
+  warmupStationIds: string[];
 }
 
 function ex(partial: SeedExercise): SeedExercise {
@@ -557,7 +557,7 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     targetExerciseIds: ["pistol_squat"],
     repeat: true,
     targetMinutes: SESSION_BAND,
-    warmupExerciseIds: [
+    warmupStationIds: [
       "pulse_raiser_march",
       "hip_circles",
       "ankle_rocks",
@@ -619,7 +619,7 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     targetExerciseIds: ["hanging_knee_raise"],
     repeat: true,
     targetMinutes: SESSION_BAND,
-    warmupExerciseIds: ["pulse_raiser_march", "hip_circles"],
+    warmupStationIds: ["pulse_raiser_march", "hip_circles"],
     slots: [
       {
         id: "core_dead_bug",
@@ -676,7 +676,7 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     targetExerciseIds: ["freestanding_hs"],
     repeat: true,
     targetMinutes: SESSION_BAND,
-    warmupExerciseIds: ["wrist_load", "scap_pushup"],
+    warmupStationIds: ["wrist_load", "scap_pushup"],
     slots: [
       {
         id: "skill_wall_hs",
@@ -725,7 +725,7 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     targetExerciseIds: ["muscle_up"],
     repeat: true,
     targetMinutes: SESSION_BAND,
-    warmupExerciseIds: ["pulse_raiser_march", "scap_pushup"],
+    warmupStationIds: ["pulse_raiser_march", "scap_pushup"],
     slots: [
       {
         id: "bars_hang",
@@ -773,7 +773,7 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     targetExerciseIds: ["pistol_squat", "pullup", "freestanding_hs"],
     repeat: true,
     targetMinutes: SESSION_BAND,
-    warmupExerciseIds: [
+    warmupStationIds: [
       "pulse_raiser_march",
       "hip_circles",
       "wrist_load",
@@ -846,7 +846,7 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     // Optional one-off; completing it drops it from the queue.
     repeat: false,
     targetMinutes: MOBILITY_BAND,
-    warmupExerciseIds: ["pulse_raiser_march", "hip_circles"],
+    warmupStationIds: ["pulse_raiser_march", "hip_circles"],
     // Every slot is pinned: resolveSlot never advances / regresses these
     // exercises, and the variety rule never swaps them for strength work.
     slots: [
@@ -920,7 +920,7 @@ export const STARTER_PROGRAM: StarterProgram = {
   id: "tmpl_legs",
   name: "Legs",
   sessionLabel: "Today",
-  warmupExerciseIds: SESSION_TEMPLATES[0].warmupExerciseIds,
+  warmupStationIds: SESSION_TEMPLATES[0].warmupStationIds,
   slots: SESSION_TEMPLATES[0].slots,
 };
 
@@ -937,7 +937,7 @@ export function templateToStarter(template: SessionTemplate): StarterProgram {
     id: template.id,
     name: template.name,
     sessionLabel: template.name,
-    warmupExerciseIds: template.warmupExerciseIds,
+    warmupStationIds: template.warmupStationIds,
     slots: template.slots,
   };
 }

@@ -23,7 +23,7 @@ describe("SESSION_TEMPLATES", () => {
 describe("STARTER_PROGRAM", () => {
   it("aliases the Legs template for older callers", () => {
     expect(STARTER_PROGRAM.id).toBe("tmpl_legs");
-    expect(STARTER_PROGRAM.warmupExerciseIds.length).toBeGreaterThan(0);
+    expect(STARTER_PROGRAM.warmupStationIds.length).toBeGreaterThan(0);
     expect(STARTER_PROGRAM.slots.map((slot) => slot.label)).toEqual([
       "Squat",
       "Split squat",

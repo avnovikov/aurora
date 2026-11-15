@@ -1,4 +1,3 @@
-import { SEED_GRAPH } from "../data/seed";
 import { escapeHtml } from "../library/present";
 import { isNativePulseAvailable } from "../pulse/hrMonitor";
 import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
@@ -117,14 +116,14 @@ function warmupHtml(planned: PlannedSession, state: ViewState): string {
   const media = step.doodlePath
     ? `<img class="doodle" src="${step.doodlePath}" alt="Doodle for ${escapeHtml(step.name)}" />`
     : "";
-  const cues = cuesListHtml(SEED_GRAPH[step.exerciseId]?.cues ?? []);
+  const cues = cuesListHtml(step.cues);
   return `
-    <p class="eyebrow">Warmup</p>
+    <p class="eyebrow">Warmup session</p>
     <h2>${escapeHtml(step.name)}</h2>
     <p class="tagline">${escapeHtml(step.region)} · <span data-warmup-left>${step.holdSeconds}</span>s</p>
     ${media}
     ${cues}
-    <p class="reason">Continuous block · ${WARMUP_GAPS.sameArea}s same area · ${WARMUP_GAPS.crossArea}s cross area</p>
+    <p class="reason">Own timings · ${WARMUP_GAPS.sameArea}s same area · ${WARMUP_GAPS.crossArea}s cross area</p>
   `;
 }
 
