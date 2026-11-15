@@ -1,4 +1,5 @@
 import type { EquipmentId, UserProfile } from "../domain/program";
+import { DEFAULT_PALETTE, isPaletteKey } from "../brand/palettes";
 import { loadDeloadActive } from "./deload";
 import { isJointHistory } from "./jointHistory";
 import { isCoachMuted, setCoachMuted } from "../voice/coachVoice";
@@ -11,6 +12,7 @@ const DEFAULT_PROFILE: UserProfile = {
   voiceMuted: false,
   jointHistory: [],
   setupDone: false,
+  palette: DEFAULT_PALETTE,
 };
 
 function freshDefault(): UserProfile {
@@ -29,6 +31,10 @@ export function loadProfile(): UserProfile {
   try {
     // Profiles saved before joint history existed lack the new fields.
     const parsed = { ...freshDefault(), ...JSON.parse(raw) } as UserProfile;
+    // An unknown palette (renamed or removed) falls back rather than losing the profile.
+    if (!isPaletteKey(parsed.palette)) {
+      parsed.palette = DEFAULT_PALETTE;
+    }
     assertProfile(parsed);
     setCoachMuted(parsed.voiceMuted);
     return parsed;
@@ -77,5 +83,8 @@ function assertProfile(profile: UserProfile): void {
   }
   if (!isJointHistory(profile.jointHistory)) {
     throw new Error("jointHistory is invalid");
+  }
+  if (!isPaletteKey(profile.palette)) {
+    throw new Error(`palette is unknown: ${String(profile.palette)}`);
   }
 }

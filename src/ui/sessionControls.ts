@@ -56,6 +56,28 @@ export function wireSessionControls(
   root.querySelector("[data-skip]")?.addEventListener("click", () => {
     completeSet(planned, state, "skipped", handlers);
   });
+  wireRepsAndLoadButtons(root, state, handlers);
+  root.querySelector("[data-cooldown-start]")?.addEventListener("click", () => {
+    handlers.onStartCooldown();
+  });
+  root.querySelector("[data-cooldown-skip]")?.addEventListener("click", () => {
+    handlers.onSkipCooldown();
+  });
+  wirePulseSimButtons(root, state, handlers);
+  wirePulseConnectButtons(root, state, handlers);
+
+  const stage = root.querySelector<HTMLElement>("[data-swipe-stage]");
+  if (stage) {
+    wireSwipe(stage, () => handlers.onFinishExercise());
+  }
+}
+
+/** The Log set steppers: this set's reps and optional added load. */
+function wireRepsAndLoadButtons(
+  root: HTMLElement,
+  state: ViewState,
+  handlers: SessionControlHandlers,
+): void {
   root.querySelector("[data-reps-minus]")?.addEventListener("click", () => {
     adjustNextReps(state, -1, handlers);
   });
@@ -71,19 +93,6 @@ export function wireSessionControls(
   root.querySelector("[data-load-plus]")?.addEventListener("click", () => {
     adjustAddedLoadDelta(state, 1, handlers);
   });
-  root.querySelector("[data-cooldown-start]")?.addEventListener("click", () => {
-    handlers.onStartCooldown();
-  });
-  root.querySelector("[data-cooldown-skip]")?.addEventListener("click", () => {
-    handlers.onSkipCooldown();
-  });
-  wirePulseSimButtons(root, state, handlers);
-  wirePulseConnectButtons(root, state, handlers);
-
-  const stage = root.querySelector<HTMLElement>("[data-swipe-stage]");
-  if (stage) {
-    wireSwipe(stage, () => handlers.onFinishExercise());
-  }
 }
 
 function wirePulseConnectButtons(

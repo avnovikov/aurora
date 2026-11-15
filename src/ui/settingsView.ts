@@ -1,4 +1,7 @@
+import { PALETTES, applyPalette, isPaletteKey, type Palette } from "../brand/palettes";
 import type { EquipmentId } from "../domain/program";
+import { escapeHtml } from "../library/present";
+import { setChipPressed } from "../library/chips";
 import { mountJointHistoryEditor } from "./jointHistoryEditor";
 import { loadDeloadActive, saveDeloadActive } from "../settings/deload";
 import {
@@ -7,6 +10,11 @@ import {
   loadProfile,
   saveProfile,
 } from "../settings/profile";
+
+/** A pick-one palette chip: label, with the meaning as a small second line. */
+function paletteChipHtml(palette: Palette, selected: boolean): string {
+  return `<button type="button" class="palette-chip${selected ? " selected" : ""}" data-palette-key="${palette.key}" aria-pressed="${selected}"><span class="palette-label">${escapeHtml(palette.label)}</span><small class="palette-meaning">${escapeHtml(palette.meaning)}</small></button>`;
+}
 
 export function renderSettingsView(root: HTMLElement): void {
   const profile = loadProfile();
@@ -26,6 +34,10 @@ export function renderSettingsView(root: HTMLElement): void {
             (item) =>
               `<button type="button" data-eq="${item}" class="${profile.equipment.includes(item) ? "selected" : ""}">${item}</button>`,
           ).join("")}
+        </div>
+        <p class="tagline">Palette</p>
+        <div class="palette-list" role="group" aria-label="Palette">
+          ${PALETTES.map((palette) => paletteChipHtml(palette, palette.key === profile.palette)).join("")}
         </div>
         <p class="tagline">Past joint injuries</p>
         <div data-joint-editor></div>
@@ -52,6 +64,19 @@ export function renderSettingsView(root: HTMLElement): void {
           profile.equipment = [...profile.equipment, id];
         }
         paint();
+      });
+    });
+
+    // Live preview and saved at once; only the palette is written, so other
+    // unsaved edits on this page still wait for Save.
+    const paletteChips = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-palette-key]"));
+    paletteChips.forEach((button) => {
+      button.addEventListener("click", () => {
+        const key = button.dataset.paletteKey;
+        if (!isPaletteKey(key)) return;
+        profile.palette = applyPalette(key);
+        saveProfile({ ...loadProfile(), palette: profile.palette });
+        paletteChips.forEach((chip) => setChipPressed(chip, chip === button));
       });
     });
 
