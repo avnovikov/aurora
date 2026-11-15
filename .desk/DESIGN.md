@@ -43,59 +43,59 @@ palettes:
   ushas:
     label: "Ushas"
     language: "Sanskrit"
-    meaning: "The Vedic goddess of dawn. Fluorescent orange on black."
+    meaning: "The Vedic goddess of dawn. Fluorescent orange page, plum-black type, violet accent (mid-90s Electric Word pages)."
     colors:
-      background: "#0a0a0a"
-      surface: "#161616"
-      foreground: "#f5f5f0"
-      muted: "#a3a3a3"
-      accent: "#ff6a13"
-      onAccent: "#0a0a0a"
-      alert: "#ff2d95"
-      edge: "#2c2c2c"
-      controlEdge: "#6b6b6b"
+      background: "#ff6a1a"
+      surface: "#ff8a45"
+      foreground: "#1f0a14"
+      muted: "#4a1608"
+      accent: "#3a1270"
+      onAccent: "#ffffff"
+      alert: "#5c0030"
+      edge: "#e05200"
+      controlEdge: "#6a1e00"
   revontulet:
     label: "Revontulet"
     language: "Finnish"
-    meaning: "Northern lights, literally fox fires. Full-bleed fluorescent lime."
+    meaning: "Northern lights, literally fox fires. Lime page, black type, web blue accent (1995 wired.com archive pages)."
     colors:
-      background: "#ccff00"
-      surface: "#e0ff66"
-      foreground: "#0a0a0a"
-      muted: "#3d4a00"
-      accent: "#0a0a0a"
-      onAccent: "#ccff00"
-      alert: "#c4006a"
-      edge: "#9fc700"
-      controlEdge: "#4d5c00"
+      background: "#99ff33"
+      surface: "#c2ff80"
+      foreground: "#000000"
+      muted: "#2b4a0a"
+      accent: "#0033cc"
+      onAccent: "#ffffff"
+      alert: "#a3001b"
+      edge: "#7ad61f"
+      controlEdge: "#3d6b0f"
   fajr:
     label: "Fajr"
     language: "Arabic"
-    meaning: "First light before sunrise, while the sky is still violet. Cyan on deep purple."
+    meaning: "First light before sunrise, while the sky is still violet. Violet column, white type, fluorescent orange accent (Tired/Wired pages)."
     colors:
-      background: "#1e0b4b"
-      surface: "#2b1466"
-      foreground: "#f3efff"
-      muted: "#b3a6e0"
-      accent: "#00e5ff"
-      onAccent: "#1e0b4b"
-      alert: "#ff5c39"
-      edge: "#3f2785"
-      controlEdge: "#8a78c9"
+      background: "#5b2a86"
+      surface: "#4c2073"
+      foreground: "#ffffff"
+      muted: "#e6d4f5"
+      accent: "#ff9a3d"
+      onAccent: "#1f0a14"
+      alert: "#ff9ad2"
+      edge: "#7a4aa8"
+      controlEdge: "#c7a8e6"
   eos:
     label: "Eos"
     language: "Greek"
-    meaning: "The dawn goddess. Cool metallic silver with electric blue."
+    meaning: "The rosy-fingered dawn goddess. Warm paper, fluorescent magenta accent (mid-90s front-of-book pages)."
     colors:
-      background: "#c8cacd"
-      surface: "#dfe1e3"
-      foreground: "#0b0b0c"
-      muted: "#45474b"
-      accent: "#0033cc"
+      background: "#fbf6ee"
+      surface: "#ffffff"
+      foreground: "#1a0f14"
+      muted: "#6b5560"
+      accent: "#d0006f"
       onAccent: "#ffffff"
-      alert: "#9e0b22"
-      edge: "#a9acb0"
-      controlEdge: "#5c5f64"
+      alert: "#b33a00"
+      edge: "#f2d2de"
+      controlEdge: "#8a6f7a"
 type:
   family: "IBM Plex Sans"
   headingFamily: "IBM Plex Sans Condensed"
@@ -120,7 +120,7 @@ sources:
   - "src/brand/identity.ts (names, tagline, about line)"
   - "README.md (product description, British English)"
   - "index.html (theme-color #070708)"
-  - "Extra palettes: inspired by early-1990s fluorescent and metallic magazine print; all values chosen for screen and contrast-checked"
+  - "Extra palettes: sampled from mid-1990s WIRED inside pages (Electric Word, Tired/Wired) and the 1995 wired.com archive pages (Internet Archive scans and Wayback captures); brightened for screen and contrast-checked"
 ---
 
 # Aurora · Rassvet
@@ -139,10 +139,10 @@ Six palettes share one set of roles. `colors` above is Rassvet, the default, and
 |---|---|---|---|
 | rassvet | Rassvet | Russian | Dawn; brass on near-black (default) |
 | alvorada | Alvorada | Portuguese | Daybreak; ink on paper (light) |
-| ushas | Ushas | Sanskrit | Dawn goddess; fluorescent orange on black |
-| revontulet | Revontulet | Finnish | Northern lights; fluorescent lime |
-| fajr | Fajr | Arabic | Pre-sunrise violet; cyan on purple |
-| eos | Eos | Greek | Dawn goddess; silver and electric blue |
+| ushas | Ushas | Sanskrit | Dawn goddess; fluorescent orange page, violet accent |
+| revontulet | Revontulet | Finnish | Northern lights; lime page, web blue accent |
+| fajr | Fajr | Arabic | Pre-sunrise violet; white type, fluorescent orange accent |
+| eos | Eos | Greek | Rosy-fingered dawn; warm paper, fluorescent magenta |
 
 Roles:
 

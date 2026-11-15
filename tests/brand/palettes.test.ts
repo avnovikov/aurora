@@ -158,9 +158,46 @@ describe("applyPalette", () => {
     expect(fake.meta?.content).toBe("#070708");
   });
 
+  it("applies the WIRED-derived palettes", () => {
+    const fake = fakeDocument();
+    applyPalette("ushas", fake.doc);
+    expect(fake.vars["--background"]).toBe("#ff6a1a");
+    expect(fake.vars["--foreground"]).toBe("#1f0a14");
+    expect(fake.vars["--accent"]).toBe("#3a1270");
+    expect(fake.meta?.content).toBe("#ff6a1a");
+    applyPalette("revontulet", fake.doc);
+    expect(fake.vars["--background"]).toBe("#99ff33");
+    expect(fake.vars["--accent"]).toBe("#0033cc");
+    applyPalette("fajr", fake.doc);
+    expect(fake.vars["--background"]).toBe("#5b2a86");
+    expect(fake.vars["--accent"]).toBe("#ff9a3d");
+    applyPalette("eos", fake.doc);
+    expect(fake.vars["--background"]).toBe("#fbf6ee");
+    expect(fake.vars["--accent"]).toBe("#d0006f");
+  });
+
   it("works without a theme-color meta", () => {
     const fake = fakeDocument(false);
     expect(() => applyPalette("ushas", fake.doc)).not.toThrow();
     expect(fake.attrs["data-palette"]).toBe("ushas");
+  });
+});
+
+/** WCAG relative luminance of a #rrggbb colour. */
+function luminance(hex: string): number {
+  const channels = [1, 3, 5].map((i) => Number.parseInt(hex.slice(i, i + 2), 16) / 255);
+  const [r, g, b] = channels.map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.04045) / 1.055) ** 2.4));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+describe("style.css color-scheme", () => {
+  it("marks exactly the light-background palettes as color-scheme light", () => {
+    const css = readFileSync(new URL("../../src/style.css", import.meta.url), "utf8");
+    const marked = [...css.matchAll(/:root\[data-palette="(\w+)"\]/g)].map((m) => m[1]).sort();
+    const light = PALETTES.filter((p) => luminance(p.colors.background) > 0.18)
+      .map((p) => p.key)
+      .sort();
+    expect(light).toEqual(["alvorada", "eos", "revontulet", "ushas"]);
+    expect(marked).toEqual(light);
   });
 });

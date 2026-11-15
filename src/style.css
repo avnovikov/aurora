@@ -37,6 +37,7 @@
 
 /* Light palettes: native controls (checkboxes, selects, scrollbars) follow. */
 :root[data-palette="alvorada"],
+:root[data-palette="ushas"],
 :root[data-palette="revontulet"],
 :root[data-palette="eos"] {
   color-scheme: light;
