@@ -1,4 +1,5 @@
-import { SEED_EXERCISES, type LoadRegion } from "../data/seed";
+import { LIBRARY_CATALOGUE } from "../data/libraryCatalogue";
+import type { LoadRegion } from "../data/seed";
 import { LIBRARY_REGIONS, searchExercises } from "../library/search";
 
 export function renderLibraryView(root: HTMLElement): void {
@@ -6,7 +7,7 @@ export function renderLibraryView(root: HTMLElement): void {
   let region: LoadRegion | "all" = "all";
 
   const paint = (): void => {
-    const results = searchExercises(SEED_EXERCISES, { text, region });
+    const results = searchExercises(LIBRARY_CATALOGUE, { text, region });
     root.innerHTML = `
       <main class="shell">
         <p class="eyebrow">Library</p>

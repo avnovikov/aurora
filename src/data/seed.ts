@@ -3,11 +3,21 @@ import type { Dose, Exercise, Pattern } from "../domain/types";
 
 export type LoadRegion = "legs" | "push" | "pull" | "core" | "skill" | "general";
 
+export interface ExerciseMedia {
+  url: string;
+  license: string;
+  source: string;
+  mediaType: string;
+}
+
 export interface SeedExercise extends Exercise {
   role?: "warmup" | "work";
   regions: LoadRegion[];
   doodlePath?: string;
   cues: string[];
+  description?: string;
+  media?: ExerciseMedia[];
+  attribution?: string;
 }
 
 export interface SeedSlot {
