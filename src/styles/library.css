@@ -72,8 +72,6 @@
 }
 
 .library .lib-list > li {
-  display: block;
-  padding: 0;
   border-bottom: 1px solid var(--edge);
 }
 
@@ -96,7 +94,6 @@
   font-weight: 600;
   font-size: 16px;
   line-height: 20px;
-  color: var(--foreground);
 }
 
 .library .lib-meta {
@@ -234,18 +231,22 @@
 
 .library .lib-filters[open] summary {
   border-color: var(--foreground);
-  border-bottom: 1px solid var(--foreground);
+}
+
+/* Small uppercase labels: the trigger names and the row labels in a sheet. */
+.library .t-label,
+.library .lib-sheet .chip-row-label {
+  font-size: 13px;
+  line-height: 16px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 .library .t-label {
   display: block;
   margin-bottom: 4px;
-  font-size: 13px;
-  line-height: 16px;
   font-weight: 400;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
 }
 
 .library .t-val {
@@ -271,11 +272,6 @@
 
 .library .lib-sheet .chip-row-label {
   margin: 0 0 8px;
-  font-size: 13px;
-  line-height: 16px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
 }
 
 .library .lib-sheet .row {

@@ -21,6 +21,7 @@ import { missingGear } from "../../src/safety/gear";
 import { PREHAB_NAMES } from "../../src/safety/prehab";
 import { overrideControlsHtml } from "../../src/ui/overrideControls";
 import { exerciseNamed as find } from "../helpers/exercises";
+import { filterTrigger } from "../helpers/libraryFilters";
 import { useMemoryStorage } from "../helpers/storage";
 
 const SHOULDER: JointHistoryEntry = { joint: "shoulder", side: "left", kind: "dislocation" };
@@ -143,7 +144,7 @@ describe("Library exclusions", () => {
     expect(listHtml([], new Set(), base)).not.toContain("data-excluded-only");
     expect(listHtml([], new Set(), base, { excluded: new Set(["x"]) })).toContain("data-excluded-only");
     const on = filterPanelsHtml({ ...DEFAULT_FILTERS, excludedOnly: true, openPanels: [] }, { hasJointHistory: false, hasExcluded: false });
-    expect(on).toContain('<span class="t-val">Excluded by me · Hide stretches</span>');
+    expect(filterTrigger(on, "show").value).toBe("Excluded by me · Hide stretches");
     expect(on).toMatch(/data-excluded-only class="selected" data-kind="toggle" aria-pressed="true"/);
     expect(hasActiveFilters({ ...DEFAULT_FILTERS, excludedOnly: true })).toBe(true);
   });

@@ -13,6 +13,7 @@ import {
   stretchHintHtml,
   type FilterPanelId,
   type FilterPanelState,
+  type ShowOptions,
 } from "./filterPanels";
 import { exerciseMetaHtml } from "./metaLine";
 import { escapeHtml } from "./present";
@@ -117,29 +118,38 @@ export function listHtml(
     .map((exercise) => listItemHtml(exercise, targetIds, jointHistory, excluded.has(exercise.id)))
     .join("");
 
-  const note = `${stretchHintHtml(q.hiddenStretches)}${clearFiltersHtml(hasActiveFilters(q))}`;
-
   return `
     <main class="shell library">
-      <header class="lib-head">
-        <p class="eyebrow">Library</p>
-        <div class="lib-titlerow">
-          <h1>Exercises</h1>
-          ${countHtml(results.length)}
-        </div>
-      </header>
+      ${headerHtml(results.length)}
       <ul class="lib-list">
         ${items}
       </ul>
-      <div class="lib-dock">
-        <input class="search" type="search" placeholder="Search exercises" aria-label="Search exercises" value="${escapeHtml(q.text)}" data-search />
-        ${note ? `<div class="lib-dock-note">${note}</div>` : ""}
-        <div class="lib-triggers">
-          ${filterPanelsHtml(q, { hasJointHistory: jointHistory.length > 0, hasExcluded: excluded.size > 0 })}
-        </div>
-      </div>
+      ${dockHtml(q, { hasJointHistory: jointHistory.length > 0, hasExcluded: excluded.size > 0 })}
     </main>
   `;
+}
+
+/** Read-only header: eyebrow, title and the result count. */
+function headerHtml(count: number): string {
+  return `<header class="lib-head">
+        <p class="eyebrow">Library</p>
+        <div class="lib-titlerow">
+          <h1>Exercises</h1>
+          ${countHtml(count)}
+        </div>
+      </header>`;
+}
+
+/** The thumb dock under the list: search, a note line when needed, and the filter triggers. */
+function dockHtml(q: Required<ListQueryState>, showOptions: ShowOptions): string {
+  const dockNote = `${stretchHintHtml(q.hiddenStretches)}${clearFiltersHtml(hasActiveFilters(q))}`;
+  return `<div class="lib-dock">
+        <input class="search" type="search" placeholder="Search exercises" aria-label="Search exercises" value="${escapeHtml(q.text)}" data-search />
+        ${dockNote ? `<div class="lib-dock-note">${dockNote}</div>` : ""}
+        <div class="lib-triggers">
+          ${filterPanelsHtml(q, showOptions)}
+        </div>
+      </div>`;
 }
 
 function jointBadgeHtml(exercise: SeedExercise, history: readonly JointHistoryEntry[]): string {

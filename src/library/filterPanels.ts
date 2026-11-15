@@ -67,8 +67,22 @@ export function withPanelState(
   return open ? [...others, panel] : others;
 }
 
+/** Joins the parts of a trigger's value, e.g. "Upper body · Chest". */
+const VALUE_SEPARATOR = " · ";
+
 function labelOf(options: readonly ChipOption[], id: string): string {
   return options.find((option) => option.id === id)?.label ?? id;
+}
+
+interface PanelParts {
+  id: FilterPanelId;
+  title: string;
+  /** The panel's current value, shown on the trigger. */
+  value: string;
+  /** The user opened this panel. */
+  opened: boolean;
+  /** The chips inside the sheet. */
+  body: string;
 }
 
 /**
@@ -76,14 +90,8 @@ function labelOf(options: readonly ChipOption[], id: string): string {
  * value; the chips sit in a sheet that opens above the dock. Panels share a
  * `name`, so opening one closes the others.
  */
-function panelHtml(
-  id: FilterPanelId,
-  title: string,
-  value: string,
-  userOpened: boolean,
-  body: string,
-): string {
-  const open = userOpened ? " open" : "";
+function panelHtml({ id, title, value, opened, body }: PanelParts): string {
+  const open = opened ? " open" : "";
   const summary = `<summary><span class="t-label">${escapeHtml(title)}</span><span class="t-val">${escapeHtml(value)}</span></summary>`;
   return `<details class="lib-filters" data-panel="${id}" name="lib-filter"${open}>${summary}<div class="lib-sheet">${body}</div></details>`;
 }
@@ -103,7 +111,7 @@ function showPanelHtml(state: FilterPanelState, options: ShowOptions, opened: bo
     labelOf(STRETCH_FILTERS, state.stretch),
   ]
     .filter(Boolean)
-    .join(" · ");
+    .join(VALUE_SEPARATOR);
   const toggles = [
     options.hasJointHistory ? toggleHtml("for-joints", "For my joints", state.forJoints) : "",
     toggleHtml("only-gear", "Only my gear", state.onlyGear),
@@ -112,21 +120,21 @@ function showPanelHtml(state: FilterPanelState, options: ShowOptions, opened: bo
   const body =
     `<p class="chip-row-label">Limit to</p><div class="row wrap">${toggles}</div>` +
     chipRowHtml("stretch", "Stretches", state.stretch, STRETCH_FILTERS, { label: "Stretches" });
-  return panelHtml("show", "Show", value, opened, body);
+  return panelHtml({ id: "show", title: "Show", value, opened, body });
 }
 
 function bodyPanelHtml(state: FilterPanelState, opened: boolean): string {
   const value = [
     state.area === "all" ? "All areas" : labelOf(AREAS, state.area),
     state.muscle === "all" ? "All muscles" : labelOf(MUSCLE_BUCKETS, state.muscle),
-  ].join(" · ");
+  ].join(VALUE_SEPARATOR);
   const body =
     chipRowHtml("area", "Body area", state.area, AREAS, { allLabel: "All areas", label: "Area" }) +
     chipRowHtml("muscle", "Primary muscle", state.muscle, MUSCLE_BUCKETS, {
       allLabel: "All muscles",
       label: "Primary muscle",
     });
-  return panelHtml("body", "Area & muscle", value, opened, body);
+  return panelHtml({ id: "body", title: "Area & muscle", value, opened, body });
 }
 
 function levelPanelHtml(state: FilterPanelState, opened: boolean): string {
@@ -137,7 +145,7 @@ function levelPanelHtml(state: FilterPanelState, opened: boolean): string {
   }));
   const value = state.level === "all" ? "All levels" : labelOf(options, state.level);
   const body = chipRowHtml("level", "Skill level", state.level, options, { allLabel: "All levels" });
-  return panelHtml("level", "Level", value, opened, body);
+  return panelHtml({ id: "level", title: "Level", value, opened, body });
 }
 
 export function filterPanelsHtml(state: FilterPanelState, options: ShowOptions): string {

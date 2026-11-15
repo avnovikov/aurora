@@ -1,23 +1,22 @@
 import { describe, expect, it } from "vitest";
-import type { JointHistoryEntry } from "../../src/domain/program";
-import { DEFAULT_FILTERS, filterPanelsHtml } from "../../src/library/filterPanels";
+import { filterPanelsHtml } from "../../src/library/filterPanels";
 import { listHtml } from "../../src/library/libraryList";
 import { exerciseMetaHtml, exerciseMetaLine } from "../../src/library/metaLine";
 import { exerciseNamed as find } from "../helpers/exercises";
+import {
+  BASE_QUERY as base,
+  filterTrigger,
+  KNEE_HISTORY,
+  openPanelIds,
+  PANEL_STATE as state,
+  SHOW_NONE,
+} from "../helpers/libraryFilters";
 
-const base = { text: "", level: "all" as const };
-const KNEES: JointHistoryEntry[] = [{ joint: "knee", side: "both", kind: "other" }];
-const state = { ...DEFAULT_FILTERS, openPanels: [] as never[] };
-const SHOW_NONE = { hasJointHistory: false, hasExcluded: false };
-
-/** The trigger text (label, value) of one panel's summary. */
-function trigger(html: string, panel: string): [string, string] {
-  const match = new RegExp(
-    `data-panel="${panel}"[^>]*><summary[^>]*><span class="t-label">([^<]*)</span><span class="t-val">([^<]*)</span></summary>`,
-  ).exec(html);
-  expect(match, panel).not.toBeNull();
-  return [match![1]!, match![2]!];
-}
+/** A trigger as [label, value], so one assertion reads a whole panel. */
+const trigger = (html: string, panel: "show" | "body" | "level"): [string, string] => {
+  const { label, value } = filterTrigger(html, panel);
+  return [label, value];
+};
 
 describe("Library list layout", () => {
   const pullUp = find("Pull-up");
@@ -77,14 +76,14 @@ describe("filter triggers show their current value", () => {
 
   it("opens a panel only when the user opened it, one at a time", () => {
     const active = filterPanelsHtml({ ...state, level: "beginner" }, SHOW_NONE);
-    expect(active).not.toMatch(/data-panel="\w+"[^>]* open/);
-    const opened = filterPanelsHtml({ ...state, openPanels: ["body"] as never[] }, SHOW_NONE);
-    expect(opened).toMatch(/data-panel="body"[^>]* open/);
+    expect(openPanelIds(active)).toEqual([]);
+    const opened = filterPanelsHtml({ ...state, openPanels: ["body"] }, SHOW_NONE);
+    expect(openPanelIds(opened)).toEqual(["body"]);
     expect(opened.match(/name="lib-filter"/g)).toHaveLength(3);
   });
 
   it("puts each panel's chips in a sheet", () => {
-    const html = listHtml([], new Set(), base, { jointHistory: KNEES });
+    const html = listHtml([], new Set(), base, { jointHistory: KNEE_HISTORY });
     expect(html.match(/<div class="lib-sheet">/g)).toHaveLength(3);
   });
 });

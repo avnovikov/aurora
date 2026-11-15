@@ -8,6 +8,7 @@ import { exerciseMetaLine } from "../../src/library/metaLine";
 import { searchExercises } from "../../src/library/search";
 import { LIBRARY_CATALOGUE } from "../../src/data/libraryCatalogue";
 import { exerciseNamed as find } from "../helpers/exercises";
+import { textOf } from "../helpers/libraryFilters";
 
 const KNEES: JointHistoryEntry[] = [{ joint: "knee", side: "both", kind: "other" }];
 const base = { text: "", level: "all" as const };
@@ -15,8 +16,8 @@ const defaults = { ...DEFAULT_FILTERS };
 
 describe("result count and Clear filters (#37)", () => {
   it("counts the rows shown, singular for one", () => {
-    expect(countHtml(38)).toContain('<span class="n">38</span> exercises');
-    expect(countHtml(1)).toContain('<span class="n">1</span> exercise<');
+    expect(textOf(countHtml(38))).toBe("38 exercises");
+    expect(textOf(countHtml(1))).toBe("1 exercise");
     expect(countHtml(38)).toContain('aria-live="polite"');
   });
 
@@ -39,7 +40,7 @@ describe("result count and Clear filters (#37)", () => {
   it("puts the count above the filter panels, so it stays in view while tapping chips", () => {
     const results = searchExercises(LIBRARY_CATALOGUE, { stretch: "hide" });
     const html = listHtml(results, new Set(), { ...base, area: "upper" });
-    expect(html).toContain(`<span class="n">${results.length}</span> exercises`);
+    expect(textOf(html)).toContain(`${results.length} exercises`);
     expect(html.indexOf("lib-count")).toBeLessThan(html.indexOf('data-panel="show"'));
     expect(html).toContain("data-clear-filters");
   });
