@@ -14,3 +14,14 @@ export function stripTags(html: string): string {
   }
   return out;
 }
+
+/** Decode the handful of HTML entities that occur in imported exercise text. */
+export function decodeEntities(text: string): string {
+  return text
+    .replaceAll("&nbsp;", " ")
+    .replaceAll("&amp;", "&")
+    .replaceAll("&quot;", '"')
+    .replaceAll("&#39;", "'")
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">");
+}

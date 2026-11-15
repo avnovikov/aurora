@@ -1,4 +1,4 @@
-import type { SkillTier } from "../../domain/types";
+import type { Difficulty } from "../../domain/types";
 
 /**
  * Movement families as ordered ladders. Each rung has a rank (easy → hard)
@@ -30,7 +30,7 @@ import type { SkillTier } from "../../domain/types";
  */
 export interface Rung {
   rank: number;
-  tier: Exclude<SkillTier, "novice">;
+  tier: Difficulty;
   keywords: readonly string[];
 }
 
@@ -352,7 +352,3 @@ export const FAMILIES: readonly Family[] = [
     fallback: { rank: 0, tier: "elite" },
   },
 ];
-
-export const FAMILY_BY_ID: Readonly<Record<string, Family>> = Object.fromEntries(
-  FAMILIES.map((family) => [family.id, family]),
-);

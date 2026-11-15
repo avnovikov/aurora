@@ -1,4 +1,4 @@
-import { stripTags } from "../enrich/stripTags";
+import { decodeEntities, stripTags } from "../enrich/stripTags";
 
 /** Filler sentences common in imported instructions; they add nothing. */
 const BOILERPLATE = [
@@ -14,9 +14,7 @@ const BOILERPLATE = [
 
 /** Normalise one imported instruction line; empty when it is pure filler. */
 export function cleanSentence(raw: string): string {
-  const text = stripTags(raw)
-    .replaceAll("&nbsp;", " ")
-    .replaceAll("&amp;", "&")
+  const text = decodeEntities(stripTags(raw))
     .replaceAll(/\s+/g, " ")
     .replace(/^\s*(\d+[.)]|[-•*])\s*/, "")
     .trim();

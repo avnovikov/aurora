@@ -1,6 +1,9 @@
 import type { Pattern } from "../domain/types";
 import { LIBRARY_CATALOGUE, LIBRARY_REDIRECTS } from "./libraryCatalogue";
 import type { SeedExercise } from "./seed";
+import { sourceRank } from "./sourceRank";
+
+export { sourceRank };
 
 /**
  * Every Library exercise by id — seed moves keep their hand-curated chains and
@@ -18,18 +21,6 @@ export const EXERCISE_GRAPH: Readonly<Record<string, SeedExercise>> = {
   ),
   ...BY_ID,
 };
-
-const SOURCE_RANK: ReadonlyArray<readonly [string, number]> = [
-  ["hf_", 1],
-  ["ntc_", 2],
-  ["fedb_", 3],
-  ["wger_", 4],
-];
-
-/** 0 = hand-curated seed … 4 = wger import. Lower is preferred. */
-export function sourceRank(exerciseId: string): number {
-  return SOURCE_RANK.find(([prefix]) => exerciseId.startsWith(prefix))?.[1] ?? 0;
-}
 
 /** Work moves the planner may put in a slot: they need tier standards to dose. */
 export function isPlannable(exercise: SeedExercise): boolean {

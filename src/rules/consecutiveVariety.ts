@@ -2,7 +2,8 @@ import { EXERCISE_GRAPH, PLANNABLE_EXERCISES, sourceRank } from "../data/exercis
 import { placeOnLadder } from "../data/enrich/ladder";
 import { TEMPLATE_BY_ID, type SeedExercise } from "../data/seed";
 import type { HistoryEntry, SessionFocus, TemplateSlot } from "../domain/program";
-import type { Pattern, SkillTier } from "../domain/types";
+import { tierIndex } from "../domain/skillTier";
+import type { Pattern } from "../domain/types";
 
 export interface VarietyPick {
   exerciseId: string;
@@ -90,20 +91,12 @@ function findAlternate(
   return null;
 }
 
-const LEVEL_ORDER: Record<SkillTier, number> = {
-  novice: 0,
-  beginner: 1,
-  intermediate: 2,
-  advanced: 3,
-  elite: 4,
-};
-
 /** Same level or one step easier — a variety swap never makes the day harder. */
 function levelGap(candidate: SeedExercise, preferred: SeedExercise | undefined): number | null {
   if (!preferred?.difficulty || !candidate.difficulty) {
     return 0;
   }
-  const gap = LEVEL_ORDER[preferred.difficulty] - LEVEL_ORDER[candidate.difficulty];
+  const gap = tierIndex(preferred.difficulty) - tierIndex(candidate.difficulty);
   return gap === 0 || gap === 1 ? gap : null;
 }
 

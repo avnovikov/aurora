@@ -1,4 +1,5 @@
 import type { SeedExercise } from "../seed";
+import { sourceRank } from "../sourceRank";
 import type { CrossLink } from "./families";
 import { hasKeyword, normaliseForKeywords } from "./keywords";
 import type { LadderPlacement } from "./ladder";
@@ -8,17 +9,9 @@ export interface Placed {
   placement: LadderPlacement;
 }
 
-const SOURCE_PRIORITY: ReadonlyArray<readonly [string, number]> = [
-  ["hf_", 1],
-  ["ntc_", 2],
-  ["fedb_", 3],
-  ["wger_", 4],
-];
-
 /** Curated sources first, then the plainest (shortest) name. */
 function anchorScore(exercise: SeedExercise): [number, number, string] {
-  const priority = SOURCE_PRIORITY.find(([prefix]) => exercise.id.startsWith(prefix))?.[1] ?? 0;
-  return [priority, exercise.name.length, exercise.id];
+  return [sourceRank(exercise.id), exercise.name.length, exercise.id];
 }
 
 function words(name: string): Set<string> {

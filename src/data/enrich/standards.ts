@@ -1,4 +1,4 @@
-import type { EffortKind, ExerciseStandards, SkillTier } from "../../domain/types";
+import type { Difficulty, EffortKind, ExerciseStandards } from "../../domain/types";
 import { hasKeyword } from "./keywords";
 import type { LadderPlacement } from "./ladder";
 
@@ -9,8 +9,6 @@ const std = (n: number, b: number, i: number, a: number, e: number): ExerciseSta
   advanced: a,
   elite: e,
 });
-
-type Difficulty = Exclude<SkillTier, "novice">;
 
 /**
  * Generic five-tier standards by exercise difficulty (max clean reps / hold s).

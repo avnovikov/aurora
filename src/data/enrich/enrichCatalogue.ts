@@ -1,14 +1,14 @@
 import { resolveExerciseTiming } from "../../domain/timing";
-import type { Pattern, SkillTier } from "../../domain/types";
+import { tierIndex } from "../../domain/skillTier";
+import type { Difficulty, Pattern } from "../../domain/types";
 import type { SeedExercise } from "../seed";
+import { isSeedId } from "../sourceRank";
 import { DESCRIPTION_SOURCES } from "../generated/descriptionSources";
 import { DESCRIPTIONS } from "../generated/descriptions";
 import { cautionsFor } from "./cautions";
 import { placeOnLadder, type LadderPlacement } from "./ladder";
 import { wireLadderProgressions, type Placed } from "./progressions";
 import { standardsFor } from "./standards";
-
-type Difficulty = Exclude<SkillTier, "novice">;
 
 const DEFAULT_DIFFICULTY: Partial<Record<Pattern, Difficulty>> = {
   skill: "advanced",
@@ -40,19 +40,6 @@ function wantsStandards(exercise: SeedExercise, placement: LadderPlacement | und
   return true;
 }
 
-const TIER_ORDER: Record<SkillTier, number> = {
-  novice: 0,
-  beginner: 1,
-  intermediate: 2,
-  advanced: 3,
-  elite: 4,
-};
-
-/** Hand-curated seed chains are trusted; every other link must respect difficulty. */
-function isSeed(exercise: SeedExercise): boolean {
-  return !/^(hf|ntc|fedb|wger)_/.test(exercise.id);
-}
-
 function respectsDifficulty(
   from: Difficulty,
   target: Difficulty | undefined,
@@ -61,7 +48,7 @@ function respectsDifficulty(
   if (!target) {
     return false;
   }
-  const delta = TIER_ORDER[target] - TIER_ORDER[from];
+  const delta = tierIndex(target) - tierIndex(from);
   return direction === "easier" ? delta <= 0 : delta >= 0;
 }
 
@@ -90,7 +77,8 @@ export function enrichCatalogue(catalogue: SeedExercise[]): SeedExercise[] {
     direction: "easier" | "harder",
     ...candidates: Array<string | undefined>
   ): string | undefined => {
-    if (isSeed(exercise)) {
+    // Hand-curated seed chains are trusted; every other link must respect difficulty.
+    if (isSeedId(exercise.id)) {
       return candidates.find(Boolean);
     }
     return candidates.find(
@@ -112,30 +100,29 @@ export function enrichCatalogue(catalogue: SeedExercise[]): SeedExercise[] {
     if (cautions.length > 0) {
       enriched.cautions = cautions;
     }
-    applyDescription(enriched);
     if (wantsStandards(exercise, placement)) {
       const { effort } = resolveExerciseTiming(exercise);
       enriched.standards = standardsFor(exercise.name, effort, difficulty, placement);
       enriched.effort = effort;
     }
-    return enriched;
+    return withDescription(enriched);
   });
 }
 
 /** Curated, merged description replaces raw source text when one exists. */
-function applyDescription(exercise: SeedExercise): void {
+function withDescription(exercise: SeedExercise): SeedExercise {
   const curated = DESCRIPTIONS[exercise.id];
   const sources = DESCRIPTION_SOURCES[exercise.id];
-  if (sources?.length) {
-    exercise.sources = sources;
-  }
-  if (!curated) {
-    return;
-  }
-  exercise.description = curated.summary;
-  exercise.steps = curated.steps;
-  exercise.cues = curated.cues;
-  if (curated.mistakes.length > 0) {
-    exercise.mistakes = curated.mistakes;
-  }
+  return {
+    ...exercise,
+    ...(sources?.length ? { sources } : {}),
+    ...(curated
+      ? {
+          description: curated.summary,
+          steps: curated.steps,
+          cues: curated.cues,
+          ...(curated.mistakes.length > 0 ? { mistakes: curated.mistakes } : {}),
+        }
+      : {}),
+  };
 }

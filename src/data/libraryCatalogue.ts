@@ -6,8 +6,6 @@ import { NTC_CATALOGUE } from "./ntc/ntcCatalogue";
 import { mergeSeedDuplicates } from "./mergeSeedDuplicates";
 import { SEED_EXERCISES, type SeedExercise } from "./seed";
 
-const SEED_IDS = new Set(SEED_EXERCISES.map((item) => item.id));
-
 /**
  * Seed first, then each extra source in order. Ids must be unique across
  * every source; seed ids keep priority in EXERCISE_GRAPH lookups.
@@ -40,8 +38,5 @@ export const LIBRARY_REDIRECTS: Readonly<Record<string, string>> = merged.redire
 
 /** All sources merged, then given levels, standards, ladder links and cautions. */
 export const LIBRARY_CATALOGUE: SeedExercise[] = enrichCatalogue(
-  buildLibraryCatalogue(
-    merged.catalogue.filter((item) => SEED_IDS.has(item.id)),
-    merged.catalogue.filter((item) => !SEED_IDS.has(item.id)),
-  ),
+  buildLibraryCatalogue(merged.seed, merged.imported),
 );

@@ -18,7 +18,7 @@ import { LIBRARY_CATALOGUE } from "../src/data/libraryCatalogue.ts";
 import { NTC_CATALOGUE } from "../src/data/ntc/ntcCatalogue.ts";
 import { SEED_EXERCISES } from "../src/data/seed.ts";
 import { buildWgerCatalogue } from "../src/data/wger/buildCatalogue.ts";
-import { wgerDescriptionLines } from "../src/data/wger/mapWgerExercise.ts";
+import { wgerAttribution, wgerDescriptionLines } from "../src/data/wger/mapWgerExercise.ts";
 import type { WgerExerciseRecord } from "../src/data/wger/types.ts";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
@@ -28,10 +28,6 @@ interface SourceText {
   source: string;
   name: string;
   lines: string[];
-}
-
-function wgerLabel(record: WgerExerciseRecord): string {
-  return `wger.de exercise ${record.id} (${record.license}${record.licenseAuthor ? `, ${record.licenseAuthor}` : ""})`;
 }
 
 async function main(): Promise<void> {
@@ -58,7 +54,7 @@ async function main(): Promise<void> {
   }
   const wger = buildWgerCatalogue(wgerRaw, [...SEED_EXERCISES, ...HF_CATALOGUE, ...NTC_CATALOGUE, ...FEDB_CATALOGUE]);
   for (const { record, intoId } of wger.duplicates) {
-    add(intoId, { source: wgerLabel(record), name: record.name, lines: cleanLines(wgerDescriptionLines(record.description)) });
+    add(intoId, { source: wgerAttribution(record), name: record.name, lines: cleanLines(wgerDescriptionLines(record.description)) });
   }
 
   const byId = new Map(LIBRARY_CATALOGUE.map((item) => [item.id, item]));

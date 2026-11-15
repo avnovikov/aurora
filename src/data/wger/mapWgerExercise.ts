@@ -1,7 +1,7 @@
 import type { ExerciseType, MuscleEntry, MuscleGroup, Pattern } from "../../domain/types";
 import type { ExerciseMedia, LoadRegion, SeedExercise } from "../seed";
 import { hasKeyword } from "../enrich/keywords";
-import { stripTags } from "../enrich/stripTags";
+import { decodeEntities, stripTags } from "../enrich/stripTags";
 import { patternFromName, regionsForPattern } from "../enrich/patternByName";
 import { WGER_SOURCE, type WgerExerciseRecord } from "./types";
 
@@ -44,6 +44,12 @@ const MOBILITY_MOTION = ["circles", "swing", " cars ", "rotation", "rock", "swit
 const ISOMETRIC_WORDS = [" hold ", " hang ", "isometric", "isometry", "stance", " l sit", " plank ", "lever ", "planche ", "support", "vacuum", "draw in"];
 const ECCENTRIC_WORDS = ["negative", "eccentric"];
 
+/** Per-row licence credit, e.g. "wger.de exercise 42 (CC-BY-SA-4.0, author)". */
+export function wgerAttribution(record: Pick<WgerExerciseRecord, "id" | "license" | "licenseAuthor">): string {
+  const author = record.licenseAuthor ? `, ${record.licenseAuthor}` : "";
+  return `${WGER_SOURCE} exercise ${record.id} (${record.license}${author})`;
+}
+
 export function wgerExerciseId(id: number): string {
   if (!Number.isInteger(id) || id < 1) {
     throw new Error(`Invalid wger exercise id: ${id}`);
@@ -75,16 +81,6 @@ export function wgerDescriptionLines(html: string): string[] {
     .filter((line) => line.length > 1);
 }
 
-function decodeEntities(text: string): string {
-  return text
-    .replaceAll("&nbsp;", " ")
-    .replaceAll("&amp;", "&")
-    .replaceAll("&quot;", '"')
-    .replaceAll("&#39;", "'")
-    .replaceAll("&lt;", "<")
-    .replaceAll("&gt;", ">");
-}
-
 export function mapWgerExerciseRecord(record: WgerExerciseRecord): SeedExercise {
   const name = cleanWgerName(record.name);
   const muscles = mapMuscles(record);
@@ -104,9 +100,7 @@ export function mapWgerExerciseRecord(record: WgerExerciseRecord): SeedExercise 
     cues,
     description: cues.length > 0 ? cues.join(" ") : undefined,
     media: media.length > 0 ? media : undefined,
-    attribution: `${WGER_SOURCE} exercise ${record.id} (${record.license}${
-      record.licenseAuthor ? `, ${record.licenseAuthor}` : ""
-    })`,
+    attribution: wgerAttribution(record),
   };
 }
 

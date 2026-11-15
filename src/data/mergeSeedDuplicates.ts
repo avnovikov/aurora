@@ -11,7 +11,8 @@ const SAME_AS_SEED: Readonly<Record<string, string>> = {
 };
 
 export interface MergeResult {
-  catalogue: SeedExercise[];
+  seed: SeedExercise[];
+  imported: SeedExercise[];
   /** Removed duplicate id → seed id that absorbed it. */
   redirects: Record<string, string>;
 }
@@ -57,5 +58,5 @@ export function mergeSeedDuplicates(seed: SeedExercise[], imported: SeedExercise
         harderId: harderId === item.id ? undefined : harderId,
       };
     });
-  return { catalogue: [...mergedSeed, ...kept], redirects };
+  return { seed: mergedSeed, imported: kept, redirects };
 }
