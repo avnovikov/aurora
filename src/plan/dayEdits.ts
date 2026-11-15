@@ -9,7 +9,7 @@ import { addBlockToPlan } from "./blockActions";
 import type { AthleteState } from "./dayPreview";
 import { excludeExercise, loadExcluded, restoreExercise } from "./exclusions";
 import type { BlockKind } from "./generateBlock";
-import { canBeGiven, easierStep, familyOf, type StepContext } from "./ladderSteps";
+import { canBeGiven, easierStep, familyOf } from "./ladderSteps";
 import { getPlanDay, replaceDaySlotExercise } from "./planDays";
 import { clearSlotExercise, setSlotExercise, slotExerciseOverride } from "./templates";
 
@@ -112,16 +112,6 @@ export function undoExclude(undo: ExcludeUndo): { restoredName: string } {
   return { restoredName: requireExercise(undo.exerciseId).name };
 }
 
-function stepContext(state: AthleteState): StepContext {
-  return {
-    memories: state.memories,
-    equipment: state.equipment,
-    jointHistory: state.jointHistory,
-    excluded: state.excluded,
-    level: state.level,
-  };
-}
-
 /**
  * Whether the planner would keep this move where it is put: a move whose
  * standard the athlete already meets is advanced to its harder step at
@@ -144,13 +134,9 @@ export function easierChoice(
   dayExerciseIds: readonly string[] = [],
 ): SeedExercise | undefined {
   const exercise = requireExercise(exerciseId);
-  const ctx = stepContext(state);
+  const avoid = new Set([...dayExerciseIds, exercise.id]);
   const fits = (candidate: SeedExercise | undefined): candidate is SeedExercise =>
-    candidate !== undefined &&
-    candidate.id !== exercise.id &&
-    !dayExerciseIds.includes(candidate.id) &&
-    canBeGiven(candidate, ctx) &&
-    plannerKeeps(candidate, state);
+    candidate !== undefined && !avoid.has(candidate.id) && canBeGiven(candidate, state) && plannerKeeps(candidate, state);
 
   const linked = exercise.easierId ? EXERCISE_GRAPH[exercise.easierId] : undefined;
   if (fits(linked)) {
@@ -161,8 +147,7 @@ export function easierChoice(
   if (!family || !placed) {
     return undefined;
   }
-  const avoid = new Set([...dayExerciseIds, exercise.id]);
-  const step = easierStep(family, { exercise, rank: placed.rank }, ctx, avoid)?.exercise;
+  const step = easierStep(family, { exercise, rank: placed.rank }, state, avoid)?.exercise;
   return fits(step) ? step : undefined;
 }
 

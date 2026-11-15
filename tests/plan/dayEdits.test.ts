@@ -32,9 +32,7 @@ const dayIds = (templateId: string, athlete: AthleteState) =>
 function ladderEasier(exerciseId: string, avoid: readonly string[] = []) {
   const family = familyOf(exerciseId)!;
   const rank = libraryFamilyLadderIndex().byId.get(exerciseId)!.rank;
-  const ctx = { memories: {}, equipment: ["body", "bar"] as const, jointHistory: [], excluded: [] };
-  return easierStep(family, { exercise: requireExercise(exerciseId), rank }, { ...ctx, equipment: [...ctx.equipment] }, new Set(avoid))
-    ?.exercise;
+  return easierStep(family, { exercise: requireExercise(exerciseId), rank }, state(), new Set(avoid))?.exercise;
 }
 
 useMemoryStorage();

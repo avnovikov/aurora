@@ -118,12 +118,15 @@ function easierSlot(element: HTMLElement): string {
   return `Easier: ${result.fromName} → ${result.toName}`;
 }
 
-/** Open or close a row's ⋯ menu in place (no repaint), one menu at a time. */
-function setMenu(root: HTMLElement, more: HTMLElement, open: boolean, focus: boolean): void {
+/**
+ * Open or close a row's ⋯ menu in place (no repaint), one menu at a time.
+ * `focus` moves focus into the opened menu, or back to ⋯ when it closes.
+ */
+function setMenu(root: HTMLElement, more: HTMLElement, { open, focus }: { open: boolean; focus: boolean }): void {
   if (open) {
     root.querySelectorAll<HTMLElement>('[data-more][aria-expanded="true"]').forEach((other) => {
       if (other !== more) {
-        setMenu(root, other, false, false);
+        setMenu(root, other, { open: false, focus: false });
       }
     });
   }
@@ -139,13 +142,13 @@ function setMenu(root: HTMLElement, more: HTMLElement, open: boolean, focus: boo
 }
 
 function wireMenus(root: HTMLElement): void {
-  on(root, "[data-more]", (more) => setMenu(root, more, more.getAttribute("aria-expanded") !== "true", true));
+  on(root, "[data-more]", (more) => setMenu(root, more, { open: more.getAttribute("aria-expanded") !== "true", focus: true }));
   root.querySelectorAll<HTMLElement>(".plan-ex-menu").forEach((menu) => {
     menu.addEventListener("keydown", (event) => {
       const more = root.querySelector<HTMLElement>(`[aria-controls="${menu.id}"]`);
       if (event.key === "Escape" && more) {
         event.preventDefault();
-        setMenu(root, more, false, true);
+        setMenu(root, more, { open: false, focus: true });
       }
     });
   });

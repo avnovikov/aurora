@@ -92,38 +92,51 @@ function whenLabel(index: number): string {
   return index === 0 ? "Today" : `Then ${index + 1}`;
 }
 
-/** "Hollow body hold (Hollow finish), Today": the move, its slot when the day has it twice, and the day. */
-function rowName(item: PreviewItem, day: PlanDayView): string {
+/** How a row's controls are named and tied together. */
+interface RowLabel {
+  /** "Hollow body hold (Hollow finish), Today": the move, its slot when the day has it twice, and the day. */
+  name: string;
+  /** The id prefix of the row's ⋯ button, menu and hidden reasons. */
+  id: string;
+}
+
+function rowLabel(item: PreviewItem, day: PlanDayView): RowLabel {
   const twice = day.items.filter((other) => other.name === item.name).length > 1;
   const slot = twice ? ` (${item.label})` : "";
-  return `${item.name}${slot}, ${whenLabel(day.index)}`;
+  return {
+    name: `${item.name}${slot}, ${whenLabel(day.index)}`,
+    id: `plan-ex-${day.index}-${item.slotId}`.replace(/[^A-Za-z0-9_-]/g, "-"),
+  };
 }
 
-function rowId(day: PlanDayView, item: PreviewItem): string {
-  return `plan-ex-${day.index}-${item.slotId}`.replace(/[^A-Za-z0-9_-]/g, "-");
-}
-
-function easierHtml(item: PreviewItem, day: PlanDayView, name: string, id: string): string {
-  const label = escapeHtml(`Easier: ${name}`);
-  if (day.easierSlotIds.includes(item.slotId)) {
+function easierHtml(row: RowLabel, available: boolean): string {
+  const label = escapeHtml(`Easier: ${row.name}`);
+  if (available) {
     return `<button type="button" class="plan-ex-easier" data-easier aria-label="${label}">Easier</button>`;
   }
-  return `<button type="button" class="plan-ex-easier" data-easier aria-disabled="true" aria-label="${label}" aria-describedby="${id}-no-easier">Easier</button><span class="visually-hidden" id="${id}-no-easier">No easier step</span>`;
+  return `<button type="button" class="plan-ex-easier" data-easier aria-disabled="true" aria-label="${label}" aria-describedby="${row.id}-no-easier">Easier</button><span class="visually-hidden" id="${row.id}-no-easier">No easier step</span>`;
+}
+
+/** ⋯ and the menu it opens, holding "Not for me". */
+function moreMenuHtml(row: RowLabel): string {
+  const moreLabel = escapeHtml(`More options: ${row.name}`);
+  const outLabel = escapeHtml(`Not for me: ${row.name}`);
+  return `<button type="button" class="plan-ex-more" data-more id="${row.id}-more" aria-label="${moreLabel}" aria-haspopup="menu" aria-expanded="false" aria-controls="${row.id}-menu"><span aria-hidden="true">⋯</span></button>
+        <div class="plan-ex-menu" id="${row.id}-menu" role="menu" aria-labelledby="${row.id}-more" hidden>
+          <button type="button" role="menuitem" class="plan-ex-out" data-not-for-me aria-label="${outLabel}" aria-describedby="${row.id}-out-help"><span class="plan-ex-out-label">Not for me</span><span class="plan-ex-out-help" id="${row.id}-out-help">Keep this move out of all your sessions</span></button>
+        </div>`;
 }
 
 /** Swap and Easier as a pair, then ⋯ opening "Not for me". */
 function actionsHtml(item: PreviewItem, day: PlanDayView): string {
-  const name = rowName(item, day);
-  const id = rowId(day, item);
+  const row = rowLabel(item, day);
   const swapping = day.swapSlotId === item.slotId;
+  const swapLabel = escapeHtml(`Swap: ${row.name}`);
   return `
       <div class="plan-ex-actions">
-        <button type="button" class="plan-ex-swap" data-swap aria-pressed="${swapping}" aria-label="${escapeHtml(`Swap: ${name}`)}">Swap</button>
-        ${easierHtml(item, day, name, id)}
-        <button type="button" class="plan-ex-more" data-more id="${id}-more" aria-label="${escapeHtml(`More options: ${name}`)}" aria-haspopup="menu" aria-expanded="false" aria-controls="${id}-menu"><span aria-hidden="true">⋯</span></button>
-        <div class="plan-ex-menu" id="${id}-menu" role="menu" aria-labelledby="${id}-more" hidden>
-          <button type="button" role="menuitem" class="plan-ex-out" data-not-for-me aria-label="${escapeHtml(`Not for me: ${name}`)}" aria-describedby="${id}-out-help"><span class="plan-ex-out-label">Not for me</span><span class="plan-ex-out-help" id="${id}-out-help">Keep this move out of all your sessions</span></button>
-        </div>
+        <button type="button" class="plan-ex-swap" data-swap aria-pressed="${swapping}" aria-label="${swapLabel}">Swap</button>
+        ${easierHtml(row, day.easierSlotIds.includes(item.slotId))}
+        ${moreMenuHtml(row)}
       </div>`;
 }
 
@@ -142,7 +155,7 @@ function exerciseHtml(item: PreviewItem, day: PlanDayView): string {
   const undo = day.undo?.slotId === item.slotId ? day.undo : undefined;
   const note = item.note ? `<p class="lib-meta plan-ex-note">${escapeHtml(item.note)}</p>` : "";
   return `
-    <li class="plan-ex${undo ? " is-out" : ""}" data-slot="${escapeHtml(item.slotId)}" data-exercise="${escapeHtml(item.exerciseId)}">
+    <li class="plan-ex" data-slot="${escapeHtml(item.slotId)}" data-exercise="${escapeHtml(item.exerciseId)}">
       <button type="button" class="plan-ex-main" data-ex-toggle aria-expanded="${open}">
         <strong class="plan-ex-name">${escapeHtml(item.name)}</strong>
         <span class="plan-ex-dose"><span class="nw">${escapeHtml(item.label)} ·</span> <span class="nw">${escapeHtml(item.dose)}</span></span>
@@ -173,7 +186,7 @@ function dayHtml(day: PlanDayView, total: number, makeOptions: readonly DayOptio
         <p class="chip-row-label">Make this day</p>
         <div class="row wrap" role="group" aria-label="Make this day">${makeOptions.map((option) => optionHtml("make", option)).join("")}</div>
         <p class="chip-row-label">Move</p>
-        <div class="plan-move" role="group" aria-label="Move this day">
+        <div role="group" aria-label="Move this day">
           <div class="row">
             <button type="button" data-move="up"${first ? " disabled" : ""}>Earlier</button>
             <button type="button" data-move="down"${last ? " disabled" : ""}>Later</button>

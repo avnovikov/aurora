@@ -34,6 +34,8 @@ const ui = (over: Partial<PlanUiState> = {}): PlanUiState => ({
 });
 const legs = () => resolveTemplate("tmpl_legs");
 const count = (html: string, needle: string) => html.split(needle).length - 1;
+/** One exercise row's markup, found by its slot. */
+const rowOf = (html: string, slotId: string) => html.match(new RegExp(`<li [^>]*data-slot="${slotId}"[\\s\\S]*?</li>`))![0];
 
 useMemoryStorage();
 
@@ -197,18 +199,18 @@ describe("Plan page", () => {
 
   it("disables Easier with a reason when a move has no easier step", () => {
     const html = planPageHtml(model());
-    const hinge = html.match(/<li class="plan-ex" data-slot="legs_hinge"[\s\S]*?<\/li>/)![0];
+    const hinge = rowOf(html, "legs_hinge");
     expect(hinge).toMatch(/data-easier aria-disabled="true"/);
     const reasonId = hinge.match(/aria-describedby="([^"]+-no-easier)"/)![1];
     expect(hinge).toContain(`id="${reasonId}">No easier step</span>`);
-    const split = html.match(/<li class="plan-ex" data-slot="legs_split"[\s\S]*?<\/li>/)![0];
+    const split = rowOf(html, "legs_split");
     expect(split).not.toContain("aria-disabled");
   });
 
   it("shows Undo in the row Not for me just changed, in place of its actions", () => {
     const notice = { index: 0, slotId: "legs_posterior", name: "Nordic curl", message: "Excluded Nordic curl from all your sessions." };
     const html = planPageHtml(buildPlanModel(loadPlanQueue(), state(), ui({ undo: notice })));
-    const row = html.match(/<li class="plan-ex is-out" data-slot="legs_posterior"[\s\S]*?<\/li>/)![0];
+    const row = rowOf(html, "legs_posterior");
     expect(row).toContain('role="status" data-plan-undo-status>Excluded Nordic curl from all your sessions.');
     expect(row).toContain('data-undo aria-label="Undo: Nordic curl, Today">Undo</button>');
     expect(row).not.toContain("data-not-for-me");

@@ -22,13 +22,19 @@ main.plan > .lib-filters:not(.plan-day) {
   margin-left: 28px;
 }
 
-main.plan .eyebrow {
-  margin: 0;
+/* Small uppercase labels: the eyebrow, the panels' row labels and each day's "when". */
+main.plan .eyebrow,
+main.plan .chip-row-label,
+.plan-day-when {
   font-size: 12.8px;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
+}
+
+main.plan .eyebrow {
+  margin: 0;
 }
 
 main.plan h1 {
@@ -94,7 +100,6 @@ main.plan .plan-ex-undo-btn {
 
 main.plan .row button:disabled,
 main.plan .plan-ex-actions button[aria-disabled="true"] {
-  background: transparent;
   border-color: var(--edge);
   color: var(--muted);
   cursor: default;
@@ -104,7 +109,6 @@ main.plan .row button.selected {
   border: 2px solid var(--foreground);
   padding: 7px 11px;
   font-weight: 600;
-  background: transparent;
 }
 
 main.plan .row.remove {
@@ -113,11 +117,6 @@ main.plan .row.remove {
 
 main.plan .chip-row-label {
   margin: 24px 0 8px;
-  font-size: 12.8px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
 }
 
 main.plan .plan-exercises + .chip-row-label {
@@ -253,11 +252,6 @@ main.plan .plan-day > summary {
 
 .plan-day-when {
   grid-area: when;
-  font-size: 12.8px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
 }
 
 .plan-day-title {
@@ -331,7 +325,8 @@ main.plan .plan-ex-main {
   color: inherit;
 }
 
-.plan-ex-name {
+.plan-ex-name,
+.plan-ex-out-label {
   display: block;
   font-size: 16px;
   font-weight: 600;
@@ -410,13 +405,6 @@ main.plan .plan-ex-actions .plan-ex-out {
 main.plan .plan-ex-actions .plan-ex-out:hover,
 main.plan .plan-ex-actions .plan-ex-out:focus-visible {
   background: var(--surface);
-}
-
-.plan-ex-out-label {
-  display: block;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 1.25;
 }
 
 .plan-ex-out-help {
