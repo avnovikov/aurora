@@ -1,3 +1,4 @@
+import { BATCH_C_SPECS } from "./specsBatchC";
 import { STRETCH_SPECS } from "./specsStretch";
 import { WARMUP_DRILL_SPECS } from "./specsWarmup";
 import { solvePose } from "./rig";
@@ -773,7 +774,7 @@ const SESSION_MOVE_SPECS: DoodleSpec[] = [
 ];
 
 /** Session moves, then warm-up drills, then cool-down stretches. */
-export const DOODLE_SPECS: DoodleSpec[] = [...SESSION_MOVE_SPECS, ...WARMUP_DRILL_SPECS, ...STRETCH_SPECS];
+export const DOODLE_SPECS: DoodleSpec[] = [...SESSION_MOVE_SPECS, ...WARMUP_DRILL_SPECS, ...STRETCH_SPECS, ...BATCH_C_SPECS];
 
 /** Lying on the back, straight legs pivoting at the hips; `deg` is the leg angle (-88 up, -6 near the floor). */
 function lyingLegs(deg: number): Pose {

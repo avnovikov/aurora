@@ -70,7 +70,21 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "wger_2686": "/doodles/doodle-wrist-stretch.svg",
   "fedb_kneeling_forearm_stretch": "/doodles/doodle-kneeling-forearm-stretch.svg",
   "ntc_thread_the_needle": "/doodles/doodle-thread-the-needle.svg",
-  "wger_1713": "/doodles/doodle-doorway-pectoral-stretch.svg"
+  "wger_1713": "/doodles/doodle-doorway-pectoral-stretch.svg",
+  "hf_4": "/doodles/doodle-diamond-push-up.svg",
+  "hf_54": "/doodles/doodle-explosive-pull-up.svg",
+  "wger_2748": "/doodles/doodle-jumping-pull-up.svg",
+  "ntc_incline_push_up_low": "/doodles/doodle-low-incline-push-up.svg",
+  "hf_8": "/doodles/doodle-one-arm-push-up.svg",
+  "hf_124": "/doodles/doodle-plank-shoulder-tap.svg",
+  "hf_18": "/doodles/doodle-superman-push-up.svg",
+  "hf_23": "/doodles/doodle-90-degree-handstand-push-up.svg",
+  "wger_1911": "/doodles/doodle-cat-plank.svg",
+  "hf_21": "/doodles/doodle-deficit-handstand-push-up.svg",
+  "fedb_flat_bench_leg_pull_in": "/doodles/doodle-flat-bench-leg-pull-in.svg",
+  "fedb_flat_bench_lying_leg_raise": "/doodles/doodle-flat-bench-lying-leg-raise.svg",
+  "hf_39": "/doodles/doodle-inverted-row.svg",
+  "hf_107": "/doodles/doodle-manna.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
