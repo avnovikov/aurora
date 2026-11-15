@@ -1,8 +1,12 @@
 import type { StopReason } from "../domain/types";
 import {
   appendSet,
+  DEFAULT_ADDED_LOAD_KG,
+  editAddedLoad,
   editNextReps,
   prescribedForNextSet,
+  workStateAfterLoggedSet,
+  type ActiveWorkState,
 } from "../session/setLog";
 import {
   loadMemories,
@@ -58,6 +62,15 @@ export function wireSessionControls(
   root.querySelector("[data-reps-plus]")?.addEventListener("click", () => {
     adjustNextReps(state, 1, handlers);
   });
+  root.querySelector("[data-add-weight]")?.addEventListener("click", () => {
+    adjustAddedLoad(state, DEFAULT_ADDED_LOAD_KG, handlers);
+  });
+  root.querySelector("[data-load-minus]")?.addEventListener("click", () => {
+    adjustAddedLoadDelta(state, -1, handlers);
+  });
+  root.querySelector("[data-load-plus]")?.addEventListener("click", () => {
+    adjustAddedLoadDelta(state, 1, handlers);
+  });
   root.querySelector("[data-cooldown-start]")?.addEventListener("click", () => {
     handlers.onStartCooldown();
   });
@@ -99,18 +112,47 @@ function wirePulseConnectButtons(
   });
 }
 
+function updateWorkState(
+  state: ViewState,
+  phases: ViewState["phase"][],
+  mapWork: (work: ActiveWorkState) => ActiveWorkState,
+  handlers: SessionControlHandlers,
+): void {
+  if (!state.workState || !phases.includes(state.phase)) {
+    return;
+  }
+  state.workState = mapWork(state.workState);
+  handlers.onPaint();
+}
+
 function adjustNextReps(
   state: ViewState,
   delta: number,
   handlers: SessionControlHandlers,
 ): void {
-  if (!state.workState || state.phase !== "rest") {
-    return;
-  }
-  const base = prescribedForNextSet(state.workState);
-  const next = delta < 0 ? Math.max(1, base + delta) : base + delta;
-  state.workState = editNextReps(state.workState, next);
-  handlers.onPaint();
+  updateWorkState(state, ["rest", "work"], (work) => {
+    const next = Math.max(1, prescribedForNextSet(work) + delta);
+    return editNextReps(work, next);
+  }, handlers);
+}
+
+function adjustAddedLoad(
+  state: ViewState,
+  kg: number,
+  handlers: SessionControlHandlers,
+): void {
+  updateWorkState(state, ["work"], (work) => editAddedLoad(work, kg), handlers);
+}
+
+function adjustAddedLoadDelta(
+  state: ViewState,
+  delta: number,
+  handlers: SessionControlHandlers,
+): void {
+  updateWorkState(state, ["work"], (work) => {
+    const next = Math.max(0, work.addedLoadKg + delta);
+    return editAddedLoad(work, next);
+  }, handlers);
 }
 
 function wirePulseSimButtons(
@@ -130,7 +172,8 @@ function wirePulseSimButtons(
   });
 }
 
-function completeSet(
+/** Exported for unit tests; session wiring calls this from Log set / Failed / Skip. */
+export function completeSet(
   planned: PlannedSession,
   state: ViewState,
   stopReason: SetStopReason,
@@ -160,12 +203,7 @@ function completeSet(
     return;
   }
   state.setIndex += 1;
-  state.workState = {
-    ...work,
-    setIndex: state.setIndex,
-    prescribedReps: item.dose.reps,
-    nextRepsOverride: undefined,
-  };
+  state.workState = workStateAfterLoggedSet(work, state.setIndex, prescribed);
   state.phase = "rest";
   state.restLeft = item.restSeconds;
   handlers.onPaint();
