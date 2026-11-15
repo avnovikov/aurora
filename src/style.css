@@ -1081,3 +1081,93 @@ button[data-kind="toggle"][aria-pressed="true"]::before {
   background: var(--panel);
   font-size: 0.9rem;
 }
+
+/* Plan: an exercise row opens to its one-line description when tapped. */
+button.plan-ex-main {
+  border: 0;
+  background: none;
+  padding: 0;
+  min-height: 44px;
+  text-align: left;
+  align-items: flex-start;
+  justify-content: center;
+}
+button.plan-ex-main[aria-expanded="true"] strong {
+  color: var(--brass);
+}
+.plan-ex-detail {
+  grid-column: 1 / -1;
+}
+.plan-ex-desc {
+  margin: 0 0 0.35rem;
+  color: #c8c8cc;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+.plan-level-note {
+  margin: 0 0.9rem 0.75rem;
+}
+
+/* Session: the short description is readable, and what to watch is always shown. */
+.session .session-summary {
+  color: #c8c8cc;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+.session-attention {
+  margin: 0.5rem 0 0.75rem;
+  padding: 0.55rem 0.75rem;
+  border-left: 3px solid var(--brass);
+  background: var(--panel);
+}
+.session-attention .eyebrow {
+  margin: 0 0 0.3rem;
+}
+.session-attention .cues {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+.session-attention .attention-joint {
+  color: #e2b45c;
+}
+
+/* Plan: drag a day by its grip (a finger-sized target) to reorder. */
+.plan-day-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.25rem;
+  transition: transform 0.15s ease;
+}
+.plan-day-item > details {
+  flex: 1;
+  min-width: 0;
+}
+.plan-drag {
+  flex: none;
+  width: 44px;
+  min-height: 44px;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 1.3rem;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.plan-drag::before {
+  content: "⠿";
+}
+.plan-day-item.is-dragging {
+  position: relative;
+  z-index: 5;
+  transition: none;
+  opacity: 0.92;
+}
+.plan-day-item.is-dragging .plan-drag {
+  color: var(--brass);
+  cursor: grabbing;
+}

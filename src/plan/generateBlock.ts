@@ -4,8 +4,8 @@ import { SESSION_TEMPLATES, TEMPLATE_BY_ID, type SeedExercise } from "../data/se
 import type { BlockEmphasis, JointHistoryEntry, SessionTemplate, TemplateSlot } from "../domain/program";
 import { tierIndex } from "../domain/skillTier";
 import { resolveExerciseTiming } from "../domain/timing";
+import { estimateSessionDuration } from "../rules/sessionDuration";
 import { applySkillDose } from "../rules/skillDose";
-import { emptyMemory } from "../session/history";
 import { areaOf } from "../library/facets";
 import { prehabFor } from "../safety/prehab";
 import { JOINT_LABEL } from "../settings/jointHistory";
@@ -19,6 +19,7 @@ import {
   type StepContext,
 } from "./ladderSteps";
 import { careSlotFor } from "./jointCareDay";
+import { memoryAtLevel } from "./levelDeclare";
 import { GENERATED_DAY_PREFIX, newDayId } from "./planDays";
 import { AREA_RECIPES, FAMILY_AREA, type LadderSlotSpec } from "./recipes";
 
@@ -163,7 +164,8 @@ const OTHER_SETS = 3;
  */
 function doseFor(exercise: SeedExercise, ctx: StepContext, lead: Lead | undefined): TemplateSlot["dose"] {
   const sets = lead ? LEAD_SETS[lead] : OTHER_SETS;
-  const memory = ctx.memories[exercise.id] ?? emptyMemory(exercise.id);
+  // With a plan level set, dose as the planner will once that level is declared on the move.
+  const memory = memoryAtLevel(ctx.memories[exercise.id], exercise, ctx.level);
   return applySkillDose({ sets, reps: 8, targetRir: 2, addedLoadKg: 0 }, exercise, memory).dose;
 }
 
@@ -218,6 +220,38 @@ function toSlots(picks: readonly SlotPick[], dayId: string, lead: Lead, ctx: Ste
   }));
 }
 
+/** The fewest sets a trimmed later slot keeps: the seed Full body day ends on a 2-set slot. */
+const TRIMMED_SETS = 2;
+/** The fewest sets the first slot keeps: the seed Full body day leads with 3. */
+const TRIMMED_LEAD_SETS = 3;
+
+function withSets(day: SessionTemplate, index: number, sets: number): SessionTemplate {
+  return {
+    ...day,
+    slots: day.slots.map((slot, i) => (i === index ? { ...slot, dose: { ...slot.dose, sets } } : slot)),
+  };
+}
+
+/**
+ * Keeps a day inside its time band. Higher tiers mean more reps and longer
+ * sessions, so when a day runs over, the later slots drop to two sets, last
+ * slot first, and then the first slot to three, until it fits. Pinned care
+ * moves are never trimmed.
+ */
+function fitToBand(day: SessionTemplate): SessionTemplate {
+  const maxSeconds = (day.targetMinutes?.maxMinutes ?? Number.POSITIVE_INFINITY) * 60;
+  const over = (candidate: SessionTemplate): boolean => estimateSessionDuration(candidate).totalSeconds > maxSeconds;
+  let fitted = day;
+  for (let index = day.slots.length - 1; index >= 0 && over(fitted); index -= 1) {
+    const slot = fitted.slots[index]!;
+    const floor = index === 0 ? TRIMMED_LEAD_SETS : TRIMMED_SETS;
+    if (!slot.pinned && slot.dose.sets > floor) {
+      fitted = withSets(fitted, index, floor);
+    }
+  }
+  return fitted;
+}
+
 function buildDay(input: BlockInput, index: number, base: string, inBlock: Set<string>): SessionTemplate {
   const letter = LETTERS[index]!;
   const emphasis = EMPHASIS_BY_LETTER[letter];
@@ -236,7 +270,7 @@ function buildDay(input: BlockInput, index: number, base: string, inBlock: Set<s
 
   const seed = seedFor(area, isSkill ? input.target : undefined, input.context);
   const title = isSkill ? skillTitle(input.target) : DAY_KIND_LABELS[input.kind];
-  return {
+  return fitToBand({
     id: dayId,
     name: `${title} · ${letter}`,
     focus: focusOfKind(input.kind),
@@ -250,7 +284,7 @@ function buildDay(input: BlockInput, index: number, base: string, inBlock: Set<s
     slots: care ? [...slots, care] : slots,
     repeat: false,
     targetMinutes: seed.targetMinutes,
-  };
+  });
 }
 
 /**

@@ -3,8 +3,9 @@ import type { PlanQueue, SessionTemplate } from "../domain/program";
 import { exerciseMetaLine } from "../library/metaLine";
 import { AREA_KINDS, DAY_KIND_LABELS, MOBILITY_TEMPLATE_ID, dayTitle, skillTitle } from "../plan/dayKinds";
 import { swapChoices } from "../plan/dayEdits";
-import { previewDay, type AthleteState } from "../plan/dayPreview";
+import { previewQueue, type AthleteState, type PreviewItem } from "../plan/dayPreview";
 import { hasProgressionPath } from "../plan/pathPlacement";
+import { PLAN_LEVELS, loadPlanLevel } from "../plan/planLevel";
 import { listAllTemplates, resolveTemplate } from "../plan/templates";
 import { warmupCooldownLabel } from "../rules/sessionDuration";
 import { templateDurationLabel, templateTargetsLabel } from "./formatTemplate";
@@ -15,7 +16,10 @@ export interface PlanUiState {
   openDays: ReadonlySet<number>;
   /** The slot whose swap choices are showing. */
   swap: { index: number; slotId: string } | null;
+  /** Exercises whose description is open, as "dayIndex:slotId". */
+  openExercises: ReadonlySet<string>;
   addOpen: boolean;
+  levelOpen: boolean;
   status?: string;
 }
 
@@ -39,9 +43,18 @@ function dayMeta(template: SessionTemplate): string {
   return [targets ? `Toward ${targets}` : "", warmupCooldownLabel(template)].filter(Boolean).join(" · ");
 }
 
-function dayView(templateId: string, index: number, state: AthleteState, ui: PlanUiState): PlanDayView {
-  const template = resolveTemplate(templateId);
-  const items = previewDay(template, state, index === 0);
+/** Key for an opened exercise description. */
+export function exerciseKey(dayIndex: number, slotId: string): string {
+  return `${dayIndex}:${slotId}`;
+}
+
+function dayView(
+  template: SessionTemplate,
+  items: readonly PreviewItem[],
+  index: number,
+  state: AthleteState,
+  ui: PlanUiState,
+): PlanDayView {
   const swapSlotId = ui.swap?.index === index ? ui.swap.slotId : undefined;
   const swapping = items.find((item) => item.slotId === swapSlotId);
   const swapOptions: SwapOption[] = swapping
@@ -60,6 +73,7 @@ function dayView(templateId: string, index: number, state: AthleteState, ui: Pla
     open: ui.openDays.has(index),
     swapSlotId: swapping ? swapSlotId : undefined,
     swapOptions,
+    openSlotIds: items.filter((item) => ui.openExercises.has(exerciseKey(index, item.slotId))).map((item) => item.slotId),
   };
 }
 
@@ -67,7 +81,11 @@ function dayView(templateId: string, index: number, state: AthleteState, ui: Pla
 export function buildPlanModel(queue: PlanQueue, state: AthleteState, ui: PlanUiState): PlanPageModel {
   const make = [...areaOptions(), ...skillOptions()];
   return {
-    days: queue.items.map((id, index) => dayView(id, index, state, ui)),
+    days: (() => {
+      const templates = queue.items.map((id) => resolveTemplate(id));
+      const previews = previewQueue(templates, state);
+      return templates.map((template, index) => dayView(template, previews[index]!, index, state, ui));
+    })(),
     makeOptions: make,
     addOptions: [
       ...make,
@@ -75,6 +93,7 @@ export function buildPlanModel(queue: PlanQueue, state: AthleteState, ui: PlanUi
       { value: "care", label: DAY_KIND_LABELS.joint_care, type: "care" },
     ],
     addOpen: ui.addOpen,
+    level: { options: PLAN_LEVELS, value: loadPlanLevel(), open: ui.levelOpen },
     status: ui.status,
   };
 }

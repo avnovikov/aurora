@@ -1,7 +1,10 @@
 import type { PlanQueue, SessionTemplate } from "../domain/program";
+import type { SkillTier } from "../domain/types";
+import { loadMemories, saveMemories } from "../session/history";
 import { generateBlock, type BlockInput } from "./generateBlock";
 import { generateJointCareDay } from "./jointCareDay";
 import type { StepContext } from "./ladderSteps";
+import { declareLevelForDays } from "./levelDeclare";
 import { savePlanDays } from "./planDays";
 
 /** Sessions left between the days of one block, so an area is not trained back to back. */
@@ -26,6 +29,13 @@ export function placeBlock(queue: PlanQueue, dayIds: readonly string[], index: n
   return { items };
 }
 
+/** With a plan level set, record it on the generated moves so sessions are dosed at that level. */
+function declarePlanLevel(days: readonly SessionTemplate[], level: SkillTier | undefined): void {
+  if (level) {
+    saveMemories(declareLevelForDays(loadMemories(), days, level));
+  }
+}
+
 export interface AddBlockResult {
   days: SessionTemplate[];
   /** The queue with the block placed; the caller saves it. */
@@ -41,6 +51,7 @@ export function addBlockToPlan(input: BlockInput & { queue: PlanQueue; index: nu
   const days = generateBlock(input);
   const queue = placeBlock(input.queue, days.map((day) => day.id), input.index);
   savePlanDays(days);
+  declarePlanLevel(days, input.context.level);
   return { days, queue };
 }
 

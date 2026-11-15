@@ -16,6 +16,13 @@ export interface StepContext {
   equipment?: readonly EquipmentId[];
   jointHistory: readonly JointHistoryEntry[];
   excluded: readonly string[];
+  /**
+   * The plan's level, when the athlete set one: every ladder starts at this
+   * tier, and the level is declared on the chosen moves (as in the Library)
+   * so the planner doses them at it. Unset, each ladder's level comes from
+   * results.
+   */
+  level?: SkillTier;
   /** Injected in tests; defaults to the Library ladder index. */
   index?: FamilyLadderIndex;
 }
@@ -77,6 +84,9 @@ export function usableMembers(familyId: string, ctx: StepContext): LadderMember[
  * already raises easier members). Beginner with no data.
  */
 export function familyTier(familyId: string, ctx: StepContext): SkillTier {
+  if (ctx.level) {
+    return ctx.level;
+  }
   const index = ctx.index ?? libraryFamilyLadderIndex();
   let best: SkillTier = DEFAULT_TIER;
   for (const entry of index.byFamily.get(familyId) ?? []) {
