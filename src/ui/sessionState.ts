@@ -1,9 +1,11 @@
 import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
+import { estimatePlannedSessionSeconds } from "../rules/sessionDuration";
 import { createEmptyLog, type ActiveWorkState } from "../session/setLog";
 import { INITIAL_PULSE } from "./pulseState";
 import type { SessionViewOptions, ViewState } from "./sessionTypes";
 
 export function initialState(options: SessionViewOptions): ViewState {
+  const plannedTotalSeconds = estimatePlannedSessionSeconds(options.planned);
   const resume = options.resume;
   if (resume) {
     const state: ViewState = {
@@ -14,10 +16,11 @@ export function initialState(options: SessionViewOptions): ViewState {
       log: resume.log,
       workState: null,
       restLeft: 0,
-      showingCues: false,
       pulse: { ...INITIAL_PULSE },
       bpm: null,
       pulseStatus: null,
+      startedAtMs: resolveStartedAtMs(resume.startedAt, resume.savedAt),
+      plannedTotalSeconds,
     };
     if (state.phase === "work" || state.phase === "rest") {
       state.workState = restoreWorkState(
@@ -36,10 +39,11 @@ export function initialState(options: SessionViewOptions): ViewState {
     log: createEmptyLog(),
     workState: null,
     restLeft: 0,
-    showingCues: false,
     pulse: { ...INITIAL_PULSE },
     bpm: null,
     pulseStatus: null,
+    startedAtMs: Date.now(),
+    plannedTotalSeconds,
   };
 }
 
@@ -86,4 +90,15 @@ function restoreWorkState(
     return null;
   }
   return { ...synced, nextRepsOverride };
+}
+
+function resolveStartedAtMs(startedAt: string | undefined, savedAt: string): number {
+  if (startedAt) {
+    const parsed = Date.parse(startedAt);
+    if (Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
+  const fallback = Date.parse(savedAt);
+  return Number.isFinite(fallback) ? fallback : Date.now();
 }

@@ -13,6 +13,8 @@ export interface PersistedSession {
   workIndex: number;
   setIndex: number;
   nextRepsOverride?: number;
+  /** ISO time when the athlete started this session (for the elapsed clock). */
+  startedAt?: string;
   savedAt: string;
 }
 

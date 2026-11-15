@@ -19,8 +19,11 @@ export interface ViewState {
   log: WorkoutLog;
   workState: ActiveWorkState | null;
   restLeft: number;
-  showingCues: boolean;
   pulse: PulseWatchState;
   bpm: number | null;
   pulseStatus: string | null;
+  /** Epoch ms when this session started (survives resume). */
+  startedAtMs: number;
+  /** Planned total seconds used for the remaining countdown. */
+  plannedTotalSeconds: number;
 }

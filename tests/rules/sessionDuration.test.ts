@@ -1,12 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { SESSION_TEMPLATES, SEED_GRAPH } from "../../src/data/seed";
 import { resolveExerciseTiming } from "../../src/domain/timing";
+import { templateToStarter } from "../../src/data/seed";
+import { planSession } from "../../src/rules/planSession";
 import {
   DEFAULT_SESSION_TARGET,
+  estimatePlannedSessionSeconds,
   estimateSessionDuration,
   estimateSlotSeconds,
   formatDurationLabel,
 } from "../../src/rules/sessionDuration";
+import type { Readiness } from "../../src/domain/types";
 
 describe("resolveExerciseTiming", () => {
   it("treats isometric seed holds as effort hold", () => {
@@ -47,5 +51,17 @@ describe("estimateSessionDuration", () => {
     expect(formatDurationLabel(estimateSessionDuration(legs))).toMatch(
       /^≈ \d+ min$/,
     );
+  });
+
+  it("estimates a positive wall-clock total for a planned session", () => {
+    const readiness: Readiness = {
+      sleepQuality: "good",
+      restingHrBpm: 58,
+      painJoints: [],
+    };
+    const legs = SESSION_TEMPLATES.find((t) => t.id === "tmpl_legs")!;
+    const planned = planSession(readiness, templateToStarter(legs), {});
+    const seconds = estimatePlannedSessionSeconds(planned);
+    expect(seconds).toBeGreaterThan(60);
   });
 });

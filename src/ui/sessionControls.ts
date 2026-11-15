@@ -50,10 +50,6 @@ export function wireSessionControls(
   root.querySelector("[data-skip]")?.addEventListener("click", () => {
     completeSet(planned, state, "skipped", handlers);
   });
-  root.querySelector("[data-cues]")?.addEventListener("click", () => {
-    state.showingCues = !state.showingCues;
-    handlers.onPaint();
-  });
   root.querySelector("[data-reps-minus]")?.addEventListener("click", () => {
     adjustNextReps(state, -1, handlers);
   });

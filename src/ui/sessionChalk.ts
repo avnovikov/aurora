@@ -1,7 +1,9 @@
+import { SEED_GRAPH } from "../data/seed";
 import { escapeHtml } from "../library/present";
 import { isNativePulseAvailable } from "../pulse/hrMonitor";
 import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
 import { WARMUP_GAPS, warmupMinutesLabel } from "../rules/sessionDuration";
+import { sessionClockSnapshot } from "../session/sessionClock";
 import { prescribedForNextSet } from "../session/setLog";
 import type { ViewState } from "./sessionTypes";
 import { currentWork } from "./sessionState";
@@ -11,6 +13,7 @@ export function shellHtml(planned: PlannedSession, state: ViewState): string {
   const pulseClass = state.pulse.connected && state.bpm === null ? "pulse-lost" : "";
   return `
     <main class="shell session ${light}">
+      ${sessionClockHtml(state)}
       ${chalkHtml(planned, state)}
       <div class="pulse-row ${pulseClass}">
         <span>Pulse ${state.bpm ?? "—"}</span>
@@ -24,6 +27,15 @@ export function shellHtml(planned: PlannedSession, state: ViewState): string {
       ${bodyHtml(planned, state)}
     </main>
   `;
+}
+
+export function sessionClockHtml(state: ViewState, nowMs: number = Date.now()): string {
+  const clock = sessionClockSnapshot(
+    state.startedAtMs,
+    state.plannedTotalSeconds,
+    nowMs,
+  );
+  return `<p class="session-clock" data-session-clock>${escapeHtml(clock.label)}</p>`;
 }
 
 function pulseControlsHtml(): string {
@@ -73,8 +85,11 @@ function chalkHtml(planned: PlannedSession, state: ViewState): string {
 }
 
 function cuesListHtml(cues: string[]): string {
-  const items = cues.map((cue) => `<li>${cue}</li>`).join("");
-  return `<ul class="cues">${items}</ul>`;
+  if (cues.length === 0) {
+    return "";
+  }
+  const items = cues.map((cue) => `<li>${escapeHtml(cue)}</li>`).join("");
+  return `<ul class="cues doodle-cues">${items}</ul>`;
 }
 
 function bodyHtml(planned: PlannedSession, state: ViewState): string {
@@ -100,38 +115,39 @@ function warmupHtml(planned: PlannedSession, state: ViewState): string {
     return `<p class="tagline">Warmup complete</p>`;
   }
   const media = step.doodlePath
-    ? `<img class="doodle" src="${step.doodlePath}" alt="Doodle for ${step.name}" />`
+    ? `<img class="doodle" src="${step.doodlePath}" alt="Doodle for ${escapeHtml(step.name)}" />`
     : "";
+  const cues = cuesListHtml(SEED_GRAPH[step.exerciseId]?.cues ?? []);
   return `
     <p class="eyebrow">Warmup</p>
-    <h2>${step.name}</h2>
-    <p class="tagline">${step.region} · <span data-warmup-left>${step.holdSeconds}</span>s</p>
+    <h2>${escapeHtml(step.name)}</h2>
+    <p class="tagline">${escapeHtml(step.region)} · <span data-warmup-left>${step.holdSeconds}</span>s</p>
     ${media}
+    ${cues}
     <p class="reason">Continuous block · ${WARMUP_GAPS.sameArea}s same area · ${WARMUP_GAPS.crossArea}s cross area</p>
   `;
 }
 
 function workHtml(item: PlannedWorkItem, state: ViewState): string {
   const reps = state.workState ? prescribedForNextSet(state.workState) : item.dose.reps;
-  const cues = state.showingCues ? cuesListHtml(item.cues) : "";
   const media = item.doodlePath
-    ? `<img class="doodle" src="${item.doodlePath}" alt="Doodle for ${item.exerciseName}" />`
+    ? `<img class="doodle" src="${item.doodlePath}" alt="Doodle for ${escapeHtml(item.exerciseName)}" />`
     : "";
+  const cues = cuesListHtml(item.cues);
   return `
     <div class="work-stage" data-swipe-stage>
-      <p class="eyebrow">${item.label} · Set ${state.setIndex} of ${item.dose.sets}</p>
-      <h2>${item.exerciseName}</h2>
+      <p class="eyebrow">${escapeHtml(item.label)} · Set ${state.setIndex} of ${item.dose.sets}</p>
+      <h2>${escapeHtml(item.exerciseName)}</h2>
       <p class="reps">${reps}</p>
-      <p class="reason">${item.reason}</p>
+      <p class="reason">${escapeHtml(item.reason)}</p>
       ${media}
+      ${cues}
       <div class="row">
-        <button type="button" data-cues>Description</button>
         <button type="button" class="cta" data-log-set>Log set</button>
         <button type="button" data-fail-set>Failed</button>
         <button type="button" data-skip>Skip</button>
       </div>
       <p class="hint">Swipe right → left to finish exercise</p>
-      ${cues}
     </div>
   `;
 }

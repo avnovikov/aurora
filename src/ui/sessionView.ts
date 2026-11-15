@@ -1,4 +1,5 @@
 import { clearSession, saveSession } from "../session/storage";
+import { sessionClockSnapshot } from "../session/sessionClock";
 import { startWakeLock } from "../session/wakeLock";
 import { speakCoachLine } from "../voice/coachVoice";
 import { disconnectHeartRate } from "../pulse/hrMonitor";
@@ -21,6 +22,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   let restHandle: RestTimerHandle | null = null;
   let warmupHandle: WarmupTimerHandle | null = null;
   let pulseTimer: number | null = null;
+  let clockTimer: number | null = null;
   const wakeLock = startWakeLock();
 
   const clearWorkTimers = (): void => {
@@ -36,8 +38,25 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       window.clearInterval(pulseTimer);
       pulseTimer = null;
     }
+    if (clockTimer !== null) {
+      window.clearInterval(clockTimer);
+      clockTimer = null;
+    }
     void wakeLock.stop();
     void disconnectHeartRate();
+  };
+
+  const paintClock = (): void => {
+    const node = root.querySelector<HTMLElement>("[data-session-clock]");
+    if (!node) {
+      return;
+    }
+    const clock = sessionClockSnapshot(
+      state.startedAtMs,
+      state.plannedTotalSeconds,
+      Date.now(),
+    );
+    node.textContent = clock.label;
   };
 
   const paint = (): void => {
@@ -62,6 +81,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       workIndex: state.workIndex,
       setIndex: state.setIndex,
       nextRepsOverride: state.workState?.nextRepsOverride,
+      startedAt: new Date(state.startedAtMs).toISOString(),
       savedAt: new Date().toISOString(),
     });
   };
@@ -150,6 +170,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   }
 
   pulseTimer = window.setInterval(maybePulseShout, 2000);
+  clockTimer = window.setInterval(paintClock, 1000);
 
   paint();
   if (state.phase === "warmup") {

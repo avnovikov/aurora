@@ -6,6 +6,7 @@ import type {
   TemplateSlot,
 } from "../domain/program";
 import type { Dose, Exercise } from "../domain/types";
+import type { PlannedSession } from "./planSession";
 import { WARMUP_GAPS } from "./warmupPlan";
 
 /** Default continuous warmup budget (~10 min of 12s stations). */
@@ -79,6 +80,26 @@ export function formatDurationLabel(estimate: SessionDurationEstimate): string {
     return `≈ ${estimate.totalMinutesRounded} min`;
   }
   return `≈ ${estimate.totalMinutesRounded} min (target ${band})`;
+}
+
+/**
+ * Wall-clock estimate for today's resolved plan (warmup stations + work + rests).
+ */
+export function estimatePlannedSessionSeconds(planned: PlannedSession): number {
+  const warmupSeconds = planned.warmup.reduce(
+    (sum, step) => sum + step.holdSeconds + step.gapSecondsAfter,
+    0,
+  );
+  const workSeconds = planned.work.reduce((sum, item) => {
+    const exercise = SEED_GRAPH[item.exerciseId];
+    if (!exercise) {
+      return sum;
+    }
+    const effort = estimateSetWorkSeconds(item.dose, exercise);
+    const rests = Math.max(0, item.dose.sets - 1) * item.restSeconds;
+    return sum + effort + rests;
+  }, 0);
+  return warmupSeconds + workSeconds;
 }
 
 /** Warmup chalk copy stays honest about the station budget. */
