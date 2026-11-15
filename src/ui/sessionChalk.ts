@@ -15,6 +15,7 @@ import {
 } from "./sessionChalkStrip";
 import { cooldownSteps, currentWork, isGetReadyRest } from "./sessionState";
 import type { ViewState } from "./sessionTypes";
+import { doseNoteHtml } from "./sessionDoseNote";
 import { weightControlsHtml } from "./sessionWeightControls";
 import "../styles/session.css";
 
@@ -284,6 +285,7 @@ function workHtml(item: PlannedWorkItem, state: ViewState): string {
   const reps = nextSetReps(state, item.dose.reps);
   const loadKg = state.workState?.addedLoadKg ?? 0;
   const dose = `${workDoseHtml(reps, workUnit(item))}
+      ${doseNoteHtml(item, state.setIndex, reps)}
       ${weightControlsHtml(loadKg)}`;
   return `
     <div class="work-stage" data-swipe-stage>
