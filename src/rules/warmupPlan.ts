@@ -6,6 +6,7 @@ export interface WarmupStep {
   region: LoadRegion;
   holdSeconds: number;
   gapSecondsAfter: number;
+  doodlePath?: string;
 }
 
 export interface WarmupPlanInput {
@@ -69,6 +70,7 @@ export function planWarmup(input: WarmupPlanInput): WarmupStep[] {
       region,
       holdSeconds: HOLD_SECONDS,
       gapSecondsAfter: gap,
+      doodlePath: exercise.doodlePath,
     };
     steps.push(step);
     elapsed += HOLD_SECONDS + gap;

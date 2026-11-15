@@ -7,6 +7,7 @@ import {
 
 let muted = false;
 let lastAudio: HTMLAudioElement | null = null;
+let audioUnlocked = false;
 
 export function setCoachMuted(next: boolean): void {
   muted = next;
@@ -30,8 +31,36 @@ export function stopCoachVoice(): void {
 }
 
 /**
- * Prefer prebuilt /voice/{assetKey}.wav (Scouse copy, male en-GB bake).
- * Fall back to speechSynthesis when the asset is missing.
+ * Call from a user tap (Start session). Chrome blocks audio until then.
+ */
+export async function unlockCoachAudio(): Promise<void> {
+  if (typeof window === "undefined") {
+    return;
+  }
+  audioUnlocked = true;
+  if (window.speechSynthesis) {
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.cancel();
+    const warm = new SpeechSynthesisUtterance(" ");
+    warm.volume = 0.01;
+    warm.rate = 2;
+    window.speechSynthesis.speak(warm);
+    window.speechSynthesis.cancel();
+  }
+  try {
+    const silent = new Audio(
+      "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA=",
+    );
+    silent.volume = 0.01;
+    await silent.play();
+    silent.pause();
+  } catch {
+    // Still mark unlocked; later play may succeed after this gesture.
+  }
+}
+
+/**
+ * Prefer prebuilt /voice/{assetKey}.wav. Fall back to speechSynthesis.
  */
 export async function speakCoachLine(
   id: CoachLineId,
@@ -50,6 +79,9 @@ export async function speakExactLine(
 ): Promise<void> {
   if (muted) {
     return;
+  }
+  if (!audioUnlocked) {
+    await unlockCoachAudio();
   }
   const played = await tryPlayAsset(line, louder);
   if (!played) {
@@ -75,8 +107,17 @@ async function tryPlayAsset(line: CoachLine, louder: boolean): Promise<boolean> 
   try {
     stopCoachVoice();
     const audio = new Audio(url);
-    audio.volume = louder ? 1 : 0.9;
+    audio.preload = "auto";
+    audio.volume = louder ? 1 : 0.95;
     lastAudio = audio;
+    await new Promise<void>((resolve, reject) => {
+      audio.addEventListener("canplaythrough", () => resolve(), { once: true });
+      audio.addEventListener("error", () => reject(new Error("audio error")), {
+        once: true,
+      });
+      audio.load();
+      window.setTimeout(() => resolve(), 400);
+    });
     await audio.play();
     return true;
   } catch {
@@ -88,15 +129,28 @@ function speakFallback(text: string, louder: boolean): void {
   if (typeof window === "undefined" || !window.speechSynthesis) {
     return;
   }
-  stopCoachVoice();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "en-GB";
-  utterance.rate = 0.85;
-  utterance.pitch = 0.85;
-  utterance.volume = louder ? 1 : 0.9;
-  const voice = pickBritishVoice(window.speechSynthesis.getVoices());
-  if (voice) {
-    utterance.voice = voice;
+  if (lastAudio) {
+    lastAudio.pause();
+    lastAudio = null;
   }
-  window.speechSynthesis.speak(utterance);
+  window.speechSynthesis.cancel();
+  const speak = (): void => {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-GB";
+    utterance.rate = 0.9;
+    utterance.pitch = 0.9;
+    utterance.volume = louder ? 1 : 0.95;
+    const voice = pickBritishVoice(window.speechSynthesis.getVoices());
+    if (voice) {
+      utterance.voice = voice;
+    }
+    window.speechSynthesis.speak(utterance);
+  };
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length === 0) {
+    window.speechSynthesis.addEventListener("voiceschanged", speak, { once: true });
+    window.setTimeout(speak, 250);
+    return;
+  }
+  speak();
 }

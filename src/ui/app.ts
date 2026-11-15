@@ -10,7 +10,7 @@ import {
 } from "../session/history";
 import { loadSession } from "../session/storage";
 import { loadProfile } from "../settings/profile";
-import { speakCoachLine } from "../voice/coachVoice";
+import { speakCoachLine, unlockCoachAudio } from "../voice/coachVoice";
 import { renderBodyView } from "./bodyView";
 import { renderCheckIn } from "./checkIn";
 import { renderEvaluationView } from "./evaluationView";
@@ -92,7 +92,10 @@ function showTodayHome(root: HTMLElement): void {
 
   renderCheckIn(root.querySelector("[data-checkin]")!, {
     onStart: (readiness) => {
-      void speakCoachLine("session_start");
+      void (async () => {
+        await unlockCoachAudio();
+        await speakCoachLine("session_start");
+      })();
       const template = peekNextTemplate(loadPlanQueue());
       const planned = planSession(
         readiness,

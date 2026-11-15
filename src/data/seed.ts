@@ -62,6 +62,7 @@ export const SEED_EXERCISES: SeedExercise[] = [
     joints: ["hip", "knee", "ankle"],
     role: "warmup",
     regions: ["general", "legs"],
+    doodlePath: "/doodles/doodle-lunge.jpg",
     cues: ["Light bounce", "Arms swing freely", "Breathe through the nose"],
   }),
   ex({
@@ -73,6 +74,7 @@ export const SEED_EXERCISES: SeedExercise[] = [
     joints: ["hip"],
     role: "warmup",
     regions: ["legs", "general"],
+    doodlePath: "/doodles/doodle-glute-bridge.jpg",
     cues: ["Slow circles", "Both directions", "Keep ribs quiet"],
   }),
   ex({
@@ -84,6 +86,7 @@ export const SEED_EXERCISES: SeedExercise[] = [
     joints: ["ankle", "knee"],
     role: "warmup",
     regions: ["legs"],
+    doodlePath: "/doodles/doodle-calf-raise.jpg",
     cues: ["Knee tracks over mid-foot", "Heel stays down as long as possible"],
   }),
   ex({

@@ -26,7 +26,7 @@ export function renderCheckIn(root: HTMLElement, handlers: CheckInHandlers): voi
         ${JOINTS.map((joint) => `<button type="button" data-joint="${joint}">${labelJoint(joint)}</button>`).join("")}
       </div>
       <button type="button" class="cta" data-start disabled>Start session</button>
-      <p class="hint">Pulse strap optional for this POC. Scouse coach voice unlocks on Start, mate.</p>
+      <p class="hint">Same Wi‑Fi as the Mac. Tap Start once — that unlocks coach voice. Phone silent switch / Chrome volume on.</p>
     </main>
   `;
 

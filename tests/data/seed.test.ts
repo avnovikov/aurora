@@ -46,8 +46,12 @@ describe("doodleFor", () => {
     );
   });
 
-  it("returns undefined for exercises without a doodle or unknown ids", () => {
-    expect(doodleFor("pulse_raiser_march")).toBeUndefined();
+  it("returns undefined for unknown ids", () => {
     expect(doodleFor("missing_exercise")).toBeUndefined();
+  });
+
+  it("maps warmup doodles for march / hips / ankles", () => {
+    expect(doodleFor("pulse_raiser_march")).toBe("/doodles/doodle-lunge.jpg");
+    expect(doodleFor("ankle_rocks")).toBe("/doodles/doodle-calf-raise.jpg");
   });
 });
