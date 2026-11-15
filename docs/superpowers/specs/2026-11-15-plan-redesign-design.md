@@ -86,7 +86,12 @@ Removed with the old editor: the per-template "Procedure" editor, its 42 dropdow
 
 Measured in Chrome at 390×844: page height 2,524px before, 1,694px after with today open; dropdowns 42 before, none after; every control at least 44px tall (queue controls were 40px).
 
-**Library and Joint care (part 3):** Excluded mark and Exclude / Restore; an Excluded choice in the Show panel; the Joint care day generated from `prehabFor`, 10–15 minutes at light dose.
+**Library and Joint care (part 3), as built:**
+
+- **Library:** an excluded move shows "Excluded by you" in the list (in place of its joint badge) and a **Not for me** switch on its page, which excludes or restores it. The Show panel gains **Excluded by me** (offered once something is excluded), listing exactly the excluded moves, stretches included. It is the same list the Plan page writes to.
+- **Joint care day** (`plan/jointCareDay.ts`): built from the prehab list for the declared joints, taking turns between joints, gear-aware and never an excluded move. It is dosed like the seed Mobility day, not by anything new: every slot pinned (the planner never advances or regresses it), 2 sets, 10 reps or a 30 second hold, RIR 3, rest from the library timing model, the Mobility day's warm-up, and its 10 to 20 minute band (moves are dropped from the end until the session fits). With no joint history it is "Joint care · general" (shoulder and hip stability) and the page says so. It can be added from the Plan page ("Add days", one day) and chosen in Today's "Train something else" panel.
+- The care move inside area days (part 1) now uses the same pinned Mobility-day dose.
+- The issue asked for 10 to 15 minutes; the library's own band for this kind of day is 10 to 20, so that band is used. Measured: 13 to 19 minutes across five joint combinations.
 
 ## Testing
 

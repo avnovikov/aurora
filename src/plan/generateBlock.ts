@@ -18,6 +18,7 @@ import {
   type LadderMember,
   type StepContext,
 } from "./ladderSteps";
+import { careSlotFor } from "./jointCareDay";
 import { GENERATED_DAY_PREFIX } from "./planDays";
 import { AREA_RECIPES, FAMILY_AREA, type LadderSlotSpec } from "./recipes";
 
@@ -182,16 +183,7 @@ function careSlot(area: AreaKind, ctx: StepContext, dayId: string, used: Readonl
       (item) => !ctx.excluded.includes(item.id) && !used.has(item.id),
     );
     if (move) {
-      const hold = resolveExerciseTiming(move).effort === "hold";
-      return {
-        id: `${dayId}_care`,
-        label: `${JOINT_LABEL[entry.joint]} care`,
-        exerciseId: move.id,
-        pattern: move.pattern,
-        dose: { sets: 2, reps: hold ? 30 : 10, targetRir: 3, addedLoadKg: 0 },
-        restSeconds: resolveExerciseTiming(move).defaultRestSeconds,
-        pinned: false,
-      };
+      return careSlotFor(move, `${dayId}_care`, `${JOINT_LABEL[entry.joint]} care`);
     }
   }
   return undefined;

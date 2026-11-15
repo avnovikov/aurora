@@ -71,7 +71,11 @@ export function buildPlanModel(queue: PlanQueue, state: AthleteState, ui: PlanUi
   return {
     days: queue.items.map((id, index) => dayView(id, index, state, ui)),
     makeOptions: make,
-    addOptions: [...make, { value: MOBILITY_TEMPLATE_ID, label: DAY_KIND_LABELS.mobility, type: "seed" }],
+    addOptions: [
+      ...make,
+      { value: MOBILITY_TEMPLATE_ID, label: DAY_KIND_LABELS.mobility, type: "seed" },
+      { value: "care", label: DAY_KIND_LABELS.joint_care, type: "care" },
+    ],
     addOpen: ui.addOpen,
     status: ui.status,
   };

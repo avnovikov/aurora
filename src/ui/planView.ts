@@ -1,7 +1,8 @@
-import { addBlockToPlan } from "../plan/blockActions";
+import { addBlockToPlan, addJointCareDay } from "../plan/blockActions";
 import { DAY_KIND_LABELS, skillTitle } from "../plan/dayKinds";
 import { excludeFromDay, makeDay, setDayExercise } from "../plan/dayEdits";
 import type { BlockKind } from "../plan/generateBlock";
+import { isGeneralCare } from "../plan/jointCareDay";
 import {
   appendQueueItem,
   completeToday,
@@ -126,6 +127,15 @@ export function renderPlanView(root: HTMLElement): void {
   const wireAdd = (): void => {
     on(root, "[data-add-kind]", (el) => act(() => addDays(el.dataset.addKind as BlockKind)));
     on(root, "[data-add-skill]", (el) => act(() => addDays("skill", el.dataset.addSkill)));
+    on(root, "[data-add-care]", () =>
+      act(() => {
+        const state = loadAthleteState();
+        const result = addJointCareDay({ queue: loadPlanQueue(), context: state });
+        savePlanQueue(result.queue);
+        const general = isGeneralCare(state) ? " You have no joint history, so it is general shoulder and hip care." : "";
+        return `Added a light Joint care day at the end of the plan.${general}`;
+      }),
+    );
     on(root, "[data-add-seed]", (el) =>
       act(() => {
         savePlanQueue(appendQueueItem(loadPlanQueue(), el.dataset.addSeed!));

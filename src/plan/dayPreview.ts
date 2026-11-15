@@ -36,6 +36,17 @@ function doseLabel(item: PlannedWorkItem): string {
 
 const SWAP_RULES = ["joint_history", "equipment", "excluded", "advance", "stall_regress", "pain"] as const;
 
+/** The parts of the planner's reason that say a move was changed (not its dose bookkeeping). */
+const CHANGE_WORDS = /swapped|Advanced|Regressed/;
+
+function changeNote(item: PlannedWorkItem): string | undefined {
+  if (!item.ruleIds.some((rule) => (SWAP_RULES as readonly string[]).includes(rule))) {
+    return undefined;
+  }
+  const parts = item.reason.split(" · ").filter((part) => CHANGE_WORDS.test(part));
+  return parts.length > 0 ? parts.join(" · ") : item.reason;
+}
+
 /**
  * What a day's session will contain: the planner's real output for a normal
  * morning (good sleep, no pain), not the stored defaults. `isToday` lets the
@@ -61,7 +72,7 @@ export function previewDay(template: SessionTemplate, state: AthleteState, isTod
     exerciseId: item.exerciseId,
     name: item.exerciseName,
     dose: doseLabel(item),
-    note: item.ruleIds.some((rule) => (SWAP_RULES as readonly string[]).includes(rule)) ? item.reason : undefined,
+    note: changeNote(item),
     cautions: item.cautions,
   }));
 }

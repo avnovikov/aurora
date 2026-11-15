@@ -8,6 +8,8 @@ import {
 import { listHtml } from "../../src/library/libraryList";
 
 const base = { text: "", level: "all" as const };
+const SHOW_ALL = { hasJointHistory: true, hasExcluded: true };
+const SHOW_NONE = { hasJointHistory: false, hasExcluded: false };
 const HISTORY: JointHistoryEntry[] = [{ joint: "knee", side: "both", kind: "other" }];
 
 /** Panel ids in document order. */
@@ -70,13 +72,14 @@ describe("panel summaries and open state", () => {
     stretch: "hide" as const,
     forJoints: false,
     onlyGear: false,
+    excludedOnly: false,
     openPanels: [] as never[],
   };
 
   it("names what is active and opens that panel", () => {
     const html = filterPanelsHtml(
       { ...state, forJoints: true, onlyGear: true, stretch: "only", level: "beginner" },
-      true,
+      SHOW_ALL,
     );
     expect(html).toContain("Show · my joints, my gear, only stretches");
     expect(html).toContain("Level · Beginner");
@@ -86,12 +89,12 @@ describe("panel summaries and open state", () => {
   });
 
   it("treats every stretch choice but the default as active", () => {
-    expect(filterPanelsHtml({ ...state, stretch: "all" }, false)).toContain("Show · include stretches");
-    expect(filterPanelsHtml({ ...state, stretch: "hide" }, false)).toContain("<summary>Show</summary>");
+    expect(filterPanelsHtml({ ...state, stretch: "all" }, SHOW_NONE)).toContain("Show · include stretches");
+    expect(filterPanelsHtml({ ...state, stretch: "hide" }, SHOW_NONE)).toContain("<summary>Show</summary>");
   });
 
   it("keeps a panel the user opened open, even when nothing is active", () => {
-    const html = filterPanelsHtml({ ...state, openPanels: ["level"] as never[] }, false);
+    const html = filterPanelsHtml({ ...state, openPanels: ["level"] as never[] }, SHOW_NONE);
     expect(html).toMatch(/data-panel="level" open/);
     expect(html).toContain("<summary>Level</summary>");
     expect(html).not.toMatch(/data-panel="show" open/);
@@ -140,9 +143,10 @@ describe("withPanelState", () => {
         stretch: "hide",
         forJoints: false,
         onlyGear: false,
+        excludedOnly: false,
         openPanels: afterOpen,
       },
-      false,
+      SHOW_NONE,
     );
     expect(html).toMatch(/data-panel="body" open/);
   });

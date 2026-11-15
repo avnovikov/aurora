@@ -11,6 +11,8 @@ export interface LibraryResultsInput {
   onlyGear: boolean;
   jointHistory: readonly JointHistoryEntry[];
   equipment: readonly EquipmentId[];
+  /** Show only these excluded moves (set when the Excluded filter is on). */
+  excludedOnly?: readonly string[];
 }
 
 export interface LibraryResults {
@@ -19,19 +21,25 @@ export interface LibraryResults {
   hiddenStretches: number;
 }
 
+/** The moves the filters run over: the curated joints list or the catalogue, narrowed to excluded moves and owned gear when asked. */
+function poolFor(input: LibraryResultsInput): SeedExercise[] {
+  const { catalogue, forJoints, onlyGear, jointHistory, equipment, excludedOnly } = input;
+  const base = forJoints ? prehabFor(jointHistory, catalogue, equipment) : catalogue;
+  const pool = excludedOnly ? base.filter((item) => excludedOnly.includes(item.id)) : base;
+  return onlyGear ? pool.filter((item) => missingGear(item.requires, equipment).length === 0) : pool;
+}
+
 /**
  * What the Library list shows. The "For my joints" list is curated, so the
- * stretch filter never applies to it (it includes stretches on purpose).
+ * stretch filter never applies to it (it includes stretches on purpose); the
+ * same goes for the user's own excluded list.
  * While stretches are hidden and the user is searching, the number of hidden
  * matches is reported so the UI can offer to show them.
  */
 export function selectLibraryResults(input: LibraryResultsInput): LibraryResults {
-  const { catalogue, query, forJoints, onlyGear, jointHistory, equipment } = input;
-  const pool = forJoints ? prehabFor(jointHistory, catalogue, equipment) : catalogue;
-  const gearPool = onlyGear
-    ? pool.filter((item) => missingGear(item.requires, equipment).length === 0)
-    : pool;
-  const stretch = forJoints ? "all" : (query.stretch ?? "all");
+  const { query, forJoints, excludedOnly } = input;
+  const gearPool = poolFor(input);
+  const stretch = forJoints || excludedOnly ? "all" : (query.stretch ?? "all");
   const results = searchExercises(gearPool, { ...query, stretch });
   const searching = (query.text?.trim() ?? "") !== "";
   const hiddenStretches =
