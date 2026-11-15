@@ -547,6 +547,53 @@ button:disabled {
   margin: 0.35rem 0 0;
 }
 
+.body-map {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin: 0.5rem 0 1.25rem;
+}
+
+.body-figure {
+  margin: 0;
+  padding: 0.5rem 0.25rem 0.25rem;
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  text-align: center;
+}
+
+.body-figure svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 22rem;
+}
+
+.body-figure figcaption {
+  color: var(--muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.body-outline {
+  fill: #0c0c0e;
+  stroke: var(--edge);
+  stroke-width: 0.8;
+}
+
+.body-region {
+  fill: var(--brass);
+  fill-opacity: var(--heat, 0);
+  stroke: var(--edge);
+  stroke-width: 0.4;
+  stroke-linejoin: round;
+}
+
+.body-empty {
+  margin-top: 0.5rem;
+}
+
 .body-bars {
   display: grid;
   gap: 0.65rem;
