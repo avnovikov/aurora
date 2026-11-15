@@ -70,7 +70,22 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "wger_2686": "/doodles/doodle-wrist-stretch.svg",
   "fedb_kneeling_forearm_stretch": "/doodles/doodle-kneeling-forearm-stretch.svg",
   "ntc_thread_the_needle": "/doodles/doodle-thread-the-needle.svg",
-  "wger_1713": "/doodles/doodle-doorway-pectoral-stretch.svg"
+  "wger_1713": "/doodles/doodle-doorway-pectoral-stretch.svg",
+  "ntc_bear_plank": "/doodles/doodle-bear-plank.svg",
+  "wger_2691": "/doodles/doodle-pike-hold.svg",
+  "fedb_bodyweight_mid_row": "/doodles/doodle-bodyweight-mid-row.svg",
+  "hf_42": "/doodles/doodle-one-arm-inverted-row.svg",
+  "hf_87": "/doodles/doodle-hip-thrust.svg",
+  "hf_93": "/doodles/doodle-tibialis-raise.svg",
+  "wger_1913": "/doodles/doodle-unilateral-hip-thrust.svg",
+  "hf_20": "/doodles/doodle-wall-handstand-push-up.svg",
+  "hf_40": "/doodles/doodle-wide-grip-inverted-row.svg",
+  "hf_6": "/doodles/doodle-archer-push-up.svg",
+  "wger_1282": "/doodles/doodle-chin-up-hold.svg",
+  "hf_108": "/doodles/doodle-dragon-flag.svg",
+  "fedb_incline_push_up_close_grip": "/doodles/doodle-incline-push-up-close-grip.svg",
+  "wger_2732": "/doodles/doodle-towel-grip-dead-hang.svg",
+  "hf_1": "/doodles/doodle-wall-push-up.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
