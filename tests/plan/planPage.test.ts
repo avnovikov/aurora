@@ -180,4 +180,38 @@ describe("Plan page", () => {
     expect(single).not.toContain("data-later");
     expect(single).toContain("1 day ·");
   });
+
+  it("gives every row Swap and Easier as a pair, and ⋯ opening Not for me, all named by move and day", () => {
+    const m = model();
+    const rows = m.days.reduce((n, day) => n + day.items.length, 0);
+    const html = planPageHtml(m);
+    expect(count(html, "data-easier")).toBe(rows);
+    expect(count(html, "data-more")).toBe(rows);
+    expect(html).toContain('aria-label="Easier: Bulgarian split squat, Today"');
+    expect(html).toContain('aria-label="Swap: Bulgarian split squat, Today"');
+    expect(html).toContain('aria-label="Not for me: Nordic curl, Today"');
+    expect(html).toMatch(/role="menu"[^>]*hidden/);
+    const names = [...html.matchAll(/aria-label="((?:Swap|Easier|More options|Not for me): [^"]+)"/g)].map((match) => match[1]);
+    expect(new Set(names).size).toBe(names.length);
+  });
+
+  it("disables Easier with a reason when a move has no easier step", () => {
+    const html = planPageHtml(model());
+    const hinge = html.match(/<li class="plan-ex" data-slot="legs_hinge"[\s\S]*?<\/li>/)![0];
+    expect(hinge).toMatch(/data-easier aria-disabled="true"/);
+    const reasonId = hinge.match(/aria-describedby="([^"]+-no-easier)"/)![1];
+    expect(hinge).toContain(`id="${reasonId}">No easier step</span>`);
+    const split = html.match(/<li class="plan-ex" data-slot="legs_split"[\s\S]*?<\/li>/)![0];
+    expect(split).not.toContain("aria-disabled");
+  });
+
+  it("shows Undo in the row Not for me just changed, in place of its actions", () => {
+    const notice = { index: 0, slotId: "legs_posterior", name: "Nordic curl", message: "Excluded Nordic curl from all your sessions." };
+    const html = planPageHtml(buildPlanModel(loadPlanQueue(), state(), ui({ undo: notice })));
+    const row = html.match(/<li class="plan-ex is-out" data-slot="legs_posterior"[\s\S]*?<\/li>/)![0];
+    expect(row).toContain('role="status" data-plan-undo-status>Excluded Nordic curl from all your sessions.');
+    expect(row).toContain('data-undo aria-label="Undo: Nordic curl, Today">Undo</button>');
+    expect(row).not.toContain("data-not-for-me");
+    expect(count(html, "data-undo ")).toBe(1);
+  });
 });

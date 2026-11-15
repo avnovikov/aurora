@@ -1,0 +1,534 @@
+/* Plan: the days coming up, hung off a timeline spine.
+   Colours only through the role variables; type on the 1.25 scale
+   (12.8 / 16 / 20 / 25 / 31.25 / 39); spacing on the 4px grid. */
+
+main.plan {
+  --plan-body: var(--font-body, "IBM Plex Sans", Roboto, sans-serif);
+  --plan-display: var(--font-display, "IBM Plex Sans Condensed", "Roboto Condensed", sans-serif);
+  padding: 32px 16px 48px;
+  font-family: var(--plan-body);
+  font-size: 16px;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Page head and the panels below the days line up with the day titles. */
+main.plan > .eyebrow,
+main.plan > h1,
+main.plan > .lib-count,
+main.plan > .plan-status,
+main.plan > .hint,
+main.plan > .lib-filters:not(.plan-day) {
+  margin-left: 28px;
+}
+
+main.plan .eyebrow {
+  margin: 0;
+  font-size: 12.8px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+main.plan h1 {
+  margin: 4px 0 8px;
+  font: 600 39px/1.1 var(--plan-display);
+  letter-spacing: 0;
+  color: var(--foreground);
+}
+
+main.plan .lib-count {
+  margin: 0 0 32px;
+  color: var(--muted);
+}
+
+main.plan .lib-meta {
+  margin: 0;
+  font-size: 12.8px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+main.plan .nw {
+  white-space: nowrap;
+}
+
+main.plan button:focus-visible,
+main.plan summary:focus-visible {
+  outline: 2px solid var(--foreground);
+  outline-offset: 2px;
+}
+
+/* The page's last action. */
+main.plan > .plan-status {
+  margin-top: -16px;
+  margin-bottom: 24px;
+  padding: 8px 12px;
+  border-left: 2px solid var(--foreground);
+  background: var(--surface);
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+/* Buttons on this page: outlined, transparent, 44px tall. */
+main.plan .row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+}
+
+main.plan .row button,
+main.plan .plan-ex-actions button,
+main.plan .plan-ex-undo-btn {
+  min-height: 44px;
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid var(--control-edge);
+  border-radius: 4px;
+  color: var(--foreground);
+  font-size: 12.8px;
+  line-height: 1.25;
+}
+
+main.plan .row button:disabled,
+main.plan .plan-ex-actions button[aria-disabled="true"] {
+  background: transparent;
+  border-color: var(--edge);
+  color: var(--muted);
+  cursor: default;
+}
+
+main.plan .row button.selected {
+  border: 2px solid var(--foreground);
+  padding: 7px 11px;
+  font-weight: 600;
+  background: transparent;
+}
+
+main.plan .row.remove {
+  margin-top: 16px;
+}
+
+main.plan .chip-row-label {
+  margin: 24px 0 8px;
+  font-size: 12.8px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+main.plan .plan-exercises + .chip-row-label {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--edge);
+}
+
+main.plan summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+main.plan summary::-webkit-details-marker {
+  display: none;
+}
+
+/* The spine: a hairline rail with a node per day; today's node is filled. */
+.plan-days {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.plan-days::before {
+  content: "";
+  position: absolute;
+  left: -0.5px;
+  top: 32px;
+  bottom: 32px;
+  width: 1px;
+  background: var(--edge);
+}
+
+.plan-day-item {
+  position: relative;
+  margin-bottom: 8px;
+  padding-left: 16px;
+  transition: transform 0.15s ease;
+}
+
+.plan-day-item::before {
+  content: "";
+  position: absolute;
+  left: -6px;
+  top: 26px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--background);
+  border: 2px solid var(--control-edge);
+  box-sizing: border-box;
+}
+
+.plan-day-item.is-today-item::before {
+  background: var(--foreground);
+  border-color: var(--foreground);
+}
+
+/* The drag grip sits at the right edge of the day. */
+.plan-drag {
+  position: absolute;
+  top: 10px;
+  right: 0;
+  z-index: 1;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 25px;
+  line-height: 1;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.plan-drag::before {
+  content: "⠿";
+}
+
+.plan-day-item.is-today-item .plan-drag {
+  right: 4px;
+}
+
+.plan-day-item.is-dragging {
+  z-index: 5;
+  transition: none;
+  opacity: 0.92;
+}
+
+.plan-day-item.is-dragging .plan-drag {
+  color: var(--foreground);
+  cursor: grabbing;
+}
+
+/* A day: a hairline row when shut; a panel when it is today or open. */
+main.plan .plan-day {
+  margin: 0;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--edge);
+}
+
+main.plan .plan-day.is-today,
+main.plan .plan-day[open] {
+  padding-bottom: 16px;
+  background: var(--surface);
+  border: 1px solid var(--edge);
+  border-radius: 4px;
+}
+
+main.plan .plan-day > *:not(summary) {
+  margin-left: 12px;
+  margin-right: 12px;
+}
+
+main.plan .plan-day > summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "when when" "title time";
+  column-gap: 8px;
+  align-items: baseline;
+  align-content: center;
+  min-height: 64px;
+  margin: 0;
+  padding: 12px 56px 12px 12px;
+  border-bottom: 0;
+  font-weight: 400;
+}
+
+.plan-day-when {
+  grid-area: when;
+  font-size: 12.8px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.plan-day-title {
+  grid-area: title;
+  min-width: 0;
+  font: 600 20px/1.2 var(--plan-display);
+}
+
+.plan-day-time {
+  grid-area: time;
+  font-size: 12.8px;
+  color: var(--muted);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Today: a bigger title, and its duration is the page's one accent figure. */
+.is-today .plan-day-when {
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+}
+
+.is-today .plan-day-title {
+  font-size: 25px;
+  line-height: 1.1;
+}
+
+.is-today .plan-day-time {
+  font: 600 31.25px/1.1 var(--plan-display);
+  color: var(--accent);
+}
+
+main.plan .plan-day-meta {
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--edge);
+}
+
+/* Exercises: name and dose across the full width, an action line below. */
+.plan-exercises {
+  list-style: none;
+  margin: 16px 12px 0;
+  padding: 0;
+}
+
+.plan-ex {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: 8px;
+  align-items: start;
+  padding: 0;
+}
+
+.plan-ex + .plan-ex {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--edge);
+}
+
+main.plan .plan-ex-main {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  text-align: left;
+  color: inherit;
+}
+
+.plan-ex-name {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.plan-ex-dose {
+  display: block;
+  font-size: 16px;
+  line-height: 1.25;
+  color: var(--muted);
+}
+
+/* Swap and Easier as an equal pair; ⋯ alone at the right end. */
+.plan-ex-actions {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) 44px;
+  column-gap: 8px;
+  align-items: center;
+}
+
+main.plan .plan-ex-actions .plan-ex-swap,
+main.plan .plan-ex-actions .plan-ex-easier {
+  min-width: 80px;
+  width: auto;
+  padding: 0 12px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+main.plan .plan-ex-actions .plan-ex-more {
+  grid-column: 4;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-color: transparent;
+  color: var(--muted);
+  font-size: 20px;
+  line-height: 1;
+}
+
+main.plan .plan-ex-actions .plan-ex-more[aria-expanded="true"] {
+  color: var(--foreground);
+  border-color: var(--control-edge);
+}
+
+.plan-ex-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 2;
+  width: 256px;
+  padding: 4px;
+  background: var(--background);
+  border: 1px solid var(--control-edge);
+  border-radius: 4px;
+}
+
+.plan-ex-menu[hidden] {
+  display: none;
+}
+
+main.plan .plan-ex-actions .plan-ex-out {
+  display: block;
+  width: 100%;
+  min-height: 56px;
+  padding: 8px 12px;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  text-align: left;
+  color: var(--foreground);
+}
+
+main.plan .plan-ex-actions .plan-ex-out:hover,
+main.plan .plan-ex-actions .plan-ex-out:focus-visible {
+  background: var(--surface);
+}
+
+.plan-ex-out-label {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.plan-ex-out-help {
+  display: block;
+  margin-top: 4px;
+  font-size: 12.8px;
+  line-height: 1.25;
+  color: var(--muted);
+}
+
+/* After "Not for me": what happened on the left, Undo on the right. */
+.plan-ex-undo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 116px;
+  column-gap: 8px;
+  align-items: center;
+  min-height: 56px;
+}
+
+.plan-ex-status {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.25;
+  color: var(--muted);
+}
+
+main.plan .plan-ex-undo-btn {
+  width: 100%;
+  height: 44px;
+  padding: 0;
+}
+
+/* A tapped row opens to its description; the planner's note and swap choices sit under it. */
+main.plan .plan-ex-main[aria-expanded="true"] .plan-ex-name {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.plan-ex-detail .plan-ex-desc {
+  margin: 0 0 4px;
+  color: var(--foreground-soft);
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.plan-swap {
+  display: grid;
+  gap: 8px;
+}
+
+main.plan .plan-swap-pick {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-height: 44px;
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid var(--control-edge);
+  border-radius: 4px;
+  color: var(--foreground);
+  text-align: left;
+}
+
+/* Level and Add days: open panels under a hairline, summary in the display face. */
+main.plan > .lib-filters:not(.plan-day) {
+  margin-top: 24px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--edge);
+}
+
+main.plan > .lib-filters[data-plan-level-panel] {
+  margin-top: 32px;
+  border-top: 0;
+}
+
+main.plan > .lib-filters:not(.plan-day) > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 56px;
+  padding: 0;
+  border-bottom: 0;
+  font: 600 20px/1.2 var(--plan-display);
+}
+
+main.plan > .lib-filters:not(.plan-day) > summary::after {
+  content: "+";
+  font: 400 25px/1 var(--plan-body);
+  color: var(--muted);
+}
+
+main.plan > .lib-filters[open]:not(.plan-day) > summary::after {
+  content: "\2212";
+}
+
+main.plan > .lib-filters[open]:not(.plan-day) {
+  padding-bottom: 8px;
+}
+
+main.plan > .lib-filters:not(.plan-day) > .chip-row-label:first-of-type {
+  margin-top: 8px;
+}
+
+main.plan .plan-level-note {
+  margin: 16px 0 0;
+}
+
+main.plan > .hint {
+  margin-top: 32px;
+  font-size: 16px;
+  color: var(--muted);
+}

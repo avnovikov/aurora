@@ -2,14 +2,14 @@ import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import type { PlanQueue, SessionTemplate } from "../domain/program";
 import { exerciseMetaLine } from "../library/metaLine";
 import { AREA_KINDS, DAY_KIND_LABELS, MOBILITY_TEMPLATE_ID, dayTitle, skillTitle } from "../plan/dayKinds";
-import { swapChoices } from "../plan/dayEdits";
+import { easierChoice, swapChoices } from "../plan/dayEdits";
 import { previewQueue, type AthleteState, type PreviewItem } from "../plan/dayPreview";
 import { hasProgressionPath } from "../plan/pathPlacement";
 import { PLAN_LEVELS, loadPlanLevel } from "../plan/planLevel";
 import { listAllTemplates, resolveTemplate } from "../plan/templates";
 import { warmupCooldownLabel } from "../rules/sessionDuration";
 import { templateDurationLabel, templateTargetsLabel } from "./formatTemplate";
-import type { DayOption, PlanDayView, PlanPageModel, SwapOption } from "./planPage";
+import type { DayOption, PlanDayView, PlanPageModel, PlanUndoNotice, SwapOption } from "./planPage";
 
 /** What the page remembers between repaints (nothing here is persisted). */
 export interface PlanUiState {
@@ -21,6 +21,8 @@ export interface PlanUiState {
   addOpen: boolean;
   levelOpen: boolean;
   status?: string;
+  /** The row "Not for me" just changed, until the next edit. */
+  undo?: (PlanUndoNotice & { index: number }) | null;
 }
 
 /** Named skills on offer: every target already in the plan or the seed days that sits on a ladder. */
@@ -57,8 +59,9 @@ function dayView(
 ): PlanDayView {
   const swapSlotId = ui.swap?.index === index ? ui.swap.slotId : undefined;
   const swapping = items.find((item) => item.slotId === swapSlotId);
+  const dayExerciseIds = items.map((item) => item.exerciseId);
   const swapOptions: SwapOption[] = swapping
-    ? swapChoices(swapping.exerciseId, state, items.map((item) => item.exerciseId)).map((exercise) => ({
+    ? swapChoices(swapping.exerciseId, state, dayExerciseIds).map((exercise) => ({
         id: exercise.id,
         name: exercise.name,
         meta: exerciseMetaLine(exercise),
@@ -73,6 +76,10 @@ function dayView(
     open: ui.openDays.has(index),
     swapSlotId: swapping ? swapSlotId : undefined,
     swapOptions,
+    easierSlotIds: items
+      .filter((item) => easierChoice(item.exerciseId, state, dayExerciseIds) !== undefined)
+      .map((item) => item.slotId),
+    undo: ui.undo?.index === index ? { slotId: ui.undo.slotId, name: ui.undo.name, message: ui.undo.message } : undefined,
     openSlotIds: items.filter((item) => ui.openExercises.has(exerciseKey(index, item.slotId))).map((item) => item.slotId),
   };
 }
