@@ -1,4 +1,4 @@
-import type { LoadRegion, SeedExercise } from "../data/seed";
+import type { SeedExercise } from "../data/seed";
 import type { SkillTier } from "../domain/types";
 import {
   matchesFacets,
@@ -13,7 +13,6 @@ export type LevelFilter = SkillTier | "all";
 
 export interface LibraryQuery {
   text?: string;
-  region?: LoadRegion | "all";
   /** Catalogue difficulty tier; "all" keeps every exercise. */
   level?: LevelFilter;
   /** Upper / lower / core / full body, from primary muscles. */
@@ -22,13 +21,11 @@ export interface LibraryQuery {
   muscle?: MuscleFilter;
   /** Stretch handling; omitted means everything (the Library UI defaults to "hide"). */
   stretch?: StretchFilter;
-  equipmentHint?: string;
 }
 
 /** Every filter with its default, so callers may omit any of them. */
-function withDefaults(query: LibraryQuery): Required<Omit<LibraryQuery, "text" | "equipmentHint">> {
+function withDefaults(query: LibraryQuery): Required<Omit<LibraryQuery, "text">> {
   return {
-    region: query.region ?? "all",
     level: query.level ?? "all",
     area: query.area ?? "all",
     muscle: query.muscle ?? "all",
@@ -37,11 +34,9 @@ function withDefaults(query: LibraryQuery): Required<Omit<LibraryQuery, "text" |
 }
 
 function passesFilters(exercise: SeedExercise, query: LibraryQuery): boolean {
-  const { region, level, area, muscle, stretch } = withDefaults(query);
-  const regionOk = region === "all" || exercise.regions.includes(region);
+  const { level, area, muscle, stretch } = withDefaults(query);
   const levelOk = level === "all" || exercise.difficulty === level;
   return (
-    regionOk &&
     levelOk &&
     matchesStretchFilter(exercise, stretch) &&
     matchesFacets(exercise, area, muscle)
@@ -66,13 +61,3 @@ export function searchExercises(
     (exercise) => passesFilters(exercise, query) && (!text || matchesText(exercise, text)),
   );
 }
-
-export const LIBRARY_REGIONS: Array<LoadRegion | "all"> = [
-  "all",
-  "core",
-  "legs",
-  "push",
-  "pull",
-  "skill",
-  "general",
-];

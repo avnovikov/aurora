@@ -98,7 +98,7 @@ describe("selectLibraryResults", () => {
 });
 
 describe("Library list stretch chips", () => {
-  const base = { text: "", region: "all" as const, level: "all" as const };
+  const base = { text: "", level: "all" as const };
 
   it("renders the three chips and marks the choice", () => {
     const html = listHtml([], new Set(), { ...base, stretch: "hide" });

@@ -52,7 +52,7 @@ describe("evidence-based cautions", () => {
 });
 
 describe("Library flags for the user's joints", () => {
-  const query = { text: "", region: "all" as const, level: "all" as const };
+  const query = { text: "", level: "all" as const };
 
   it("badges avoided and cautioned moves in the list", () => {
     const html = listHtml(

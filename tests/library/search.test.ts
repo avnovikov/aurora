@@ -1,13 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { LIBRARY_CATALOGUE } from "../../src/data/libraryCatalogue";
 import { SEED_EXERCISES } from "../../src/data/seed";
+import { areaOf } from "../../src/library/facets";
 import { searchExercises } from "../../src/library/search";
 
 describe("searchExercises", () => {
   it("filters the Core area", () => {
-    const results = searchExercises(LIBRARY_CATALOGUE, { region: "core" });
+    const results = searchExercises(LIBRARY_CATALOGUE, { area: "core" });
     expect(results.length).toBeGreaterThan(SEED_EXERCISES.length / 2);
-    expect(results.every((item) => item.regions.includes("core"))).toBe(true);
+    expect(results.every((item) => areaOf(item) === "core")).toBe(true);
   });
 
   it("searches by name", () => {

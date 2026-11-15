@@ -4,6 +4,7 @@ import {
   AREAS,
   MUSCLE_BUCKETS,
   areaOf,
+  isStretch,
   matchesFacetText,
   matchesFacets,
   primaryBuckets,
@@ -63,11 +64,11 @@ describe("facet filtering", () => {
     expect(matchesFacets(find("Pull-up"), "all", "arms")).toBe(false);
   });
 
-  it("combines with level and region filters", () => {
+  it("combines with level and stretch filters", () => {
     const results = searchExercises(LIBRARY_CATALOGUE, {
       area: "upper",
       muscle: "chest",
-      region: "push",
+      stretch: "hide",
       level: "beginner",
     });
     expect(results.length).toBeGreaterThan(0);
@@ -76,7 +77,7 @@ describe("facet filtering", () => {
         (item) =>
           areaOf(item) === "upper" &&
           primaryBuckets(item).includes("chest") &&
-          item.regions.includes("push") &&
+          !isStretch(item) &&
           item.difficulty === "beginner",
       ),
     ).toBe(true);
@@ -107,21 +108,21 @@ describe("text search by muscle and area", () => {
 });
 
 describe("Library list chips", () => {
-  const base = { text: "", region: "all" as const, level: "all" as const };
+  const base = { text: "", level: "all" as const };
 
-  it("renders area and muscle chips, closed by default", () => {
+  it("renders area and muscle chips, panel closed by default", () => {
     const html = listHtml([], new Set(), base);
     expect(html).toContain('data-area="upper"');
     expect(html).toContain('data-muscle="glutes_hips"');
-    expect(html).not.toMatch(/<details class="lib-filters" open/);
+    expect(html).not.toMatch(/data-panel="body" open/);
   });
 
   it("opens the panel and marks the choice while a facet is active", () => {
     const html = listHtml([], new Set(), { ...base, area: "upper", muscle: "chest" });
-    expect(html).toMatch(/<details class="lib-filters" open/);
+    expect(html).toMatch(/data-panel="body" open/);
     expect(html).toMatch(/data-area="upper" class="selected"/);
     expect(html).toMatch(/data-muscle="chest" class="selected"/);
-    expect(html).toContain("(active)");
+    expect(html).toContain("Area &amp; muscle · Upper body, Chest");
   });
 });
 

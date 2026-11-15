@@ -375,15 +375,6 @@ button:disabled {
   font: inherit;
 }
 
-.lib-levels {
-  margin-top: 0;
-}
-
-.lib-levels button {
-  font-size: 0.8rem;
-  padding: 0.45rem 0.7rem;
-}
-
 .lib-list,
 .queue-list {
   list-style: none;
@@ -957,11 +948,19 @@ button:disabled {
 
 .lib-filters {
   margin: 0.5rem 0;
+  border: 1px solid var(--edge);
+  background: var(--panel);
 }
 .lib-filters summary {
   cursor: pointer;
   font-weight: 600;
-  margin-bottom: 0.4rem;
+  padding: 0.65rem 0.9rem;
+}
+.lib-filters[open] summary {
+  border-bottom: 1px solid var(--edge);
+}
+.lib-filters .row {
+  margin: 0.6rem 0.9rem 0.75rem;
 }
 .lib-link {
   background: none;

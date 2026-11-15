@@ -90,7 +90,6 @@ describe("Library gear filter", () => {
   it("always offers Only my gear", () => {
     const html = listHtml([], new Set(), {
       text: "",
-      region: "all",
       level: "all",
       onlyGear: true,
     });

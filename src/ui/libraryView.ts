@@ -5,6 +5,8 @@ import {
   type SeedExercise,
 } from "../data/seed";
 import { mountLibraryDetail } from "../library/libraryDetail";
+import { DEFAULT_STRETCH } from "../library/facets";
+import type { FilterPanelId } from "../library/filterPanels";
 import { focusSearchInput, mountLibraryList, type ListQueryState } from "../library/libraryList";
 import { mountPlanDayPicker } from "../library/libraryPlanPick";
 import { selectLibraryResults } from "../library/results";
@@ -25,7 +27,7 @@ import {
 import { loadProfile } from "../settings/profile";
 
 /** Every list filter with a value; "hiddenStretches" is computed, not chosen. */
-type ListFilters = Required<Omit<ListQueryState, "hiddenStretches">>;
+type ListFilters = Required<Omit<ListQueryState, "hiddenStretches" | "openPanels">>;
 
 const CATALOGUE_BY_ID: Record<string, SeedExercise> = Object.fromEntries(
   LIBRARY_CATALOGUE.map((exercise) => [exercise.id, exercise]),
@@ -38,11 +40,10 @@ function templateDisplayName(templateId: string): string {
 export function renderLibraryView(root: HTMLElement): void {
   const filters: ListFilters = {
     text: "",
-    region: "all",
     level: "all",
     area: "all",
     muscle: "all",
-    stretch: "hide",
+    stretch: DEFAULT_STRETCH,
     forJoints: false,
     onlyGear: false,
   };
@@ -50,6 +51,7 @@ export function renderLibraryView(root: HTMLElement): void {
     filters[key] = value;
     paint();
   };
+  let openPanels: FilterPanelId[] = [];
   let selectedId: string | null = null;
   let pickingPlanForId: string | null = null;
   let planStatus: string | null = null;
@@ -160,19 +162,21 @@ export function renderLibraryView(root: HTMLElement): void {
       root,
       results,
       targetIds,
-      { ...filters, hiddenStretches },
+      { ...filters, hiddenStretches, openPanels },
       {
         onSearch: (next) => {
           setFilter("text", next);
           focusSearchInput(root);
         },
-        onRegion: (next) => setFilter("region", next),
         onLevel: (next) => setFilter("level", next),
         onArea: (next) => setFilter("area", next),
         onMuscle: (next) => setFilter("muscle", next),
         onStretch: (next) => setFilter("stretch", next),
         onForJoints: (on) => setFilter("forJoints", on),
         onOnlyGear: (on) => setFilter("onlyGear", on),
+        onPanelToggle: (panel, open) => {
+          openPanels = open ? [...new Set([...openPanels, panel])] : openPanels.filter((id) => id !== panel);
+        },
         onSelect: (id) => {
           selectedId = id;
           planStatus = null;

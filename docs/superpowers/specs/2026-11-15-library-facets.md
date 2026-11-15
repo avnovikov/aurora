@@ -30,6 +30,23 @@ The Library hides stretches by default. A row of three chips controls it: **No s
 - **Plan editor:** unaffected, since mobility moves are never plannable.
 - The logic lives in `src/library/results.ts` (`selectLibraryResults`), a pure function that the view calls and the tests cover.
 
+## Filter layout (three panels)
+
+The old region chips (All, core, legs, push, pull, skill, general) are gone from the Library, along with their code. The filters now live in **three panels that look and behave the same** (`src/library/filterPanels.ts`):
+
+| Panel | Contents |
+|---|---|
+| **Show** | For my joints (only with joint history), Only my gear, and the stretch choice (No stretches / Stretches only / Everything) |
+| **Area & muscle** | All areas + four areas; All muscles + eight buckets |
+| **Level** | All levels + beginner, intermediate, advanced, elite |
+
+- All three are collapsed by default. A panel opens by itself while something in it is active, and the summary says what: "Show · my gear, stretches only", "Area & muscle · Upper body, Chest", "Level · Beginner". The default stretch choice (No stretches) does not count as active.
+- A panel the user opens stays open across repaints (remembered in the view), so tapping a chip never snaps it shut.
+- The "N stretches match — show" hint sits under the search box, outside the collapsed panels, so it is always visible.
+- Same chip style everywhere: the levels row no longer has its own smaller buttons.
+- The Novice chip is removed: no move has that level (it exists only for the athlete's own tier), so it always filtered to nothing.
+- The region filter is removed from search too (`LibraryQuery.region`); the planner is unaffected because it reads each exercise's `regions`, not the query.
+
 ## Known limits
 
 - About 37% of moves have a single muscle entry, mostly wger and free-exercise-db stretches; some are wrong (Bent-Leg Hamstring Stretch maps to quads, Hip Crossover to quads). Strength moves are mostly right, so the filters are good for working moves and shaky for stretches. Fixing the muscle data is a separate piece of work.

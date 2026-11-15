@@ -24,22 +24,21 @@ export function toggleHtml(attr: string, label: string, on: boolean): string {
 }
 
 /**
- * A row of single-choice chips. `allLabel` prepends an "all" chip; `rowClass`
- * adds to the default "row wrap". The row is tagged `data-<attr>s`.
+ * A row of single-choice chips. `allLabel` prepends an "all" chip. The row is
+ * tagged `data-<attr>s`.
  */
 export function chipRowHtml(
   attr: string,
   ariaLabel: string,
   selected: string,
   options: readonly ChipOption[],
-  config: { allLabel?: string; rowClass?: string } = {},
+  config: { allLabel?: string } = {},
 ): string {
   const all = config.allLabel ? chipHtml(attr, "all", config.allLabel, selected === "all") : "";
   const chips = options
     .map((option) => chipHtml(attr, option.id, option.label, option.id === selected))
     .join("");
-  const rowClass = ["row wrap", config.rowClass].filter(Boolean).join(" ");
-  return `<div class="${rowClass}" data-${attr}s aria-label="${escapeHtml(ariaLabel)}">${all}${chips}</div>`;
+  return `<div class="row wrap" data-${attr}s aria-label="${escapeHtml(ariaLabel)}">${all}${chips}</div>`;
 }
 
 /** Calls `handler` with the chip's value when any `data-<attr>` chip is clicked. */

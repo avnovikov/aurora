@@ -85,6 +85,9 @@ type WithMuscles = Pick<SeedExercise, "muscles">;
 /** hide = training moves and mobility drills only; only = stretches; all = everything. */
 export type StretchFilter = "hide" | "only" | "all";
 
+/** The Library hides stretches until asked. */
+export const DEFAULT_STRETCH: StretchFilter = "hide";
+
 export const STRETCH_FILTERS: ReadonlyArray<{ id: StretchFilter; label: string }> = [
   { id: "hide", label: "No stretches" },
   { id: "only", label: "Stretches only" },
