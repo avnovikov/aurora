@@ -47,63 +47,26 @@ export function wireSessionControls(
   state: ViewState,
   handlers: SessionControlHandlers,
 ): void {
-  wireSetOutcomeButtons(root, planned, state, handlers);
-  wireRepAndLoadControls(root, state, handlers);
-  wireCooldownButtons(root, handlers);
+  const clicks: Record<string, () => void> = {
+    "[data-log-set]": () => completeSet(planned, state, "completed", handlers),
+    "[data-fail-set]": () =>
+      completeSet(planned, state, "muscular_failure", handlers),
+    "[data-skip]": () => completeSet(planned, state, "skipped", handlers),
+    "[data-reps-minus]": () => adjustNextReps(state, -1, handlers),
+    "[data-reps-plus]": () => adjustNextReps(state, 1, handlers),
+    "[data-add-weight]": () =>
+      adjustAddedLoad(state, DEFAULT_ADDED_LOAD_KG, handlers),
+    "[data-load-minus]": () => adjustAddedLoadBy(state, -1, handlers),
+    "[data-load-plus]": () => adjustAddedLoadBy(state, 1, handlers),
+    "[data-cooldown-start]": () => handlers.onStartCooldown(),
+    "[data-cooldown-skip]": () => handlers.onSkipCooldown(),
+  };
+  for (const [selector, onClick] of Object.entries(clicks)) {
+    root.querySelector(selector)?.addEventListener("click", onClick);
+  }
   wirePulseSimButtons(root, state, handlers);
   wirePulseConnectButtons(root, state, handlers);
   wireStageSwipe(root, handlers);
-}
-
-function wireSetOutcomeButtons(
-  root: HTMLElement,
-  planned: PlannedSession,
-  state: ViewState,
-  handlers: SessionControlHandlers,
-): void {
-  root.querySelector("[data-log-set]")?.addEventListener("click", () => {
-    completeSet(planned, state, "completed", handlers);
-  });
-  root.querySelector("[data-fail-set]")?.addEventListener("click", () => {
-    completeSet(planned, state, "muscular_failure", handlers);
-  });
-  root.querySelector("[data-skip]")?.addEventListener("click", () => {
-    completeSet(planned, state, "skipped", handlers);
-  });
-}
-
-function wireRepAndLoadControls(
-  root: HTMLElement,
-  state: ViewState,
-  handlers: SessionControlHandlers,
-): void {
-  root.querySelector("[data-reps-minus]")?.addEventListener("click", () => {
-    adjustNextReps(state, -1, handlers);
-  });
-  root.querySelector("[data-reps-plus]")?.addEventListener("click", () => {
-    adjustNextReps(state, 1, handlers);
-  });
-  root.querySelector("[data-add-weight]")?.addEventListener("click", () => {
-    adjustAddedLoad(state, DEFAULT_ADDED_LOAD_KG, handlers);
-  });
-  root.querySelector("[data-load-minus]")?.addEventListener("click", () => {
-    adjustAddedLoadBy(state, -1, handlers);
-  });
-  root.querySelector("[data-load-plus]")?.addEventListener("click", () => {
-    adjustAddedLoadBy(state, 1, handlers);
-  });
-}
-
-function wireCooldownButtons(
-  root: HTMLElement,
-  handlers: SessionControlHandlers,
-): void {
-  root.querySelector("[data-cooldown-start]")?.addEventListener("click", () => {
-    handlers.onStartCooldown();
-  });
-  root.querySelector("[data-cooldown-skip]")?.addEventListener("click", () => {
-    handlers.onSkipCooldown();
-  });
 }
 
 function wireStageSwipe(

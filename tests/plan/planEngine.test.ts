@@ -89,11 +89,12 @@ describe("generated days keep the library's dosing rules", () => {
     }
   });
 
-  it("uses seed-day sets (first slot 4, a skill's first slot 5, the rest 3) and target RIR 2", () => {
+  it("uses seed-day sets (first slot 4, a skill's first slot 5, the rest 3) and target RIR 2, 3 for beginners", () => {
     const strength = (day: SessionTemplate) => day.slots.filter((slot) => !slot.id.endsWith("_care"));
     for (const day of block("upper")) {
       expect(strength(day).map((slot) => slot.dose.sets)).toEqual([4, 3, 3, 3]);
-      expect(strength(day).every((slot) => slot.dose.targetRir === 2)).toBe(true);
+      // Seed RIR 2, raised to 3 where the move is dosed at the beginner tier (Hackett 2017).
+      expect(strength(day).every((slot) => slot.dose.targetRir === 2 || slot.dose.targetRir === 3)).toBe(true);
     }
     expect(block("skill")[0]!.slots[0]!.dose.sets).toBe(5);
   });
