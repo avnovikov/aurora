@@ -96,14 +96,18 @@ Local dev on `http://192.168.x.x:5173` is fine for UI and voice; **strap pairing
 
 ---
 
-## 6. Web Bluetooth (stub today)
+## 6. Heart-rate strap (Capacitor — not Lightsail)
 
-The app does **not** yet implement the Heart Rate Service. After HTTPS is live, the next step is a small **stub page** or dev flag that:
+**Decision (2026-11-15):** live BPM uses the **Aurora Android APK** (Capacitor + `@capacitor-community/bluetooth-le`, Heart Rate `0x180D` / `0x2A37`). HTTPS / Lightsail is **not** required for the strap.
 
-1. Calls `navigator.bluetooth.requestDevice` with `filters: [{ services: ['heart_rate'] }]`.
-2. Surfaces errors clearly (permission denied, no device, non-HTTPS).
+```bash
+npm run cap:sync    # build dist/ + sync into android/
+npm run cap:open    # Android Studio — needs a local JDK
+```
 
-Real HR ingestion and IndexedDB → server sync are tracked in GitHub **#7**; deploy scaffolding does not enable BLE by itself.
+On device: **Connect pulse** during a session. Web `npm run dev` keeps **Pulse ok / Pulse lost** simulators; Connect explains that the Android app is required.
+
+Lightsail remains optional for a public HTTPS install / later sync. IndexedDB → server is still later under **#7**.
 
 ---
 

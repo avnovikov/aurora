@@ -1,6 +1,6 @@
 # Aurora · Rassvet
 
-Private morning training coach for Android Chrome.
+Private morning training coach for Android (Capacitor APK + optional Chrome PWA).
 
 - **Aurora** — GitHub / product name (dawn in English and Portuguese)
 - **Rassvet** (Рассвет) — soul mark shown in the app
@@ -28,7 +28,16 @@ npm run dev -- --host
 2. Open it in **Chrome** on the phone (same Wi‑Fi).
 3. Tap **Start session** once (unlocks audio).
 4. Optional: Chrome menu → **Install app** (manifest is present).
-5. Voice + wake lock work best; **Web Bluetooth needs HTTPS** (use deploy below for the strap).
+5. Voice works; strap HR needs the **Android APK** (below), not LAN HTTP.
+
+### Android APK (heart-rate strap)
+
+```bash
+npm run cap:sync    # Vite build → android/
+npm run cap:open    # Android Studio (local JDK required)
+```
+
+App id: `com.aurora.rassvet`. Uses `@capacitor-community/bluetooth-le` (MIT). Sideload the debug APK; in a session tap **Connect pulse**. Spec: `docs/superpowers/specs/2026-11-15-capacitor-ble-hr-design.md`. Issues: [#7](https://github.com/avnovikov/aurora/issues/7), [#19](https://github.com/avnovikov/aurora/issues/19), [#20](https://github.com/avnovikov/aurora/issues/20).
 
 ### Preview production build locally
 
@@ -36,18 +45,16 @@ npm run dev -- --host
 npm run build && npm run preview -- --host
 ```
 
-## Deploy (Lightsail — own instance, not `ks-ui-app`)
+## Deploy (Lightsail — optional, not `ks-ui-app`)
 
-Target: smallest Lightsail in **`eu-west-1`**, static `dist/` behind Nginx + Let’s Encrypt HTTPS.
+Not required for BLE. Optional HTTPS host for PWA / later sync: smallest Lightsail in **`eu-west-1`**.
 
 ```bash
 npm run build
-# then sync dist/ to the instance, e.g.:
 # rsync -avz --delete dist/ ubuntu@<aurora-host>:/var/www/aurora/
 ```
 
-Scaffold / runbook: `docs/deploy/lightsail.md` and `scripts/deploy-lightsail.sh` (on `poc` as they land).  
-**Do not** deploy onto KS `ks-ui-app`. Creating the instance needs your AWS OK (cost).
+Runbook: `docs/deploy/lightsail.md` and `scripts/deploy-lightsail.sh`.
 
 Integration branch: **`poc`**. Do not merge to `main` without explicit OK.
 
@@ -64,7 +71,7 @@ Run `npm run smell` before larger commits.
 
 ## Stack
 
-TypeScript, Vite, Vitest, ESLint/SonarJS. Rule engine is pure (no DOM / Bluetooth). Hosted later on AWS Lightsail (separate from KS `ks-ui-app`).
+TypeScript, Vite, Vitest, ESLint/SonarJS, Capacitor Android. Rule engine is pure (no DOM / Bluetooth). Optional Lightsail host (separate from KS `ks-ui-app`).
 
 ## Licence
 
