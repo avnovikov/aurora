@@ -51,6 +51,7 @@ function state(partial: Partial<ViewState>): ViewState {
     phase: "work",
     warmupIndex: 0,
     workIndex: 0,
+    cooldownIndex: 0,
     setIndex: 1,
     log: createEmptyLog(),
     workState: null,

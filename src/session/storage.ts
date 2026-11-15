@@ -8,8 +8,10 @@ export interface PersistedSession {
   readiness: Readiness;
   planned: PlannedSession;
   log: WorkoutLog;
-  phase: "warmup" | "work" | "done";
+  phase: "warmup" | "work" | "cooldown" | "done";
   warmupIndex: number;
+  /** Cool-down station index (absent in sessions saved before the cool-down existed). */
+  cooldownIndex?: number;
   workIndex: number;
   setIndex: number;
   nextRepsOverride?: number;
@@ -46,7 +48,12 @@ function assertSession(session: PersistedSession): void {
   if (!session.planned || !session.readiness || !session.log) {
     throw new Error("Persisted session is missing required fields");
   }
-  if (session.warmupIndex < 0 || session.workIndex < 0 || session.setIndex < 1) {
+  if (
+    session.warmupIndex < 0 ||
+    session.workIndex < 0 ||
+    session.setIndex < 1 ||
+    (session.cooldownIndex ?? 0) < 0
+  ) {
     throw new Error("Persisted session indexes out of range");
   }
 }

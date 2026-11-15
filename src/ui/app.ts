@@ -1,3 +1,4 @@
+import { warmupCooldownLabel } from "../rules/sessionDuration";
 import { templateToStarter } from "../data/seed";
 import type { SessionEvaluation } from "../domain/program";
 import {
@@ -104,6 +105,7 @@ function showTodayHome(root: HTMLElement): void {
         <p class="tagline">${todayLabel}: <strong>${next.name}</strong> · ${duration}${
           targets ? ` → ${targets}` : ""
         }</p>
+        <p class="hint" data-warmup-preview>${warmupCooldownLabel(next)}</p>
         ${deloadNoteHtml(loadDeloadActive())}
         ${forecast}
         <div data-checkin></div>

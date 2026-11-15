@@ -1,7 +1,8 @@
 import { existsSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { EXERCISE_GRAPH } from "../../src/data/exerciseGraph";
-import { GENERATED_DOODLES } from "../../src/data/generated/doodleMap";
+import { GENERATED_DOODLES, REPLACED_DOODLE_IDS } from "../../src/data/generated/doodleMap";
+import { WARMUP_STATION_BY_ID } from "../../src/data/warmupStations";
 import { DOODLE_SPECS } from "../../src/doodles/specs";
 import { validateSpec } from "../../src/doodles/validate";
 
@@ -29,7 +30,22 @@ describe("animated doodles", () => {
     expect(EXERCISE_GRAPH.hf_44.doodlePath).toBe("/doodles/doodle-chin-up.svg");
   });
 
-  it("never replace a hand-drawn seed doodle", () => {
+  it("keep hand-drawn doodles unless a spec explicitly replaces them", () => {
     expect(EXERCISE_GRAPH.pullup.doodlePath).toBe("/doodles/doodle-pullup.jpg");
+    for (const id of REPLACED_DOODLE_IDS) {
+      expect(EXERCISE_GRAPH[id]?.doodlePath, id).toBe(GENERATED_DOODLES[id]);
+    }
+    expect(REPLACED_DOODLE_IDS).toEqual(
+      DOODLE_SPECS.filter((spec) => spec.replaces).map((spec) => spec.id),
+    );
+  });
+
+  it("show replacement animations on warmup stations too", () => {
+    for (const id of REPLACED_DOODLE_IDS) {
+      const station = WARMUP_STATION_BY_ID[id];
+      if (station) {
+        expect(station.doodlePath, id).toBe(GENERATED_DOODLES[id]);
+      }
+    }
   });
 });

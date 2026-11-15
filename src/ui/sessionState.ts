@@ -1,4 +1,5 @@
 import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
+import type { WarmupStep } from "../rules/warmupPlan";
 import { estimatePlannedSessionSeconds } from "../rules/sessionDuration";
 import { createEmptyLog, type ActiveWorkState } from "../session/setLog";
 import { INITIAL_PULSE } from "./pulseState";
@@ -9,9 +10,10 @@ export function initialState(options: SessionViewOptions): ViewState {
   const resume = options.resume;
   if (resume) {
     const state: ViewState = {
-      phase: resume.phase === "done" ? "done" : resume.phase,
+      phase: resume.phase,
       warmupIndex: resume.warmupIndex,
       workIndex: resume.workIndex,
+      cooldownIndex: resume.cooldownIndex ?? 0,
       setIndex: resume.setIndex,
       log: resume.log,
       workState: null,
@@ -35,6 +37,7 @@ export function initialState(options: SessionViewOptions): ViewState {
     phase: "warmup",
     warmupIndex: 0,
     workIndex: 0,
+    cooldownIndex: 0,
     setIndex: 1,
     log: createEmptyLog(),
     workState: null,
@@ -51,15 +54,59 @@ export function currentWork(planned: PlannedSession, state: ViewState): PlannedW
   return planned.work[state.workIndex] ?? null;
 }
 
-/** Phase label stored in persistence (rest maps to work). */
-export function persistPhase(state: ViewState): "warmup" | "work" {
-  if (state.phase === "rest") {
+export type PersistedPhase = "warmup" | "work" | "cooldown" | "done";
+
+/** Phase label stored in persistence (a rest maps to the surface it belongs to). */
+export function persistPhase(planned: PlannedSession, state: ViewState): PersistedPhase {
+  if (state.phase !== "rest") {
+    return state.phase;
+  }
+  if (state.workState !== null) {
     return "work";
   }
-  if (state.phase === "warmup") {
+  if (state.warmupIndex < planned.warmup.length) {
     return "warmup";
   }
-  return "work";
+  return state.workIndex >= planned.work.length ? "cooldown" : "work";
+}
+
+/** Cool-down stations (sessions saved before the cool-down existed have none). */
+export function cooldownSteps(planned: PlannedSession): WarmupStep[] {
+  return planned.cooldown ?? [];
+}
+
+/**
+ * After the last work item: offer the cool-down on the done screen, or end
+ * the session straight away when the template has none.
+ */
+export function enterDone(planned: PlannedSession, state: ViewState): "offer" | "finish" {
+  state.workState = null;
+  if (cooldownSteps(planned).length === 0) {
+    return "finish";
+  }
+  state.phase = "done";
+  state.cooldownIndex = 0;
+  return "offer";
+}
+
+/** Start the optional cool-down from the done screen. */
+export function startCooldown(planned: PlannedSession, state: ViewState): void {
+  if (state.phase !== "done" || cooldownSteps(planned).length === 0) {
+    throw new Error("Cool-down can only start from the done screen of a session that has one");
+  }
+  state.phase = "cooldown";
+  state.cooldownIndex = 0;
+  state.workState = null;
+}
+
+/** Move to the next stretch; "finish" when the last one is done. */
+export function advanceCooldown(planned: PlannedSession, state: ViewState): "next" | "finish" {
+  state.cooldownIndex += 1;
+  if (state.cooldownIndex >= cooldownSteps(planned).length) {
+    return "finish";
+  }
+  state.phase = "cooldown";
+  return "next";
 }
 
 export function syncWorkState(

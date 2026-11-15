@@ -86,6 +86,8 @@ export interface DoodleSpec {
   frames: Keyframe[];
   /** Seconds per transition between keyframes. */
   transition?: number;
+  /** Replace an existing hand-drawn doodle (e.g. one that shows the wrong move). */
+  replaces?: boolean;
 }
 
 export const BONES = {

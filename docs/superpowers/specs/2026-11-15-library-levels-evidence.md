@@ -185,3 +185,28 @@ Every Library move gets `requires` from its name: **bar** (pull-ups, hangs, leve
 - **Library:** an **Only my gear** chip hides moves needing gear you lack; detail pages say "Needs: …".
 - **Plan editor:** the exercise pickers list only moves you have the gear for (the current pick always stays).
 - Not enforced: the variety rotation can still propose a gear move, but the final swap step catches it; warmup stations are not gated.
+
+## 8. Warm-up and cool-down (2026-11-15)
+
+Design: `2026-11-15-warmup-cooldown.md`. Each station shows a short citation in small text (`src/data/warmupStations.ts`). All sources below were read as abstracts or summaries.
+
+| Claim used | Source |
+|---|---|
+| RAMP structure: Raise → Activate/Mobilise → Potentiate | Jeffreys 2007 [S] |
+| Moderate warm-up of about 5–15 min | Bishop 2003, Sports Med, PMID 12762825 [S] |
+| Warm-ups improved performance in 79% of criteria | Fradkin 2010, meta-analysis, PMID 19996770 [S] |
+| Structured warm-ups reduce injuries | FIFA 11+, Soligard 2008, BMJ [S]; Thorborg 2017, IRR 0.61 [S] |
+| Strength (RR 0.32) and balance (RR 0.55) training prevent injuries; stretching does not (RR 0.96) | Lauersen 2014, BJSM, PMID 24100287 [S] |
+| Static stretching ≤30 s per muscle before training is fine; losses likely from 60 s | Kay & Blazevich 2012, PMID 21659901; Simic 2013, PMID 22316148; Behm 2016, PMID 26642915 [S] |
+| Stretching after training does not reduce soreness | Herbert 2011, Cochrane; Afonso 2021 [S] |
+| Range: about 60 s per muscle group (2–4 × 15–30 s), at least 2–3 days/week | ACSM, Garber 2011, MSSE [S] |
+| Range gains plateau at about 4 min per session | Ingram 2025, Sports Med, PMID 39614059 [S] |
+| Pistol depth depends on ankle dorsiflexion | Dill 2014, J Athl Train, PMID 25144599 [S] |
+| Skill: wrist pain in about 53% of gymnasts | DiFiori 2006, AJSM [S] |
+| Skill: serratus and upward rotation (push-up plus) | Ludewig 2004, AJSM [S] |
+| Legs: glute medius activation | Reiman 2012 [S] |
+| Bars: posterior cuff | Reinold 2004, JOSPT [S] |
+| Bars: scapular work (OSTRC shoulder programme) | Andersson 2016, BJSM [S] |
+| Core: McGill-style bracing | Secondary sources only [conv] |
+
+The cool-down is optional and offered for range only, never as an injury or soreness fix.

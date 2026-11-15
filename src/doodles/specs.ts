@@ -578,7 +578,395 @@ export const DOODLE_SPECS: DoodleSpec[] = [
       { hold: 0.4, pose: archer([2, -131]) },
     ],
   },
+  {
+    id: "hf_122",
+    slug: "lying-leg-raise",
+    title: "Lying leg raise",
+    transition: 0.35,
+    frames: [
+      { hold: 0.5, pose: lyingLegs(-6) },
+      { hold: 0.05, pose: lyingLegs(-30) },
+      { hold: 0.05, pose: lyingLegs(-60) },
+      { hold: 0.5, pose: lyingLegs(-88) },
+      { hold: 0.05, pose: lyingLegs(-60) },
+      { hold: 0.05, pose: lyingLegs(-30) },
+    ],
+  },
+  {
+    id: "hf_119",
+    slug: "reverse-crunch",
+    title: "Reverse crunch",
+    transition: 0.9,
+    frames: [
+      { hold: 0.5, pose: reverseCrunch(false) },
+      { hold: 0.6, pose: reverseCrunch(true) },
+    ],
+  },
+  {
+    id: "ntc_floor_windshield_wiper",
+    slug: "floor-windshield-wiper",
+    title: "Floor windshield wiper",
+    transition: 0.3,
+    frames: [
+      { hold: 0.4, pose: lyingLegs(-88) },
+      { hold: 0.05, pose: lyingLegs(-65) },
+      { hold: 0.5, pose: lyingLegs(-35) },
+      { hold: 0.05, pose: lyingLegs(-65) },
+      { hold: 0.05, pose: lyingLegs(-88) },
+      { hold: 0.05, pose: lyingLegs(-108) },
+      { hold: 0.5, pose: lyingLegs(-130) },
+      { hold: 0.05, pose: lyingLegs(-108) },
+    ],
+  },
+  {
+    id: "hf_110",
+    slug: "hanging-leg-raise",
+    title: "Hanging leg raise",
+    props: [{ kind: "bar", y: -420, x1: -110, x2: 110, grips: [0] }],
+    transition: 0.3,
+    frames: [
+      { hold: 0.5, pose: hangingLegs(88) },
+      { hold: 0.05, pose: hangingLegs(60) },
+      { hold: 0.05, pose: hangingLegs(30) },
+      { hold: 0.5, pose: hangingLegs(-5) },
+      { hold: 0.05, pose: hangingLegs(30) },
+      { hold: 0.05, pose: hangingLegs(60) },
+    ],
+  },
+  {
+    id: "hf_111",
+    slug: "windshield-wiper",
+    title: "Windshield wiper",
+    view: "front",
+    props: [{ kind: "bar", y: -420, x1: -150, x2: 150, grips: [-56, 56] }],
+    transition: 0.3,
+    frames: [
+      { hold: 0.4, pose: wiperLegs(-55) },
+      { hold: 0.05, pose: wiperLegs(-35) },
+      { hold: 0.05, pose: wiperLegs(-18) },
+      { hold: 0.05, pose: wiperLegs(18) },
+      { hold: 0.05, pose: wiperLegs(35) },
+      { hold: 0.4, pose: wiperLegs(55) },
+      { hold: 0.05, pose: wiperLegs(35) },
+      { hold: 0.05, pose: wiperLegs(18) },
+      { hold: 0.05, pose: wiperLegs(-18) },
+      { hold: 0.05, pose: wiperLegs(-35) },
+    ],
+  },
+  {
+    id: "wger_1529",
+    slug: "toes-to-bar",
+    title: "Toes to bar",
+    props: [{ kind: "bar", y: -420, x1: -110, x2: 110, grips: [0] }],
+    transition: 0.3,
+    frames: [
+      { hold: 0.4, pose: hangingLegs(88, -34) },
+      { hold: 0.05, pose: hangingLegs(60, -34) },
+      { hold: 0.05, pose: hangingLegs(30, -34) },
+      { hold: 0.05, pose: toesMid(-1) },
+      { hold: 0.05, pose: toesMid() },
+      { hold: 0.05, pose: toesMid(1) },
+      { hold: 0.5, pose: toesToBar() },
+      { hold: 0.05, pose: toesMid(1) },
+      { hold: 0.05, pose: toesMid() },
+      { hold: 0.05, pose: toesMid(-1) },
+      { hold: 0.05, pose: hangingLegs(30, -34) },
+      { hold: 0.05, pose: hangingLegs(60, -34) },
+    ],
+  },
+  {
+    id: "wall_handstand",
+    slug: "wall-handstand",
+    title: "Wall handstand",
+    replaces: true,
+    props: [{ kind: "box", x: 17, y: -470, w: 14, h: 470 }],
+    transition: 1.6,
+    frames: [
+      { hold: 1, pose: wallHandstand(0) },
+      { hold: 1, pose: wallHandstand(1) },
+    ],
+  },
+  {
+    id: "pulse_raiser_march",
+    slug: "march-in-place",
+    title: "March in place",
+    replaces: true,
+    transition: 0.25,
+    frames: [
+      { hold: 0.15, pose: march(true) },
+      { hold: 0.05, pose: marchStand() },
+      { hold: 0.15, pose: march(false) },
+      { hold: 0.05, pose: marchStand() },
+    ],
+  },
+  {
+    id: "hip_circles",
+    slug: "hip-circles",
+    title: "Hip circles",
+    replaces: true,
+    view: "front",
+    transition: 0.4,
+    frames: [
+      { hold: 0.1, pose: hipCircle(-20, -171) },
+      { hold: 0.1, pose: hipCircle(0, -174) },
+      { hold: 0.1, pose: hipCircle(20, -171) },
+      { hold: 0.1, pose: hipCircle(0, -173) },
+    ],
+  },
+  {
+    id: "ankle_rocks",
+    slug: "ankle-rocks",
+    title: "Ankle rocks",
+    replaces: true,
+    transition: 1,
+    frames: [
+      { hold: 0.5, pose: ankleRock(90) },
+      { hold: 0.6, pose: ankleRock(58) },
+    ],
+  },
+  {
+    id: "glute_bridge",
+    slug: "glute-bridge",
+    title: "Glute bridge",
+    replaces: true,
+    transition: 0.9,
+    frames: [
+      {
+        hold: 0.4,
+        pose: { ...lyingFaceUp([-12, -24]), feet: { near: [82, 0], far: [78, 0] }, toes: { near: 0, far: 0 } },
+      },
+      {
+        hold: 0.6,
+        pose: {
+          ...lyingFaceUp([-15, -51]),
+          knees: { near: { at: [66.3, -84.6] }, far: { at: [66.3, -84.6] } },
+          feet: { near: [82, 0], far: [80, 0] },
+          toes: { near: 0, far: 0 },
+        },
+      },
+    ],
+  },
+  {
+    id: "wrist_load",
+    slug: "wrist-load",
+    title: "Wrist load",
+    replaces: true,
+    transition: 1.2,
+    frames: [
+      { hold: 0.4, pose: wristRock(false) },
+      { hold: 0.5, pose: wristRock(true) },
+    ],
+  },
+  {
+    id: "scap_pushup",
+    slug: "scap-pushup",
+    title: "Scapular push-up",
+    replaces: true,
+    transition: 0.8,
+    frames: [
+      { hold: 0.4, pose: scapPlank(0) },
+      { hold: 0.4, pose: scapPlank(1) },
+    ],
+  },
 ];
+
+/** Lying on the back, straight legs pivoting at the hips; `deg` is the leg angle (-88 up, -6 near the floor). */
+function lyingLegs(deg: number): Pose {
+  const base = lyingFaceUp([-12, -20]);
+  const pelvis = base.pelvis as Point;
+  return {
+    ...base,
+    feet: { near: along(pelvis, deg, 173.9), far: along(pelvis, deg - 1, 173.4) },
+    toes: { near: deg, far: deg },
+  };
+}
+
+/** Tabletop knees over the hips, or hips curled off the floor with the knees drawn towards the chest. */
+function reverseCrunch(curled: boolean): Pose {
+  const base = lyingFaceUp(curled ? [-20, -52] : [-12, -20]);
+  const pelvis = base.pelvis as Point;
+  const thigh = curled ? -115 : -90;
+  const kneeNear = along(pelvis, thigh, 88);
+  const kneeFar = along(pelvis, thigh - 2, 88);
+  return {
+    ...base,
+    knees: { near: { at: kneeNear }, far: { at: kneeFar } },
+    feet: { near: along(kneeNear, thigh + 90, 86), far: along(kneeFar, thigh + 88, 86) },
+    toes: { near: thigh + 90, far: thigh + 90 },
+  };
+}
+
+/** Side-view bar hang with straight legs; `deg` is the leg angle from the hips (90 down, 0 level forward). */
+function hangingLegs(deg: number, headX = 34): Pose {
+  const pelvis: Point = [0, -196];
+  return {
+    pelvis,
+    head: [headX, -318],
+    hands: { near: [4, -420], far: [0, -420] },
+    feet: { near: along(pelvis, deg, 173.6), far: along(pelvis, deg - 1, 173.4) },
+    toes: { near: deg, far: deg },
+  };
+}
+
+/** Toes meeting the bar: torso leaning back, body piked, arms pulling. */
+function toesToBar(): Pose {
+  const pelvis: Point = [-78, -252];
+  return {
+    pelvis,
+    chest: along(pelvis, -66, 80),
+    head: along(along(pelvis, -66, 80), -110, 55),
+    hands: { near: [4, -420], far: [0, -420] },
+    feet: { near: [8, -400], far: [4, -400] },
+    toes: { near: -90, far: -90 },
+  };
+}
+
+/** Halfway up to the bar: hips tucked back, head ducked behind the arms. */
+function toesMid(t = 0): Pose {
+  const pelvis: Point = [-40 - 20 * t, -224 - 14 * t];
+  const chest = along(pelvis, -77 + 8 * t, 80);
+  return {
+    pelvis,
+    chest,
+    head: along(chest, -125 + 10 * t, 54),
+    hands: { near: [4, -420], far: [0, -420] },
+    feet: { near: along(pelvis, -62 + 3 * t, 173), far: along(pelvis, -63 + 3 * t, 172.8) },
+    toes: { near: -62, far: -62 },
+  };
+}
+
+/** Front-view hang with straight legs raised and swept `deg` degrees to one side of vertical. */
+function wiperLegs(deg: number): Pose {
+  const pelvis: Point = [0, -201];
+  const dir = -90 + deg;
+  return {
+    pelvis,
+    chest: [0, -281],
+    hands: { near: [-56, -420], far: [56, -420] },
+    feet: { near: along([-8, pelvis[1]], dir - 1, 173.4), far: along([8, pelvis[1]], dir + 1, 173.4) },
+    toes: { near: dir, far: dir },
+  };
+}
+
+/** Inverted against a wall: hands on the floor, body leaning back so the heels rest on the wall. */
+function wallHandstand(nod: 0 | 1): Pose {
+  const hand: Point = [52, 0];
+  const shoulder: Point = [52, -126];
+  const dir = -94.2;
+  const pelvis = along(shoulder, dir, 98);
+  const chest = along(pelvis, dir + 180, 80);
+  return {
+    pelvis,
+    chest,
+    // Head between the arms (Opus review: was hanging 38 units in front of them).
+    head: nod ? [77, -100] : [75, -97],
+    hands: { near: hand, far: [hand[0] - 2, 0] },
+    feet: { near: along(pelvis, dir, 174), far: along(pelvis, dir, 174) },
+    toes: { near: -75, far: -75 },
+  };
+}
+
+/** Standing march: one knee to hip height, opposite arm forward. */
+function march(nearUp: boolean): Pose {
+  const pelvis: Point = [0, -172];
+  const knee = along(pelvis, 5, 88);
+  const up = nearUp ? "near" : "far";
+  const down = nearUp ? "far" : "near";
+  const fwd: Point = [72, -214];
+  const back: Point = [-33, -158];
+  return {
+    pelvis,
+    chest: [0, -252],
+    knees: { [up]: { at: knee } },
+    feet: { [up]: along(knee, 92, 86), [down]: [0, 0] },
+    toes: { [up]: 0, [down]: 0 },
+    // Opposite arm swing: the arm opposite the raised knee goes forward.
+    hands: { [up]: back, [down]: fwd },
+    elbows: { near: { bend: 1 }, far: { bend: 1 } },
+  };
+}
+
+/** Standing between march steps: both feet down, hands hanging by the hips. */
+function marchStand(): Pose {
+  return {
+    pelvis: [0, -172],
+    chest: [0, -252],
+    feet: { near: [0, 0], far: [0, 0] },
+    toes: { near: 0, far: 0 },
+    hands: { near: [6, -146], far: [2, -146] },
+    elbows: { near: { bend: 1 }, far: { bend: 1 } },
+  };
+}
+
+/** Front-view standing, hands on hips, pelvis at (x, y); feet planted. */
+function hipCircle(x: number, y: number): Pose {
+  return {
+    pelvis: [x, y],
+    chest: [round(-x * 0.25), round(y - Math.sqrt(6400 - (x * 1.25) ** 2))],
+    hands: { near: [x - 34, y - 12], far: [x + 34, y - 12] },
+    elbows: { near: { bend: 1 }, far: { bend: -1 } },
+    // Knees bow outward symmetrically (otherwise they cross at the side positions).
+    knees: { near: { bend: 1 }, far: { bend: -1 } },
+    feet: { near: [-14, 0], far: [14, 0] },
+    toes: { near: 180, far: 0 },
+  };
+}
+
+/** Half-kneeling; the front shin leans `deg` from the floor (90 = vertical) while the heel stays down. */
+function ankleRock(deg: number): Pose {
+  const ankle: Point = [70, 0];
+  const knee = along(ankle, -deg, 86);
+  const pelvis: Point = deg === 90 ? [-17.9, -91] : [27.8, -78.2];
+  const backKnee: Point = [-18, -3];
+  return {
+    pelvis,
+    chest: [pelvis[0] + 6, pelvis[1] - 80],
+    hands: { near: [knee[0] - 14, knee[1] - 10], far: [knee[0] - 18, knee[1] - 12] },
+    knees: { near: { at: knee }, far: { at: backKnee } },
+    feet: { near: ankle, far: [-104, -3] },
+    toes: { near: 0, far: 180 },
+  };
+}
+
+/** All fours; at the rock the shoulders travel forward of the hands. */
+function wristRock(rocked: boolean): Pose {
+  const base = allFours();
+  if (!rocked) return base;
+  const pelvis: Point = [-22, -88];
+  return {
+    pelvis,
+    chest: chestToward(pelvis, [70, -124]),
+    hands: { near: [48, 0], far: [44, 0] },
+    feet: { near: [-136, -4], far: [-132, -4] },
+    toes: { near: 180, far: 180 },
+  };
+}
+
+/** High plank on straight arms; `sink` lets the chest drop between the shoulder blades. */
+function scapPlank(sink: 0 | 1): Pose {
+  if (sink) {
+    return {
+      pelvis: [-29.4, -86.7],
+      chest: [42, -115],
+      spine: { bend: 1 },
+      head: [96, -130],
+      hands: { near: [60, 0], far: [59, 0] },
+      feet: { near: [-190, -19], far: [-190, -19] },
+      toes: { near: 62, far: 62 },
+    };
+  }
+  // Shoulders stay put over the hands (arms straight); only the chest segment tilts about them.
+  const shoulder: Point = [60, -126];
+  return {
+    pelvis: [-29.4, -86.7],
+    chest: along(shoulder, (sink ? -28 : -20) + 180, 18),
+    // Head drops with the chest as the shoulder blades squeeze together.
+    head: along(along(shoulder, (sink ? -28 : -20) + 180, 18), sink ? 8 : -16, 56),
+    hands: { near: [60, 0], far: [59, 0] },
+    feet: { near: [-190, -19], far: [-190, -19] },
+    toes: { near: 62, far: 62 },
+  };
+}
 
 /**
  * Lying on the back: upper back (chest) and head on the floor in one line,

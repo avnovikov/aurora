@@ -1,4 +1,4 @@
-import type { PlannedSession } from "../rules/planSession";
+import type { WarmupStep } from "../rules/warmupPlan";
 import type { ViewState } from "./sessionTypes";
 
 export interface WarmupTimerHandle {
@@ -6,18 +6,22 @@ export interface WarmupTimerHandle {
 }
 
 export interface WarmupRunnerCallbacks {
-  onRestGap: (gapSeconds: number, resumeWarmup: () => void) => void;
+  onRestGap: (gapSeconds: number, resumeStations: () => void) => void;
   onAdvance: () => void;
   onPaint: () => void;
 }
 
-export function startWarmupHold(
+/**
+ * Run one timed station (warm-up or cool-down): count the hold down, then
+ * take the gap as a short rest and come back to `stationPhase` to advance.
+ */
+export function startStationHold(
   root: HTMLElement,
-  planned: PlannedSession,
+  step: WarmupStep | undefined,
   state: ViewState,
+  stationPhase: "warmup" | "cooldown",
   callbacks: WarmupRunnerCallbacks,
 ): WarmupTimerHandle | null {
-  const step = planned.warmup[state.warmupIndex];
   if (!step) {
     callbacks.onAdvance();
     return null;
@@ -37,7 +41,7 @@ export function startWarmupHold(
         state.restLeft = gap;
         callbacks.onPaint();
         callbacks.onRestGap(gap, () => {
-          state.phase = "warmup";
+          state.phase = stationPhase;
           callbacks.onAdvance();
         });
       } else {

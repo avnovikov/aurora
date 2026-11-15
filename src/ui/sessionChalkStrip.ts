@@ -1,12 +1,19 @@
 import type { PlannedSession } from "../rules/planSession";
-import { warmupMinutesLabel } from "../rules/sessionDuration";
+import { cooldownOfferLabel, warmupMinutesLabel } from "../rules/sessionDuration";
 import { warmupViewSeconds } from "../rules/warmupPlan";
+import { cooldownSteps } from "./sessionState";
 import type { ViewState } from "./sessionTypes";
 
 /** Compact session progress line: position + current (+ next). */
 export function chalkNowLabel(planned: PlannedSession, state: ViewState): string {
   if (isWarmupSurface(planned, state)) {
     return warmupChalkLabel(planned, state);
+  }
+  if (isCooldownSurface(planned, state)) {
+    return cooldownChalkLabel(planned, state);
+  }
+  if (state.phase === "done") {
+    return "Session done";
   }
   return workChalkLabel(planned, state);
 }
@@ -29,7 +36,34 @@ export function chalkRailNotches(
     className: workRailClass(state, index),
     title: item.label,
   }));
-  return [warmup, ...work];
+  const cooldown = cooldownSteps(planned);
+  if (cooldown.length === 0) {
+    return [warmup, ...work];
+  }
+  const cooldownNotch: ChalkRailNotch = {
+    className: isCooldownSurface(planned, state) ? "active" : "",
+    title: cooldownOfferLabel(warmupViewSeconds(cooldown)),
+  };
+  return [warmup, ...work, cooldownNotch];
+}
+
+/** True while the optional cool-down runs (including the gaps between stretches). */
+export function isCooldownSurface(planned: PlannedSession, state: ViewState): boolean {
+  if (state.phase === "cooldown") {
+    return true;
+  }
+  return (
+    state.phase === "rest" &&
+    state.workState === null &&
+    state.warmupIndex >= planned.warmup.length &&
+    state.workIndex >= planned.work.length
+  );
+}
+
+function cooldownChalkLabel(planned: PlannedSession, state: ViewState): string {
+  const steps = cooldownSteps(planned);
+  const step = steps[state.cooldownIndex];
+  return joinChalk(cooldownOfferLabel(warmupViewSeconds(steps)), step?.name);
 }
 
 /** True while the athlete is still on the warmup surface (including warmup rest). */
@@ -90,6 +124,9 @@ function warmupRailClass(planned: PlannedSession, state: ViewState): string {
 function workRailClass(state: ViewState, index: number): string {
   if (state.phase === "warmup") {
     return "";
+  }
+  if (state.phase === "cooldown" || state.phase === "done") {
+    return "done";
   }
   if (state.workIndex === index) {
     return "active";

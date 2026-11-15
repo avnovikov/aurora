@@ -1,12 +1,16 @@
 import type { LoadRegion } from "../data/seed";
-import type { WarmupStation } from "../data/warmupStations";
+import type { StationPhase, WarmupStation } from "../data/warmupStations";
 
 /**
- * One station in the prebuilt warmup view (not a work exercise prescription).
+ * One station in the prebuilt warm-up or cool-down view (not a work exercise prescription).
  */
 export interface WarmupStep {
   stationId: string;
   name: string;
+  /** RAMP phase or cooldown (older persisted sessions may lack it). */
+  phase?: StationPhase;
+  /** Short evidence citation shown in small text on the station. */
+  source?: string;
   region: LoadRegion;
   holdSeconds: number;
   gapSecondsAfter: number;
@@ -51,6 +55,8 @@ export function buildWarmupView(stations: WarmupStation[]): WarmupStep[] {
     return {
       stationId: station.id,
       name: station.name,
+      phase: station.phase,
+      source: station.source,
       region: displayRegion(station),
       holdSeconds,
       gapSecondsAfter: 0,
@@ -66,6 +72,11 @@ export function buildWarmupView(stations: WarmupStation[]): WarmupStep[] {
   }
 
   return steps;
+}
+
+/** Cool-down view: same timed stations as the warm-up, but may be empty. */
+export function buildCooldownView(stations: WarmupStation[]): WarmupStep[] {
+  return stations.length === 0 ? [] : buildWarmupView(stations);
 }
 
 /** Total wall-clock seconds for a materialised warmup view. */
