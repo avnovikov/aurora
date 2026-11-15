@@ -1,5 +1,5 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
-import type { SessionTemplate } from "../domain/program";
+import type { SessionTemplate, WarmupLevel } from "../domain/program";
 import {
   estimateSessionDuration,
   formatDurationLabel,
@@ -18,7 +18,7 @@ export function templateTargetsLabel(
   return targetExerciseIds.map(exerciseName).join(separator);
 }
 
-/** Duration label for a session template. */
-export function templateDurationLabel(template: SessionTemplate): string {
-  return formatDurationLabel(estimateSessionDuration(template));
+/** Duration label for a session template (warm-up at the given level). */
+export function templateDurationLabel(template: SessionTemplate, level?: WarmupLevel): string {
+  return formatDurationLabel(estimateSessionDuration(template, level));
 }

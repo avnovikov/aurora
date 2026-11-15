@@ -1,4 +1,4 @@
-import { BONES, dist, sampleTimeline, type DoodleSpec, type Point, type Prop, type Side, type Solved } from "./rig";
+import { BONES, SEGMENTS, dist, sampleTimeline, type DoodleSpec, type Point, type Prop, type Side, type Solved } from "./rig";
 import { figurePoints, propSegments, specViewBox } from "./renderSvg";
 
 /** Validator for doodle specs (rig v2 spec, "Validator" section). JSON-serialisable output. */
@@ -215,6 +215,25 @@ function propCrossings(spec: DoodleSpec, pose: Solved): { segment: string; prop:
   return found;
 }
 
+/**
+ * Head circle overlapping a prop obstacle (e.g. a head drawn inside a wall).
+ * Pull-up bars are exempt: the head legitimately passes a bar (chin over bar),
+ * which sits in front of or behind it, not in its plane.
+ */
+function headInProp(spec: DoodleSpec, pose: Solved): string[] {
+  const issues: string[] = [];
+  (spec.props ?? []).forEach((prop, index) => {
+    if (prop.kind === "bar") return;
+    for (const [c, d] of obstacles(prop)) {
+      if (distanceToSegment(pose.head, c, d) < SEGMENTS.headRadius - TOUCH) {
+        issues.push(`head overlaps prop ${index}`);
+        return;
+      }
+    }
+  });
+  return issues;
+}
+
 export function validateSpec(spec: DoodleSpec): SpecReport {
   const timeline = sampleTimeline(spec);
   const box = specViewBox(spec, timeline.poses);
@@ -230,7 +249,7 @@ export function validateSpec(spec: DoodleSpec): SpecReport {
       index,
       boneLengthError: round(boneLengthError(pose), 4),
       torsoLength: round(torsoLength(pose), 2),
-      anatomy: anatomy(pose, spec.view),
+      anatomy: [...anatomy(pose, spec.view), ...headInProp(spec, pose)],
       unreachable: pose.pins
         .filter((pin) => dist(pin.target, pin.actual) > PIN_TOLERANCE)
         .map((pin) => ({
@@ -260,9 +279,10 @@ export function validateSpec(spec: DoodleSpec): SpecReport {
   ];
   const transitionAnatomy = between((pose) => anatomy(pose, spec.view));
   // A limb sweeping through a prop between keyframes is as visible as one at a keyframe.
-  const transitionPropCrossings = between((pose) =>
-    propCrossings(spec, pose).map((c) => `${c.segment} crosses prop ${c.prop}`),
-  );
+  const transitionPropCrossings = between((pose) => [
+    ...propCrossings(spec, pose).map((c) => `${c.segment} crosses prop ${c.prop}`),
+    ...headInProp(spec, pose),
+  ]);
   const transitionSamplesBelowFloor = timeline.poses.filter(
     (pose, i) => !timeline.keyframeIndex.includes(i) && belowFloor(pose).length > 0,
   ).length;

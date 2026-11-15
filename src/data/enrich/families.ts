@@ -133,7 +133,7 @@ export const FAMILIES: readonly Family[] = [
     includes: ["handstand", "crow", "frog stand", "elbow lever", "straight arm press"],
     rungs: [
       r(3, "elite", ["press to handstand", "straight arm press", "japanese"]),
-      r(2, "advanced", ["freestanding", "handstand hold", "handstand attempt"]),
+      r(2, "advanced", ["freestanding", "handstand hold", "handstand attempt", "chest to wall"]),
       r(1, "intermediate", ["wall handstand"]),
       r(0, "intermediate", ["crow", "frog stand", "elbow lever"]),
     ],
@@ -212,6 +212,8 @@ export const FAMILIES: readonly Family[] = [
     excludes: ["jump", "stretch"],
     rungs: [
       r(5, "elite", ["dragon squat"]),
+      // Holding a support, partial depth: same step as a 1-leg box squat but easier.
+      r(3, "intermediate", ["assisted pistol"]),
       r(4, "advanced", ["pistol"]),
       r(3, "advanced", ["skater", "shrimp", "1 leg box", "archer squat", "sissy", "single leg squat"]),
       r(2, "intermediate", ["bulgarian", "deficit", "knee drive", "cossack", "step down"]),

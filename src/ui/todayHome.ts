@@ -1,4 +1,4 @@
-import type { SessionTemplate } from "../domain/program";
+import type { SessionTemplate, WarmupLevel } from "../domain/program";
 import { escapeHtml } from "../library/present";
 import { dayTitle } from "../plan/dayKinds";
 import { warmupCooldownLabel } from "../rules/sessionDuration";
@@ -16,6 +16,8 @@ export interface TodayHomeModel {
   deloadActive: boolean;
   /** Markup for the "train something else" panel. */
   overrideHtml: string;
+  /** Warm-up level for today's session (unknown → beginner). */
+  warmupLevel?: WarmupLevel;
 }
 
 /**
@@ -36,10 +38,10 @@ export function todayHomeHtml(model: TodayHomeModel): string {
         <p class="eyebrow">${model.isOverride ? "Today instead" : "Next up"}</p>
         <div class="today-card-head">
           <h2 id="today-session">${escapeHtml(dayTitle(next))}</h2>
-          <span class="today-duration">${escapeHtml(templateDurationLabel(next))}</span>
+          <span class="today-duration">${escapeHtml(templateDurationLabel(next, model.warmupLevel))}</span>
         </div>
         ${toward}
-        <p class="lib-meta" data-warmup-preview>${escapeHtml(warmupCooldownLabel(next))}</p>
+        <p class="lib-meta" data-warmup-preview>${escapeHtml(warmupCooldownLabel(next, model.warmupLevel))}</p>
         ${core}
         ${deloadNoteHtml(model.deloadActive)}
         <div data-checkin></div>

@@ -11,6 +11,7 @@ import type {
   HistoryEntry,
   JointHistoryEntry,
   SessionFocus,
+  WarmupLevel,
 } from "../domain/program";
 import type {
   Dose,
@@ -26,6 +27,7 @@ import {
   pickSlotExerciseForVariety,
 } from "./consecutiveVariety";
 import { resolveSlot } from "./resolveSlot";
+import { warmupLevelFor } from "./warmupLevel";
 import { buildCooldownView, buildWarmupView, type WarmupStep } from "./warmupPlan";
 
 export interface PlannedWorkItem {
@@ -55,6 +57,8 @@ export interface PlannedSession {
    * Not work prescriptions; runs before `work`.
    */
   warmup: WarmupStep[];
+  /** Level the warm-up was picked for (older persisted sessions may lack it). */
+  warmupLevel?: WarmupLevel;
   work: PlannedWorkItem[];
   /**
    * Optional cool-down stretches offered after the last work item (may be empty).
@@ -77,6 +81,8 @@ export interface PlanSessionOptions {
   equipment?: readonly EquipmentId[];
   /** Exercise ids the user never wants planned; swapped for a substitute. */
   excluded?: readonly string[];
+  /** Overrides the level derived from the athlete's tier in the target family. */
+  warmupLevel?: WarmupLevel;
 }
 
 /** Inputs shared by every slot in one planned session. */
@@ -89,8 +95,8 @@ interface SlotContext {
   excluded: readonly string[];
 }
 
-function warmupStationsFor(program: StarterProgram): WarmupStation[] {
-  return stationsFor(program.warmupStationIds, program.warmupHoldSeconds);
+function warmupStationsFor(program: StarterProgram, level: WarmupLevel): WarmupStation[] {
+  return stationsFor(program.warmupByLevel[level], program.warmupHoldSeconds);
 }
 
 function cooldownStationsFor(program: StarterProgram): WarmupStation[] {
@@ -102,6 +108,16 @@ const SWAP_RULE = {
   gear: "equipment",
   joints: "joint_history",
 } as const satisfies Record<NonNullable<SuitableChoice["cause"]>, RuleId>;
+
+/** Caller's level, else the athlete's tier in the target family (unknown → beginner). */
+function pickWarmupLevel(
+  program: StarterProgram,
+  memories: Record<string, ExerciseMemory>,
+  override: WarmupLevel | undefined,
+): WarmupLevel {
+  return override ?? warmupLevelFor({ targetExerciseIds: program.targetExerciseIds ?? [], memories });
+}
+
 
 /** What joint, gear and exclusion care did to a resolved move: the final move, why, and notes. */
 interface CareOutcome {
@@ -237,13 +253,15 @@ export function planSession(
     },
     previous?.exerciseIds ?? null,
   );
-  const warmup = buildWarmupView(warmupStationsFor(program));
+  const warmupLevel = pickWarmupLevel(program, memories, options.warmupLevel);
+  const warmup = buildWarmupView(warmupStationsFor(program, warmupLevel));
   const cooldown = buildCooldownView(cooldownStationsFor(program));
   return {
     programId: program.id,
     sessionLabel: program.sessionLabel,
     readiness,
     warmup,
+    warmupLevel,
     work,
     cooldown,
     lightDay: work.some((item) => item.ruleIds.includes("light_day")),

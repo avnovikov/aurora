@@ -243,7 +243,9 @@ function buildDay(input: BlockInput, index: number, base: string, inBlock: Set<s
     kind: input.kind,
     block: { id: `blk_${base}`, letter, emphasis },
     targetExerciseIds: input.target ? [input.target] : [...seed.targetExerciseIds],
-    warmupStationIds: [...seed.warmupStationIds],
+    // Per-level lists; the level is picked from the athlete's tier in the day's target family.
+    warmupByLevel: seed.warmupByLevel,
+    warmupHoldSeconds: seed.warmupHoldSeconds,
     cooldownStationIds: [...seed.cooldownStationIds],
     slots: care ? [...slots, care] : slots,
     repeat: false,

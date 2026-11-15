@@ -1,4 +1,10 @@
-import type { EquipmentId, PlanQueue, SessionTemplate } from "../domain/program";
+import type {
+  EquipmentId,
+  PlanQueue,
+  SessionTemplate,
+  WarmupLevel,
+  WarmupLists,
+} from "../domain/program";
 import type { Dose, Exercise, ExerciseStandards, Pattern, SkillTier } from "../domain/types";
 
 export type LoadRegion = "legs" | "push" | "pull" | "core" | "skill" | "general";
@@ -48,7 +54,9 @@ export interface StarterProgram {
   name: string;
   sessionLabel: string;
   slots: SeedSlot[];
-  warmupStationIds: string[];
+  /** Target skills; the warm-up level comes from the athlete's tier in their family. */
+  targetExerciseIds?: readonly string[];
+  warmupByLevel: WarmupLists;
   cooldownStationIds: string[];
   warmupHoldSeconds?: Readonly<Record<string, number>>;
 }
@@ -562,6 +570,30 @@ for (let i = 0; i < SEED_EXERCISES.length; i += 1) {
   SEED_EXERCISES[i] = withSeedStandards(SEED_EXERCISES[i]);
 }
 
+/** Raise for every warm-up (v2/v3): toy soldiers, controlled, building amplitude. */
+const WARMUP_RAISE = "ntc_toy_soldiers";
+
+/** Raise + the session's mobilise drills, then each level's activate and ramp. */
+function tieredWarmup(
+  mobilise: readonly string[],
+  byLevel: Readonly<Record<WarmupLevel, readonly string[]>>,
+): WarmupLists {
+  const head = [WARMUP_RAISE, ...mobilise];
+  return {
+    beginner: [...head, ...byLevel.beginner],
+    intermediate: [...head, ...byLevel.intermediate],
+    advanced: [...head, ...byLevel.advanced],
+  };
+}
+
+/** One list for every level (Mobility: no levels, no ramp). */
+function sameForEveryLevel(ids: readonly string[]): WarmupLists {
+  return { beginner: ids, intermediate: ids, advanced: ids };
+}
+
+/** Bars activation for every level: OSTRC cuff and scapula, push-up plus, Y-T-W. */
+const BARS_ACTIVATE = ["wger_578", "ntc_push_up_plus", "ntc_prone_ytw", "scapular_pull"];
+
 /**
  * Strength templates sized for ~30–45 min wall-clock
  * (prebuilt warmup sequence + work + ACSM/NSCA rests).
@@ -575,18 +607,24 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     targetExerciseIds: ["pistol_squat"],
     repeat: true,
     targetMinutes: SESSION_BAND,
-    warmupStationIds: [
-      "pulse_raiser_march",
-      "ntc_jumping_jacks",
-      "ankle_rocks",
-      "hf_158",
-      "hf_157",
-      "glute_bridge",
-      "wger_1202",
-      "wger_2667",
-      "fedb_split_squats",
-      "wger_1948",
-    ],
+    // v3 Legs: FIFA 11+ / HarmoKnee balance and strength, then a squat ramp.
+    warmupByLevel: tieredWarmup(["ankle_rocks"], {
+      beginner: ["ntc_single_leg_balance", "glute_bridge", "bodyweight_squat", "wger_2557"],
+      intermediate: [
+        "ntc_single_leg_balance",
+        "fedb_single_leg_glute_bridge",
+        "fedb_bodyweight_walking_lunge",
+        "fedb_split_squats",
+        "wger_1948",
+      ],
+      advanced: [
+        "wger_2667",
+        "fedb_single_leg_glute_bridge",
+        "fedb_bodyweight_walking_lunge",
+        "wger_1948",
+        "ntc_assisted_pistol",
+      ],
+    }),
     cooldownStationIds: [
       "fedb_calf_stretch_hands_against_wall",
       "wger_1239",
@@ -649,16 +687,12 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     targetExerciseIds: ["hanging_knee_raise"],
     repeat: true,
     targetMinutes: SESSION_BAND,
-    warmupStationIds: [
-      "pulse_raiser_march",
-      "ntc_jumping_jacks",
-      "hf_154",
-      "hip_circles",
-      "hf_100",
-      "hf_116",
-      "dead_bug",
-      "hf_103",
-    ],
+    // v3 Abs: 11+ / HarmoKnee core strength plus dead bug [C], then an easy hollow.
+    warmupByLevel: tieredWarmup([], {
+      beginner: ["glute_bridge", "hf_99", "hf_100", "dead_bug", "hollow_hold_tuck"],
+      intermediate: ["glute_bridge", "hf_99", "hf_100", "dead_bug", "hollow_hold_ramp"],
+      advanced: ["glute_bridge", "hf_99", "hf_100", "dead_bug", "hollow_hold_ramp"],
+    }),
     cooldownStationIds: [
       "hf_165",
       "fedb_childs_pose_cooldown",
@@ -719,17 +753,19 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     targetExerciseIds: ["freestanding_hs"],
     repeat: true,
     targetMinutes: SESSION_BAND,
-    warmupStationIds: [
-      "pulse_raiser_march",
-      "ntc_jumping_jacks",
-      "hf_167",
-      "wger_2680",
-      "hf_152",
-      "fedb_childs_pose",
-      "scap_pushup",
-      "hollow_hold",
-      "wall_handstand",
-    ],
+    // v3 Skill: wrist rocks [C], push-up plus and Y-T-W (Cools; Ekstrom), then a
+    // wall ramp that never reaches the work set's max hold.
+    warmupByLevel: tieredWarmup(["wger_2680"], {
+      beginner: ["ntc_push_up_plus", "ntc_prone_ytw", "hf_99", "wger_2691", "ntc_wall_walk_up_45"],
+      intermediate: ["ntc_push_up_plus", "ntc_prone_ytw", "hf_100", "wger_2691", "ntc_wall_walk_up"],
+      advanced: [
+        "ntc_push_up_plus",
+        "ntc_prone_ytw",
+        "hf_100",
+        "ntc_wall_walk_up",
+        "ntc_chest_to_wall_handstand",
+      ],
+    }),
     cooldownStationIds: [
       "wger_2686",
       "fedb_kneeling_forearm_stretch",
@@ -784,17 +820,13 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     targetExerciseIds: ["muscle_up"],
     repeat: true,
     targetMinutes: SESSION_BAND,
-    warmupStationIds: [
-      "pulse_raiser_march",
-      "ntc_jumping_jacks",
-      "ntc_arm_circles",
-      "wger_1822",
-      "hf_152",
-      "wger_578",
-      "ntc_prone_ytw",
-      "scapular_pull",
-      "wger_2690",
-    ],
+    // v3 Bars: OSTRC shoulder programme (cuff, scapula, thoracic, IR range),
+    // then an easy pull ramp. No muscle-up drills.
+    warmupByLevel: tieredWarmup(["hf_155"], {
+      beginner: [...BARS_ACTIVATE, "pullup_dead_hang", "wger_2748"],
+      intermediate: ["wger_1711", ...BARS_ACTIVATE, "wger_2748", "pullup_ramp"],
+      advanced: ["wger_1711", ...BARS_ACTIVATE, "pullup_ramp_sets"],
+    }),
     cooldownStationIds: [
       "wger_1713",
       "fedb_childs_pose_cooldown",
@@ -848,26 +880,32 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     targetExerciseIds: ["pistol_squat", "pullup", "freestanding_hs"],
     repeat: true,
     targetMinutes: SESSION_BAND,
-    warmupStationIds: [
-      "pulse_raiser_march",
-      "ntc_jumping_jacks",
-      "ankle_rocks",
-      "hip_circles",
-      "hf_152",
-      "wger_2680",
-      "glute_bridge",
-      "scap_pushup",
-      "wger_2667",
-      "bodyweight_squat",
-      "fedb_incline_push_up",
-    ],
+    // v3 Full body: 11+-style strength and balance, then squat → push-up ramp.
+    warmupByLevel: tieredWarmup([], {
+      beginner: ["ntc_push_up_plus", "ntc_single_leg_balance", "hf_99", "bodyweight_squat", "fedb_incline_push_up"],
+      intermediate: [
+        "fedb_bodyweight_walking_lunge",
+        "ntc_push_up_plus",
+        "ntc_single_leg_balance",
+        "hf_99",
+        "bodyweight_squat",
+        "push_up_ramp",
+      ],
+      advanced: [
+        "fedb_bodyweight_walking_lunge",
+        "ntc_push_up_plus",
+        "ntc_single_leg_balance",
+        "hf_99",
+        "bodyweight_squat",
+        "push_up_ramp",
+      ],
+    }),
     cooldownStationIds: [
       "fedb_calf_stretch_hands_against_wall",
       "fedb_kneeling_hip_flexor",
       "fedb_childs_pose_cooldown",
       "wger_2686",
     ],
-    warmupHoldSeconds: { ankle_rocks: 45, wger_2667: 45 },
     slots: [
       {
         id: "full_squat",
@@ -935,18 +973,10 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     // Optional one-off; completing it drops it from the queue.
     repeat: false,
     targetMinutes: MOBILITY_BAND,
-    warmupStationIds: [
-      "pulse_raiser_march",
-      "ntc_jumping_jacks",
-      "hf_154",
-      "hf_169",
-      "hf_158",
-      "hf_152",
-      "wger_2680",
-    ],
+    // v3 Mobility: one list, no ramp (no strength work follows) and no
+    // transition rest; controlled dynamic drills (Behm 2016; Opplert 2018).
+    warmupByLevel: sameForEveryLevel(["ntc_toy_soldiers", "ntc_leg_swings", "hf_169", "ankle_rocks", "hf_154"]),
     cooldownStationIds: [],
-    // The design's holds give 6.5 min; two drills at 60 s reach the 7 min floor.
-    warmupHoldSeconds: { hf_158: 60, wger_2680: 60 },
     // Every slot is pinned: resolveSlot never advances / regresses these
     // exercises, and the variety rule never swaps them for strength work.
     slots: [
@@ -1020,7 +1050,8 @@ export const STARTER_PROGRAM: StarterProgram = {
   id: "tmpl_legs",
   name: "Legs",
   sessionLabel: "Today",
-  warmupStationIds: SESSION_TEMPLATES[0].warmupStationIds,
+  targetExerciseIds: SESSION_TEMPLATES[0].targetExerciseIds,
+  warmupByLevel: SESSION_TEMPLATES[0].warmupByLevel,
   cooldownStationIds: SESSION_TEMPLATES[0].cooldownStationIds,
   warmupHoldSeconds: SESSION_TEMPLATES[0].warmupHoldSeconds,
   slots: SESSION_TEMPLATES[0].slots,
@@ -1035,7 +1066,8 @@ export function templateToStarter(template: SessionTemplate): StarterProgram {
     id: template.id,
     name: template.name,
     sessionLabel: template.name,
-    warmupStationIds: template.warmupStationIds,
+    targetExerciseIds: template.targetExerciseIds,
+    warmupByLevel: template.warmupByLevel,
     cooldownStationIds: template.cooldownStationIds,
     warmupHoldSeconds: template.warmupHoldSeconds,
     slots: template.slots,

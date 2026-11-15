@@ -48,4 +48,18 @@ describe("NTC_CATALOGUE", () => {
     const sumo = NTC_CATALOGUE.find((item) => item.id === "ntc_sumo_squat");
     expect(sumo?.effort).toBeUndefined();
   });
+
+  it("adds the v3 warm-up moves at their levels, with curated descriptions", () => {
+    const levels = {
+      ntc_push_up_plus: "beginner",
+      ntc_assisted_pistol: "intermediate",
+      ntc_chest_to_wall_handstand: "advanced",
+      ntc_single_leg_balance: "beginner",
+    } as const;
+    for (const [id, level] of Object.entries(levels)) {
+      const entry = LIBRARY_CATALOGUE.find((item) => item.id === id);
+      expect(entry?.difficulty, id).toBe(level);
+      expect(entry?.steps?.length, id).toBeGreaterThan(0);
+    }
+  });
 });

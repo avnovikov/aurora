@@ -14,6 +14,7 @@ import {
   advanceCooldown,
   cooldownSteps,
   enterDone,
+  enterWorkAfterWarmup,
   initialState,
   persistPhase,
   startCooldown,
@@ -116,12 +117,15 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   const advanceWarmup = (): void => {
     state.warmupIndex += 1;
     if (state.warmupIndex >= options.planned.warmup.length) {
-      state.phase = "work";
-      state.workIndex = 0;
-      state.setIndex = 1;
-      state.workState = syncWorkState(options.planned, state);
+      const getReady = enterWorkAfterWarmup(options.planned, state);
       void speakCoachLine("warmup_done");
       paint();
+      if (getReady > 0) {
+        startRest(() => {
+          state.phase = "work";
+          paint();
+        }, true);
+      }
       return;
     }
     paint();

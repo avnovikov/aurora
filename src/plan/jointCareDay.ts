@@ -89,7 +89,9 @@ export function generateJointCareDay(ctx: StepContext, newId: () => string = new
     focus: "joint_care",
     kind: "joint_care",
     targetExerciseIds: [],
-    warmupStationIds: [...seed.warmupStationIds],
+    // Per-level lists; the level is picked from the athlete's tier in the day's target family.
+    warmupByLevel: seed.warmupByLevel,
+    warmupHoldSeconds: seed.warmupHoldSeconds,
     cooldownStationIds: [...seed.cooldownStationIds],
     slots: moves.slice(0, count).map((move, index) => careSlotFor(move, `${id}_${index}`, "Care")),
     repeat: false,
