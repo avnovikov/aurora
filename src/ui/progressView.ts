@@ -4,11 +4,15 @@ import {
   KEY_CHAIN_ANCHOR_IDS,
   listChainRootIds,
   type ChainMap,
-  type ChainNode,
   type LastResolveSignal,
 } from "../progress/chainMap";
+import {
+  compactProgressBlock,
+  type CompactProgressBlock,
+} from "../progress/compactProgress";
 import { loadSession } from "../session/storage";
 import { loadMemories } from "../session/history";
+import { escapeHtml } from "../library/present";
 
 const NO_HR_HISTORY_NOTE = "Resting HR trend: no HR history yet";
 
@@ -18,8 +22,8 @@ export function renderProgressView(root: HTMLElement): void {
     <main class="shell">
       <p class="eyebrow">Progress</p>
       <h1>Chains</h1>
-      <p class="tagline">Harder skills are goals. The chalk line shows where you are, with easier and harder neighbours.</p>
-      ${chains.map(chainHtml).join("")}
+      <p class="tagline">Where you are now, and the next step up.</p>
+      ${chains.map(chainCardHtml).join("")}
       <p class="hint">${NO_HR_HISTORY_NOTE}</p>
     </main>
   `;
@@ -48,18 +52,25 @@ function lastResolveLookup(): (
   };
 }
 
-function chainHtml(chain: ChainMap): string {
-  const nodes = chain.nodes.map(nodeHtml).join("");
+function chainCardHtml(chain: ChainMap): string {
+  const block = compactProgressBlock(chain);
   return `
-    <section class="chain-card" data-chain="${chain.rootId}">
-      <h2 class="chain-title">${chain.label}</h2>
-      <ol class="chain-map">${nodes}</ol>
-      <p class="chain-reason chain-${chain.status.kind}">${chain.status.reason}</p>
+    <section class="chain-card" data-chain="${escapeHtml(chain.rootId)}">
+      <h2 class="chain-title">${escapeHtml(chain.label)}</h2>
+      ${exerciseBlockHtml(block)}
+      <p class="chain-reason chain-${chain.status.kind}">${escapeHtml(chain.status.reason)}</p>
     </section>
   `;
 }
 
-function nodeHtml(node: ChainNode): string {
-  const marker = node.position === "current" ? ' aria-current="step"' : "";
-  return `<li class="chain-node chain-${node.position}"${marker}>${node.name}</li>`;
+function exerciseBlockHtml(block: CompactProgressBlock): string {
+  const next = block.next
+    ? `<p class="exercise-next"><span class="exercise-next-label">Next</span> ${escapeHtml(block.next.name)}</p>`
+    : `<p class="exercise-next is-end">Top of this chain</p>`;
+  return `
+    <div class="exercise-block">
+      <p class="exercise-current" aria-current="step">${escapeHtml(block.current.name)}</p>
+      ${next}
+    </div>
+  `;
 }
