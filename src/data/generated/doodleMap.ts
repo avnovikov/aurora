@@ -70,8 +70,18 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "wger_2686": "/doodles/doodle-wrist-stretch.svg",
   "fedb_kneeling_forearm_stretch": "/doodles/doodle-kneeling-forearm-stretch.svg",
   "ntc_thread_the_needle": "/doodles/doodle-thread-the-needle.svg",
-  "wger_1713": "/doodles/doodle-doorway-pectoral-stretch.svg"
+  "wger_1713": "/doodles/doodle-doorway-pectoral-stretch.svg",
+  "nordic_curl": "/doodles/doodle-nordic-curl.svg",
+  "dead_bug": "/doodles/doodle-dead-bug.svg",
+  "hollow_hold": "/doodles/doodle-hollow-hold.svg",
+  "elevated_pike": "/doodles/doodle-elevated-pike.svg",
+  "hanging_knee_raise": "/doodles/doodle-hanging-knee-raise.svg",
+  "pullup_dead_hang": "/doodles/doodle-dead-hang.svg",
+  "scapular_pull": "/doodles/doodle-scapular-pull.svg",
+  "pullup": "/doodles/doodle-pullup.svg",
+  "freestanding_hs": "/doodles/doodle-freestanding-hs.svg",
+  "muscle_up": "/doodles/doodle-muscle-up.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
-export const REPLACED_DOODLE_IDS: readonly string[] = ["wall_handstand","pulse_raiser_march","hip_circles","ankle_rocks","glute_bridge","wrist_load","scap_pushup"];
+export const REPLACED_DOODLE_IDS: readonly string[] = ["wall_handstand","pulse_raiser_march","hip_circles","ankle_rocks","glute_bridge","wrist_load","scap_pushup","nordic_curl","dead_bug","hollow_hold","elevated_pike","hanging_knee_raise","pullup_dead_hang","scapular_pull","pullup","freestanding_hs","muscle_up"];
