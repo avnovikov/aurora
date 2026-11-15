@@ -1,4 +1,5 @@
 import type { SeedExercise } from "../data/seed";
+import { doodleMarkup } from "../doodles/doodleMarkup";
 import { escapeHtml } from "./present";
 
 const MAX_IMAGES = 3;
@@ -10,7 +11,7 @@ export function summaryHtml(exercise: SeedExercise): string {
 /** Doodle first; otherwise licensed HTTPS images with their credit line. */
 export function mediaHtml(exercise: SeedExercise): string {
   if (exercise.doodlePath) {
-    return `<img class="doodle" src="${escapeHtml(exercise.doodlePath)}" alt="Doodle for ${escapeHtml(exercise.name)}" />`;
+    return doodleMarkup(exercise.doodlePath, exercise.name);
   }
   const images = (exercise.media ?? [])
     .filter((item) => item.mediaType === "image" && item.url.startsWith("https://") && item.license)

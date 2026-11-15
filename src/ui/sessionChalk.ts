@@ -1,4 +1,5 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
+import { doodleMarkup } from "../doodles/doodleMarkup";
 import { resolveExerciseTiming } from "../domain/timing";
 import { escapeHtml } from "../library/present";
 import { isNativePulseAvailable } from "../pulse/hrMonitor";
@@ -120,12 +121,6 @@ function stepsHtml(item: PlannedWorkItem): string {
   return `<details class="session-howto"><summary>How to</summary><ol class="lib-steps">${steps}</ol></details>`;
 }
 
-function doodleHtml(path: string | undefined, name: string): string {
-  if (!path) {
-    return "";
-  }
-  return `<img class="doodle" src="${path}" alt="Doodle for ${escapeHtml(name)}" />`;
-}
 
 function bodyHtml(planned: PlannedSession, state: ViewState): string {
   if (isWarmupSurface(planned, state)) {
@@ -185,7 +180,7 @@ function stationHtml(eyebrow: string, step: WarmupStep): string {
       <p class="session-dose"><span class="session-dose-q">${escapeHtml(step.region)} <span aria-hidden="true">·</span></span> ${doseFigureHtml(`<span data-warmup-left>${step.holdSeconds}</span>`, SECONDS_UNIT_HTML)}</p>
       ${sideSwitchHtml(step)}`;
   return `
-    ${heroHtml({ phase: eyebrow, move: step.name, dose, doodle: doodleHtml(step.doodlePath, step.name) })}
+    ${heroHtml({ phase: eyebrow, move: step.name, dose, doodle: doodleMarkup(step.doodlePath, step.name) })}
     <section class="session-read">
       ${summaryHtml(EXERCISE_GRAPH[step.stationId]?.description)}
       ${attentionHtml(step.cues)}
@@ -201,7 +196,7 @@ interface HeroParts {
   move: string;
   /** Dose markup: the big figure and anything that belongs with it. */
   dose: string;
-  /** Doodle markup from doodleHtml, or "" for none. */
+  /** Doodle markup from doodleMarkup, or "" for none. */
   doodle: string;
 }
 
@@ -293,7 +288,7 @@ function workHtml(item: PlannedWorkItem, state: ViewState): string {
         phase: `Set ${state.setIndex} of ${item.dose.sets}`,
         move: item.exerciseName,
         dose,
-        doodle: doodleHtml(item.doodlePath, item.exerciseName),
+        doodle: doodleMarkup(item.doodlePath, item.exerciseName),
       })}
       <section class="session-read">
         ${summaryHtml(item.summary)}

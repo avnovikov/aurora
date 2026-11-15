@@ -1,11 +1,18 @@
 import { FOCUS_BY_ID, type Focus, type Segment } from "./focus";
 import { sampleTimeline, SEGMENTS, type DoodleSpec, type Point, type Prop, type Side, type Solved } from "./rig";
 
-const STROKE = "#f4f1ea";
+/**
+ * Colours are CSS custom properties so an inlined doodle follows the active
+ * palette; the fallbacks are the standalone look (light ink on black).
+ */
+const INK = "var(--doodle-ink, #f4f1ea)";
+/** Fills that hide lines behind them (head, grips, inset): whatever the doodle sits on. */
+const PAPER = "var(--doodle-paper, #000)";
+const BACKDROP = "var(--doodle-backdrop, #000)";
 const STROKE_WIDTH = 7;
 const FAR_OPACITY = 0.5;
 /** App accent (brass); coral is reserved for pulse and pain. */
-const FOCUS_COLOUR = "#c4a574";
+const FOCUS_COLOUR = "var(--doodle-focus, #c4a574)";
 const HIGHLIGHT_WIDTH = 20;
 const HIGHLIGHT_OPACITY = 0.45;
 /** Inset diameter as a share of the main view height. */
@@ -81,7 +88,7 @@ function propSvg(prop: Prop): string {
     .join("");
   const grips =
     prop.kind === "bar"
-      ? (prop.grips ?? []).map((x) => `<ellipse cx="${x}" cy="${prop.y}" rx="8" ry="11" fill="#000"/>`).join("")
+      ? (prop.grips ?? []).map((x) => `<ellipse cx="${x}" cy="${prop.y}" rx="8" ry="11" style="fill:${PAPER}"/>`).join("")
       : "";
   return lines + grips;
 }
@@ -178,7 +185,7 @@ function segmentPath(segment: Segment): Path {
 function highlightSvg(focus: Focus | undefined, poses: Solved[], timing: string, map: Mapper): string {
   if (!focus || focus.highlight.length === 0) return "";
   const lines = focus.highlight.map((segment) => animatedPolyline(segmentPath(segment), poses, timing, 1, map)).join("");
-  return `<g stroke="${FOCUS_COLOUR}" stroke-width="${HIGHLIGHT_WIDTH}" opacity="${HIGHLIGHT_OPACITY}">${lines}</g>`;
+  return `<g style="stroke:${FOCUS_COLOUR}" stroke-width="${HIGHLIGHT_WIDTH}" opacity="${HIGHLIGHT_OPACITY}">${lines}</g>`;
 }
 
 /** The figure (far side first), drawn through `map`; `headScale` keeps the head in proportion. */
@@ -189,7 +196,7 @@ function figureSvg(spec: DoodleSpec, poses: Solved[], timing: string, map: Mappe
     animatedPolyline(legPath("far"), poses, timing, farOpacity, map),
     animatedPolyline(armPath("far"), poses, timing, farOpacity, map),
     animatedPolyline(spinePath, poses, timing, 1, map),
-    `<circle cx="${fmt(head[0][0])}" cy="${fmt(head[0][1])}" r="${fmt(SEGMENTS.headRadius * headScale)}" fill="#000">${animate(
+    `<circle cx="${fmt(head[0][0])}" cy="${fmt(head[0][1])}" r="${fmt(SEGMENTS.headRadius * headScale)}" style="fill:${PAPER}">${animate(
       "cx",
       head.map((p) => fmt(p[0])),
       timing,
@@ -239,19 +246,19 @@ function insetSvg(spec: DoodleSpec, focus: Focus, inset: Inset, poses: Solved[],
   const clipId = `focus-${spec.slug}`;
   const fontSize = r * 0.16;
   const label = focus.label
-    ? `<text x="${fmt(cx)}" y="${fmt(cy + r + fontSize * 1.2)}" fill="${FOCUS_COLOUR}" stroke="none" font-family="system-ui, sans-serif" font-size="${fmt(fontSize)}" text-anchor="middle">${focus.label}</text>`
+    ? `<text x="${fmt(cx)}" y="${fmt(cy + r + fontSize * 1.2)}" style="fill:${FOCUS_COLOUR}" stroke="none" font-family="system-ui, sans-serif" font-size="${fmt(fontSize)}" text-anchor="middle">${focus.label}</text>`
     : "";
   return `<clipPath id="${clipId}"><circle cx="${fmt(cx)}" cy="${fmt(cy)}" r="${fmt(r)}"/></clipPath>
 <g clip-path="url(#${clipId})">
-<circle cx="${fmt(cx)}" cy="${fmt(cy)}" r="${fmt(r)}" fill="#000" stroke="none"/>
+<circle cx="${fmt(cx)}" cy="${fmt(cy)}" r="${fmt(r)}" style="fill:${PAPER}" stroke="none"/>
 ${highlightSvg(focus, poses, timing, map)}
 ${figureSvg(spec, poses, timing, map, zoom)}
 </g>
-<circle cx="${fmt(cx)}" cy="${fmt(cy)}" r="${fmt(r)}" stroke="${FOCUS_COLOUR}" stroke-width="4"/>
+<circle cx="${fmt(cx)}" cy="${fmt(cy)}" r="${fmt(r)}" style="stroke:${FOCUS_COLOUR}" stroke-width="4"/>
 ${label}`;
 }
 
-/** Animated SVG (SMIL) — plays inside a plain <img>, loops forever. */
+/** Animated SVG (SMIL), loops forever; plays standalone, in an <img>, or inlined (doodleMarkup). */
 export function renderDoodleSvg(spec: DoodleSpec): string {
   const timeline = sampleTimeline(spec);
   const { poses } = timeline;
@@ -273,8 +280,8 @@ export function renderDoodleSvg(spec: DoodleSpec): string {
     .join("\n");
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${view}" role="img" aria-label="${spec.title}">
 <title>${spec.title}</title>
-<rect x="${fmt(box.x)}" y="${fmt(box.y)}" width="${fmt(width)}" height="${fmt(box.h)}" fill="#000"/>
-<g fill="none" stroke="${STROKE}" stroke-width="${STROKE_WIDTH}" stroke-linecap="round" stroke-linejoin="round">
+<rect x="${fmt(box.x)}" y="${fmt(box.y)}" width="${fmt(width)}" height="${fmt(box.h)}" style="fill:${BACKDROP}"/>
+<g fill="none" style="stroke:${INK}" stroke-width="${STROKE_WIDTH}" stroke-linecap="round" stroke-linejoin="round">
 ${layers}
 </g>
 </svg>
