@@ -8,6 +8,8 @@ const SLEEP: ReadonlyArray<{ id: SleepQuality; label: string }> = [
   { id: "fair", label: "Fair" },
   { id: "poor", label: "Poor" },
 ];
+/** The "pick how you slept" hint describes Start until a sleep chip is picked. */
+const START_HINT_ID = "today-start-hint";
 
 export interface CheckInHandlers {
   onStart: (readiness: Readiness) => void;
@@ -21,16 +23,14 @@ export function checkInHtml(startLabel: string): string {
   const sleep = SLEEP.map((item) => chipHtml("sleep-value", item.id, item.label, false)).join("");
   const pain = JOINTS.map((joint) => toggleChipHtml("joint", joint, JOINT_LABEL[joint], false)).join("");
   return `
-    <div class="check-in">
-      <p class="chip-row-label">How did you sleep?</p>
-      <div class="today-sleep" role="group" aria-label="How did you sleep?">${sleep}</div>
-      <p class="chip-row-label">Any pain today? <span class="optional">Optional</span></p>
-      <div class="today-pain" role="group" aria-label="Any pain today?">${pain}</div>
-      <button type="button" class="cta today-start" aria-describedby="today-start-hint" data-start disabled>${startLabel}</button>
-      <div class="today-hints">
-        <p class="hint" id="today-start-hint" data-start-hint>Pick how you slept to start.</p>
-        <p class="hint">Starting turns on the coach's voice, so keep the sound up.</p>
-      </div>
+    <p class="chip-row-label">How did you sleep?</p>
+    <div class="today-sleep" role="group" aria-label="How did you sleep?">${sleep}</div>
+    <p class="chip-row-label">Any pain today? <span class="optional">Optional</span></p>
+    <div class="today-pain" role="group" aria-label="Any pain today?">${pain}</div>
+    <button type="button" class="today-start" aria-describedby="${START_HINT_ID}" data-start disabled>${startLabel}</button>
+    <div class="today-hints">
+      <p class="hint" id="${START_HINT_ID}" data-start-hint>Pick how you slept to start.</p>
+      <p class="hint">Starting turns on the coach's voice, so keep the sound up.</p>
     </div>
   `;
 }

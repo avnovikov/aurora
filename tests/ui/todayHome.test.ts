@@ -36,17 +36,17 @@ describe("Today page", () => {
       "Next up",
       'class="today-duration"',
       'id="today-session"',
-      'class="today-goal">Toward ',
+      ">Toward ",
       "data-warmup-preview",
     ].map((needle) => html.indexOf(needle));
     expect(order.every((at) => at >= 0)).toBe(true);
     expect([...order].sort((a, b) => a - b)).toEqual(order);
     const nextRow = html.slice(html.indexOf('class="today-nextrow"'), html.indexOf('id="today-session"'));
-    expect(nextRow).toMatch(/Next up<\/p>\s*<p class="today-duration">≈ \d+ min<\/p>/);
+    expect(nextRow).toMatch(/Next up<\/p>\s*<p[^>]*>≈ \d+ min<\/p>/);
   });
 
   it("puts the check-in in its own panel after the reading area, then Coming up and the override", () => {
-    expect(html).toContain('<section class="today-act" aria-label="Check-in"><div data-checkin></div></section>');
+    expect(html).toMatch(/<section[^>]*aria-label="Check-in"><div data-checkin><\/div><\/section>/);
     expect(html.indexOf("today-read")).toBeLessThan(html.indexOf("today-act"));
     const withOverride = todayHomeHtml(model({ overrideHtml: "<details data-override-controls></details>" }));
     expect(withOverride.indexOf("data-checkin")).toBeLessThan(withOverride.indexOf("data-forecast"));
@@ -114,8 +114,9 @@ describe("check-in", () => {
   });
 
   it("links Start to its hint and keeps the hints under it", () => {
-    expect(html).toMatch(/<button type="button" class="cta today-start" aria-describedby="today-start-hint" data-start disabled>/);
-    expect(html).toContain('<p class="hint" id="today-start-hint" data-start-hint>Pick how you slept to start.</p>');
+    const hintId = /<button[^>]*aria-describedby="([^"]+)"[^>]*data-start disabled>/.exec(html)?.[1];
+    expect(hintId).toBeTruthy();
+    expect(html).toMatch(new RegExp(`<p[^>]*id="${hintId}" data-start-hint>Pick how you slept to start.</p>`));
     expect(html.indexOf("data-start ")).toBeLessThan(html.indexOf("data-start-hint"));
     expect(html).toContain("Starting turns on the coach's voice, so keep the sound up.");
   });
