@@ -43,7 +43,7 @@ palettes:
   ushas:
     label: "Ushas"
     language: "Sanskrit"
-    meaning: "The Vedic goddess of dawn. Fluorescent orange page, plum-black type, violet accent (mid-90s Electric Word pages)."
+    meaning: "The Vedic goddess of dawn. Fluorescent orange page, plum-black type, violet accent."
     colors:
       background: "#ff6a1a"
       surface: "#ff8a45"
@@ -57,7 +57,7 @@ palettes:
   revontulet:
     label: "Revontulet"
     language: "Finnish"
-    meaning: "Northern lights, literally fox fires. Lime page, black type, web blue accent (1995 wired.com archive pages)."
+    meaning: "Northern lights, literally fox fires. Lime page, black type, web blue accent."
     colors:
       background: "#99ff33"
       surface: "#c2ff80"
@@ -71,7 +71,7 @@ palettes:
   fajr:
     label: "Fajr"
     language: "Arabic"
-    meaning: "First light before sunrise, while the sky is still violet. Violet column, white type, fluorescent orange accent (Tired/Wired pages)."
+    meaning: "First light before sunrise, while the sky is still violet. Violet column, white type, fluorescent orange accent."
     colors:
       background: "#5b2a86"
       surface: "#4c2073"
@@ -85,7 +85,7 @@ palettes:
   eos:
     label: "Eos"
     language: "Greek"
-    meaning: "The rosy-fingered dawn goddess. Warm paper, fluorescent magenta accent (mid-90s front-of-book pages)."
+    meaning: "The rosy-fingered dawn goddess. Warm paper, fluorescent magenta accent."
     colors:
       background: "#fbf6ee"
       surface: "#ffffff"

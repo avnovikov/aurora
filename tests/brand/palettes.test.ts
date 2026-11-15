@@ -158,7 +158,7 @@ describe("applyPalette", () => {
     expect(fake.meta?.content).toBe("#070708");
   });
 
-  it("applies the WIRED-derived palettes", () => {
+  it("applies the 90s-print-derived palettes", () => {
     const fake = fakeDocument();
     applyPalette("ushas", fake.doc);
     expect(fake.vars["--background"]).toBe("#ff6a1a");
