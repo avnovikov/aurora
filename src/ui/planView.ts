@@ -98,16 +98,20 @@ function procedureBlockHtml(templateId: string): string {
   const workIds = SEED_EXERCISES.filter((item) => item.role === "work").map(
     (item) => item.id,
   );
-  const targetSelect = exerciseSelectHtml(
-    workIds,
-    template.targetExerciseIds[0],
-    `data-target data-template="${template.id}"`,
-    "Target",
-  );
+  // Templates without a north-star skill (Mobility) have nothing to pick.
+  const targetSelect =
+    template.targetExerciseIds.length > 0
+      ? exerciseSelectHtml(
+          workIds,
+          template.targetExerciseIds[0],
+          `data-target data-template="${template.id}"`,
+          "Target",
+        )
+      : "";
   const slots = template.slots
     .map((slot) =>
       exerciseSelectHtml(
-        workIds,
+        withSelected(workIds, slot.exerciseId),
         slot.exerciseId,
         `data-slot-exercise data-template="${template.id}" data-slot="${slot.id}"`,
         slot.label,
@@ -118,7 +122,7 @@ function procedureBlockHtml(templateId: string): string {
     <details class="procedure-block" ${template.id === "tmpl_bars" ? "open" : ""}>
       <summary>
         <span>${template.name}</span>
-        <span class="hint">${SEED_GRAPH[template.targetExerciseIds[0]]?.name ?? "Target"}</span>
+        <span class="hint">${SEED_GRAPH[template.targetExerciseIds[0]]?.name ?? "No target"}</span>
       </summary>
       <div class="procedure-fields">
         ${targetSelect}
@@ -127,6 +131,11 @@ function procedureBlockHtml(templateId: string): string {
       </div>
     </details>
   `;
+}
+
+/** Slot exercises may be warmup-role moves (Mobility); keep them selectable. */
+function withSelected(ids: string[], selectedId: string): string[] {
+  return ids.includes(selectedId) ? ids : [selectedId, ...ids];
 }
 
 function exerciseSelectHtml(

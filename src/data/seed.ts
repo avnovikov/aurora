@@ -77,6 +77,8 @@ function assertSeedExercise(exercise: SeedExercise): void {
 }
 
 const SESSION_BAND = { minMinutes: 30, maxMinutes: 45 } as const;
+/** Short optional prehab session (includes the default warmup budget). */
+const MOBILITY_BAND = { minMinutes: 15, maxMinutes: 25 } as const;
 
 /** Rep or hold-second floors by skill tier (literature-inspired). */
 function std(
@@ -544,7 +546,7 @@ for (let i = 0; i < SEED_EXERCISES.length; i += 1) {
 }
 
 /**
- * Templates sized for ~30–45 min wall-clock (≈10 min warmup + work + ACSM/NSCA rests).
+ * Strength templates sized for ~30–45 min wall-clock (≈10 min warmup + work + ACSM/NSCA rests).
  * Strength compounds use 90–120 s rest; core/accessory 45–60 s.
  */
 export const SESSION_TEMPLATES: SessionTemplate[] = [
@@ -832,6 +834,66 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
         dose: { sets: 2, reps: 8, targetRir: 2, addedLoadKg: 0 },
         restSeconds: 75,
         pinned: false,
+      },
+    ],
+  },
+  {
+    id: "tmpl_mobility",
+    name: "Mobility",
+    focus: "mobility",
+    // No north-star skill: this is optional prehab, not a progression chain.
+    targetExerciseIds: [],
+    // Optional one-off; completing it drops it from the queue.
+    repeat: false,
+    targetMinutes: MOBILITY_BAND,
+    warmupExerciseIds: ["pulse_raiser_march", "hip_circles"],
+    // Every slot is pinned: resolveSlot never advances / regresses these
+    // exercises, and the variety rule never swaps them for strength work.
+    slots: [
+      {
+        id: "mob_wrist",
+        label: "Wrist load",
+        exerciseId: "wrist_load",
+        pattern: "mobility",
+        dose: { sets: 2, reps: 30, targetRir: 3, addedLoadKg: 0 },
+        restSeconds: 20,
+        pinned: true,
+      },
+      {
+        id: "mob_hip",
+        label: "Hip circles",
+        exerciseId: "hip_circles",
+        pattern: "mobility",
+        dose: { sets: 2, reps: 10, targetRir: 3, addedLoadKg: 0 },
+        restSeconds: 20,
+        pinned: true,
+      },
+      {
+        id: "mob_ankle",
+        label: "Ankle rocks",
+        exerciseId: "ankle_rocks",
+        pattern: "mobility",
+        dose: { sets: 2, reps: 12, targetRir: 3, addedLoadKg: 0 },
+        restSeconds: 20,
+        pinned: true,
+      },
+      {
+        id: "mob_scap",
+        label: "Scap push-up",
+        exerciseId: "scap_pushup",
+        pattern: "horizontal_push",
+        dose: { sets: 2, reps: 10, targetRir: 3, addedLoadKg: 0 },
+        restSeconds: 30,
+        pinned: true,
+      },
+      {
+        id: "mob_bridge",
+        label: "Glute bridge",
+        exerciseId: "glute_bridge",
+        pattern: "hinge",
+        dose: { sets: 2, reps: 12, targetRir: 3, addedLoadKg: 0 },
+        restSeconds: 30,
+        pinned: true,
       },
     ],
   },

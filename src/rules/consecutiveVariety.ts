@@ -29,7 +29,7 @@ export function lastConsecutiveSameZone(
 
 /**
  * For consecutive same-zone days, keep only slots marked
- * `allowConsecutiveRepeat`; every other slot must avoid yesterday's IDs.
+ * `allowConsecutiveRepeat` or `pinned`; every other slot must avoid yesterday's IDs.
  */
 export function pickSlotExerciseForVariety(
   slot: TemplateSlot,
@@ -37,7 +37,7 @@ export function pickSlotExerciseForVariety(
   alreadyChosenToday: ReadonlySet<string>,
 ): VarietyPick {
   const avoid = new Set(previousExerciseIds);
-  if (slot.allowConsecutiveRepeat) {
+  if (slot.allowConsecutiveRepeat || slot.pinned) {
     return { exerciseId: slot.exerciseId, swapped: false };
   }
   if (!avoid.has(slot.exerciseId) && !alreadyChosenToday.has(slot.exerciseId)) {
