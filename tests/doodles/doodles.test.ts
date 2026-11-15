@@ -3,6 +3,9 @@ import { describe, expect, it } from "vitest";
 import { EXERCISE_GRAPH } from "../../src/data/exerciseGraph";
 import { GENERATED_DOODLES, REPLACED_DOODLE_IDS } from "../../src/data/generated/doodleMap";
 import { WARMUP_STATION_BY_ID } from "../../src/data/warmupStations";
+import { FOCUS_BY_ID } from "../../src/doodles/focus";
+import { figurePoints, renderDoodleSvg } from "../../src/doodles/renderSvg";
+import { sampleTimeline } from "../../src/doodles/rig";
 import { DOODLE_SPECS } from "../../src/doodles/specs";
 import { validateSpec } from "../../src/doodles/validate";
 
@@ -46,6 +49,31 @@ describe("animated doodles", () => {
       if (station) {
         expect(station.doodlePath, id).toBe(GENERATED_DOODLES[id]);
       }
+    }
+  });
+});
+
+describe("doodle focus (highlight and zoom inset)", () => {
+  const specIds = new Set(DOODLE_SPECS.map((spec) => spec.id));
+  const jointNames = new Set(
+    figurePoints(sampleTimeline(DOODLE_SPECS[0]).poses[0]).map((point) => point.name),
+  );
+
+  it("only targets existing doodles and real joint names", () => {
+    for (const [id, focus] of Object.entries(FOCUS_BY_ID)) {
+      expect(specIds.has(id), id).toBe(true);
+      for (const joint of focus.joints) expect(jointNames.has(joint), `${id}: ${joint}`).toBe(true);
+      expect(focus.highlight.length, id).toBeGreaterThan(0);
+      if (focus.zoom) expect(focus.joints.length, `${id} needs joints to centre the inset`).toBeGreaterThan(0);
+    }
+  });
+
+  it("draws a uniquely clipped inset only where a zoom is asked for", () => {
+    const zoomed = Object.keys(FOCUS_BY_ID).filter((id) => FOCUS_BY_ID[id].zoom);
+    for (const spec of DOODLE_SPECS) {
+      const svg = renderDoodleSvg(spec);
+      const hasInset = svg.includes(`clip-path="url(#focus-${spec.slug})"`);
+      expect(hasInset, spec.slug).toBe(zoomed.includes(spec.id));
     }
   });
 });
