@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { EXERCISE_GRAPH } from "../../src/data/exerciseGraph";
 import { SESSION_TEMPLATES, templateToStarter } from "../../src/data/seed";
 import type { JointHistoryEntry, SessionTemplate } from "../../src/domain/program";
@@ -19,6 +19,7 @@ import { missingGear } from "../../src/safety/gear";
 import { assessExercise } from "../../src/safety/jointCare";
 import { chooseSuitableExercise } from "../../src/safety/suitableExercise";
 import { exerciseNamed } from "../helpers/exercises";
+import { useMemoryStorage } from "../helpers/storage";
 
 const KINDS: BlockKind[] = ["upper", "lower", "core", "full", "skill"];
 const GOOD = { painJoints: [], sleepQuality: "good" as const };
@@ -40,14 +41,7 @@ const block = (kind: BlockKind, context = ctx(), count?: number): SessionTemplat
   generateBlock({ kind, target: kind === "skill" ? "freestanding_hs" : undefined, context, count, newId: () => "t" });
 const names = (day: SessionTemplate): string[] => day.slots.map((slot) => EXERCISE_GRAPH[slot.exerciseId]!.name);
 
-beforeEach(() => {
-  const store = new Map<string, string>();
-  globalThis.localStorage = {
-    getItem: (k: string) => store.get(k) ?? null,
-    setItem: (k: string, v: string) => void store.set(k, v),
-    removeItem: (k: string) => void store.delete(k),
-  } as unknown as Storage;
-});
+useMemoryStorage();
 
 describe("generated days keep the library's dosing rules", () => {
   const INTERMEDIATE = {

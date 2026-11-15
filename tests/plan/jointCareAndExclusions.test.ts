@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { EXERCISE_GRAPH } from "../../src/data/exerciseGraph";
 import { LIBRARY_CATALOGUE } from "../../src/data/libraryCatalogue";
 import { SESSION_TEMPLATES, templateToStarter } from "../../src/data/seed";
@@ -21,6 +21,7 @@ import { missingGear } from "../../src/safety/gear";
 import { PREHAB_NAMES } from "../../src/safety/prehab";
 import { overrideControlsHtml } from "../../src/ui/overrideControls";
 import { exerciseNamed as find } from "../helpers/exercises";
+import { useMemoryStorage } from "../helpers/storage";
 
 const SHOULDER: JointHistoryEntry = { joint: "shoulder", side: "left", kind: "dislocation" };
 const KNEE: JointHistoryEntry = { joint: "knee", side: "both", kind: "other" };
@@ -35,14 +36,7 @@ const care = (over: Partial<StepContext> = {}) => generateJointCareDay(ctx(over)
 const names = (day: { slots: Array<{ exerciseId: string }> }) => day.slots.map((slot) => EXERCISE_GRAPH[slot.exerciseId]!.name);
 const mobility = SESSION_TEMPLATES.find((t) => t.id === "tmpl_mobility")!;
 
-beforeEach(() => {
-  const store = new Map<string, string>();
-  globalThis.localStorage = {
-    getItem: (k: string) => store.get(k) ?? null,
-    setItem: (k: string, v: string) => void store.set(k, v),
-    removeItem: (k: string) => void store.delete(k),
-  } as unknown as Storage;
-});
+useMemoryStorage();
 
 describe("Joint care day", () => {
   it("uses only prehab moves for the declared joints, taking turns between them", () => {
@@ -139,15 +133,15 @@ describe("Library exclusions", () => {
   const nordic = find("Nordic curl");
 
   it("marks an excluded move in the list instead of its joint badge", () => {
-    const html = listHtml([nordic, find("Standard Push-Up")], new Set(), base, [KNEE], new Set([nordic.id]));
+    const html = listHtml([nordic, find("Standard Push-Up")], new Set(), base, { jointHistory: [KNEE], excluded: new Set([nordic.id]) });
     expect(html).toContain("Excluded by you");
     expect(html.split("lib-badge").length - 1).toBe(1);
-    expect(listHtml([nordic], new Set(), base, [], new Set())).not.toContain("Excluded by you");
+    expect(listHtml([nordic], new Set(), base)).not.toContain("Excluded by you");
   });
 
   it("offers the Excluded filter only when something is excluded", () => {
-    expect(listHtml([], new Set(), base, [], new Set())).not.toContain("data-excluded-only");
-    expect(listHtml([], new Set(), base, [], new Set(["x"]))).toContain("data-excluded-only");
+    expect(listHtml([], new Set(), base)).not.toContain("data-excluded-only");
+    expect(listHtml([], new Set(), base, { excluded: new Set(["x"]) })).toContain("data-excluded-only");
     const on = filterPanelsHtml({ ...DEFAULT_FILTERS, excludedOnly: true, openPanels: [] }, { hasJointHistory: false, hasExcluded: false });
     expect(on).toContain("Show · excluded");
     expect(on).toMatch(/data-excluded-only class="selected" data-kind="toggle" aria-pressed="true"/);
@@ -170,18 +164,18 @@ describe("Library exclusions", () => {
   });
 
   it("shows the Not for me switch on the detail page, in both states", () => {
-    const off = detailHtml(nordic, new Set(), {}, {}, [], null, null, false);
+    const off = detailHtml(nordic);
     expect(off).toMatch(/data-exclude-toggle class="" data-kind="toggle" aria-pressed="false">Not for me/);
     expect(off).toContain("Tick to keep this move out of all your sessions.");
-    const on = detailHtml(nordic, new Set(), {}, {}, [], null, null, true);
+    const on = detailHtml(nordic, { excluded: true });
     expect(on).toMatch(/data-exclude-toggle class="selected" data-kind="toggle" aria-pressed="true"/);
     expect(on).toContain("Aurora never plans this move");
   });
 
   it("does not call an excluded move allowed in the joints block", () => {
-    const html = detailHtml(nordic, new Set(), {}, {}, [KNEE], null, null, true);
+    const html = detailHtml(nordic, { jointHistory: [KNEE], excluded: true });
     expect(html).toContain("You excluded this move, so Aurora does not plan it.");
     expect(html).not.toContain("Allowed in your sessions");
-    expect(detailHtml(nordic, new Set(), {}, {}, [KNEE], null, null, false)).toContain("Allowed in your sessions, with care.");
+    expect(detailHtml(nordic, { jointHistory: [KNEE] })).toContain("Allowed in your sessions, with care.");
   });
 });

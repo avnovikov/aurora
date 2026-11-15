@@ -38,7 +38,7 @@ describe("personalBest helpers", () => {
 describe("Library detail personal best", () => {
   it("shows the hero and does not use Best logged hint", () => {
     const exercise = EXERCISE_GRAPH.wall_handstand!;
-    const html = detailHtml(exercise, new Set(), {}, { bestReps: 25 });
+    const html = detailHtml(exercise, { memory: { bestReps: 25 } });
     expect(html).toContain("data-personal-best");
     expect(html).toContain("Personal best");
     expect(html).not.toContain("Best logged");

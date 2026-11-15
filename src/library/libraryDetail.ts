@@ -40,11 +40,12 @@ export interface DetailMemoryView {
   bestReps?: number;
 }
 
-export interface MountLibraryDetailOptions {
-  exercise: SeedExercise;
-  targetIds: ReadonlySet<string>;
-  catalogueById: Record<string, SeedExercise>;
-  actions: DetailActions;
+/** Everything the detail page shows besides the exercise itself; all optional. */
+export interface DetailView {
+  /** Exercises that are a plan target (shown with a Target badge). */
+  targetIds?: ReadonlySet<string>;
+  /** Lookup for progression links. */
+  catalogueById?: Record<string, SeedExercise>;
   memory?: DetailMemoryView;
   jointHistory?: readonly JointHistoryEntry[];
   planStatus?: string | null;
@@ -52,6 +53,11 @@ export interface MountLibraryDetailOptions {
   cascadeHint?: string | null;
   /** The user excluded this move ("not for me"). */
   excluded?: boolean;
+}
+
+export interface MountLibraryDetailOptions extends DetailView {
+  exercise: SeedExercise;
+  actions: DetailActions;
 }
 
 function wireExcludeToggle(root: HTMLElement, actions: DetailActions, excluded: boolean): void {
@@ -64,27 +70,8 @@ export function mountLibraryDetail(
   root: HTMLElement,
   options: MountLibraryDetailOptions,
 ): void {
-  const {
-    exercise,
-    targetIds,
-    catalogueById,
-    actions,
-    memory = {},
-    jointHistory = [],
-    planStatus = null,
-    cascadeHint = null,
-    excluded = false,
-  } = options;
-  root.innerHTML = detailHtml(
-    exercise,
-    targetIds,
-    catalogueById,
-    memory,
-    jointHistory,
-    planStatus,
-    cascadeHint,
-    excluded,
-  );
+  const { exercise, actions, excluded = false } = options;
+  root.innerHTML = detailHtml(exercise, options);
 
   wireExcludeToggle(root, actions, excluded);
 
@@ -117,16 +104,16 @@ export function mountLibraryDetail(
   });
 }
 
-export function detailHtml(
-  exercise: SeedExercise,
-  targetIds: ReadonlySet<string>,
-  catalogueById: Record<string, SeedExercise> = {},
-  memory: DetailMemoryView = {},
-  jointHistory: readonly JointHistoryEntry[] = [],
-  planStatus: string | null = null,
-  cascadeHint: string | null = null,
-  excluded = false,
-): string {
+export function detailHtml(exercise: SeedExercise, view: DetailView = {}): string {
+  const {
+    targetIds = new Set<string>(),
+    catalogueById = {},
+    memory = {},
+    jointHistory = [],
+    planStatus = null,
+    cascadeHint = null,
+    excluded = false,
+  } = view;
   const targetBadge = isTemplateTarget(exercise.id, targetIds)
     ? `<p class="lib-badge">Target</p>`
     : "";

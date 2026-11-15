@@ -3,7 +3,7 @@ import type { PlanQueue, SessionTemplate } from "../domain/program";
 import type { ScheduleOverride } from "./scheduleOverride";
 import { prunePlanDays } from "./planDays";
 import { loadScheduleOverride } from "./scheduleOverride";
-import { findTemplate, isKnownTemplate, resolveTemplate } from "./templates";
+import { assertKnownTemplate, findTemplate, isKnownTemplate, resolveTemplate } from "./templates";
 
 const KEY = "aurora.poc.planQueue.v1";
 
@@ -153,12 +153,6 @@ export function removeQueueItem(queue: PlanQueue, index: number): PlanQueue {
 export function appendQueueItem(queue: PlanQueue, templateId: string): PlanQueue {
   assertKnownTemplate(templateId);
   return { items: [...queue.items, templateId] };
-}
-
-function assertKnownTemplate(templateId: string): void {
-  if (!isKnownTemplate(templateId)) {
-    throw new Error(`Unknown template: ${templateId}`);
-  }
 }
 
 function assertIndex(queue: PlanQueue, index: number): void {

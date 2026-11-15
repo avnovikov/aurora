@@ -1,6 +1,6 @@
-import { EXERCISE_GRAPH } from "../data/exerciseGraph";
+import { requireExercise } from "../data/exerciseGraph";
 import { LIBRARY_CATALOGUE } from "../data/libraryCatalogue";
-import { SESSION_TEMPLATES, type SeedExercise } from "../data/seed";
+import { SESSION_TEMPLATES, TEMPLATE_BY_ID, type SeedExercise } from "../data/seed";
 import type { BlockEmphasis, JointHistoryEntry, SessionTemplate, TemplateSlot } from "../domain/program";
 import { tierIndex } from "../domain/skillTier";
 import { resolveExerciseTiming } from "../domain/timing";
@@ -19,7 +19,7 @@ import {
   type StepContext,
 } from "./ladderSteps";
 import { careSlotFor } from "./jointCareDay";
-import { GENERATED_DAY_PREFIX } from "./planDays";
+import { GENERATED_DAY_PREFIX, newDayId } from "./planDays";
 import { AREA_RECIPES, FAMILY_AREA, type LadderSlotSpec } from "./recipes";
 
 export type BlockKind = AreaKind | "skill";
@@ -64,10 +64,6 @@ interface SlotPick {
   member: LadderMember;
 }
 
-function defaultId(): string {
-  return globalThis.crypto.randomUUID().replaceAll("-", "").slice(0, 10);
-}
-
 /**
  * The seed day whose warm-up, cool-down and time band a generated day
  * borrows. A named skill takes the seed day that trains the same ladder
@@ -82,7 +78,7 @@ function seedFor(area: AreaKind, target: string | undefined, ctx: StepContext): 
         template.targetExerciseIds.some((id) => familyOf(id, ctx) === family),
       )
     : undefined;
-  const seed = sameLadder ?? SESSION_TEMPLATES.find((template) => template.id === SEED_BY_AREA[area]);
+  const seed = sameLadder ?? TEMPLATE_BY_ID[SEED_BY_AREA[area]];
   if (!seed) {
     throw new Error(`Missing seed template ${SEED_BY_AREA[area]}`);
   }
@@ -95,14 +91,6 @@ function areaKindOfTarget(targetId: string, ctx: StepContext): AreaKind {
   const byFamily = family ? FAMILY_AREA[family] : undefined;
   const byMuscles = areaOf(requireExercise(targetId));
   return byFamily ?? (byMuscles === "upper" || byMuscles === "lower" || byMuscles === "core" ? byMuscles : "full");
-}
-
-function requireExercise(exerciseId: string): SeedExercise {
-  const exercise = EXERCISE_GRAPH[exerciseId];
-  if (!exercise) {
-    throw new Error(`Unknown exercise: ${exerciseId}`);
-  }
-  return exercise;
 }
 
 function leadSpec(targetId: string, ctx: StepContext): LadderSlotSpec | undefined {
@@ -138,23 +126,26 @@ function weakestSpec(specs: readonly LadderSlotSpec[], ctx: StepContext): Ladder
   );
 }
 
-function pickFor(
-  spec: LadderSlotSpec,
-  emphasis: BlockEmphasis,
-  ctx: StepContext,
-  inBlock: ReadonlySet<string>,
-  inDay: ReadonlySet<string>,
-): LadderMember | undefined {
-  const working = workingStep(spec.family, ctx, inDay);
+/** Moves already taken: in this day (never repeat) and in the block's earlier days (day C avoids them). */
+interface Used {
+  day: ReadonlySet<string>;
+  block: ReadonlySet<string>;
+}
+
+function pickFor(spec: LadderSlotSpec, emphasis: BlockEmphasis, ctx: StepContext, used: Used): LadderMember | undefined {
+  const working = workingStep(spec.family, ctx, used.day);
   if (!working) {
     return undefined;
   }
   if (emphasis === "easier") {
     // One rung down; at the bottom of the ladder, a sibling move at the same level.
-    return easierStep(spec.family, working, ctx, inDay) ?? workingStep(spec.family, ctx, new Set([...inDay, working.exercise.id]));
+    return (
+      easierStep(spec.family, working, ctx, used.day) ??
+      workingStep(spec.family, ctx, new Set([...used.day, working.exercise.id]))
+    );
   }
   if (emphasis === "focus") {
-    return workingStep(spec.family, ctx, new Set([...inDay, ...inBlock]));
+    return workingStep(spec.family, ctx, new Set([...used.day, ...used.block]));
   }
   return working;
 }
@@ -206,7 +197,7 @@ function pickMoves(
   const inDay = new Set<string>();
   const picks: SlotPick[] = [];
   for (const spec of ordered) {
-    const member = pickFor(spec, emphasis, ctx, inBlock, inDay);
+    const member = pickFor(spec, emphasis, ctx, { day: inDay, block: inBlock });
     if (member) {
       inDay.add(member.exercise.id);
       picks.push({ spec, member });
@@ -276,7 +267,7 @@ export function generateBlock(input: BlockInput): SessionTemplate[] {
   if (input.target) {
     requireExercise(input.target);
   }
-  const base = (input.newId ?? defaultId)();
+  const base = (input.newId ?? newDayId)();
   const inBlock = new Set<string>();
   return Array.from({ length: count }, (_, index) => buildDay(input, index, base, inBlock));
 }

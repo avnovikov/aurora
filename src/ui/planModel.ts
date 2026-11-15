@@ -1,7 +1,7 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import type { PlanQueue, SessionTemplate } from "../domain/program";
 import { exerciseMetaLine } from "../library/metaLine";
-import { AREA_KINDS, DAY_KIND_LABELS, dayTitle, skillTitle } from "../plan/dayKinds";
+import { AREA_KINDS, DAY_KIND_LABELS, MOBILITY_TEMPLATE_ID, dayTitle, skillTitle } from "../plan/dayKinds";
 import { swapChoices } from "../plan/dayEdits";
 import { previewDay, type AthleteState } from "../plan/dayPreview";
 import { hasProgressionPath } from "../plan/pathPlacement";
@@ -18,8 +18,6 @@ export interface PlanUiState {
   addOpen: boolean;
   status?: string;
 }
-
-const MOBILITY_TEMPLATE_ID = "tmpl_mobility";
 
 /** Named skills on offer: every target already in the plan or the seed days that sits on a ladder. */
 function skillOptions(): DayOption[] {

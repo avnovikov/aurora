@@ -88,11 +88,15 @@ describe("planner honours equipment", () => {
 
 describe("Library gear filter", () => {
   it("always offers Only my gear", () => {
-    const html = listHtml([], new Set(), {
+    const html = listHtml(
+      [],
+      new Set(),
+      {
       text: "",
       level: "all",
       onlyGear: true,
-    });
+    },
+    );
     expect(html).toContain("data-only-gear");
     expect(html).toMatch(/data-only-gear class="selected"/);
   });

@@ -163,12 +163,13 @@ export function renderLibraryView(root: HTMLElement): void {
       equipment,
       excludedOnly: excludedOnly ? excluded : undefined,
     });
-    mountLibraryList(
-      root,
+    mountLibraryList(root, {
       results,
       targetIds,
-      { ...filters, hiddenStretches, openPanels },
-      {
+      query: { ...filters, hiddenStretches, openPanels },
+      jointHistory,
+      excluded: new Set(excluded),
+      actions: {
         onSearch: (next) => {
           setFilter("text", next);
           focusSearchInput(root);
@@ -194,9 +195,7 @@ export function renderLibraryView(root: HTMLElement): void {
           paint();
         },
       },
-      jointHistory,
-      new Set(excluded),
-    );
+    });
   };
 
   paint();

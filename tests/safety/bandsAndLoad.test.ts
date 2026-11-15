@@ -58,7 +58,7 @@ describe("resistance bands", () => {
   });
 
   it("states the gear on the detail page", () => {
-    expect(detailHtml(find("Band pull-aparts"), new Set())).toMatch(/class="lib-meta">[^<]*needs band</);
+    expect(detailHtml(find("Band pull-aparts"))).toMatch(/class="lib-meta">[^<]*needs band</);
   });
 });
 
@@ -84,7 +84,7 @@ describe("joint load map", () => {
   });
 
   it("shows joint load on the detail page and marks the user's joint", () => {
-    const html = detailHtml(find("Wall handstand hold"), new Set(), {}, {}, [wrist]);
+    const html = detailHtml(find("Wall handstand hold"), { jointHistory: [wrist] });
     expect(html).toContain("Joint load");
     expect(html).toContain("(your joint)");
   });

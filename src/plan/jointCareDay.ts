@@ -1,20 +1,19 @@
 import { LIBRARY_CATALOGUE } from "../data/libraryCatalogue";
-import { SESSION_TEMPLATES, type SeedExercise } from "../data/seed";
+import { TEMPLATE_BY_ID, type SeedExercise } from "../data/seed";
 import type { JointHistoryEntry, SessionTemplate, TemplateSlot } from "../domain/program";
 import { resolveExerciseTiming } from "../domain/timing";
 import { estimateSessionDuration } from "../rules/sessionDuration";
 import { assessExercise } from "../safety/jointCare";
 import { prehabFor } from "../safety/prehab";
-import { DAY_KIND_LABELS } from "./dayKinds";
+import { DAY_KIND_LABELS, MOBILITY_TEMPLATE_ID } from "./dayKinds";
 import type { StepContext } from "./ladderSteps";
-import { GENERATED_DAY_PREFIX } from "./planDays";
+import { GENERATED_DAY_PREFIX, newDayId } from "./planDays";
 
 /** With no joint history: general care for the two joints bodyweight training loads most. */
 const GENERAL_CARE: readonly JointHistoryEntry[] = [
   { joint: "shoulder", side: "both", kind: "other" },
   { joint: "hip", side: "both", kind: "other" },
 ];
-const MOBILITY_SEED_ID = "tmpl_mobility";
 const MAX_MOVES = 6;
 
 /**
@@ -36,9 +35,9 @@ export function careSlotFor(move: SeedExercise, id: string, label: string): Temp
 }
 
 function mobilitySeed(): SessionTemplate {
-  const seed = SESSION_TEMPLATES.find((template) => template.id === MOBILITY_SEED_ID);
+  const seed = TEMPLATE_BY_ID[MOBILITY_TEMPLATE_ID];
   if (!seed) {
-    throw new Error(`Missing seed template ${MOBILITY_SEED_ID}`);
+    throw new Error(`Missing seed template ${MOBILITY_TEMPLATE_ID}`);
   }
   return seed;
 }
@@ -75,7 +74,7 @@ export function isGeneralCare(ctx: Pick<StepContext, "jointHistory">): boolean {
  * Mobility day's warm-up and its 10 to 20 minute band: moves are dropped
  * from the end until the session fits.
  */
-export function generateJointCareDay(ctx: StepContext, newId: () => string = defaultId): SessionTemplate {
+export function generateJointCareDay(ctx: StepContext, newId: () => string = newDayId): SessionTemplate {
   const general = isGeneralCare(ctx);
   const joints = general ? GENERAL_CARE : ctx.jointHistory;
   const moves = careMoves(joints, ctx).slice(0, MAX_MOVES);
@@ -104,6 +103,3 @@ export function generateJointCareDay(ctx: StepContext, newId: () => string = def
   return build(count);
 }
 
-function defaultId(): string {
-  return globalThis.crypto.randomUUID().replaceAll("-", "").slice(0, 10);
-}

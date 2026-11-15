@@ -8,6 +8,11 @@ type DayMap = Record<string, SessionTemplate>;
 /** Generated days live under ids with this prefix; seed templates never do. */
 export const GENERATED_DAY_PREFIX = "day_";
 
+/** A fresh id for a generated day (or block of days). */
+export function newDayId(): string {
+  return globalThis.crypto.randomUUID().replaceAll("-", "").slice(0, 10);
+}
+
 function isGeneratedDayId(templateId: string): boolean {
   return templateId.startsWith(GENERATED_DAY_PREFIX);
 }

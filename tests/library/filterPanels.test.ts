@@ -17,7 +17,7 @@ const panelIds = (html: string): string[] =>
   [...html.matchAll(/<details class="lib-filters" data-panel="(\w+)"/g)].map((m) => m[1]!);
 
 describe("filter panels", () => {
-  const html = listHtml([], new Set(), base, HISTORY);
+  const html = listHtml([], new Set(), base, { jointHistory: HISTORY });
 
   it("has three panels in order: aux, area & muscle, level", () => {
     expect(panelIds(html)).toEqual(["show", "body", "level"]);
@@ -60,7 +60,7 @@ describe("filter panels", () => {
   });
 
   it("only offers For my joints when there is joint history", () => {
-    expect(listHtml([], new Set(), base, [])).not.toContain("data-for-joints");
+    expect(listHtml([], new Set(), base)).not.toContain("data-for-joints");
   });
 });
 

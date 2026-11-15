@@ -90,6 +90,12 @@ function usableAlternatives(
 
 const byCautions = (a: Scored, b: Scored): number => a.cautions.length - b.cautions.length;
 
+/** Order for replacing a move the athlete excluded; fewest cautions breaks ties. */
+function byExclusionOrder(original: Candidate): (a: Scored, b: Scored) => number {
+  return (a, b) =>
+    compareTuples(exclusionOrder(original, a.candidate), exclusionOrder(original, b.candidate)) || byCautions(a, b);
+}
+
 /**
  * Substitutes for a move the athlete does not want, best first: same ladder,
  * nearest difficulty, never harder while an equal or easier move exists.
@@ -101,11 +107,7 @@ export function substitutesFor(
   excluded: readonly string[] = [],
 ): SeedExercise[] {
   return usableAlternatives(exercise, history, equipment, excluded)
-    .sort(
-      (a, b) =>
-        compareTuples(exclusionOrder(exercise, a.candidate), exclusionOrder(exercise, b.candidate)) ||
-        byCautions(a, b),
-    )
+    .sort(byExclusionOrder(exercise))
     .map(({ candidate }) => candidate);
 }
 
@@ -135,11 +137,7 @@ export function chooseSuitableExercise(
   const candidates = usableAlternatives(exercise, history, equipment, excluded);
   const safe =
     cause === "excluded"
-      ? [...candidates].sort(
-          (a, b) =>
-            compareTuples(exclusionOrder(exercise, a.candidate), exclusionOrder(exercise, b.candidate)) ||
-            byCautions(a, b),
-        )[0]
+      ? [...candidates].sort(byExclusionOrder(exercise))[0]
       : [...candidates].sort(byCautions)[0];
   if (!safe) {
     const note = isExcluded ? ["You excluded this move and no substitute was found"] : [];

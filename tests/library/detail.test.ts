@@ -7,7 +7,7 @@ describe("detailHtml", () => {
   it("renders cues, pattern, and progression links for pull-up", () => {
     const exercise = SEED_GRAPH.pullup;
     const targets = collectTemplateTargetIds();
-    const html = detailHtml(exercise, targets, SEED_GRAPH);
+    const html = detailHtml(exercise, { targetIds: targets, catalogueById: SEED_GRAPH });
     expect(html).toContain("Pull-up");
     // Raw seed entry (not enriched), so no level or gear yet: area and primary muscle only.
     expect(html).toMatch(/class="lib-meta">Upper body · Back</);
@@ -22,7 +22,7 @@ describe("detailHtml", () => {
   it("omits target badge for non-target warm-ups", () => {
     const exercise = SEED_GRAPH.pulse_raiser_march;
     const targets = collectTemplateTargetIds();
-    const html = detailHtml(exercise, targets, SEED_GRAPH);
+    const html = detailHtml(exercise, { targetIds: targets, catalogueById: SEED_GRAPH });
     expect(html).not.toContain("lib-badge");
   });
 });
