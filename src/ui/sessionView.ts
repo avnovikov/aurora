@@ -1,5 +1,6 @@
 import { clearSession, saveSession } from "../session/storage";
 import { speakCoachLine } from "../voice/coachVoice";
+import { disconnectHeartRate } from "../pulse/hrMonitor";
 import {
   shouldShoutPulseLost,
   shoutPulseNotReadable,
@@ -54,6 +55,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     if (pulseTimer !== null) {
       window.clearInterval(pulseTimer);
     }
+    void disconnectHeartRate();
     state.phase = "done";
     clearSession();
     void speakCoachLine("session_done");
@@ -110,6 +112,15 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     onFinishExercise: finishExercise,
     onFinishAll: finishAll,
     onPulseLostSim: maybePulseShout,
+    onPulseBpm: (bpm) => {
+      state.bpm = bpm;
+      state.pulse = {
+        connected: true,
+        lastValidAtMs: Date.now(),
+        lastShoutAtMs: state.pulse.lastShoutAtMs,
+      };
+      paint();
+    },
   };
 
   const wireControls = (): void => {
