@@ -2,13 +2,9 @@ import type { SeedExercise } from "../data/seed";
 import type { JointHistoryEntry } from "../domain/program";
 import { assessExercise } from "../safety/jointCare";
 import { onChipClick, onToggleClick } from "./chips";
+import type { AreaFilter, MuscleFilter, StretchFilter } from "./facets";
 import {
-  DEFAULT_STRETCH,
-  type AreaFilter,
-  type MuscleFilter,
-  type StretchFilter,
-} from "./facets";
-import {
+  DEFAULT_FILTERS,
   filterPanelsHtml,
   hasActiveFilters,
   resultCountHtml,
@@ -46,16 +42,7 @@ export interface ListActions {
 
 /** Fills every optional field, so the markup and wiring read one complete state. */
 function withListDefaults(query: ListQueryState): Required<ListQueryState> {
-  return {
-    area: "all",
-    muscle: "all",
-    stretch: DEFAULT_STRETCH,
-    hiddenStretches: 0,
-    forJoints: false,
-    onlyGear: false,
-    openPanels: [],
-    ...query,
-  };
+  return { ...DEFAULT_FILTERS, hiddenStretches: 0, openPanels: [], ...query };
 }
 
 export function mountLibraryList(

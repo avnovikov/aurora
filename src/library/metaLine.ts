@@ -7,7 +7,7 @@ import { AREAS, MUSCLE_BUCKETS, areaOf, primaryBuckets } from "./facets";
  * area · primary muscles · level · needs gear. Shared by list rows and the
  * detail page so both speak the same vocabulary.
  */
-export function exerciseMetaParts(exercise: SeedExercise): string[] {
+function exerciseMetaParts(exercise: SeedExercise): string[] {
   const area = areaOf(exercise);
   const muscles = primaryBuckets(exercise)
     .map((bucket) => MUSCLE_BUCKETS.find((item) => item.id === bucket)?.label ?? bucket)

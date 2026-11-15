@@ -36,16 +36,22 @@ export interface FilterPanelState {
   openPanels: readonly FilterPanelId[];
 }
 
+export type FilterValues = Omit<FilterPanelState, "openPanels">;
+
+/** Every filter's default: the single source for the view, Clear filters and "is anything active". */
+export const DEFAULT_FILTERS: Readonly<FilterValues> = {
+  level: "all",
+  area: "all",
+  muscle: "all",
+  stretch: DEFAULT_STRETCH,
+  forJoints: false,
+  onlyGear: false,
+};
+
 /** True when any filter differs from its default (search text not included). */
-export function hasActiveFilters(state: Omit<FilterPanelState, "openPanels">): boolean {
-  return (
-    state.level !== "all" ||
-    state.area !== "all" ||
-    state.muscle !== "all" ||
-    state.stretch !== DEFAULT_STRETCH ||
-    state.forJoints ||
-    state.onlyGear
-  );
+export function hasActiveFilters(state: FilterValues): boolean {
+  const keys = Object.keys(DEFAULT_FILTERS) as Array<keyof FilterValues>;
+  return keys.some((key) => state[key] !== DEFAULT_FILTERS[key]);
 }
 
 /** The panels the user has open after one of them is opened or closed. */

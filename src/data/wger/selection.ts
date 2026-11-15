@@ -41,7 +41,7 @@ export const WGER_ALLOW_UNTAGGED: readonly string[] = [
  * and hip/knee stability. Face pulls are left out: they finish in the
  * abducted + externally rotated position unstable shoulders should avoid.
  */
-export const WGER_ALLOW_BAND: readonly string[] = [
+const WGER_ALLOW_BAND: readonly string[] = [
   "Band pull-aparts",
   "Band pull-apart with external rotation",
   "Banded Scapular Retraction",

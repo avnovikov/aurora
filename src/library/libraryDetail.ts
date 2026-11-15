@@ -160,7 +160,7 @@ function planStatusHtml(planStatus: string | null): string {
 }
 
 
-function listHtmlItems(notes: readonly string[]): string {
+function bulletItemsHtml(notes: readonly string[]): string {
   return notes.map((note) => `<li>${escapeHtml(note)}</li>`).join("");
 }
 
@@ -173,7 +173,7 @@ function safetyHtml(exercise: SeedExercise, history: readonly JointHistoryEntry[
   const general = exercise.cautions ?? [];
   if (verdict.cautions.length === 0) {
     return general.length > 0
-      ? `<p class="eyebrow">Safety</p><ul class="lib-cautions">${listHtmlItems(general)}</ul>`
+      ? `<p class="eyebrow">Safety</p><ul class="lib-cautions">${bulletItemsHtml(general)}</ul>`
       : "";
   }
   const lead = verdict.avoid
@@ -181,9 +181,9 @@ function safetyHtml(exercise: SeedExercise, history: readonly JointHistoryEntry[
     : "Allowed in your sessions, with care.";
   const generalBlock =
     general.length > 0
-      ? `<p class="eyebrow">General safety</p><ul class="cues">${listHtmlItems(general)}</ul>`
+      ? `<p class="eyebrow">General safety</p><ul class="cues">${bulletItemsHtml(general)}</ul>`
       : "";
-  return `<div class="joint-caution"><p class="eyebrow">For your joints</p><p>${lead}</p><ul class="cues">${listHtmlItems(verdict.cautions)}</ul>${generalBlock}</div>`;
+  return `<div class="joint-caution"><p class="eyebrow">For your joints</p><p>${lead}</p><ul class="cues">${bulletItemsHtml(verdict.cautions)}</ul>${generalBlock}</div>`;
 }
 
 /** Which joints this move stresses (impersonal), marking the user's own. */

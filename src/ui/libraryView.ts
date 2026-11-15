@@ -5,8 +5,7 @@ import {
   type SeedExercise,
 } from "../data/seed";
 import { mountLibraryDetail } from "../library/libraryDetail";
-import { DEFAULT_STRETCH } from "../library/facets";
-import { withPanelState, type FilterPanelId } from "../library/filterPanels";
+import { DEFAULT_FILTERS, withPanelState, type FilterPanelId } from "../library/filterPanels";
 import { focusSearchInput, mountLibraryList, type ListQueryState } from "../library/libraryList";
 import { mountPlanDayPicker } from "../library/libraryPlanPick";
 import { selectLibraryResults } from "../library/results";
@@ -38,15 +37,7 @@ function templateDisplayName(templateId: string): string {
 }
 
 export function renderLibraryView(root: HTMLElement): void {
-  const filters: ListFilters = {
-    text: "",
-    level: "all",
-    area: "all",
-    muscle: "all",
-    stretch: DEFAULT_STRETCH,
-    forJoints: false,
-    onlyGear: false,
-  };
+  const filters: ListFilters = { text: "", ...DEFAULT_FILTERS };
   const setFilter = <K extends keyof ListFilters>(key: K, value: ListFilters[K]): void => {
     filters[key] = value;
     paint();
@@ -175,14 +166,7 @@ export function renderLibraryView(root: HTMLElement): void {
         onForJoints: (on) => setFilter("forJoints", on),
         onOnlyGear: (on) => setFilter("onlyGear", on),
         onClearFilters: () => {
-          Object.assign(filters, {
-            level: "all",
-            area: "all",
-            muscle: "all",
-            stretch: DEFAULT_STRETCH,
-            forJoints: false,
-            onlyGear: false,
-          });
+          Object.assign(filters, DEFAULT_FILTERS);
           paint();
         },
         onPanelToggle: (panel, open) => {

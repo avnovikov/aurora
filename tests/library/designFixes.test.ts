@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { JointHistoryEntry } from "../../src/domain/program";
 import { MUSCLE_BUCKETS } from "../../src/library/facets";
-import { hasActiveFilters, resultCountHtml } from "../../src/library/filterPanels";
+import { DEFAULT_FILTERS, hasActiveFilters, resultCountHtml } from "../../src/library/filterPanels";
 import { detailHtml } from "../../src/library/libraryDetail";
 import { listHtml } from "../../src/library/libraryList";
 import { exerciseMetaLine } from "../../src/library/metaLine";
@@ -11,14 +11,7 @@ import { exerciseNamed as find } from "../helpers/exercises";
 
 const KNEES: JointHistoryEntry[] = [{ joint: "knee", side: "both", kind: "other" }];
 const base = { text: "", level: "all" as const };
-const defaults = {
-  level: "all" as const,
-  area: "all" as const,
-  muscle: "all" as const,
-  stretch: "hide" as const,
-  forJoints: false,
-  onlyGear: false,
-};
+const defaults = { ...DEFAULT_FILTERS };
 
 describe("result count and Clear filters (#37)", () => {
   it("counts the rows shown, singular for one", () => {
@@ -81,6 +74,12 @@ describe("filter clarity and accessibility (#37)", () => {
   it("labels each chip row", () => {
     for (const label of ["Limit to", "Stretches", "Area", "Primary muscle"]) {
       expect(html).toContain(`<p class="chip-row-label">${label}</p>`);
+    }
+  });
+
+  it("groups each chip row so its name is announced", () => {
+    for (const name of ["Stretches", "Body area", "Primary muscle", "Skill level"]) {
+      expect(html).toContain(`role="group" aria-label="${name}"`);
     }
   });
 
