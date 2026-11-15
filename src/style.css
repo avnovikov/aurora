@@ -250,6 +250,14 @@ button:disabled {
   font-size: 0.85rem;
 }
 
+/* How this work set is done (reps in reserve, pyramid holds). */
+.dose-note {
+  margin: 0.25rem 0 0.5rem;
+  color: var(--brass);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
 /* Halfway pause on a per-side station. */
 .side-switch {
   margin: 0.5rem 0;

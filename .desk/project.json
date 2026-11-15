@@ -1,14 +1,31 @@
 {
-  "quality": "best",
+  "quality": "lean",
   "models": {
-    "director": "anthropic/fable",
-    "senior": "anthropic/opus",
+    "director": "anthropic/opus",
+    "senior": "anthropic/sonnet",
     "builder": "anthropic/sonnet"
   },
   "presets": {
-    "studio":  { "director": "anthropic/opus",   "senior": "anthropic/sonnet", "builder": "anthropic/haiku" },
-    "best":    { "director": "anthropic/fable",  "senior": "anthropic/opus",   "builder": "anthropic/sonnet" },
-    "thrifty": { "director": "anthropic/sonnet", "senior": "anthropic/haiku",  "builder": "anthropic/haiku" }
+    "studio": {
+      "director": "anthropic/opus",
+      "senior": "anthropic/sonnet",
+      "builder": "anthropic/haiku"
+    },
+    "best": {
+      "director": "anthropic/fable",
+      "senior": "anthropic/opus",
+      "builder": "anthropic/sonnet"
+    },
+    "thrifty": {
+      "director": "anthropic/sonnet",
+      "senior": "anthropic/haiku",
+      "builder": "anthropic/haiku"
+    },
+    "lean": {
+      "director": "anthropic/opus",
+      "senior": "anthropic/sonnet",
+      "builder": "anthropic/sonnet"
+    }
   },
   "maxRounds": 8,
   "framework": "vanilla-ts+vite",

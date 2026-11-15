@@ -16,9 +16,11 @@ import {
 import {
   connectHeartRate,
   disconnectHeartRate,
+  PULSE_STRAP_DISCONNECTED,
 } from "../pulse/hrMonitor";
 import type { PlannedSession } from "../rules/planSession";
 import { pulseConnectedAt, pulseLostSim } from "./pulseState";
+import { applyConnectHeartRateResult } from "./sessionPulse";
 import type { ViewState } from "./sessionTypes";
 import { currentWork } from "./sessionState";
 import { wireSwipe } from "./sessionSwipe";
@@ -47,52 +49,36 @@ export function wireSessionControls(
   state: ViewState,
   handlers: SessionControlHandlers,
 ): void {
-  root.querySelector("[data-log-set]")?.addEventListener("click", () => {
-    completeSet(planned, state, "completed", handlers);
-  });
-  root.querySelector("[data-fail-set]")?.addEventListener("click", () => {
-    completeSet(planned, state, "muscular_failure", handlers);
-  });
-  root.querySelector("[data-skip]")?.addEventListener("click", () => {
-    completeSet(planned, state, "skipped", handlers);
-  });
-  wireRepsAndLoadButtons(root, state, handlers);
-  root.querySelector("[data-cooldown-start]")?.addEventListener("click", () => {
-    handlers.onStartCooldown();
-  });
-  root.querySelector("[data-cooldown-skip]")?.addEventListener("click", () => {
-    handlers.onSkipCooldown();
-  });
+  const clicks: Record<string, () => void> = {
+    "[data-log-set]": () => completeSet(planned, state, "completed", handlers),
+    "[data-fail-set]": () =>
+      completeSet(planned, state, "muscular_failure", handlers),
+    "[data-skip]": () => completeSet(planned, state, "skipped", handlers),
+    "[data-reps-minus]": () => adjustNextReps(state, -1, handlers),
+    "[data-reps-plus]": () => adjustNextReps(state, 1, handlers),
+    "[data-add-weight]": () =>
+      adjustAddedLoad(state, DEFAULT_ADDED_LOAD_KG, handlers),
+    "[data-load-minus]": () => adjustAddedLoadBy(state, -1, handlers),
+    "[data-load-plus]": () => adjustAddedLoadBy(state, 1, handlers),
+    "[data-cooldown-start]": () => handlers.onStartCooldown(),
+    "[data-cooldown-skip]": () => handlers.onSkipCooldown(),
+  };
+  for (const [selector, onClick] of Object.entries(clicks)) {
+    root.querySelector(selector)?.addEventListener("click", onClick);
+  }
   wirePulseSimButtons(root, state, handlers);
   wirePulseConnectButtons(root, state, handlers);
-
-  const stage = root.querySelector<HTMLElement>("[data-swipe-stage]");
-  if (stage) {
-    wireSwipe(stage, () => handlers.onFinishExercise());
-  }
+  wireStageSwipe(root, handlers);
 }
 
-/** The Log set steppers: this set's reps and optional added load. */
-function wireRepsAndLoadButtons(
+function wireStageSwipe(
   root: HTMLElement,
-  state: ViewState,
   handlers: SessionControlHandlers,
 ): void {
-  root.querySelector("[data-reps-minus]")?.addEventListener("click", () => {
-    adjustNextReps(state, -1, handlers);
-  });
-  root.querySelector("[data-reps-plus]")?.addEventListener("click", () => {
-    adjustNextReps(state, 1, handlers);
-  });
-  root.querySelector("[data-add-weight]")?.addEventListener("click", () => {
-    adjustAddedLoad(state, DEFAULT_ADDED_LOAD_KG, handlers);
-  });
-  root.querySelector("[data-load-minus]")?.addEventListener("click", () => {
-    adjustAddedLoadDelta(state, -1, handlers);
-  });
-  root.querySelector("[data-load-plus]")?.addEventListener("click", () => {
-    adjustAddedLoadDelta(state, 1, handlers);
-  });
+  const stage = root.querySelector<HTMLElement>("[data-swipe-stage]");
+  if (stage) {
+    wireSwipe(stage, handlers.onFinishExercise);
+  }
 }
 
 function wirePulseConnectButtons(
@@ -101,21 +87,18 @@ function wirePulseConnectButtons(
   handlers: SessionControlHandlers,
 ): void {
   root.querySelector("[data-pulse-connect]")?.addEventListener("click", () => {
+    // Stable handler refs: Set-based subscribe must not stack duplicates.
     void connectHeartRate(
-      (bpm) => handlers.onPulseBpm(bpm),
-      () => handlers.onPulseDisconnected(),
+      handlers.onPulseBpm,
+      handlers.onPulseDisconnected,
     ).then((result) => {
-      state.pulseStatus = result.message;
-      if (result.ok) {
-        state.pulse = pulseConnectedAt(state.pulse, Date.now());
-      }
-      handlers.onPaint();
+      applyConnectHeartRateResult(state, result, handlers.onPaint);
     });
   });
   root.querySelector("[data-pulse-disconnect]")?.addEventListener("click", () => {
     void disconnectHeartRate().then(() => {
       handlers.onPulseDisconnected();
-      state.pulseStatus = "Pulse strap disconnected.";
+      state.pulseStatus = PULSE_STRAP_DISCONNECTED;
       handlers.onPaint();
     });
   });
@@ -153,14 +136,13 @@ function adjustAddedLoad(
   updateWorkState(state, ["work"], (work) => editAddedLoad(work, kg), handlers);
 }
 
-function adjustAddedLoadDelta(
+function adjustAddedLoadBy(
   state: ViewState,
   delta: number,
   handlers: SessionControlHandlers,
 ): void {
   updateWorkState(state, ["work"], (work) => {
-    const next = Math.max(0, work.addedLoadKg + delta);
-    return editAddedLoad(work, next);
+    return editAddedLoad(work, Math.max(0, work.addedLoadKg + delta));
   }, handlers);
 }
 
