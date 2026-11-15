@@ -964,10 +964,6 @@ export function doodleFor(exerciseId: string): string | undefined {
   return SEED_GRAPH[exerciseId]?.doodlePath;
 }
 
-export function cuesFor(exerciseId: string): string[] {
-  return SEED_GRAPH[exerciseId]?.cues ?? [];
-}
-
 export function templateToStarter(template: SessionTemplate): StarterProgram {
   return {
     id: template.id,

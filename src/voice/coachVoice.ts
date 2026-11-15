@@ -89,16 +89,6 @@ export async function speakExactLine(
   }
 }
 
-export async function speakCoachText(
-  text: string,
-  louder = false,
-): Promise<void> {
-  if (muted) {
-    return;
-  }
-  speakFallback(text, louder);
-}
-
 async function tryPlayAsset(line: CoachLine, louder: boolean): Promise<boolean> {
   if (typeof window === "undefined" || typeof Audio === "undefined") {
     return false;

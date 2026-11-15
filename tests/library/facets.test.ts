@@ -11,8 +11,8 @@ import {
 import { listHtml } from "../../src/library/libraryList";
 import { searchExercises } from "../../src/library/search";
 import { exerciseSelectHtml, setPickerFacetsForTests } from "../../src/ui/planView";
+import { exerciseNamed as find } from "../helpers/exercises";
 
-const find = (name: string) => LIBRARY_CATALOGUE.find((item) => item.name === name)!;
 const entry = (group: string, role: "primary" | "secondary" | "stabilizer") =>
   ({ group, role }) as never;
 

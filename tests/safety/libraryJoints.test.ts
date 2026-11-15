@@ -4,10 +4,10 @@ import type { JointHistoryEntry } from "../../src/domain/program";
 import { detailHtml } from "../../src/library/libraryDetail";
 import { listHtml } from "../../src/library/libraryList";
 import { PREHAB_NAMES, prehabFor } from "../../src/safety/prehab";
+import { exerciseNamed as find } from "../helpers/exercises";
 
 const SHOULDER: JointHistoryEntry = { joint: "shoulder", side: "left", kind: "dislocation" };
 const KNEES: JointHistoryEntry = { joint: "knee", side: "both", kind: "other" };
-const find = (name: string) => LIBRARY_CATALOGUE.find((item) => item.name === name)!;
 
 describe("prehab list", () => {
   it("resolves every named move to a Library exercise", () => {

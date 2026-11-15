@@ -2,15 +2,12 @@ import { LIBRARY_CATALOGUE } from "../data/libraryCatalogue";
 import {
   SESSION_TEMPLATES,
   TEMPLATE_BY_ID,
-  type LoadRegion,
   type SeedExercise,
 } from "../data/seed";
 import { mountLibraryDetail } from "../library/libraryDetail";
-import { focusSearchInput, mountLibraryList } from "../library/libraryList";
-import type { AreaFilter, MuscleFilter, StretchFilter } from "../library/facets";
+import { focusSearchInput, mountLibraryList, type ListQueryState } from "../library/libraryList";
 import { mountPlanDayPicker } from "../library/libraryPlanPick";
 import { selectLibraryResults } from "../library/results";
-import type { LevelFilter } from "../library/search";
 import { collectTemplateTargetIds } from "../library/targets";
 import { listUpcomingPlanDays } from "../plan/pathPlacement";
 import {
@@ -27,6 +24,9 @@ import {
 } from "../session/history";
 import { loadProfile } from "../settings/profile";
 
+/** Every list filter with a value; "hiddenStretches" is computed, not chosen. */
+type ListFilters = Required<Omit<ListQueryState, "hiddenStretches">>;
+
 const CATALOGUE_BY_ID: Record<string, SeedExercise> = Object.fromEntries(
   LIBRARY_CATALOGUE.map((exercise) => [exercise.id, exercise]),
 );
@@ -36,14 +36,20 @@ function templateDisplayName(templateId: string): string {
 }
 
 export function renderLibraryView(root: HTMLElement): void {
-  let text = "";
-  let region: LoadRegion | "all" = "all";
-  let level: LevelFilter = "all";
-  let area: AreaFilter = "all";
-  let muscle: MuscleFilter = "all";
-  let stretch: StretchFilter = "hide";
-  let forJoints = false;
-  let onlyGear = false;
+  const filters: ListFilters = {
+    text: "",
+    region: "all",
+    level: "all",
+    area: "all",
+    muscle: "all",
+    stretch: "hide",
+    forJoints: false,
+    onlyGear: false,
+  };
+  const setFilter = <K extends keyof ListFilters>(key: K, value: ListFilters[K]): void => {
+    filters[key] = value;
+    paint();
+  };
   let selectedId: string | null = null;
   let pickingPlanForId: string | null = null;
   let planStatus: string | null = null;
@@ -141,9 +147,10 @@ export function renderLibraryView(root: HTMLElement): void {
   };
 
   const paintList = (): void => {
+    const { forJoints, onlyGear, ...query } = filters;
     const { results, hiddenStretches } = selectLibraryResults({
       catalogue: LIBRARY_CATALOGUE,
-      query: { text, region, level, area, muscle, stretch },
+      query,
       forJoints,
       onlyGear,
       jointHistory,
@@ -153,44 +160,22 @@ export function renderLibraryView(root: HTMLElement): void {
       root,
       results,
       targetIds,
-      { text, region, level, area, muscle, stretch, hiddenStretches, forJoints, onlyGear },
+      { ...filters, hiddenStretches },
       {
         onSearch: (next) => {
-          text = next;
-          paint();
+          setFilter("text", next);
           focusSearchInput(root);
         },
-        onRegion: (next) => {
-          region = next;
-          paint();
-        },
-        onLevel: (next) => {
-          level = next;
-          paint();
-        },
-        onArea: (next) => {
-          area = next;
-          paint();
-        },
-        onMuscle: (next) => {
-          muscle = next;
-          paint();
-        },
-        onStretch: (next) => {
-          stretch = next;
-          paint();
-        },
+        onRegion: (next) => setFilter("region", next),
+        onLevel: (next) => setFilter("level", next),
+        onArea: (next) => setFilter("area", next),
+        onMuscle: (next) => setFilter("muscle", next),
+        onStretch: (next) => setFilter("stretch", next),
+        onForJoints: (on) => setFilter("forJoints", on),
+        onOnlyGear: (on) => setFilter("onlyGear", on),
         onSelect: (id) => {
           selectedId = id;
           planStatus = null;
-          paint();
-        },
-        onForJoints: (on) => {
-          forJoints = on;
-          paint();
-        },
-        onOnlyGear: (on) => {
-          onlyGear = on;
           paint();
         },
       },

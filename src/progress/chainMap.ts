@@ -49,9 +49,6 @@ export const KEY_CHAIN_ANCHOR_IDS: readonly string[] = [
   "hollow_hold",
 ];
 
-/** @deprecated Use KEY_CHAIN_ANCHOR_IDS */
-export const KEY_CHAIN_ROOT_IDS = KEY_CHAIN_ANCHOR_IDS;
-
 const CHAIN_LABELS: Readonly<Record<string, string>> = {
   bodyweight_squat: "Squat",
   hip_hinge: "Hinge",

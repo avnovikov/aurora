@@ -44,7 +44,6 @@ export type SkillTier =
   | "elite";
 /** Difficulty of a movement (a move is never "novice"). */
 export type Difficulty = Exclude<SkillTier, "novice">;
-export type PrescriptionMode = "straight_sets" | "rounds";
 export type SleepQuality = "good" | "fair" | "poor";
 export type FailRegion = "start" | "mid" | "end";
 export type StopReason =

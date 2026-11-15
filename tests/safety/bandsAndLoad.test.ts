@@ -9,9 +9,9 @@ import { assessExercise } from "../../src/safety/jointCare";
 import { jointLoadsFor } from "../../src/safety/jointLoad";
 import { prehabFor } from "../../src/safety/prehab";
 import { ALL_EQUIPMENT } from "../../src/settings/profile";
+import { exerciseNamed as find } from "../helpers/exercises";
 
 const bandMoves = LIBRARY_CATALOGUE.filter((item) => item.requires?.includes("band"));
-const find = (name: string) => LIBRARY_CATALOGUE.find((item) => item.name === name)!;
 const wrist: JointHistoryEntry = { joint: "wrist", side: "right", kind: "other" };
 const knee: JointHistoryEntry = { joint: "knee", side: "both", kind: "other" };
 

@@ -1,7 +1,6 @@
 import type { LoadRegion, SeedExercise } from "../data/seed";
 import type { JointHistoryEntry } from "../domain/program";
 import { SKILL_TIER_LABELS, SKILL_TIERS } from "../domain/skillTier";
-import type { SkillTier } from "../domain/types";
 import { assessExercise } from "../safety/jointCare";
 import {
   AREAS,
@@ -11,6 +10,7 @@ import {
   type MuscleFilter,
   type StretchFilter,
 } from "./facets";
+import { chipHtml, chipRowHtml, onChipClick, onToggleClick, toggleHtml } from "./chips";
 import { LIBRARY_REGIONS, type LevelFilter } from "./search";
 import { escapeHtml, formatPattern } from "./present";
 import { isTemplateTarget } from "./targets";
@@ -38,12 +38,25 @@ export interface ListActions {
   onSearch: (text: string) => void;
   onRegion: (region: LoadRegion | "all") => void;
   onLevel: (level: LevelFilter) => void;
-  onArea?: (area: AreaFilter) => void;
-  onMuscle?: (muscle: MuscleFilter) => void;
-  onStretch?: (stretch: StretchFilter) => void;
+  onArea: (area: AreaFilter) => void;
+  onMuscle: (muscle: MuscleFilter) => void;
+  onStretch: (stretch: StretchFilter) => void;
   onSelect: (exerciseId: string) => void;
-  onForJoints?: (on: boolean) => void;
-  onOnlyGear?: (on: boolean) => void;
+  onForJoints: (on: boolean) => void;
+  onOnlyGear: (on: boolean) => void;
+}
+
+/** Fills every optional field, so the markup and wiring read one complete state. */
+function withListDefaults(query: ListQueryState): Required<ListQueryState> {
+  return {
+    area: "all",
+    muscle: "all",
+    stretch: "all",
+    hiddenStretches: 0,
+    forJoints: false,
+    onlyGear: false,
+    ...query,
+  };
 }
 
 export function mountLibraryList(
@@ -54,47 +67,19 @@ export function mountLibraryList(
   actions: ListActions,
   jointHistory: readonly JointHistoryEntry[] = [],
 ): void {
-  root.innerHTML = listHtml(results, targetIds, query, jointHistory);
+  const state = withListDefaults(query);
+  root.innerHTML = listHtml(results, targetIds, state, jointHistory);
 
-  root.querySelector("[data-for-joints]")?.addEventListener("click", () => {
-    actions.onForJoints?.(!query.forJoints);
-  });
-  root.querySelector("[data-only-gear]")?.addEventListener("click", () => {
-    actions.onOnlyGear?.(!query.onlyGear);
-  });
+  onToggleClick(root, "for-joints", () => actions.onForJoints(!state.forJoints));
+  onToggleClick(root, "only-gear", () => actions.onOnlyGear(!state.onlyGear));
+  onChipClick(root, "region", (value) => actions.onRegion(value as LoadRegion | "all"));
+  onChipClick(root, "level", (value) => actions.onLevel(value as LevelFilter));
+  onChipClick(root, "area", (value) => actions.onArea(value as AreaFilter));
+  onChipClick(root, "muscle", (value) => actions.onMuscle(value as MuscleFilter));
+  onChipClick(root, "stretch", (value) => actions.onStretch(value as StretchFilter));
 
   root.querySelector<HTMLInputElement>("[data-search]")?.addEventListener("input", (event) => {
     actions.onSearch((event.target as HTMLInputElement).value);
-  });
-
-  root.querySelectorAll<HTMLButtonElement>("[data-region]").forEach((button) => {
-    button.addEventListener("click", () => {
-      actions.onRegion(button.dataset.region as LoadRegion | "all");
-    });
-  });
-
-  root.querySelectorAll<HTMLButtonElement>("[data-level]").forEach((button) => {
-    button.addEventListener("click", () => {
-      actions.onLevel(button.dataset.level as LevelFilter);
-    });
-  });
-
-  root.querySelectorAll<HTMLButtonElement>("[data-area]").forEach((button) => {
-    button.addEventListener("click", () => {
-      actions.onArea?.(button.dataset.area as AreaFilter);
-    });
-  });
-
-  root.querySelectorAll<HTMLButtonElement>("[data-stretch]").forEach((button) => {
-    button.addEventListener("click", () => {
-      actions.onStretch?.(button.dataset.stretch as StretchFilter);
-    });
-  });
-
-  root.querySelectorAll<HTMLButtonElement>("[data-muscle]").forEach((button) => {
-    button.addEventListener("click", () => {
-      actions.onMuscle?.(button.dataset.muscle as MuscleFilter);
-    });
   });
 
   root.querySelectorAll<HTMLButtonElement>("[data-exercise-id]").forEach((button) => {
@@ -122,33 +107,29 @@ export function listHtml(
   query: ListQueryState,
   jointHistory: readonly JointHistoryEntry[] = [],
 ): string {
-  const regions = LIBRARY_REGIONS.map(
-    (item) =>
-      `<button type="button" data-region="${item}" class="${item === query.region ? "selected" : ""}">${labelRegion(item)}</button>`,
+  const q = withListDefaults(query);
+  const regions = LIBRARY_REGIONS.map((item) =>
+    chipHtml("region", item, labelRegion(item), item === q.region),
   ).join("");
-  const levels = levelFilterButtonsHtml(query.level);
-
   const items = results
     .map((exercise) => listItemHtml(exercise, targetIds, jointHistory))
     .join("");
-  const forJoints = forJointsButtonHtml(jointHistory.length > 0, query.forJoints === true);
+  const forJoints = jointHistory.length > 0 ? toggleHtml("for-joints", "For my joints", q.forJoints) : "";
 
   return `
     <main class="shell">
       <p class="eyebrow">Library</p>
       <h1>Exercises</h1>
       <p class="tagline">Core is an area filter — abs, hollow, anti-extension, and friends.</p>
-      <input class="search" type="search" placeholder="Search exercises" value="${escapeHtml(query.text)}" data-search />
+      <input class="search" type="search" placeholder="Search exercises" value="${escapeHtml(q.text)}" data-search />
       <div class="row wrap" data-regions>
         ${regions}
         ${forJoints}
-        <button type="button" data-only-gear class="${query.onlyGear ? "selected" : ""}">Only my gear</button>
+        ${toggleHtml("only-gear", "Only my gear", q.onlyGear)}
       </div>
-      <div class="row wrap lib-levels" data-levels aria-label="Skill level">
-        ${levels}
-      </div>
-      ${stretchFilterHtml(query.stretch ?? "all", query.hiddenStretches ?? 0)}
-      ${bodyFiltersHtml(query.area ?? "all", query.muscle ?? "all")}
+      ${levelRowHtml(q.level)}
+      ${stretchFilterHtml(q.stretch, q.hiddenStretches)}
+      ${bodyFiltersHtml(q.area, q.muscle)}
       <ul class="lib-list">
         ${items}
       </ul>
@@ -156,30 +137,22 @@ export function listHtml(
   `;
 }
 
-function stretchFilterHtml(selected: StretchFilter, hidden: number): string {
-  const chips = STRETCH_FILTERS.map(
-    (option) =>
-      `<button type="button" data-stretch="${option.id}" class="${option.id === selected ? "selected" : ""}">${option.label}</button>`,
-  ).join("");
-  const noun = hidden === 1 ? "stretch" : "stretches";
-  const note =
-    hidden > 0
-      ? `<p class="hint"><button type="button" data-stretch="all" class="lib-link">${hidden} ${noun} match — show</button></p>`
-      : "";
-  return `<div class="row wrap" data-stretches aria-label="Stretches">${chips}</div>${note}`;
+function levelRowHtml(selected: LevelFilter): string {
+  const options = SKILL_TIERS.map((tier) => ({ id: tier, label: SKILL_TIER_LABELS[tier] }));
+  return chipRowHtml("level", "Skill level", selected, options, {
+    allLabel: "All levels",
+    rowClass: "lib-levels",
+  });
 }
 
-function chipRowHtml(
-  attr: string,
-  label: string,
-  selected: string,
-  options: ReadonlyArray<{ id: string; label: string }>,
-  allLabel: string,
-): string {
-  const chip = (id: string, text: string): string =>
-    `<button type="button" data-${attr}="${id}" class="${id === selected ? "selected" : ""}">${text}</button>`;
-  const chips = options.map((option) => chip(option.id, option.label)).join("");
-  return `<div class="row wrap" data-${attr}s aria-label="${label}">${chip("all", allLabel)}${chips}</div>`;
+function stretchFilterHtml(selected: StretchFilter, hidden: number): string {
+  const noun = hidden === 1 ? "stretch" : "stretches";
+  const showLabel = `${hidden} ${noun} match — show`;
+  const note =
+    hidden > 0
+      ? `<p class="hint">${chipHtml("stretch", "all", showLabel, false, "lib-link")}</p>`
+      : "";
+  return `${chipRowHtml("stretch", "Stretches", selected, STRETCH_FILTERS)}${note}`;
 }
 
 /** Area and muscle chips live in a panel that opens while either is active. */
@@ -187,25 +160,9 @@ function bodyFiltersHtml(area: AreaFilter, muscle: MuscleFilter): string {
   const active = area !== "all" || muscle !== "all";
   return `<details class="lib-filters" ${active ? "open" : ""}>
     <summary>Area &amp; muscle${active ? " (active)" : ""}</summary>
-    ${chipRowHtml("area", "Body area", area, AREAS, "All areas")}
-    ${chipRowHtml("muscle", "Primary muscle", muscle, MUSCLE_BUCKETS, "All muscles")}
+    ${chipRowHtml("area", "Body area", area, AREAS, { allLabel: "All areas" })}
+    ${chipRowHtml("muscle", "Primary muscle", muscle, MUSCLE_BUCKETS, { allLabel: "All muscles" })}
   </details>`;
-}
-
-function levelFilterButtonsHtml(selected: LevelFilter): string {
-  const all = `<button type="button" data-level="all" class="${selected === "all" ? "selected" : ""}">All levels</button>`;
-  const tiers = SKILL_TIERS.map(
-    (tier: SkillTier) =>
-      `<button type="button" data-level="${tier}" class="${tier === selected ? "selected" : ""}">${SKILL_TIER_LABELS[tier]}</button>`,
-  ).join("");
-  return `${all}${tiers}`;
-}
-
-function forJointsButtonHtml(hasHistory: boolean, on: boolean): string {
-  if (!hasHistory) {
-    return "";
-  }
-  return `<button type="button" data-for-joints class="${on ? "selected" : ""}">For my joints</button>`;
 }
 
 function jointBadgeHtml(exercise: SeedExercise, history: readonly JointHistoryEntry[]): string {

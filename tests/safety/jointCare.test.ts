@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import type { JointHistoryEntry } from "../../src/domain/program";
 import { planSession } from "../../src/rules/planSession";
-import { assessExercise, chooseSafeExercise } from "../../src/safety/jointCare";
+import { assessExercise } from "../../src/safety/jointCare";
+import { chooseSuitableExercise } from "../../src/safety/suitableExercise";
 import { movementRisks } from "../../src/safety/movementRisk";
 import { loadProfile, saveProfile } from "../../src/settings/profile";
 import { describeEntry, toggleJoint, updateEntry } from "../../src/settings/jointHistory";
@@ -44,9 +45,9 @@ describe("assessExercise", () => {
   });
 });
 
-describe("chooseSafeExercise", () => {
+describe("chooseSuitableExercise", () => {
   it("swaps an avoided move for a same-pattern safe one", () => {
-    const choice = chooseSafeExercise(
+    const choice = chooseSuitableExercise(
       { id: "cossack_squat", name: "Cossack squat", pattern: "squat" },
       [KNEES],
     );
@@ -55,7 +56,7 @@ describe("chooseSafeExercise", () => {
   });
 
   it("keeps a safe move", () => {
-    const choice = chooseSafeExercise(
+    const choice = chooseSuitableExercise(
       { id: "bodyweight_squat", name: "Bodyweight squat", pattern: "squat" },
       [KNEES],
     );

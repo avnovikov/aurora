@@ -125,14 +125,3 @@ export function pickLine(
   const index = Math.floor(random() * options.length);
   return options[Math.min(index, options.length - 1)];
 }
-
-export function countWordToId(word: string): CoachLineId | null {
-  const map: Record<string, CoachLineId> = {
-    five: "five",
-    four: "four",
-    three: "three",
-    two: "two",
-    one: "one",
-  };
-  return map[word.toLowerCase()] ?? null;
-}

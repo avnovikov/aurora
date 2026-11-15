@@ -5,8 +5,8 @@ import { STRETCH_FILTERS, isStretch } from "../../src/library/facets";
 import { listHtml } from "../../src/library/libraryList";
 import { selectLibraryResults } from "../../src/library/results";
 import { searchExercises } from "../../src/library/search";
+import { exerciseNamed as find } from "../helpers/exercises";
 
-const find = (name: string) => LIBRARY_CATALOGUE.find((item) => item.name === name)!;
 const SHOULDER: JointHistoryEntry = { joint: "shoulder", side: "left", kind: "dislocation" };
 
 const input = (query: Parameters<typeof selectLibraryResults>[0]["query"], extra = {}) => ({

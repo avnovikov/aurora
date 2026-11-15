@@ -1,6 +1,7 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import {
   STARTER_PROGRAM,
+  type SeedExercise,
   type SeedSlot,
   type StarterProgram,
 } from "../data/seed";
@@ -9,18 +10,19 @@ import {
   type WarmupStation,
 } from "../data/warmupStations";
 import type {
-  HistoryEntry,
   EquipmentId,
+  HistoryEntry,
   JointHistoryEntry,
   SessionFocus,
 } from "../domain/program";
-import { chooseSafeExercise } from "../safety/jointCare";
 import type {
   Dose,
   ExerciseMemory,
   Readiness,
   ResolveResult,
+  RuleId,
 } from "../domain/types";
+import { chooseSuitableExercise } from "../safety/suitableExercise";
 import { emptyMemory } from "../session/history";
 import {
   lastConsecutiveSameZone,
@@ -86,6 +88,35 @@ function warmupStationsFor(program: StarterProgram): WarmupStation[] {
   return program.warmupStationIds.map((id) => requireWarmupStation(id));
 }
 
+/** What joint and gear care did to a resolved move: the final move, why, and notes. */
+interface CareOutcome {
+  chosen: SeedExercise;
+  reason: string;
+  ruleIds: RuleId[];
+  cautions: string[];
+}
+
+function applyCare(
+  resolved: ResolveResult,
+  resolvedExercise: SeedExercise,
+  varietyReason: string | undefined,
+  context: SlotContext,
+): CareOutcome {
+  const care = chooseSuitableExercise(resolvedExercise, context.jointHistory, context.equipment);
+  const chosen = EXERCISE_GRAPH[care.id] ?? resolvedExercise;
+  const baseReason = varietyReason ? `${resolved.reason} · ${varietyReason}` : resolved.reason;
+  if (!care.swappedFrom) {
+    return { chosen, reason: baseReason, ruleIds: resolved.ruleIds, cautions: care.cautions };
+  }
+  const swapRule: RuleId = care.cause === "gear" ? "equipment" : "joint_history";
+  return {
+    chosen,
+    reason: `${baseReason} · ${care.reason}`,
+    ruleIds: [...resolved.ruleIds, swapRule],
+    cautions: care.cautions,
+  };
+}
+
 function planWorkItem(
   slot: SeedSlot,
   exerciseId: string,
@@ -107,16 +138,12 @@ function planWorkItem(
     deloadActive: context.deloadActive,
   });
   const resolvedExercise = EXERCISE_GRAPH[resolved.exerciseId] ?? exercise;
-  const care = chooseSafeExercise(resolvedExercise, context.jointHistory, context.equipment);
-  const chosen = EXERCISE_GRAPH[care.id] ?? resolvedExercise;
-  const baseReason = varietyReason
-    ? `${resolved.reason} · ${varietyReason}`
-    : resolved.reason;
-  const reason = care.swappedFrom
-    ? `${baseReason} · ${care.reason}`
-    : baseReason;
-  const swapRule = care.cause === "gear" ? ("equipment" as const) : ("joint_history" as const);
-  const ruleIds = care.swappedFrom ? [...resolved.ruleIds, swapRule] : resolved.ruleIds;
+  const { chosen, reason, ruleIds, cautions } = applyCare(
+    resolved,
+    resolvedExercise,
+    varietyReason,
+    context,
+  );
   return {
     slotId: slot.id,
     label: slot.label,
@@ -130,7 +157,7 @@ function planWorkItem(
     cues: chosen.cues,
     summary: chosen.description,
     steps: chosen.steps,
-    cautions: care.cautions,
+    cautions,
   };
 }
 

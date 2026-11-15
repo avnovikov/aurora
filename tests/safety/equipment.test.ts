@@ -1,12 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { requiresFor } from "../../src/data/enrich/equipment";
-import { LIBRARY_CATALOGUE } from "../../src/data/libraryCatalogue";
 import { listHtml } from "../../src/library/libraryList";
 import { planSession } from "../../src/rules/planSession";
 import { missingGear } from "../../src/safety/gear";
-import { chooseSafeExercise } from "../../src/safety/jointCare";
+import { chooseSuitableExercise } from "../../src/safety/suitableExercise";
+import { exerciseNamed as find } from "../helpers/exercises";
 
-const find = (name: string) => LIBRARY_CATALOGUE.find((item) => item.name === name)!;
 const readiness = { painJoints: [], sleepQuality: "good" as const };
 
 describe("requiresFor", () => {
@@ -72,15 +71,15 @@ describe("planner honours equipment", () => {
     expect(session.work.every((item) => !item.ruleIds.includes("equipment"))).toBe(true);
   });
 
-  it("chooseSafeExercise swaps for gear with a clear reason", () => {
-    const choice = chooseSafeExercise(find("Ring Push-Up"), [], ["body", "bar"]);
+  it("chooseSuitableExercise swaps for gear with a clear reason", () => {
+    const choice = chooseSuitableExercise(find("Ring Push-Up"), [], ["body", "bar"]);
     expect(choice.cause).toBe("gear");
     expect(choice.reason).toMatch(/Needs rings \(not in your equipment\)/);
     expect(missingGear(find(choice.name).requires, ["body", "bar"])).toEqual([]);
   });
 
   it("keeps the move, with a note, when no gear-free alternative exists", () => {
-    const choice = chooseSafeExercise(find("Pull-up"), [], ["body"]);
+    const choice = chooseSuitableExercise(find("Pull-up"), [], ["body"]);
     expect(choice.swappedFrom).toBeUndefined();
     expect(choice.cause).toBe("gear");
     expect(choice.cautions[0]).toMatch(/Needs bar/);

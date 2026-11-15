@@ -1,4 +1,4 @@
-import { exerciseNameKey } from "../nameKey";
+import { checkDuplicate, exerciseNameKey } from "../nameKey";
 import { serialiseCatalogueModule } from "../serialiseCatalogue";
 import type { SeedExercise } from "../seed";
 import { cleanWgerName, mapWgerExerciseRecord } from "./mapWgerExercise";
@@ -29,8 +29,8 @@ export function buildWgerCatalogue(
     }
     const key = exerciseNameKey(cleanWgerName(record.name));
     const alias = WGER_SAME_AS_EXISTING[record.name];
-    const intoId = alias ? taken.get(exerciseNameKey(alias)) : taken.get(key);
-    if (alias || intoId) {
+    const { duplicate, intoId } = checkDuplicate(taken, key, alias);
+    if (duplicate) {
       skippedDuplicates.push(record.name);
       if (intoId) {
         duplicates.push({ record, intoId });
