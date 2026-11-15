@@ -277,6 +277,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       {
         "group": "shoulders",
         "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "primary"
       }
     ],
     "joints": [],
@@ -320,6 +324,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       },
       {
         "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -409,6 +417,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       {
         "group": "triceps",
         "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "primary"
       }
     ],
     "joints": [],
@@ -459,6 +471,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       {
         "group": "shoulders",
         "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "primary"
       }
     ],
     "joints": [],
@@ -499,7 +515,11 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "dynamic",
     "muscles": [
       {
-        "group": "shoulders",
+        "group": "chest",
+        "role": "primary"
+      },
+      {
+        "group": "middle back",
         "role": "primary"
       }
     ],
@@ -544,10 +564,6 @@ export const HF_CATALOGUE: SeedExercise[] = [
       },
       {
         "group": "abdominals",
-        "role": "primary"
-      },
-      {
-        "group": "quadriceps",
         "role": "primary"
       }
     ],
@@ -598,6 +614,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       },
       {
         "group": "triceps",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -799,6 +819,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       {
         "group": "shoulders",
         "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "primary"
       }
     ],
     "joints": [],
@@ -945,6 +969,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       {
         "group": "triceps",
         "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "primary"
       }
     ],
     "joints": [],
@@ -970,6 +998,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       },
       {
         "group": "triceps",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -1104,6 +1136,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       },
       {
         "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -1245,7 +1281,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
         "role": "primary"
       },
       {
-        "group": "quadriceps",
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -1278,7 +1314,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_31",
     "name": "Planche Lean",
     "pattern": "horizontal_push",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
         "group": "shoulders",
@@ -1286,6 +1322,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       },
       {
         "group": "chest",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -1318,7 +1358,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_32",
     "name": "Tuck Planche",
     "pattern": "horizontal_push",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
         "group": "shoulders",
@@ -1330,6 +1370,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       },
       {
         "group": "triceps",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -1362,7 +1406,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_33",
     "name": "Straddle Planche",
     "pattern": "horizontal_push",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
         "group": "shoulders",
@@ -1374,6 +1418,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       },
       {
         "group": "triceps",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -1392,7 +1440,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_34",
     "name": "Full Planche",
     "pattern": "horizontal_push",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
         "group": "shoulders",
@@ -1404,6 +1452,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       },
       {
         "group": "triceps",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       },
       {
@@ -1453,6 +1505,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       },
       {
         "group": "triceps",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -1558,7 +1614,11 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "dynamic",
     "muscles": [
       {
-        "group": "shoulders",
+        "group": "middle back",
+        "role": "primary"
+      },
+      {
+        "group": "chest",
         "role": "primary"
       }
     ],
@@ -1579,6 +1639,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "pattern": "vertical_pull",
     "type": "dynamic",
     "muscles": [
+      {
+        "group": "middle back",
+        "role": "primary"
+      },
       {
         "group": "lats",
         "role": "primary"
@@ -1628,6 +1692,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       {
         "group": "shoulders",
         "role": "primary"
+      },
+      {
+        "group": "middle back",
+        "role": "primary"
       }
     ],
     "joints": [],
@@ -1660,7 +1728,15 @@ export const HF_CATALOGUE: SeedExercise[] = [
         "role": "primary"
       },
       {
+        "group": "middle back",
+        "role": "primary"
+      },
+      {
         "group": "biceps",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -1697,6 +1773,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "muscles": [
       {
         "group": "lats",
+        "role": "primary"
+      },
+      {
+        "group": "middle back",
         "role": "primary"
       },
       {
@@ -1954,6 +2034,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       {
         "group": "biceps",
         "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "primary"
       }
     ],
     "joints": [],
@@ -1983,10 +2067,6 @@ export const HF_CATALOGUE: SeedExercise[] = [
       },
       {
         "group": "abdominals",
-        "role": "primary"
-      },
-      {
-        "group": "quadriceps",
         "role": "primary"
       }
     ],
@@ -2032,6 +2112,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       {
         "group": "shoulders",
         "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "primary"
       }
     ],
     "joints": [],
@@ -2076,6 +2160,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       {
         "group": "forearms",
         "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "primary"
       }
     ],
     "joints": [],
@@ -2105,6 +2193,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       },
       {
         "group": "forearms",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -2228,6 +2320,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       {
         "group": "triceps",
         "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "primary"
       }
     ],
     "joints": [],
@@ -2293,10 +2389,14 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_57",
     "name": "Tuck Front Lever",
     "pattern": "vertical_pull",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
         "group": "lats",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       },
       {
@@ -2319,10 +2419,14 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_58",
     "name": "Full Front Lever",
     "pattern": "vertical_pull",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
         "group": "lats",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       },
       {
@@ -2370,7 +2474,15 @@ export const HF_CATALOGUE: SeedExercise[] = [
         "role": "primary"
       },
       {
+        "group": "middle back",
+        "role": "primary"
+      },
+      {
         "group": "biceps",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -2416,6 +2528,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       {
         "group": "biceps",
         "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "primary"
       }
     ],
     "joints": [],
@@ -2433,7 +2549,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_61",
     "name": "Tuck Back Lever",
     "pattern": "vertical_pull",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
         "group": "shoulders",
@@ -2441,6 +2557,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       },
       {
         "group": "biceps",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       },
       {
@@ -2463,7 +2583,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_62",
     "name": "Full Back Lever",
     "pattern": "vertical_pull",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
         "group": "shoulders",
@@ -2471,6 +2591,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       },
       {
         "group": "biceps",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       },
       {
@@ -2620,6 +2744,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
         "role": "primary"
       },
       {
+        "group": "abdominals",
+        "role": "primary"
+      },
+      {
         "group": "biceps",
         "role": "primary"
       },
@@ -2648,6 +2776,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       {
         "group": "shoulders",
         "role": "primary"
+      },
+      {
+        "group": "middle back",
+        "role": "primary"
       }
     ],
     "joints": [],
@@ -2673,6 +2805,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       },
       {
         "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -2717,6 +2853,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       },
       {
         "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -3035,7 +3175,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_78",
     "name": "Wall Sit",
     "pattern": "squat",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
         "group": "quadriceps",
@@ -3534,7 +3674,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "dynamic",
     "muscles": [
       {
-        "group": "shoulders",
+        "group": "calves",
         "role": "primary"
       }
     ],
@@ -3576,7 +3716,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "dynamic",
     "muscles": [
       {
-        "group": "shoulders",
+        "group": "calves",
         "role": "primary"
       }
     ],
@@ -3788,7 +3928,11 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "isometric",
     "muscles": [
       {
-        "group": "shoulders",
+        "group": "abdominals",
+        "role": "primary"
+      },
+      {
+        "group": "lower back",
         "role": "primary"
       }
     ],
@@ -3811,6 +3955,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "muscles": [
       {
         "group": "abdominals",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
         "role": "primary"
       }
     ],
@@ -3843,7 +3991,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_101",
     "name": "Side Plank with Rotation",
     "pattern": "core_compression",
-    "type": "isometric",
+    "type": "dynamic",
     "muscles": [
       {
         "group": "abdominals",
@@ -3872,7 +4020,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "isometric",
     "muscles": [
       {
-        "group": "quadriceps",
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -3894,7 +4042,11 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "dynamic",
     "muscles": [
       {
-        "group": "quadriceps",
+        "group": "abdominals",
+        "role": "primary"
+      },
+      {
+        "group": "chest",
         "role": "primary"
       }
     ],
@@ -3916,7 +4068,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "dynamic",
     "muscles": [
       {
-        "group": "quadriceps",
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -3935,8 +4087,12 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_105",
     "name": "L-Sit",
     "pattern": "core_compression",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
+      {
+        "group": "abdominals",
+        "role": "primary"
+      },
       {
         "group": "quadriceps",
         "role": "primary"
@@ -3975,8 +4131,12 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_106",
     "name": "V-Sit",
     "pattern": "core_compression",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
+      {
+        "group": "abdominals",
+        "role": "primary"
+      },
       {
         "group": "quadriceps",
         "role": "primary"
@@ -4002,10 +4162,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_107",
     "name": "Manna",
     "pattern": "core_compression",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
-        "group": "quadriceps",
+        "group": "abdominals",
         "role": "primary"
       },
       {
@@ -4032,10 +4192,6 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "muscles": [
       {
         "group": "abdominals",
-        "role": "primary"
-      },
-      {
-        "group": "quadriceps",
         "role": "primary"
       }
     ],
@@ -4068,10 +4224,14 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_109",
     "name": "Hanging Knee Raise",
     "pattern": "core_compression",
-    "type": "isometric",
+    "type": "dynamic",
     "muscles": [
       {
-        "group": "quadriceps",
+        "group": "abdominals",
+        "role": "primary"
+      },
+      {
+        "group": "forearms",
         "role": "primary"
       }
     ],
@@ -4090,10 +4250,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_110",
     "name": "Hanging Leg Raise",
     "pattern": "core_compression",
-    "type": "isometric",
+    "type": "dynamic",
     "muscles": [
       {
-        "group": "quadriceps",
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -4133,7 +4293,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
         "role": "primary"
       },
       {
-        "group": "quadriceps",
+        "group": "forearms",
         "role": "primary"
       }
     ],
@@ -4152,7 +4312,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_112",
     "name": "Human Flag",
     "pattern": "core_compression",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
         "group": "abdominals",
@@ -4185,6 +4345,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "dynamic",
     "muscles": [
       {
+        "group": "abdominals",
+        "role": "primary"
+      },
+      {
         "group": "lats",
         "role": "primary"
       },
@@ -4212,10 +4376,6 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "muscles": [
       {
         "group": "abdominals",
-        "role": "primary"
-      },
-      {
-        "group": "quadriceps",
         "role": "primary"
       }
     ],
@@ -4246,10 +4406,6 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "muscles": [
       {
         "group": "abdominals",
-        "role": "primary"
-      },
-      {
-        "group": "quadriceps",
         "role": "primary"
       }
     ],
@@ -4285,6 +4441,14 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "dynamic",
     "muscles": [
       {
+        "group": "abdominals",
+        "role": "primary"
+      },
+      {
+        "group": "lower back",
+        "role": "primary"
+      },
+      {
         "group": "glutes",
         "role": "primary"
       }
@@ -4314,6 +4478,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "pattern": "core_compression",
     "type": "isometric",
     "muscles": [
+      {
+        "group": "lower back",
+        "role": "primary"
+      },
       {
         "group": "glutes",
         "role": "primary"
@@ -4355,6 +4523,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "isometric",
     "muscles": [
       {
+        "group": "lower back",
+        "role": "primary"
+      },
+      {
         "group": "glutes",
         "role": "primary"
       },
@@ -4381,7 +4553,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "dynamic",
     "muscles": [
       {
-        "group": "quadriceps",
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -4403,7 +4575,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "dynamic",
     "muscles": [
       {
-        "group": "quadriceps",
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -4439,11 +4611,15 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "dynamic",
     "muscles": [
       {
-        "group": "quadriceps",
+        "group": "abdominals",
         "role": "primary"
       },
       {
         "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
         "role": "primary"
       }
     ],
@@ -4465,7 +4641,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "dynamic",
     "muscles": [
       {
-        "group": "quadriceps",
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -4501,6 +4677,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "dynamic",
     "muscles": [
       {
+        "group": "abdominals",
+        "role": "primary"
+      },
+      {
         "group": "quadriceps",
         "role": "primary"
       }
@@ -4534,7 +4714,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_124",
     "name": "Plank Shoulder Tap",
     "pattern": "core_compression",
-    "type": "isometric",
+    "type": "dynamic",
     "muscles": [
       {
         "group": "abdominals",
@@ -4583,7 +4763,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "dynamic",
     "muscles": [
       {
-        "group": "shoulders",
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -4627,6 +4807,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
         "role": "primary"
       },
       {
+        "group": "abdominals",
+        "role": "primary"
+      },
+      {
         "group": "forearms",
         "role": "primary"
       }
@@ -4653,7 +4837,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
         "role": "primary"
       },
       {
-        "group": "quadriceps",
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -4672,8 +4856,12 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_128",
     "name": "Elbow Lever",
     "pattern": "skill",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
+      {
+        "group": "abdominals",
+        "role": "primary"
+      },
       {
         "group": "forearms",
         "role": "primary"
@@ -4698,7 +4886,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_129",
     "name": "Crow Pose",
     "pattern": "skill",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
         "group": "shoulders",
@@ -4706,6 +4894,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       },
       {
         "group": "forearms",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -4738,7 +4930,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_130",
     "name": "Iron Cross",
     "pattern": "skill",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
         "group": "chest",
@@ -4750,6 +4942,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       },
       {
         "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -4776,7 +4972,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_131",
     "name": "Maltese Cross",
     "pattern": "skill",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
         "group": "chest",
@@ -4788,6 +4984,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       },
       {
         "group": "biceps",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -4814,7 +5014,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_132",
     "name": "Victorian Cross",
     "pattern": "skill",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
         "group": "lats",
@@ -4826,6 +5026,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       },
       {
         "group": "biceps",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -4869,6 +5073,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       {
         "group": "biceps",
         "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "primary"
       }
     ],
     "joints": [],
@@ -4886,18 +5094,18 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_134",
     "name": "Back Bridge",
     "pattern": "skill",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
+      {
+        "group": "lower back",
+        "role": "primary"
+      },
       {
         "group": "glutes",
         "role": "primary"
       },
       {
         "group": "shoulders",
-        "role": "primary"
-      },
-      {
-        "group": "quadriceps",
         "role": "primary"
       }
     ],
@@ -4930,10 +5138,14 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_135",
     "name": "Neck Bridge",
     "pattern": "skill",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
-        "group": "shoulders",
+        "group": "neck",
+        "role": "primary"
+      },
+      {
+        "group": "lower back",
         "role": "primary"
       }
     ],
@@ -4966,7 +5178,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_136",
     "name": "Japanese Handstand",
     "pattern": "skill",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
         "group": "shoulders",
@@ -4974,6 +5186,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       },
       {
         "group": "triceps",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -5000,6 +5216,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       },
       {
         "group": "chest",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -5047,6 +5267,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       {
         "group": "shoulders",
         "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "primary"
       }
     ],
     "joints": [],
@@ -5085,6 +5309,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       {
         "group": "glutes",
         "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "primary"
       }
     ],
     "joints": [],
@@ -5121,7 +5349,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "dynamic",
     "muscles": [
       {
-        "group": "shoulders",
+        "group": "quadriceps",
         "role": "primary"
       }
     ],
@@ -5209,6 +5437,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
         "role": "primary"
       },
       {
+        "group": "abdominals",
+        "role": "primary"
+      },
+      {
         "group": "quadriceps",
         "role": "primary"
       }
@@ -5257,6 +5489,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       {
         "group": "hamstrings",
         "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "primary"
       }
     ],
     "joints": [],
@@ -5303,10 +5539,6 @@ export const HF_CATALOGUE: SeedExercise[] = [
       {
         "group": "triceps",
         "role": "primary"
-      },
-      {
-        "group": "quadriceps",
-        "role": "primary"
       }
     ],
     "joints": [],
@@ -5337,7 +5569,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
         "role": "primary"
       },
       {
-        "group": "quadriceps",
+        "group": "abdominals",
         "role": "primary"
       }
     ],
@@ -5421,6 +5653,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "dynamic",
     "muscles": [
       {
+        "group": "abdominals",
+        "role": "primary"
+      },
+      {
         "group": "quadriceps",
         "role": "primary"
       },
@@ -5463,11 +5699,11 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "dynamic",
     "muscles": [
       {
-        "group": "lats",
+        "group": "abdominals",
         "role": "primary"
       },
       {
-        "group": "quadriceps",
+        "group": "lats",
         "role": "primary"
       },
       {
@@ -5510,6 +5746,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "muscles": [
       {
         "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
         "role": "primary"
       },
       {
@@ -5571,6 +5811,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
       {
         "group": "shoulders",
         "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "primary"
       }
     ],
     "joints": [],
@@ -5594,6 +5838,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "muscles": [
       {
         "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "chest",
         "role": "primary"
       },
       {
@@ -5634,6 +5882,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "dynamic",
     "muscles": [
       {
+        "group": "middle back",
+        "role": "primary"
+      },
+      {
         "group": "shoulders",
         "role": "primary"
       }
@@ -5654,10 +5906,14 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_153",
     "name": "German Hang",
     "pattern": "mobility",
-    "type": "isometric",
+    "type": "dynamic",
     "muscles": [
       {
         "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "chest",
         "role": "primary"
       },
       {
@@ -5683,6 +5939,14 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "pattern": "mobility",
     "type": "dynamic",
     "muscles": [
+      {
+        "group": "middle back",
+        "role": "primary"
+      },
+      {
+        "group": "lower back",
+        "role": "primary"
+      },
       {
         "group": "abdominals",
         "role": "primary"
@@ -5721,6 +5985,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "dynamic",
     "muscles": [
       {
+        "group": "middle back",
+        "role": "primary"
+      },
+      {
         "group": "abdominals",
         "role": "primary"
       }
@@ -5744,6 +6012,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "dynamic",
     "muscles": [
       {
+        "group": "lower back",
+        "role": "primary"
+      },
+      {
         "group": "hamstrings",
         "role": "primary"
       }
@@ -5766,6 +6038,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "pattern": "mobility",
     "type": "isometric",
     "muscles": [
+      {
+        "group": "middle back",
+        "role": "primary"
+      },
       {
         "group": "quadriceps",
         "role": "primary"
@@ -5806,10 +6082,6 @@ export const HF_CATALOGUE: SeedExercise[] = [
       {
         "group": "glutes",
         "role": "primary"
-      },
-      {
-        "group": "quadriceps",
-        "role": "primary"
       }
     ],
     "joints": [],
@@ -5836,14 +6108,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_159",
     "name": "Pigeon Pose",
     "pattern": "mobility",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
         "group": "glutes",
-        "role": "primary"
-      },
-      {
-        "group": "quadriceps",
         "role": "primary"
       }
     ],
@@ -5883,10 +6151,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_160",
     "name": "Frog Stretch",
     "pattern": "mobility",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
-        "group": "shoulders",
+        "group": "adductors",
         "role": "primary"
       }
     ],
@@ -5906,7 +6174,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_161",
     "name": "Couch Stretch",
     "pattern": "mobility",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
         "group": "quadriceps",
@@ -5943,7 +6211,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_162",
     "name": "Pancake Stretch",
     "pattern": "mobility",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
         "group": "adductors",
@@ -5988,7 +6256,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_163",
     "name": "Front Split",
     "pattern": "mobility",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
         "group": "hamstrings",
@@ -6035,7 +6303,7 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_164",
     "name": "Middle Split",
     "pattern": "mobility",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
         "group": "adductors",
@@ -6062,10 +6330,10 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_165",
     "name": "Cobra Stretch",
     "pattern": "mobility",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
-        "group": "quadriceps",
+        "group": "lower back",
         "role": "primary"
       },
       {
@@ -6163,14 +6431,18 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "id": "hf_168",
     "name": "Scorpion Stretch",
     "pattern": "mobility",
-    "type": "dynamic",
+    "type": "isometric",
     "muscles": [
       {
-        "group": "quadriceps",
+        "group": "abdominals",
         "role": "primary"
       },
       {
-        "group": "abdominals",
+        "group": "middle back",
+        "role": "primary"
+      },
+      {
+        "group": "lower back",
         "role": "primary"
       }
     ],
@@ -6193,15 +6465,15 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "type": "dynamic",
     "muscles": [
       {
-        "group": "quadriceps",
-        "role": "primary"
-      },
-      {
         "group": "adductors",
         "role": "primary"
       },
       {
         "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "middle back",
         "role": "primary"
       }
     ],
@@ -6231,6 +6503,14 @@ export const HF_CATALOGUE: SeedExercise[] = [
     "pattern": "mobility",
     "type": "dynamic",
     "muscles": [
+      {
+        "group": "middle back",
+        "role": "primary"
+      },
+      {
+        "group": "chest",
+        "role": "primary"
+      },
       {
         "group": "abdominals",
         "role": "primary"

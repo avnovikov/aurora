@@ -1,4 +1,5 @@
-import { SEED_GRAPH, SESSION_TEMPLATES } from "../data/seed";
+import { EXERCISE_GRAPH } from "../data/exerciseGraph";
+import { SESSION_TEMPLATES } from "../data/seed";
 import {
   buildChainMap,
   KEY_CHAIN_ANCHOR_IDS,
@@ -31,9 +32,9 @@ function buildProgressChains(): ChainMap[] {
     template.slots.map((slot) => slot.exerciseId),
   );
   const lastResolveFor = lastResolveLookup();
-  return listChainRootIds(SESSION_TEMPLATES, KEY_CHAIN_ANCHOR_IDS, SEED_GRAPH).map(
+  return listChainRootIds(SESSION_TEMPLATES, KEY_CHAIN_ANCHOR_IDS, EXERCISE_GRAPH).map(
     (rootId) =>
-      buildChainMap(rootId, planExerciseIds, memories, SEED_GRAPH, lastResolveFor),
+      buildChainMap(rootId, planExerciseIds, memories, EXERCISE_GRAPH, lastResolveFor),
   );
 }
 

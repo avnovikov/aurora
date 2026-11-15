@@ -1,4 +1,5 @@
-import { SEED_GRAPH, type SeedExercise } from "../data/seed";
+import { EXERCISE_GRAPH } from "../data/exerciseGraph";
+import { type SeedExercise } from "../data/seed";
 
 export interface TargetDistance {
   targetId: string;
@@ -17,8 +18,8 @@ export function distanceToTarget(
   currentId: string,
   targetId: string,
 ): TargetDistance {
-  const current = SEED_GRAPH[currentId];
-  const target = SEED_GRAPH[targetId];
+  const current = EXERCISE_GRAPH[currentId];
+  const target = EXERCISE_GRAPH[targetId];
   if (!current || !target) {
     return missingDistance(currentId, targetId, current, target);
   }
@@ -53,7 +54,7 @@ function walkHarderSteps(start: SeedExercise, targetId: string): number | null {
     if (cursor.harderId === targetId) {
       return steps;
     }
-    const harder = SEED_GRAPH[cursor.harderId];
+    const harder = EXERCISE_GRAPH[cursor.harderId];
     if (!harder) {
       return null;
     }

@@ -1,7 +1,7 @@
+import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import { maxTier } from "../domain/skillTier";
 import type { Exercise, ExerciseMemory, SkillTier } from "../domain/types";
 import type { HistoryEntry, SessionEvaluation } from "../domain/program";
-import { SEED_GRAPH } from "../data/seed";
 import { effectiveSkillTier } from "../rules/skillDose";
 
 const HISTORY_KEY = "aurora.poc.history.v1";
@@ -87,7 +87,7 @@ export function recordBestReps(
   memories: Record<string, ExerciseMemory>,
   exerciseId: string,
   completedReps: number,
-  exercise: Exercise | undefined = SEED_GRAPH[exerciseId],
+  exercise: Exercise | undefined = EXERCISE_GRAPH[exerciseId],
 ): Record<string, ExerciseMemory> {
   if (completedReps <= 0) {
     return memories;

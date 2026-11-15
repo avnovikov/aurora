@@ -1,4 +1,4 @@
-import { SEED_GRAPH } from "../data/seed";
+import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import type { SessionTemplate } from "../domain/program";
 import {
   templateDurationLabel,
@@ -32,7 +32,7 @@ export function forecastStripHtml(upcoming: SessionTemplate[]): string {
 
 function templateHitsCore(template: SessionTemplate): boolean {
   return template.slots.some((slot) => {
-    const exercise = SEED_GRAPH[slot.exerciseId];
+    const exercise = EXERCISE_GRAPH[slot.exerciseId];
     return exercise?.regions.includes("core") ?? false;
   });
 }

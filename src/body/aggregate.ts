@@ -1,4 +1,4 @@
-import { SEED_GRAPH } from "../data/seed";
+import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import type { HistoryEntry } from "../domain/program";
 import type { Exercise, MuscleGroup, MuscleRole } from "../domain/types";
 
@@ -78,7 +78,7 @@ function isCountable(entry: HistoryEntry, cutoffMs: number): boolean {
 
 function addEntryLoad(loads: MuscleLoadMap, entry: HistoryEntry): void {
   for (const exerciseId of entry.exerciseIds) {
-    const exercise = SEED_GRAPH[exerciseId];
+    const exercise = EXERCISE_GRAPH[exerciseId];
     if (!exercise) {
       continue;
     }

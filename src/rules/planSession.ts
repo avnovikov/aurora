@@ -1,5 +1,5 @@
+import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import {
-  SEED_GRAPH,
   STARTER_PROGRAM,
   type LoadRegion,
   type SeedSlot,
@@ -35,6 +35,9 @@ export interface PlannedWorkItem {
   reason: string;
   doodlePath?: string;
   cues: string[];
+  /** One-line description and how-to steps from the curated Library text. */
+  summary?: string;
+  steps?: string[];
 }
 
 export interface PlannedSession {
@@ -69,7 +72,7 @@ interface SlotContext {
 function focusRegionsFromSlots(program: StarterProgram): LoadRegion[] {
   const regions = new Set<LoadRegion>();
   for (const slot of program.slots) {
-    const exercise = SEED_GRAPH[slot.exerciseId];
+    const exercise = EXERCISE_GRAPH[slot.exerciseId];
     exercise?.regions.forEach((region) => {
       if (region !== "general") {
         regions.add(region);
@@ -89,7 +92,7 @@ function planWorkItem(
   context: SlotContext,
   varietyReason?: string,
 ): PlannedWorkItem {
-  const exercise = SEED_GRAPH[exerciseId];
+  const exercise = EXERCISE_GRAPH[exerciseId];
   if (!exercise) {
     throw new Error(`Unknown exercise for slot ${slot.id}: ${exerciseId}`);
   }
@@ -100,10 +103,10 @@ function planWorkItem(
     dose: { ...slot.dose },
     pinned: slot.pinned,
     weakLinks: [],
-    graph: SEED_GRAPH,
+    graph: EXERCISE_GRAPH,
     deloadActive: context.deloadActive,
   });
-  const chosen = SEED_GRAPH[resolved.exerciseId] ?? exercise;
+  const chosen = EXERCISE_GRAPH[resolved.exerciseId] ?? exercise;
   const reason = varietyReason
     ? `${resolved.reason} · ${varietyReason}`
     : resolved.reason;
@@ -118,6 +121,8 @@ function planWorkItem(
     reason,
     doodlePath: chosen.doodlePath,
     cues: chosen.cues,
+    summary: chosen.description,
+    steps: chosen.steps,
   };
 }
 

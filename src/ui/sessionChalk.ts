@@ -91,6 +91,16 @@ function cuesListHtml(cues: string[]): string {
   return `<ul class="cues doodle-cues">${items}</ul>`;
 }
 
+/** Curated summary and collapsible how-to steps for the current exercise. */
+function howToHtml(item: PlannedWorkItem): string {
+  const summary = item.summary ? `<p class="lib-summary">${escapeHtml(item.summary)}</p>` : "";
+  if (!item.steps?.length) {
+    return summary;
+  }
+  const steps = item.steps.map((step) => `<li>${escapeHtml(step)}</li>`).join("");
+  return `${summary}<details class="session-howto"><summary>How to</summary><ol class="lib-steps">${steps}</ol></details>`;
+}
+
 function bodyHtml(planned: PlannedSession, state: ViewState): string {
   if (
     state.phase === "warmup" ||
@@ -140,6 +150,7 @@ function workHtml(item: PlannedWorkItem, state: ViewState): string {
       <p class="reps">${reps}</p>
       <p class="reason">${escapeHtml(item.reason)}</p>
       ${media}
+      ${howToHtml(item)}
       ${cues}
       <div class="row">
         <button type="button" class="cta" data-log-set>Log set</button>
