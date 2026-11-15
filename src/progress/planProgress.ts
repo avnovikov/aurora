@@ -29,6 +29,9 @@ export interface PlanProgressCard {
   /** Where training sits (or suggested start when not started). */
   currentId: string;
   currentName: string;
+  /** Personal best on the Now / suggested-start step, when logged. */
+  personalBestReps?: number;
+  personalBestIsHold: boolean;
   nextId: string | null;
   nextName: string | null;
   stepsToTarget: number | null;
@@ -135,6 +138,7 @@ function notStartedCard(
     phase: "not_started",
     currentId: startId,
     currentName: start?.name ?? startId,
+    ...personalBestFields(startId, graph, memories),
     nextId,
     nextName: nameOrNull(graph, nextId),
     stepsToTarget: distanceToTarget(startId, target.id).stepsToTarget,
@@ -165,6 +169,7 @@ function activeCard(
     phase: "active",
     currentId,
     currentName: current.name,
+    ...personalBestFields(currentId, graph, memories),
     nextId,
     nextName: nameOrNull(graph, nextId),
     stepsToTarget: distanceToTarget(currentId, target.id).stepsToTarget,
@@ -198,6 +203,7 @@ function orphanTargetCard(target: TargetRef): PlanProgressCard {
     phase: "not_started",
     currentId: target.id,
     currentName: target.name,
+    personalBestIsHold: false,
     nextId: null,
     nextName: null,
     stepsToTarget: 0,
@@ -206,6 +212,18 @@ function orphanTargetCard(target: TargetRef): PlanProgressCard {
       kind: "no_history",
       reason: "No progression path linked for this target yet",
     },
+  };
+}
+
+function personalBestFields(
+  exerciseId: string,
+  graph: ChainGraph,
+  memories: Record<string, ExerciseMemory>,
+): Pick<PlanProgressCard, "personalBestReps" | "personalBestIsHold"> {
+  const exercise = graph[exerciseId] as SeedExercise | undefined;
+  return {
+    personalBestReps: memories[exerciseId]?.bestReps,
+    personalBestIsHold: exercise?.effort === "hold",
   };
 }
 

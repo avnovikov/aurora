@@ -20,6 +20,7 @@ import {
   stepsHtml,
   summaryHtml,
 } from "./detailSections";
+import { personalBestHeroHtml, personalBestUnit } from "./personalBest";
 import { isTemplateTarget } from "./targets";
 
 export interface DetailActions {
@@ -124,6 +125,7 @@ export function detailHtml(
       ${targetBadge}
       <p class="eyebrow">Exercise</p>
       <h1>${escapeHtml(exercise.name)}</h1>
+      ${personalBestHeroHtml(memory.bestReps, personalBestUnit(exercise))}
       <p class="lib-meta">${escapeHtml(exerciseMetaLine(exercise))}</p>
       <p class="lib-meta">Muscles: ${escapeHtml(formatMuscles(exercise.muscles))}</p>
       ${summaryHtml(exercise)}
@@ -220,10 +222,13 @@ function skillPickerHtml(
     const selected = tier === current ? "selected" : "";
     return `<option value="${tier}" ${selected}>${SKILL_TIER_LABELS[tier]}</option>`;
   }).join("");
-  const best = bestRepsHintHtml(exercise, memory, current);
   const cascade = cascadeHint
     ? `<p class="hint" data-cascade-hint>${escapeHtml(cascadeHint)}</p>`
     : "";
+  const levelHint =
+    memory.bestReps === undefined
+      ? `<p class="hint">Set your starting level; logged sets refine it.</p>`
+      : `<p class="hint">Effective level · ${escapeHtml(effectiveLabel(memory.skillTier ?? current))}</p>`;
   return `
     <p class="eyebrow">Your level</p>
     <label class="field">
@@ -232,25 +237,10 @@ function skillPickerHtml(
         ${options}
       </select>
     </label>
-    ${best}
+    ${levelHint}
     ${cascade}
   `;
 }
-
-function bestRepsHintHtml(
-  exercise: SeedExercise,
-  memory: DetailMemoryView,
-  current: SkillTier,
-): string {
-  if (memory.bestReps === undefined) {
-    return `<p class="hint">Set your starting level; logged sets refine it.</p>`;
-  }
-  const unit = exercise.effort === "hold" ? "s" : " reps";
-  const label = effectiveLabel(memory.skillTier ?? current);
-  return `<p class="hint">Best logged · ${memory.bestReps}${unit} · ${escapeHtml(label)}</p>`;
-}
-
-
 
 function standardsHtml(exercise: SeedExercise): string {
   if (!exercise.standards) {
