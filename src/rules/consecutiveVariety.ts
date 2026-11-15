@@ -1,5 +1,8 @@
-import { SEED_GRAPH, TEMPLATE_BY_ID, type SeedExercise } from "../data/seed";
+import { EXERCISE_GRAPH, PLANNABLE_EXERCISES, sourceRank } from "../data/exerciseGraph";
+import { placeOnLadder } from "../data/enrich/ladder";
+import { TEMPLATE_BY_ID, type SeedExercise } from "../data/seed";
 import type { HistoryEntry, SessionFocus, TemplateSlot } from "../domain/program";
+import { tierIndex } from "../domain/skillTier";
 import type { Pattern } from "../domain/types";
 
 export interface VarietyPick {
@@ -88,28 +91,42 @@ function findAlternate(
   return null;
 }
 
-/**
- * Prefer same pattern, then same training region, then any other work move.
- * Maximises difference on consecutive same-zone days.
- */
-function candidateTiers(
-  pattern: Pattern,
-  preferredId: string,
-): SeedExercise[][] {
-  const preferred = SEED_GRAPH[preferredId];
-  const regionHint = preferred?.regions.find((region) => region !== "general");
-  const work = Object.values(SEED_GRAPH).filter(
-    (exercise) => exercise.role === "work" && exercise.id !== preferredId,
-  );
-  const samePattern = work
-    .filter((exercise) => exercise.pattern === pattern)
-    .sort((a, b) => a.id.localeCompare(b.id));
-  const sameRegion = regionHint
-    ? work
-        .filter((exercise) => exercise.regions.includes(regionHint))
-        .sort((a, b) => a.id.localeCompare(b.id))
-    : [];
-  const anything = [...work].sort((a, b) => a.id.localeCompare(b.id));
-  return [samePattern, sameRegion, anything];
+/** Same level or one step easier — a variety swap never makes the day harder. */
+function levelGap(candidate: SeedExercise, preferred: SeedExercise | undefined): number | null {
+  if (!preferred?.difficulty || !candidate.difficulty) {
+    return 0;
+  }
+  const gap = tierIndex(preferred.difficulty) - tierIndex(candidate.difficulty);
+  return gap === 0 || gap === 1 ? gap : null;
 }
 
+function familyOf(exercise: SeedExercise | undefined): string | undefined {
+  return exercise ? placeOnLadder(exercise.name)?.family.id : undefined;
+}
+
+/**
+ * Alternates from the whole plannable Library: same movement family, then
+ * same pattern, then same training region, then any work move — each pool
+ * limited to the same level or one easier, curated sources first.
+ */
+function candidateTiers(pattern: Pattern, preferredId: string): SeedExercise[][] {
+  const preferred = EXERCISE_GRAPH[preferredId];
+  const family = familyOf(preferred);
+  const regionHint = preferred?.regions.find((region) => region !== "general");
+  const work = PLANNABLE_EXERCISES.filter(
+    (exercise) => exercise.id !== preferredId && levelGap(exercise, preferred) !== null,
+  );
+  const ordered = (pool: SeedExercise[]): SeedExercise[] =>
+    [...pool].sort(
+      (a, b) =>
+        (levelGap(a, preferred) ?? 0) - (levelGap(b, preferred) ?? 0) ||
+        sourceRank(a.id) - sourceRank(b.id) ||
+        a.id.localeCompare(b.id),
+    );
+  const sameFamily = family ? work.filter((exercise) => familyOf(exercise) === family) : [];
+  const samePattern = work.filter((exercise) => exercise.pattern === pattern);
+  const sameRegion = regionHint
+    ? work.filter((exercise) => exercise.regions.includes(regionHint))
+    : [];
+  return [ordered(sameFamily), ordered(samePattern), ordered(sameRegion), ordered(work)];
+}

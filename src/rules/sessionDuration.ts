@@ -1,4 +1,4 @@
-import { SEED_GRAPH } from "../data/seed";
+import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import { requireWarmupStation } from "../data/warmupStations";
 import { resolveExerciseTiming } from "../domain/timing";
 import type {
@@ -93,7 +93,7 @@ export function formatDurationLabel(estimate: SessionDurationEstimate): string {
 export function estimatePlannedSessionSeconds(planned: PlannedSession): number {
   const warmupSeconds = warmupViewSeconds(planned.warmup);
   const workSeconds = planned.work.reduce((sum, item) => {
-    const exercise = SEED_GRAPH[item.exerciseId];
+    const exercise = EXERCISE_GRAPH[item.exerciseId];
     if (!exercise) {
       return sum;
     }
@@ -125,7 +125,7 @@ function estimateTemplateWarmupSeconds(template: SessionTemplate): number {
 export { WARMUP_GAPS };
 
 function requireExercise(exerciseId: string): Exercise {
-  const exercise = SEED_GRAPH[exerciseId];
+  const exercise = EXERCISE_GRAPH[exerciseId];
   if (!exercise) {
     throw new Error(`Unknown exercise for duration estimate: ${exerciseId}`);
   }

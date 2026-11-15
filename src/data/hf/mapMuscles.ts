@@ -22,12 +22,49 @@ const MUSCLE_ALIASES: Record<string, MuscleGroup> = {
   "middle back": "middle back",
   back: "lats",
   obliques: "abdominals",
-  "hip flexors": "quadriceps",
   adductors: "adductors",
   abductors: "abductors",
+  gastrocnemius: "calves",
+  soleus: "calves",
+  "tibialis anterior": "calves",
+  "rectus abdominis": "abdominals",
+  core: "abdominals",
+  "transverse abdominis": "abdominals",
+  piriformis: "glutes",
+  "hip external rotators": "glutes",
+  "glute medius": "glutes",
+  "gluteus medius": "glutes",
+  "gluteus maximus": "glutes",
+  "hip adductors": "adductors",
+  groin: "adductors",
+  "inner thighs": "adductors",
+  "lumbar spine": "lower back",
+  "erector spinae": "lower back",
+  "spinal erectors": "lower back",
+  grip: "forearms",
+  "wrist flexors": "forearms",
+  "wrist extensors": "forearms",
+  pecs: "chest",
+  "serratus anterior": "chest",
+  rhomboids: "middle back",
+  "lower traps": "traps",
+  "upper back": "middle back",
+  "thoracic spine": "middle back",
+  neck: "neck",
 };
 
-export function mapHfPrimaryMuscles(primaryMuscles: string[]): MuscleEntry[] {
+/** Used only when no listed muscle is recognised ("hip flexors" alone, etc.). */
+const FALLBACK_BY_CATEGORY: Record<string, MuscleGroup> = {
+  push: "chest",
+  pull: "lats",
+  legs: "quadriceps",
+  core: "abdominals",
+  skill: "shoulders",
+  mobility: "glutes",
+  explosive: "quadriceps",
+};
+
+export function mapHfPrimaryMuscles(primaryMuscles: string[], category = ""): MuscleEntry[] {
   const groups: MuscleEntry[] = [];
   const seen = new Set<MuscleGroup>();
 
@@ -41,7 +78,7 @@ export function mapHfPrimaryMuscles(primaryMuscles: string[]): MuscleEntry[] {
   }
 
   if (groups.length === 0) {
-    groups.push({ group: "shoulders", role: "primary" });
+    groups.push({ group: FALLBACK_BY_CATEGORY[category] ?? "shoulders", role: "primary" });
   }
 
   return groups;

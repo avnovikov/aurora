@@ -8,6 +8,11 @@ export const SKILL_TIERS: readonly SkillTier[] = [
   "elite",
 ] as const;
 
+/** Position of a tier, 0 = novice … 4 = elite (for comparisons). */
+export function tierIndex(tier: SkillTier): number {
+  return SKILL_TIERS.indexOf(tier);
+}
+
 export const SKILL_TIER_LABELS: Record<SkillTier, string> = {
   novice: "Novice",
   beginner: "Beginner",

@@ -154,6 +154,10 @@ Dropping kg to hit reps is not an advance.
 | MuscleWiki | Text, muscles, branded videos + link; non-profit only; no maps/tools/image files |
 | [Martjn/calisthenics_exercises](https://huggingface.co/datasets/Martjn/calisthenics_exercises) | **Dataset license: Apache-2.0 (open).** Import names, descriptions, categories, primary muscles, and three-step progressions under Apache-2.0 with attribution. External `links[]` keep their own licenses — import media only when `license` is `CC-BY-SA`, `CC-BY-SA-3.0`, or `public-domain`; skip empty/`null` licenses. free-exercise-db images stay out (origin unclear). MuscleWiki media only via MuscleWiki notice, not via this file’s bare page links. |
 | User JSON | Own notes; refuse records with no license when claimed as third-party |
+| NTC-style moves | Generic move names only; all cues written in-house (no Nike text or media) |
+| ExerciseDB | **Not allowed** — data and media under commercial Terms of Use (only the API code is AGPL) |
+
+Levels, progressions, standards and safety notes: see `2026-11-15-library-levels-evidence.md`.
 
 Starter seed: legs + handstand doodles and chains; four core chains so rules run before full import.
 

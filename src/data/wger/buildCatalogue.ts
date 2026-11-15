@@ -1,0 +1,99 @@
+import { exerciseNameKey } from "../nameKey";
+import { serialiseCatalogueModule } from "../serialiseCatalogue";
+import type { SeedExercise } from "../seed";
+import { cleanWgerName, mapWgerExerciseRecord } from "./mapWgerExercise";
+import { WGER_SAME_AS_EXISTING, isWgerCandidate } from "./selection";
+import type { WgerExerciseRecord } from "./types";
+
+export interface WgerBuildResult {
+  catalogue: SeedExercise[];
+  skippedDuplicates: string[];
+  /** Skipped records and the library id they duplicate (for merging text). */
+  duplicates: Array<{ record: WgerExerciseRecord; intoId: string }>;
+}
+
+/** Bodyweight subset of wger, minus names already in `existing` (or repeated in wger). */
+export function buildWgerCatalogue(
+  records: WgerExerciseRecord[],
+  existing: SeedExercise[],
+): WgerBuildResult {
+  const taken = new Map(existing.map((item) => [exerciseNameKey(item.name), item.id]));
+  const catalogue: SeedExercise[] = [];
+  const skippedDuplicates: string[] = [];
+  const duplicates: Array<{ record: WgerExerciseRecord; intoId: string }> = [];
+  const ordered = [...records].sort((a, b) => a.id - b.id);
+
+  for (const record of ordered) {
+    if (!isWgerCandidate(record)) {
+      continue;
+    }
+    const key = exerciseNameKey(cleanWgerName(record.name));
+    const alias = WGER_SAME_AS_EXISTING[record.name];
+    const intoId = alias ? taken.get(exerciseNameKey(alias)) : taken.get(key);
+    if (alias || intoId) {
+      skippedDuplicates.push(record.name);
+      if (intoId) {
+        duplicates.push({ record, intoId });
+      }
+      continue;
+    }
+    const mapped = mapWgerExerciseRecord(record);
+    taken.set(key, mapped.id);
+    catalogue.push(mapped);
+  }
+
+  catalogue.sort((a, b) => a.name.localeCompare(b.name));
+  return { catalogue, skippedDuplicates, duplicates };
+}
+
+interface WgerApiExercise {
+  id: number;
+  category: { name: string };
+  muscles: Array<{ id: number }>;
+  muscles_secondary: Array<{ id: number }>;
+  equipment: Array<{ name: string }>;
+  license: { short_name: string };
+  license_author: string | null;
+  images: Array<{ image: string; license: number; license_author: string | null }>;
+  translations: Array<{ language: number; name: string; description: string }>;
+}
+
+const ENGLISH = 2;
+const LICENSE_BY_ID: Record<number, string> = {
+  1: "CC-BY-SA-3.0",
+  2: "CC-BY-SA-4.0",
+  3: "CC0",
+  4: "CC-BY-4.0",
+  5: "ODbL",
+};
+
+/** Reduce the wger API payload to English-only fields we use. */
+export function slimWgerApiResults(results: WgerApiExercise[]): WgerExerciseRecord[] {
+  return results.flatMap((item) => {
+    const english = item.translations.find((t) => t.language === ENGLISH);
+    if (!english) {
+      return [];
+    }
+    return [
+      {
+        id: item.id,
+        name: english.name.trim(),
+        description: english.description,
+        category: item.category.name,
+        muscles: item.muscles.map((m) => m.id),
+        musclesSecondary: item.muscles_secondary.map((m) => m.id),
+        equipment: item.equipment.map((e) => e.name),
+        license: item.license.short_name.replace(" ", "-").replace(/-(\d)$/, "-$1.0"),
+        licenseAuthor: item.license_author ?? "",
+        images: item.images.flatMap((img) => {
+          const license = LICENSE_BY_ID[img.license];
+          return license ? [{ url: img.image, license, author: img.license_author ?? "" }] : [];
+        }),
+      },
+    ];
+  });
+}
+
+export function serialiseWgerCatalogueModule(catalogue: SeedExercise[]): string {
+  return serialiseCatalogueModule("WGER_CATALOGUE", "scripts/import-wger.ts", catalogue);
+}

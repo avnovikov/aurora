@@ -1,5 +1,5 @@
 import type { PlanQueue, SessionTemplate } from "../domain/program";
-import type { Dose, Exercise, ExerciseStandards, Pattern } from "../domain/types";
+import type { Dose, Exercise, ExerciseStandards, Pattern, SkillTier } from "../domain/types";
 
 export type LoadRegion = "legs" | "push" | "pull" | "core" | "skill" | "general";
 
@@ -18,6 +18,16 @@ export interface SeedExercise extends Exercise {
   description?: string;
   media?: ExerciseMedia[];
   attribution?: string;
+  /** Level at which this move is typically a working exercise. */
+  difficulty?: SkillTier;
+  /** Evidence-based safety notes shown in the Library. */
+  cautions?: string[];
+  /** How-to steps (curated house style). */
+  steps?: string[];
+  /** Common faults to avoid. */
+  mistakes?: string[];
+  /** Where the merged description text came from (attribution). */
+  sources?: string[];
 }
 
 export interface SeedSlot {
@@ -515,7 +525,8 @@ const SEED_STANDARDS: Record<string, ExerciseStandards> = {
   hip_hinge: std(8, 12, 20, 30, 40),
   nordic_curl: std(1, 2, 4, 6, 10),
   calf_raise: std(10, 15, 25, 40, 50),
-  single_leg_calf_raise: std(6, 10, 15, 20, 25),
+  /** Hébert-Losier 2017 PMID 28886865: healthy median ≈ 21–24 reps. */
+  single_leg_calf_raise: std(8, 15, 25, 35, 45),
   wall_handstand: std(10, 20, 40, 60, 90),
   elevated_pike: std(3, 5, 8, 12, 15),
   freestanding_hs: std(5, 10, 20, 40, 60),
@@ -525,7 +536,8 @@ const SEED_STANDARDS: Record<string, ExerciseStandards> = {
   hanging_knee_raise: std(3, 6, 10, 15, 20),
   pullup_dead_hang: std(10, 20, 40, 60, 90),
   scapular_pull: std(3, 6, 10, 15, 20),
-  pullup: std(1, 5, 12, 20, 25),
+  /** USMC PFT (men 21–25): 5 reps minimum, 23 maximum. */
+  pullup: std(1, 5, 10, 18, 25),
   muscle_up: std(1, 2, 3, 5, 8),
 };
 

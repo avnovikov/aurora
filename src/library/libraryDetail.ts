@@ -6,6 +6,14 @@ import {
 } from "./skillPresent";
 import type { SkillTier } from "../domain/types";
 import { escapeHtml, formatMuscles, formatPattern } from "./present";
+import {
+  cuesHtml,
+  mediaHtml,
+  mistakesHtml,
+  sourcesHtml,
+  stepsHtml,
+  summaryHtml,
+} from "./detailSections";
 import { isTemplateTarget } from "./targets";
 
 export interface DetailActions {
@@ -72,12 +80,6 @@ export function detailHtml(
   const targetBadge = isTemplateTarget(exercise.id, targetIds)
     ? `<p class="lib-badge">Target</p>`
     : "";
-  const media = exercise.doodlePath
-    ? `<img class="doodle" src="${escapeHtml(exercise.doodlePath)}" alt="Doodle for ${escapeHtml(exercise.name)}" />`
-    : "";
-  const cues = exercise.cues
-    .map((cue) => `<li>${escapeHtml(cue)}</li>`)
-    .join("");
   const chain = chainLinksHtml(exercise, catalogueById);
   const standards = standardsHtml(exercise);
   const skill = skillPickerHtml(exercise, memory);
@@ -88,15 +90,20 @@ export function detailHtml(
       ${targetBadge}
       <p class="eyebrow">Exercise</p>
       <h1>${escapeHtml(exercise.name)}</h1>
+      ${levelHtml(exercise)}
       <p class="tagline">Pattern: ${escapeHtml(formatPattern(exercise.pattern))}</p>
       <p class="tagline">Muscles: ${escapeHtml(formatMuscles(exercise.muscles))}</p>
       <p class="tagline">Regions: ${escapeHtml(exercise.regions.join(", "))}</p>
-      ${media}
+      ${summaryHtml(exercise)}
+      ${mediaHtml(exercise)}
+      ${cautionsHtml(exercise)}
+      ${stepsHtml(exercise)}
+      ${cuesHtml(exercise)}
+      ${mistakesHtml(exercise)}
       ${skill}
       ${standards}
-      <p class="eyebrow">Cues</p>
-      <ul class="cues">${cues}</ul>
       ${chain}
+      ${sourcesHtml(exercise)}
     </main>
   `;
 }
@@ -137,6 +144,24 @@ function bestRepsHintHtml(
   const unit = exercise.effort === "hold" ? "s" : " reps";
   const label = effectiveLabel(memory.skillTier ?? current);
   return `<p class="hint">Best logged · ${memory.bestReps}${unit} · ${escapeHtml(label)}</p>`;
+}
+
+function levelHtml(exercise: SeedExercise): string {
+  if (!exercise.difficulty) {
+    return "";
+  }
+  return `<p class="tagline">Level: ${escapeHtml(SKILL_TIER_LABELS[exercise.difficulty])}</p>`;
+}
+
+function cautionsHtml(exercise: SeedExercise): string {
+  if (!exercise.cautions?.length) {
+    return "";
+  }
+  const items = exercise.cautions.map((note) => `<li>${escapeHtml(note)}</li>`).join("");
+  return `
+    <p class="eyebrow">Safety</p>
+    <ul class="lib-cautions">${items}</ul>
+  `;
 }
 
 function standardsHtml(exercise: SeedExercise): string {

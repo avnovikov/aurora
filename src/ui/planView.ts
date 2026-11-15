@@ -1,4 +1,7 @@
-import { SEED_EXERCISES, SESSION_TEMPLATES } from "../data/seed";
+import { EXERCISE_GRAPH, PLANNABLE_EXERCISES, plannableByPattern } from "../data/exerciseGraph";
+import { SESSION_TEMPLATES } from "../data/seed";
+import { SKILL_TIER_LABELS } from "../domain/skillTier";
+import { escapeHtml, formatPattern } from "../library/present";
 import {
   appendQueueItem,
   completeToday,
@@ -99,14 +102,10 @@ function queueItemHtml(id: string, index: number, total: number): string {
 
 function procedureBlockHtml(templateId: string): string {
   const template = resolveTemplate(templateId);
-  const workIds = SEED_EXERCISES.filter((item) => item.role === "work").map(
-    (item) => item.id,
-  );
   // Templates without a north-star skill (Mobility) have nothing to pick.
   const targetSelect =
     template.targetExerciseIds.length > 0
       ? exerciseSelectHtml(
-          workIds,
           template.targetExerciseIds[0],
           `data-target data-template="${template.id}"`,
           "Target",
@@ -115,7 +114,6 @@ function procedureBlockHtml(templateId: string): string {
   const slots = template.slots
     .map((slot) =>
       exerciseSelectHtml(
-        withSelected(workIds, slot.exerciseId),
         slot.exerciseId,
         `data-slot-exercise data-template="${template.id}" data-slot="${slot.id}"`,
         slot.label,
@@ -141,30 +139,30 @@ function procedureBlockHtml(templateId: string): string {
   `;
 }
 
-/** Slot exercises may be warmup-role moves (Mobility); keep them selectable. */
-function withSelected(ids: string[], selectedId: string): string[] {
-  return ids.includes(selectedId) ? ids : [selectedId, ...ids];
-}
-
-function exerciseSelectHtml(
-  ids: string[],
-  selected: string | undefined,
-  attrs: string,
-  label: string,
-): string {
-  const options = ids
-    .map((id) => {
-      const name = exerciseName(id);
-      const isSelected = id === selected ? "selected" : "";
-      return `<option value="${id}" ${isSelected}>${name}</option>`;
-    })
-    .join("");
+/**
+ * Every plannable Library move, grouped by movement pattern with its level.
+ * A current pick outside that set (e.g. a Mobility warmup-role slot) stays selectable.
+ */
+function exerciseSelectHtml(selected: string | undefined, attrs: string, label: string): string {
+  const groups = [...plannableByPattern()].map(([pattern, exercises]) => {
+    const options = exercises.map((exercise) => optionHtml(exercise.id, selected)).join("");
+    return `<optgroup label="${escapeHtml(formatPattern(pattern))}">${options}</optgroup>`;
+  });
+  const isListed = PLANNABLE_EXERCISES.some((exercise) => exercise.id === selected);
+  const current = selected && !isListed ? optionHtml(selected, selected) : "";
   return `
     <label class="procedure-field">
       <span>${label}</span>
-      <select ${attrs}>${options}</select>
+      <select ${attrs}>${current}${groups.join("")}</select>
     </label>
   `;
+}
+
+function optionHtml(id: string, selected: string | undefined): string {
+  const exercise = EXERCISE_GRAPH[id];
+  const level = exercise?.difficulty ? ` · ${SKILL_TIER_LABELS[exercise.difficulty]}` : "";
+  const isSelected = id === selected ? "selected" : "";
+  return `<option value="${escapeHtml(id)}" ${isSelected}>${escapeHtml(exerciseName(id))}${level}</option>`;
 }
 
 function wirePlanControls(root: HTMLElement, paint: () => void): void {

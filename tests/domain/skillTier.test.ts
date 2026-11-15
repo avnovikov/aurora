@@ -18,7 +18,8 @@ describe("skill tiers", () => {
 
   it("leaves RIR when prescribing working reps", () => {
     const standards = SEED_GRAPH.pullup.standards!;
-    expect(workingRepsForTier(standards, "intermediate", 2)).toBe(10);
+    // USMC-anchored intermediate standard 10, minus 2 RIR.
+    expect(workingRepsForTier(standards, "intermediate", 2)).toBe(8);
   });
 
   it("walks to the next tier", () => {

@@ -1,4 +1,5 @@
 import type { LoadRegion, SeedExercise } from "../data/seed";
+import { SKILL_TIER_LABELS } from "../domain/skillTier";
 import { LIBRARY_REGIONS } from "./search";
 import { escapeHtml, formatPattern } from "./present";
 import { isTemplateTarget } from "./targets";
@@ -89,11 +90,15 @@ function listItemHtml(exercise: SeedExercise, targetIds: ReadonlySet<string>): s
     <li class="${coreClass}">
       <button type="button" class="lib-row" data-exercise-id="${escapeHtml(exercise.id)}">
         <strong>${target}${escapeHtml(exercise.name)}</strong>
-        <span>${escapeHtml(formatPattern(exercise.pattern))} · ${escapeHtml(exercise.regions.join(", "))}</span>
-        <p class="hint">${escapeHtml(exercise.cues[0] ?? "")}</p>
+        <span>${escapeHtml(formatPattern(exercise.pattern))} · ${escapeHtml(exercise.regions.join(", "))}${levelSuffix(exercise)}</span>
+        <p class="hint">${escapeHtml(exercise.description ?? exercise.cues[0] ?? "")}</p>
       </button>
     </li>
   `;
+}
+
+function levelSuffix(exercise: SeedExercise): string {
+  return exercise.difficulty ? ` · ${SKILL_TIER_LABELS[exercise.difficulty]}` : "";
 }
 
 function labelRegion(region: LoadRegion | "all"): string {
