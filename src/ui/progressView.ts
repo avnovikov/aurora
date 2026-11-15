@@ -1,7 +1,9 @@
 import { SEED_GRAPH, SESSION_TEMPLATES } from "../data/seed";
 import type { SessionTemplate } from "../domain/program";
 import type { ExerciseMemory } from "../domain/types";
+import { SKILL_TIER_LABELS } from "../domain/skillTier";
 import { distanceToTarget, type TargetDistance } from "../progress/targetDistance";
+import { shouldAdvanceProgression } from "../rules/skillDose";
 import { loadMemories } from "../session/history";
 
 export function renderProgressView(root: HTMLElement): void {
@@ -52,11 +54,39 @@ function formatGuess(
   memory: ExerciseMemory | undefined,
 ): string {
   if (!memory) {
-    return "No history yet — log a session";
+    return "No history yet — set a level in Library or log a session";
   }
-  const harder = SEED_GRAPH[currentId]?.harderId;
-  if (memory.sessionsAtStandard >= 2 && harder) {
-    return `Next level guess: ${SEED_GRAPH[harder]?.name ?? harder}`;
+  const tierLabel = tierLabelFor(memory);
+  const next = nextProgressionHint(currentId, memory);
+  if (next) {
+    return `${tierLabel} · next: ${next}`;
   }
-  return `At standard ×${memory.sessionsAtStandard}, below ×${memory.sessionsBelowFloor}`;
+  return `${tierLabel}${bestRepsHint(memory)} · at standard ×${memory.sessionsAtStandard}`;
+}
+
+function tierLabelFor(memory: ExerciseMemory): string {
+  const tier = memory.skillTier ?? memory.declaredTier;
+  return tier ? SKILL_TIER_LABELS[tier] : "Unset";
+}
+
+function bestRepsHint(memory: ExerciseMemory): string {
+  if (memory.bestReps === undefined) {
+    return "";
+  }
+  return ` · best ${memory.bestReps}`;
+}
+
+function nextProgressionHint(
+  currentId: string,
+  memory: ExerciseMemory,
+): string | null {
+  const exercise = SEED_GRAPH[currentId];
+  const harder = exercise?.harderId;
+  if (!exercise || !harder) {
+    return null;
+  }
+  if (!shouldAdvanceProgression(exercise, memory)) {
+    return null;
+  }
+  return SEED_GRAPH[harder]?.name ?? harder;
 }

@@ -1,66 +1,152 @@
-import { SESSION_TEMPLATES, TEMPLATE_BY_ID } from "../data/seed";
+import { SEED_EXERCISES, SEED_GRAPH, SESSION_TEMPLATES } from "../data/seed";
 import {
   completeNext,
   loadPlanQueue,
   moveQueueItem,
-  peekUpcoming,
   removeQueueItem,
   replaceQueueItem,
   savePlanQueue,
   skipNext,
 } from "../plan/queue";
-import { forecastStripHtml } from "./forecastStrip";
+import {
+  clearTemplateOverride,
+  listResolvedTemplates,
+  resolveTemplate,
+  setSlotExercise,
+  setTemplateTarget,
+} from "../plan/templates";
+import {
+  estimateSessionDuration,
+  formatDurationLabel,
+} from "../rules/sessionDuration";
 
 export function renderPlanView(root: HTMLElement): void {
   const paint = (): void => {
     const queue = loadPlanQueue();
-    const upcoming = peekUpcoming(queue, Math.min(3, queue.items.length));
     root.innerHTML = `
       <main class="shell">
         <p class="eyebrow">Plan</p>
-        <h1>Session queue</h1>
-        <p class="tagline">Delete or rearrange anything. Next is what Today runs.</p>
-        ${forecastStripHtml(upcoming)}
-        <div class="row">
-          <button type="button" data-skip>Skip next → tail</button>
-        </div>
-        <p class="eyebrow">Full queue</p>
-        <ol class="queue-list queue-edit">
+        <h1>Queue</h1>
+        <p class="tagline">First item is Today. Move it with the arrows.</p>
+        <button type="button" class="plan-skip" data-skip>Skip next → end</button>
+        <ol class="plan-queue" aria-label="Session queue">
           ${queue.items
-            .map((id, index) => queueRowHtml(id, index, queue.items.length))
+            .map((id, index) => queueItemHtml(id, index, queue.items.length))
             .join("")}
         </ol>
-        <p class="eyebrow">Add to end</p>
-        <div class="row wrap">
-          ${SESSION_TEMPLATES.map(
-            (template) =>
-              `<button type="button" data-add="${template.id}">+ ${template.name}</button>`,
-          ).join("")}
-        </div>
+        <section class="plan-section">
+          <p class="eyebrow">Add session</p>
+          <div class="plan-add">
+            ${SESSION_TEMPLATES.map(
+              (template) =>
+                `<button type="button" data-add="${template.id}">${template.name}</button>`,
+            ).join("")}
+          </div>
+        </section>
+        <section class="plan-section">
+          <p class="eyebrow">Procedure</p>
+          <p class="tagline">Working exercises now; Target is the north star.</p>
+          <div class="procedure-list">
+            ${listResolvedTemplates()
+              .map((template) => procedureBlockHtml(template.id))
+              .join("")}
+          </div>
+        </section>
       </main>
     `;
 
     wirePlanControls(root, paint);
+    wireProcedureControls(root, paint);
   };
 
   paint();
 }
 
-function queueRowHtml(id: string, index: number, total: number): string {
-  const template = TEMPLATE_BY_ID[id];
-  const options = SESSION_TEMPLATES.map(
+function queueItemHtml(id: string, index: number, total: number): string {
+  const template = resolveTemplate(id);
+  const isNext = index === 0;
+  const targetNames = template.targetExerciseIds
+    .map((exerciseId) => SEED_GRAPH[exerciseId]?.name ?? exerciseId)
+    .join(" · ");
+  const duration = formatDurationLabel(estimateSessionDuration(template));
+  const replaceOptions = SESSION_TEMPLATES.map(
     (item) =>
       `<option value="${item.id}" ${item.id === id ? "selected" : ""}>${item.name}</option>`,
   ).join("");
   return `
-    <li class="queue-edit-row" data-index="${index}">
-      <span class="queue-pos">${index === 0 ? "Next" : String(index + 1)}</span>
-      <select data-replace aria-label="Template at position ${index + 1}">${options}</select>
-      <button type="button" data-up ${index === 0 ? "disabled" : ""} aria-label="Move up">↑</button>
-      <button type="button" data-down ${index >= total - 1 ? "disabled" : ""} aria-label="Move down">↓</button>
-      <button type="button" data-remove ${total <= 1 ? "disabled" : ""} aria-label="Delete">Delete</button>
-      <span class="hint">${template?.focus ?? ""}</span>
+    <li class="plan-queue-item ${isNext ? "is-next" : ""}" data-index="${index}">
+      <div class="plan-queue-rank">${isNext ? "Next" : String(index + 1)}</div>
+      <div class="plan-queue-body">
+        <strong>${template.name}</strong>
+        <p class="hint">${duration}${targetNames ? ` · ${targetNames}` : ""}</p>
+        <label class="plan-replace">
+          <span class="visually-hidden">Change session type</span>
+          <select data-replace aria-label="Change session ${index + 1}">${replaceOptions}</select>
+        </label>
+      </div>
+      <div class="plan-queue-move" role="group" aria-label="Reorder">
+        <button type="button" data-up ${index === 0 ? "disabled" : ""} aria-label="Move earlier">↑</button>
+        <button type="button" data-down ${index >= total - 1 ? "disabled" : ""} aria-label="Move later">↓</button>
+      </div>
+      <button type="button" class="plan-remove" data-remove ${total <= 1 ? "disabled" : ""} aria-label="Remove from queue">✕</button>
     </li>
+  `;
+}
+
+function procedureBlockHtml(templateId: string): string {
+  const template = resolveTemplate(templateId);
+  const workIds = SEED_EXERCISES.filter((item) => item.role === "work").map(
+    (item) => item.id,
+  );
+  const targetSelect = exerciseSelectHtml(
+    workIds,
+    template.targetExerciseIds[0],
+    `data-target data-template="${template.id}"`,
+    "Target",
+  );
+  const slots = template.slots
+    .map((slot) =>
+      exerciseSelectHtml(
+        workIds,
+        slot.exerciseId,
+        `data-slot-exercise data-template="${template.id}" data-slot="${slot.id}"`,
+        slot.label,
+      ),
+    )
+    .join("");
+  return `
+    <details class="procedure-block" ${template.id === "tmpl_bars" ? "open" : ""}>
+      <summary>
+        <span>${template.name}</span>
+        <span class="hint">${SEED_GRAPH[template.targetExerciseIds[0]]?.name ?? "Target"}</span>
+      </summary>
+      <div class="procedure-fields">
+        ${targetSelect}
+        ${slots}
+        <button type="button" class="plan-reset" data-reset-procedure="${template.id}">Reset to default</button>
+      </div>
+    </details>
+  `;
+}
+
+function exerciseSelectHtml(
+  ids: string[],
+  selected: string | undefined,
+  attrs: string,
+  label: string,
+): string {
+  const options = ids
+    .map((id) => {
+      const name = SEED_GRAPH[id]?.name ?? id;
+      const isSelected = id === selected ? "selected" : "";
+      return `<option value="${id}" ${isSelected}>${name}</option>`;
+    })
+    .join("");
+  return `
+    <label class="procedure-field">
+      <span>${label}</span>
+      <select ${attrs}>${options}</select>
+    </label>
   `;
 }
 
@@ -79,7 +165,7 @@ function wirePlanControls(root: HTMLElement, paint: () => void): void {
     });
   });
 
-  root.querySelectorAll<HTMLElement>(".queue-edit-row").forEach((row) => {
+  root.querySelectorAll<HTMLElement>(".plan-queue-item").forEach((row) => {
     const index = Number(row.dataset.index);
     row.querySelector("[data-up]")?.addEventListener("click", () => {
       if (index <= 0) {
@@ -104,6 +190,42 @@ function wirePlanControls(root: HTMLElement, paint: () => void): void {
         paint();
       },
     );
+  });
+}
+
+function wireProcedureControls(root: HTMLElement, paint: () => void): void {
+  root.querySelectorAll<HTMLSelectElement>("[data-target]").forEach((select) => {
+    select.addEventListener("change", () => {
+      const templateId = select.dataset.template;
+      if (!templateId) {
+        return;
+      }
+      setTemplateTarget(templateId, select.value);
+      paint();
+    });
+  });
+
+  root.querySelectorAll<HTMLSelectElement>("[data-slot-exercise]").forEach((select) => {
+    select.addEventListener("change", () => {
+      const templateId = select.dataset.template;
+      const slotId = select.dataset.slot;
+      if (!templateId || !slotId) {
+        return;
+      }
+      setSlotExercise(templateId, slotId, select.value);
+      paint();
+    });
+  });
+
+  root.querySelectorAll<HTMLButtonElement>("[data-reset-procedure]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const templateId = button.dataset.resetProcedure;
+      if (!templateId) {
+        return;
+      }
+      clearTemplateOverride(templateId);
+      paint();
+    });
   });
 }
 

@@ -43,6 +43,7 @@ function emptyMemory(exerciseId: string): ExerciseMemory {
     sessionsBelowFloor: 0,
     lastAddedLoadKg: 0,
     weakLinkSessionsRemaining: 0,
+    skillTier: "beginner",
   };
 }
 

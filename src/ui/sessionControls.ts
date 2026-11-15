@@ -3,6 +3,11 @@ import {
   editNextReps,
   prescribedForNextSet,
 } from "../session/setLog";
+import {
+  loadMemories,
+  recordBestReps,
+  saveMemories,
+} from "../session/history";
 import type { PlannedSession } from "../rules/planSession";
 import type { ViewState } from "./sessionTypes";
 import { currentWork } from "./sessionState";
@@ -112,6 +117,9 @@ function completeSet(
     addedLoadKg: work.addedLoadKg,
     stopReason,
   });
+  if (completed > 0) {
+    saveMemories(recordBestReps(loadMemories(), item.exerciseId, completed));
+  }
   if (state.setIndex >= item.dose.sets || stopReason === "skipped") {
     handlers.onFinishExercise();
     return;

@@ -1,10 +1,23 @@
 import type { SeedExercise } from "../data/seed";
+import {
+  SKILL_TIERS,
+  SKILL_TIER_LABELS,
+  effectiveLabel,
+} from "./skillPresent";
+import type { SkillTier } from "../domain/types";
 import { escapeHtml, formatMuscles, formatPattern } from "./present";
 import { isTemplateTarget } from "./targets";
 
 export interface DetailActions {
   onBack: () => void;
   onOpenExercise: (exerciseId: string) => void;
+  onDeclareTier?: (exerciseId: string, tier: SkillTier) => void;
+}
+
+export interface DetailMemoryView {
+  skillTier?: SkillTier;
+  declaredTier?: SkillTier;
+  bestReps?: number;
 }
 
 export function mountLibraryDetail(
@@ -13,8 +26,9 @@ export function mountLibraryDetail(
   targetIds: ReadonlySet<string>,
   catalogueById: Record<string, SeedExercise>,
   actions: DetailActions,
+  memory: DetailMemoryView = {},
 ): void {
-  root.innerHTML = detailHtml(exercise, targetIds, catalogueById);
+  root.innerHTML = detailHtml(exercise, targetIds, catalogueById, memory);
 
   root.querySelector<HTMLButtonElement>("[data-lib-back]")?.addEventListener("click", () => {
     actions.onBack();
@@ -28,12 +42,21 @@ export function mountLibraryDetail(
       }
     });
   });
+
+  root.querySelector<HTMLSelectElement>("[data-skill-tier]")?.addEventListener(
+    "change",
+    (event) => {
+      const tier = (event.target as HTMLSelectElement).value as SkillTier;
+      actions.onDeclareTier?.(exercise.id, tier);
+    },
+  );
 }
 
 export function detailHtml(
   exercise: SeedExercise,
   targetIds: ReadonlySet<string>,
   catalogueById: Record<string, SeedExercise> = {},
+  memory: DetailMemoryView = {},
 ): string {
   const targetBadge = isTemplateTarget(exercise.id, targetIds)
     ? `<p class="lib-badge">Target</p>`
@@ -45,6 +68,8 @@ export function detailHtml(
     .map((cue) => `<li>${escapeHtml(cue)}</li>`)
     .join("");
   const chain = chainLinksHtml(exercise, catalogueById);
+  const standards = standardsHtml(exercise);
+  const skill = skillPickerHtml(exercise, memory);
 
   return `
     <main class="shell lib-detail">
@@ -56,10 +81,64 @@ export function detailHtml(
       <p class="tagline">Muscles: ${escapeHtml(formatMuscles(exercise.muscles))}</p>
       <p class="tagline">Regions: ${escapeHtml(exercise.regions.join(", "))}</p>
       ${media}
+      ${skill}
+      ${standards}
       <p class="eyebrow">Cues</p>
       <ul class="cues">${cues}</ul>
       ${chain}
     </main>
+  `;
+}
+
+function skillPickerHtml(
+  exercise: SeedExercise,
+  memory: DetailMemoryView,
+): string {
+  if (!exercise.standards) {
+    return "";
+  }
+  const current = memory.declaredTier ?? memory.skillTier ?? "beginner";
+  const options = SKILL_TIERS.map((tier) => {
+    const selected = tier === current ? "selected" : "";
+    return `<option value="${tier}" ${selected}>${SKILL_TIER_LABELS[tier]}</option>`;
+  }).join("");
+  const best = bestRepsHintHtml(exercise, memory, current);
+  return `
+    <p class="eyebrow">Your level</p>
+    <label class="field">
+      <span class="visually-hidden">Skill tier</span>
+      <select data-skill-tier aria-label="Skill tier for ${escapeHtml(exercise.name)}">
+        ${options}
+      </select>
+    </label>
+    ${best}
+  `;
+}
+
+function bestRepsHintHtml(
+  exercise: SeedExercise,
+  memory: DetailMemoryView,
+  current: SkillTier,
+): string {
+  if (memory.bestReps === undefined) {
+    return `<p class="hint">Set your starting level; logged sets refine it.</p>`;
+  }
+  const unit = exercise.effort === "hold" ? "s" : " reps";
+  const label = effectiveLabel(memory.skillTier ?? current);
+  return `<p class="hint">Best logged · ${memory.bestReps}${unit} · ${escapeHtml(label)}</p>`;
+}
+
+function standardsHtml(exercise: SeedExercise): string {
+  if (!exercise.standards) {
+    return "";
+  }
+  const unit = exercise.effort === "hold" ? "s" : "";
+  const cells = SKILL_TIERS.map((tier) => {
+    return `<li><span>${SKILL_TIER_LABELS[tier]}</span><strong>${exercise.standards![tier]}${unit}</strong></li>`;
+  }).join("");
+  return `
+    <p class="eyebrow">Standards</p>
+    <ul class="skill-standards">${cells}</ul>
   `;
 }
 

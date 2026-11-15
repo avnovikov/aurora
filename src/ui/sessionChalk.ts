@@ -1,4 +1,5 @@
 import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
+import { warmupMinutesLabel } from "../rules/sessionDuration";
 import { prescribedForNextSet } from "../session/setLog";
 import type { ViewState } from "./sessionTypes";
 import { currentWork } from "./sessionState";
@@ -43,7 +44,7 @@ function workNotchClass(state: ViewState, index: number): string {
 }
 
 function chalkHtml(planned: PlannedSession, state: ViewState): string {
-  const warmupNotch = `<li class="${warmupNotchClass(state, planned)}">Warmup · 10 min</li>`;
+  const warmupNotch = `<li class="${warmupNotchClass(state, planned)}">${warmupMinutesLabel()}</li>`;
   const workNotches = planned.work.map((item, index) => {
     const cls = workNotchClass(state, index);
     return `<li class="${cls}">${item.label}</li>`;

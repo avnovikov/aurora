@@ -1,7 +1,11 @@
-import { templateToStarter } from "../data/seed";
+import { SEED_GRAPH, templateToStarter } from "../data/seed";
 import type { SessionEvaluation } from "../domain/program";
 import { loadPlanQueue, peekNextTemplate, peekUpcoming } from "../plan/queue";
 import { planSession } from "../rules/planSession";
+import {
+  estimateSessionDuration,
+  formatDurationLabel,
+} from "../rules/sessionDuration";
 import {
   appendHistory,
   applyEvaluationToMemory,
@@ -70,6 +74,7 @@ function showTodayHome(root: HTMLElement): void {
   const upcoming = peekUpcoming(queue, 3);
   const next = peekNextTemplate(queue);
   const forecast = forecastStripHtml(upcoming);
+  const duration = formatDurationLabel(estimateSessionDuration(next));
 
   renderShell(
     root,
@@ -78,9 +83,11 @@ function showTodayHome(root: HTMLElement): void {
       <main class="shell">
         <p class="eyebrow">Aurora · Rassvet</p>
         <h1>Today</h1>
-        <p class="tagline">Next in queue: <strong>${next.name}</strong>${
+        <p class="tagline">Next in queue: <strong>${next.name}</strong> · ${duration}${
           next.targetExerciseIds.length
-            ? ` → target path locked`
+            ? ` → ${next.targetExerciseIds
+                .map((id) => SEED_GRAPH[id]?.name ?? id)
+                .join(", ")}`
             : ""
         }</p>
         ${forecast}

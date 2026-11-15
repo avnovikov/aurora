@@ -7,6 +7,10 @@ import type {
   WeakLink,
 } from "../domain/types";
 import { applyLightDayDose, isLightDay } from "./lightDay";
+import {
+  applySkillDose,
+  shouldAdvanceProgression,
+} from "./skillDose";
 
 function painSwap(
   exercise: Exercise,
@@ -64,18 +68,28 @@ function tryAdvance(
   graph: Record<string, Exercise>,
   ruleIds: RuleId[],
 ): ResolveResult | null {
-  if (memory.sessionsAtStandard < 2 || !exercise.harderId) {
+  if (!shouldAdvanceProgression(exercise, memory)) {
     return null;
   }
-  const harder = graph[exercise.harderId];
+  const harder = exercise.harderId ? graph[exercise.harderId] : undefined;
   if (!harder) {
     return null;
   }
+  const starter = applySkillDose(
+    { ...dose, reps: Math.min(dose.reps, 3) },
+    harder,
+    {
+      ...memory,
+      exerciseId: harder.id,
+      sessionsAtStandard: 0,
+      bestReps: undefined,
+    },
+  );
   return result(
     harder.id,
-    { ...dose, reps: Math.min(dose.reps, 3) },
+    starter.dose,
     [...ruleIds, "advance"],
-    `Advanced to ${harder.name} after two sessions at standard`,
+    `Advanced to ${harder.name} (skill / standard met)`,
   );
 }
 
@@ -117,54 +131,95 @@ function tryStall(
   );
 }
 
+function applyReadinessDose(
+  dose: Dose,
+  readiness: ResolveInput["readiness"],
+  ruleIds: RuleId[],
+): { dose: Dose; light: boolean } {
+  const light = isLightDay(readiness);
+  if (!light) {
+    return { dose, light: false };
+  }
+  ruleIds.push("light_day");
+  return { dose: applyLightDayDose(dose), light: true };
+}
+
+function applyUnpinnedResolution(
+  input: ResolveInput,
+  dose: Dose,
+  ruleIds: RuleId[],
+  light: boolean,
+): ResolveResult {
+  const skilled = applySkillDose(dose, input.exercise, input.memory);
+  const nextDose = skilled.dose;
+  if (skilled.applied) {
+    ruleIds.push("skill_dose");
+  }
+  if (!light) {
+    const advanced = tryAdvance(
+      input.exercise,
+      nextDose,
+      input.memory,
+      input.graph,
+      ruleIds,
+    );
+    if (advanced) {
+      return advanced;
+    }
+    const stalled = tryStall(input.exercise, nextDose, input, ruleIds);
+    if (stalled) {
+      return stalled;
+    }
+  }
+  const tierNote = skilled.applied ? ` · ${skilled.tier} dose` : "";
+  return result(
+    input.exercise.id,
+    nextDose,
+    [...ruleIds, "hold"],
+    light
+      ? "Hold exercise with light-day dose"
+      : `Hold prescription${tierNote}`,
+  );
+}
+
 /**
- * Resolves one slot: pain → pin → light day → advance → stall → hold.
+ * Resolves one slot: pain → pin → light day → skill dose → advance → stall → hold.
  * Pure; no DOM or Bluetooth.
  */
 export function resolveSlot(input: ResolveInput): ResolveResult {
   const ruleIds: RuleId[] = [];
-  const exercise = input.exercise;
-  let dose: Dose = { ...input.dose };
+  const doseStart: Dose = { ...input.dose };
 
-  const swap = painSwap(exercise, input.readiness.painJoints, input.graph);
+  const swap = painSwap(input.exercise, input.readiness.painJoints, input.graph);
   if (swap) {
-    return result(swap.id, dose, ["pain"], `Pain on loaded joint; swapped to ${swap.name}`);
+    return result(
+      swap.id,
+      doseStart,
+      ["pain"],
+      `Pain on loaded joint; swapped to ${swap.name}`,
+    );
   }
 
   if (input.pinned) {
     ruleIds.push("pin");
   }
 
-  const light = isLightDay(input.readiness);
-  if (light) {
-    ruleIds.push("light_day");
-    dose = applyLightDayDose(dose);
-  }
-
+  const readiness = applyReadinessDose(doseStart, input.readiness, ruleIds);
   if (input.pinned) {
     return result(
-      exercise.id,
-      dose,
+      input.exercise.id,
+      readiness.dose,
       ruleIds,
-      light ? "Pinned exercise; light-day dose only" : "Pinned exercise; dose unchanged",
+      readiness.light
+        ? "Pinned exercise; light-day dose only"
+        : "Pinned exercise; dose unchanged",
     );
   }
 
-  if (!light) {
-    const advanced = tryAdvance(exercise, dose, input.memory, input.graph, ruleIds);
-    if (advanced) {
-      return advanced;
-    }
-    const stalled = tryStall(exercise, dose, input, ruleIds);
-    if (stalled) {
-      return stalled;
-    }
-  }
-
-  return result(
-    exercise.id,
-    dose,
-    [...ruleIds, "hold"],
-    light ? "Hold exercise with light-day dose" : "Hold prescription",
+  return applyUnpinnedResolution(
+    input,
+    readiness.dose,
+    ruleIds,
+    readiness.light,
   );
 }

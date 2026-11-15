@@ -13,6 +13,9 @@ describe("detailHtml", () => {
     expect(html).toContain('data-lib-back');
     expect(html).toContain("Target");
     expect(html).toContain("data-chain-id=");
+    expect(html).toContain("Your level");
+    expect(html).toContain("data-skill-tier");
+    expect(html).toContain("Standards");
   });
 
   it("omits target badge for non-target warm-ups", () => {

@@ -33,6 +33,15 @@ export type Pattern =
   | "mobility";
 
 export type ExerciseType = "dynamic" | "isometric" | "eccentric";
+/** How `dose.reps` is interpreted: counted reps vs hold seconds. */
+export type EffortKind = "reps" | "hold";
+/** Athlete level for a single exercise (rep/hold standards). */
+export type SkillTier =
+  | "novice"
+  | "beginner"
+  | "intermediate"
+  | "advanced"
+  | "elite";
 export type PrescriptionMode = "straight_sets" | "rounds";
 export type SleepQuality = "good" | "fair" | "poor";
 export type FailRegion = "start" | "mid" | "end";
@@ -49,6 +58,23 @@ export interface MuscleEntry {
   role: MuscleRole;
 }
 
+export interface ExerciseTiming {
+  effort: EffortKind;
+  /** Wall-clock seconds per counted rep (ignored when effort is hold). */
+  secondsPerRep: number;
+  /** Literature-default rest when a slot does not override. */
+  defaultRestSeconds: number;
+}
+
+/** Max clean reps (or hold seconds) associated with each skill tier. */
+export interface ExerciseStandards {
+  novice: number;
+  beginner: number;
+  intermediate: number;
+  advanced: number;
+  elite: number;
+}
+
 export interface Exercise {
   id: string;
   name: string;
@@ -58,6 +84,12 @@ export interface Exercise {
   easierId?: string;
   harderId?: string;
   joints: string[];
+  /** Optional; resolved via `resolveExerciseTiming` when absent. */
+  effort?: EffortKind;
+  secondsPerRep?: number;
+  defaultRestSeconds?: number;
+  /** Literature-inspired rep/hold floors per tier. */
+  standards?: ExerciseStandards;
 }
 
 export interface WeakLink {
@@ -75,6 +107,12 @@ export interface ExerciseMemory {
   sessionsBelowFloor: number;
   lastAddedLoadKg: number;
   weakLinkSessionsRemaining: number;
+  /** Effective tier used for prescription (declared or inferred). */
+  skillTier?: SkillTier;
+  /** Last manual pick from Library; wins ties with inference until best exceeds it. */
+  declaredTier?: SkillTier;
+  /** Best clean completed reps / hold seconds logged. */
+  bestReps?: number;
 }
 
 export interface Readiness {
@@ -109,6 +147,7 @@ export type RuleId =
   | "pain"
   | "pin"
   | "light_day"
+  | "skill_dose"
   | "advance"
   | "stall_weak_link"
   | "stall_regress"

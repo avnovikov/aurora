@@ -1,5 +1,5 @@
 import type { PlanQueue, SessionTemplate } from "../domain/program";
-import type { Dose, Exercise, Pattern } from "../domain/types";
+import type { Dose, Exercise, ExerciseStandards, Pattern } from "../domain/types";
 
 export type LoadRegion = "legs" | "push" | "pull" | "core" | "skill" | "general";
 
@@ -40,7 +40,30 @@ export interface StarterProgram {
 
 function ex(partial: SeedExercise): SeedExercise {
   assertSeedExercise(partial);
-  return partial;
+  return {
+    ...partial,
+    effort: partial.effort ?? seedDefaultEffort(partial.type),
+    secondsPerRep: partial.secondsPerRep ?? seedDefaultSecondsPerRep(partial),
+  };
+}
+
+function seedDefaultEffort(
+  type: SeedExercise["type"],
+): NonNullable<SeedExercise["effort"]> {
+  if (type === "isometric") {
+    return "hold";
+  }
+  return "reps";
+}
+
+function seedDefaultSecondsPerRep(partial: SeedExercise): number {
+  if (partial.type === "isometric") {
+    return 1;
+  }
+  if (partial.type === "eccentric") {
+    return 5;
+  }
+  return 3.5;
 }
 
 function assertSeedExercise(exercise: SeedExercise): void {
@@ -50,6 +73,19 @@ function assertSeedExercise(exercise: SeedExercise): void {
   if (exercise.muscles.length === 0) {
     throw new Error(`Seed exercise ${exercise.id} needs muscles`);
   }
+}
+
+const SESSION_BAND = { minMinutes: 30, maxMinutes: 45 } as const;
+
+/** Rep or hold-second floors by skill tier (literature-inspired). */
+function std(
+  novice: number,
+  beginner: number,
+  intermediate: number,
+  advanced: number,
+  elite: number,
+): ExerciseStandards {
+  return { novice, beginner, intermediate, advanced, elite };
 }
 
 export const SEED_EXERCISES: SeedExercise[] = [
@@ -62,7 +98,7 @@ export const SEED_EXERCISES: SeedExercise[] = [
     joints: ["hip", "knee", "ankle"],
     role: "warmup",
     regions: ["general", "legs"],
-    doodlePath: "/doodles/doodle-lunge.jpg",
+    doodlePath: "/doodles/doodle-march-in-place.jpg",
     cues: ["Light bounce", "Arms swing freely", "Breathe through the nose"],
   }),
   ex({
@@ -74,7 +110,7 @@ export const SEED_EXERCISES: SeedExercise[] = [
     joints: ["hip"],
     role: "warmup",
     regions: ["legs", "general"],
-    doodlePath: "/doodles/doodle-glute-bridge.jpg",
+    doodlePath: "/doodles/doodle-hip-circles.jpg",
     cues: ["Slow circles", "Both directions", "Keep ribs quiet"],
   }),
   ex({
@@ -197,6 +233,20 @@ export const SEED_EXERCISES: SeedExercise[] = [
     cues: ["Slow lower", "Catch with hands if needed", "Squeeze glutes"],
   }),
   ex({
+    id: "calf_raise",
+    name: "Calf raise",
+    pattern: "conditioning",
+    type: "dynamic",
+    muscles: [{ group: "calves", role: "primary" }],
+    joints: ["ankle"],
+    role: "work",
+    regions: ["legs"],
+    doodlePath: "/doodles/doodle-calf-raise.jpg",
+    cues: ["Full range", "Pause at the top", "Soft knees"],
+    secondsPerRep: 2.5,
+    defaultRestSeconds: 45,
+  }),
+  ex({
     id: "wall_handstand",
     name: "Wall handstand hold",
     pattern: "skill",
@@ -252,8 +302,9 @@ export const SEED_EXERCISES: SeedExercise[] = [
     type: "dynamic",
     muscles: [{ group: "glutes", role: "primary" }],
     joints: ["hip"],
-    role: "warmup",
-    regions: ["legs"],
+    /** Used in warmup pools and as Abs accessory work. */
+    role: "work",
+    regions: ["legs", "core"],
     doodlePath: "/doodles/doodle-glute-bridge.jpg",
     cues: ["Ribs down", "Squeeze at the top", "No overarching"],
   }),
@@ -266,6 +317,7 @@ export const SEED_EXERCISES: SeedExercise[] = [
     joints: ["lumbar"],
     role: "work",
     regions: ["core"],
+    doodlePath: "/doodles/doodle-dead-bug.jpg",
     cues: ["Low back glued down", "Opposite arm and leg", "Slow breath out"],
   }),
   ex({
@@ -279,6 +331,7 @@ export const SEED_EXERCISES: SeedExercise[] = [
     harderId: "hanging_knee_raise",
     role: "work",
     regions: ["core"],
+    doodlePath: "/doodles/doodle-hollow-hold.jpg",
     cues: ["Ribs down", "Arms by ears if you can", "Lower back pressed"],
   }),
   ex({
@@ -291,6 +344,7 @@ export const SEED_EXERCISES: SeedExercise[] = [
     easierId: "hollow_hold",
     role: "work",
     regions: ["core", "pull"],
+    doodlePath: "/doodles/doodle-hanging-knee-raise.jpg",
     cues: ["Dead hang first", "Knees up without swinging", "Control the lower"],
   }),
   ex({
@@ -306,6 +360,7 @@ export const SEED_EXERCISES: SeedExercise[] = [
     harderId: "scapular_pull",
     role: "work",
     regions: ["pull"],
+    doodlePath: "/doodles/doodle-dead-hang.jpg",
     cues: ["Shoulders packed", "Quiet legs", "Breathe"],
   }),
   ex({
@@ -322,6 +377,7 @@ export const SEED_EXERCISES: SeedExercise[] = [
     harderId: "pullup",
     role: "work",
     regions: ["pull"],
+    doodlePath: "/doodles/doodle-scapular-pull.jpg",
     cues: ["Arms stay straight", "Depress the scapulae", "Pause at the top"],
   }),
   ex({
@@ -335,16 +391,74 @@ export const SEED_EXERCISES: SeedExercise[] = [
     ],
     joints: ["shoulder", "elbow"],
     easierId: "scapular_pull",
+    harderId: "muscle_up",
     role: "work",
     regions: ["pull"],
+    doodlePath: "/doodles/doodle-pullup.jpg",
     cues: ["Chest to bar path", "No kip for strength sets", "Full hang between reps"],
+  }),
+  ex({
+    id: "muscle_up",
+    name: "Muscle-up",
+    pattern: "vertical_pull",
+    type: "dynamic",
+    muscles: [
+      { group: "lats", role: "primary" },
+      { group: "triceps", role: "secondary" },
+      { group: "chest", role: "secondary" },
+    ],
+    joints: ["shoulder", "elbow", "wrist"],
+    easierId: "pullup",
+    role: "work",
+    regions: ["pull"],
+    doodlePath: "/doodles/doodle-muscle-up.jpg",
+    cues: ["Strict pull first", "Hips to bar then sit-up", "Lock out above the bar"],
   }),
 ];
 
+/** Literature-inspired max clean reps / hold seconds by tier (seed work moves). */
+const SEED_STANDARDS: Record<string, ExerciseStandards> = {
+  scap_pushup: std(5, 10, 15, 25, 40),
+  bodyweight_squat: std(8, 15, 25, 40, 60),
+  bulgarian_split: std(3, 6, 10, 15, 20),
+  pistol_squat: std(1, 3, 8, 12, 15),
+  hip_hinge: std(8, 12, 20, 30, 40),
+  nordic_curl: std(1, 2, 4, 6, 10),
+  calf_raise: std(10, 15, 25, 40, 50),
+  wall_handstand: std(10, 20, 40, 60, 90),
+  elevated_pike: std(3, 5, 8, 12, 15),
+  freestanding_hs: std(5, 10, 20, 40, 60),
+  glute_bridge: std(8, 12, 20, 30, 40),
+  dead_bug: std(5, 8, 12, 16, 20),
+  hollow_hold: std(10, 20, 40, 60, 90),
+  hanging_knee_raise: std(3, 6, 10, 15, 20),
+  pullup_dead_hang: std(10, 20, 40, 60, 90),
+  scapular_pull: std(3, 6, 10, 15, 20),
+  pullup: std(1, 5, 12, 20, 25),
+  muscle_up: std(1, 2, 3, 5, 8),
+};
+
+function withSeedStandards(exercise: SeedExercise): SeedExercise {
+  const standards = exercise.standards ?? SEED_STANDARDS[exercise.id];
+  return standards ? { ...exercise, standards } : exercise;
+}
+
 export const SEED_GRAPH: Record<string, SeedExercise> = Object.fromEntries(
-  SEED_EXERCISES.map((exercise) => [exercise.id, exercise]),
+  SEED_EXERCISES.map((exercise) => {
+    const enriched = withSeedStandards(exercise);
+    return [enriched.id, enriched];
+  }),
 );
 
+/** Keep catalogue rows aligned with graph (standards attached). */
+for (let i = 0; i < SEED_EXERCISES.length; i += 1) {
+  SEED_EXERCISES[i] = withSeedStandards(SEED_EXERCISES[i]);
+}
+
+/**
+ * Templates sized for ~30–45 min wall-clock (≈10 min warmup + work + ACSM/NSCA rests).
+ * Strength compounds use 90–120 s rest; core/accessory 45–60 s.
+ */
 export const SESSION_TEMPLATES: SessionTemplate[] = [
   {
     id: "tmpl_legs",
@@ -352,6 +466,7 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     focus: "legs",
     targetExerciseIds: ["pistol_squat"],
     repeat: true,
+    targetMinutes: SESSION_BAND,
     warmupExerciseIds: [
       "pulse_raiser_march",
       "hip_circles",
@@ -363,6 +478,15 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
         id: "legs_squat",
         label: "Squat",
         exerciseId: "bodyweight_squat",
+        pattern: "squat",
+        dose: { sets: 4, reps: 10, targetRir: 2, addedLoadKg: 0 },
+        restSeconds: 90,
+        pinned: false,
+      },
+      {
+        id: "legs_split",
+        label: "Split squat",
+        exerciseId: "bulgarian_split",
         pattern: "squat",
         dose: { sets: 3, reps: 8, targetRir: 2, addedLoadKg: 0 },
         restSeconds: 90,
@@ -377,6 +501,24 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
         restSeconds: 90,
         pinned: false,
       },
+      {
+        id: "legs_posterior",
+        label: "Nordic",
+        exerciseId: "nordic_curl",
+        pattern: "hinge",
+        dose: { sets: 3, reps: 5, targetRir: 2, addedLoadKg: 0 },
+        restSeconds: 90,
+        pinned: false,
+      },
+      {
+        id: "legs_calf",
+        label: "Calf",
+        exerciseId: "calf_raise",
+        pattern: "conditioning",
+        dose: { sets: 3, reps: 12, targetRir: 2, addedLoadKg: 0 },
+        restSeconds: 45,
+        pinned: false,
+      },
     ],
   },
   {
@@ -385,23 +527,51 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     focus: "abs",
     targetExerciseIds: ["hanging_knee_raise"],
     repeat: true,
+    targetMinutes: SESSION_BAND,
     warmupExerciseIds: ["pulse_raiser_march", "hip_circles"],
     slots: [
-      {
-        id: "core_hollow",
-        label: "Hollow",
-        exerciseId: "hollow_hold",
-        pattern: "core_anti_extension",
-        dose: { sets: 3, reps: 20, targetRir: 2, addedLoadKg: 0 },
-        restSeconds: 60,
-        pinned: false,
-      },
       {
         id: "core_dead_bug",
         label: "Dead bug",
         exerciseId: "dead_bug",
         pattern: "core_anti_extension",
-        dose: { sets: 3, reps: 8, targetRir: 2, addedLoadKg: 0 },
+        dose: { sets: 4, reps: 10, targetRir: 2, addedLoadKg: 0 },
+        restSeconds: 45,
+        pinned: false,
+      },
+      {
+        id: "core_hollow",
+        label: "Hollow",
+        exerciseId: "hollow_hold",
+        pattern: "core_anti_extension",
+        dose: { sets: 4, reps: 30, targetRir: 2, addedLoadKg: 0 },
+        restSeconds: 45,
+        pinned: false,
+      },
+      {
+        id: "core_hang",
+        label: "Knee raise",
+        exerciseId: "hanging_knee_raise",
+        pattern: "core_compression",
+        dose: { sets: 4, reps: 8, targetRir: 2, addedLoadKg: 0 },
+        restSeconds: 60,
+        pinned: false,
+      },
+      {
+        id: "core_bridge",
+        label: "Bridge",
+        exerciseId: "glute_bridge",
+        pattern: "hinge",
+        dose: { sets: 3, reps: 12, targetRir: 2, addedLoadKg: 0 },
+        restSeconds: 45,
+        pinned: false,
+      },
+      {
+        id: "core_hollow_finisher",
+        label: "Hollow finish",
+        exerciseId: "hollow_hold",
+        pattern: "core_anti_extension",
+        dose: { sets: 3, reps: 25, targetRir: 2, addedLoadKg: 0 },
         restSeconds: 45,
         pinned: false,
       },
@@ -413,6 +583,7 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     focus: "skill",
     targetExerciseIds: ["freestanding_hs"],
     repeat: true,
+    targetMinutes: SESSION_BAND,
     warmupExerciseIds: ["wrist_load", "scap_pushup"],
     slots: [
       {
@@ -420,7 +591,7 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
         label: "Wall HS",
         exerciseId: "wall_handstand",
         pattern: "skill",
-        dose: { sets: 4, reps: 20, targetRir: 3, addedLoadKg: 0 },
+        dose: { sets: 5, reps: 30, targetRir: 3, addedLoadKg: 0 },
         restSeconds: 60,
         pinned: false,
       },
@@ -429,8 +600,26 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
         label: "Pike",
         exerciseId: "elevated_pike",
         pattern: "vertical_push",
-        dose: { sets: 3, reps: 6, targetRir: 2, addedLoadKg: 0 },
+        dose: { sets: 4, reps: 6, targetRir: 2, addedLoadKg: 0 },
         restSeconds: 90,
+        pinned: false,
+      },
+      {
+        id: "skill_free",
+        label: "Freestanding",
+        exerciseId: "freestanding_hs",
+        pattern: "skill",
+        dose: { sets: 4, reps: 20, targetRir: 3, addedLoadKg: 0 },
+        restSeconds: 60,
+        pinned: false,
+      },
+      {
+        id: "skill_scap",
+        label: "Scap push-up",
+        exerciseId: "scap_pushup",
+        pattern: "horizontal_push",
+        dose: { sets: 3, reps: 10, targetRir: 2, addedLoadKg: 0 },
+        restSeconds: 45,
         pinned: false,
       },
     ],
@@ -439,8 +628,10 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     id: "tmpl_bars",
     name: "Bars",
     focus: "bars",
-    targetExerciseIds: ["pullup"],
+    /** North star: muscle-up. Working pull-up is the current capability in slots. */
+    targetExerciseIds: ["muscle_up"],
     repeat: true,
+    targetMinutes: SESSION_BAND,
     warmupExerciseIds: ["pulse_raiser_march", "scap_pushup"],
     slots: [
       {
@@ -448,7 +639,7 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
         label: "Hang",
         exerciseId: "pullup_dead_hang",
         pattern: "vertical_pull",
-        dose: { sets: 3, reps: 20, targetRir: 2, addedLoadKg: 0 },
+        dose: { sets: 4, reps: 30, targetRir: 2, addedLoadKg: 0 },
         restSeconds: 60,
         pinned: false,
       },
@@ -457,8 +648,26 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
         label: "Scap pull",
         exerciseId: "scapular_pull",
         pattern: "vertical_pull",
-        dose: { sets: 3, reps: 6, targetRir: 2, addedLoadKg: 0 },
+        dose: { sets: 4, reps: 8, targetRir: 2, addedLoadKg: 0 },
         restSeconds: 90,
+        pinned: false,
+      },
+      {
+        id: "bars_pull",
+        label: "Pull-up",
+        exerciseId: "pullup",
+        pattern: "vertical_pull",
+        dose: { sets: 4, reps: 5, targetRir: 2, addedLoadKg: 0 },
+        restSeconds: 120,
+        pinned: false,
+      },
+      {
+        id: "bars_core",
+        label: "Hollow",
+        exerciseId: "hollow_hold",
+        pattern: "core_anti_extension",
+        dose: { sets: 3, reps: 30, targetRir: 2, addedLoadKg: 0 },
+        restSeconds: 45,
         pinned: false,
       },
     ],
@@ -469,6 +678,7 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     focus: "full_body",
     targetExerciseIds: ["pistol_squat", "pullup", "freestanding_hs"],
     repeat: true,
+    targetMinutes: SESSION_BAND,
     warmupExerciseIds: [
       "pulse_raiser_march",
       "hip_circles",
@@ -481,16 +691,34 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
         label: "Squat",
         exerciseId: "bodyweight_squat",
         pattern: "squat",
-        dose: { sets: 2, reps: 8, targetRir: 2, addedLoadKg: 0 },
+        dose: { sets: 3, reps: 10, targetRir: 2, addedLoadKg: 0 },
         restSeconds: 75,
         pinned: false,
       },
       {
         id: "full_pull",
         label: "Pull",
-        exerciseId: "scapular_pull",
+        exerciseId: "pullup",
         pattern: "vertical_pull",
-        dose: { sets: 2, reps: 6, targetRir: 2, addedLoadKg: 0 },
+        dose: { sets: 3, reps: 5, targetRir: 2, addedLoadKg: 0 },
+        restSeconds: 105,
+        pinned: false,
+      },
+      {
+        id: "full_pike",
+        label: "Pike",
+        exerciseId: "elevated_pike",
+        pattern: "vertical_push",
+        dose: { sets: 3, reps: 6, targetRir: 2, addedLoadKg: 0 },
+        restSeconds: 90,
+        pinned: false,
+      },
+      {
+        id: "full_hinge",
+        label: "Hinge",
+        exerciseId: "hip_hinge",
+        pattern: "hinge",
+        dose: { sets: 3, reps: 8, targetRir: 2, addedLoadKg: 0 },
         restSeconds: 75,
         pinned: false,
       },
@@ -499,8 +727,17 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
         label: "Core",
         exerciseId: "hollow_hold",
         pattern: "core_anti_extension",
-        dose: { sets: 2, reps: 20, targetRir: 2, addedLoadKg: 0 },
+        dose: { sets: 3, reps: 25, targetRir: 2, addedLoadKg: 0 },
         restSeconds: 45,
+        pinned: false,
+      },
+      {
+        id: "full_split",
+        label: "Split",
+        exerciseId: "bulgarian_split",
+        pattern: "squat",
+        dose: { sets: 2, reps: 8, targetRir: 2, addedLoadKg: 0 },
+        restSeconds: 75,
         pinned: false,
       },
     ],

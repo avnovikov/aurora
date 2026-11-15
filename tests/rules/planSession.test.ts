@@ -7,7 +7,7 @@ describe("planSession", () => {
 
     expect(session.programId).toBe("tmpl_legs");
     expect(session.warmup.length).toBeGreaterThan(0);
-    expect(session.work).toHaveLength(2);
+    expect(session.work).toHaveLength(5);
     expect(session.lightDay).toBe(false);
     expect(session.work.every((item) => item.cues.length > 0)).toBe(true);
   });

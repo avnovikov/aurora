@@ -19,6 +19,11 @@ export interface TemplateSlot {
   pinned: boolean;
 }
 
+export interface SessionDurationTarget {
+  minMinutes: number;
+  maxMinutes: number;
+}
+
 export interface SessionTemplate {
   id: string;
   name: string;
@@ -29,6 +34,8 @@ export interface SessionTemplate {
   slots: TemplateSlot[];
   /** If true, completing re-appends this template to the queue tail */
   repeat: boolean;
+  /** Planned wall-clock band for this session (warmup + work + rests). */
+  targetMinutes?: SessionDurationTarget;
 }
 
 export interface PlanQueue {

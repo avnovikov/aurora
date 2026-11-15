@@ -1,5 +1,6 @@
 import { DEFAULT_PLAN_QUEUE, TEMPLATE_BY_ID } from "../data/seed";
 import type { PlanQueue, SessionTemplate } from "../domain/program";
+import { resolveTemplate } from "./templates";
 
 const KEY = "aurora.poc.planQueue.v1";
 
@@ -28,21 +29,19 @@ export function savePlanQueue(queue: PlanQueue): void {
 
 export function peekNextTemplate(queue: PlanQueue): SessionTemplate {
   const id = queue.items[0];
-  const template = TEMPLATE_BY_ID[id];
-  if (!template) {
+  if (!id || !TEMPLATE_BY_ID[id]) {
     throw new Error(`Unknown template in queue: ${id}`);
   }
-  return template;
+  return resolveTemplate(id);
 }
 
 export function peekUpcoming(queue: PlanQueue, count: number): SessionTemplate[] {
   assertPositiveCount(count);
   return queue.items.slice(0, count).map((id) => {
-    const template = TEMPLATE_BY_ID[id];
-    if (!template) {
+    if (!TEMPLATE_BY_ID[id]) {
       throw new Error(`Unknown template in queue: ${id}`);
     }
-    return template;
+    return resolveTemplate(id);
   });
 }
 

@@ -94,6 +94,20 @@ describe("resolveSlot", () => {
     expect(result.ruleIds).toContain("advance");
   });
 
+  it("advances immediately when skill tier is already advanced", () => {
+    const result = resolveSlot(
+      baseInput({
+        memory: memory({
+          exerciseId: "squat",
+          skillTier: "advanced",
+          sessionsAtStandard: 0,
+        }),
+      }),
+    );
+    expect(result.exerciseId).toBe("pistol");
+    expect(result.ruleIds).toContain("advance");
+  });
+
   it("pain beats a good pulse and swaps pattern mate without that joint", () => {
     const result = resolveSlot(
       baseInput({

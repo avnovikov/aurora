@@ -1,5 +1,11 @@
-import type { ExerciseMemory } from "../domain/types";
+import {
+  inferTierFromBest,
+  maxTier,
+  standardsFor,
+} from "../domain/skillTier";
+import type { Exercise, ExerciseMemory, SkillTier } from "../domain/types";
 import type { HistoryEntry, SessionEvaluation } from "../domain/program";
+import { SEED_GRAPH } from "../data/seed";
 
 const HISTORY_KEY = "aurora.poc.history.v1";
 const MEMORY_KEY = "aurora.poc.memory.v1";
@@ -58,7 +64,58 @@ export function applyEvaluationToMemory(
   return next;
 }
 
-function emptyMemory(exerciseId: string): ExerciseMemory {
+/**
+ * Manual tier pick from Library (option C declare path).
+ */
+export function declareSkillTier(
+  memories: Record<string, ExerciseMemory>,
+  exerciseId: string,
+  tier: SkillTier,
+): Record<string, ExerciseMemory> {
+  const current = memories[exerciseId] ?? emptyMemory(exerciseId);
+  return {
+    ...memories,
+    [exerciseId]: {
+      ...current,
+      declaredTier: tier,
+      skillTier: maxTier(current.skillTier ?? tier, tier),
+    },
+  };
+}
+
+/**
+ * After a logged set, raise bestReps and promote skillTier when standards say so.
+ */
+export function recordBestReps(
+  memories: Record<string, ExerciseMemory>,
+  exerciseId: string,
+  completedReps: number,
+  exercise: Exercise | undefined = SEED_GRAPH[exerciseId],
+): Record<string, ExerciseMemory> {
+  if (completedReps <= 0) {
+    return memories;
+  }
+  const current = memories[exerciseId] ?? emptyMemory(exerciseId);
+  const bestReps = Math.max(current.bestReps ?? 0, completedReps);
+  let skillTier = current.skillTier ?? current.declaredTier ?? "beginner";
+  const standards = exercise ? standardsFor(exercise) : null;
+  if (standards) {
+    skillTier = maxTier(skillTier, inferTierFromBest(bestReps, standards));
+    if (current.declaredTier) {
+      skillTier = maxTier(skillTier, current.declaredTier);
+    }
+  }
+  return {
+    ...memories,
+    [exerciseId]: {
+      ...current,
+      bestReps,
+      skillTier,
+    },
+  };
+}
+
+export function emptyMemory(exerciseId: string): ExerciseMemory {
   return {
     exerciseId,
     sessionsAtStandard: 0,

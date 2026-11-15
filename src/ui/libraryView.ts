@@ -8,6 +8,11 @@ import { mountLibraryDetail } from "../library/libraryDetail";
 import { focusSearchInput, mountLibraryList } from "../library/libraryList";
 import { searchExercises } from "../library/search";
 import { collectTemplateTargetIds } from "../library/targets";
+import {
+  declareSkillTier,
+  loadMemories,
+  saveMemories,
+} from "../session/history";
 
 const CATALOGUE_BY_ID: Record<string, SeedExercise> = Object.fromEntries(
   LIBRARY_CATALOGUE.map((exercise) => [exercise.id, exercise]),
@@ -27,16 +32,32 @@ export function renderLibraryView(root: HTMLElement): void {
         paint();
         return;
       }
-      mountLibraryDetail(root, exercise, targetIds, CATALOGUE_BY_ID, {
-        onBack: () => {
-          selectedId = null;
-          paint();
+      const memory = loadMemories()[selectedId] ?? {};
+      mountLibraryDetail(
+        root,
+        exercise,
+        targetIds,
+        CATALOGUE_BY_ID,
+        {
+          onBack: () => {
+            selectedId = null;
+            paint();
+          },
+          onOpenExercise: (id) => {
+            selectedId = id;
+            paint();
+          },
+          onDeclareTier: (exerciseId, tier) => {
+            saveMemories(declareSkillTier(loadMemories(), exerciseId, tier));
+            paint();
+          },
         },
-        onOpenExercise: (id) => {
-          selectedId = id;
-          paint();
+        {
+          skillTier: memory.skillTier,
+          declaredTier: memory.declaredTier,
+          bestReps: memory.bestReps,
         },
-      });
+      );
       return;
     }
 
