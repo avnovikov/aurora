@@ -1,24 +1,28 @@
 import { speakExactLine } from "../voice/coachVoice";
-import { cueSchedule } from "../voice/restCue";
+import { cueSchedule, type RestCueEvent } from "../voice/restCue";
 import type { ViewState } from "./sessionTypes";
 
-export function formatRestLabel(
+function cueAt(
   left: number,
-  schedule: ReturnType<typeof cueSchedule>,
-): string {
-  const due = schedule.find((event) => event.atSecondsLeft === left);
-  if (due) {
-    return due.text;
-  }
-  return String(Math.max(left, 0));
+  schedule: readonly RestCueEvent[],
+): RestCueEvent | undefined {
+  return schedule.find((event) => event.atSecondsLeft === left);
+}
+
+/** On-screen rest cue copy for a given second; null when only the count shows. */
+export function restCueText(
+  left: number,
+  schedule: readonly RestCueEvent[],
+): string | null {
+  return cueAt(left, schedule)?.text ?? null;
 }
 
 export function speakDueCues(
   left: number,
-  schedule: ReturnType<typeof cueSchedule>,
+  schedule: readonly RestCueEvent[],
   spoken: Set<number>,
 ): void {
-  const due = schedule.find((event) => event.atSecondsLeft === left);
+  const due = cueAt(left, schedule);
   if (!due || spoken.has(left)) {
     return;
   }
@@ -43,12 +47,16 @@ export function startRestTimer(
   const spokenForRest = new Set<number>();
   const schedule = withVoice ? cueSchedule(state.restLeft) : [];
 
+  const paintRest = (): void => {
+    setText(root, "[data-rest-left]", String(Math.max(state.restLeft, 0)));
+    setText(root, "[data-rest-cue]", restCueText(state.restLeft, schedule) ?? "");
+  };
+
+  paintRest();
+
   const timerId = window.setInterval(() => {
     state.restLeft -= 1;
-    const label = root.querySelector("[data-rest-left]");
-    if (label) {
-      label.textContent = formatRestLabel(state.restLeft, schedule);
-    }
+    paintRest();
     if (withVoice) {
       speakDueCues(state.restLeft, schedule, spokenForRest);
     }
@@ -61,4 +69,11 @@ export function startRestTimer(
   return {
     clear: () => window.clearInterval(timerId),
   };
+}
+
+function setText(root: HTMLElement, selector: string, text: string): void {
+  const el = root.querySelector(selector);
+  if (el) {
+    el.textContent = text;
+  }
 }

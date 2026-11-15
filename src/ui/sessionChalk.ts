@@ -1,12 +1,15 @@
 import { escapeHtml } from "../library/present";
 import { isNativePulseAvailable } from "../pulse/hrMonitor";
 import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
-import { WARMUP_GAPS, warmupMinutesLabel } from "../rules/sessionDuration";
-import { warmupViewSeconds } from "../rules/warmupPlan";
 import { sessionClockSnapshot } from "../session/sessionClock";
 import { prescribedForNextSet } from "../session/setLog";
-import type { ViewState } from "./sessionTypes";
+import {
+  chalkNowLabel,
+  chalkRailNotches,
+  isWarmupSurface,
+} from "./sessionChalkStrip";
 import { currentWork } from "./sessionState";
+import type { ViewState } from "./sessionTypes";
 
 export function shellHtml(planned: PlannedSession, state: ViewState): string {
   const light = planned.lightDay || planned.deload ? "light-day" : "";
@@ -16,8 +19,11 @@ export function shellHtml(planned: PlannedSession, state: ViewState): string {
       ${sessionClockHtml(state)}
       ${chalkHtml(planned, state)}
       <div class="pulse-row ${pulseClass}">
-        <span>Pulse ${state.bpm ?? "—"}</span>
-        ${pulseControlsHtml()}
+        <span class="pulse-chip">Pulse ${state.bpm ?? "—"}</span>
+        <details class="pulse-more">
+          <summary>Strap</summary>
+          ${pulseControlsHtml()}
+        </details>
       </div>
       ${
         state.pulseStatus
@@ -51,37 +57,20 @@ function pulseControlsHtml(): string {
   `;
 }
 
-function warmupNotchClass(state: ViewState, planned: PlannedSession): string {
-  if (state.phase === "warmup") {
-    return "active";
-  }
-  if (state.warmupIndex >= planned.warmup.length) {
-    return "done";
-  }
-  return "";
-}
-
-function workNotchClass(state: ViewState, index: number): string {
-  if (state.phase === "warmup") {
-    return "";
-  }
-  if (state.workIndex === index) {
-    return "active";
-  }
-  if (state.workIndex > index) {
-    return "done";
-  }
-  return "";
-}
-
 function chalkHtml(planned: PlannedSession, state: ViewState): string {
-  const warmupNotch = `<li class="${warmupNotchClass(state, planned)}">${warmupMinutesLabel(warmupViewSeconds(planned.warmup))}</li>`;
-  const workNotches = planned.work.map((item, index) => {
-    const cls = workNotchClass(state, index);
-    return `<li class="${cls}">${item.label}</li>`;
-  });
-  const notches = [warmupNotch, ...workNotches];
-  return `<ol class="chalk">${notches.join("")}</ol>`;
+  const now = escapeHtml(chalkNowLabel(planned, state));
+  const notches = chalkRailNotches(planned, state)
+    .map((notch) => {
+      const classAttr = notch.className ? ` class="${notch.className}"` : "";
+      return `<li${classAttr} title="${escapeHtml(notch.title)}"></li>`;
+    })
+    .join("");
+  return `
+    <div class="chalk-head">
+      <p class="chalk-now">${now}</p>
+      <ol class="chalk-rail" aria-hidden="true">${notches}</ol>
+    </div>
+  `;
 }
 
 function jointCautionHtml(cautions: string[]): string {
@@ -92,17 +81,28 @@ function jointCautionHtml(cautions: string[]): string {
   return `<div class="joint-caution"><p class="eyebrow">Heads up</p><ul class="cues">${items}</ul></div>`;
 }
 
-function cuesListHtml(cues: string[]): string {
+function cuesBlockHtml(cues: string[]): string {
   if (cues.length === 0) {
     return "";
   }
+  const [onlyCue] = cues;
+  if (cues.length === 1 && onlyCue) {
+    return `<p class="cue-teaser">${escapeHtml(onlyCue)}</p>`;
+  }
   const items = cues.map((cue) => `<li>${escapeHtml(cue)}</li>`).join("");
-  return `<ul class="cues doodle-cues">${items}</ul>`;
+  return `
+    <details class="session-cues">
+      <summary>Form cues</summary>
+      <ul class="cues doodle-cues">${items}</ul>
+    </details>
+  `;
 }
 
 /** Curated summary and collapsible how-to steps for the current exercise. */
 function howToHtml(item: PlannedWorkItem): string {
-  const summary = item.summary ? `<p class="lib-summary">${escapeHtml(item.summary)}</p>` : "";
+  const summary = item.summary
+    ? `<p class="lib-summary">${escapeHtml(item.summary)}</p>`
+    : "";
   if (!item.steps?.length) {
     return summary;
   }
@@ -110,15 +110,19 @@ function howToHtml(item: PlannedWorkItem): string {
   return `${summary}<details class="session-howto"><summary>How to</summary><ol class="lib-steps">${steps}</ol></details>`;
 }
 
+function doodleHtml(path: string | undefined, name: string): string {
+  if (!path) {
+    return "";
+  }
+  return `<img class="doodle" src="${path}" alt="Doodle for ${escapeHtml(name)}" />`;
+}
+
 function bodyHtml(planned: PlannedSession, state: ViewState): string {
-  if (
-    state.phase === "warmup" ||
-    (state.phase === "rest" && state.workState === null && state.warmupIndex < planned.warmup.length)
-  ) {
+  if (isWarmupSurface(planned, state)) {
     return warmupHtml(planned, state);
   }
   if (state.phase === "rest" && state.workState) {
-    return restHtml(state);
+    return restHtml(planned, state);
   }
   const item = currentWork(planned, state);
   if (!item) {
@@ -132,56 +136,59 @@ function warmupHtml(planned: PlannedSession, state: ViewState): string {
   if (!step) {
     return `<p class="tagline">Warmup complete</p>`;
   }
-  const media = step.doodlePath
-    ? `<img class="doodle" src="${step.doodlePath}" alt="Doodle for ${escapeHtml(step.name)}" />`
-    : "";
-  const cues = cuesListHtml(step.cues);
   return `
-    <p class="eyebrow">Warmup session</p>
+    <p class="eyebrow">Warmup</p>
     <h2>${escapeHtml(step.name)}</h2>
     <p class="tagline">${escapeHtml(step.region)} · <span data-warmup-left>${step.holdSeconds}</span>s</p>
-    ${media}
-    ${cues}
-    <p class="reason">Prebuilt sequence · ${WARMUP_GAPS.sameArea}s same area · ${WARMUP_GAPS.crossArea}s cross area</p>
+    ${doodleHtml(step.doodlePath, step.name)}
+    ${cuesBlockHtml(step.cues)}
   `;
 }
 
 function workHtml(item: PlannedWorkItem, state: ViewState): string {
   const reps = state.workState ? prescribedForNextSet(state.workState) : item.dose.reps;
-  const media = item.doodlePath
-    ? `<img class="doodle" src="${item.doodlePath}" alt="Doodle for ${escapeHtml(item.exerciseName)}" />`
-    : "";
-  const cues = cuesListHtml(item.cues);
   return `
     <div class="work-stage" data-swipe-stage>
-      <p class="eyebrow">${escapeHtml(item.label)} · Set ${state.setIndex} of ${item.dose.sets}</p>
+      <p class="eyebrow">Set ${state.setIndex} of ${item.dose.sets}</p>
       <h2>${escapeHtml(item.exerciseName)}</h2>
       <p class="reps">${reps}</p>
-      <p class="reason">${escapeHtml(item.reason)}</p>
-      ${media}
+      ${doodleHtml(item.doodlePath, item.exerciseName)}
       ${jointCautionHtml(item.cautions)}
       ${howToHtml(item)}
-      ${cues}
-      <div class="row">
+      ${cuesBlockHtml(item.cues)}
+      <details class="session-why">
+        <summary>Why this dose</summary>
+        <p class="reason">${escapeHtml(item.reason)}</p>
+      </details>
+      <div class="work-actions">
         <button type="button" class="cta" data-log-set>Log set</button>
-        <button type="button" data-fail-set>Failed</button>
-        <button type="button" data-skip>Skip</button>
+        <div class="work-actions-secondary">
+          <button type="button" class="btn-quiet" data-fail-set>Failed</button>
+          <button type="button" class="btn-quiet" data-skip>Skip</button>
+        </div>
       </div>
-      <p class="hint">Swipe left or right to finish — keep the swipe going</p>
+      <p class="hint">Swipe left or right to finish</p>
     </div>
   `;
 }
 
-function restHtml(state: ViewState): string {
+function restHtml(planned: PlannedSession, state: ViewState): string {
+  const item = currentWork(planned, state);
   const reps = state.workState ? prescribedForNextSet(state.workState) : 0;
+  const nextLine = item
+    ? `next ${escapeHtml(item.exerciseName)} · Set ${state.setIndex} of ${item.dose.sets}`
+    : "next set";
   return `
-    <p class="eyebrow">Rest</p>
-    <p class="reps" data-rest-left>${state.restLeft}</p>
-    <p class="tagline">Next set reps</p>
-    <div class="row">
-      <button type="button" data-reps-minus>−</button>
-      <span class="reps-edit">${reps}</span>
-      <button type="button" data-reps-plus>+</button>
+    <div class="rest-stage">
+      <p class="eyebrow">Rest · ${nextLine}</p>
+      <p class="reps" data-rest-left>${state.restLeft}</p>
+      <p class="rest-cue" data-rest-cue></p>
+      <p class="tagline">Next set reps</p>
+      <div class="row rest-reps-row">
+        <button type="button" class="rest-step" data-reps-minus>−</button>
+        <span class="reps-edit">${reps}</span>
+        <button type="button" class="rest-step" data-reps-plus>+</button>
+      </div>
     </div>
   `;
 }
