@@ -46,6 +46,7 @@ export function renderLibraryView(root: HTMLElement): void {
   let selectedId: string | null = null;
   let pickingPlanForId: string | null = null;
   let planStatus: string | null = null;
+  let cascadeHint: string | null = null;
   const { jointHistory, equipment } = loadProfile();
   const targetIds = collectTemplateTargetIds(SESSION_TEMPLATES);
 
@@ -64,6 +65,7 @@ export function renderLibraryView(root: HTMLElement): void {
   const clearPlanStatusAndSelect = (exerciseId: string | null): void => {
     selectedId = exerciseId;
     planStatus = null;
+    cascadeHint = null;
     paint();
   };
 
@@ -111,7 +113,9 @@ export function renderLibraryView(root: HTMLElement): void {
         onBack: () => clearPlanStatusAndSelect(null),
         onOpenExercise: clearPlanStatusAndSelect,
         onDeclareTier: (id, tier) => {
-          saveMemories(declareSkillTier(loadMemories(), id, tier));
+          const result = declareSkillTier(loadMemories(), id, tier);
+          saveMemories(result.memories);
+          cascadeHint = cascadeHintFor(result.cascadedCount);
           paint();
         },
         onGeneratePlan: () => {
@@ -136,6 +140,7 @@ export function renderLibraryView(root: HTMLElement): void {
         bestReps: memory.bestReps,
       },
       planStatus,
+      cascadeHint,
     });
   };
 
@@ -175,6 +180,7 @@ export function renderLibraryView(root: HTMLElement): void {
         onSelect: (id) => {
           selectedId = id;
           planStatus = null;
+          cascadeHint = null;
           paint();
         },
       },
@@ -183,4 +189,12 @@ export function renderLibraryView(root: HTMLElement): void {
   };
 
   paint();
+}
+
+function cascadeHintFor(cascadedCount: number): string | null {
+  if (cascadedCount === 0) {
+    return null;
+  }
+  const moves = cascadedCount === 1 ? "move" : "moves";
+  return `Updated ${cascadedCount} related ${moves} in this family.`;
 }
