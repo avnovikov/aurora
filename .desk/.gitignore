@@ -1,0 +1,10 @@
+jobs/
+events.jsonl
+dashboard.runtime.json
+logs/
+ref/*.png
+out/*/rough-*
+out/*/renders/
+out/*/*.src.html
+out/*/source.html
+out/*/fonts-*.css
