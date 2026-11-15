@@ -47,36 +47,21 @@ export function wireSessionControls(
   state: ViewState,
   handlers: SessionControlHandlers,
 ): void {
-  root.querySelector("[data-log-set]")?.addEventListener("click", () => {
-    completeSet(planned, state, "completed", handlers);
-  });
-  root.querySelector("[data-fail-set]")?.addEventListener("click", () => {
-    completeSet(planned, state, "muscular_failure", handlers);
-  });
-  root.querySelector("[data-skip]")?.addEventListener("click", () => {
-    completeSet(planned, state, "skipped", handlers);
-  });
-  root.querySelector("[data-reps-minus]")?.addEventListener("click", () => {
-    adjustNextReps(state, -1, handlers);
-  });
-  root.querySelector("[data-reps-plus]")?.addEventListener("click", () => {
-    adjustNextReps(state, 1, handlers);
-  });
-  root.querySelector("[data-add-weight]")?.addEventListener("click", () => {
-    adjustAddedLoad(state, DEFAULT_ADDED_LOAD_KG, handlers);
-  });
-  root.querySelector("[data-load-minus]")?.addEventListener("click", () => {
-    adjustAddedLoadDelta(state, -1, handlers);
-  });
-  root.querySelector("[data-load-plus]")?.addEventListener("click", () => {
-    adjustAddedLoadDelta(state, 1, handlers);
-  });
-  root.querySelector("[data-cooldown-start]")?.addEventListener("click", () => {
-    handlers.onStartCooldown();
-  });
-  root.querySelector("[data-cooldown-skip]")?.addEventListener("click", () => {
-    handlers.onSkipCooldown();
-  });
+  const clicks: Record<string, () => void> = {
+    "[data-log-set]": () => completeSet(planned, state, "completed", handlers),
+    "[data-fail-set]": () => completeSet(planned, state, "muscular_failure", handlers),
+    "[data-skip]": () => completeSet(planned, state, "skipped", handlers),
+    "[data-reps-minus]": () => adjustNextReps(state, -1, handlers),
+    "[data-reps-plus]": () => adjustNextReps(state, 1, handlers),
+    "[data-add-weight]": () => adjustAddedLoad(state, DEFAULT_ADDED_LOAD_KG, handlers),
+    "[data-load-minus]": () => adjustAddedLoadDelta(state, -1, handlers),
+    "[data-load-plus]": () => adjustAddedLoadDelta(state, 1, handlers),
+    "[data-cooldown-start]": () => handlers.onStartCooldown(),
+    "[data-cooldown-skip]": () => handlers.onSkipCooldown(),
+  };
+  for (const [selector, onClick] of Object.entries(clicks)) {
+    root.querySelector(selector)?.addEventListener("click", onClick);
+  }
   wirePulseSimButtons(root, state, handlers);
   wirePulseConnectButtons(root, state, handlers);
 
