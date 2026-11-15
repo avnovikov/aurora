@@ -1,3 +1,10 @@
+// Bundled fonts (latin, only the weights in use), so the APK works offline.
+import "@fontsource/ibm-plex-sans/latin-400.css";
+import "@fontsource/ibm-plex-sans/latin-500.css";
+import "@fontsource/ibm-plex-sans/latin-600.css";
+import "@fontsource/ibm-plex-sans-condensed/latin-500.css";
+import "@fontsource/ibm-plex-sans-condensed/latin-600.css";
+import "@fontsource/ibm-plex-sans-condensed/latin-700.css";
 import "./style.css";
 import { applyPalette } from "./brand/palettes";
 import { loadProfile } from "./settings/profile";
