@@ -710,3 +710,17 @@ button:disabled {
 .chain-reason.chain-stall {
   color: var(--brass);
 }
+
+.override-controls .plan-add {
+  grid-template-columns: 1fr;
+}
+
+.override-controls button[aria-pressed="true"] {
+  border-color: var(--brass);
+  color: var(--brass);
+}
+
+.override-clear {
+  width: 100%;
+  margin-top: 0.5rem;
+}

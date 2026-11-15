@@ -1,5 +1,6 @@
 import { DEFAULT_PLAN_QUEUE, TEMPLATE_BY_ID } from "../data/seed";
 import type { PlanQueue, SessionTemplate } from "../domain/program";
+import type { ScheduleOverride } from "./scheduleOverride";
 import { resolveTemplate } from "./templates";
 
 const KEY = "aurora.poc.planQueue.v1";
@@ -27,10 +28,43 @@ export function savePlanQueue(queue: PlanQueue): void {
   localStorage.setItem(KEY, JSON.stringify(queue));
 }
 
-export function peekNextTemplate(queue: PlanQueue): SessionTemplate {
-  const id = queue.items[0];
+/**
+ * Today's session: the one-off override when set, otherwise the queue head.
+ * Never mutates the queue; it only advances when the session completes.
+ */
+export function peekNextTemplate(
+  queue: PlanQueue,
+  override: ScheduleOverride | null = null,
+): SessionTemplate {
+  if (override) {
+    return resolveKnownTemplate(override.templateId, "schedule override");
+  }
+  return resolveKnownTemplate(queue.items[0], "queue");
+}
+
+/**
+ * Forecast list: an override takes the "next" slot, and the untouched queue
+ * head (which will still run after it) follows.
+ */
+export function peekUpcomingWithOverride(
+  queue: PlanQueue,
+  count: number,
+  override: ScheduleOverride | null,
+): SessionTemplate[] {
+  assertPositiveCount(count);
+  if (!override) {
+    return peekUpcoming(queue, count);
+  }
+  const overrideTemplate = peekNextTemplate(queue, override);
+  if (count === 1) {
+    return [overrideTemplate];
+  }
+  return [overrideTemplate, ...peekUpcoming(queue, count - 1)];
+}
+
+function resolveKnownTemplate(id: string | undefined, source: string): SessionTemplate {
   if (!id || !TEMPLATE_BY_ID[id]) {
-    throw new Error(`Unknown template in queue: ${id}`);
+    throw new Error(`Unknown template in ${source}: ${id}`);
   }
   return resolveTemplate(id);
 }

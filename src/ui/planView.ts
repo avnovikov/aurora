@@ -9,6 +9,7 @@ import {
   savePlanQueue,
   skipNext,
 } from "../plan/queue";
+import { clearScheduleOverride } from "../plan/scheduleOverride";
 import {
   clearTemplateOverride,
   listResolvedTemplates,
@@ -237,5 +238,6 @@ function wireProcedureControls(root: HTMLElement, paint: () => void): void {
 
 /** Used after session evaluation */
 export function advancePlanAfterSession(): void {
+  clearScheduleOverride();
   savePlanQueue(completeNext(loadPlanQueue()));
 }
