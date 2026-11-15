@@ -2,6 +2,7 @@ import { escapeHtml } from "../library/present";
 import { isNativePulseAvailable } from "../pulse/hrMonitor";
 import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
 import { WARMUP_GAPS, warmupMinutesLabel } from "../rules/sessionDuration";
+import { warmupViewSeconds } from "../rules/warmupPlan";
 import { sessionClockSnapshot } from "../session/sessionClock";
 import { prescribedForNextSet } from "../session/setLog";
 import type { ViewState } from "./sessionTypes";
@@ -74,7 +75,7 @@ function workNotchClass(state: ViewState, index: number): string {
 }
 
 function chalkHtml(planned: PlannedSession, state: ViewState): string {
-  const warmupNotch = `<li class="${warmupNotchClass(state, planned)}">${warmupMinutesLabel()}</li>`;
+  const warmupNotch = `<li class="${warmupNotchClass(state, planned)}">${warmupMinutesLabel(warmupViewSeconds(planned.warmup))}</li>`;
   const workNotches = planned.work.map((item, index) => {
     const cls = workNotchClass(state, index);
     return `<li class="${cls}">${item.label}</li>`;
@@ -123,7 +124,7 @@ function warmupHtml(planned: PlannedSession, state: ViewState): string {
     <p class="tagline">${escapeHtml(step.region)} · <span data-warmup-left>${step.holdSeconds}</span>s</p>
     ${media}
     ${cues}
-    <p class="reason">Own timings · ${WARMUP_GAPS.sameArea}s same area · ${WARMUP_GAPS.crossArea}s cross area</p>
+    <p class="reason">Prebuilt sequence · ${WARMUP_GAPS.sameArea}s same area · ${WARMUP_GAPS.crossArea}s cross area</p>
   `;
 }
 

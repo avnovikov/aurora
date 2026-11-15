@@ -1,4 +1,5 @@
 import { SEED_GRAPH } from "../data/seed";
+import { requireWarmupStation } from "../data/warmupStations";
 import { resolveExerciseTiming } from "../domain/timing";
 import type {
   SessionDurationTarget,
@@ -7,13 +8,17 @@ import type {
 } from "../domain/program";
 import type { Dose, Exercise } from "../domain/types";
 import type { PlannedSession } from "./planSession";
-import { WARMUP_GAPS } from "./warmupPlan";
+import {
+  buildWarmupView,
+  warmupViewSeconds,
+  WARMUP_GAPS,
+} from "./warmupPlan";
 
-/** Default continuous warmup budget (~10 min of 12s stations). */
-export const DEFAULT_WARMUP_SECONDS = 600;
+/** Fallback when a template has no warmup stations listed. */
+export const DEFAULT_WARMUP_SECONDS = 60;
 
 export const DEFAULT_SESSION_TARGET: SessionDurationTarget = {
-  minMinutes: 30,
+  minMinutes: 25,
   maxMinutes: 45,
 };
 
@@ -48,7 +53,7 @@ export function estimateSlotSeconds(
 
 export function estimateSessionDuration(
   template: SessionTemplate,
-  warmupSeconds: number = DEFAULT_WARMUP_SECONDS,
+  warmupSeconds: number = estimateTemplateWarmupSeconds(template),
 ): SessionDurationEstimate {
   assertWarmupSeconds(warmupSeconds);
   const target = template.targetMinutes ?? DEFAULT_SESSION_TARGET;
@@ -86,10 +91,7 @@ export function formatDurationLabel(estimate: SessionDurationEstimate): string {
  * Wall-clock estimate for today's resolved plan (warmup stations + work + rests).
  */
 export function estimatePlannedSessionSeconds(planned: PlannedSession): number {
-  const warmupSeconds = planned.warmup.reduce(
-    (sum, step) => sum + step.holdSeconds + step.gapSecondsAfter,
-    0,
-  );
+  const warmupSeconds = warmupViewSeconds(planned.warmup);
   const workSeconds = planned.work.reduce((sum, item) => {
     const exercise = SEED_GRAPH[item.exerciseId];
     if (!exercise) {
@@ -102,12 +104,22 @@ export function estimatePlannedSessionSeconds(planned: PlannedSession): number {
   return warmupSeconds + workSeconds;
 }
 
-/** Warmup chalk copy stays honest about the station budget. */
-export function warmupMinutesLabel(
-  warmupSeconds: number = DEFAULT_WARMUP_SECONDS,
-): string {
+/** Warmup chalk copy from the prebuilt sequence length. */
+export function warmupMinutesLabel(warmupSeconds: number): string {
+  assertWarmupSeconds(warmupSeconds);
+  if (warmupSeconds < 60) {
+    return `Warmup · ${Math.round(warmupSeconds)}s`;
+  }
   const minutes = Math.round(warmupSeconds / 60);
   return `Warmup · ${minutes} min`;
+}
+
+function estimateTemplateWarmupSeconds(template: SessionTemplate): number {
+  if (template.warmupStationIds.length === 0) {
+    return DEFAULT_WARMUP_SECONDS;
+  }
+  const stations = template.warmupStationIds.map((id) => requireWarmupStation(id));
+  return warmupViewSeconds(buildWarmupView(stations));
 }
 
 export { WARMUP_GAPS };

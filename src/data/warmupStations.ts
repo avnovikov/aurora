@@ -1,14 +1,14 @@
 import type { LoadRegion } from "./seed";
 
 /**
- * Warmup is its own mini-session: stations with hold timings, not work exercises.
- * One tap still runs this block, then today's strength/mobility work.
+ * Display data for the prebuilt warmup view (not a planner catalogue).
+ * Templates list station ids in order; each runs once with its own hold.
  */
 export interface WarmupStation {
   id: string;
   name: string;
   regions: LoadRegion[];
-  /** Station hold length (seconds). Defaults applied in the planner if omitted. */
+  /** Station hold length (seconds). */
   holdSeconds: number;
   doodlePath?: string;
   cues: string[];
@@ -19,7 +19,7 @@ export const WARMUP_STATIONS: WarmupStation[] = [
     id: "pulse_raiser_march",
     name: "March in place",
     regions: ["general", "legs"],
-    holdSeconds: 12,
+    holdSeconds: 90,
     doodlePath: "/doodles/doodle-march-in-place.jpg",
     cues: ["Light bounce", "Arms swing freely", "Breathe through the nose"],
   },
@@ -27,7 +27,7 @@ export const WARMUP_STATIONS: WarmupStation[] = [
     id: "hip_circles",
     name: "Hip circles",
     regions: ["legs", "general"],
-    holdSeconds: 12,
+    holdSeconds: 75,
     doodlePath: "/doodles/doodle-hip-circles.jpg",
     cues: ["Slow circles", "Both directions", "Keep ribs quiet"],
   },
@@ -35,7 +35,7 @@ export const WARMUP_STATIONS: WarmupStation[] = [
     id: "ankle_rocks",
     name: "Ankle rocks",
     regions: ["legs"],
-    holdSeconds: 12,
+    holdSeconds: 75,
     doodlePath: "/doodles/doodle-calf-raise.jpg",
     cues: ["Knee tracks over mid-foot", "Heel stays down as long as possible"],
   },
@@ -43,7 +43,7 @@ export const WARMUP_STATIONS: WarmupStation[] = [
     id: "wrist_load",
     name: "Wrist load",
     regions: ["skill", "push"],
-    holdSeconds: 15,
+    holdSeconds: 60,
     doodlePath: "/doodles/doodle-wrist-load.jpg",
     cues: ["Fingers spread", "Shift weight gently", "Stop before sharp pain"],
   },
@@ -51,7 +51,7 @@ export const WARMUP_STATIONS: WarmupStation[] = [
     id: "scap_pushup",
     name: "Scapular push-up",
     regions: ["skill", "push"],
-    holdSeconds: 12,
+    holdSeconds: 75,
     doodlePath: "/doodles/doodle-scap-pushup.jpg",
     cues: ["Arms locked", "Only the shoulder blades move", "Long neck"],
   },
@@ -59,7 +59,7 @@ export const WARMUP_STATIONS: WarmupStation[] = [
     id: "glute_bridge",
     name: "Glute bridge",
     regions: ["legs", "core"],
-    holdSeconds: 12,
+    holdSeconds: 75,
     doodlePath: "/doodles/doodle-glute-bridge.jpg",
     cues: ["Ribs down", "Squeeze glutes at the top", "Do not arch the low back"],
   },
