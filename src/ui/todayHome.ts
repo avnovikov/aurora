@@ -2,7 +2,7 @@ import type { SessionTemplate } from "../domain/program";
 import { escapeHtml } from "../library/present";
 import { warmupCooldownLabel } from "../rules/sessionDuration";
 import { deloadNoteHtml } from "./deloadNote";
-import { comingUpHtml, templateHitsCore } from "./forecastStrip";
+import { comingUpHtml, templateHitsCore } from "./comingUp";
 import { templateDurationLabel, templateTargetsLabel } from "./formatTemplate";
 
 export interface TodayHomeModel {

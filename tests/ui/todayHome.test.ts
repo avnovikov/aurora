@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { SESSION_TEMPLATES } from "../../src/data/seed";
 import { checkInHtml } from "../../src/ui/checkIn";
-import { comingUpHtml } from "../../src/ui/forecastStrip";
+import { comingUpHtml } from "../../src/ui/comingUp";
 import { overrideControlsHtml } from "../../src/ui/overrideControls";
 import { todayHomeHtml } from "../../src/ui/todayHome";
 

@@ -54,12 +54,6 @@ h2 {
   font-size: 1.6rem;
 }
 
-.soul {
-  margin: -0.4rem 0 1rem;
-  color: var(--muted);
-  font-size: 0.95rem;
-}
-
 .tagline,
 .about,
 .reason,
