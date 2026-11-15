@@ -22,4 +22,5 @@ export interface ViewState {
   showingCues: boolean;
   pulse: PulseWatchState;
   bpm: number | null;
+  pulseStatus: string | null;
 }

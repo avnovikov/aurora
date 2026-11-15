@@ -16,6 +16,7 @@ export function initialState(options: SessionViewOptions): ViewState {
       showingCues: false,
       pulse: { connected: false, lastValidAtMs: null, lastShoutAtMs: null },
       bpm: null,
+      pulseStatus: null,
     };
     if (state.phase === "work" || state.phase === "rest") {
       state.workState = restoreWorkState(
@@ -37,6 +38,7 @@ export function initialState(options: SessionViewOptions): ViewState {
     showingCues: false,
     pulse: { connected: false, lastValidAtMs: null, lastShoutAtMs: null },
     bpm: null,
+    pulseStatus: null,
   };
 }
 

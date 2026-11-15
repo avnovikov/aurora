@@ -9,6 +9,10 @@ import {
   recordBestReps,
   saveMemories,
 } from "../session/history";
+import {
+  connectHeartRate,
+  disconnectHeartRate,
+} from "../pulse/hrMonitor";
 import type { PlannedSession } from "../rules/planSession";
 import type { ViewState } from "./sessionTypes";
 import { currentWork } from "./sessionState";
@@ -26,6 +30,7 @@ export interface SessionControlHandlers {
   onFinishExercise: () => void;
   onFinishAll: () => void;
   onPulseLostSim: () => void;
+  onPulseBpm: (bpm: number) => void;
 }
 
 export function wireSessionControls(
@@ -54,11 +59,50 @@ export function wireSessionControls(
     adjustNextReps(state, 1, handlers);
   });
   wirePulseSimButtons(root, state, handlers);
+  wirePulseConnectButtons(root, state, handlers);
 
   const stage = root.querySelector<HTMLElement>("[data-swipe-stage]");
   if (stage) {
     wireSwipe(stage, () => handlers.onFinishExercise());
   }
+}
+
+function wirePulseConnectButtons(
+  root: HTMLElement,
+  state: ViewState,
+  handlers: SessionControlHandlers,
+): void {
+  root.querySelector("[data-pulse-connect]")?.addEventListener("click", () => {
+    void connectHeartRate(
+      (bpm) => handlers.onPulseBpm(bpm),
+      (message) => {
+        state.pulseStatus = message;
+        handlers.onPaint();
+      },
+    ).then((result) => {
+      state.pulseStatus = result.message;
+      if (result.ok) {
+        state.pulse = {
+          connected: true,
+          lastValidAtMs: Date.now(),
+          lastShoutAtMs: state.pulse.lastShoutAtMs,
+        };
+      }
+      handlers.onPaint();
+    });
+  });
+  root.querySelector("[data-pulse-disconnect]")?.addEventListener("click", () => {
+    void disconnectHeartRate().then(() => {
+      state.pulse = {
+        connected: false,
+        lastValidAtMs: null,
+        lastShoutAtMs: state.pulse.lastShoutAtMs,
+      };
+      state.bpm = null;
+      state.pulseStatus = "Pulse strap disconnected.";
+      handlers.onPaint();
+    });
+  });
 }
 
 function adjustNextReps(

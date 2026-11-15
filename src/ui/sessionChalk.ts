@@ -12,9 +12,12 @@ export function shellHtml(planned: PlannedSession, state: ViewState): string {
       ${chalkHtml(planned, state)}
       <div class="pulse-row ${pulseClass}">
         <span>Pulse ${state.bpm ?? "—"}</span>
+        <button type="button" data-pulse-connect>Connect pulse</button>
+        <button type="button" data-pulse-disconnect>Disconnect</button>
         <button type="button" data-sim-pulse-ok>Pulse ok</button>
         <button type="button" data-sim-pulse-lost>Pulse lost</button>
       </div>
+      ${state.pulseStatus ? `<p class="tagline" data-pulse-status>${state.pulseStatus}</p>` : ""}
       ${bodyHtml(planned, state)}
     </main>
   `;
