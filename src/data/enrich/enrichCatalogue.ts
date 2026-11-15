@@ -5,6 +5,7 @@ import type { SeedExercise } from "../seed";
 import { isSeedId } from "../sourceRank";
 import { DESCRIPTION_SOURCES } from "../generated/descriptionSources";
 import { DESCRIPTIONS } from "../generated/descriptions";
+import { GENERATED_DOODLES } from "../generated/doodleMap";
 import { cautionsFor } from "./cautions";
 import { requiresFor } from "./equipment";
 import { placeOnLadder, type LadderPlacement } from "./ladder";
@@ -112,6 +113,8 @@ export function enrichCatalogue(catalogue: SeedExercise[]): SeedExercise[] {
       enriched.standards = standardsFor(exercise.name, effort, difficulty, placement);
       enriched.effort = effort;
     }
+    // Hand-drawn seed doodles win; animated SVGs fill the rest.
+    enriched.doodlePath ??= GENERATED_DOODLES[exercise.id];
     return withDescription(enriched);
   });
 }

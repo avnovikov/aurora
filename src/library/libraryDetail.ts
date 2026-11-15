@@ -1,5 +1,6 @@
 import type { SeedExercise } from "../data/seed";
 import type { JointHistoryEntry } from "../domain/program";
+import { hasProgressionPath } from "../plan/pathPlacement";
 import { assessExercise } from "../safety/jointCare";
 import { jointLoadsFor } from "../safety/jointLoad";
 import { JOINT_LABEL } from "../settings/jointHistory";
@@ -24,6 +25,8 @@ export interface DetailActions {
   onBack: () => void;
   onOpenExercise: (exerciseId: string) => void;
   onDeclareTier?: (exerciseId: string, tier: SkillTier) => void;
+  onGeneratePlan?: () => void;
+  onAddToPlan?: () => void;
 }
 
 export interface DetailMemoryView {
@@ -39,6 +42,7 @@ export interface MountLibraryDetailOptions {
   actions: DetailActions;
   memory?: DetailMemoryView;
   jointHistory?: readonly JointHistoryEntry[];
+  planStatus?: string | null;
 }
 
 export function mountLibraryDetail(
@@ -52,8 +56,16 @@ export function mountLibraryDetail(
     actions,
     memory = {},
     jointHistory = [],
+    planStatus = null,
   } = options;
-  root.innerHTML = detailHtml(exercise, targetIds, catalogueById, memory, jointHistory);
+  root.innerHTML = detailHtml(
+    exercise,
+    targetIds,
+    catalogueById,
+    memory,
+    jointHistory,
+    planStatus,
+  );
 
   root.querySelector<HTMLButtonElement>("[data-lib-back]")?.addEventListener("click", () => {
     actions.onBack();
@@ -75,6 +87,13 @@ export function mountLibraryDetail(
       actions.onDeclareTier?.(exercise.id, tier);
     },
   );
+
+  root.querySelector("[data-generate-plan]")?.addEventListener("click", () => {
+    actions.onGeneratePlan?.();
+  });
+  root.querySelector("[data-add-to-plan]")?.addEventListener("click", () => {
+    actions.onAddToPlan?.();
+  });
 }
 
 export function detailHtml(
@@ -83,6 +102,7 @@ export function detailHtml(
   catalogueById: Record<string, SeedExercise> = {},
   memory: DetailMemoryView = {},
   jointHistory: readonly JointHistoryEntry[] = [],
+  planStatus: string | null = null,
 ): string {
   const targetBadge = isTemplateTarget(exercise.id, targetIds)
     ? `<p class="lib-badge">Target</p>`
@@ -90,6 +110,7 @@ export function detailHtml(
   const chain = chainLinksHtml(exercise, catalogueById);
   const standards = standardsHtml(exercise);
   const skill = skillPickerHtml(exercise, memory);
+  const planActions = planActionsHtml(exercise, planStatus);
 
   return `
     <main class="shell lib-detail">
@@ -113,9 +134,32 @@ export function detailHtml(
       ${skill}
       ${standards}
       ${chain}
+      ${planActions}
       ${sourcesHtml(exercise)}
     </main>
   `;
+}
+
+function planActionsHtml(exercise: SeedExercise, planStatus: string | null): string {
+  if (!hasProgressionPath(exercise)) {
+    return "";
+  }
+  return `
+    <p class="eyebrow">Plan</p>
+    <div class="row wrap lib-plan-actions">
+      <button type="button" class="cta" data-generate-plan>Generate plan</button>
+      <button type="button" data-add-to-plan>Add to the plan</button>
+    </div>
+    <p class="hint">Generate builds a whole day toward this skill. Add inserts your current-level step into an existing day until you outgrow it.</p>
+    ${planStatusHtml(planStatus)}
+  `;
+}
+
+function planStatusHtml(planStatus: string | null): string {
+  if (!planStatus) {
+    return "";
+  }
+  return `<p class="tagline" data-plan-status>${escapeHtml(planStatus)}</p>`;
 }
 
 function requiresHtml(exercise: SeedExercise): string {
