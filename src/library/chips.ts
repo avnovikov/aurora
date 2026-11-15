@@ -15,30 +15,34 @@ export function chipHtml(
   extraClass = "",
 ): string {
   const classes = [selected ? "selected" : "", extraClass].filter(Boolean).join(" ");
-  return `<button type="button" data-${attr}="${escapeHtml(value)}" class="${classes}">${escapeHtml(label)}</button>`;
-}
-
-/** A button with no value that toggles on and off (`data-attr`). */
-export function toggleHtml(attr: string, label: string, on: boolean): string {
-  return `<button type="button" data-${attr} class="${on ? "selected" : ""}">${escapeHtml(label)}</button>`;
+  return `<button type="button" data-${attr}="${escapeHtml(value)}" class="${classes}" aria-pressed="${selected}">${escapeHtml(label)}</button>`;
 }
 
 /**
- * A row of single-choice chips. `allLabel` prepends an "all" chip. The row is
- * tagged `data-<attr>s`.
+ * A button with no value that toggles on and off (`data-attr`). It is marked
+ * `data-kind="toggle"` so it can look like a checkbox, not a pick-one chip.
+ */
+export function toggleHtml(attr: string, label: string, on: boolean): string {
+  return `<button type="button" data-${attr} class="${on ? "selected" : ""}" data-kind="toggle" aria-pressed="${on}">${escapeHtml(label)}</button>`;
+}
+
+/**
+ * A row of single-choice chips. `allLabel` prepends an "all" chip; `label`
+ * shows a visible caption above the row. The row is tagged `data-<attr>s`.
  */
 export function chipRowHtml(
   attr: string,
   ariaLabel: string,
   selected: string,
   options: readonly ChipOption[],
-  config: { allLabel?: string } = {},
+  config: { allLabel?: string; label?: string } = {},
 ): string {
   const all = config.allLabel ? chipHtml(attr, "all", config.allLabel, selected === "all") : "";
   const chips = options
     .map((option) => chipHtml(attr, option.id, option.label, option.id === selected))
     .join("");
-  return `<div class="row wrap" data-${attr}s aria-label="${escapeHtml(ariaLabel)}">${all}${chips}</div>`;
+  const caption = config.label ? `<p class="chip-row-label">${escapeHtml(config.label)}</p>` : "";
+  return `${caption}<div class="row wrap" data-${attr}s aria-label="${escapeHtml(ariaLabel)}">${all}${chips}</div>`;
 }
 
 /** Calls `handler` with the chip's value when any `data-<attr>` chip is clicked. */

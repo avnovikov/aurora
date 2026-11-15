@@ -8,6 +8,8 @@
   --muted: #9a9a9e;
   --panel: #121214;
   --edge: #2a2a2e;
+  /* Borders of interactive controls: at least 3:1 on page and panel (WCAG 1.4.11). */
+  --control-edge: #636369;
   --silver: #8e8e93;
 }
 
@@ -83,7 +85,7 @@ h2 {
 
 button {
   appearance: none;
-  border: 1px solid var(--edge);
+  border: 1px solid var(--control-edge);
   background: var(--panel);
   color: #e8e8ea;
   padding: 0.65rem 0.9rem;
@@ -357,7 +359,8 @@ button:disabled {
   border-radius: 0;
   background: transparent;
   color: var(--muted);
-  font-size: 0.65rem;
+  font-size: 0.75rem;
+  min-height: 48px;
   padding: 0.75rem 0.2rem;
 }
 
@@ -370,7 +373,7 @@ button:disabled {
   margin: 0.75rem 0;
   padding: 0.75rem;
   background: var(--panel);
-  border: 1px solid var(--edge);
+  border: 1px solid var(--control-edge);
   color: #e8e8ea;
   font: inherit;
 }
@@ -550,7 +553,6 @@ button:disabled {
 }
 
 
-.lib-list li.core-hit,
 .forecast-card.core-spark,
 .body-row.core-spark span:first-child {
   color: var(--brass);
@@ -570,15 +572,33 @@ button:disabled {
 
 .lib-row strong {
   color: #e8e8ea;
+  font-size: 1.05rem;
 }
 
-.lib-list li.core-hit .lib-row strong {
-  color: var(--brass);
+/* Row and detail metadata: area · muscles · level · gear. Recedes behind the name. */
+.lib-meta {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin: 0.15rem 0 0;
+}
+
+.lib-desc {
+  color: #c8c8cc;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  margin-top: 0.3rem;
+}
+
+.lib-count {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 0.25rem 0 0.5rem;
 }
 
 .lib-back {
   margin-bottom: 0.75rem;
-  padding: 0.4rem 0;
+  min-height: 44px;
+  padding: 0.6rem 0;
   border: 0;
   background: transparent;
   color: var(--brass);
@@ -674,7 +694,6 @@ button:disabled {
 
 .lib-plan-actions .cta {
   width: auto;
-  flex: 1 1 12rem;
 }
 
 .plan-pick-list {
@@ -1006,4 +1025,47 @@ button:disabled {
   text-decoration: underline;
   cursor: pointer;
   color: inherit;
+}
+
+/* Selection is not colour-only: a filled background plus a check (chips) or a
+   filled box (toggles), driven by aria-pressed so screen readers agree. */
+button[aria-pressed="true"] {
+  background: rgba(196, 165, 116, 0.14);
+}
+button[aria-pressed="true"]:not([data-kind="toggle"])::before {
+  content: "✓";
+  margin-right: 0.4em;
+}
+button[data-kind="toggle"]::before {
+  content: "";
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  margin-right: 0.5em;
+  border: 1.5px solid currentColor;
+  vertical-align: -0.05em;
+}
+button[data-kind="toggle"][aria-pressed="true"]::before {
+  background: currentColor;
+  box-shadow: inset 0 0 0 2px var(--panel);
+}
+.lib-link[aria-pressed] {
+  background: none;
+}
+.chip-row-label {
+  margin: 0.7rem 0.9rem 0;
+  color: var(--muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.lib-filters .chip-row-label + .row {
+  margin-top: 0.35rem;
+}
+/* Plan actions: two equal halves at the same height (the .cta top margin is for stacked forms). */
+.lib-plan-actions button,
+.lib-plan-actions .cta {
+  flex: 1 1 0;
+  min-width: 0;
+  margin-top: 0;
 }

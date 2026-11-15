@@ -120,7 +120,7 @@ describe("enriched library", () => {
 
   it("shows level and safety notes on the detail page", () => {
     const html = detailHtml(byName("Bench Dip"), new Set(), byId);
-    expect(html).toContain("Level: Beginner");
+    expect(html).toMatch(/class="lib-meta">[^<]*Beginner/);
     expect(html).toContain("Safety");
   });
 });

@@ -36,6 +36,18 @@ export interface FilterPanelState {
   openPanels: readonly FilterPanelId[];
 }
 
+/** True when any filter differs from its default (search text not included). */
+export function hasActiveFilters(state: Omit<FilterPanelState, "openPanels">): boolean {
+  return (
+    state.level !== "all" ||
+    state.area !== "all" ||
+    state.muscle !== "all" ||
+    state.stretch !== DEFAULT_STRETCH ||
+    state.forJoints ||
+    state.onlyGear
+  );
+}
+
 /** The panels the user has open after one of them is opened or closed. */
 export function withPanelState(
   openPanels: readonly FilterPanelId[],
@@ -73,7 +85,9 @@ function showPanelHtml(state: FilterPanelState, hasJointHistory: boolean, opened
     hasJointHistory ? toggleHtml("for-joints", "For my joints", state.forJoints) : "",
     toggleHtml("only-gear", "Only my gear", state.onlyGear),
   ].join("");
-  const body = `<div class="row wrap">${toggles}</div>${chipRowHtml("stretch", "Stretches", state.stretch, STRETCH_FILTERS)}`;
+  const body =
+    `<p class="chip-row-label">Limit to</p><div class="row wrap">${toggles}</div>` +
+    chipRowHtml("stretch", "Stretches", state.stretch, STRETCH_FILTERS, { label: "Stretches" });
   return panelHtml("show", "Show", parts, opened, body);
 }
 
@@ -83,8 +97,11 @@ function bodyPanelHtml(state: FilterPanelState, opened: boolean): string {
     state.muscle === "all" ? "" : labelOf(MUSCLE_BUCKETS, state.muscle),
   ].filter(Boolean);
   const body =
-    chipRowHtml("area", "Body area", state.area, AREAS, { allLabel: "All areas" }) +
-    chipRowHtml("muscle", "Primary muscle", state.muscle, MUSCLE_BUCKETS, { allLabel: "All muscles" });
+    chipRowHtml("area", "Body area", state.area, AREAS, { allLabel: "All areas", label: "Area" }) +
+    chipRowHtml("muscle", "Primary muscle", state.muscle, MUSCLE_BUCKETS, {
+      allLabel: "All muscles",
+      label: "Primary muscle",
+    });
   return panelHtml("body", "Area & muscle", parts, opened, body);
 }
 
@@ -106,6 +123,15 @@ export function filterPanelsHtml(state: FilterPanelState, hasJointHistory: boole
     bodyPanelHtml(state, opened("body")),
     levelPanelHtml(state, opened("level")),
   ].join("");
+}
+
+/** "38 exercises", plus a Clear filters button while any filter is active. */
+export function resultCountHtml(count: number, filtered: boolean): string {
+  const noun = count === 1 ? "exercise" : "exercises";
+  const clear = filtered
+    ? ` <button type="button" class="lib-link" data-clear-filters>Clear filters</button>`
+    : "";
+  return `<p class="lib-count" aria-live="polite">${count} ${noun}${clear}</p>`;
 }
 
 /** Shown under the search box while stretches are hidden but match the search. */

@@ -78,7 +78,7 @@ describe("panel summaries and open state", () => {
       { ...state, forJoints: true, onlyGear: true, stretch: "only", level: "beginner" },
       true,
     );
-    expect(html).toContain("Show · my joints, my gear, stretches only");
+    expect(html).toContain("Show · my joints, my gear, only stretches");
     expect(html).toContain("Level · Beginner");
     expect(html).toMatch(/data-panel="show" open/);
     expect(html).toMatch(/data-panel="level" open/);
@@ -86,7 +86,7 @@ describe("panel summaries and open state", () => {
   });
 
   it("treats every stretch choice but the default as active", () => {
-    expect(filterPanelsHtml({ ...state, stretch: "all" }, false)).toContain("Show · everything");
+    expect(filterPanelsHtml({ ...state, stretch: "all" }, false)).toContain("Show · include stretches");
     expect(filterPanelsHtml({ ...state, stretch: "hide" }, false)).toContain("<summary>Show</summary>");
   });
 

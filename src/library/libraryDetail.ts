@@ -10,7 +10,8 @@ import {
   effectiveLabel,
 } from "./skillPresent";
 import type { SkillTier } from "../domain/types";
-import { escapeHtml, formatMuscles, formatPattern } from "./present";
+import { exerciseMetaLine } from "./metaLine";
+import { escapeHtml, formatMuscles } from "./present";
 import {
   cuesHtml,
   mediaHtml,
@@ -118,23 +119,19 @@ export function detailHtml(
       ${targetBadge}
       <p class="eyebrow">Exercise</p>
       <h1>${escapeHtml(exercise.name)}</h1>
-      ${levelHtml(exercise)}
-      <p class="tagline">Pattern: ${escapeHtml(formatPattern(exercise.pattern))}</p>
-      <p class="tagline">Muscles: ${escapeHtml(formatMuscles(exercise.muscles))}</p>
-      <p class="tagline">Regions: ${escapeHtml(exercise.regions.join(", "))}</p>
-      ${requiresHtml(exercise)}
+      <p class="lib-meta">${escapeHtml(exerciseMetaLine(exercise))}</p>
+      <p class="lib-meta">Muscles: ${escapeHtml(formatMuscles(exercise.muscles))}</p>
       ${summaryHtml(exercise)}
+      ${planActions}
       ${mediaHtml(exercise)}
-      ${jointNotesHtml(exercise, jointHistory)}
+      ${safetyHtml(exercise, jointHistory)}
       ${jointLoadHtml(exercise, jointHistory)}
-      ${cautionsHtml(exercise)}
       ${stepsHtml(exercise)}
       ${cuesHtml(exercise)}
       ${mistakesHtml(exercise)}
       ${skill}
       ${standards}
       ${chain}
-      ${planActions}
       ${sourcesHtml(exercise)}
     </main>
   `;
@@ -162,23 +159,31 @@ function planStatusHtml(planStatus: string | null): string {
   return `<p class="tagline" data-plan-status>${escapeHtml(planStatus)}</p>`;
 }
 
-function requiresHtml(exercise: SeedExercise): string {
-  return exercise.requires?.length
-    ? `<p class="tagline">Needs: ${escapeHtml(exercise.requires.join(", "))}</p>`
-    : "";
+
+function listHtmlItems(notes: readonly string[]): string {
+  return notes.map((note) => `<li>${escapeHtml(note)}</li>`).join("");
 }
 
-/** What the user's own injury history means for this move. */
-function jointNotesHtml(exercise: SeedExercise, history: readonly JointHistoryEntry[]): string {
+/**
+ * One safety block. With a joint verdict it leads with what that means for
+ * the user, then the general notes; otherwise just the general notes.
+ */
+function safetyHtml(exercise: SeedExercise, history: readonly JointHistoryEntry[]): string {
   const verdict = assessExercise(exercise.name, history);
+  const general = exercise.cautions ?? [];
   if (verdict.cautions.length === 0) {
-    return "";
+    return general.length > 0
+      ? `<p class="eyebrow">Safety</p><ul class="lib-cautions">${listHtmlItems(general)}</ul>`
+      : "";
   }
   const lead = verdict.avoid
     ? "Aurora skips this move in your sessions."
     : "Allowed in your sessions, with care.";
-  const items = verdict.cautions.map((note) => `<li>${escapeHtml(note)}</li>`).join("");
-  return `<div class="joint-caution"><p class="eyebrow">For your joints</p><p>${lead}</p><ul class="cues">${items}</ul></div>`;
+  const generalBlock =
+    general.length > 0
+      ? `<p class="eyebrow">General safety</p><ul class="cues">${listHtmlItems(general)}</ul>`
+      : "";
+  return `<div class="joint-caution"><p class="eyebrow">For your joints</p><p>${lead}</p><ul class="cues">${listHtmlItems(verdict.cautions)}</ul>${generalBlock}</div>`;
 }
 
 /** Which joints this move stresses (impersonal), marking the user's own. */
@@ -235,23 +240,7 @@ function bestRepsHintHtml(
   return `<p class="hint">Best logged · ${memory.bestReps}${unit} · ${escapeHtml(label)}</p>`;
 }
 
-function levelHtml(exercise: SeedExercise): string {
-  if (!exercise.difficulty) {
-    return "";
-  }
-  return `<p class="tagline">Level: ${escapeHtml(SKILL_TIER_LABELS[exercise.difficulty])}</p>`;
-}
 
-function cautionsHtml(exercise: SeedExercise): string {
-  if (!exercise.cautions?.length) {
-    return "";
-  }
-  const items = exercise.cautions.map((note) => `<li>${escapeHtml(note)}</li>`).join("");
-  return `
-    <p class="eyebrow">Safety</p>
-    <ul class="lib-cautions">${items}</ul>
-  `;
-}
 
 function standardsHtml(exercise: SeedExercise): string {
   if (!exercise.standards) {

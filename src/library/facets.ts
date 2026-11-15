@@ -25,7 +25,7 @@ export const MUSCLE_BUCKETS: ReadonlyArray<{ id: MuscleBucket; label: string }> 
   { id: "back", label: "Back" },
   { id: "shoulders", label: "Shoulders" },
   { id: "arms", label: "Arms" },
-  { id: "core", label: "Core" },
+  { id: "core", label: "Abs & lower back" },
   { id: "glutes_hips", label: "Glutes & hips" },
   { id: "quads", label: "Quads" },
   { id: "hamstrings_calves", label: "Hamstrings & calves" },
@@ -63,6 +63,7 @@ const LOWER = new Set<MuscleBucket>(["glutes_hips", "quads", "hamstrings_calves"
 
 const ALIASES: Readonly<Record<string, MuscleBucket>> = {
   abs: "core",
+  core: "core",
   abdominals: "core",
   lats: "back",
   traps: "back",
@@ -89,9 +90,9 @@ export type StretchFilter = "hide" | "only" | "all";
 export const DEFAULT_STRETCH: StretchFilter = "hide";
 
 export const STRETCH_FILTERS: ReadonlyArray<{ id: StretchFilter; label: string }> = [
-  { id: "hide", label: "No stretches" },
-  { id: "only", label: "Stretches only" },
-  { id: "all", label: "Everything" },
+  { id: "hide", label: "Hide stretches" },
+  { id: "only", label: "Only stretches" },
+  { id: "all", label: "Include stretches" },
 ];
 
 /** Static holds that are strengthening, neck or balance drills, not stretches. */

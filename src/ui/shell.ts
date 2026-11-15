@@ -27,7 +27,7 @@ export function renderShell(
       <nav class="tab-bar" aria-label="Main">
         ${TABS.map(
           (tab) =>
-            `<button type="button" class="${tab.id === active ? "active" : ""}" data-tab="${tab.id}">${tab.label}</button>`,
+            `<button type="button" class="${tab.id === active ? "active" : ""}" data-tab="${tab.id}"${tab.id === active ? ' aria-current="page"' : ""}>${tab.label}</button>`,
         ).join("")}
       </nav>
     </div>

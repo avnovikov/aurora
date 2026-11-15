@@ -174,6 +174,17 @@ export function renderLibraryView(root: HTMLElement): void {
         onStretch: (next) => setFilter("stretch", next),
         onForJoints: (on) => setFilter("forJoints", on),
         onOnlyGear: (on) => setFilter("onlyGear", on),
+        onClearFilters: () => {
+          Object.assign(filters, {
+            level: "all",
+            area: "all",
+            muscle: "all",
+            stretch: DEFAULT_STRETCH,
+            forJoints: false,
+            onlyGear: false,
+          });
+          paint();
+        },
         onPanelToggle: (panel, open) => {
           openPanels = withPanelState(openPanels, panel, open);
         },

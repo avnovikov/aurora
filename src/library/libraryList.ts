@@ -1,6 +1,5 @@
 import type { SeedExercise } from "../data/seed";
 import type { JointHistoryEntry } from "../domain/program";
-import { SKILL_TIER_LABELS } from "../domain/skillTier";
 import { assessExercise } from "../safety/jointCare";
 import { onChipClick, onToggleClick } from "./chips";
 import {
@@ -11,11 +10,14 @@ import {
 } from "./facets";
 import {
   filterPanelsHtml,
+  hasActiveFilters,
+  resultCountHtml,
   stretchHintHtml,
   type FilterPanelId,
   type FilterPanelState,
 } from "./filterPanels";
-import { escapeHtml, formatPattern } from "./present";
+import { exerciseMetaLine } from "./metaLine";
+import { escapeHtml } from "./present";
 import type { LevelFilter } from "./search";
 import { isTemplateTarget } from "./targets";
 
@@ -38,6 +40,8 @@ export interface ListActions {
   onOnlyGear: (on: boolean) => void;
   /** A panel was opened or closed by the user (no repaint needed). */
   onPanelToggle: (panel: FilterPanelId, open: boolean) => void;
+  /** Reset every filter to its default (search text is kept). */
+  onClearFilters: () => void;
 }
 
 /** Fills every optional field, so the markup and wiring read one complete state. */
@@ -67,6 +71,7 @@ export function mountLibraryList(
 
   onToggleClick(root, "for-joints", () => actions.onForJoints(!state.forJoints));
   onToggleClick(root, "only-gear", () => actions.onOnlyGear(!state.onlyGear));
+  onToggleClick(root, "clear-filters", actions.onClearFilters);
   onChipClick(root, "level", (value) => actions.onLevel(value as LevelFilter));
   onChipClick(root, "area", (value) => actions.onArea(value as AreaFilter));
   onChipClick(root, "muscle", (value) => actions.onMuscle(value as MuscleFilter));
@@ -117,6 +122,7 @@ export function listHtml(
       <p class="eyebrow">Library</p>
       <h1>Exercises</h1>
       <input class="search" type="search" placeholder="Search exercises" value="${escapeHtml(q.text)}" data-search />
+      ${resultCountHtml(results.length, hasActiveFilters(q))}
       ${stretchHintHtml(q.hiddenStretches)}
       ${filterPanelsHtml(q, jointHistory.length > 0)}
       <ul class="lib-list">
@@ -141,22 +147,17 @@ function listItemHtml(
   targetIds: ReadonlySet<string>,
   history: readonly JointHistoryEntry[],
 ): string {
-  const coreClass = exercise.regions.includes("core") ? "core-hit" : "";
   const target = isTemplateTarget(exercise.id, targetIds)
     ? `<span class="lib-badge inline">Target</span> `
     : "";
+  const description = exercise.description ?? exercise.cues[0] ?? "";
   return `
-    <li class="${coreClass}">
+    <li>
       <button type="button" class="lib-row" data-exercise-id="${escapeHtml(exercise.id)}">
         <strong>${target}${jointBadgeHtml(exercise, history)}${escapeHtml(exercise.name)}</strong>
-        <span>${escapeHtml(formatPattern(exercise.pattern))} · ${escapeHtml(exercise.regions.join(", "))}${levelSuffix(exercise)}</span>
-        <p class="hint">${escapeHtml(exercise.description ?? exercise.cues[0] ?? "")}</p>
+        <span class="lib-meta">${escapeHtml(exerciseMetaLine(exercise))}</span>
+        <span class="lib-desc">${escapeHtml(description)}</span>
       </button>
     </li>
   `;
-}
-
-function levelSuffix(exercise: SeedExercise): string {
-  const level = exercise.difficulty ? ` · ${SKILL_TIER_LABELS[exercise.difficulty]}` : "";
-  return exercise.requires?.length ? `${level} · needs ${exercise.requires.join(", ")}` : level;
 }

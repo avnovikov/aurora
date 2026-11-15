@@ -9,7 +9,8 @@ describe("detailHtml", () => {
     const targets = collectTemplateTargetIds();
     const html = detailHtml(exercise, targets, SEED_GRAPH);
     expect(html).toContain("Pull-up");
-    expect(html).toContain("vertical pull");
+    // Raw seed entry (not enriched), so no level or gear yet: area and primary muscle only.
+    expect(html).toMatch(/class="lib-meta">Upper body · Back</);
     expect(html).toContain('data-lib-back');
     expect(html).toContain("Target");
     expect(html).toContain("data-chain-id=");

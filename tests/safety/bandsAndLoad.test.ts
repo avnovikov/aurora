@@ -58,7 +58,7 @@ describe("resistance bands", () => {
   });
 
   it("states the gear on the detail page", () => {
-    expect(detailHtml(find("Band pull-aparts"), new Set())).toContain("Needs: band");
+    expect(detailHtml(find("Band pull-aparts"), new Set())).toMatch(/class="lib-meta">[^<]*needs band</);
   });
 });
 

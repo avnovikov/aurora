@@ -104,7 +104,7 @@ describe("Library list stretch chips", () => {
     const html = listHtml([], new Set(), { ...base, stretch: "hide" });
     expect(html).toContain('data-stretch="hide" class="selected"');
     expect(html).toContain('data-stretch="only"');
-    expect(html).toContain("No stretches");
+    expect(html).toContain("Hide stretches");
   });
 
   it("offers to show hidden matches", () => {
