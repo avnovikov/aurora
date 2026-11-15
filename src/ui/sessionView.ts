@@ -1,8 +1,11 @@
 import { clearSession, saveSession } from "../session/storage";
-import { sessionClockSnapshot } from "../session/sessionClock";
+import { formatClock, sessionClockSnapshot } from "../session/sessionClock";
 import { startWakeLock } from "../session/wakeLock";
 import { speakCoachLine } from "../voice/coachVoice";
-import { disconnectHeartRate } from "../pulse/hrMonitor";
+import {
+  disconnectHeartRate,
+  PULSE_STRAP_DISCONNECTED,
+} from "../pulse/hrMonitor";
 import {
   shouldShoutPulseLost,
   shoutPulseNotReadable,
@@ -25,6 +28,7 @@ import {
   syncWorkState,
 } from "./sessionState";
 import { pulseConnectedAt, pulseDisconnected } from "./pulseState";
+import { attachSessionPulse } from "./sessionPulse";
 import type { SessionViewOptions } from "./sessionTypes";
 import { startStationHold, type WarmupTimerHandle } from "./sessionWarmup";
 
@@ -60,8 +64,9 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   };
 
   const paintClock = (): void => {
-    const node = root.querySelector<HTMLElement>("[data-session-clock]");
-    if (!node) {
+    const elapsed = root.querySelector("[data-session-clock] [data-session-elapsed]");
+    const left = root.querySelector("[data-session-clock] [data-session-left]");
+    if (!elapsed || !left) {
       return;
     }
     const clock = sessionClockSnapshot(
@@ -69,7 +74,8 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       state.plannedTotalSeconds,
       Date.now(),
     );
-    node.textContent = clock.label;
+    elapsed.textContent = formatClock(clock.elapsedSeconds);
+    left.textContent = formatClock(clock.remainingSeconds);
   };
 
   const paint = (): void => {
@@ -228,7 +234,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     onPulseDisconnected: () => {
       state.pulse = pulseDisconnected(state.pulse);
       state.bpm = null;
-      state.pulseStatus = "Pulse strap disconnected.";
+      state.pulseStatus = PULSE_STRAP_DISCONNECTED;
       paint();
     },
   };
@@ -248,6 +254,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   pulseTimer = window.setInterval(maybePulseShout, 2000);
   clockTimer = window.setInterval(paintClock, 1000);
 
+  attachSessionPulse(state, handlers);
   paint();
   if (state.phase === "warmup") {
     runStationHold("warmup");

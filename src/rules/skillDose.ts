@@ -10,6 +10,7 @@ import type {
   ExerciseMemory,
   SkillTier,
 } from "../domain/types";
+import { capDose, rirForTier } from "./doseCaps";
 
 const DEFAULT_TIER: SkillTier = "beginner";
 
@@ -32,7 +33,8 @@ export function effectiveSkillTier(
 }
 
 /**
- * Scale template dose toward the athlete’s tier standard (leave target RIR).
+ * Scale template dose toward the athlete’s tier standard, at no less than the
+ * tier's RIR and never above its rep or hold cap (`doseCaps`).
  */
 export function applySkillDose(
   dose: Dose,
@@ -48,9 +50,10 @@ export function applySkillDose(
     };
   }
   const tier = effectiveSkillTier(memory, exercise);
-  const working = workingRepsForTier(standards, tier, dose.targetRir);
+  const targetRir = rirForTier(dose.targetRir, tier);
+  const working = capDose(workingRepsForTier(standards, tier, targetRir), exercise, tier);
   return {
-    dose: { ...dose, reps: working },
+    dose: { ...dose, reps: working, targetRir },
     tier,
     applied: working !== dose.reps,
   };
