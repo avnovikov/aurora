@@ -28,6 +28,7 @@ export interface SeedSlot {
   dose: Dose;
   restSeconds: number;
   pinned: boolean;
+  allowConsecutiveRepeat?: boolean;
 }
 
 export interface StarterProgram {
@@ -203,6 +204,73 @@ export const SEED_EXERCISES: SeedExercise[] = [
     cues: ["Control the descent", "Reach the free leg forward", "No collapse at the bottom"],
   }),
   ex({
+    id: "shrimp_squat",
+    name: "Shrimp squat",
+    pattern: "squat",
+    type: "dynamic",
+    muscles: [
+      { group: "quadriceps", role: "primary" },
+      { group: "glutes", role: "secondary" },
+    ],
+    joints: ["hip", "knee", "ankle"],
+    easierId: "bulgarian_split",
+    harderId: "pistol_squat",
+    role: "work",
+    regions: ["legs"],
+    doodlePath: "/doodles/doodle-shrimp-squat.jpg",
+    cues: ["Hold the rear foot", "Knee tracks forward", "Stay tall"],
+  }),
+  ex({
+    id: "cossack_squat",
+    name: "Cossack squat",
+    pattern: "squat",
+    type: "dynamic",
+    muscles: [
+      { group: "quadriceps", role: "primary" },
+      { group: "adductors", role: "secondary" },
+    ],
+    joints: ["hip", "knee", "ankle"],
+    easierId: "bodyweight_squat",
+    role: "work",
+    regions: ["legs"],
+    doodlePath: "/doodles/doodle-cossack-squat.jpg",
+    cues: ["Sit into one hip", "Other leg straight", "Heel down on the working side"],
+  }),
+  ex({
+    id: "step_up",
+    name: "Step-up",
+    pattern: "squat",
+    type: "dynamic",
+    muscles: [
+      { group: "quadriceps", role: "primary" },
+      { group: "glutes", role: "secondary" },
+    ],
+    joints: ["hip", "knee", "ankle"],
+    easierId: "bodyweight_squat",
+    harderId: "bulgarian_split",
+    role: "work",
+    regions: ["legs"],
+    doodlePath: "/doodles/doodle-step-up.jpg",
+    cues: ["Drive through the whole foot", "Stand tall on top", "Control the lower"],
+  }),
+  ex({
+    id: "reverse_lunge",
+    name: "Reverse lunge",
+    pattern: "squat",
+    type: "dynamic",
+    muscles: [
+      { group: "quadriceps", role: "primary" },
+      { group: "glutes", role: "secondary" },
+    ],
+    joints: ["hip", "knee", "ankle"],
+    easierId: "bodyweight_squat",
+    harderId: "bulgarian_split",
+    role: "work",
+    regions: ["legs"],
+    doodlePath: "/doodles/doodle-lunge.jpg",
+    cues: ["Step back lightly", "Front knee tracks", "Push back to stand"],
+  }),
+  ex({
     id: "hip_hinge",
     name: "Hip hinge",
     pattern: "hinge",
@@ -243,6 +311,21 @@ export const SEED_EXERCISES: SeedExercise[] = [
     regions: ["legs"],
     doodlePath: "/doodles/doodle-calf-raise.jpg",
     cues: ["Full range", "Pause at the top", "Soft knees"],
+    secondsPerRep: 2.5,
+    defaultRestSeconds: 45,
+  }),
+  ex({
+    id: "single_leg_calf_raise",
+    name: "Single-leg calf raise",
+    pattern: "conditioning",
+    type: "dynamic",
+    muscles: [{ group: "calves", role: "primary" }],
+    joints: ["ankle"],
+    easierId: "calf_raise",
+    role: "work",
+    regions: ["legs"],
+    doodlePath: "/doodles/doodle-calf-raise.jpg",
+    cues: ["Light touch for balance", "Full range", "Equal work both sides"],
     secondsPerRep: 2.5,
     defaultRestSeconds: 45,
   }),
@@ -422,9 +505,14 @@ const SEED_STANDARDS: Record<string, ExerciseStandards> = {
   bodyweight_squat: std(8, 15, 25, 40, 60),
   bulgarian_split: std(3, 6, 10, 15, 20),
   pistol_squat: std(1, 3, 8, 12, 15),
+  shrimp_squat: std(2, 4, 8, 12, 15),
+  cossack_squat: std(5, 8, 12, 16, 20),
+  step_up: std(6, 10, 15, 20, 25),
+  reverse_lunge: std(6, 10, 15, 20, 25),
   hip_hinge: std(8, 12, 20, 30, 40),
   nordic_curl: std(1, 2, 4, 6, 10),
   calf_raise: std(10, 15, 25, 40, 50),
+  single_leg_calf_raise: std(6, 10, 15, 20, 25),
   wall_handstand: std(10, 20, 40, 60, 90),
   elevated_pike: std(3, 5, 8, 12, 15),
   freestanding_hs: std(5, 10, 20, 40, 60),
@@ -482,6 +570,7 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
         dose: { sets: 4, reps: 10, targetRir: 2, addedLoadKg: 0 },
         restSeconds: 90,
         pinned: false,
+        allowConsecutiveRepeat: true,
       },
       {
         id: "legs_split",
@@ -547,6 +636,7 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
         dose: { sets: 4, reps: 30, targetRir: 2, addedLoadKg: 0 },
         restSeconds: 45,
         pinned: false,
+        allowConsecutiveRepeat: true,
       },
       {
         id: "core_hang",
@@ -594,6 +684,7 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
         dose: { sets: 5, reps: 30, targetRir: 3, addedLoadKg: 0 },
         restSeconds: 60,
         pinned: false,
+        allowConsecutiveRepeat: true,
       },
       {
         id: "skill_pike",
@@ -660,6 +751,7 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
         dose: { sets: 4, reps: 5, targetRir: 2, addedLoadKg: 0 },
         restSeconds: 120,
         pinned: false,
+        allowConsecutiveRepeat: true,
       },
       {
         id: "bars_core",
@@ -694,6 +786,7 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
         dose: { sets: 3, reps: 10, targetRir: 2, addedLoadKg: 0 },
         restSeconds: 75,
         pinned: false,
+        allowConsecutiveRepeat: true,
       },
       {
         id: "full_pull",

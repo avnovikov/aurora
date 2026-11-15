@@ -17,6 +17,11 @@ export interface TemplateSlot {
   dose: Dose;
   restSeconds: number;
   pinned: boolean;
+  /**
+   * If true, this slot may keep the same exercise when the same zone
+   * runs back-to-back (e.g. Legs squat). All other slots rotate.
+   */
+  allowConsecutiveRepeat?: boolean;
 }
 
 export interface SessionDurationTarget {

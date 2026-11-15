@@ -9,6 +9,7 @@ import {
 import {
   appendHistory,
   applyEvaluationToMemory,
+  loadHistory,
   loadMemories,
   saveMemories,
 } from "../session/history";
@@ -108,6 +109,7 @@ function showTodayHome(root: HTMLElement): void {
         readiness,
         templateToStarter(template),
         loadMemories(),
+        { history: loadHistory(), focus: template.focus },
       );
       renderSessionView(root, {
         planned,

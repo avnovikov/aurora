@@ -3,14 +3,20 @@ import {
   STARTER_PROGRAM,
   type LoadRegion,
   type SeedExercise,
+  type SeedSlot,
   type StarterProgram,
 } from "../data/seed";
+import type { HistoryEntry, SessionFocus } from "../domain/program";
 import type {
   Dose,
   ExerciseMemory,
   Readiness,
   ResolveResult,
 } from "../domain/types";
+import {
+  lastConsecutiveSameZone,
+  pickSlotExerciseForVariety,
+} from "./consecutiveVariety";
 import { resolveSlot } from "./resolveSlot";
 import { planWarmup, type WarmupStep } from "./warmupPlan";
 
@@ -34,6 +40,11 @@ export interface PlannedSession {
   warmup: WarmupStep[];
   work: PlannedWorkItem[];
   lightDay: boolean;
+}
+
+export interface PlanSessionOptions {
+  history?: readonly HistoryEntry[];
+  focus?: SessionFocus;
 }
 
 function emptyMemory(exerciseId: string): ExerciseMemory {
@@ -67,17 +78,19 @@ function warmupPool(program: StarterProgram): SeedExercise[] {
 }
 
 function planWorkItem(
-  slot: StarterProgram["slots"][number],
+  slot: SeedSlot,
+  exerciseId: string,
   readiness: Readiness,
   memories: Record<string, ExerciseMemory>,
+  varietyReason?: string,
 ): PlannedWorkItem {
-  const exercise = SEED_GRAPH[slot.exerciseId];
+  const exercise = SEED_GRAPH[exerciseId];
   if (!exercise) {
-    throw new Error(`Unknown exercise for slot ${slot.id}: ${slot.exerciseId}`);
+    throw new Error(`Unknown exercise for slot ${slot.id}: ${exerciseId}`);
   }
   const resolved = resolveSlot({
     exercise,
-    memory: memories[slot.exerciseId] ?? emptyMemory(slot.exerciseId),
+    memory: memories[exerciseId] ?? emptyMemory(exerciseId),
     readiness,
     dose: { ...slot.dose },
     pinned: slot.pinned,
@@ -85,6 +98,9 @@ function planWorkItem(
     graph: SEED_GRAPH,
   });
   const chosen = SEED_GRAPH[resolved.exerciseId] ?? exercise;
+  const reason = varietyReason
+    ? `${resolved.reason} · ${varietyReason}`
+    : resolved.reason;
   return {
     slotId: slot.id,
     label: slot.label,
@@ -93,21 +109,63 @@ function planWorkItem(
     dose: resolved.dose,
     restSeconds: slot.restSeconds,
     ruleIds: resolved.ruleIds,
-    reason: resolved.reason,
+    reason,
     doodlePath: chosen.doodlePath,
     cues: chosen.cues,
   };
 }
 
+function planWorkWithVariety(
+  program: StarterProgram,
+  readiness: Readiness,
+  memories: Record<string, ExerciseMemory>,
+  previousExerciseIds: readonly string[] | null,
+): PlannedWorkItem[] {
+  if (!previousExerciseIds || previousExerciseIds.length === 0) {
+    return program.slots.map((slot) =>
+      planWorkItem(slot, slot.exerciseId, readiness, memories),
+    );
+  }
+
+  const chosenToday = new Set<string>();
+  return program.slots.map((slot) => {
+    const pick = pickSlotExerciseForVariety(
+      slot,
+      previousExerciseIds,
+      chosenToday,
+    );
+    chosenToday.add(pick.exerciseId);
+    return planWorkItem(
+      slot,
+      pick.exerciseId,
+      readiness,
+      memories,
+      pick.swapped ? pick.reason : undefined,
+    );
+  });
+}
+
 /**
  * Freezes today's session: warmup + resolved working slots.
+ * When the last completed session was the same zone, non-anchor slots rotate.
  */
 export function planSession(
   readiness: Readiness,
   program: StarterProgram = STARTER_PROGRAM,
   memories: Record<string, ExerciseMemory> = {},
+  options: PlanSessionOptions = {},
 ): PlannedSession {
-  const work = program.slots.map((slot) => planWorkItem(slot, readiness, memories));
+  const focus = options.focus;
+  const previous =
+    focus && options.history
+      ? lastConsecutiveSameZone(options.history, focus)
+      : null;
+  const work = planWorkWithVariety(
+    program,
+    readiness,
+    memories,
+    previous?.exerciseIds ?? null,
+  );
   const warmup = planWarmup({
     pool: warmupPool(program),
     focusRegions: focusRegionsFromSlots(program),
