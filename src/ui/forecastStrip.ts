@@ -1,38 +1,33 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import type { SessionTemplate } from "../domain/program";
-import {
-  templateDurationLabel,
-  templateTargetsLabel,
-} from "./formatTemplate";
+import { escapeHtml } from "../library/present";
+import { templateDurationLabel } from "./formatTemplate";
 
-/**
- * Cool dawn strip: next sessions + target chips; Core days get a spark mark.
- */
-export function forecastStripHtml(upcoming: SessionTemplate[]): string {
-  if (upcoming.length === 0) {
-    return `<div class="forecast"><p class="tagline">Queue empty — add a session in Plan.</p></div>`;
+/** True when the session works the core (an Abs day, or any slot loading the core). */
+export function templateHitsCore(template: SessionTemplate): boolean {
+  if (template.focus === "abs") {
+    return true;
   }
-  const cards = upcoming
-    .map((template, index) => {
-      const core = template.focus === "abs" || templateHitsCore(template);
-      const targets = templateTargetsLabel(template.targetExerciseIds);
-      const duration = templateDurationLabel(template);
-      return `
-        <article class="forecast-card ${index === 0 ? "next" : ""} ${core ? "core-spark" : ""}">
-          <p class="eyebrow">${index === 0 ? "Next up" : `Then ${index + 1}`}</p>
-          <h3>${template.name}</h3>
-          <p class="tagline">${duration}${targets ? ` · ${targets}` : ""}</p>
-          ${core ? `<p class="spark">Core area loaded</p>` : ""}
-        </article>
-      `;
-    })
-    .join("");
-  return `<div class="forecast" data-forecast>${cards}</div>`;
+  return template.slots.some((slot) => EXERCISE_GRAPH[slot.exerciseId]?.regions.includes("core") ?? false);
 }
 
-function templateHitsCore(template: SessionTemplate): boolean {
-  return template.slots.some((slot) => {
-    const exercise = EXERCISE_GRAPH[slot.exerciseId];
-    return exercise?.regions.includes("core") ?? false;
-  });
+/**
+ * The sessions after today's, as compact rows. Today's session itself is the
+ * Today card, so it is not repeated here.
+ */
+export function comingUpHtml(upcoming: readonly SessionTemplate[]): string {
+  const later = upcoming.slice(1);
+  if (upcoming.length === 0) {
+    return `<p class="tagline">Queue empty — add a session in Plan.</p>`;
+  }
+  if (later.length === 0) {
+    return "";
+  }
+  const rows = later
+    .map((template, index) => {
+      const spark = templateHitsCore(template) ? ` <span class="spark">· core</span>` : "";
+      return `<li><span class="coming-up-when">Then ${index + 2}</span><strong>${escapeHtml(template.name)}</strong><span class="coming-up-time">${escapeHtml(templateDurationLabel(template))}</span>${spark}</li>`;
+    })
+    .join("");
+  return `<section class="coming-up" data-forecast aria-label="Coming up"><p class="chip-row-label">Coming up</p><ol>${rows}</ol></section>`;
 }

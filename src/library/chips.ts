@@ -26,6 +26,17 @@ export function toggleHtml(attr: string, label: string, on: boolean): string {
   return `<button type="button" data-${attr} class="${on ? "selected" : ""}" data-kind="toggle" aria-pressed="${on}">${escapeHtml(label)}</button>`;
 }
 
+/** A multi-select chip with a value: looks like a checkbox (`data-kind="toggle"`). */
+export function toggleChipHtml(attr: string, value: string, label: string, on: boolean): string {
+  return `<button type="button" data-${attr}="${escapeHtml(value)}" class="${on ? "selected" : ""}" data-kind="toggle" aria-pressed="${on}">${escapeHtml(label)}</button>`;
+}
+
+/** Marks one chip pressed or not, keeping the class and aria-pressed in step. */
+export function setChipPressed(chip: Element, on: boolean): void {
+  chip.classList.toggle("selected", on);
+  chip.setAttribute("aria-pressed", String(on));
+}
+
 /**
  * A row of single-choice chips. `allLabel` prepends an "all" chip; `label`
  * shows a visible caption above the row.

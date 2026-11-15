@@ -20,13 +20,7 @@ import { loadProfile } from "../settings/profile";
 import { speakCoachLine, unlockCoachAudio } from "../voice/coachVoice";
 import { renderBodyView } from "./bodyView";
 import { renderCheckIn } from "./checkIn";
-import { deloadNoteHtml } from "./deloadNote";
 import { renderEvaluationView } from "./evaluationView";
-import { forecastStripHtml } from "./forecastStrip";
-import {
-  templateDurationLabel,
-  templateTargetsLabel,
-} from "./formatTemplate";
 import { renderLibraryView } from "./libraryView";
 import { overrideControlsHtml, wireOverrideControls } from "./overrideControls";
 import { advancePlanAfterSession, renderPlanView } from "./planView";
@@ -35,6 +29,7 @@ import { renderSessionView } from "./sessionView";
 import { renderSettingsView } from "./settingsView";
 import { renderSetupView } from "./setupView";
 import { renderShell, type AppTab } from "./shell";
+import { todayHomeHtml } from "./todayHome";
 
 const PANEL_RENDERERS: Partial<
   Record<Exclude<AppTab, "today" | "progress">, (panel: HTMLElement) => void>
@@ -87,29 +82,18 @@ function showTab(root: HTMLElement, tab: AppTab): void {
 function showTodayHome(root: HTMLElement): void {
   const queue = loadPlanQueue();
   const override = loadScheduleOverride();
-  const upcoming = peekUpcomingWithOverride(queue, 3, override);
   const next = peekNextTemplate(queue, override);
-  const forecast = forecastStripHtml(upcoming);
-  const duration = templateDurationLabel(next);
-  const targets = templateTargetsLabel(next.targetExerciseIds, ", ");
-  const todayLabel = override ? "Today instead" : "Next in queue";
 
   renderShell(
     root,
     "today",
-    `<div data-panel>
-      <main class="shell">
-        <p class="eyebrow">Aurora · Rassvet</p>
-        <h1>Today</h1>
-        <p class="tagline">${todayLabel}: <strong>${next.name}</strong> · ${duration}${
-          targets ? ` → ${targets}` : ""
-        }</p>
-        ${deloadNoteHtml(loadDeloadActive())}
-        ${forecast}
-        <div data-checkin></div>
-        ${overrideControlsHtml(override)}
-      </main>
-    </div>`,
+    `<div data-panel>${todayHomeHtml({
+      next,
+      isOverride: override !== null,
+      upcoming: peekUpcomingWithOverride(queue, 3, override),
+      deloadActive: loadDeloadActive(),
+      overrideHtml: overrideControlsHtml(override),
+    })}</div>`,
     (tab) => showTab(root, tab),
   );
 
@@ -141,7 +125,7 @@ function showTodayHome(root: HTMLElement): void {
         onDone: (setCount) => showEvaluation(root, setCount, planned),
       });
     },
-  });
+  }, `Start ${next.name}`);
 }
 
 function showEvaluation(
