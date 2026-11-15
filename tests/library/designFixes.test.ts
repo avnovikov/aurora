@@ -129,12 +129,13 @@ describe("detail page (#37)", () => {
     expect(html).not.toMatch(/Pattern:|Regions:/);
   });
 
-  it("shows plan actions right after the summary, before media and how-to", () => {
+  it("shows plan actions in the action tray, after how-to and the level (mock 2205)", () => {
     const html = detailHtml(find("Pistol squat"));
     const plan = html.indexOf("data-generate-plan");
     expect(plan).toBeGreaterThan(-1);
-    expect(plan).toBeLessThan(html.indexOf("How to"));
-    expect(html.indexOf("lib-summary")).toBeLessThan(plan);
+    expect(html.indexOf("How to")).toBeLessThan(plan);
+    expect(html.indexOf("data-skill-tier")).toBeLessThan(plan);
+    expect(plan).toBeLessThan(html.indexOf("data-exclude-toggle"));
   });
 });
 
