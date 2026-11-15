@@ -38,14 +38,22 @@ export interface RestTimerHandle {
   clear: () => void;
 }
 
+export interface RestTimerOptions {
+  /** Next work is a hold / timed station — no 4–1 countdown. */
+  timedNext?: boolean;
+}
+
 export function startRestTimer(
   root: HTMLElement,
   state: ViewState,
   withVoice: boolean,
   onDoneRest: () => void,
+  options: RestTimerOptions = {},
 ): RestTimerHandle {
   const spokenForRest = new Set<number>();
-  const schedule = withVoice ? cueSchedule(state.restLeft) : [];
+  const schedule = withVoice
+    ? cueSchedule(state.restLeft, { timedNext: options.timedNext === true })
+    : [];
 
   const paintRest = (): void => {
     setText(root, "[data-rest-left]", String(Math.max(state.restLeft, 0)));

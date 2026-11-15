@@ -21,9 +21,9 @@ say_line() {
   rm -f "$tmp"
 }
 
-say_line get_ready "Get ready, mate."
-say_line get_ready_b "Nearly on, la. Get ready."
-say_line get_ready_c "Ten seconds. Shake it out, mate."
+say_line get_ready "Get ready..."
+say_line get_ready_b "Get ready, mate."
+say_line get_ready_c "Nearly on, la. Get ready."
 say_line five "Five."
 say_line four "Four."
 say_line three "Three."
