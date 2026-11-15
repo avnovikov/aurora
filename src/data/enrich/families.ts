@@ -313,6 +313,7 @@ export const FAMILIES: readonly Family[] = [
     rungs: [
       r(5, "elite", ["manna"]),
       r(4, "advanced", ["toes to bar", "straddle l", " v sit", "pike compression"]),
+      r(2, "intermediate", ["floor windshield"]),
       r(3, "advanced", ["hanging leg raise", "hanging pike", "hip lift on rings", "windshield"]),
       r(2, "intermediate", ["tuck l sit", "foot supported"]),
       r(3, "advanced", [" l sit", " l hold"]),

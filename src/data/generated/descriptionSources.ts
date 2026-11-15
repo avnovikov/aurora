@@ -685,6 +685,9 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   "ntc_crab_toe_touch": [
     "NTC-style bodyweight move (cues written in-house)"
   ],
+  "ntc_floor_windshield_wiper": [
+    "NTC-style bodyweight move (cues written in-house)"
+  ],
   "ntc_sumo_squat": [
     "NTC-style bodyweight move (cues written in-house)",
     "wger.de exercise 632 (CC-BY-SA-4.0, sophialj)"
@@ -1349,6 +1352,21 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   "wger_1005": [
     "wger.de exercise 1005 (CC-BY-SA-4.0)"
   ],
+  "wger_1826": [
+    "wger.de exercise 1826 (CC-BY-SA-4.0, beagle)"
+  ],
+  "wger_1380": [
+    "wger.de exercise 1380 (CC-BY-SA-4.0, schwolfar)"
+  ],
+  "wger_2494": [
+    "wger.de exercise 2494 (CC-BY-SA-4.0, Rehab Hero)"
+  ],
+  "wger_1842": [
+    "wger.de exercise 1842 (CC-BY-SA-4.0, Croak6728)"
+  ],
+  "wger_1877": [
+    "wger.de exercise 1877 (CC-BY-SA-4.0, hurr99)"
+  ],
   "wger_57": [
     "wger.de exercise 57 (CC-BY-SA-4.0, nate303303)"
   ],
@@ -1713,6 +1731,9 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   "wger_1207": [
     "wger.de exercise 1207 (CC-BY-SA-4.0, lxmx)"
   ],
+  "wger_2635": [
+    "wger.de exercise 2635 (CC-BY-SA-4.0, trs1800)"
+  ],
   "wger_1477": [
     "wger.de exercise 1477 (CC-BY-SA-4.0, Moffi)"
   ],
@@ -1771,6 +1792,9 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   ],
   "wger_583": [
     "wger.de exercise 583 (CC-BY-SA-4.0, nate303303)"
+  ],
+  "wger_578": [
+    "wger.de exercise 578 (CC-BY-SA-4.0, apeschel)"
   ],
   "wger_1393": [
     "wger.de exercise 1393 (CC-BY-SA-4.0, captive0592)"
@@ -1933,26 +1957,5 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   ],
   "wger_2686": [
     "wger.de exercise 2686 (CC-BY-SA-4.0, tobias08)"
-  ],
-  "wger_578": [
-    "wger.de exercise 578 (CC-BY-SA-4.0, apeschel)"
-  ],
-  "wger_1380": [
-    "wger.de exercise 1380 (CC-BY-SA-4.0, schwolfar)"
-  ],
-  "wger_1826": [
-    "wger.de exercise 1826 (CC-BY-SA-4.0, beagle)"
-  ],
-  "wger_1877": [
-    "wger.de exercise 1877 (CC-BY-SA-4.0, hurr99)"
-  ],
-  "wger_2635": [
-    "wger.de exercise 2635 (CC-BY-SA-4.0, trs1800)"
-  ],
-  "wger_2494": [
-    "wger.de exercise 2494 (CC-BY-SA-4.0, Rehab Hero)"
-  ],
-  "wger_1842": [
-    "wger.de exercise 1842 (CC-BY-SA-4.0, Croak6728)"
   ]
 };
