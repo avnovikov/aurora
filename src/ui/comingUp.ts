@@ -1,6 +1,7 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import type { SessionTemplate } from "../domain/program";
 import { escapeHtml } from "../library/present";
+import { dayTitle } from "../plan/dayKinds";
 import { templateDurationLabel } from "./formatTemplate";
 
 /** True when the session works the core (an Abs day, or any slot loading the core). */
@@ -26,7 +27,7 @@ export function comingUpHtml(upcoming: readonly SessionTemplate[]): string {
   const rows = later
     .map((template, index) => {
       const spark = templateHitsCore(template) ? ` <span class="spark">· core</span>` : "";
-      return `<li><span class="coming-up-when">Then ${index + 2}</span><strong>${escapeHtml(template.name)}</strong><span class="coming-up-time">${escapeHtml(templateDurationLabel(template))}</span>${spark}</li>`;
+      return `<li><span class="coming-up-when">Then ${index + 2}</span><strong>${escapeHtml(dayTitle(template))}</strong><span class="coming-up-time">${escapeHtml(templateDurationLabel(template))}</span>${spark}</li>`;
     })
     .join("");
   return `<section class="coming-up" data-forecast aria-label="Coming up"><p class="chip-row-label">Coming up</p><ol>${rows}</ol></section>`;

@@ -1,7 +1,9 @@
-import { DEFAULT_PLAN_QUEUE, TEMPLATE_BY_ID } from "../data/seed";
+import { DEFAULT_PLAN_QUEUE } from "../data/seed";
 import type { PlanQueue, SessionTemplate } from "../domain/program";
 import type { ScheduleOverride } from "./scheduleOverride";
-import { resolveTemplate } from "./templates";
+import { prunePlanDays } from "./planDays";
+import { loadScheduleOverride } from "./scheduleOverride";
+import { findTemplate, isKnownTemplate, resolveTemplate } from "./templates";
 
 const KEY = "aurora.poc.planQueue.v1";
 
@@ -26,6 +28,8 @@ export function savePlanQueue(queue: PlanQueue): void {
     throw new Error("Plan queue must not be empty");
   }
   localStorage.setItem(KEY, JSON.stringify(queue));
+  // Generated days that are neither queued nor today's override are done with.
+  prunePlanDays([...queue.items, loadScheduleOverride()?.templateId]);
 }
 
 /**
@@ -63,7 +67,7 @@ export function peekUpcomingWithOverride(
 }
 
 function resolveKnownTemplate(id: string | undefined, source: string): SessionTemplate {
-  if (!id || !TEMPLATE_BY_ID[id]) {
+  if (!id || !isKnownTemplate(id)) {
     throw new Error(`Unknown template in ${source}: ${id}`);
   }
   return resolveTemplate(id);
@@ -82,7 +86,7 @@ export function completeNext(queue: PlanQueue): PlanQueue {
   if (!head) {
     throw new Error("Cannot complete an empty plan queue");
   }
-  const template = TEMPLATE_BY_ID[head];
+  const template = findTemplate(head);
   const nextItems = [...rest];
   if (template?.repeat) {
     nextItems.push(head);
@@ -164,7 +168,7 @@ export function appendQueueItem(queue: PlanQueue, templateId: string): PlanQueue
 }
 
 function assertKnownTemplate(templateId: string): void {
-  if (!TEMPLATE_BY_ID[templateId]) {
+  if (!isKnownTemplate(templateId)) {
     throw new Error(`Unknown template: ${templateId}`);
   }
 }

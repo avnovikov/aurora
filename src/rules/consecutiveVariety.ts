@@ -1,8 +1,9 @@
 import { EXERCISE_GRAPH, PLANNABLE_EXERCISES, sourceRank } from "../data/exerciseGraph";
 import { placeOnLadder } from "../data/enrich/ladder";
-import { TEMPLATE_BY_ID, type SeedExercise } from "../data/seed";
+import type { SeedExercise } from "../data/seed";
 import type { HistoryEntry, SessionFocus, TemplateSlot } from "../domain/program";
 import { tierIndex } from "../domain/skillTier";
+import { findTemplate } from "../plan/templates";
 import type { Pattern } from "../domain/types";
 
 export interface VarietyPick {
@@ -23,7 +24,7 @@ export function lastConsecutiveSameZone(
   if (!latest) {
     return null;
   }
-  const lastFocus = TEMPLATE_BY_ID[latest.templateId]?.focus;
+  const lastFocus = findTemplate(latest.templateId)?.focus;
   if (lastFocus !== focus) {
     return null;
   }

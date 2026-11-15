@@ -22,7 +22,7 @@ describe("Today page", () => {
 
   it("has one h1 and names today's session once, in the card", () => {
     expect(count(html, "<h1")).toBe(1);
-    expect(html).toContain('<h2 id="today-session">Legs</h2>');
+    expect(html).toContain('<h2 id="today-session">Lower body</h2>');
     expect(html).toContain("Next up");
     expect(html.indexOf("today-card")).toBeLessThan(html.indexOf("data-checkin"));
   });
@@ -80,8 +80,8 @@ describe("check-in", () => {
 describe("coming up", () => {
   it("lists the sessions after today's", () => {
     const html = comingUpHtml([legs, bars]);
-    expect(html).toContain("Bars");
-    expect(html).not.toContain(">Legs<");
+    expect(html).toContain("Upper body");
+    expect(html).not.toContain(">Lower body<");
   });
 
   it("is empty when only today's session is queued, and explains an empty queue", () => {
@@ -112,7 +112,7 @@ describe("train something else today", () => {
   it("opens, names the choice and offers a way back while an override is active", () => {
     const html = overrideControlsHtml({ templateId: bars.id });
     expect(html).toMatch(/data-override-controls open>/);
-    expect(html).toContain("Train something else today · Bars");
+    expect(html).toContain("Train something else today · Upper body");
     expect(html).toMatch(new RegExp(`data-override="${bars.id}" class="selected" aria-pressed="true"`));
     expect(html).toContain("Back to the plan");
   });

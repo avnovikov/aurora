@@ -150,6 +150,7 @@ export type RuleId =
   | "pain"
   | "joint_history"
   | "equipment"
+  | "excluded"
   | "pin"
   | "light_day"
   | "deload"

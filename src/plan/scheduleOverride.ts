@@ -1,5 +1,5 @@
-import { TEMPLATE_BY_ID } from "../data/seed";
 import { createKeyValueStore } from "../storage/keyValueStore";
+import { isKnownTemplate } from "./templates";
 
 const store = createKeyValueStore("aurora.poc.scheduleOverride.v1");
 
@@ -23,7 +23,7 @@ export function loadScheduleOverride(): ScheduleOverride | null {
 }
 
 export function saveScheduleOverride(override: ScheduleOverride): void {
-  if (!TEMPLATE_BY_ID[override.templateId]) {
+  if (!isKnownTemplate(override.templateId)) {
     throw new Error(`Unknown template for schedule override: ${override.templateId}`);
   }
   store.write(JSON.stringify({ templateId: override.templateId }));
@@ -42,5 +42,5 @@ function isValidOverride(value: unknown): value is ScheduleOverride {
     return false;
   }
   const templateId = (value as { templateId?: unknown }).templateId;
-  return typeof templateId === "string" && Boolean(TEMPLATE_BY_ID[templateId]);
+  return typeof templateId === "string" && isKnownTemplate(templateId);
 }
