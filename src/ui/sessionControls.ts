@@ -49,13 +49,15 @@ export function wireSessionControls(
 ): void {
   const clicks: Record<string, () => void> = {
     "[data-log-set]": () => completeSet(planned, state, "completed", handlers),
-    "[data-fail-set]": () => completeSet(planned, state, "muscular_failure", handlers),
+    "[data-fail-set]": () =>
+      completeSet(planned, state, "muscular_failure", handlers),
     "[data-skip]": () => completeSet(planned, state, "skipped", handlers),
     "[data-reps-minus]": () => adjustNextReps(state, -1, handlers),
     "[data-reps-plus]": () => adjustNextReps(state, 1, handlers),
-    "[data-add-weight]": () => adjustAddedLoad(state, DEFAULT_ADDED_LOAD_KG, handlers),
-    "[data-load-minus]": () => adjustAddedLoadDelta(state, -1, handlers),
-    "[data-load-plus]": () => adjustAddedLoadDelta(state, 1, handlers),
+    "[data-add-weight]": () =>
+      adjustAddedLoad(state, DEFAULT_ADDED_LOAD_KG, handlers),
+    "[data-load-minus]": () => adjustAddedLoadBy(state, -1, handlers),
+    "[data-load-plus]": () => adjustAddedLoadBy(state, 1, handlers),
     "[data-cooldown-start]": () => handlers.onStartCooldown(),
     "[data-cooldown-skip]": () => handlers.onSkipCooldown(),
   };
@@ -64,10 +66,16 @@ export function wireSessionControls(
   }
   wirePulseSimButtons(root, state, handlers);
   wirePulseConnectButtons(root, state, handlers);
+  wireStageSwipe(root, handlers);
+}
 
+function wireStageSwipe(
+  root: HTMLElement,
+  handlers: SessionControlHandlers,
+): void {
   const stage = root.querySelector<HTMLElement>("[data-swipe-stage]");
   if (stage) {
-    wireSwipe(stage, () => handlers.onFinishExercise());
+    wireSwipe(stage, handlers.onFinishExercise);
   }
 }
 
@@ -129,14 +137,13 @@ function adjustAddedLoad(
   updateWorkState(state, ["work"], (work) => editAddedLoad(work, kg), handlers);
 }
 
-function adjustAddedLoadDelta(
+function adjustAddedLoadBy(
   state: ViewState,
   delta: number,
   handlers: SessionControlHandlers,
 ): void {
   updateWorkState(state, ["work"], (work) => {
-    const next = Math.max(0, work.addedLoadKg + delta);
-    return editAddedLoad(work, next);
+    return editAddedLoad(work, Math.max(0, work.addedLoadKg + delta));
   }, handlers);
 }
 
