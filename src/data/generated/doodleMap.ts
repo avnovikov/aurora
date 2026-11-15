@@ -70,7 +70,20 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "wger_2686": "/doodles/doodle-wrist-stretch.svg",
   "fedb_kneeling_forearm_stretch": "/doodles/doodle-kneeling-forearm-stretch.svg",
   "ntc_thread_the_needle": "/doodles/doodle-thread-the-needle.svg",
-  "wger_1713": "/doodles/doodle-doorway-pectoral-stretch.svg"
+  "wger_1713": "/doodles/doodle-doorway-pectoral-stretch.svg",
+  "wger_2449": "/doodles/doodle-clamshell-to-reverse-clamshell.svg",
+  "wger_2448": "/doodles/doodle-reverse-clamshell.svg",
+  "hf_129": "/doodles/doodle-crow-pose.svg",
+  "hf_113": "/doodles/doodle-ab-wheel-rollout.svg",
+  "wger_1392": "/doodles/doodle-good-morning.svg",
+  "wger_1809": "/doodles/doodle-reverse-hyperextension.svg",
+  "ntc_side_plank_hip_lift": "/doodles/doodle-side-plank-hip-lift.svg",
+  "hf_101": "/doodles/doodle-side-plank-with-rotation.svg",
+  "wger_1101": "/doodles/doodle-horizontal-traction-isometry.svg",
+  "hf_50": "/doodles/doodle-archer-pull-up.svg",
+  "hf_125": "/doodles/doodle-body-saw.svg",
+  "hf_17": "/doodles/doodle-clap-push-up.svg",
+  "hf_5": "/doodles/doodle-decline-push-up.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
