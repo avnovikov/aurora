@@ -1,5 +1,6 @@
 import type { SessionTemplate } from "../domain/program";
 import { escapeHtml } from "../library/present";
+import { dayTitle } from "../plan/dayKinds";
 import { warmupCooldownLabel } from "../rules/sessionDuration";
 import { deloadNoteHtml } from "./deloadNote";
 import { comingUpHtml, templateHitsCore } from "./comingUp";
@@ -34,7 +35,7 @@ export function todayHomeHtml(model: TodayHomeModel): string {
       <section class="today-card" aria-labelledby="today-session">
         <p class="eyebrow">${model.isOverride ? "Today instead" : "Next up"}</p>
         <div class="today-card-head">
-          <h2 id="today-session">${escapeHtml(next.name)}</h2>
+          <h2 id="today-session">${escapeHtml(dayTitle(next))}</h2>
           <span class="today-duration">${escapeHtml(templateDurationLabel(next))}</span>
         </div>
         ${toward}

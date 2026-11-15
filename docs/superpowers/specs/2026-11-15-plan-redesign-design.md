@@ -25,7 +25,7 @@ An area day is a fixed **recipe of movement ladders**, each slot filled with the
 |---|---|
 | Upper body | push-up, pull, overhead push, row (+ shoulder care move) |
 | Lower body | single-leg squat, hamstring, glute, calf (+ knee or hip care move) |
-| Core | anti-extension, compression, side plank |
+| Core | anti-extension, compression, side plank, a second anti-extension move, glute (five slots, like the seed Abs / Core day, to stay in the 25–45 minute band) |
 | Full body | one each of push-up, pull, single-leg squat, hamstring, anti-extension |
 | Skill: ‹move› | the move's ladder first with the most sets, then the area's ladders it belongs to |
 | Mobility | the existing mobility template |
@@ -33,17 +33,28 @@ An area day is a fixed **recipe of movement ladders**, each slot filled with the
 
 **"Toward the goal" and "progression" are one mechanism.** Every ladder ends in a top move. A day with a target puts that ladder first and gives it the most sets; without a target every ladder simply advances.
 
-**Current step** for a ladder: the hardest plannable member (gear owned, safe for joint history, not excluded) whose difficulty does not exceed the athlete's tier on that ladder; the tier is the highest of the members' tiers in memory (the Library's family cascade already raises easier members). With no data it is Beginner.
+**The generator chooses moves; it does not set training load.** Everything about dose comes from rules the library already has:
 
-**Block of days:**
+| What | Where it comes from |
+|---|---|
+| Starting step on a ladder | The same rule as the Library's "Generate plan" (`pickLevelAppropriateStep`): the first move at the athlete's tier, else the nearest tier. The tier is the highest effective tier of the ladder's members in memory (declared level, best reps, stored tier). Beginner with no data. |
+| Reps | The planner's own tier-standard reps for this athlete and move (`applySkillDose`, target RIR 2 like every seed slot). The stored day is exactly what the session prescribes. |
+| Sets | As in the seed days: first slot 4 (a skill day's first slot 5), the rest 3. |
+| Rest | The library timing model (`resolveExerciseTiming`). |
+| Warm-up, cool-down, time band | Borrowed from the seed day of the same area; a named skill borrows the seed day that trains the same ladder (a handstand day gets the wrist preparation). |
+| Light day, deload, pain swap, advance, stall | Unchanged: the planner applies them to generated days like any other. |
 
-| Day | Emphasis | How it differs |
-|---|---|---|
-| A | strength | working step on each ladder, 4 sets |
-| B | volume | one step easier where one exists, 3 sets (an easier move means more reps at the tier standard) |
-| C | target or weakest | the target ladder first; with no target, the weakest ladder first; a different member from A where possible |
+**Block of days.** The days differ only in which move is chosen:
 
-Spacing: the first day goes at the requested index; the others at every second position after it (ending at the queue's end).
+| Day | Choice |
+|---|---|
+| A (working) | the athlete's working step on each ladder |
+| B (easier) | one rung easier where the ladder has one, else a sibling move at the same level |
+| C (focus) | the goal's ladder first (with no goal, the weakest ladder), using different moves from A and B where the ladder has them |
+
+Spacing: the first day goes at the requested index; each later day two positions after the previous one (or at the end of the queue).
+
+**Audit (kept as tests in `tests/plan/planEngine.test.ts`).** Across nine scenarios (plain, poor sleep, deload, knee pain, joint history, no bar, results that trigger advance and stall, and combinations) every exercise, dose, rest and rule on the six seed days is identical before and after this change. For 30 generated days (five kinds, three days, two levels): all fit the 25 to 45 minute band, the stored preview equals the planner's prescription, and light-day and deload rules apply. The audit caught one fault, fixed before merge: a three-slot Core day ran 19 to 23 minutes, under the band, so the Core recipe now has five slots like the seed Abs / Core day.
 
 ### Evidence and its limits
 
@@ -67,7 +78,7 @@ New units, each with one purpose:
 
 Seed days keep their ids and work untouched; `dayTitle` shows them under area names (Legs: Lower body, Abs / Core: Core, Bars: Upper body, Skill: Skill: Freestanding handstand), so existing queues migrate without rewriting stored data.
 
-**Exclusions** are a fourth reason a move is swapped out in `chooseSuitableExercise` (after joint avoid, missing gear), and a filter in generation. Excluding from the plan also writes the list, so the Library shows the same state.
+**Exclusions** are a third reason a move is swapped out in `chooseSuitableExercise` (with joint avoid and missing gear), and a filter in generation. Joint and gear swaps keep their original rule exactly; only an excluded move uses a ladder-aware order (same ladder, nearest difficulty, never harder when an equal or easier move exists). Excluding from the plan also writes the list, so the Library shows the same state.
 
 **Plan page (part 2):** a timeline of days; tapping a day expands the planner's real output for it (not template defaults), with per-exercise "Not for me" (exclude and substitute) and "Swap"; "Make this day…" and "Add a block" pick an area and generate. Same look as the Library and Today: panels, chips, toggles, labelled groups, 44px targets.
 

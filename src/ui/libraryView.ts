@@ -1,9 +1,5 @@
 import { LIBRARY_CATALOGUE } from "../data/libraryCatalogue";
-import {
-  SESSION_TEMPLATES,
-  TEMPLATE_BY_ID,
-  type SeedExercise,
-} from "../data/seed";
+import type { SeedExercise } from "../data/seed";
 import { mountLibraryDetail } from "../library/libraryDetail";
 import { DEFAULT_FILTERS, withPanelState, type FilterPanelId } from "../library/filterPanels";
 import { focusSearchInput, mountLibraryList, type ListQueryState } from "../library/libraryList";
@@ -16,7 +12,8 @@ import {
   generatePlanTowardExercise,
 } from "../plan/pathPlanActions";
 import { loadPlanQueue, savePlanQueue } from "../plan/queue";
-import { resolveTemplate } from "../plan/templates";
+import { dayTitle } from "../plan/dayKinds";
+import { listAllTemplates, resolveTemplate } from "../plan/templates";
 import {
   declareSkillTier,
   emptyMemory,
@@ -33,7 +30,7 @@ const CATALOGUE_BY_ID: Record<string, SeedExercise> = Object.fromEntries(
 );
 
 function templateDisplayName(templateId: string): string {
-  return TEMPLATE_BY_ID[templateId]?.name ?? resolveTemplate(templateId).name;
+  return dayTitle(resolveTemplate(templateId));
 }
 
 export function renderLibraryView(root: HTMLElement): void {
@@ -48,7 +45,7 @@ export function renderLibraryView(root: HTMLElement): void {
   let planStatus: string | null = null;
   let cascadeHint: string | null = null;
   const { jointHistory, equipment } = loadProfile();
-  const targetIds = collectTemplateTargetIds(SESSION_TEMPLATES);
+  const targetIds = collectTemplateTargetIds(listAllTemplates());
 
   const paint = (): void => {
     if (pickingPlanForId) {

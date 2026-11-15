@@ -19,7 +19,7 @@ import type {
   ResolveResult,
   RuleId,
 } from "../domain/types";
-import { chooseSuitableExercise } from "../safety/suitableExercise";
+import { chooseSuitableExercise, type SuitableChoice } from "../safety/suitableExercise";
 import { emptyMemory } from "../session/history";
 import {
   lastConsecutiveSameZone,
@@ -75,6 +75,8 @@ export interface PlanSessionOptions {
   jointHistory?: readonly JointHistoryEntry[];
   /** Gear the user owns; moves needing other gear are swapped out. */
   equipment?: readonly EquipmentId[];
+  /** Exercise ids the user never wants planned; swapped for a substitute. */
+  excluded?: readonly string[];
 }
 
 /** Inputs shared by every slot in one planned session. */
@@ -84,6 +86,7 @@ interface SlotContext {
   deloadActive: boolean;
   jointHistory: readonly JointHistoryEntry[];
   equipment?: readonly EquipmentId[];
+  excluded: readonly string[];
 }
 
 function warmupStationsFor(program: StarterProgram): WarmupStation[] {
@@ -94,7 +97,13 @@ function cooldownStationsFor(program: StarterProgram): WarmupStation[] {
   return stationsFor(program.cooldownStationIds ?? []);
 }
 
-/** What joint and gear care did to a resolved move: the final move, why, and notes. */
+const SWAP_RULE = {
+  excluded: "excluded",
+  gear: "equipment",
+  joints: "joint_history",
+} as const satisfies Record<NonNullable<SuitableChoice["cause"]>, RuleId>;
+
+/** What joint, gear and exclusion care did to a resolved move: the final move, why, and notes. */
 interface CareOutcome {
   chosen: SeedExercise;
   reason: string;
@@ -108,13 +117,18 @@ function applyCare(
   varietyReason: string | undefined,
   context: SlotContext,
 ): CareOutcome {
-  const care = chooseSuitableExercise(resolvedExercise, context.jointHistory, context.equipment);
+  const care = chooseSuitableExercise(
+    resolvedExercise,
+    context.jointHistory,
+    context.equipment,
+    context.excluded,
+  );
   const chosen = EXERCISE_GRAPH[care.id] ?? resolvedExercise;
   const baseReason = varietyReason ? `${resolved.reason} · ${varietyReason}` : resolved.reason;
   if (!care.swappedFrom) {
     return { chosen, reason: baseReason, ruleIds: resolved.ruleIds, cautions: care.cautions };
   }
-  const swapRule: RuleId = care.cause === "gear" ? "equipment" : "joint_history";
+  const swapRule = SWAP_RULE[care.cause ?? "joints"];
   return {
     chosen,
     reason: `${baseReason} · ${care.reason}`,
@@ -219,6 +233,7 @@ export function planSession(
       deloadActive,
       jointHistory: options.jointHistory ?? [],
       equipment: options.equipment,
+      excluded: options.excluded ?? [],
     },
     previous?.exerciseIds ?? null,
   );

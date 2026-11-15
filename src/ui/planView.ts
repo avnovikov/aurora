@@ -1,6 +1,7 @@
 import { warmupCooldownLabel } from "../rules/sessionDuration";
 import { EXERCISE_GRAPH, PLANNABLE_EXERCISES, plannableByPattern } from "../data/exerciseGraph";
 import { SESSION_TEMPLATES } from "../data/seed";
+import { dayTitle } from "../plan/dayKinds";
 import { missingGear } from "../safety/gear";
 import { loadProfile } from "../settings/profile";
 import { SKILL_TIER_LABELS } from "../domain/skillTier";
@@ -77,7 +78,7 @@ export function renderPlanView(root: HTMLElement): void {
           <div class="plan-add">
             ${SESSION_TEMPLATES.map(
               (template) =>
-                `<button type="button" data-add="${template.id}">${template.name}</button>`,
+                `<button type="button" data-add="${template.id}">${escapeHtml(dayTitle(template))}</button>`,
             ).join("")}
           </div>
         </section>
@@ -111,13 +112,13 @@ function queueItemHtml(id: string, index: number, total: number): string {
   const duration = `${templateDurationLabel(template)} · ${warmupCooldownLabel(template)}`;
   const replaceOptions = SESSION_TEMPLATES.map(
     (item) =>
-      `<option value="${item.id}" ${item.id === id ? "selected" : ""}>${item.name}</option>`,
+      `<option value="${item.id}" ${item.id === id ? "selected" : ""}>${escapeHtml(dayTitle(item))}</option>`,
   ).join("");
   return `
     <li class="plan-queue-item ${isNext ? "is-next" : ""}" data-index="${index}">
       <div class="plan-queue-rank">${isNext ? "Next" : String(index + 1)}</div>
       <div class="plan-queue-body">
-        <strong>${template.name}</strong>
+        <strong>${escapeHtml(dayTitle(template))}</strong>
         <p class="hint">${duration}${targetNames ? ` · ${targetNames}` : ""}</p>
         <label class="plan-replace">
           <span class="visually-hidden">Change session type</span>
@@ -156,7 +157,7 @@ function procedureBlockHtml(templateId: string): string {
   return `
     <details class="procedure-block" ${template.id === "tmpl_bars" ? "open" : ""}>
       <summary>
-        <span>${template.name}</span>
+        <span>${escapeHtml(dayTitle(template))}</span>
         <span class="hint">${
           template.targetExerciseIds[0]
             ? exerciseName(template.targetExerciseIds[0])

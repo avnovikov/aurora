@@ -7,7 +7,29 @@ export type SessionFocus =
   | "bars"
   | "full_body"
   | "skill"
-  | "mobility";
+  | "mobility"
+  | "joint_care";
+
+/** What a plan day is for, in the words the athlete uses. */
+export type DayKind =
+  | "upper"
+  | "lower"
+  | "core"
+  | "full"
+  | "skill"
+  | "mobility"
+  | "joint_care";
+
+/** Which day of a generated block this is, and how it differs from the others. */
+/** A: the athlete's working step; B: one step easier; C: the goal's ladder (or weakest) first, using different moves. */
+export type BlockEmphasis = "working" | "easier" | "focus";
+
+export interface BlockInfo {
+  /** Shared by every day generated together. */
+  id: string;
+  letter: "A" | "B" | "C";
+  emphasis: BlockEmphasis;
+}
 
 export interface TemplateSlot {
   id: string;
@@ -42,6 +64,10 @@ export interface SessionTemplate {
   /** Per-template warm-up hold overrides (seconds) by station id. */
   warmupHoldSeconds?: Readonly<Record<string, number>>;
   slots: TemplateSlot[];
+  /** Set on generated days (seed days map from `focus`); see `dayTitle`. */
+  kind?: DayKind;
+  /** Set on days generated as part of a block. */
+  block?: BlockInfo;
   /** If true, completing re-appends this template to the queue tail */
   repeat: boolean;
   /** Planned wall-clock band for this session (warmup + work + rests). */

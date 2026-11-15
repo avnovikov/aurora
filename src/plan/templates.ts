@@ -2,6 +2,7 @@ import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import { SESSION_TEMPLATES, TEMPLATE_BY_ID } from "../data/seed";
 import type { SessionTemplate, TemplateSlot } from "../domain/program";
 import { createKeyValueStore } from "../storage/keyValueStore";
+import { getPlanDay, listPlanDays } from "./planDays";
 
 const store = createKeyValueStore("aurora.poc.templateOverrides.v1");
 
@@ -83,16 +84,38 @@ export function setTemplateTarget(
   return resolveTemplate(templateId);
 }
 
-export function resolveTemplate(templateId: string): SessionTemplate {
+/**
+ * A queue-able day by id: a generated day, else a seed template with its
+ * saved edits. Undefined for ids that are neither (e.g. a pruned day).
+ */
+export function findTemplate(templateId: string): SessionTemplate | undefined {
+  const generated = getPlanDay(templateId);
+  if (generated) {
+    return generated;
+  }
   const base = TEMPLATE_BY_ID[templateId];
-  if (!base) {
+  return base ? applyOverride(base, loadTemplateOverrides()[templateId]) : undefined;
+}
+
+export function isKnownTemplate(templateId: string): boolean {
+  return findTemplate(templateId) !== undefined;
+}
+
+export function resolveTemplate(templateId: string): SessionTemplate {
+  const template = findTemplate(templateId);
+  if (!template) {
     throw new Error(`Unknown template: ${templateId}`);
   }
-  return applyOverride(base, loadTemplateOverrides()[templateId]);
+  return template;
 }
 
 export function listResolvedTemplates(): SessionTemplate[] {
   return SESSION_TEMPLATES.map((template) => resolveTemplate(template.id));
+}
+
+/** Seed templates plus every generated day still in use. */
+export function listAllTemplates(): SessionTemplate[] {
+  return [...listResolvedTemplates(), ...listPlanDays()];
 }
 
 export function applyOverride(

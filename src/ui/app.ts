@@ -5,6 +5,8 @@ import {
   peekNextTemplate,
   peekUpcomingWithOverride,
 } from "../plan/queue";
+import { dayTitle } from "../plan/dayKinds";
+import { loadExcluded } from "../plan/exclusions";
 import { loadScheduleOverride } from "../plan/scheduleOverride";
 import { planSession, type PlannedSession } from "../rules/planSession";
 import {
@@ -118,6 +120,7 @@ function showTodayHome(root: HTMLElement): void {
           deloadActive: loadDeloadActive(),
           jointHistory: loadProfile().jointHistory,
           equipment: loadProfile().equipment,
+          excluded: loadExcluded(),
         },
       );
       renderSessionView(root, {
@@ -125,7 +128,7 @@ function showTodayHome(root: HTMLElement): void {
         onDone: (setCount) => showEvaluation(root, setCount, planned),
       });
     },
-  }, `Start ${next.name}`);
+  }, `Start ${dayTitle(next)}`);
 }
 
 function showEvaluation(
