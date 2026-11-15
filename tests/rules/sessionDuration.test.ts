@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { SESSION_TEMPLATES, SEED_GRAPH } from "../../src/data/seed";
 import { resolveExerciseTiming } from "../../src/domain/timing";
 import {
+  DEFAULT_SESSION_TARGET,
   estimateSessionDuration,
   estimateSlotSeconds,
   formatDurationLabel,
@@ -23,12 +24,13 @@ describe("resolveExerciseTiming", () => {
 });
 
 describe("estimateSessionDuration", () => {
-  it("keeps every seed template inside the 30–45 min band", () => {
+  it("keeps every seed template inside its own target band", () => {
     for (const template of SESSION_TEMPLATES) {
       const estimate = estimateSessionDuration(template);
+      const band = template.targetMinutes ?? DEFAULT_SESSION_TARGET;
       expect(estimate.withinTarget).toBe(true);
-      expect(estimate.totalMinutesRounded).toBeGreaterThanOrEqual(30);
-      expect(estimate.totalMinutesRounded).toBeLessThanOrEqual(45);
+      expect(estimate.totalMinutesRounded).toBeGreaterThanOrEqual(band.minMinutes);
+      expect(estimate.totalMinutesRounded).toBeLessThanOrEqual(band.maxMinutes);
     }
   });
 
