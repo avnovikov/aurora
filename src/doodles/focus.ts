@@ -94,6 +94,12 @@ export const FOCUS_BY_ID: Readonly<Record<string, Focus>> = {
     zoom: 2,
     label: "shoulders down",
   }, // Active hang
+  scapular_pull: {
+    joints: ["shoulder.near", "shoulder.far", "neck"],
+    highlight: ["shoulder.near", "shoulder.far", "neck"],
+    zoom: 2,
+    label: "shoulder blades down",
+  },
   wger_578: {
     joints: ["shoulder.near", "elbow.near", "hand.near"],
     highlight: ["upperArm.near", "forearm.near"],
