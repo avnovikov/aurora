@@ -17,5 +17,11 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "wger_2533": "/doodles/doodle-arch-hang.svg",
   "wger_2690": "/doodles/doodle-active-hang.svg",
   "wger_1704": "/doodles/doodle-tuck-l-sit.svg",
-  "hf_127": "/doodles/doodle-press-to-handstand.svg"
+  "hf_127": "/doodles/doodle-press-to-handstand.svg",
+  "wger_2557": "/doodles/doodle-supported-split-squat.svg",
+  "fedb_split_squats": "/doodles/doodle-split-squats.svg",
+  "hf_91": "/doodles/doodle-deficit-step-down.svg",
+  "hf_72": "/doodles/doodle-skater-squat.svg",
+  "wger_1948": "/doodles/doodle-one-leg-box-squat.svg",
+  "hf_75": "/doodles/doodle-archer-squat.svg"
 };

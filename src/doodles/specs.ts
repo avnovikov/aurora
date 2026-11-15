@@ -457,6 +457,127 @@ export const DOODLE_SPECS: DoodleSpec[] = [
       { hold: 0.2, pose: pressLean() },
     ],
   },
+  {
+    id: "wger_2557",
+    slug: "supported-split-squat",
+    title: "Supported split squat",
+    props: [{ kind: "box", x: 100, y: -92, w: 60, h: 92 }],
+    transition: 1.2,
+    frames: [
+      { hold: 0.5, pose: supportedSplit(-95) },
+      { hold: 0.5, pose: supportedSplit(-92) },
+    ],
+  },
+  {
+    id: "fedb_split_squats",
+    slug: "split-squats",
+    title: "Split squat",
+    transition: 1,
+    frames: [
+      { hold: 0.4, pose: splitSquat([-10, -150]) },
+      { hold: 0.4, pose: splitSquat([-10, -100]) },
+    ],
+  },
+  {
+    id: "hf_91",
+    slug: "deficit-step-down",
+    title: "Deficit step-down",
+    props: [{ kind: "box", x: -90, y: -40, w: 120, h: 40 }],
+    transition: 1.2,
+    frames: [
+      {
+        hold: 0.5,
+        pose: {
+          pelvis: [4, -208],
+          chest: along([4, -208], -90, 80),
+          hands: { near: [114, -276], far: [108, -276] },
+          feet: { near: [4, -40], far: [40, -52] },
+          toes: { near: 0, far: 90 },
+        },
+      },
+      {
+        hold: 0.5,
+        pose: {
+          // Hips back, standing knee forward, free heel tapping the floor in front of the box.
+          pelvis: [-10, -162],
+          chest: along([-10, -162], -80, 80),
+          hands: { near: [104, -232], far: [98, -232] },
+          feet: { near: [4, -40], far: [50, 0] },
+          toes: { near: 0, far: -30 },
+        },
+      },
+    ],
+  },
+  {
+    id: "hf_72",
+    slug: "skater-squat",
+    title: "Skater squat",
+    transition: 1.2,
+    frames: [
+      {
+        hold: 0.4,
+        pose: {
+          pelvis: [0, -172],
+          chest: [0, -252],
+          hands: { near: [116, -262], far: [110, -262] },
+          feet: { near: [0, 0], far: [-90, -120] },
+          toes: { near: 0, far: 135 },
+        },
+      },
+      {
+        hold: 0.5,
+        pose: {
+          pelvis: [-35, -95],
+          chest: along([-35, -95], -65, 80),
+          hands: { near: [90, -190], far: [84, -190] },
+          feet: { near: [0, 0], far: [-140, -45] },
+          toes: { near: 0, far: 135 },
+        },
+      },
+    ],
+  },
+  {
+    id: "wger_1948",
+    slug: "one-leg-box-squat",
+    title: "One-leg box squat",
+    props: [{ kind: "box", x: -130, y: -84, w: 90, h: 84 }],
+    transition: 1.2,
+    frames: [
+      {
+        hold: 0.5,
+        pose: {
+          pelvis: [0, -172],
+          chest: [0, -252],
+          hands: { near: [122, -262], far: [116, -262] },
+          feet: { near: [10, 0], far: along([0, -172], 20, 170) },
+          toes: { near: 0, far: -70 },
+        },
+      },
+      {
+        hold: 0.5,
+        pose: {
+          // Sitting back to touch the box; free leg held straight out in front.
+          pelvis: [-52, -94],
+          chest: along([-52, -94], -62, 80),
+          hands: { near: [112, -180], far: [106, -180] },
+          feet: { near: [10, 0], far: along([-52, -94], -5, 170) },
+          toes: { near: 0, far: -70 },
+        },
+      },
+    ],
+  },
+  {
+    id: "hf_75",
+    slug: "archer-squat",
+    title: "Archer squat",
+    view: "front",
+    transition: 1.3,
+    frames: [
+      { hold: 0.4, pose: archer([2, -131]) },
+      { hold: 0.5, pose: archer([-30, -88]) },
+      { hold: 0.4, pose: archer([2, -131]) },
+    ],
+  },
 ];
 
 /**
@@ -640,5 +761,42 @@ function handstand(): Pose {
     hands: { near: [52, -1], far: [50, -1.5] },
     feet: { near: [46, -397], far: [42, -397] },
     toes: { near: -90, far: -90 },
+  };
+}
+
+/** Split stance with the near hand resting on a box; the back knee is solved just above the floor. */
+function supportedSplit(pelvisY: number): Pose {
+  const pelvis: Point = [0, pelvisY];
+  return {
+    pelvis,
+    // Torso upright, with a slight lean so the hand reaches the box.
+    chest: along(pelvis, -72, 80),
+    hands: { near: [108, -92], far: [107, -92] },
+    feet: { near: [70, 0], far: [-96, -20] },
+    toes: { near: 0, far: 80 },
+  };
+}
+
+/** Long staggered stance, back heel lifted, torso upright. */
+function splitSquat(pelvis: Point): Pose {
+  return {
+    pelvis,
+    chest: [pelvis[0], pelvis[1] - 80],
+    hands: { near: [pelvis[0] + 110, pelvis[1] - 82], far: [pelvis[0] + 104, pelvis[1] - 82] },
+    feet: { near: [60, 0], far: [-100, -20] },
+    toes: { near: 0, far: 80 },
+  };
+}
+
+/** Front-view wide stance; `side` 1 = deep on the near (left) leg. */
+function archer(pelvis: Point): Pose {
+  return {
+    pelvis,
+    chest: [pelvis[0], pelvis[1] - 80],
+    // Arms out to the sides for balance.
+    hands: { near: [pelvis[0] - 135, pelvis[1] - 120], far: [pelvis[0] + 135, pelvis[1] - 120] },
+    feet: { near: [-120, 0], far: [125, 0] },
+    knees: { near: { bend: 1 } },
+    toes: { near: 180, far: 0 },
   };
 }
