@@ -49,6 +49,8 @@ export interface StarterProgram {
   sessionLabel: string;
   slots: SeedSlot[];
   warmupStationIds: string[];
+  cooldownStationIds: string[];
+  warmupHoldSeconds?: Readonly<Record<string, number>>;
 }
 
 function ex(partial: SeedExercise): SeedExercise {
@@ -575,9 +577,21 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     targetMinutes: SESSION_BAND,
     warmupStationIds: [
       "pulse_raiser_march",
-      "hip_circles",
+      "ntc_jumping_jacks",
       "ankle_rocks",
+      "hf_158",
+      "hf_157",
       "glute_bridge",
+      "wger_1202",
+      "wger_2667",
+      "fedb_split_squats",
+      "wger_1948",
+    ],
+    cooldownStationIds: [
+      "fedb_calf_stretch_hands_against_wall",
+      "wger_1239",
+      "fedb_kneeling_hip_flexor",
+      "hf_158_cooldown",
     ],
     slots: [
       {
@@ -637,9 +651,17 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     targetMinutes: SESSION_BAND,
     warmupStationIds: [
       "pulse_raiser_march",
+      "ntc_jumping_jacks",
+      "hf_154",
       "hip_circles",
-      "glute_bridge",
-      "ankle_rocks",
+      "hf_100",
+      "hf_116",
+      "dead_bug",
+      "hf_103",
+    ],
+    cooldownStationIds: [
+      "hf_165",
+      "fedb_childs_pose_cooldown",
     ],
     slots: [
       {
@@ -699,9 +721,20 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     targetMinutes: SESSION_BAND,
     warmupStationIds: [
       "pulse_raiser_march",
-      "wrist_load",
+      "ntc_jumping_jacks",
+      "hf_167",
+      "wger_2680",
+      "hf_152",
+      "fedb_childs_pose",
       "scap_pushup",
-      "hip_circles",
+      "hollow_hold",
+      "wall_handstand",
+    ],
+    cooldownStationIds: [
+      "wger_2686",
+      "fedb_kneeling_forearm_stretch",
+      "fedb_childs_pose_cooldown",
+      "ntc_thread_the_needle",
     ],
     slots: [
       {
@@ -753,9 +786,20 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     targetMinutes: SESSION_BAND,
     warmupStationIds: [
       "pulse_raiser_march",
-      "scap_pushup",
-      "wrist_load",
-      "hip_circles",
+      "ntc_jumping_jacks",
+      "ntc_arm_circles",
+      "wger_1822",
+      "hf_152",
+      "wger_578",
+      "ntc_prone_ytw",
+      "scapular_pull",
+      "wger_2690",
+    ],
+    cooldownStationIds: [
+      "wger_1713",
+      "fedb_childs_pose_cooldown",
+      "fedb_kneeling_forearm_stretch",
+      "ntc_thread_the_needle",
     ],
     slots: [
       {
@@ -806,10 +850,24 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     targetMinutes: SESSION_BAND,
     warmupStationIds: [
       "pulse_raiser_march",
+      "ntc_jumping_jacks",
+      "ankle_rocks",
       "hip_circles",
-      "wrist_load",
+      "hf_152",
+      "wger_2680",
+      "glute_bridge",
       "scap_pushup",
+      "wger_2667",
+      "bodyweight_squat",
+      "fedb_incline_push_up",
     ],
+    cooldownStationIds: [
+      "fedb_calf_stretch_hands_against_wall",
+      "fedb_kneeling_hip_flexor",
+      "fedb_childs_pose_cooldown",
+      "wger_2686",
+    ],
+    warmupHoldSeconds: { ankle_rocks: 45, wger_2667: 45 },
     slots: [
       {
         id: "full_squat",
@@ -879,10 +937,16 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     targetMinutes: MOBILITY_BAND,
     warmupStationIds: [
       "pulse_raiser_march",
-      "hip_circles",
-      "ankle_rocks",
-      "wrist_load",
+      "ntc_jumping_jacks",
+      "hf_154",
+      "hf_169",
+      "hf_158",
+      "hf_152",
+      "wger_2680",
     ],
+    cooldownStationIds: [],
+    // The design's holds give 6.5 min; two drills at 60 s reach the 7 min floor.
+    warmupHoldSeconds: { hf_158: 60, wger_2680: 60 },
     // Every slot is pinned: resolveSlot never advances / regresses these
     // exercises, and the variety rule never swaps them for strength work.
     slots: [
@@ -957,6 +1021,8 @@ export const STARTER_PROGRAM: StarterProgram = {
   name: "Legs",
   sessionLabel: "Today",
   warmupStationIds: SESSION_TEMPLATES[0].warmupStationIds,
+  cooldownStationIds: SESSION_TEMPLATES[0].cooldownStationIds,
+  warmupHoldSeconds: SESSION_TEMPLATES[0].warmupHoldSeconds,
   slots: SESSION_TEMPLATES[0].slots,
 };
 
@@ -970,6 +1036,8 @@ export function templateToStarter(template: SessionTemplate): StarterProgram {
     name: template.name,
     sessionLabel: template.name,
     warmupStationIds: template.warmupStationIds,
+    cooldownStationIds: template.cooldownStationIds,
+    warmupHoldSeconds: template.warmupHoldSeconds,
     slots: template.slots,
   };
 }

@@ -30,6 +30,8 @@ export interface SessionControlHandlers {
   onStartRest: (withVoice: boolean, onDone: () => void) => void;
   onFinishExercise: () => void;
   onFinishAll: () => void;
+  onStartCooldown: () => void;
+  onSkipCooldown: () => void;
   onPulseLostSim: () => void;
   onPulseBpm: (bpm: number) => void;
   onPulseDisconnected: () => void;
@@ -55,6 +57,12 @@ export function wireSessionControls(
   });
   root.querySelector("[data-reps-plus]")?.addEventListener("click", () => {
     adjustNextReps(state, 1, handlers);
+  });
+  root.querySelector("[data-cooldown-start]")?.addEventListener("click", () => {
+    handlers.onStartCooldown();
+  });
+  root.querySelector("[data-cooldown-skip]")?.addEventListener("click", () => {
+    handlers.onSkipCooldown();
   });
   wirePulseSimButtons(root, state, handlers);
   wirePulseConnectButtons(root, state, handlers);

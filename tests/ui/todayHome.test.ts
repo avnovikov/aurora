@@ -35,6 +35,11 @@ describe("Today page", () => {
     expect(count(comingUp, "<li>")).toBe(2);
   });
 
+  it("keeps the warm-up and cool-down preview from #38 in the card", () => {
+    expect(html).toMatch(/data-warmup-preview>Warm-up \d+ min/);
+    expect(html.indexOf("data-warmup-preview")).toBeLessThan(html.indexOf("data-checkin"));
+  });
+
   it("labels an override as today instead", () => {
     expect(todayHomeHtml(model({ isOverride: true, next: bars }))).toContain("Today instead");
   });

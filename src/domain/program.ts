@@ -35,8 +35,12 @@ export interface SessionTemplate {
   focus: SessionFocus;
   /** North-star hard skills (e.g. freestanding_hs, pistol_squat) */
   targetExerciseIds: string[];
-  /** Stations for the one-tap warmup mini-session (see `WARMUP_STATIONS`). */
+  /** Warm-up stations in RAMP order (see `WARMUP_STATIONS`). */
   warmupStationIds: string[];
+  /** Optional cool-down stretches offered after the work (may be empty). */
+  cooldownStationIds: string[];
+  /** Per-template warm-up hold overrides (seconds) by station id. */
+  warmupHoldSeconds?: Readonly<Record<string, number>>;
   slots: TemplateSlot[];
   /** If true, completing re-appends this template to the queue tail */
   repeat: boolean;

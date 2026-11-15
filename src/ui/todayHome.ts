@@ -1,5 +1,6 @@
 import type { SessionTemplate } from "../domain/program";
 import { escapeHtml } from "../library/present";
+import { warmupCooldownLabel } from "../rules/sessionDuration";
 import { deloadNoteHtml } from "./deloadNote";
 import { comingUpHtml, templateHitsCore } from "./forecastStrip";
 import { templateDurationLabel, templateTargetsLabel } from "./formatTemplate";
@@ -37,6 +38,7 @@ export function todayHomeHtml(model: TodayHomeModel): string {
           <span class="today-duration">${escapeHtml(templateDurationLabel(next))}</span>
         </div>
         ${toward}
+        <p class="lib-meta" data-warmup-preview>${escapeHtml(warmupCooldownLabel(next))}</p>
         ${core}
         ${deloadNoteHtml(model.deloadActive)}
         <div data-checkin></div>
