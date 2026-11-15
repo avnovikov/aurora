@@ -15,7 +15,7 @@ export interface CheckInHandlers {
 
 /**
  * The morning check-in: sleep (required), pain (optional), Start. It sits
- * inside the Today card, so it has no heading or branding of its own.
+ * in the Today panel, so it has no heading or branding of its own.
  */
 export function checkInHtml(startLabel: string): string {
   const sleep = SLEEP.map((item) => chipHtml("sleep-value", item.id, item.label, false)).join("");
@@ -23,12 +23,14 @@ export function checkInHtml(startLabel: string): string {
   return `
     <div class="check-in">
       <p class="chip-row-label">How did you sleep?</p>
-      <div class="row wrap" role="group" aria-label="How did you sleep?">${sleep}</div>
+      <div class="today-sleep" role="group" aria-label="How did you sleep?">${sleep}</div>
       <p class="chip-row-label">Any pain today? <span class="optional">Optional</span></p>
-      <div class="row wrap" role="group" aria-label="Any pain today?">${pain}</div>
-      <button type="button" class="cta" data-start disabled>${startLabel}</button>
-      <p class="hint" data-start-hint>Pick how you slept to start.</p>
-      <p class="hint">Starting turns on the coach's voice, so keep the sound up.</p>
+      <div class="today-pain" role="group" aria-label="Any pain today?">${pain}</div>
+      <button type="button" class="cta today-start" aria-describedby="today-start-hint" data-start disabled>${startLabel}</button>
+      <div class="today-hints">
+        <p class="hint" id="today-start-hint" data-start-hint>Pick how you slept to start.</p>
+        <p class="hint">Starting turns on the coach's voice, so keep the sound up.</p>
+      </div>
     </div>
   `;
 }
@@ -50,6 +52,7 @@ export function renderCheckIn(
       sleepChips.forEach((chip) => setChipPressed(chip, chip === button));
       startBtn.disabled = false;
       root.querySelector("[data-start-hint]")?.remove();
+      startBtn.removeAttribute("aria-describedby");
     });
   });
 

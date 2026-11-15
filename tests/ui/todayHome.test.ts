@@ -28,6 +28,31 @@ describe("Today page", () => {
     expect(html.indexOf("today-card")).toBeLessThan(html.indexOf("data-checkin"));
   });
 
+  it("reads top-down: title, Next up with the duration on its row, name, goal, warm-up", () => {
+    const order = [
+      "Aurora · Rassvet",
+      "<h1",
+      'class="today-nextrow"',
+      "Next up",
+      'class="today-duration"',
+      'id="today-session"',
+      'class="today-goal">Toward ',
+      "data-warmup-preview",
+    ].map((needle) => html.indexOf(needle));
+    expect(order.every((at) => at >= 0)).toBe(true);
+    expect([...order].sort((a, b) => a - b)).toEqual(order);
+    const nextRow = html.slice(html.indexOf('class="today-nextrow"'), html.indexOf('id="today-session"'));
+    expect(nextRow).toMatch(/Next up<\/p>\s*<p class="today-duration">≈ \d+ min<\/p>/);
+  });
+
+  it("puts the check-in in its own panel after the reading area, then Coming up and the override", () => {
+    expect(html).toContain('<section class="today-act" aria-label="Check-in"><div data-checkin></div></section>');
+    expect(html.indexOf("today-read")).toBeLessThan(html.indexOf("today-act"));
+    const withOverride = todayHomeHtml(model({ overrideHtml: "<details data-override-controls></details>" }));
+    expect(withOverride.indexOf("data-checkin")).toBeLessThan(withOverride.indexOf("data-forecast"));
+    expect(withOverride.indexOf("data-forecast")).toBeLessThan(withOverride.indexOf("data-override-controls"));
+  });
+
   it("does not repeat today's session in Coming up", () => {
     const comingUp = html.slice(html.indexOf("coming-up"));
     expect(comingUp).toContain("Then 2");
@@ -81,6 +106,18 @@ describe("check-in", () => {
     expect(html).toMatch(/data-sleep-value="good" class="" aria-pressed="false"/);
     expect(count(html, 'data-kind="toggle"')).toBe(5);
     expect(html).toMatch(/role="group" aria-label="How did you sleep\?"/);
+  });
+
+  it("lays sleep out as a row of three and pain as a grid", () => {
+    expect(html).toMatch(/<div class="today-sleep" role="group" aria-label="How did you sleep\?">/);
+    expect(html).toMatch(/<div class="today-pain" role="group" aria-label="Any pain today\?">/);
+  });
+
+  it("links Start to its hint and keeps the hints under it", () => {
+    expect(html).toMatch(/<button type="button" class="cta today-start" aria-describedby="today-start-hint" data-start disabled>/);
+    expect(html).toContain('<p class="hint" id="today-start-hint" data-start-hint>Pick how you slept to start.</p>');
+    expect(html.indexOf("data-start ")).toBeLessThan(html.indexOf("data-start-hint"));
+    expect(html).toContain("Starting turns on the coach's voice, so keep the sound up.");
   });
 });
 
