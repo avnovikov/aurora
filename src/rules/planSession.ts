@@ -13,6 +13,7 @@ import type {
   Readiness,
   ResolveResult,
 } from "../domain/types";
+import { emptyMemory } from "../session/history";
 import {
   lastConsecutiveSameZone,
   pickSlotExerciseForVariety,
@@ -45,17 +46,6 @@ export interface PlannedSession {
 export interface PlanSessionOptions {
   history?: readonly HistoryEntry[];
   focus?: SessionFocus;
-}
-
-function emptyMemory(exerciseId: string): ExerciseMemory {
-  return {
-    exerciseId,
-    sessionsAtStandard: 0,
-    sessionsBelowFloor: 0,
-    lastAddedLoadKg: 0,
-    weakLinkSessionsRemaining: 0,
-    skillTier: "beginner",
-  };
 }
 
 function focusRegionsFromSlots(program: StarterProgram): LoadRegion[] {

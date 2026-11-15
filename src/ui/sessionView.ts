@@ -27,6 +27,9 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   };
 
   const paint = (): void => {
+    if ((state.phase === "work" || state.phase === "rest") && !state.workState) {
+      state.workState = syncWorkState(options.planned, state);
+    }
     root.innerHTML = shellHtml(options.planned, state);
     wireControls();
     persist();

@@ -1,5 +1,6 @@
-import { SEED_EXERCISES, SEED_GRAPH, SESSION_TEMPLATES } from "../data/seed";
+import { SEED_EXERCISES, SESSION_TEMPLATES } from "../data/seed";
 import {
+  appendQueueItem,
   completeNext,
   loadPlanQueue,
   moveQueueItem,
@@ -16,9 +17,10 @@ import {
   setTemplateTarget,
 } from "../plan/templates";
 import {
-  estimateSessionDuration,
-  formatDurationLabel,
-} from "../rules/sessionDuration";
+  exerciseName,
+  templateDurationLabel,
+  templateTargetsLabel,
+} from "./formatTemplate";
 
 export function renderPlanView(root: HTMLElement): void {
   const paint = (): void => {
@@ -65,10 +67,8 @@ export function renderPlanView(root: HTMLElement): void {
 function queueItemHtml(id: string, index: number, total: number): string {
   const template = resolveTemplate(id);
   const isNext = index === 0;
-  const targetNames = template.targetExerciseIds
-    .map((exerciseId) => SEED_GRAPH[exerciseId]?.name ?? exerciseId)
-    .join(" · ");
-  const duration = formatDurationLabel(estimateSessionDuration(template));
+  const targetNames = templateTargetsLabel(template.targetExerciseIds);
+  const duration = templateDurationLabel(template);
   const replaceOptions = SESSION_TEMPLATES.map(
     (item) =>
       `<option value="${item.id}" ${item.id === id ? "selected" : ""}>${item.name}</option>`,
@@ -118,7 +118,11 @@ function procedureBlockHtml(templateId: string): string {
     <details class="procedure-block" ${template.id === "tmpl_bars" ? "open" : ""}>
       <summary>
         <span>${template.name}</span>
-        <span class="hint">${SEED_GRAPH[template.targetExerciseIds[0]]?.name ?? "Target"}</span>
+        <span class="hint">${
+          template.targetExerciseIds[0]
+            ? exerciseName(template.targetExerciseIds[0])
+            : "Target"
+        }</span>
       </summary>
       <div class="procedure-fields">
         ${targetSelect}
@@ -137,7 +141,7 @@ function exerciseSelectHtml(
 ): string {
   const options = ids
     .map((id) => {
-      const name = SEED_GRAPH[id]?.name ?? id;
+      const name = exerciseName(id);
       const isSelected = id === selected ? "selected" : "";
       return `<option value="${id}" ${isSelected}>${name}</option>`;
     })
@@ -158,9 +162,11 @@ function wirePlanControls(root: HTMLElement, paint: () => void): void {
 
   root.querySelectorAll<HTMLButtonElement>("[data-add]").forEach((button) => {
     button.addEventListener("click", () => {
-      const queueNow = loadPlanQueue();
-      queueNow.items.push(button.dataset.add!);
-      savePlanQueue(queueNow);
+      const templateId = button.dataset.add;
+      if (!templateId) {
+        return;
+      }
+      savePlanQueue(appendQueueItem(loadPlanQueue(), templateId));
       paint();
     });
   });

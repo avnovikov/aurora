@@ -51,7 +51,7 @@ function sortPool(pool: SeedExercise[], focus: LoadRegion[]): SeedExercise[] {
 
 /**
  * Builds a continuous warmup list (~10 min) of short 10–15s stations
- * with 5s same-area / 10s cross-area gaps.
+ * with equal same-area / cross-area gaps (see WARMUP_GAPS).
  */
 export function planWarmup(input: WarmupPlanInput): WarmupStep[] {
   const target = input.targetSeconds ?? DEFAULT_TARGET_SECONDS;

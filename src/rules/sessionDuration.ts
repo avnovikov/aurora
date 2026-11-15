@@ -89,11 +89,6 @@ export function warmupMinutesLabel(
   return `Warmup · ${minutes} min`;
 }
 
-export function literatureRestHint(exerciseId: string): number {
-  const exercise = requireExercise(exerciseId);
-  return resolveExerciseTiming(exercise).defaultRestSeconds;
-}
-
 export { WARMUP_GAPS };
 
 function requireExercise(exerciseId: string): Exercise {

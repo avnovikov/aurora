@@ -20,14 +20,25 @@ export interface DetailMemoryView {
   bestReps?: number;
 }
 
+export interface MountLibraryDetailOptions {
+  exercise: SeedExercise;
+  targetIds: ReadonlySet<string>;
+  catalogueById: Record<string, SeedExercise>;
+  actions: DetailActions;
+  memory?: DetailMemoryView;
+}
+
 export function mountLibraryDetail(
   root: HTMLElement,
-  exercise: SeedExercise,
-  targetIds: ReadonlySet<string>,
-  catalogueById: Record<string, SeedExercise>,
-  actions: DetailActions,
-  memory: DetailMemoryView = {},
+  options: MountLibraryDetailOptions,
 ): void {
+  const {
+    exercise,
+    targetIds,
+    catalogueById,
+    actions,
+    memory = {},
+  } = options;
   root.innerHTML = detailHtml(exercise, targetIds, catalogueById, memory);
 
   root.querySelector<HTMLButtonElement>("[data-lib-back]")?.addEventListener("click", () => {

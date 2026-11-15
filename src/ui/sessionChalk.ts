@@ -1,5 +1,5 @@
 import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
-import { warmupMinutesLabel } from "../rules/sessionDuration";
+import { WARMUP_GAPS, warmupMinutesLabel } from "../rules/sessionDuration";
 import { prescribedForNextSet } from "../session/setLog";
 import type { ViewState } from "./sessionTypes";
 import { currentWork } from "./sessionState";
@@ -72,15 +72,6 @@ function bodyHtml(planned: PlannedSession, state: ViewState): string {
   if (!item) {
     return `<p class="tagline">No work items.</p>`;
   }
-  if (!state.workState) {
-    state.workState = {
-      slotId: item.slotId,
-      exerciseId: item.exerciseId,
-      setIndex: state.setIndex,
-      prescribedReps: item.dose.reps,
-      addedLoadKg: item.dose.addedLoadKg,
-    };
-  }
   return workHtml(item, state);
 }
 
@@ -97,7 +88,7 @@ function warmupHtml(planned: PlannedSession, state: ViewState): string {
     <h2>${step.name}</h2>
     <p class="tagline">${step.region} · <span data-warmup-left>${step.holdSeconds}</span>s</p>
     ${media}
-    <p class="reason">Continuous block · 5s same area · 10s cross area</p>
+    <p class="reason">Continuous block · ${WARMUP_GAPS.sameArea}s same area · ${WARMUP_GAPS.crossArea}s cross area</p>
   `;
 }
 
@@ -137,16 +128,5 @@ function restHtml(state: ViewState): string {
       <span class="reps-edit">${reps}</span>
       <button type="button" data-reps-plus>+</button>
     </div>
-  `;
-}
-
-export function doneShellHtml(setCount: number): string {
-  return `
-    <main class="shell">
-      <p class="eyebrow">Session</p>
-      <h1>Done</h1>
-      <p class="tagline">${setCount} sets logged.</p>
-      <button type="button" class="cta" data-home>Back to check-in</button>
-    </main>
   `;
 }

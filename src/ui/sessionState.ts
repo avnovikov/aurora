@@ -5,7 +5,7 @@ import type { SessionViewOptions, ViewState } from "./sessionTypes";
 export function initialState(options: SessionViewOptions): ViewState {
   const resume = options.resume;
   if (resume) {
-    return {
+    const state: ViewState = {
       phase: resume.phase === "done" ? "done" : resume.phase,
       warmupIndex: resume.warmupIndex,
       workIndex: resume.workIndex,
@@ -17,6 +17,14 @@ export function initialState(options: SessionViewOptions): ViewState {
       pulse: { connected: false, lastValidAtMs: null, lastShoutAtMs: null },
       bpm: null,
     };
+    if (state.phase === "work" || state.phase === "rest") {
+      state.workState = restoreWorkState(
+        options.planned,
+        state,
+        resume.nextRepsOverride,
+      );
+    }
+    return state;
   }
   return {
     phase: "warmup",
@@ -63,4 +71,16 @@ export function syncWorkState(
     addedLoadKg: item.dose.addedLoadKg,
     nextRepsOverride: state.workState?.nextRepsOverride,
   };
+}
+
+function restoreWorkState(
+  planned: PlannedSession,
+  state: ViewState,
+  nextRepsOverride: number | undefined,
+): ActiveWorkState | null {
+  const synced = syncWorkState(planned, state);
+  if (!synced) {
+    return null;
+  }
+  return { ...synced, nextRepsOverride };
 }

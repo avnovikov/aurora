@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  appendQueueItem,
   completeNext,
   moveQueueItem,
   peekUpcoming,
@@ -55,5 +56,13 @@ describe("plan queue", () => {
       "tmpl_full",
     );
     expect(next.items).toEqual(["tmpl_full", "tmpl_abs"]);
+  });
+
+  it("appendQueueItem adds a known template without mutating input", () => {
+    const queue = { items: ["tmpl_legs"] };
+    const next = appendQueueItem(queue, "tmpl_abs");
+    expect(next.items).toEqual(["tmpl_legs", "tmpl_abs"]);
+    expect(queue.items).toEqual(["tmpl_legs"]);
+    expect(() => appendQueueItem(queue, "tmpl_unknown")).toThrow("Unknown template");
   });
 });

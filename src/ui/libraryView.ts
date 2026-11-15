@@ -10,6 +10,7 @@ import { searchExercises } from "../library/search";
 import { collectTemplateTargetIds } from "../library/targets";
 import {
   declareSkillTier,
+  emptyMemory,
   loadMemories,
   saveMemories,
 } from "../session/history";
@@ -32,13 +33,12 @@ export function renderLibraryView(root: HTMLElement): void {
         paint();
         return;
       }
-      const memory = loadMemories()[selectedId] ?? {};
-      mountLibraryDetail(
-        root,
+      const memory = loadMemories()[selectedId] ?? emptyMemory(selectedId);
+      mountLibraryDetail(root, {
         exercise,
         targetIds,
-        CATALOGUE_BY_ID,
-        {
+        catalogueById: CATALOGUE_BY_ID,
+        actions: {
           onBack: () => {
             selectedId = null;
             paint();
@@ -52,12 +52,12 @@ export function renderLibraryView(root: HTMLElement): void {
             paint();
           },
         },
-        {
+        memory: {
           skillTier: memory.skillTier,
           declaredTier: memory.declaredTier,
           bestReps: memory.bestReps,
         },
-      );
+      });
       return;
     }
 

@@ -1,11 +1,7 @@
-import { SEED_GRAPH, templateToStarter } from "../data/seed";
+import { templateToStarter } from "../data/seed";
 import type { SessionEvaluation } from "../domain/program";
 import { loadPlanQueue, peekNextTemplate, peekUpcoming } from "../plan/queue";
-import { planSession } from "../rules/planSession";
-import {
-  estimateSessionDuration,
-  formatDurationLabel,
-} from "../rules/sessionDuration";
+import { planSession, type PlannedSession } from "../rules/planSession";
 import {
   appendHistory,
   applyEvaluationToMemory,
@@ -20,12 +16,26 @@ import { renderBodyView } from "./bodyView";
 import { renderCheckIn } from "./checkIn";
 import { renderEvaluationView } from "./evaluationView";
 import { forecastStripHtml } from "./forecastStrip";
+import {
+  templateDurationLabel,
+  templateTargetsLabel,
+} from "./formatTemplate";
 import { renderLibraryView } from "./libraryView";
 import { advancePlanAfterSession, renderPlanView } from "./planView";
 import { renderProgressView } from "./progressView";
 import { renderSessionView } from "./sessionView";
 import { renderSettingsView } from "./settingsView";
 import { renderShell, type AppTab } from "./shell";
+
+const PANEL_RENDERERS: Partial<
+  Record<Exclude<AppTab, "today">, (panel: HTMLElement) => void>
+> = {
+  library: renderLibraryView,
+  progress: renderProgressView,
+  body: renderBodyView,
+  plan: renderPlanView,
+  settings: renderSettingsView,
+};
 
 export function bootApp(root: HTMLElement): void {
   loadProfile();
@@ -46,28 +56,16 @@ function showTab(root: HTMLElement, tab: AppTab): void {
     showTodayHome(root);
     return;
   }
-  if (tab === "library") {
-    renderShell(root, tab, `<div data-panel></div>`, (next) => showTab(root, next));
-    renderLibraryView(root.querySelector("[data-panel]")!);
-    return;
-  }
-  if (tab === "progress") {
-    renderShell(root, tab, `<div data-panel></div>`, (next) => showTab(root, next));
-    renderProgressView(root.querySelector("[data-panel]")!);
-    return;
-  }
-  if (tab === "body") {
-    renderShell(root, tab, `<div data-panel></div>`, (next) => showTab(root, next));
-    renderBodyView(root.querySelector("[data-panel]")!);
-    return;
-  }
-  if (tab === "plan") {
-    renderShell(root, tab, `<div data-panel></div>`, (next) => showTab(root, next));
-    renderPlanView(root.querySelector("[data-panel]")!);
-    return;
+  const renderPanel = PANEL_RENDERERS[tab];
+  if (!renderPanel) {
+    throw new Error(`No panel renderer for tab: ${tab}`);
   }
   renderShell(root, tab, `<div data-panel></div>`, (next) => showTab(root, next));
-  renderSettingsView(root.querySelector("[data-panel]")!);
+  const panel = root.querySelector<HTMLElement>("[data-panel]");
+  if (!panel) {
+    throw new Error("Expected [data-panel] after shell render");
+  }
+  renderPanel(panel);
 }
 
 function showTodayHome(root: HTMLElement): void {
@@ -75,7 +73,8 @@ function showTodayHome(root: HTMLElement): void {
   const upcoming = peekUpcoming(queue, 3);
   const next = peekNextTemplate(queue);
   const forecast = forecastStripHtml(upcoming);
-  const duration = formatDurationLabel(estimateSessionDuration(next));
+  const duration = templateDurationLabel(next);
+  const targets = templateTargetsLabel(next.targetExerciseIds, ", ");
 
   renderShell(
     root,
@@ -85,11 +84,7 @@ function showTodayHome(root: HTMLElement): void {
         <p class="eyebrow">Aurora · Rassvet</p>
         <h1>Today</h1>
         <p class="tagline">Next in queue: <strong>${next.name}</strong> · ${duration}${
-          next.targetExerciseIds.length
-            ? ` → ${next.targetExerciseIds
-                .map((id) => SEED_GRAPH[id]?.name ?? id)
-                .join(", ")}`
-            : ""
+          targets ? ` → ${targets}` : ""
         }</p>
         ${forecast}
         <div data-checkin></div>
@@ -122,7 +117,7 @@ function showTodayHome(root: HTMLElement): void {
 function showEvaluation(
   root: HTMLElement,
   setCount: number,
-  planned: { programId: string; sessionLabel: string; work: Array<{ exerciseId: string }> },
+  planned: PlannedSession,
 ): void {
   renderEvaluationView(root, setCount, (evaluation: SessionEvaluation) => {
     const exerciseIds = planned.work.map((item) => item.exerciseId);

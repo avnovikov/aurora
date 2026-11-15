@@ -1,9 +1,9 @@
 import { SEED_GRAPH } from "../data/seed";
 import type { SessionTemplate } from "../domain/program";
 import {
-  estimateSessionDuration,
-  formatDurationLabel,
-} from "../rules/sessionDuration";
+  templateDurationLabel,
+  templateTargetsLabel,
+} from "./formatTemplate";
 
 /**
  * Cool dawn strip: next sessions + target chips; Core days get a spark mark.
@@ -15,10 +15,8 @@ export function forecastStripHtml(upcoming: SessionTemplate[]): string {
   const cards = upcoming
     .map((template, index) => {
       const core = template.focus === "abs" || templateHitsCore(template);
-      const targets = template.targetExerciseIds
-        .map((id) => SEED_GRAPH[id]?.name ?? id)
-        .join(" · ");
-      const duration = formatDurationLabel(estimateSessionDuration(template));
+      const targets = templateTargetsLabel(template.targetExerciseIds);
+      const duration = templateDurationLabel(template);
       return `
         <article class="forecast-card ${index === 0 ? "next" : ""} ${core ? "core-spark" : ""}">
           <p class="eyebrow">${index === 0 ? "Next up" : `Then ${index + 1}`}</p>

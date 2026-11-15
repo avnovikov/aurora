@@ -5,6 +5,7 @@ import { SKILL_TIER_LABELS } from "../domain/skillTier";
 import { distanceToTarget, type TargetDistance } from "../progress/targetDistance";
 import { shouldAdvanceProgression } from "../rules/skillDose";
 import { loadMemories } from "../session/history";
+import { exerciseName } from "./formatTemplate";
 
 export function renderProgressView(root: HTMLElement): void {
   const memories = loadMemories();
@@ -88,5 +89,5 @@ function nextProgressionHint(
   if (!shouldAdvanceProgression(exercise, memory)) {
     return null;
   }
-  return SEED_GRAPH[harder]?.name ?? harder;
+  return exerciseName(harder);
 }

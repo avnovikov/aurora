@@ -1,3 +1,4 @@
+import type { StopReason } from "../domain/types";
 import {
   appendSet,
   editNextReps,
@@ -13,7 +14,11 @@ import type { ViewState } from "./sessionTypes";
 import { currentWork } from "./sessionState";
 import { wireSwipe } from "./sessionSwipe";
 
-export type StopReason = "completed" | "muscular_failure" | "skipped";
+/** Stop reasons the session UI can log from buttons. */
+export type SetStopReason = Extract<
+  StopReason,
+  "completed" | "muscular_failure" | "skipped"
+>;
 
 export interface SessionControlHandlers {
   onPaint: () => void;
@@ -98,7 +103,7 @@ function wirePulseSimButtons(
 function completeSet(
   planned: PlannedSession,
   state: ViewState,
-  stopReason: StopReason,
+  stopReason: SetStopReason,
   handlers: SessionControlHandlers,
 ): void {
   const item = currentWork(planned, state);

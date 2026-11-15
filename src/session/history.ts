@@ -1,11 +1,8 @@
-import {
-  inferTierFromBest,
-  maxTier,
-  standardsFor,
-} from "../domain/skillTier";
+import { maxTier } from "../domain/skillTier";
 import type { Exercise, ExerciseMemory, SkillTier } from "../domain/types";
 import type { HistoryEntry, SessionEvaluation } from "../domain/program";
 import { SEED_GRAPH } from "../data/seed";
+import { effectiveSkillTier } from "../rules/skillDose";
 
 const HISTORY_KEY = "aurora.poc.history.v1";
 const MEMORY_KEY = "aurora.poc.memory.v1";
@@ -97,19 +94,14 @@ export function recordBestReps(
   }
   const current = memories[exerciseId] ?? emptyMemory(exerciseId);
   const bestReps = Math.max(current.bestReps ?? 0, completedReps);
-  let skillTier = current.skillTier ?? current.declaredTier ?? "beginner";
-  const standards = exercise ? standardsFor(exercise) : null;
-  if (standards) {
-    skillTier = maxTier(skillTier, inferTierFromBest(bestReps, standards));
-    if (current.declaredTier) {
-      skillTier = maxTier(skillTier, current.declaredTier);
-    }
-  }
+  const withBest = { ...current, bestReps };
+  const skillTier = exercise
+    ? effectiveSkillTier(withBest, exercise)
+    : (withBest.skillTier ?? withBest.declaredTier ?? "beginner");
   return {
     ...memories,
     [exerciseId]: {
-      ...current,
-      bestReps,
+      ...withBest,
       skillTier,
     },
   };
