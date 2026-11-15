@@ -3,8 +3,10 @@ import {
   appendSet,
   assertLogImmutable,
   createEmptyLog,
+  editAddedLoad,
   editNextReps,
   prescribedForNextSet,
+  workStateAfterLoggedSet,
   type ActiveWorkState,
 } from "../../src/session/setLog";
 
@@ -73,6 +75,52 @@ describe("editNextReps", () => {
     );
     expect(() => editNextReps(activeState(), 2.5)).toThrow(
       "Next reps must be a positive integer",
+    );
+  });
+});
+
+describe("editAddedLoad", () => {
+  it("sets added load when non-negative", () => {
+    expect(editAddedLoad(activeState(), 12).addedLoadKg).toBe(12);
+    expect(editAddedLoad(activeState({ addedLoadKg: 12 }), 0).addedLoadKg).toBe(0);
+  });
+
+  it("rejects negative or non-finite load", () => {
+    expect(() => editAddedLoad(activeState(), -1)).toThrow(
+      "addedLoadKg must be a non-negative finite number",
+    );
+    expect(() => editAddedLoad(activeState(), Number.NaN)).toThrow(
+      "addedLoadKg must be a non-negative finite number",
+    );
+  });
+});
+
+describe("workStateAfterLoggedSet", () => {
+  it("sticks logged reps for the next set and clears load", () => {
+    const next = workStateAfterLoggedSet(
+      activeState({
+        setIndex: 1,
+        prescribedReps: 8,
+        nextRepsOverride: 6,
+        addedLoadKg: 12,
+      }),
+      2,
+      6,
+    );
+
+    expect(next.setIndex).toBe(2);
+    expect(next.prescribedReps).toBe(6);
+    expect(next.nextRepsOverride).toBe(6);
+    expect(next.addedLoadKg).toBe(0);
+    expect(prescribedForNextSet(next)).toBe(6);
+  });
+
+  it("rejects invalid next set index or logged reps", () => {
+    expect(() => workStateAfterLoggedSet(activeState(), 0, 6)).toThrow(
+      "setIndex must be >= 1",
+    );
+    expect(() => workStateAfterLoggedSet(activeState(), 2, 0)).toThrow(
+      "logged reps must be a positive integer",
     );
   });
 });

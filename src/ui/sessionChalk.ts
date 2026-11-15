@@ -14,6 +14,7 @@ import {
 } from "./sessionChalkStrip";
 import { cooldownSteps, currentWork, isGetReadyRest } from "./sessionState";
 import type { ViewState } from "./sessionTypes";
+import { weightControlsHtml } from "./sessionWeightControls";
 
 export function shellHtml(planned: PlannedSession, state: ViewState): string {
   const light = planned.lightDay || planned.deload ? "light-day" : "";
@@ -205,13 +206,29 @@ function doneHtml(planned: PlannedSession, state: ViewState): string {
   `;
 }
 
+function nextSetReps(state: ViewState, fallback: number): number {
+  return state.workState ? prescribedForNextSet(state.workState) : fallback;
+}
+
+/** Shared − / value / + stepper used on work and rest. */
+function repsStepperHtml(reps: number, valueClass: string, rowClass: string): string {
+  return `
+      <div class="row ${rowClass}">
+        <button type="button" class="rest-step" data-reps-minus>−</button>
+        <span class="${valueClass}">${reps}</span>
+        <button type="button" class="rest-step" data-reps-plus>+</button>
+      </div>`;
+}
+
 function workHtml(item: PlannedWorkItem, state: ViewState): string {
-  const reps = state.workState ? prescribedForNextSet(state.workState) : item.dose.reps;
+  const reps = nextSetReps(state, item.dose.reps);
+  const loadKg = state.workState?.addedLoadKg ?? 0;
   return `
     <div class="work-stage" data-swipe-stage>
       <p class="eyebrow">Set ${state.setIndex} of ${item.dose.sets}</p>
       <h2>${escapeHtml(item.exerciseName)}</h2>
-      <p class="reps">${reps}</p>
+      ${repsStepperHtml(reps, "reps", "work-reps-row")}
+      ${weightControlsHtml(loadKg)}
       ${doodleHtml(item.doodlePath, item.exerciseName)}
       ${summaryHtml(item.summary)}
       ${attentionHtml(item.cues, item.cautions)}
@@ -234,7 +251,7 @@ function workHtml(item: PlannedWorkItem, state: ViewState): string {
 
 function restHtml(planned: PlannedSession, state: ViewState): string {
   const item = currentWork(planned, state);
-  const reps = state.workState ? prescribedForNextSet(state.workState) : 0;
+  const reps = nextSetReps(state, 0);
   const nextLine = item
     ? `next ${escapeHtml(item.exerciseName)} · Set ${state.setIndex} of ${item.dose.sets}`
     : "next set";
@@ -249,11 +266,7 @@ function restHtml(planned: PlannedSession, state: ViewState): string {
       <p class="rest-cue" data-rest-cue></p>
       ${getReadyNote}
       <p class="tagline">Next set reps</p>
-      <div class="row rest-reps-row">
-        <button type="button" class="rest-step" data-reps-minus>−</button>
-        <span class="reps-edit">${reps}</span>
-        <button type="button" class="rest-step" data-reps-plus>+</button>
-      </div>
+      ${repsStepperHtml(reps, "reps-edit", "rest-reps-row")}
     </div>
   `;
 }

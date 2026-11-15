@@ -1,5 +1,8 @@
 import type { StopReason } from "../domain/types";
 
+/** Prefill when the athlete turns on optional added load for a set. */
+export const DEFAULT_ADDED_LOAD_KG = 12;
+
 export interface SetLogEntry {
   readonly id: string;
   readonly slotId: string;
@@ -34,25 +37,44 @@ export function appendSet(
   entry: Omit<SetLogEntry, "id" | "loggedAt"> & { id?: string; loggedAt?: string },
 ): WorkoutLog {
   assertAppendable(entry);
-  const next: SetLogEntry = {
-    id: entry.id ?? `set_${log.entries.length + 1}_${entry.slotId}`,
-    slotId: entry.slotId,
-    exerciseId: entry.exerciseId,
-    setIndex: entry.setIndex,
-    prescribedReps: entry.prescribedReps,
-    completedReps: entry.completedReps,
-    addedLoadKg: entry.addedLoadKg,
-    stopReason: entry.stopReason,
-    loggedAt: entry.loggedAt ?? new Date().toISOString(),
-  };
-  return { entries: [...log.entries, Object.freeze(next)] };
+  const { id, loggedAt, ...fields } = entry;
+  const next: SetLogEntry = Object.freeze({
+    ...fields,
+    id: id ?? `set_${log.entries.length + 1}_${entry.slotId}`,
+    loggedAt: loggedAt ?? new Date().toISOString(),
+  });
+  return { entries: [...log.entries, next] };
 }
 
 export function editNextReps(state: ActiveWorkState, reps: number): ActiveWorkState {
-  if (!Number.isInteger(reps) || reps < 1) {
-    throw new Error(`Next reps must be a positive integer; got ${reps}`);
-  }
+  assertPositiveInteger(reps, "Next reps must be a positive integer");
   return { ...state, nextRepsOverride: reps, prescribedReps: reps };
+}
+
+/** Optional added load for the set about to be logged (kg). Zero means no weight. */
+export function editAddedLoad(state: ActiveWorkState, kg: number): ActiveWorkState {
+  assertNonNegativeFinite(kg, "addedLoadKg must be a non-negative finite number");
+  return { ...state, addedLoadKg: kg };
+}
+
+/**
+ * After a completed/failed set, prepare work state for the next set of the same
+ * exercise: reps stick to what was just logged; added load does not.
+ */
+export function workStateAfterLoggedSet(
+  state: ActiveWorkState,
+  nextSetIndex: number,
+  loggedReps: number,
+): ActiveWorkState {
+  assertPositiveInteger(nextSetIndex, "setIndex must be >= 1");
+  assertPositiveInteger(loggedReps, "logged reps must be a positive integer");
+  return {
+    ...state,
+    setIndex: nextSetIndex,
+    prescribedReps: loggedReps,
+    nextRepsOverride: loggedReps,
+    addedLoadKg: 0,
+  };
 }
 
 export function prescribedForNextSet(state: ActiveWorkState): number {
@@ -67,16 +89,22 @@ export function assertLogImmutable(log: WorkoutLog): void {
   }
 }
 
+function assertPositiveInteger(value: number, message: string): void {
+  if (!Number.isInteger(value) || value < 1) {
+    throw new Error(`${message}; got ${value}`);
+  }
+}
+
+function assertNonNegativeFinite(value: number, message: string): void {
+  if (!Number.isFinite(value) || value < 0) {
+    throw new Error(`${message}; got ${value}`);
+  }
+}
+
 function assertAppendable(
   entry: Omit<SetLogEntry, "id" | "loggedAt"> & { id?: string; loggedAt?: string },
 ): void {
-  if (entry.setIndex < 1) {
-    throw new Error(`setIndex must be >= 1; got ${entry.setIndex}`);
-  }
-  if (entry.completedReps < 0) {
-    throw new Error(`completedReps must be >= 0; got ${entry.completedReps}`);
-  }
-  if (entry.prescribedReps < 1) {
-    throw new Error(`prescribedReps must be >= 1; got ${entry.prescribedReps}`);
-  }
+  assertPositiveInteger(entry.setIndex, "setIndex must be >= 1");
+  assertPositiveInteger(entry.prescribedReps, "prescribedReps must be >= 1");
+  assertNonNegativeFinite(entry.completedReps, "completedReps must be >= 0");
 }
