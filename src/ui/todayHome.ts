@@ -1,3 +1,4 @@
+import "../styles/today.css";
 import type { SessionTemplate, WarmupLevel } from "../domain/program";
 import { escapeHtml } from "../library/present";
 import { dayTitle } from "../plan/dayKinds";
@@ -22,34 +23,45 @@ export interface TodayHomeModel {
 }
 
 /**
- * The front page. One card does the morning job (what you're doing, how you
- * slept, any pain, Start); the rest of the queue and the override sit below
- * it, compact. The check-in is mounted into `[data-checkin]`.
+ * The front page. The top reads (what you're doing today, how long, toward
+ * what); the panel below sits within thumb reach and does the morning job
+ * (how you slept, any pain, Start). The rest of the queue and the override
+ * sit under it. The check-in is mounted into `[data-checkin]`.
  */
 export function todayHomeHtml(model: TodayHomeModel): string {
   const { next } = model;
   const targets = templateTargetsLabel(next.targetExerciseIds, ", ");
-  const toward = targets ? `<p class="lib-meta">Toward ${escapeHtml(targets)}</p>` : "";
+  const toward = targets ? `<p class="today-goal">Toward ${escapeHtml(targets)}</p>` : "";
   const core = templateHitsCore(next) ? `<p class="spark">Core area loaded</p>` : "";
   return `
     <main class="shell today">
-      <p class="eyebrow">Aurora · Rassvet</p>
-      <h1>Today</h1>
-      <section class="today-card" aria-labelledby="today-session">
-        <p class="eyebrow">${model.isOverride ? "Today instead" : "Next up"}</p>
-        <div class="today-card-head">
-          <h2 id="today-session">${escapeHtml(dayTitle(next))}</h2>
-          <span class="today-duration">${escapeHtml(templateDurationLabel(next, model.warmupLevel))}</span>
-        </div>
-        ${toward}
-        <p class="lib-meta" data-warmup-preview>${escapeHtml(warmupCooldownLabel(next, model.warmupLevel))}</p>
-        ${core}
-        ${deloadNoteHtml(model.deloadActive)}
-        ${todayPulseHtml()}
-        <div data-checkin></div>
-      </section>
-      ${comingUpHtml(model.upcoming)}
-      ${model.overrideHtml}
+      <div class="today-card">
+        <section class="today-read">
+          <header>
+            <p class="eyebrow">Aurora · Rassvet</p>
+            <h1>Today</h1>
+          </header>
+          <section class="today-session" aria-labelledby="today-session">
+            <div class="today-nextrow">
+              <p class="eyebrow">${model.isOverride ? "Today instead" : "Next up"}</p>
+              <p class="today-duration">${escapeHtml(templateDurationLabel(next, model.warmupLevel))}</p>
+            </div>
+            <h2 id="today-session">${escapeHtml(dayTitle(next))}</h2>
+            ${toward}
+            <p class="today-warmup" data-warmup-preview>${escapeHtml(warmupCooldownLabel(next, model.warmupLevel))}</p>
+            ${core}
+            ${deloadNoteHtml(model.deloadActive)}
+          </section>
+        </section>
+        <section class="today-act" aria-label="Check-in">
+          ${todayPulseHtml()}
+          <div data-checkin></div>
+        </section>
+      </div>
+      <div class="today-rest">
+        ${comingUpHtml(model.upcoming)}
+        ${model.overrideHtml}
+      </div>
     </main>
   `;
 }
