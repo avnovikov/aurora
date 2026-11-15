@@ -1,3 +1,4 @@
+import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import { escapeHtml } from "../library/present";
 import { isNativePulseAvailable } from "../pulse/hrMonitor";
 import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
@@ -76,41 +77,31 @@ function chalkHtml(planned: PlannedSession, state: ViewState): string {
   `;
 }
 
-function jointCautionHtml(cautions: string[]): string {
-  if (cautions.length === 0) {
-    return "";
-  }
-  const items = cautions.map((note) => `<li>${escapeHtml(note)}</li>`).join("");
-  return `<div class="joint-caution"><p class="eyebrow">Heads up</p><ul class="cues">${items}</ul></div>`;
+/** The move in one sentence, from the curated Library text. */
+function summaryHtml(summary: string | undefined): string {
+  return summary ? `<p class="lib-summary session-summary">${escapeHtml(summary)}</p>` : "";
 }
 
-function cuesBlockHtml(cues: string[]): string {
-  if (cues.length === 0) {
+/**
+ * What to keep in mind while doing the move: the form cues, then anything
+ * the athlete's joint history adds. Always visible, never behind a tap.
+ */
+function attentionHtml(cues: readonly string[], cautions: readonly string[] = []): string {
+  if (cues.length === 0 && cautions.length === 0) {
     return "";
   }
-  const [onlyCue] = cues;
-  if (cues.length === 1 && onlyCue) {
-    return `<p class="cue-teaser">${escapeHtml(onlyCue)}</p>`;
-  }
-  const items = cues.map((cue) => `<li>${escapeHtml(cue)}</li>`).join("");
-  return `
-    <details class="session-cues">
-      <summary>Form cues</summary>
-      <ul class="cues doodle-cues">${items}</ul>
-    </details>
-  `;
+  const cueItems = cues.map((cue) => `<li>${escapeHtml(cue)}</li>`).join("");
+  const jointItems = cautions.map((note) => `<li class="attention-joint">${escapeHtml(note)}</li>`).join("");
+  return `<div class="session-attention" data-attention><p class="eyebrow">Pay attention to</p><ul class="cues">${cueItems}${jointItems}</ul></div>`;
 }
 
-/** Curated summary and collapsible how-to steps for the current exercise. */
-function howToHtml(item: PlannedWorkItem): string {
-  const summary = item.summary
-    ? `<p class="lib-summary">${escapeHtml(item.summary)}</p>`
-    : "";
+/** Collapsible step-by-step instructions for the current exercise. */
+function stepsHtml(item: PlannedWorkItem): string {
   if (!item.steps?.length) {
-    return summary;
+    return "";
   }
   const steps = item.steps.map((step) => `<li>${escapeHtml(step)}</li>`).join("");
-  return `${summary}<details class="session-howto"><summary>How to</summary><ol class="lib-steps">${steps}</ol></details>`;
+  return `<details class="session-howto"><summary>How to</summary><ol class="lib-steps">${steps}</ol></details>`;
 }
 
 function doodleHtml(path: string | undefined, name: string): string {
@@ -171,7 +162,8 @@ function stationHtml(eyebrow: string, step: WarmupStep): string {
     <h2>${escapeHtml(step.name)}</h2>
     <p class="tagline">${escapeHtml(step.region)} · <span data-warmup-left>${step.holdSeconds}</span>s</p>
     ${doodleHtml(step.doodlePath, step.name)}
-    ${cuesBlockHtml(step.cues)}
+    ${summaryHtml(EXERCISE_GRAPH[step.stationId]?.description)}
+    ${attentionHtml(step.cues)}
     ${source}
   `;
 }
@@ -212,9 +204,9 @@ function workHtml(item: PlannedWorkItem, state: ViewState): string {
       <h2>${escapeHtml(item.exerciseName)}</h2>
       <p class="reps">${reps}</p>
       ${doodleHtml(item.doodlePath, item.exerciseName)}
-      ${jointCautionHtml(item.cautions)}
-      ${howToHtml(item)}
-      ${cuesBlockHtml(item.cues)}
+      ${summaryHtml(item.summary)}
+      ${attentionHtml(item.cues, item.cautions)}
+      ${stepsHtml(item)}
       <details class="session-why">
         <summary>Why this dose</summary>
         <p class="reason">${escapeHtml(item.reason)}</p>

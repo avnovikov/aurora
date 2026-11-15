@@ -1,5 +1,6 @@
 import type { AthleteState } from "../plan/dayPreview";
 import { loadExcluded } from "../plan/exclusions";
+import { loadPlanLevel, planLevelTier } from "../plan/planLevel";
 import { loadHistory, loadMemories } from "../session/history";
 import { loadDeloadActive } from "../settings/deload";
 import { loadProfile } from "../settings/profile";
@@ -14,5 +15,6 @@ export function loadAthleteState(): AthleteState {
     equipment: profile.equipment,
     excluded: loadExcluded(),
     deloadActive: loadDeloadActive(),
+    level: planLevelTier(loadPlanLevel()),
   };
 }

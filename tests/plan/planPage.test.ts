@@ -24,7 +24,14 @@ const state = (over: Partial<AthleteState> = {}): AthleteState => ({
   deloadActive: false,
   ...over,
 });
-const ui = (over: Partial<PlanUiState> = {}): PlanUiState => ({ openDays: new Set([0]), swap: null, addOpen: false, ...over });
+const ui = (over: Partial<PlanUiState> = {}): PlanUiState => ({
+  openDays: new Set([0]),
+  swap: null,
+  openExercises: new Set(),
+  addOpen: false,
+  levelOpen: false,
+  ...over,
+});
 const legs = () => resolveTemplate("tmpl_legs");
 const count = (html: string, needle: string) => html.split(needle).length - 1;
 
@@ -33,7 +40,7 @@ useMemoryStorage();
 describe("day preview", () => {
   it("is the planner's real session for a normal morning, not the stored defaults", () => {
     const athlete = state({ jointHistory: KNEES, equipment: ["body"] });
-    const preview = previewDay(legs(), athlete, false);
+    const preview = previewDay(legs(), athlete);
     const planned = planSession({ painJoints: [], sleepQuality: "good" }, templateToStarter(legs()), {}, {
       focus: "legs",
       jointHistory: KNEES,
@@ -47,21 +54,21 @@ describe("day preview", () => {
   });
 
   it("writes holds in seconds and reps plainly", () => {
-    const bars = previewDay(resolveTemplate("tmpl_bars"), state(), false);
+    const bars = previewDay(resolveTemplate("tmpl_bars"), state());
     expect(bars.find((item) => item.name === "Dead hang")?.dose).toMatch(/^\d+ × \d+ s$/);
-    expect(previewDay(legs(), state(), false)[0]!.dose).toMatch(/^\d+ × \d+$/);
+    expect(previewDay(legs(), state())[0]!.dose).toMatch(/^\d+ × \d+$/);
   });
 
   it("explains a move the planner changed, and stays quiet otherwise", () => {
-    const swapped = previewDay(legs(), state({ excluded: ["nordic_curl"] }), false).find((item) => item.note);
+    const swapped = previewDay(legs(), state({ excluded: ["nordic_curl"] })).find((item) => item.note);
     expect(swapped?.note).toMatch(/^Excluded by you: swapped Nordic curl for /);
     expect(swapped?.note).not.toMatch(/prescription|dose/);
-    expect(previewDay(legs(), state(), false).every((item) => item.note === undefined)).toBe(true);
+    expect(previewDay(legs(), state()).every((item) => item.note === undefined)).toBe(true);
   });
 
   it("shows a deload week's lighter dose", () => {
-    const normal = previewDay(legs(), state(), false)[0]!.dose;
-    const deload = previewDay(legs(), state({ deloadActive: true }), false)[0]!.dose;
+    const normal = previewDay(legs(), state())[0]!.dose;
+    const deload = previewDay(legs(), state({ deloadActive: true }))[0]!.dose;
     expect(deload).not.toBe(normal);
   });
 });
@@ -87,7 +94,7 @@ describe("day edits", () => {
     expect(slot.exerciseId).not.toBe("nordic_curl");
     expect(EXERCISE_GRAPH[slot.exerciseId]!.name).toBe(result.substituteName);
     // The planner now needs no swap: the day itself holds the substitute.
-    expect(previewDay(legs(), state({ excluded: loadExcluded() }), false).every((item) => item.note === undefined)).toBe(true);
+    expect(previewDay(legs(), state({ excluded: loadExcluded() })).every((item) => item.note === undefined)).toBe(true);
   });
 
   it("edits a generated day in place and a seed day through its saved edits", () => {
@@ -129,7 +136,7 @@ describe("Plan page", () => {
   it("opens today and shows its real exercises with both quick edits", () => {
     const first = model().days[0]!;
     expect(first.open).toBe(true);
-    expect(first.items.map((item) => item.name)).toEqual(previewDay(legs(), state(), true).map((item) => item.name));
+    expect(first.items.map((item) => item.name)).toEqual(previewDay(legs(), state()).map((item) => item.name));
     const html = planPageHtml(model());
     expect(count(html, "data-not-for-me")).toBe(model().days.reduce((n, day) => n + day.items.length, 0));
     expect(html).toContain(">Swap</button>");

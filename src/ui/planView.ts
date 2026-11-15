@@ -1,9 +1,11 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
+import { onChipClick } from "../library/chips";
 import { addBlockToPlan, addJointCareDay } from "../plan/blockActions";
 import { DAY_KIND_LABELS, skillTitle } from "../plan/dayKinds";
 import { excludeFromDay, makeDay, setDayExercise } from "../plan/dayEdits";
 import type { BlockKind } from "../plan/generateBlock";
 import { isGeneralCare } from "../plan/jointCareDay";
+import { PLAN_LEVELS, savePlanLevel, type PlanLevel } from "../plan/planLevel";
 import {
   appendQueueItem,
   completeToday,
@@ -15,14 +17,17 @@ import {
 } from "../plan/queue";
 import { clearScheduleOverride, loadScheduleOverride } from "../plan/scheduleOverride";
 import { loadAthleteState } from "./athleteState";
-import { buildPlanModel, type PlanUiState } from "./planModel";
+import { enableDragReorder, movedIndex } from "./dragReorder";
+import { buildPlanModel, exerciseKey, type PlanUiState } from "./planModel";
 import { planPageHtml } from "./planPage";
 
 /** What the page remembers between repaints. */
 interface Ui {
   openDays: Set<number>;
   swap: PlanUiState["swap"];
+  openExercises: Set<string>;
   addOpen: boolean;
+  levelOpen: boolean;
   status?: string;
 }
 
@@ -121,6 +126,14 @@ function wireDayEdits({ root, ui, act }: PlanController): void {
 }
 
 function wireExerciseEdits({ root, ui, act, paint }: PlanController): void {
+  on(root, "[data-ex-toggle]", (el) => {
+    const { index, slotId } = slotOf(el);
+    const key = exerciseKey(index, slotId);
+    if (!ui.openExercises.delete(key)) {
+      ui.openExercises.add(key);
+    }
+    paint();
+  });
   on(root, "[data-swap]", (el) => {
     const { index, slotId } = slotOf(el);
     const same = ui.swap?.index === index && ui.swap.slotId === slotId;
@@ -151,6 +164,37 @@ function wireAdd({ root, act }: PlanController): void {
   );
 }
 
+function wireLevel({ root, ui, act }: PlanController): void {
+  onChipClick(root, "plan-level", (value) =>
+    act(() => {
+      savePlanLevel(value as PlanLevel);
+      ui.levelOpen = true;
+      const label = PLAN_LEVELS.find((level) => level.id === value)?.label ?? value;
+      return value === "auto"
+        ? "New days will follow your results."
+        : `New days will be built at ${label} level. Days already in the plan are unchanged.`;
+    }),
+  );
+  root.querySelector<HTMLDetailsElement>("details[data-plan-level-panel]")?.addEventListener("toggle", (event) => {
+    ui.levelOpen = (event.currentTarget as HTMLDetailsElement).open;
+  });
+}
+
+/** Drag a day by its grip to move it; open days stay open where they land. */
+function wireDrag({ root, ui, act }: PlanController): void {
+  const list = root.querySelector<HTMLElement>(".plan-days");
+  if (!list) {
+    return;
+  }
+  enableDragReorder(list, (from, to) =>
+    act(() => {
+      savePlanQueue(moveQueueItem(loadPlanQueue(), from, to));
+      ui.openDays = new Set([...ui.openDays].map((index) => movedIndex(index, from, to)));
+      return to === 0 ? "Moved to today." : `Moved to position ${to + 1}.`;
+    }),
+  );
+}
+
 /** Remember which panels the user opened, so a repaint does not snap them shut. */
 function wirePanels({ root, ui }: PlanController): void {
   root.querySelectorAll<HTMLDetailsElement>("details[data-day]").forEach((panel) => {
@@ -169,7 +213,7 @@ function wirePanels({ root, ui }: PlanController): void {
 }
 
 export function renderPlanView(root: HTMLElement): void {
-  const ui: Ui = { openDays: new Set([0]), swap: null, addOpen: false };
+  const ui: Ui = { openDays: new Set([0]), swap: null, openExercises: new Set(), addOpen: false, levelOpen: false };
   const controller: PlanController = {
     root,
     ui,
@@ -181,6 +225,7 @@ export function renderPlanView(root: HTMLElement): void {
         ui.status = error instanceof Error ? error.message : "That did not work.";
       }
       ui.swap = null;
+      ui.openExercises.clear();
       controller.paint();
     },
     paint: () => {
@@ -189,6 +234,8 @@ export function renderPlanView(root: HTMLElement): void {
       wireDayEdits(controller);
       wireExerciseEdits(controller);
       wireAdd(controller);
+      wireLevel(controller);
+      wireDrag(controller);
     },
   };
   controller.paint();

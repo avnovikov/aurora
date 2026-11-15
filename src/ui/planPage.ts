@@ -1,3 +1,4 @@
+import { chipRowHtml } from "../library/chips";
 import { escapeHtml } from "../library/present";
 import type { PreviewItem } from "../plan/dayPreview";
 
@@ -27,6 +28,8 @@ export interface PlanDayView {
   open: boolean;
   /** Slot whose swap choices are showing, if any. */
   swapSlotId?: string;
+  /** Slots whose description is showing (tapped open). */
+  openSlotIds: readonly string[];
   swapOptions: readonly SwapOption[];
 }
 
@@ -37,6 +40,8 @@ export interface PlanPageModel {
   /** Blocks and single days that can be added. */
   addOptions: readonly DayOption[];
   addOpen: boolean;
+  /** The plan's level: every choice, the current one, and whether its panel is open. */
+  level: { options: ReadonlyArray<{ id: string; label: string }>; value: string; open: boolean };
   /** Result of the last action ("Excluded Nordic curl. Now: Sliding Leg Curl."). */
   status?: string;
 }
@@ -62,23 +67,30 @@ function swapRowHtml(options: readonly SwapOption[]): string {
   return `<div class="plan-swap" role="group" aria-label="Swap for">${chips}</div>`;
 }
 
+/** What opens under a tapped exercise: its one-line description and any joint notes. */
+function exerciseDetailHtml(item: PreviewItem): string {
+  const summary = item.summary ? `<p class="plan-ex-desc">${escapeHtml(item.summary)}</p>` : "";
+  const cautions = item.cautions.map((note) => `<p class="lib-meta">${escapeHtml(note)}</p>`).join("");
+  const empty = !summary && !cautions ? `<p class="lib-meta">No description yet.</p>` : "";
+  return `<div class="plan-ex-detail" data-ex-detail>${summary}${cautions}${empty}</div>`;
+}
+
 function exerciseHtml(item: PreviewItem, day: PlanDayView): string {
   const swapping = day.swapSlotId === item.slotId;
-  const notes = [item.note, ...item.cautions]
-    .filter((note): note is string => Boolean(note))
-    .map((note) => `<p class="lib-meta plan-ex-note">${escapeHtml(note)}</p>`)
-    .join("");
+  const open = day.openSlotIds.includes(item.slotId);
+  const note = item.note ? `<p class="lib-meta plan-ex-note">${escapeHtml(item.note)}</p>` : "";
   return `
     <li class="plan-ex" data-slot="${escapeHtml(item.slotId)}" data-exercise="${escapeHtml(item.exerciseId)}">
-      <div class="plan-ex-main">
+      <button type="button" class="plan-ex-main" data-ex-toggle aria-expanded="${open}">
         <strong>${escapeHtml(item.name)}</strong>
         <span class="lib-meta">${escapeHtml(item.label)} · ${escapeHtml(item.dose)}</span>
-      </div>
+      </button>
       <div class="plan-ex-actions">
         <button type="button" data-swap aria-pressed="${swapping}">Swap</button>
         <button type="button" data-not-for-me>Not for me</button>
       </div>
-      ${notes}
+      ${note}
+      ${open ? exerciseDetailHtml(item) : ""}
       ${swapping ? swapRowHtml(day.swapOptions) : ""}
     </li>
   `;
@@ -90,7 +102,8 @@ function dayHtml(day: PlanDayView, total: number, makeOptions: readonly DayOptio
   const last = day.index >= total - 1;
   const later = first && total > 1 ? actionHtml("later", String(day.index), "To the end") : "";
   return `
-    <li>
+    <li class="plan-day-item">
+      <span class="plan-drag" data-drag-handle title="Drag to move this day" aria-hidden="true"></span>
       <details class="lib-filters plan-day${first ? " is-today" : ""}" data-day="${day.index}"${day.open ? " open" : ""}>
         <summary>
           <span class="plan-day-when">${when}</span>
@@ -131,6 +144,19 @@ function addPanelHtml(model: PlanPageModel): string {
   `;
 }
 
+function levelPanelHtml(level: PlanPageModel["level"]): string {
+  const current = level.options.find((option) => option.id === level.value);
+  const active = level.value !== level.options[0]?.id;
+  const summary = escapeHtml(active && current ? `Level · ${current.label}` : "Level");
+  return `
+    <details class="lib-filters" data-plan-level-panel${level.open || active ? " open" : ""}>
+      <summary>${summary}</summary>
+      ${chipRowHtml("plan-level", "Plan level", level.value, level.options)}
+      <p class="lib-meta plan-level-note">Used when you add days or remake a day: moves are picked at this level and it is recorded as your level on them, as in the Library. It never lowers a level your results have earned. Days already in the plan keep their moves.</p>
+    </details>
+  `;
+}
+
 /**
  * The Plan page, read first: the days coming up, each opening to the
  * exercises its session will really contain, with the two quick edits
@@ -143,11 +169,12 @@ export function planPageHtml(model: PlanPageModel): string {
     <main class="shell plan">
       <p class="eyebrow">Plan</p>
       <h1>Coming up</h1>
-      <p class="lib-count">${count} ${count === 1 ? "day" : "days"} · open a day to see its exercises</p>
+      <p class="lib-count">${count} ${count === 1 ? "day" : "days"} · open a day to see its exercises, drag ⠿ to reorder</p>
       ${status}
       <ol class="plan-days" aria-label="Days coming up">
         ${model.days.map((day) => dayHtml(day, count, model.makeOptions)).join("")}
       </ol>
+      ${levelPanelHtml(model.level)}
       ${addPanelHtml(model)}
       <p class="hint">Exercises shown are for a normal morning. A poor night's sleep or a deload week makes the day lighter.</p>
     </main>
