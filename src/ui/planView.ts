@@ -3,6 +3,13 @@ import { SESSION_TEMPLATES } from "../data/seed";
 import { missingGear } from "../safety/gear";
 import { loadProfile } from "../settings/profile";
 import { SKILL_TIER_LABELS } from "../domain/skillTier";
+import {
+  AREAS,
+  MUSCLE_BUCKETS,
+  matchesFacets,
+  type AreaFilter,
+  type MuscleFilter,
+} from "../library/facets";
 import { escapeHtml, formatPattern } from "../library/present";
 import {
   appendQueueItem,
@@ -31,6 +38,25 @@ import {
   templateTargetsLabel,
 } from "./formatTemplate";
 
+/** Narrows every exercise picker on this page; the current pick always stays. */
+const pickerFacets: { area: AreaFilter; muscle: MuscleFilter } = { area: "all", muscle: "all" };
+
+function facetSelectHtml(
+  attr: string,
+  label: string,
+  selected: string,
+  options: ReadonlyArray<{ id: string; label: string }>,
+  allLabel: string,
+): string {
+  const items = [{ id: "all", label: allLabel }, ...options]
+    .map(
+      (option) =>
+        `<option value="${option.id}" ${option.id === selected ? "selected" : ""}>${option.label}</option>`,
+    )
+    .join("");
+  return `<label class="procedure-field"><span>${label}</span><select ${attr}>${items}</select></label>`;
+}
+
 export function renderPlanView(root: HTMLElement): void {
   const paint = (): void => {
     const queue = loadPlanQueue();
@@ -57,6 +83,10 @@ export function renderPlanView(root: HTMLElement): void {
         <section class="plan-section">
           <p class="eyebrow">Procedure</p>
           <p class="tagline">Working exercises now; Target is the north star.</p>
+          <div class="procedure-facets">
+            ${facetSelectHtml("data-pick-area", "Show area", pickerFacets.area, AREAS, "All areas")}
+            ${facetSelectHtml("data-pick-muscle", "Show muscle", pickerFacets.muscle, MUSCLE_BUCKETS, "All muscles")}
+          </div>
           <div class="procedure-list">
             ${listResolvedTemplates()
               .map((template) => procedureBlockHtml(template.id))
@@ -142,16 +172,21 @@ function procedureBlockHtml(templateId: string): string {
 }
 
 /**
- * Every plannable Library move the user has the gear for, grouped by pattern with its level.
+ * Every plannable Library move the user has the gear for (and that matches the
+ * area/muscle filters above), grouped by pattern with its level.
  * A current pick outside that set (e.g. a Mobility warmup-role slot) stays selectable.
  */
-function exerciseSelectHtml(selected: string | undefined, attrs: string, label: string): string {
+export function exerciseSelectHtml(selected: string | undefined, attrs: string, label: string): string {
   const { equipment } = loadProfile();
-  const usable = (id: string, requires: Parameters<typeof missingGear>[0]): boolean =>
-    id === selected || missingGear(requires, equipment).length === 0;
+  const usable = (
+    exercise: Parameters<typeof matchesFacets>[0] & { id: string; requires?: Parameters<typeof missingGear>[0] },
+  ): boolean =>
+    exercise.id === selected ||
+    (missingGear(exercise.requires, equipment).length === 0 &&
+      matchesFacets(exercise, pickerFacets.area, pickerFacets.muscle));
   const groups = [...plannableByPattern()].flatMap(([pattern, exercises]) => {
     const options = exercises
-      .filter((exercise) => usable(exercise.id, exercise.requires))
+      .filter(usable)
       .map((exercise) => optionHtml(exercise.id, selected))
       .join("");
     return options ? [`<optgroup label="${escapeHtml(formatPattern(pattern))}">${options}</optgroup>`] : [];
@@ -219,6 +254,15 @@ function wirePlanControls(root: HTMLElement, paint: () => void): void {
 }
 
 function wireProcedureControls(root: HTMLElement, paint: () => void): void {
+  root.querySelector<HTMLSelectElement>("[data-pick-area]")?.addEventListener("change", (event) => {
+    pickerFacets.area = (event.target as HTMLSelectElement).value as AreaFilter;
+    paint();
+  });
+  root.querySelector<HTMLSelectElement>("[data-pick-muscle]")?.addEventListener("change", (event) => {
+    pickerFacets.muscle = (event.target as HTMLSelectElement).value as MuscleFilter;
+    paint();
+  });
+
   root.querySelectorAll<HTMLSelectElement>("[data-target]").forEach((select) => {
     select.addEventListener("change", () => {
       const templateId = select.dataset.template;
@@ -260,4 +304,10 @@ export function advancePlanAfterSession(): void {
   const nextQueue = completeToday(loadPlanQueue(), override);
   clearScheduleOverride();
   savePlanQueue(nextQueue);
+}
+
+/** Test hook: set the picker filters without the DOM. */
+export function setPickerFacetsForTests(area: AreaFilter, muscle: MuscleFilter): void {
+  pickerFacets.area = area;
+  pickerFacets.muscle = muscle;
 }

@@ -923,3 +923,12 @@ button:disabled {
 }
 .lib-badge.avoid { background: rgba(200, 60, 60, 0.18); }
 .lib-badge.caution { background: rgba(217, 142, 4, 0.2); }
+
+.lib-filters {
+  margin: 0.5rem 0;
+}
+.lib-filters summary {
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}

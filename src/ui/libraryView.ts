@@ -6,6 +6,7 @@ import {
 } from "../data/seed";
 import { mountLibraryDetail } from "../library/libraryDetail";
 import { focusSearchInput, mountLibraryList } from "../library/libraryList";
+import type { AreaFilter, MuscleFilter } from "../library/facets";
 import { searchExercises, type LevelFilter } from "../library/search";
 import { missingGear } from "../safety/gear";
 import { prehabFor } from "../safety/prehab";
@@ -26,6 +27,8 @@ export function renderLibraryView(root: HTMLElement): void {
   let text = "";
   let region: LoadRegion | "all" = "all";
   let level: LevelFilter = "all";
+  let area: AreaFilter = "all";
+  let muscle: MuscleFilter = "all";
   let forJoints = false;
   let onlyGear = false;
   let selectedId: string | null = null;
@@ -73,12 +76,12 @@ export function renderLibraryView(root: HTMLElement): void {
     const gearPool = onlyGear
       ? pool.filter((item) => missingGear(item.requires, equipment).length === 0)
       : pool;
-    const results = searchExercises(gearPool, { text, region, level });
+    const results = searchExercises(gearPool, { text, region, level, area, muscle });
     mountLibraryList(
       root,
       results,
       targetIds,
-      { text, region, level, forJoints, onlyGear },
+      { text, region, level, area, muscle, forJoints, onlyGear },
       {
         onSearch: (next) => {
           text = next;
@@ -91,6 +94,14 @@ export function renderLibraryView(root: HTMLElement): void {
         },
         onLevel: (next) => {
           level = next;
+          paint();
+        },
+        onArea: (next) => {
+          area = next;
+          paint();
+        },
+        onMuscle: (next) => {
+          muscle = next;
           paint();
         },
         onSelect: (id) => {

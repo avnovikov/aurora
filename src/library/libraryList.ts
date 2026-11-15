@@ -3,6 +3,7 @@ import type { JointHistoryEntry } from "../domain/program";
 import { SKILL_TIER_LABELS, SKILL_TIERS } from "../domain/skillTier";
 import type { SkillTier } from "../domain/types";
 import { assessExercise } from "../safety/jointCare";
+import { AREAS, MUSCLE_BUCKETS, type AreaFilter, type MuscleFilter } from "./facets";
 import { LIBRARY_REGIONS, type LevelFilter } from "./search";
 import { escapeHtml, formatPattern } from "./present";
 import { isTemplateTarget } from "./targets";
@@ -12,6 +13,10 @@ export interface ListQueryState {
   region: LoadRegion | "all";
   /** Catalogue difficulty; "all" shows every level. */
   level: LevelFilter;
+  /** Upper / lower / core / full body; "all" shows every area. */
+  area?: AreaFilter;
+  /** Rolled-up primary muscle; "all" shows every muscle. */
+  muscle?: MuscleFilter;
   /** Show only prehab moves for the joints in the user's history. */
   forJoints?: boolean;
   /** Hide moves that need gear the user does not have. */
@@ -22,6 +27,8 @@ export interface ListActions {
   onSearch: (text: string) => void;
   onRegion: (region: LoadRegion | "all") => void;
   onLevel: (level: LevelFilter) => void;
+  onArea?: (area: AreaFilter) => void;
+  onMuscle?: (muscle: MuscleFilter) => void;
   onSelect: (exerciseId: string) => void;
   onForJoints?: (on: boolean) => void;
   onOnlyGear?: (on: boolean) => void;
@@ -57,6 +64,18 @@ export function mountLibraryList(
   root.querySelectorAll<HTMLButtonElement>("[data-level]").forEach((button) => {
     button.addEventListener("click", () => {
       actions.onLevel(button.dataset.level as LevelFilter);
+    });
+  });
+
+  root.querySelectorAll<HTMLButtonElement>("[data-area]").forEach((button) => {
+    button.addEventListener("click", () => {
+      actions.onArea?.(button.dataset.area as AreaFilter);
+    });
+  });
+
+  root.querySelectorAll<HTMLButtonElement>("[data-muscle]").forEach((button) => {
+    button.addEventListener("click", () => {
+      actions.onMuscle?.(button.dataset.muscle as MuscleFilter);
     });
   });
 
@@ -110,11 +129,35 @@ export function listHtml(
       <div class="row wrap lib-levels" data-levels aria-label="Skill level">
         ${levels}
       </div>
+      ${bodyFiltersHtml(query.area ?? "all", query.muscle ?? "all")}
       <ul class="lib-list">
         ${items}
       </ul>
     </main>
   `;
+}
+
+function chipRowHtml(
+  attr: string,
+  label: string,
+  selected: string,
+  options: ReadonlyArray<{ id: string; label: string }>,
+  allLabel: string,
+): string {
+  const chip = (id: string, text: string): string =>
+    `<button type="button" data-${attr}="${id}" class="${id === selected ? "selected" : ""}">${text}</button>`;
+  const chips = options.map((option) => chip(option.id, option.label)).join("");
+  return `<div class="row wrap" data-${attr}s aria-label="${label}">${chip("all", allLabel)}${chips}</div>`;
+}
+
+/** Area and muscle chips live in a panel that opens while either is active. */
+function bodyFiltersHtml(area: AreaFilter, muscle: MuscleFilter): string {
+  const active = area !== "all" || muscle !== "all";
+  return `<details class="lib-filters" ${active ? "open" : ""}>
+    <summary>Area &amp; muscle${active ? " (active)" : ""}</summary>
+    ${chipRowHtml("area", "Body area", area, AREAS, "All areas")}
+    ${chipRowHtml("muscle", "Primary muscle", muscle, MUSCLE_BUCKETS, "All muscles")}
+  </details>`;
 }
 
 function levelFilterButtonsHtml(selected: LevelFilter): string {
