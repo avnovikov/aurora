@@ -1,0 +1,23 @@
+{
+  "quality": "best",
+  "models": {
+    "director": "anthropic/fable",
+    "senior": "anthropic/opus",
+    "builder": "anthropic/sonnet"
+  },
+  "presets": {
+    "studio":  { "director": "anthropic/opus",   "senior": "anthropic/sonnet", "builder": "anthropic/haiku" },
+    "best":    { "director": "anthropic/fable",  "senior": "anthropic/opus",   "builder": "anthropic/sonnet" },
+    "thrifty": { "director": "anthropic/sonnet", "senior": "anthropic/haiku",  "builder": "anthropic/haiku" }
+  },
+  "maxRounds": 8,
+  "framework": "vanilla-ts+vite",
+  "constraints": {
+    "platform": "Android phone via Capacitor; optional Chrome PWA",
+    "viewport": "360-430px wide, 28rem content column",
+    "locale": "en-GB",
+    "palettes": "Six user-selectable palettes in .desk/DESIGN.md; every screen must work in all of them",
+    "fonts": "Bundled locally; no network font loading",
+    "dosing": "Never show reps, holds or loads that the rules did not produce"
+  }
+}
