@@ -1,10 +1,10 @@
 import type { SessionTemplate } from "../domain/program";
 import { SKILL_TIER_LABELS } from "../domain/skillTier";
 import type { Exercise, ExerciseMemory, RuleId } from "../domain/types";
+import { STALL_BELOW_FLOOR_SESSIONS } from "../rules/resolveSlot";
 import { shouldAdvanceProgression } from "../rules/skillDose";
 
-/** Below-floor sessions in a row before the resolver treats the lift as stalled. */
-export const STALL_BELOW_FLOOR_SESSIONS = 2;
+export { STALL_BELOW_FLOOR_SESSIONS };
 
 export type ChainGraph = Record<string, Exercise>;
 
@@ -37,14 +37,20 @@ export interface ChainMap {
   status: ChainStatus;
 }
 
-/** Seed roots always shown, even when no template targets them. */
-export const KEY_CHAIN_ROOT_IDS: readonly string[] = [
+/**
+ * Plan anchors always shown (walked to chain roots by listChainRootIds).
+ * These ids need not themselves be progression roots.
+ */
+export const KEY_CHAIN_ANCHOR_IDS: readonly string[] = [
   "bodyweight_squat",
   "hip_hinge",
   "wall_handstand",
   "pullup",
   "hollow_hold",
 ];
+
+/** @deprecated Use KEY_CHAIN_ANCHOR_IDS */
+export const KEY_CHAIN_ROOT_IDS = KEY_CHAIN_ANCHOR_IDS;
 
 const CHAIN_LABELS: Readonly<Record<string, string>> = {
   bodyweight_squat: "Squat",

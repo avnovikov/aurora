@@ -14,6 +14,7 @@ import {
   disconnectHeartRate,
 } from "../pulse/hrMonitor";
 import type { PlannedSession } from "../rules/planSession";
+import { pulseConnectedAt, pulseLostSim } from "./pulseState";
 import type { ViewState } from "./sessionTypes";
 import { currentWork } from "./sessionState";
 import { wireSwipe } from "./sessionSwipe";
@@ -31,6 +32,7 @@ export interface SessionControlHandlers {
   onFinishAll: () => void;
   onPulseLostSim: () => void;
   onPulseBpm: (bpm: number) => void;
+  onPulseDisconnected: () => void;
 }
 
 export function wireSessionControls(
@@ -75,30 +77,18 @@ function wirePulseConnectButtons(
   root.querySelector("[data-pulse-connect]")?.addEventListener("click", () => {
     void connectHeartRate(
       (bpm) => handlers.onPulseBpm(bpm),
-      (message) => {
-        state.pulseStatus = message;
-        handlers.onPaint();
-      },
+      () => handlers.onPulseDisconnected(),
     ).then((result) => {
       state.pulseStatus = result.message;
       if (result.ok) {
-        state.pulse = {
-          connected: true,
-          lastValidAtMs: Date.now(),
-          lastShoutAtMs: state.pulse.lastShoutAtMs,
-        };
+        state.pulse = pulseConnectedAt(state.pulse, Date.now());
       }
       handlers.onPaint();
     });
   });
   root.querySelector("[data-pulse-disconnect]")?.addEventListener("click", () => {
     void disconnectHeartRate().then(() => {
-      state.pulse = {
-        connected: false,
-        lastValidAtMs: null,
-        lastShoutAtMs: state.pulse.lastShoutAtMs,
-      };
-      state.bpm = null;
+      handlers.onPulseDisconnected();
       state.pulseStatus = "Pulse strap disconnected.";
       handlers.onPaint();
     });
@@ -125,20 +115,12 @@ function wirePulseSimButtons(
   handlers: SessionControlHandlers,
 ): void {
   root.querySelector("[data-sim-pulse-lost]")?.addEventListener("click", () => {
-    state.pulse = {
-      connected: true,
-      lastValidAtMs: Date.now() - 6000,
-      lastShoutAtMs: null,
-    };
+    state.pulse = pulseLostSim(Date.now());
     handlers.onPulseLostSim();
     handlers.onPaint();
   });
   root.querySelector("[data-sim-pulse-ok]")?.addEventListener("click", () => {
-    state.pulse = {
-      connected: true,
-      lastValidAtMs: Date.now(),
-      lastShoutAtMs: state.pulse.lastShoutAtMs,
-    };
+    state.pulse = pulseConnectedAt(state.pulse, Date.now());
     state.bpm = 62;
     handlers.onPaint();
   });

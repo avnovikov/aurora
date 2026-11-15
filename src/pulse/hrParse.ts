@@ -1,3 +1,6 @@
+/** Reject absurd BLE values (uint16 can be tens of thousands). */
+const MAX_PLAUSIBLE_BPM = 250;
+
 /**
  * Parse Bluetooth Heart Rate Measurement (characteristic 0x2A37).
  * Flags bit0: 0 = uint8 BPM at offset 1; 1 = uint16 LE BPM at offset 1.
@@ -12,9 +15,14 @@ export function parseHeartRateMeasurement(view: DataView): number | null {
     if (view.byteLength < 3) {
       return null;
     }
-    const bpm = view.getUint16(1, true);
-    return bpm > 0 ? bpm : null;
+    return saneBpm(view.getUint16(1, true));
   }
-  const bpm = view.getUint8(1);
-  return bpm > 0 ? bpm : null;
+  return saneBpm(view.getUint8(1));
+}
+
+function saneBpm(bpm: number): number | null {
+  if (!Number.isFinite(bpm) || bpm <= 0 || bpm > MAX_PLAUSIBLE_BPM) {
+    return null;
+  }
+  return bpm;
 }

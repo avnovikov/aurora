@@ -10,6 +10,7 @@ import { shellHtml } from "./sessionChalk";
 import { wireSessionControls, type SessionControlHandlers } from "./sessionControls";
 import { startRestTimer, type RestTimerHandle } from "./sessionRest";
 import { initialState, persistPhase, syncWorkState } from "./sessionState";
+import { pulseConnectedAt, pulseDisconnected } from "./pulseState";
 import type { SessionViewOptions } from "./sessionTypes";
 import { startWarmupHold, type WarmupTimerHandle } from "./sessionWarmup";
 
@@ -27,6 +28,16 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     restHandle = null;
     warmupHandle?.clear();
     warmupHandle = null;
+  };
+
+  const dispose = (): void => {
+    clearWorkTimers();
+    if (pulseTimer !== null) {
+      window.clearInterval(pulseTimer);
+      pulseTimer = null;
+    }
+    void wakeLock.stop();
+    void disconnectHeartRate();
   };
 
   const paint = (): void => {
@@ -56,12 +67,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   };
 
   const finishAll = (): void => {
-    clearWorkTimers();
-    if (pulseTimer !== null) {
-      window.clearInterval(pulseTimer);
-    }
-    void wakeLock.stop();
-    void disconnectHeartRate();
+    dispose();
     state.phase = "done";
     clearSession();
     void speakCoachLine("session_done");
@@ -120,11 +126,13 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     onPulseLostSim: maybePulseShout,
     onPulseBpm: (bpm) => {
       state.bpm = bpm;
-      state.pulse = {
-        connected: true,
-        lastValidAtMs: Date.now(),
-        lastShoutAtMs: state.pulse.lastShoutAtMs,
-      };
+      state.pulse = pulseConnectedAt(state.pulse, Date.now());
+      paint();
+    },
+    onPulseDisconnected: () => {
+      state.pulse = pulseDisconnected(state.pulse);
+      state.bpm = null;
+      state.pulseStatus = "Pulse strap disconnected.";
       paint();
     },
   };

@@ -12,6 +12,9 @@ import {
   shouldAdvanceProgression,
 } from "./skillDose";
 
+/** Below-floor sessions in a row before stall regression. */
+export const STALL_BELOW_FLOOR_SESSIONS = 2;
+
 function painSwap(
   exercise: Exercise,
   painJoints: string[],
@@ -99,7 +102,7 @@ function tryStall(
   input: ResolveInput,
   ruleIds: RuleId[],
 ): ResolveResult | null {
-  if (input.memory.sessionsBelowFloor < 2) {
+  if (input.memory.sessionsBelowFloor < STALL_BELOW_FLOOR_SESSIONS) {
     return null;
   }
   const weak = pickWeakLink(
@@ -137,16 +140,15 @@ interface DoseModifiers {
   light: boolean;
   /** Manual deload week is active. */
   deload: boolean;
+  /** Rule ids contributed by readiness / deload. */
+  ruleIds: RuleId[];
 }
 
 /** Light-day signals and manual deload share one dose cut; it is applied once. */
-function applyReadinessDose(
-  dose: Dose,
-  input: ResolveInput,
-  ruleIds: RuleId[],
-): DoseModifiers {
+function applyReadinessDose(dose: Dose, input: ResolveInput): DoseModifiers {
   const light = isLightDay(input.readiness);
   const deload = input.deloadActive === true;
+  const ruleIds: RuleId[] = [];
   if (light) {
     ruleIds.push("light_day");
   }
@@ -154,9 +156,9 @@ function applyReadinessDose(
     ruleIds.push("deload");
   }
   if (!light && !deload) {
-    return { dose, light, deload };
+    return { dose, light, deload, ruleIds };
   }
-  return { dose: applyLightDayDose(dose), light, deload };
+  return { dose: applyLightDayDose(dose), light, deload, ruleIds };
 }
 
 /** Light days and deload weeks hold the exercise: no advance, no stall move. */
@@ -241,7 +243,8 @@ export function resolveSlot(input: ResolveInput): ResolveResult {
     ruleIds.push("pin");
   }
 
-  const modifiers = applyReadinessDose(doseStart, input, ruleIds);
+  const modifiers = applyReadinessDose(doseStart, input);
+  ruleIds.push(...modifiers.ruleIds);
   if (input.pinned) {
     return result(
       input.exercise.id,

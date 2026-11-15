@@ -97,9 +97,19 @@ describe("session completion with override", () => {
     vi.unstubAllGlobals();
   });
 
-  it("clears the override and advances the queue", () => {
+  it("clears a different override without eating the real queue head", () => {
     savePlanQueue(QUEUE);
     saveScheduleOverride({ templateId: "tmpl_bars" });
+
+    advancePlanAfterSession();
+
+    expect(loadScheduleOverride()).toBeNull();
+    expect(loadPlanQueue().items).toEqual(QUEUE.items);
+  });
+
+  it("advances the queue when the override matches the head", () => {
+    savePlanQueue(QUEUE);
+    saveScheduleOverride({ templateId: "tmpl_legs" });
 
     advancePlanAfterSession();
 

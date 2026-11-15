@@ -7,7 +7,7 @@ export const HEART_RATE_MEASUREMENT =
   "00002a37-0000-1000-8000-00805f9b34fb";
 
 export type BpmListener = (bpm: number) => void;
-export type PulseStatusListener = (message: string) => void;
+export type DisconnectListener = () => void;
 
 export interface BleHeartRateClient {
   initialize(options?: { androidNeverForLocation?: boolean }): Promise<void>;
@@ -28,6 +28,11 @@ export interface BleHeartRateClient {
     characteristic: string,
   ): Promise<void>;
   disconnect(deviceId: string): Promise<void>;
+}
+
+export interface ConnectHeartRateResult {
+  ok: boolean;
+  message: string;
 }
 
 let activeDeviceId: string | null = null;
@@ -62,47 +67,56 @@ async function resolveClient(): Promise<BleHeartRateClient | null> {
 
 /**
  * Connect to a BLE heart-rate strap and push BPM updates.
- * On plain web (no Capacitor), returns a clear status message and does not throw.
+ * Never throws; failures return `{ ok: false, message }`.
  */
 export async function connectHeartRate(
   onBpm: BpmListener,
-  onStatus?: PulseStatusListener,
-): Promise<{ ok: boolean; message: string }> {
-  const client = await resolveClient();
-  if (!client) {
-    const message =
-      "Pulse strap needs the Aurora Android app (Capacitor). Use Pulse ok / lost to simulate on web.";
-    onStatus?.(message);
-    return { ok: false, message };
+  onDisconnect?: DisconnectListener,
+): Promise<ConnectHeartRateResult> {
+  if (activeDeviceId) {
+    return { ok: true, message: "Pulse strap already connected." };
   }
 
-  await client.initialize({ androidNeverForLocation: true });
-  const device = await client.requestDevice({
-    services: [HEART_RATE_SERVICE],
-    optionalServices: [HEART_RATE_SERVICE],
-  });
-  activeDeviceId = device.deviceId;
+  const client = await resolveClient();
+  if (!client) {
+    return {
+      ok: false,
+      message:
+        "Pulse strap needs the Aurora Android app (Capacitor). Use Pulse ok / lost to simulate on web.",
+    };
+  }
 
-  await client.connect(device.deviceId, () => {
-    activeDeviceId = null;
-    onStatus?.("Pulse strap disconnected.");
-  });
+  try {
+    await client.initialize({ androidNeverForLocation: true });
+    const device = await client.requestDevice({
+      services: [HEART_RATE_SERVICE],
+      optionalServices: [HEART_RATE_SERVICE],
+    });
+    activeDeviceId = device.deviceId;
 
-  await client.startNotifications(
-    device.deviceId,
-    HEART_RATE_SERVICE,
-    HEART_RATE_MEASUREMENT,
-    (value) => {
-      const bpm = parseHeartRateMeasurement(value);
-      if (bpm !== null) {
-        onBpm(bpm);
-      }
-    },
-  );
+    await client.connect(device.deviceId, () => {
+      activeDeviceId = null;
+      onDisconnect?.();
+    });
 
-  const message = "Pulse strap connected.";
-  onStatus?.(message);
-  return { ok: true, message };
+    await client.startNotifications(
+      device.deviceId,
+      HEART_RATE_SERVICE,
+      HEART_RATE_MEASUREMENT,
+      (value) => {
+        const bpm = parseHeartRateMeasurement(value);
+        if (bpm !== null) {
+          onBpm(bpm);
+        }
+      },
+    );
+
+    return { ok: true, message: "Pulse strap connected." };
+  } catch (error) {
+    await disconnectHeartRate();
+    const detail = error instanceof Error ? error.message : "connection failed";
+    return { ok: false, message: `Pulse strap ${detail}.` };
+  }
 }
 
 export async function disconnectHeartRate(): Promise<void> {

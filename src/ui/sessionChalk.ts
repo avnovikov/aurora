@@ -1,3 +1,5 @@
+import { escapeHtml } from "../library/present";
+import { isNativePulseAvailable } from "../pulse/hrMonitor";
 import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
 import { WARMUP_GAPS, warmupMinutesLabel } from "../rules/sessionDuration";
 import { prescribedForNextSet } from "../session/setLog";
@@ -12,14 +14,28 @@ export function shellHtml(planned: PlannedSession, state: ViewState): string {
       ${chalkHtml(planned, state)}
       <div class="pulse-row ${pulseClass}">
         <span>Pulse ${state.bpm ?? "—"}</span>
-        <button type="button" data-pulse-connect>Connect pulse</button>
-        <button type="button" data-pulse-disconnect>Disconnect</button>
-        <button type="button" data-sim-pulse-ok>Pulse ok</button>
-        <button type="button" data-sim-pulse-lost>Pulse lost</button>
+        ${pulseControlsHtml()}
       </div>
-      ${state.pulseStatus ? `<p class="tagline" data-pulse-status>${state.pulseStatus}</p>` : ""}
+      ${
+        state.pulseStatus
+          ? `<p class="tagline" data-pulse-status>${escapeHtml(state.pulseStatus)}</p>`
+          : ""
+      }
       ${bodyHtml(planned, state)}
     </main>
+  `;
+}
+
+function pulseControlsHtml(): string {
+  if (isNativePulseAvailable()) {
+    return `
+      <button type="button" data-pulse-connect>Connect pulse</button>
+      <button type="button" data-pulse-disconnect>Disconnect</button>
+    `;
+  }
+  return `
+    <button type="button" data-sim-pulse-ok>Pulse ok</button>
+    <button type="button" data-sim-pulse-lost>Pulse lost</button>
   `;
 }
 

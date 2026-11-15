@@ -1,7 +1,7 @@
 import { SEED_EXERCISES, SESSION_TEMPLATES } from "../data/seed";
 import {
   appendQueueItem,
-  completeNext,
+  completeToday,
   loadPlanQueue,
   moveQueueItem,
   removeQueueItem,
@@ -9,7 +9,10 @@ import {
   savePlanQueue,
   skipNext,
 } from "../plan/queue";
-import { clearScheduleOverride } from "../plan/scheduleOverride";
+import {
+  clearScheduleOverride,
+  loadScheduleOverride,
+} from "../plan/scheduleOverride";
 import {
   clearTemplateOverride,
   listResolvedTemplates,
@@ -247,6 +250,8 @@ function wireProcedureControls(root: HTMLElement, paint: () => void): void {
 
 /** Used after session evaluation */
 export function advancePlanAfterSession(): void {
+  const override = loadScheduleOverride();
+  const nextQueue = completeToday(loadPlanQueue(), override);
   clearScheduleOverride();
-  savePlanQueue(completeNext(loadPlanQueue()));
+  savePlanQueue(nextQueue);
 }

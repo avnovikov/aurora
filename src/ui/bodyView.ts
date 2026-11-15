@@ -16,7 +16,7 @@ export function renderBodyView(root: HTMLElement): void {
       <main class="shell">
         <p class="eyebrow">Body</p>
         <h1>Muscle load</h1>
-        <p class="tagline">Sets per area — primaries count in full, secondaries half, stabilizers a quarter.</p>
+        <p class="tagline">Sets per area — primaries count in full, secondaries half, stabilisers a quarter.</p>
         <div class="row wrap">${renderPeriodButtons(period)}</div>
         ${renderBodyMap(loads)}
         ${renderLoadList(loads)}

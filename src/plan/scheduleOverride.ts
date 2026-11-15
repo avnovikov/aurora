@@ -1,18 +1,16 @@
 import { TEMPLATE_BY_ID } from "../data/seed";
+import { createKeyValueStore } from "../storage/keyValueStore";
 
-const KEY = "aurora.poc.scheduleOverride.v1";
+const store = createKeyValueStore("aurora.poc.scheduleOverride.v1");
 
 /** One-off "train X instead today" choice; the plan queue itself is untouched. */
 export interface ScheduleOverride {
   templateId: string;
 }
 
-/** In-memory fallback when `localStorage` is unavailable (unit tests). */
-const memoryStore: { value: string | null } = { value: null };
-
 /** Returns the stored override, or null when unset, malformed, or pointing at an unknown template. */
 export function loadScheduleOverride(): ScheduleOverride | null {
-  const raw = readStorage();
+  const raw = store.read();
   if (!raw) {
     return null;
   }
@@ -28,22 +26,15 @@ export function saveScheduleOverride(override: ScheduleOverride): void {
   if (!TEMPLATE_BY_ID[override.templateId]) {
     throw new Error(`Unknown template for schedule override: ${override.templateId}`);
   }
-  writeStorage(JSON.stringify({ templateId: override.templateId }));
+  store.write(JSON.stringify({ templateId: override.templateId }));
 }
 
 export function clearScheduleOverride(): void {
-  if (typeof localStorage === "undefined") {
-    memoryStore.value = null;
-    return;
-  }
-  localStorage.removeItem(KEY);
+  store.clear();
 }
 
 export function resetScheduleOverrideForTests(): void {
-  memoryStore.value = null;
-  if (typeof localStorage !== "undefined") {
-    localStorage.removeItem(KEY);
-  }
+  store.clear();
 }
 
 function isValidOverride(value: unknown): value is ScheduleOverride {
@@ -52,19 +43,4 @@ function isValidOverride(value: unknown): value is ScheduleOverride {
   }
   const templateId = (value as { templateId?: unknown }).templateId;
   return typeof templateId === "string" && Boolean(TEMPLATE_BY_ID[templateId]);
-}
-
-function readStorage(): string | null {
-  if (typeof localStorage === "undefined") {
-    return memoryStore.value;
-  }
-  return localStorage.getItem(KEY);
-}
-
-function writeStorage(value: string): void {
-  if (typeof localStorage === "undefined") {
-    memoryStore.value = value;
-    return;
-  }
-  localStorage.setItem(KEY, value);
 }

@@ -1,10 +1,8 @@
 import { SEED_GRAPH, SESSION_TEMPLATES, TEMPLATE_BY_ID } from "../data/seed";
 import type { SessionTemplate, TemplateSlot } from "../domain/program";
+import { createKeyValueStore } from "../storage/keyValueStore";
 
-const KEY = "aurora.poc.templateOverrides.v1";
-
-/** In-memory fallback when `localStorage` is unavailable (unit tests). */
-const memoryOverrides: { value: string | null } = { value: null };
+const store = createKeyValueStore("aurora.poc.templateOverrides.v1");
 
 export interface TemplateOverride {
   targetExerciseIds?: string[];
@@ -14,7 +12,7 @@ export interface TemplateOverride {
 export type TemplateOverrideMap = Record<string, TemplateOverride>;
 
 export function loadTemplateOverrides(): TemplateOverrideMap {
-  const raw = readStorage();
+  const raw = store.read();
   if (!raw) {
     return {};
   }
@@ -30,37 +28,14 @@ export function loadTemplateOverrides(): TemplateOverrideMap {
 }
 
 export function saveTemplateOverrides(overrides: TemplateOverrideMap): void {
-  writeStorage(JSON.stringify(overrides));
-}
-
-function readStorage(): string | null {
-  if (typeof localStorage === "undefined") {
-    return memoryOverrides.value;
-  }
-  return localStorage.getItem(KEY);
-}
-
-function writeStorage(value: string): void {
-  if (typeof localStorage === "undefined") {
-    memoryOverrides.value = value;
-    return;
-  }
-  localStorage.setItem(KEY, value);
-}
-
-function clearStorage(): void {
-  if (typeof localStorage === "undefined") {
-    memoryOverrides.value = null;
-    return;
-  }
-  localStorage.removeItem(KEY);
+  store.write(JSON.stringify(overrides));
 }
 
 export function clearTemplateOverride(templateId: string): void {
   const overrides = loadTemplateOverrides();
   delete overrides[templateId];
   if (Object.keys(overrides).length === 0) {
-    clearStorage();
+    store.clear();
     return;
   }
   saveTemplateOverrides(overrides);
@@ -68,7 +43,7 @@ export function clearTemplateOverride(templateId: string): void {
 
 /** Test helper — wipe persisted procedure edits. */
 export function resetTemplateOverridesForTests(): void {
-  clearStorage();
+  store.clear();
 }
 
 export function setSlotExercise(

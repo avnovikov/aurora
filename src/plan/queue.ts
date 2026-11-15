@@ -71,12 +71,7 @@ function resolveKnownTemplate(id: string | undefined, source: string): SessionTe
 
 export function peekUpcoming(queue: PlanQueue, count: number): SessionTemplate[] {
   assertPositiveCount(count);
-  return queue.items.slice(0, count).map((id) => {
-    if (!TEMPLATE_BY_ID[id]) {
-      throw new Error(`Unknown template in queue: ${id}`);
-    }
-    return resolveTemplate(id);
-  });
+  return queue.items.slice(0, count).map((id) => resolveKnownTemplate(id, "queue"));
 }
 
 /**
@@ -96,6 +91,23 @@ export function completeNext(queue: PlanQueue): PlanQueue {
     return structuredClone(DEFAULT_PLAN_QUEUE);
   }
   return { items: nextItems };
+}
+
+/**
+ * After today's session: clear a one-off override without eating the real queue
+ * head. If the override was the same as the head, advance once as usual.
+ */
+export function completeToday(
+  queue: PlanQueue,
+  override: ScheduleOverride | null,
+): PlanQueue {
+  if (!override) {
+    return completeNext(queue);
+  }
+  if (override.templateId === queue.items[0]) {
+    return completeNext(queue);
+  }
+  return { items: [...queue.items] };
 }
 
 export function skipNext(queue: PlanQueue): PlanQueue {

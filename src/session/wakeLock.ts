@@ -9,6 +9,7 @@
 
 export interface WakeLockSentinelLike {
   release: () => Promise<void>;
+  addEventListener?: (type: "release", listener: () => void) => void;
 }
 
 export interface WakeLockApi {
@@ -74,6 +75,11 @@ export function startWakeLock(
     try {
       const granted = await api.request("screen");
       sentinel = granted;
+      granted.addEventListener?.("release", () => {
+        if (sentinel === granted) {
+          sentinel = null;
+        }
+      });
       if (!sessionActive || env.isHidden()) {
         // Session ended or tab hid while the request was pending.
         await releaseSentinel();

@@ -1,25 +1,9 @@
-const KEY = "aurora.poc.deload.v1";
+import { createKeyValueStore } from "../storage/keyValueStore";
 
-/** In-memory fallback when `localStorage` is unavailable (unit tests). */
-const memoryState: { value: string | null } = { value: null };
+const store = createKeyValueStore("aurora.poc.deload.v1");
 
 interface DeloadState {
   deloadActive: boolean;
-}
-
-function readStorage(): string | null {
-  if (typeof localStorage === "undefined") {
-    return memoryState.value;
-  }
-  return localStorage.getItem(KEY);
-}
-
-function writeStorage(value: string): void {
-  if (typeof localStorage === "undefined") {
-    memoryState.value = value;
-    return;
-  }
-  localStorage.setItem(KEY, value);
 }
 
 function parseDeloadState(raw: string): DeloadState {
@@ -33,7 +17,7 @@ function parseDeloadState(raw: string): DeloadState {
 
 /** Manual deload flag for the POC; corrupt or missing data means "off". */
 export function loadDeloadActive(): boolean {
-  const raw = readStorage();
+  const raw = store.read();
   if (!raw) {
     return false;
   }
@@ -48,13 +32,10 @@ export function saveDeloadActive(deloadActive: boolean): void {
   if (typeof deloadActive !== "boolean") {
     throw new Error(`deloadActive must be a boolean; got ${String(deloadActive)}`);
   }
-  writeStorage(JSON.stringify({ deloadActive }));
+  store.write(JSON.stringify({ deloadActive }));
 }
 
 /** Test helper — wipe the persisted deload flag. */
 export function resetDeloadForTests(): void {
-  memoryState.value = null;
-  if (typeof localStorage !== "undefined") {
-    localStorage.removeItem(KEY);
-  }
+  store.clear();
 }

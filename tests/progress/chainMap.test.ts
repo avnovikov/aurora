@@ -7,7 +7,7 @@ import {
   buildChainNodes,
   hasTrainingSignal,
   inferChainStatus,
-  KEY_CHAIN_ROOT_IDS,
+  KEY_CHAIN_ANCHOR_IDS,
   listChainRootIds,
   pickCurrentId,
 } from "../../src/progress/chainMap";
@@ -55,7 +55,7 @@ describe("listChainRootIds", () => {
   it("dedupes chains that share a root", () => {
     const rootIds = listChainRootIds(
       SESSION_TEMPLATES,
-      KEY_CHAIN_ROOT_IDS,
+      KEY_CHAIN_ANCHOR_IDS,
       SEED_GRAPH,
     );
     expect(new Set(rootIds).size).toBe(rootIds.length);

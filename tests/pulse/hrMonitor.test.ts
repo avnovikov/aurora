@@ -30,11 +30,9 @@ function mockClient(overrides: Partial<BleHeartRateClient> = {}): BleHeartRateCl
 describe("connectHeartRate", () => {
   it("explains when native BLE is unavailable", async () => {
     setBleHeartRateClientForTests(null);
-    const status = vi.fn();
-    const result = await connectHeartRate(vi.fn(), status);
+    const result = await connectHeartRate(vi.fn());
     expect(result.ok).toBe(false);
     expect(result.message).toMatch(/Android app/i);
-    expect(status).toHaveBeenCalled();
   });
 
   it("subscribes and forwards parsed BPM from the mock client", async () => {
@@ -56,5 +54,27 @@ describe("connectHeartRate", () => {
       expect.any(Function),
     );
     expect(onBpm).toHaveBeenCalledWith(71);
+  });
+
+  it("returns ok without reconnecting when already connected", async () => {
+    const client = mockClient();
+    setBleHeartRateClientForTests(client);
+    await connectHeartRate(vi.fn());
+    const second = await connectHeartRate(vi.fn());
+    expect(second.ok).toBe(true);
+    expect(second.message).toMatch(/already connected/i);
+    expect(client.requestDevice).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not throw when the picker is cancelled", async () => {
+    const client = mockClient({
+      requestDevice: vi.fn(async () => {
+        throw new Error("cancelled");
+      }),
+    });
+    setBleHeartRateClientForTests(client);
+    const result = await connectHeartRate(vi.fn());
+    expect(result.ok).toBe(false);
+    expect(result.message).toMatch(/cancelled/i);
   });
 });

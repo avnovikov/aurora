@@ -18,6 +18,11 @@ describe("parseHeartRateMeasurement", () => {
   });
 
   it("reads little-endian uint16 heart rate when format flag is set", () => {
-    expect(parseHeartRateMeasurement(viewFrom(0x01, 0x2c, 0x01))).toBe(300);
+    expect(parseHeartRateMeasurement(viewFrom(0x01, 0xb4, 0x00))).toBe(180);
+  });
+
+  it("rejects implausible BPM values", () => {
+    expect(parseHeartRateMeasurement(viewFrom(0x00, 0))).toBeNull();
+    expect(parseHeartRateMeasurement(viewFrom(0x01, 0x2c, 0x01))).toBeNull();
   });
 });

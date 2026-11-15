@@ -1,5 +1,6 @@
 import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
 import { createEmptyLog, type ActiveWorkState } from "../session/setLog";
+import { INITIAL_PULSE } from "./pulseState";
 import type { SessionViewOptions, ViewState } from "./sessionTypes";
 
 export function initialState(options: SessionViewOptions): ViewState {
@@ -14,7 +15,7 @@ export function initialState(options: SessionViewOptions): ViewState {
       workState: null,
       restLeft: 0,
       showingCues: false,
-      pulse: { connected: false, lastValidAtMs: null, lastShoutAtMs: null },
+      pulse: { ...INITIAL_PULSE },
       bpm: null,
       pulseStatus: null,
     };
@@ -36,7 +37,7 @@ export function initialState(options: SessionViewOptions): ViewState {
     workState: null,
     restLeft: 0,
     showingCues: false,
-    pulse: { connected: false, lastValidAtMs: null, lastShoutAtMs: null },
+    pulse: { ...INITIAL_PULSE },
     bpm: null,
     pulseStatus: null,
   };
