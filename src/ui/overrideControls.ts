@@ -1,4 +1,6 @@
 import { SESSION_TEMPLATES } from "../data/seed";
+import { chipHtml } from "../library/chips";
+import { escapeHtml } from "../library/present";
 import { loadPlanQueue } from "../plan/queue";
 import {
   clearScheduleOverride,
@@ -6,24 +8,26 @@ import {
   type ScheduleOverride,
 } from "../plan/scheduleOverride";
 
-/** "Train X instead today" buttons plus a clear action when an override is active. */
+/**
+ * "Train something else today": a collapsed panel (same look as the Library
+ * filters) with one chip per session, open while an override is active.
+ */
 export function overrideControlsHtml(override: ScheduleOverride | null): string {
   const queueHead = loadPlanQueue().items[0];
-  const buttons = SESSION_TEMPLATES.filter((template) => template.id !== queueHead)
-    .map((template) => {
-      const active = template.id === override?.templateId;
-      return `<button type="button" data-override="${template.id}" aria-pressed="${active}">Train ${template.name} instead today</button>`;
-    })
+  const chips = SESSION_TEMPLATES.filter((template) => template.id !== queueHead)
+    .map((template) => chipHtml("override", template.id, template.name, template.id === override?.templateId))
     .join("");
+  const active = SESSION_TEMPLATES.find((template) => template.id === override?.templateId);
+  const summary = escapeHtml(active ? `Train something else today · ${active.name}` : "Train something else today");
   const clear = override
-    ? `<button type="button" class="override-clear" data-override-clear>Clear override</button>`
+    ? `<p class="override-clear"><button type="button" class="lib-link" data-override-clear>Back to the plan</button></p>`
     : "";
   return `
-    <section class="plan-section override-controls" data-override-controls>
-      <p class="eyebrow">Today only</p>
-      <div class="plan-add">${buttons}</div>
+    <details class="lib-filters override-controls" data-override-controls${override ? " open" : ""}>
+      <summary>${summary}</summary>
+      <div class="row wrap" role="group" aria-label="Train instead today">${chips}</div>
       ${clear}
-    </section>
+    </details>
   `;
 }
 
