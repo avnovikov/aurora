@@ -42,6 +42,7 @@ describe("bundled IBM Plex fonts", () => {
         "@fontsource/ibm-plex-sans/latin-400.css",
         "@fontsource/ibm-plex-sans/latin-500.css",
         "@fontsource/ibm-plex-sans/latin-600.css",
+        "@fontsource/ibm-plex-sans/latin-700.css",
       ].sort(),
     );
   });
