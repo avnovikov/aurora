@@ -98,7 +98,21 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "hf_50": "/doodles/doodle-archer-pull-up.svg",
   "hf_125": "/doodles/doodle-body-saw.svg",
   "hf_17": "/doodles/doodle-clap-push-up.svg",
-  "hf_5": "/doodles/doodle-decline-push-up.svg"
+  "hf_5": "/doodles/doodle-decline-push-up.svg",
+  "hf_4": "/doodles/doodle-diamond-push-up.svg",
+  "hf_54": "/doodles/doodle-explosive-pull-up.svg",
+  "wger_2748": "/doodles/doodle-jumping-pull-up.svg",
+  "ntc_incline_push_up_low": "/doodles/doodle-low-incline-push-up.svg",
+  "hf_8": "/doodles/doodle-one-arm-push-up.svg",
+  "hf_124": "/doodles/doodle-plank-shoulder-tap.svg",
+  "hf_18": "/doodles/doodle-superman-push-up.svg",
+  "hf_23": "/doodles/doodle-90-degree-handstand-push-up.svg",
+  "wger_1911": "/doodles/doodle-cat-plank.svg",
+  "hf_21": "/doodles/doodle-deficit-handstand-push-up.svg",
+  "fedb_flat_bench_leg_pull_in": "/doodles/doodle-flat-bench-leg-pull-in.svg",
+  "fedb_flat_bench_lying_leg_raise": "/doodles/doodle-flat-bench-lying-leg-raise.svg",
+  "hf_39": "/doodles/doodle-inverted-row.svg",
+  "hf_107": "/doodles/doodle-manna.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
