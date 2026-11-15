@@ -33,6 +33,7 @@ import { renderSettingsView } from "./settingsView";
 import { renderSetupView } from "./setupView";
 import { renderShell, type AppTab } from "./shell";
 import { todayHomeHtml } from "./todayHome";
+import { wireTodayPulse } from "./todayPulse";
 
 const PANEL_RENDERERS: Partial<
   Record<Exclude<AppTab, "today" | "progress">, (panel: HTMLElement) => void>
@@ -42,6 +43,13 @@ const PANEL_RENDERERS: Partial<
   plan: renderPlanView,
   settings: renderSettingsView,
 };
+
+let disposeTodayPulse: (() => void) | null = null;
+
+function clearTodayPulse(): void {
+  disposeTodayPulse?.();
+  disposeTodayPulse = null;
+}
 
 export function bootApp(root: HTMLElement): void {
   const profile = loadProfile();
@@ -66,6 +74,7 @@ function showTab(root: HTMLElement, tab: AppTab): void {
     showTodayHome(root);
     return;
   }
+  clearTodayPulse();
   renderShell(root, tab, `<div data-panel></div>`, (next) => showTab(root, next));
   const panel = root.querySelector<HTMLElement>("[data-panel]");
   if (!panel) {
@@ -102,8 +111,11 @@ function showTodayHome(root: HTMLElement): void {
   );
 
   wireOverrideControls(root, () => showTodayHome(root));
+  clearTodayPulse();
+  disposeTodayPulse = wireTodayPulse(root);
   renderCheckIn(root.querySelector("[data-checkin]")!, {
     onStart: (readiness) => {
+      clearTodayPulse();
       void (async () => {
         await unlockCoachAudio();
         await speakCoachLine("session_start");
