@@ -125,19 +125,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       return;
     }
     paint();
-    runWarmupHold();
-  };
-
-  const runWarmupHold = (): void => {
-    clearWorkTimers();
-    const step = options.planned.warmup[state.warmupIndex];
-    warmupHandle = startStationHold(root, step, state, "warmup", {
-      onPaint: paint,
-      onAdvance: advanceWarmup,
-      onRestGap: (_gap, resumeWarmup) => {
-        startRest(resumeWarmup, true);
-      },
-    });
+    runStationHold("warmup");
   };
 
   const advanceCooldownStep = (): void => {
@@ -146,17 +134,21 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       return;
     }
     paint();
-    runCooldownHold();
+    runStationHold("cooldown");
   };
 
-  const runCooldownHold = (): void => {
+  /** Run the current warm-up or cool-down station; only warm-up gaps get the voice cue. */
+  const runStationHold = (kind: "warmup" | "cooldown"): void => {
     clearWorkTimers();
-    const step = cooldownSteps(options.planned)[state.cooldownIndex];
-    warmupHandle = startStationHold(root, step, state, "cooldown", {
+    const isWarmup = kind === "warmup";
+    const step = isWarmup
+      ? options.planned.warmup[state.warmupIndex]
+      : cooldownSteps(options.planned)[state.cooldownIndex];
+    warmupHandle = startStationHold(root, step, state, kind, {
       onPaint: paint,
-      onAdvance: advanceCooldownStep,
-      onRestGap: (_gap, resumeCooldown) => {
-        startRest(resumeCooldown, false);
+      onAdvance: isWarmup ? advanceWarmup : advanceCooldownStep,
+      onRestGap: (_gap, resume) => {
+        startRest(resume, isWarmup);
       },
     });
   };
@@ -191,7 +183,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     onStartCooldown: () => {
       startCooldown(options.planned, state);
       paint();
-      runCooldownHold();
+      runStationHold("cooldown");
     },
     onSkipCooldown: () => {
       clearWorkTimers();
@@ -228,8 +220,8 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
 
   paint();
   if (state.phase === "warmup") {
-    runWarmupHold();
+    runStationHold("warmup");
   } else if (state.phase === "cooldown") {
-    runCooldownHold();
+    runStationHold("cooldown");
   }
 }

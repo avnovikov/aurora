@@ -126,7 +126,7 @@ export function warmupMinutesLabel(warmupSeconds: number): string {
   return `Warmup · ${minutes} min`;
 }
 
-export function estimateTemplateWarmupSeconds(template: SessionTemplate): number {
+function estimateTemplateWarmupSeconds(template: SessionTemplate): number {
   if (template.warmupStationIds.length === 0) {
     return DEFAULT_WARMUP_SECONDS;
   }
@@ -140,7 +140,7 @@ export function estimateTemplateCooldownSeconds(template: SessionTemplate): numb
 }
 
 /** Whole minutes for a station sequence label (at least 1 when non-empty). */
-export function stationMinutes(seconds: number): number {
+function stationMinutes(seconds: number): number {
   assertWarmupSeconds(seconds);
   return seconds === 0 ? 0 : Math.max(1, Math.round(seconds / 60));
 }

@@ -63,6 +63,8 @@ const SRC = {
 } as const;
 
 const STRETCH_CUE = "Two easy 30 s holds (switch sides halfway)";
+/** Cool-down stretch: ~60 s per target as two 30 s holds (Garber 2011). */
+const STRETCH_HOLD_SECONDS = 60;
 
 const STATION_SPECS: StationSpec[] = [
   // Raise
@@ -74,7 +76,7 @@ const STATION_SPECS: StationSpec[] = [
     source: SRC.raise,
     cues: ["Light bounce", "Arms swing freely", "Breathe through the nose"],
   },
-  { id: "ntc_jumping_jacks", phase: "raise", regions: ["general"], holdSeconds: 60, source: SRC.raise },
+  { id: "ntc_jumping_jacks", phase: "raise", regions: ["general"], holdSeconds: 60, source: SRC.raise }, // Jumping jacks
   // Mobilise
   {
     id: "hip_circles",
@@ -100,9 +102,9 @@ const STATION_SPECS: StationSpec[] = [
     source: SRC.wrist,
     cues: ["Fingers spread", "Shift weight gently", "Stop before sharp pain"],
   },
-  { id: "hf_167", phase: "mobilise", regions: ["skill"], holdSeconds: 45, source: SRC.wrist },
-  { id: "wger_2680", phase: "mobilise", regions: ["skill"], holdSeconds: 45, source: SRC.wrist },
-  { id: "hf_152", phase: "mobilise", regions: ["push"], holdSeconds: 45, source: SRC.serratus },
+  { id: "hf_167", phase: "mobilise", regions: ["skill"], holdSeconds: 45, source: SRC.wrist }, // Wrist circles
+  { id: "wger_2680", phase: "mobilise", regions: ["skill"], holdSeconds: 45, source: SRC.wrist }, // Wrist rocks
+  { id: "hf_152", phase: "mobilise", regions: ["push"], holdSeconds: 45, source: SRC.serratus }, // Wall angel
   {
     id: "fedb_childs_pose",
     phase: "mobilise",
@@ -111,12 +113,12 @@ const STATION_SPECS: StationSpec[] = [
     source: SRC.shortStatic,
     extraCue: "Two 20 s holds",
   },
-  { id: "hf_158", phase: "mobilise", regions: ["legs"], holdSeconds: 45, source: SRC.mobilise },
-  { id: "hf_157", phase: "mobilise", regions: ["legs"], holdSeconds: 30, source: SRC.mobilise },
-  { id: "ntc_arm_circles", phase: "mobilise", regions: ["pull"], holdSeconds: 45, source: SRC.mobilise },
-  { id: "wger_1822", phase: "mobilise", regions: ["general"], holdSeconds: 60, source: SRC.mobilise },
-  { id: "hf_154", phase: "mobilise", regions: ["core"], holdSeconds: 45, source: SRC.mobilise },
-  { id: "hf_169", phase: "mobilise", regions: ["legs"], holdSeconds: 60, source: SRC.mobilise },
+  { id: "hf_158", phase: "mobilise", regions: ["legs"], holdSeconds: 45, source: SRC.mobilise }, // 90/90 hip switch
+  { id: "hf_157", phase: "mobilise", regions: ["legs"], holdSeconds: 30, source: SRC.mobilise }, // Deep squat hold
+  { id: "ntc_arm_circles", phase: "mobilise", regions: ["pull"], holdSeconds: 45, source: SRC.mobilise }, // Arm circles
+  { id: "wger_1822", phase: "mobilise", regions: ["general"], holdSeconds: 60, source: SRC.mobilise }, // Open book
+  { id: "hf_154", phase: "mobilise", regions: ["core"], holdSeconds: 45, source: SRC.mobilise }, // Cat-cow
+  { id: "hf_169", phase: "mobilise", regions: ["legs"], holdSeconds: 60, source: SRC.mobilise }, // World's greatest stretch
   // Activate
   {
     id: "scap_pushup",
@@ -134,32 +136,32 @@ const STATION_SPECS: StationSpec[] = [
     source: SRC.strength,
     cues: ["Ribs down", "Squeeze glutes at the top", "Do not arch the low back"],
   },
-  { id: "hollow_hold", phase: "activate", regions: ["core"], holdSeconds: 40, source: SRC.bracing },
-  { id: "wger_1202", phase: "activate", regions: ["legs"], holdSeconds: 60, source: SRC.gluteMed },
-  { id: "wger_2667", phase: "activate", regions: ["legs"], holdSeconds: 60, source: SRC.balance },
-  { id: "wger_578", phase: "activate", regions: ["pull"], holdSeconds: 60, source: SRC.cuff },
-  { id: "ntc_prone_ytw", phase: "activate", regions: ["pull"], holdSeconds: 45, source: SRC.scapula },
-  { id: "scapular_pull", phase: "activate", regions: ["pull"], holdSeconds: 45, source: SRC.scapula },
-  { id: "hf_100", phase: "activate", regions: ["core"], holdSeconds: 60, source: SRC.bracing },
-  { id: "hf_116", phase: "activate", regions: ["core"], holdSeconds: 60, source: SRC.bracing },
-  { id: "dead_bug", phase: "activate", regions: ["core"], holdSeconds: 45, source: SRC.bracing },
+  { id: "hollow_hold", phase: "activate", regions: ["core"], holdSeconds: 40, source: SRC.bracing }, // Hollow body hold
+  { id: "wger_1202", phase: "activate", regions: ["legs"], holdSeconds: 60, source: SRC.gluteMed }, // Side-lying hip abduction
+  { id: "wger_2667", phase: "activate", regions: ["legs"], holdSeconds: 60, source: SRC.balance }, // Single-leg balance
+  { id: "wger_578", phase: "activate", regions: ["pull"], holdSeconds: 60, source: SRC.cuff }, // Side-lying external rotation
+  { id: "ntc_prone_ytw", phase: "activate", regions: ["pull"], holdSeconds: 45, source: SRC.scapula }, // Prone Y-T-W raise
+  { id: "scapular_pull", phase: "activate", regions: ["pull"], holdSeconds: 45, source: SRC.scapula }, // Scapular pull-up
+  { id: "hf_100", phase: "activate", regions: ["core"], holdSeconds: 60, source: SRC.bracing }, // Side plank
+  { id: "hf_116", phase: "activate", regions: ["core"], holdSeconds: 60, source: SRC.bracing }, // Bird dog
+  { id: "dead_bug", phase: "activate", regions: ["core"], holdSeconds: 45, source: SRC.bracing }, // Dead bug
   // Potentiate
-  { id: "wall_handstand", phase: "potentiate", regions: ["skill"], holdSeconds: 50, source: SRC.potentiate },
-  { id: "fedb_split_squats", phase: "potentiate", regions: ["legs"], holdSeconds: 45, source: SRC.specific },
-  { id: "wger_1948", phase: "potentiate", regions: ["legs"], holdSeconds: 45, source: SRC.specific },
-  { id: "wger_2690", phase: "potentiate", regions: ["pull"], holdSeconds: 40, source: SRC.potentiate },
-  { id: "hf_103", phase: "potentiate", regions: ["core"], holdSeconds: 30, source: SRC.potentiate },
-  { id: "bodyweight_squat", phase: "potentiate", regions: ["legs"], holdSeconds: 30, source: SRC.potentiate },
-  { id: "fedb_incline_push_up", phase: "potentiate", regions: ["push"], holdSeconds: 30, source: SRC.potentiate },
+  { id: "wall_handstand", phase: "potentiate", regions: ["skill"], holdSeconds: 50, source: SRC.potentiate }, // Wall handstand hold
+  { id: "fedb_split_squats", phase: "potentiate", regions: ["legs"], holdSeconds: 45, source: SRC.specific }, // Split squat
+  { id: "wger_1948", phase: "potentiate", regions: ["legs"], holdSeconds: 45, source: SRC.specific }, // 1-leg box squat
+  { id: "wger_2690", phase: "potentiate", regions: ["pull"], holdSeconds: 40, source: SRC.potentiate }, // Active hang
+  { id: "hf_103", phase: "potentiate", regions: ["core"], holdSeconds: 30, source: SRC.potentiate }, // Hollow body rock
+  { id: "bodyweight_squat", phase: "potentiate", regions: ["legs"], holdSeconds: 30, source: SRC.potentiate }, // Bodyweight squat
+  { id: "fedb_incline_push_up", phase: "potentiate", regions: ["push"], holdSeconds: 30, source: SRC.potentiate }, // Incline push-up
   // Cool-down (optional; ~60 s per target, 2 × 30 s)
-  ...cooldown("wger_2686", ["skill"], SRC.stretch),
-  ...cooldown("fedb_kneeling_forearm_stretch", ["skill"], SRC.stretch),
-  ...cooldown("ntc_thread_the_needle", ["pull"], SRC.stretchShoulder),
-  ...cooldown("fedb_calf_stretch_hands_against_wall", ["legs"], SRC.stretchAnkle),
-  ...cooldown("wger_1239", ["legs"], SRC.stretchAnkle),
-  ...cooldown("fedb_kneeling_hip_flexor", ["legs"], SRC.stretch),
-  ...cooldown("wger_1713", ["push"], SRC.stretch),
-  ...cooldown("hf_165", ["core"], SRC.stretch),
+  cooldown("wger_2686", ["skill"], SRC.stretch), // Wrist stretch
+  cooldown("fedb_kneeling_forearm_stretch", ["skill"], SRC.stretch), // Kneeling forearm stretch
+  cooldown("ntc_thread_the_needle", ["pull"], SRC.stretchShoulder), // Thread the needle
+  cooldown("fedb_calf_stretch_hands_against_wall", ["legs"], SRC.stretchAnkle), // Calf stretch, straight knee
+  cooldown("wger_1239", ["legs"], SRC.stretchAnkle), // Standing calf stretch
+  cooldown("fedb_kneeling_hip_flexor", ["legs"], SRC.stretch), // Kneeling hip flexor stretch
+  cooldown("wger_1713", ["push"], SRC.stretch), // Doorway pec stretch
+  cooldown("hf_165", ["core"], SRC.stretch), // Cobra stretch
   {
     id: "fedb_childs_pose_cooldown",
     exerciseId: "fedb_childs_pose",
@@ -180,8 +182,8 @@ const STATION_SPECS: StationSpec[] = [
   },
 ];
 
-function cooldown(id: string, regions: LoadRegion[], source: string): StationSpec[] {
-  return [{ id, phase: "cooldown", regions, holdSeconds: 60, source, extraCue: STRETCH_CUE }];
+function cooldown(id: string, regions: LoadRegion[], source: string): StationSpec {
+  return { id, phase: "cooldown", regions, holdSeconds: STRETCH_HOLD_SECONDS, source, extraCue: STRETCH_CUE };
 }
 
 function resolveStation(spec: StationSpec): WarmupStation {
