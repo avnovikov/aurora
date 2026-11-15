@@ -1,4 +1,4 @@
-import { SEED_GRAPH, type SeedExercise } from "../data/seed";
+import type { SeedExercise } from "../data/seed";
 import { escapeHtml, formatMuscles, formatPattern } from "./present";
 import { isTemplateTarget } from "./targets";
 
@@ -11,9 +11,10 @@ export function mountLibraryDetail(
   root: HTMLElement,
   exercise: SeedExercise,
   targetIds: ReadonlySet<string>,
+  catalogueById: Record<string, SeedExercise>,
   actions: DetailActions,
 ): void {
-  root.innerHTML = detailHtml(exercise, targetIds);
+  root.innerHTML = detailHtml(exercise, targetIds, catalogueById);
 
   root.querySelector<HTMLButtonElement>("[data-lib-back]")?.addEventListener("click", () => {
     actions.onBack();
@@ -32,6 +33,7 @@ export function mountLibraryDetail(
 export function detailHtml(
   exercise: SeedExercise,
   targetIds: ReadonlySet<string>,
+  catalogueById: Record<string, SeedExercise> = {},
 ): string {
   const targetBadge = isTemplateTarget(exercise.id, targetIds)
     ? `<p class="lib-badge">Target</p>`
@@ -42,7 +44,7 @@ export function detailHtml(
   const cues = exercise.cues
     .map((cue) => `<li>${escapeHtml(cue)}</li>`)
     .join("");
-  const chain = chainLinksHtml(exercise);
+  const chain = chainLinksHtml(exercise, catalogueById);
 
   return `
     <main class="shell lib-detail">
@@ -61,16 +63,19 @@ export function detailHtml(
   `;
 }
 
-function chainLinksHtml(exercise: SeedExercise): string {
+function chainLinksHtml(
+  exercise: SeedExercise,
+  catalogueById: Record<string, SeedExercise>,
+): string {
   const links: string[] = [];
   if (exercise.easierId) {
-    const easier = SEED_GRAPH[exercise.easierId];
+    const easier = catalogueById[exercise.easierId];
     if (easier) {
       links.push(chainButtonHtml(exercise.easierId, easier.name, "Easier"));
     }
   }
   if (exercise.harderId) {
-    const harder = SEED_GRAPH[exercise.harderId];
+    const harder = catalogueById[exercise.harderId];
     if (harder) {
       links.push(chainButtonHtml(exercise.harderId, harder.name, "Harder"));
     }

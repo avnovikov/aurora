@@ -7,7 +7,7 @@ describe("detailHtml", () => {
   it("renders cues, pattern, and progression links for pull-up", () => {
     const exercise = SEED_GRAPH.pullup;
     const targets = collectTemplateTargetIds();
-    const html = detailHtml(exercise, targets);
+    const html = detailHtml(exercise, targets, SEED_GRAPH);
     expect(html).toContain("Pull-up");
     expect(html).toContain("vertical pull");
     expect(html).toContain('data-lib-back');
@@ -18,7 +18,7 @@ describe("detailHtml", () => {
   it("omits target badge for non-target warm-ups", () => {
     const exercise = SEED_GRAPH.pulse_raiser_march;
     const targets = collectTemplateTargetIds();
-    const html = detailHtml(exercise, targets);
+    const html = detailHtml(exercise, targets, SEED_GRAPH);
     expect(html).not.toContain("lib-badge");
   });
 });
