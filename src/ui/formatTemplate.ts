@@ -1,4 +1,4 @@
-import { SEED_GRAPH } from "../data/seed";
+import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import type { SessionTemplate } from "../domain/program";
 import {
   estimateSessionDuration,
@@ -7,7 +7,7 @@ import {
 
 /** Display name for an exercise id, falling back to the id itself. */
 export function exerciseName(exerciseId: string): string {
-  return SEED_GRAPH[exerciseId]?.name ?? exerciseId;
+  return EXERCISE_GRAPH[exerciseId]?.name ?? exerciseId;
 }
 
 /** Target names joined for UI chips and taglines. */

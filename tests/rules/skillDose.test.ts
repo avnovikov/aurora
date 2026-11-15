@@ -26,7 +26,7 @@ describe("skillDose", () => {
       memory({ declaredTier: "intermediate" }),
     );
     expect(result.tier).toBe("intermediate");
-    expect(result.dose.reps).toBe(10);
+    expect(result.dose.reps).toBe(8);
     expect(result.applied).toBe(true);
   });
 

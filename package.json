@@ -15,7 +15,11 @@
     "import:hf": "tsx scripts/import-hf-calisthenics.ts",
     "voice:prebuild": "bash scripts/prebuild-voice.sh",
     "cap:sync": "npm run build && npx cap sync android",
-    "cap:open": "npx cap open android"
+    "cap:open": "npx cap open android",
+    "import:fedb": "tsx scripts/import-free-exercise-db.ts",
+    "import:wger": "tsx scripts/import-wger.ts",
+    "descriptions:bundle": "tsx scripts/build-description-bundles.ts",
+    "descriptions:compile": "tsx scripts/compile-descriptions.ts"
   },
   "devDependencies": {
     "@capacitor/android": "^8.6.2",

@@ -1,4 +1,5 @@
-import { SEED_GRAPH, SESSION_TEMPLATES, TEMPLATE_BY_ID } from "../data/seed";
+import { EXERCISE_GRAPH } from "../data/exerciseGraph";
+import { SESSION_TEMPLATES, TEMPLATE_BY_ID } from "../data/seed";
 import type { SessionTemplate, TemplateSlot } from "../domain/program";
 import { createKeyValueStore } from "../storage/keyValueStore";
 
@@ -137,7 +138,7 @@ function assertKnownExercise(exerciseId: string): void {
   if (!exerciseId.trim()) {
     throw new Error("exerciseId must be non-empty");
   }
-  if (!SEED_GRAPH[exerciseId]) {
+  if (!EXERCISE_GRAPH[exerciseId]) {
     throw new Error(`Unknown exercise: ${exerciseId}`);
   }
 }

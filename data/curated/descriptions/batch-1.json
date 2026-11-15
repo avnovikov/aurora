@@ -1,0 +1,2042 @@
+[
+ {
+  "id": "pulse_raiser_march",
+  "summary": "A light, rhythmic march on the spot that raises your heart rate and warms up the legs before training.",
+  "steps": [
+   "Stand tall with your feet hip-width apart and your arms relaxed at your sides.",
+   "Lift one knee to a comfortable height while the opposite arm swings forward.",
+   "Lower that foot softly and lift the other knee, swinging the other arm.",
+   "Keep alternating at an easy, steady rhythm with a light bounce through the feet."
+  ],
+  "cues": [
+   "Light bounce",
+   "Arms swing freely",
+   "Breathe through the nose"
+  ],
+  "mistakes": [
+   "Stomping heavily instead of landing softly",
+   "Slouching or leaning back as you lift the knees"
+  ]
+ },
+ {
+  "id": "hip_circles",
+  "summary": "A controlled standing mobility drill that moves the hip through slow circles to warm up the glutes and hip joint.",
+  "steps": [
+   "Stand on one leg beside a wall or sturdy support and hold it lightly for balance.",
+   "Raise the free knee to about hip height.",
+   "Open the knee out to the side, then sweep it back and down to draw a large, slow circle.",
+   "Reverse the direction after a few circles, keeping the standing leg steady.",
+   "Switch sides."
+  ],
+  "cues": [
+   "Slow circles",
+   "Both directions",
+   "Keep ribs quiet"
+  ],
+  "mistakes": [
+   "Rushing the circles and swinging the leg",
+   "Twisting the torso instead of moving at the hip"
+  ]
+ },
+ {
+  "id": "ankle_rocks",
+  "summary": "A rocking drill that drives the knee forward over the foot to improve ankle dorsiflexion and loosen the calves.",
+  "steps": [
+   "Kneel in a half-kneeling position with your front foot flat on the floor.",
+   "Shift your weight forward, moving the front knee over the middle of the foot.",
+   "Keep the heel down and pause for a moment at the end of your comfortable range.",
+   "Rock back to the start and continue, then switch sides."
+  ],
+  "cues": [
+   "Knee tracks over mid-foot",
+   "Heel stays down",
+   "Gentle, pain-free range"
+  ],
+  "mistakes": [
+   "Letting the heel lift off the floor",
+   "Letting the knee cave inward"
+  ]
+ },
+ {
+  "id": "wrist_load",
+  "summary": "A gentle hands-on-floor hold that prepares the wrists and forearms to bear weight for push and handstand work.",
+  "steps": [
+   "Kneel on all fours with your hands under your shoulders and fingers spread wide.",
+   "Press the whole palm and the base of each finger into the floor.",
+   "Slowly shift your weight forward over your hands until you feel a mild load in the wrists.",
+   "Hold the position, breathing steadily."
+  ],
+  "cues": [
+   "Fingers spread",
+   "Shift weight gently",
+   "Stop before sharp pain"
+  ],
+  "mistakes": [
+   "Lifting the base of the fingers off the floor",
+   "Dropping weight onto the wrists too quickly"
+  ]
+ },
+ {
+  "id": "scap_pushup",
+  "summary": "A straight-arm push-up variation that moves only the shoulder blades, training scapular control for pushing.",
+  "steps": [
+   "Set up in a high plank with your hands under your shoulders and your arms locked.",
+   "Let your chest sink slightly so the shoulder blades draw together.",
+   "Push the floor away to spread the shoulder blades apart and round the upper back slightly.",
+   "Return to the start with control, keeping the elbows straight throughout."
+  ],
+  "cues": [
+   "Arms locked",
+   "Only the shoulder blades move",
+   "Long neck"
+  ],
+  "mistakes": [
+   "Bending the elbows into a partial push-up",
+   "Hips sagging toward the floor",
+   "Dropping the head between the arms"
+  ]
+ },
+ {
+  "id": "bodyweight_squat",
+  "summary": "A fundamental two-leg squat that builds strength in the quadriceps and glutes and grooves a sound squat pattern.",
+  "steps": [
+   "Stand with your feet about hip- to shoulder-width apart, toes turned out slightly.",
+   "Bend your hips and knees together to sit down between your heels.",
+   "Lower as deep as you can while keeping your chest up and heels on the floor.",
+   "Push through your whole foot to stand tall at the top."
+  ],
+  "cues": [
+   "Feet under hips",
+   "Knees track toes",
+   "Stand tall at the top"
+  ],
+  "mistakes": [
+   "Knees caving inward",
+   "Heels lifting off the floor",
+   "Chest collapsing forward at the bottom"
+  ]
+ },
+ {
+  "id": "bulgarian_split",
+  "summary": "A rear-foot-elevated split squat that loads the front leg to build single-leg quadriceps and glute strength.",
+  "steps": [
+   "Stand a long stride in front of a bench and rest the top of your rear foot on it.",
+   "Keep your torso tall and your weight mostly on the front foot.",
+   "Bend the front knee to lower until the back knee nearly touches the floor.",
+   "Drive through the front foot to return to the top.",
+   "Switch sides."
+  ],
+  "cues": [
+   "Rear foot light",
+   "Front heel stays down",
+   "Torso tall"
+  ],
+  "mistakes": [
+   "Pushing off with the rear leg",
+   "Front heel lifting off the floor",
+   "Front knee caving inward"
+  ]
+ },
+ {
+  "id": "pistol_squat",
+  "summary": "A full-depth single-leg squat with the free leg held straight in front, building leg strength, balance and control.",
+  "steps": [
+   "Stand on one leg with the other leg extended slightly in front of you.",
+   "Reach your arms forward and bend the standing knee to sit down slowly.",
+   "Lift the free leg higher as you descend so it stays clear of the floor.",
+   "Lower to full depth without collapsing, keeping the heel down.",
+   "Drive through the standing foot to rise to the top, then switch sides."
+  ],
+  "cues": [
+   "Control the descent",
+   "Reach the free leg forward",
+   "No collapse at the bottom"
+  ],
+  "mistakes": [
+   "Dropping into the bottom without control",
+   "Standing heel lifting off the floor",
+   "Standing knee caving inward"
+  ]
+ },
+ {
+  "id": "shrimp_squat",
+  "summary": "A single-leg squat with the free foot held behind you, building quadriceps and glute strength with a tall torso.",
+  "steps": [
+   "Stand on one leg and bend the other knee to hold that foot behind you.",
+   "Reach the free arm forward for balance.",
+   "Bend the standing knee to lower until the back knee lightly touches the floor.",
+   "Drive through the standing foot to return to the top.",
+   "Switch sides."
+  ],
+  "cues": [
+   "Hold the rear foot",
+   "Knee tracks forward",
+   "Stay tall"
+  ],
+  "mistakes": [
+   "Dropping the back knee hard onto the floor",
+   "Leaning far forward to reach depth",
+   "Standing knee caving inward"
+  ]
+ },
+ {
+  "id": "cossack_squat",
+  "summary": "A deep side-to-side squat that strengthens the quadriceps and adductors while building hip mobility.",
+  "steps": [
+   "Stand with your feet in a wide stance, toes turned out slightly.",
+   "Shift your weight to one side and sit down into that hip, bending the knee.",
+   "Keep the other leg straight with its toes pointing up as you lower.",
+   "Push through the bent leg to return to the middle.",
+   "Repeat to the other side."
+  ],
+  "cues": [
+   "Sit into one hip",
+   "Other leg straight",
+   "Heel down on the working side"
+  ],
+  "mistakes": [
+   "Working heel lifting off the floor",
+   "Rounding the back to reach depth",
+   "Bending the straight leg"
+  ]
+ },
+ {
+  "id": "step_up",
+  "summary": "A single-leg step onto a raised surface that builds quadriceps and glute strength and balance.",
+  "steps": [
+   "Stand facing a sturdy box or step and place one whole foot on top.",
+   "Lean slightly forward and drive through the top foot to stand up on the step.",
+   "Stand tall at the top without pushing off the bottom foot.",
+   "Lower the trailing foot back to the floor with control.",
+   "Switch sides."
+  ],
+  "cues": [
+   "Drive through the whole foot",
+   "Stand tall on top",
+   "Control the lower"
+  ],
+  "mistakes": [
+   "Pushing off with the bottom leg",
+   "Knee caving inward as you rise",
+   "Dropping down quickly instead of lowering"
+  ]
+ },
+ {
+  "id": "reverse_lunge",
+  "summary": "A backward-stepping lunge that strengthens the quadriceps and glutes of the front leg with steady balance.",
+  "steps": [
+   "Stand tall with your feet hip-width apart.",
+   "Step one foot back and lower until both knees bend to about 90 degrees.",
+   "Keep your torso upright and the front knee in line with the toes.",
+   "Push through the front foot to bring the back foot forward and stand.",
+   "Alternate legs or switch sides."
+  ],
+  "cues": [
+   "Step back lightly",
+   "Front knee tracks",
+   "Push back to stand"
+  ],
+  "mistakes": [
+   "Back knee slamming into the floor",
+   "Front knee caving inward",
+   "Leaning the torso far forward"
+  ]
+ },
+ {
+  "id": "hip_hinge",
+  "summary": "A pattern drill that teaches bending at the hips with a neutral spine, training the hamstrings and glutes.",
+  "steps": [
+   "Stand with your feet hip-width apart and a soft bend in the knees.",
+   "Push your hips back as your torso tips forward, keeping your spine long.",
+   "Lower until you feel tension in the hamstrings or your back begins to round.",
+   "Drive the hips forward to stand tall, squeezing the glutes."
+  ],
+  "cues": [
+   "Soft knees",
+   "Push hips back",
+   "Spine long"
+  ],
+  "mistakes": [
+   "Rounding the lower back",
+   "Bending the knees into a squat",
+   "Overarching the back at the top"
+  ]
+ },
+ {
+  "id": "nordic_curl",
+  "summary": "A kneeling hamstring exercise where you lower your body slowly forward, building eccentric hamstring strength.",
+  "steps": [
+   "Kneel on a pad with your ankles anchored under a sturdy object or held by a partner.",
+   "Keep a straight line from knees to head and squeeze your glutes.",
+   "Lean forward slowly, resisting with your hamstrings for as long as possible.",
+   "Catch yourself with your hands in a push-up position when you can no longer hold.",
+   "Push lightly off the floor to return to kneeling."
+  ],
+  "cues": [
+   "Slow lower",
+   "Squeeze glutes",
+   "Catch with hands if needed"
+  ],
+  "mistakes": [
+   "Bending at the hips instead of staying straight",
+   "Dropping quickly instead of resisting the descent"
+  ]
+ },
+ {
+  "id": "calf_raise",
+  "summary": "A two-leg heel raise that strengthens the calves and builds control around the ankle.",
+  "steps": [
+   "Stand on the floor or the edge of a step with the balls of your feet supported.",
+   "Rise onto your toes by lifting your heels as high as you can.",
+   "Pause briefly at the top.",
+   "Lower your heels slowly through the full range without dropping."
+  ],
+  "cues": [
+   "Full range",
+   "Pause at the top",
+   "Soft knees"
+  ],
+  "mistakes": [
+   "Bouncing through the bottom",
+   "Rolling onto the outer edges of the feet",
+   "Cutting the range short"
+  ]
+ },
+ {
+  "id": "single_leg_calf_raise",
+  "summary": "A one-leg heel raise that strengthens each calf on its own and improves ankle stability.",
+  "steps": [
+   "Stand on one foot on the floor or a step, touching a wall lightly for balance.",
+   "Rise onto the ball of the foot as high as you can.",
+   "Pause briefly at the top.",
+   "Lower the heel slowly through the full range.",
+   "Switch sides."
+  ],
+  "cues": [
+   "Light touch for balance",
+   "Full range",
+   "Equal work both sides"
+  ],
+  "mistakes": [
+   "Leaning heavily on the support",
+   "Bouncing through the bottom",
+   "Rolling the ankle outward"
+  ]
+ },
+ {
+  "id": "wall_handstand",
+  "summary": "A handstand held with the chest facing a wall, building shoulder strength, body alignment and comfort upside down.",
+  "steps": [
+   "Place your hands on the floor shoulder-width apart, close to a wall, facing it.",
+   "Walk your feet up the wall as you walk your hands closer to it.",
+   "Stack your hands, shoulders and hips with your body straight and toes on the wall.",
+   "Push the floor away and keep the ribs tucked.",
+   "Hold the position, breathing steadily, then walk down with control."
+  ],
+  "cues": [
+   "Hollow ribs",
+   "Push the floor away",
+   "Look at the hands"
+  ],
+  "mistakes": [
+   "Arching the lower back into a banana shape",
+   "Shrugging down into the shoulders",
+   "Hands placed too far from the wall"
+  ]
+ },
+ {
+  "id": "elevated_pike",
+  "summary": "A pike push-up with the feet raised that loads the shoulders and triceps in a near-vertical pressing angle.",
+  "steps": [
+   "Place your feet on a box or bench and your hands on the floor, hips high in a pike.",
+   "Stack your hips above your shoulders as closely as you can.",
+   "Bend your elbows to lower the top of your head toward the floor in front of your hands.",
+   "Press back up until your arms are straight."
+  ],
+  "cues": [
+   "Hips high",
+   "Elbows track back",
+   "Head lands ahead of the hands"
+  ],
+  "mistakes": [
+   "Hips dropping so it becomes a decline push-up",
+   "Elbows flaring straight out to the sides",
+   "Dropping the head quickly to the floor"
+  ]
+ },
+ {
+  "id": "freestanding_hs",
+  "summary": "Practice kicking up to a handstand without support, building balance, shoulder strength and safe exits.",
+  "steps": [
+   "Stand in a lunge with your arms overhead and plenty of clear space around you.",
+   "Place your hands on the floor and kick one leg up, bringing the other to meet it.",
+   "Find balance with a straight body, using finger pressure to stop overbalancing.",
+   "Hold the position, breathing steadily.",
+   "Exit by stepping down or cartwheeling out when balance is lost."
+  ],
+  "cues": [
+   "Kick to balance",
+   "Fingers correct the fall",
+   "Exit cleanly"
+  ],
+  "mistakes": [
+   "Kicking too hard and falling over",
+   "Bending the arms when balance is lost",
+   "Continuing after form breaks"
+  ]
+ },
+ {
+  "id": "glute_bridge",
+  "summary": "A floor-based hip lift that strengthens the glutes while keeping the ribs down and the spine neutral.",
+  "steps": [
+   "Lie on your back with your knees bent, feet flat and hip-width apart.",
+   "Brace lightly and press through your heels to lift your hips.",
+   "Rise until there is a straight line from knees to shoulders and squeeze your glutes.",
+   "Lower your hips slowly back to the floor."
+  ],
+  "cues": [
+   "Ribs down",
+   "Squeeze at the top",
+   "No overarching"
+  ],
+  "mistakes": [
+   "Arching the lower back at the top",
+   "Pushing through the toes instead of the heels",
+   "Knees falling in or out"
+  ]
+ },
+ {
+  "id": "dead_bug",
+  "summary": "A lying core drill that extends opposite arm and leg while the lower back stays down, training anti-extension.",
+  "steps": [
+   "Lie on your back with your arms pointing up and knees bent to 90 degrees over your hips.",
+   "Press your lower back gently into the floor.",
+   "Slowly extend one arm overhead and the opposite leg out, stopping before the back lifts.",
+   "Return to the start and repeat with the other arm and leg."
+  ],
+  "cues": [
+   "Low back glued down",
+   "Opposite arm and leg",
+   "Slow breath out"
+  ],
+  "mistakes": [
+   "Lower back arching off the floor",
+   "Moving too fast to stay controlled",
+   "Holding the breath"
+  ]
+ },
+ {
+  "id": "hollow_hold",
+  "summary": "A lying core hold with arms and legs lifted and the lower back pressed down, building trunk tension for skills.",
+  "steps": [
+   "Lie on your back with your legs straight and arms by your sides.",
+   "Press your lower back into the floor and draw your ribs down.",
+   "Lift your shoulders and legs off the floor, reaching the arms overhead if you can.",
+   "Hold the position, breathing steadily."
+  ],
+  "cues": [
+   "Ribs down",
+   "Lower back pressed",
+   "Arms by ears if you can"
+  ],
+  "mistakes": [
+   "Lower back lifting off the floor",
+   "Legs too low to control",
+   "Straining the neck forward"
+  ]
+ },
+ {
+  "id": "hanging_knee_raise",
+  "summary": "A hanging core exercise that lifts the knees toward the chest, training the abdominals and grip.",
+  "steps": [
+   "Hang from a bar with straight arms and your shoulders active.",
+   "Brace your core and lift your knees toward your chest.",
+   "Curl the pelvis up slightly at the top without swinging.",
+   "Lower your legs slowly to a still hang."
+  ],
+  "cues": [
+   "Dead hang first",
+   "Knees up without swinging",
+   "Control the lower"
+  ],
+  "mistakes": [
+   "Swinging to build momentum",
+   "Dropping the legs quickly",
+   "Leaning the torso back instead of curling up"
+  ]
+ },
+ {
+  "id": "pullup_dead_hang",
+  "summary": "A straight-arm hang from a bar that builds grip strength and shoulder tolerance for pulling work.",
+  "steps": [
+   "Grip a bar with an overhand grip about shoulder-width apart.",
+   "Lift your feet so you hang with straight arms.",
+   "Draw your shoulders slightly away from your ears and keep your legs still.",
+   "Hold the position, breathing steadily."
+  ],
+  "cues": [
+   "Shoulders packed",
+   "Quiet legs",
+   "Breathe"
+  ],
+  "mistakes": [
+   "Swinging or kicking the legs",
+   "Bending the elbows"
+  ]
+ },
+ {
+  "id": "scapular_pull",
+  "summary": "A small pull from a dead hang using only the shoulder blades, building scapular strength for pull-ups.",
+  "steps": [
+   "Hang from a bar with an overhand grip and straight arms.",
+   "Pull your shoulder blades down and back to lift your body slightly.",
+   "Pause briefly at the top with the arms still straight.",
+   "Lower slowly back to a full hang."
+  ],
+  "cues": [
+   "Arms stay straight",
+   "Depress the scapulae",
+   "Pause at the top"
+  ],
+  "mistakes": [
+   "Bending the elbows to pull",
+   "Shrugging the shoulders up to the ears",
+   "Swinging the body"
+  ]
+ },
+ {
+  "id": "pullup",
+  "summary": "A strict vertical pull from a full hang to chin over the bar, building lat and biceps strength.",
+  "steps": [
+   "Hang from a bar with an overhand grip slightly wider than shoulder-width.",
+   "Set your shoulders down and brace your core with your legs still.",
+   "Pull your chest toward the bar until your chin clears it.",
+   "Lower slowly to a full hang with straight arms."
+  ],
+  "cues": [
+   "Chest to bar path",
+   "No kip for strength sets",
+   "Full hang between reps"
+  ],
+  "mistakes": [
+   "Kipping or swinging for momentum",
+   "Stopping short of a full hang",
+   "Reaching the chin forward to clear the bar"
+  ]
+ },
+ {
+  "id": "muscle_up",
+  "summary": "A pull-up that transitions over the bar into a dip, building explosive pulling and pushing strength.",
+  "steps": [
+   "Hang from a bar with an overhand grip about shoulder-width apart.",
+   "Pull explosively, driving the bar toward your lower chest and hips toward the bar.",
+   "As the bar reaches your chest, lean forward and turn your wrists over the bar.",
+   "Press down into a dip until your arms lock out above the bar.",
+   "Lower back through the transition to a hang with control."
+  ],
+  "cues": [
+   "Strict pull first",
+   "Hips to bar then sit-up",
+   "Lock out above the bar"
+  ],
+  "mistakes": [
+   "Pulling straight up instead of around the bar",
+   "Leading with one arm through the transition",
+   "Dropping from the top without control"
+  ]
+ },
+ {
+  "id": "hf_1",
+  "summary": "A push-up performed standing against a wall, introducing the pressing pattern for the chest, shoulders and triceps.",
+  "steps": [
+   "Stand an arm's length from a wall and place your hands on it at shoulder height.",
+   "Step your feet back slightly so your body forms a straight line.",
+   "Bend your elbows to bring your chest toward the wall.",
+   "Push the wall away until your arms are straight."
+  ],
+  "cues": [
+   "Body in one line",
+   "Elbows at about 45 degrees",
+   "Push the wall away"
+  ],
+  "mistakes": [
+   "Hips sagging or sticking out",
+   "Dropping the head toward the wall"
+  ]
+ },
+ {
+  "id": "hf_2",
+  "summary": "The classic floor push-up from a high plank, building chest, shoulder and triceps strength with a rigid trunk.",
+  "steps": [
+   "Set up in a high plank with hands slightly wider than shoulders and body straight.",
+   "Brace your core and squeeze your glutes.",
+   "Bend your elbows to lower your chest until it nearly touches the floor.",
+   "Push through your palms to return to straight arms."
+  ],
+  "cues": [
+   "Straight line head to heels",
+   "Elbows at about 45 degrees",
+   "Push the floor away"
+  ],
+  "mistakes": [
+   "Hips sagging toward the floor",
+   "Elbows flaring straight out to the sides",
+   "Cutting the range short at the bottom"
+  ]
+ },
+ {
+  "id": "hf_3",
+  "summary": "A push-up with the hands set well outside the shoulders, shifting more emphasis to the chest and front shoulders.",
+  "steps": [
+   "Set up in a high plank with your hands placed wider than shoulder-width.",
+   "Brace your core so your body forms a straight line.",
+   "Lower your chest until it nearly touches the floor.",
+   "Drive through your palms to return to straight arms."
+  ],
+  "cues": [
+   "Core tight",
+   "Straight line head to heels",
+   "Wrists under or just inside elbows"
+  ],
+  "mistakes": [
+   "Lower back sagging",
+   "Hands so wide the range becomes very short"
+  ]
+ },
+ {
+  "id": "hf_4",
+  "summary": "A close-hand push-up with thumbs and index fingers forming a diamond, placing heavy emphasis on the triceps.",
+  "steps": [
+   "Set up in a plank with your hands under your chest, thumbs and index fingers touching.",
+   "Keep your body straight and your core tight.",
+   "Bend your elbows close to your sides to lower your chest toward your hands.",
+   "Push back up until your arms are fully straight."
+  ],
+  "cues": [
+   "Elbows close to the body",
+   "Core tight",
+   "Chest toward the hands"
+  ],
+  "mistakes": [
+   "Elbows flaring out wide",
+   "Hips sagging or piking",
+   "Partial range at the bottom"
+  ]
+ },
+ {
+  "id": "hf_5",
+  "summary": "A push-up with the feet raised on a bench, shifting more load to the upper chest, shoulders and triceps.",
+  "steps": [
+   "Place your feet on a bench or step and your hands on the floor slightly wider than shoulders.",
+   "Brace so your body forms a straight line from shoulders to ankles.",
+   "Bend your elbows to lower your chest toward the floor.",
+   "Push back up to straight arms."
+  ],
+  "cues": [
+   "Straight line shoulders to ankles",
+   "Core braced",
+   "Push the floor away"
+  ],
+  "mistakes": [
+   "Hips sagging under the extra load",
+   "Piking the hips up to make it easier",
+   "Feet set too high for your strength"
+  ]
+ },
+ {
+  "id": "hf_6",
+  "summary": "A wide push-up that shifts the body toward one hand while the other arm stays straight, building one-arm strength.",
+  "steps": [
+   "Set up in a high plank with your hands placed much wider than shoulder-width.",
+   "Bend one elbow to lower your chest toward that hand.",
+   "Keep the opposite arm straight, sliding or pivoting it out to the side.",
+   "Push back up to the middle and repeat toward the other side."
+  ],
+  "cues": [
+   "Straight arm stays locked",
+   "Chest over the working hand",
+   "Hips level"
+  ],
+  "mistakes": [
+   "Bending the assisting arm",
+   "Hips twisting or sagging"
+  ]
+ },
+ {
+  "id": "hf_7",
+  "summary": "A wide push-up that slides the chest from one hand to the other at the bottom, building strength in each arm.",
+  "steps": [
+   "Set up in a high plank with your hands placed much wider than shoulder-width.",
+   "Lower your chest toward one hand, keeping the other arm straight.",
+   "Stay low and shift your chest across to the other hand.",
+   "Push back up to straight arms once you reach the far side."
+  ],
+  "cues": [
+   "Stay low across",
+   "Body in one line",
+   "Straight arm assists"
+  ],
+  "mistakes": [
+   "Rising up while moving side to side",
+   "Hips sagging during the shift"
+  ]
+ },
+ {
+  "id": "hf_8",
+  "summary": "A push-up performed on a single arm with the feet set wide, building maximal chest, shoulder and triceps strength.",
+  "steps": [
+   "Set up in a plank with your feet wider than shoulder-width and one hand under your chest.",
+   "Place your free hand behind your back.",
+   "Brace your whole body and lower your chest slowly toward the floor.",
+   "Press back up to a straight arm without rotating your torso.",
+   "Switch sides."
+  ],
+  "cues": [
+   "Feet wide for balance",
+   "Squeeze glutes and core",
+   "Square hips to the floor"
+  ],
+  "mistakes": [
+   "Torso twisting open toward the free arm",
+   "Hips sagging or piking",
+   "Partial range at the bottom"
+  ]
+ },
+ {
+  "id": "hf_9",
+  "summary": "A push-up with the hands set near the hips and the shoulders leaned past the wrists, building strength for planche.",
+  "steps": [
+   "Set up in a plank with your hands beside your waist, fingers turned out or back.",
+   "Lean forward until your shoulders are in front of your wrists.",
+   "Keep the lean as you bend your elbows to lower your chest.",
+   "Press back up, keeping the shoulders forward throughout."
+  ],
+  "cues": [
+   "Shoulders ahead of wrists",
+   "Hold the lean",
+   "Elbows close to the body"
+  ],
+  "mistakes": [
+   "Losing the forward lean as you lower",
+   "Hips sagging toward the floor",
+   "Elbows flaring out"
+  ]
+ },
+ {
+  "id": "hf_10",
+  "summary": "A flowing push-up that swoops from a downward-dog shape into an upward-facing arch, training pressing and mobility.",
+  "steps": [
+   "Start in a pike with hips high, hands and feet slightly wider than shoulder-width.",
+   "Bend your elbows and swoop your chest down close to the floor between your hands.",
+   "Continue forward and straighten your arms to arch up, hips low and chest up.",
+   "Push your hips back up to return to the pike."
+  ],
+  "cues": [
+   "Chest skims the floor",
+   "Smooth, continuous flow",
+   "Push hips back to reset"
+  ],
+  "mistakes": [
+   "Dropping the hips to the floor before the swoop",
+   "Rushing and losing control of the arch"
+  ]
+ },
+ {
+  "id": "hf_11",
+  "summary": "A push-up that moves between forearm plank and high plank, targeting the triceps like a bodyweight skull crusher.",
+  "steps": [
+   "Set up in a forearm plank with elbows under your shoulders and body straight.",
+   "Press through your palms to lift the elbows and straighten your arms.",
+   "Lower your forearms back to the floor with control.",
+   "Keep your hips level and body straight throughout."
+  ],
+  "cues": [
+   "Press through the palms",
+   "Hips stay level",
+   "Elbows track straight back"
+  ],
+  "mistakes": [
+   "Hips piking up to help the press",
+   "Elbows flaring out to the sides"
+  ]
+ },
+ {
+  "id": "hf_12",
+  "summary": "A straight-arm plank movement that protracts and retracts the shoulder blades to build scapular control.",
+  "steps": [
+   "Set up in a high plank with hands under your shoulders and elbows locked.",
+   "Let your chest sink slightly so the shoulder blades move together.",
+   "Push the floor away to spread the shoulder blades apart.",
+   "Move through a comfortable, controlled range without bending the arms."
+  ],
+  "cues": [
+   "Elbows locked",
+   "Only the shoulder blades move",
+   "Push the floor away"
+  ],
+  "mistakes": [
+   "Bending the elbows",
+   "Hips sagging toward the floor"
+  ]
+ },
+ {
+  "id": "hf_13",
+  "summary": "A push-up that draws one knee toward the same-side elbow on each rep, adding core and hip work to the press.",
+  "steps": [
+   "Set up in a high plank with your hands slightly wider than shoulder-width.",
+   "Lower your chest while bringing one knee out to the side toward the same elbow.",
+   "Push back up while returning the foot to the start.",
+   "Repeat with the other leg."
+  ],
+  "cues": [
+   "Knee out to the elbow",
+   "Hips stay low",
+   "Body stays long"
+  ],
+  "mistakes": [
+   "Hips piking up as the knee moves",
+   "Shortening the push-up depth"
+  ]
+ },
+ {
+  "id": "hf_14",
+  "summary": "A swooping push-up from pike to arch that reverses the same path back, training the chest, shoulders and triceps.",
+  "steps": [
+   "Start in a pike with hips high and hands and feet slightly wider than shoulder-width.",
+   "Bend your elbows and swoop your chest down and forward close to the floor.",
+   "Straighten your arms into an arch with hips low and chest up.",
+   "Reverse the swoop, bending your elbows and sliding back to the pike."
+  ],
+  "cues": [
+   "Chest skims the floor",
+   "Reverse the same path",
+   "Control both directions"
+  ],
+  "mistakes": [
+   "Pushing hips straight back instead of reversing the swoop",
+   "Rushing through the bottom"
+  ]
+ },
+ {
+  "id": "hf_15",
+  "summary": "A push-up on gymnastic rings where unstable handles demand extra chest, shoulder and stabilizer strength.",
+  "steps": [
+   "Set the rings low and hold them in a high plank, arms straight and rings close to your sides.",
+   "Brace so your body forms a straight line.",
+   "Lower your chest between the rings, keeping them from drifting apart.",
+   "Press back up and turn the rings out slightly at the top."
+  ],
+  "cues": [
+   "Rings stay close",
+   "Body in one line",
+   "Turn out at the top"
+  ],
+  "mistakes": [
+   "Rings drifting wide",
+   "Hips sagging toward the floor",
+   "Shaking through a partial range"
+  ]
+ },
+ {
+  "id": "hf_16",
+  "summary": "A push-up with hands set wide and low near the hips, an extreme straight-body press toward the maltese hold.",
+  "steps": [
+   "Set up in a plank with your hands wide and near your hips, fingers pointing outward.",
+   "Lean your shoulders forward and protract your shoulder blades.",
+   "Bend your elbows to lower your chest toward the floor with the body straight.",
+   "Press back up while holding the lean."
+  ],
+  "cues": [
+   "Lean forward",
+   "Shoulder blades spread",
+   "Body rigid"
+  ],
+  "mistakes": [
+   "Hips piking or sagging",
+   "Losing the forward lean"
+  ]
+ },
+ {
+  "id": "hf_17",
+  "summary": "An explosive push-up that drives the hands off the floor for a clap, building upper-body power.",
+  "steps": [
+   "Set up in a strong push-up position with hands slightly wider than shoulders.",
+   "Lower your chest under control.",
+   "Push explosively so your hands leave the floor and clap them quickly.",
+   "Land with soft elbows to absorb the impact, then reset."
+  ],
+  "cues": [
+   "Core tight",
+   "Explode off the floor",
+   "Soft elbows on landing"
+  ],
+  "mistakes": [
+   "Landing with locked elbows",
+   "Hips sagging on the push",
+   "Not pushing high enough to clap"
+  ]
+ },
+ {
+  "id": "hf_18",
+  "summary": "An explosive push-up where both hands and feet leave the floor and the body extends in the air, building power.",
+  "steps": [
+   "Set up in a high plank with your hands slightly wider than shoulders.",
+   "Lower your chest quickly with the body tight.",
+   "Push explosively through the hands and toes so both leave the floor.",
+   "Reach the arms forward briefly in the air, then return them under you.",
+   "Land with soft elbows and knees bent slightly."
+  ],
+  "cues": [
+   "Whole body stays rigid",
+   "Explode from hands and toes",
+   "Soft landing"
+  ],
+  "mistakes": [
+   "Landing with locked arms",
+   "Arching the back in the air",
+   "Attempting it without a powerful clap push-up"
+  ]
+ },
+ {
+  "id": "hf_19",
+  "summary": "A push-up from an inverted V shape that lowers the head toward the floor, training the shoulders like a press.",
+  "steps": [
+   "Start in a pike with hands shoulder-width apart and hips high over your shoulders.",
+   "Bend your elbows to lower the top of your head toward the floor ahead of your hands.",
+   "Keep the hips high as you lower.",
+   "Press back up until your arms are straight."
+  ],
+  "cues": [
+   "Hips high",
+   "Head forms a tripod with hands",
+   "Elbows track back"
+  ],
+  "mistakes": [
+   "Hips dropping into a regular push-up",
+   "Elbows flaring straight out",
+   "Lowering the head between the hands"
+  ]
+ },
+ {
+  "id": "hf_20",
+  "summary": "A vertical push-up in a wall-supported handstand, building strong shoulders and triceps for overhead pressing.",
+  "steps": [
+   "Place your hands shoulder-width apart close to a wall and kick up into a handstand.",
+   "Keep your arms straight, body long and heels resting on the wall.",
+   "Bend your elbows to lower your head slowly toward the floor.",
+   "Press back up until your arms are straight."
+  ],
+  "cues": [
+   "Lower slowly",
+   "Head forms a tripod with hands",
+   "Ribs down"
+  ],
+  "mistakes": [
+   "Dropping quickly onto the head",
+   "Arching the lower back heavily",
+   "Elbows flaring straight out"
+  ]
+ },
+ {
+  "id": "hf_21",
+  "summary": "A wall handstand push-up on raised handles so the head drops below the hands, adding range for the shoulders.",
+  "steps": [
+   "Set parallettes or blocks close to a wall and kick up into a handstand on them.",
+   "Keep your body straight with heels on the wall.",
+   "Lower slowly until your head passes below the level of your hands.",
+   "Press back up to straight arms."
+  ],
+  "cues": [
+   "Control the bottom",
+   "Elbows track forward-out",
+   "Body stays stacked"
+  ],
+  "mistakes": [
+   "Losing tension at the deepest point",
+   "Arching the back to press out",
+   "Using a deficit before the wall version is solid"
+  ]
+ },
+ {
+  "id": "hf_22",
+  "summary": "A handstand push-up performed without wall support, combining balance with heavy shoulder and triceps pressing.",
+  "steps": [
+   "Kick up into a balanced freestanding handstand with hands shoulder-width apart.",
+   "Shift your shoulders slightly forward as you begin to bend the elbows.",
+   "Lower under control until your head nearly touches the floor.",
+   "Press back up, moving the shoulders back over the hands to regain balance."
+  ],
+  "cues": [
+   "Find balance first",
+   "Fingers steer the balance",
+   "Slow down, strong up"
+  ],
+  "mistakes": [
+   "Losing balance and arching the back",
+   "Dropping fast into the bottom"
+  ]
+ },
+ {
+  "id": "hf_23",
+  "summary": "A handstand push-up lowered to a horizontal hold with the body parallel to the floor, then pressed back up.",
+  "steps": [
+   "Start in a handstand on the floor or parallettes.",
+   "Lean the shoulders forward and bend the elbows as your body tilts down.",
+   "Lower until your body is parallel to the floor, elbows bent near 90 degrees.",
+   "Press back up and rotate the body to the vertical handstand."
+  ],
+  "cues": [
+   "Lean shoulders forward",
+   "Body stays straight",
+   "Press and rotate up"
+  ],
+  "mistakes": [
+   "Bending at the hips instead of staying straight",
+   "Losing the lean and collapsing"
+  ]
+ },
+ {
+  "id": "hf_24",
+  "summary": "A dip with the hands on a bench behind you, training the triceps with the feet supporting part of your weight.",
+  "steps": [
+   "Sit on the edge of a bench, hands beside your hips, fingers forward.",
+   "Slide your hips off the bench with your legs extended in front of you.",
+   "Bend your elbows straight back to lower your body to a comfortable depth.",
+   "Press through your hands to straighten your arms."
+  ],
+  "cues": [
+   "Elbows point back",
+   "Hips close to the bench",
+   "Shoulders away from the ears"
+  ],
+  "mistakes": [
+   "Lowering past a comfortable shoulder range",
+   "Elbows flaring out to the sides",
+   "Shoulders shrugging up"
+  ]
+ },
+ {
+  "id": "hf_25",
+  "summary": "A dip between parallel bars that lowers until the upper arms are about parallel, building triceps and chest strength.",
+  "steps": [
+   "Support yourself on parallel bars with straight arms and shoulders pressed down.",
+   "Lower your body by bending your elbows, keeping them close to your sides.",
+   "Stop when your upper arms are about parallel to the floor.",
+   "Press back up until your arms are straight."
+  ],
+  "cues": [
+   "Shoulders down",
+   "Elbows close",
+   "Lock out at the top"
+  ],
+  "mistakes": [
+   "Shoulders shrugging toward the ears",
+   "Swinging the legs for momentum",
+   "Cutting the range short"
+  ]
+ },
+ {
+  "id": "hf_26",
+  "summary": "A parallel bar dip with an intentional forward lean of the torso, shifting more emphasis to the chest.",
+  "steps": [
+   "Support yourself on parallel bars with straight arms.",
+   "Lean your torso forward and let your legs drift slightly behind you.",
+   "Lower until your upper arms are about parallel, elbows angled slightly out.",
+   "Press back up while keeping the forward lean."
+  ],
+  "cues": [
+   "Chest over the hands",
+   "Shoulders down",
+   "Hold the lean"
+  ],
+  "mistakes": [
+   "Losing the lean and standing upright",
+   "Shoulders rolling forward at the bottom"
+  ]
+ },
+ {
+  "id": "hf_27",
+  "summary": "A dip on a single straight bar in front of the body, building the pressing strength used in muscle-ups.",
+  "steps": [
+   "Support yourself above a straight bar with an overhand grip, arms locked.",
+   "Lean your chest forward over the bar and let your legs angle slightly forward.",
+   "Bend your elbows to lower your chest toward the bar.",
+   "Press back up to straight arms."
+  ],
+  "cues": [
+   "Chest over the bar",
+   "Elbows track back",
+   "Lock out at the top"
+  ],
+  "mistakes": [
+   "Bar drifting away from the body",
+   "Shrugging the shoulders up"
+  ]
+ },
+ {
+  "id": "hf_28",
+  "summary": "A dip with a straight bar behind the body, demanding shoulder extension mobility and strong pressing.",
+  "steps": [
+   "Stand with your back to a straight bar and grip it behind you with arms straight.",
+   "Support your weight with your hands and lift your feet so you hang in front of the bar.",
+   "Bend your elbows to lower your body, letting the bar travel up your back.",
+   "Press back up to straight arms."
+  ],
+  "cues": [
+   "Chest up",
+   "Control the bottom",
+   "Body close to the bar"
+  ],
+  "mistakes": [
+   "Dropping past your controlled range",
+   "Rounding the shoulders forward"
+  ]
+ },
+ {
+  "id": "hf_29",
+  "summary": "A dip on gymnastic rings that demands strong stabilization through the shoulders, chest and triceps.",
+  "steps": [
+   "Support yourself on the rings with straight arms and rings close to your sides.",
+   "Turn the rings out slightly and keep your body still.",
+   "Lower until your upper arms are about parallel, keeping the rings close.",
+   "Press back up and lock out with the rings turned out."
+  ],
+  "cues": [
+   "Rings close to the body",
+   "Turn out at the top",
+   "Shoulders down"
+  ],
+  "mistakes": [
+   "Rings drifting wide",
+   "Shaking through a partial range",
+   "Shrugging the shoulders up"
+  ]
+ },
+ {
+  "id": "hf_30",
+  "summary": "A parallel bar dip performed while holding the legs straight out in an L-sit, adding core and hip flexor work.",
+  "steps": [
+   "Support yourself on parallel bars with straight arms.",
+   "Lift your straight legs in front of you to hip height.",
+   "Lower until your upper arms are about parallel while holding the legs up.",
+   "Press back up to straight arms without dropping the legs."
+  ],
+  "cues": [
+   "Legs stay level",
+   "Toes pointed",
+   "Shoulders down"
+  ],
+  "mistakes": [
+   "Legs dropping during the dip",
+   "Bending the knees"
+  ]
+ },
+ {
+  "id": "hf_31",
+  "summary": "A straight-arm plank hold with the shoulders leaned past the wrists, building shoulder and wrist strength for planche.",
+  "steps": [
+   "Set up in a high plank with your fingers turned slightly out.",
+   "Protract your shoulder blades and tuck into a hollow body.",
+   "Lean forward until your shoulders are in front of your wrists, arms straight.",
+   "Hold the position, breathing steadily."
+  ],
+  "cues": [
+   "Arms locked",
+   "Shoulder blades spread",
+   "Hollow body"
+  ],
+  "mistakes": [
+   "Bending the elbows",
+   "Hips sagging into an arch",
+   "Shoulder blades pinching together"
+  ]
+ },
+ {
+  "id": "hf_32",
+  "summary": "A straight-arm balance with knees tucked and feet off the floor, an early planche progression for the shoulders.",
+  "steps": [
+   "Squat down and place your hands on the floor or parallettes beside your feet.",
+   "Lean forward with straight arms until your feet become light.",
+   "Lift your feet and pull your knees into your chest, hips level with your shoulders.",
+   "Hold the position, breathing steadily."
+  ],
+  "cues": [
+   "Arms locked",
+   "Push the floor away",
+   "Round the upper back"
+  ],
+  "mistakes": [
+   "Bending the elbows to balance",
+   "Hips dropping below shoulder height"
+  ]
+ },
+ {
+  "id": "hf_33",
+  "summary": "A planche held with the legs spread wide, shortening the lever compared with the full planche.",
+  "steps": [
+   "Start in a tuck planche with straight arms on the floor or parallettes.",
+   "Extend your legs out into a wide straddle as you lean further forward.",
+   "Keep your hips and legs level with your shoulders in a straight line.",
+   "Hold the position, breathing steadily."
+  ],
+  "cues": [
+   "Arms locked",
+   "Legs wide and straight",
+   "Push the floor away"
+  ],
+  "mistakes": [
+   "Bending the elbows",
+   "Hips piking or sagging"
+  ]
+ },
+ {
+  "id": "hf_34",
+  "summary": "A horizontal straight-body hold on locked arms with the legs together, the elite goal of planche training.",
+  "steps": [
+   "Start in a planche lean or straddle planche on straight arms.",
+   "Lean forward and lift your legs until your body is parallel to the floor.",
+   "Keep your legs together, glutes tight and body straight from shoulders to toes.",
+   "Hold the position, breathing steadily."
+  ],
+  "cues": [
+   "Arms locked",
+   "Squeeze glutes",
+   "Shoulders spread"
+  ],
+  "mistakes": [
+   "Bending the elbows",
+   "Hips piking or sagging"
+  ]
+ },
+ {
+  "id": "hf_35",
+  "summary": "A push-up performed while holding a planche, keeping the feet off the floor through the whole rep.",
+  "steps": [
+   "Lean into a planche on the floor or parallettes with your feet off the floor.",
+   "Bend your elbows to lower your chest while keeping the body level.",
+   "Lean further forward as you lower to stay balanced.",
+   "Press back up to straight arms without touching down."
+  ],
+  "cues": [
+   "Body stays level",
+   "Elbows close",
+   "Shoulders lead forward"
+  ],
+  "mistakes": [
+   "Feet touching down between reps",
+   "Hips piking as you press"
+  ]
+ },
+ {
+  "id": "hf_36",
+  "summary": "A ring exercise that lets the arms open wide and squeezes them back together, like a bodyweight chest fly.",
+  "steps": [
+   "Hold the rings set at about hip height and lean into an incline plank with straight arms.",
+   "Keep a slight bend in the elbows and let your arms open out to the sides.",
+   "Lower only as far as you can control.",
+   "Squeeze your arms back together to return to the start."
+  ],
+  "cues": [
+   "Slight elbow bend",
+   "Body in one line",
+   "Squeeze the rings together"
+  ],
+  "mistakes": [
+   "Bending the elbows into a push-up",
+   "Opening too wide to control",
+   "Hips sagging"
+  ]
+ },
+ {
+  "id": "hf_37",
+  "summary": "A straight-arm hang from a bar that builds grip strength and shoulder stability for pulling.",
+  "steps": [
+   "Grip a bar with an overhand grip about shoulder-width apart.",
+   "Lift your feet so you hang with fully straight arms.",
+   "Keep your body still with the shoulders slightly engaged.",
+   "Hold the position, breathing steadily."
+  ],
+  "cues": [
+   "Full grip on the bar",
+   "Quiet legs",
+   "Shoulders engaged"
+  ],
+  "mistakes": [
+   "Swinging the body",
+   "Bending the elbows"
+  ]
+ },
+ {
+  "id": "hf_38",
+  "summary": "A small pull from a dead hang made by depressing the shoulder blades, strengthening the shoulders for pull-ups.",
+  "steps": [
+   "Hang from a bar with an overhand grip and straight arms.",
+   "Pull your shoulders down away from your ears to lift your body a few inches.",
+   "Pause briefly at the top with the arms straight.",
+   "Lower slowly back to a full hang."
+  ],
+  "cues": [
+   "Arms stay straight",
+   "Reverse shrug",
+   "Pause at the top"
+  ],
+  "mistakes": [
+   "Bending the elbows to pull",
+   "Swinging the body"
+  ]
+ },
+ {
+  "id": "hf_39",
+  "summary": "A horizontal pull under a low bar with a straight body, building the upper back, lats and biceps.",
+  "steps": [
+   "Set a bar at about waist height and hang underneath it with your arms straight.",
+   "Grip slightly wider than shoulders and keep your body straight, heels on the floor.",
+   "Pull your chest to the bar, drawing your shoulder blades together.",
+   "Pause briefly, then lower slowly to straight arms."
+  ],
+  "cues": [
+   "Body in one line",
+   "Chest to the bar",
+   "Shoulder blades together"
+  ],
+  "mistakes": [
+   "Hips sagging toward the floor",
+   "Reaching the chin instead of the chest",
+   "Shrugging the shoulders up"
+  ]
+ },
+ {
+  "id": "hf_40",
+  "summary": "An inverted row with the hands set wide and elbows flared, emphasizing the rear shoulders and upper back.",
+  "steps": [
+   "Hang under a low bar with a grip wider than shoulder-width and arms straight.",
+   "Keep your body straight from shoulders to heels.",
+   "Pull your chest to the bar with your elbows flaring out to the sides.",
+   "Lower slowly to straight arms."
+  ],
+  "cues": [
+   "Elbows wide",
+   "Squeeze the upper back",
+   "Hips up"
+  ],
+  "mistakes": [
+   "Hips sagging",
+   "Shrugging toward the ears"
+  ]
+ },
+ {
+  "id": "hf_41",
+  "summary": "A row on gymnastic rings with the feet on the floor, building back and biceps strength with added stability work.",
+  "steps": [
+   "Hold the rings and walk your feet forward to lean back with straight arms.",
+   "Keep your body straight from head to heels.",
+   "Pull your chest up between the rings, drawing the shoulder blades together.",
+   "Lower slowly to straight arms."
+  ],
+  "cues": [
+   "Body in one line",
+   "Elbows close to the ribs",
+   "Shoulder blades together"
+  ],
+  "mistakes": [
+   "Hips sagging",
+   "Rings drifting wide apart"
+  ]
+ },
+ {
+  "id": "hf_42",
+  "summary": "An inverted row pulled with one arm while the body stays square, building unilateral back and core strength.",
+  "steps": [
+   "Hang under a low bar or ring with one hand and your body straight.",
+   "Set your feet wider for balance and place the free hand on your chest or hip.",
+   "Pull your chest toward the hand without rotating your torso.",
+   "Lower slowly to a straight arm, then switch sides."
+  ],
+  "cues": [
+   "Hips square",
+   "Brace the core",
+   "Elbow close to the ribs"
+  ],
+  "mistakes": [
+   "Torso twisting toward the bar",
+   "Hips sagging"
+  ]
+ },
+ {
+  "id": "hf_43",
+  "summary": "A vertical pull with palms facing away that lifts the chin over the bar, building lat, biceps and grip strength.",
+  "steps": [
+   "Hang from a bar with palms facing away, hands about shoulder-width apart.",
+   "Draw your shoulders down and brace your core.",
+   "Pull your elbows down and back until your chin clears the bar.",
+   "Lower slowly to a full hang with straight arms."
+  ],
+  "cues": [
+   "Lead with the chest",
+   "Elbows down and back",
+   "Full hang at the bottom"
+  ],
+  "mistakes": [
+   "Kipping or swinging for momentum",
+   "Partial range at the bottom",
+   "Shrugging the shoulders up"
+  ]
+ },
+ {
+  "id": "hf_44",
+  "summary": "A pull-up with palms facing you and hands about shoulder-width, adding biceps emphasis to the lat work.",
+  "steps": [
+   "Hang from a bar with palms facing you, hands shoulder-width apart or slightly closer.",
+   "Brace your core and set your shoulders down.",
+   "Pull with elbows close to your body until your chin clears the bar.",
+   "Lower slowly to a full hang."
+  ],
+  "cues": [
+   "Elbows close",
+   "Chest up",
+   "Control the lower"
+  ],
+  "mistakes": [
+   "Swinging for momentum",
+   "Stopping short of a full hang"
+  ]
+ },
+ {
+  "id": "hf_45",
+  "summary": "A pull-up with the hands much wider than the shoulders, emphasizing the upper lats and shoulders.",
+  "steps": [
+   "Hang from a bar with an overhand grip well wider than shoulder-width.",
+   "Draw your shoulders down and keep them there.",
+   "Drive your elbows down and slightly back to pull your chest toward the bar.",
+   "Pause briefly when your chin clears the bar, then lower slowly."
+  ],
+  "cues": [
+   "Lead with the chest",
+   "No shrugging",
+   "Elbows down and back"
+  ],
+  "mistakes": [
+   "Shrugging the shoulders up",
+   "Cutting the range short",
+   "Grip so wide the range becomes very short"
+  ]
+ },
+ {
+  "id": "hf_46",
+  "summary": "A pull-up with the hands close together, increasing range of motion and emphasis on the biceps and grip.",
+  "steps": [
+   "Hang from a bar with your hands a few inches apart.",
+   "Brace your core and set your shoulders down.",
+   "Pull your chest toward your hands until your chin clears the bar.",
+   "Lower slowly to a full hang."
+  ],
+  "cues": [
+   "Elbows forward and close",
+   "Chest to hands",
+   "Full hang at the bottom"
+  ],
+  "mistakes": [
+   "Swinging for momentum",
+   "Partial range at the top or bottom"
+  ]
+ },
+ {
+  "id": "hf_47",
+  "summary": "A pull-up on parallel handles with palms facing each other, training the lats and biceps in a joint-friendly grip.",
+  "steps": [
+   "Hang from parallel handles with your palms facing each other.",
+   "Brace your core and set your shoulders down.",
+   "Pull with elbows close to your sides until your chin clears the handles.",
+   "Lower slowly to a full hang."
+  ],
+  "cues": [
+   "Elbows close",
+   "Chest up",
+   "Control the lower"
+  ],
+  "mistakes": [
+   "Kipping or swinging",
+   "Stopping short of a full hang"
+  ]
+ },
+ {
+  "id": "hf_48",
+  "summary": "A pull-up with the hands close and staggered along the bar, moving the head to alternate sides on each rep.",
+  "steps": [
+   "Stand under the bar side-on and grip it with hands close together, one in front of the other.",
+   "Hang with straight arms and brace your core.",
+   "Pull up so your head passes one side of the bar.",
+   "Lower slowly and pass the head to the other side on the next rep."
+  ],
+  "cues": [
+   "Hands close together",
+   "Don't twist the torso",
+   "Alternate sides"
+  ],
+  "mistakes": [
+   "Rotating the torso to get over the bar",
+   "Swinging for momentum"
+  ]
+ },
+ {
+  "id": "hf_49",
+  "summary": "A pull-up performed with the legs held straight out in an L, training the back and the core together.",
+  "steps": [
+   "Hang from a bar with an overhand grip about shoulder-width apart.",
+   "Lift your straight legs to hip height so your body forms an L.",
+   "Pull until your chin clears the bar while holding the legs level.",
+   "Lower slowly to a full hang without dropping the legs."
+  ],
+  "cues": [
+   "Legs stay level",
+   "Toes pointed",
+   "No swinging"
+  ],
+  "mistakes": [
+   "Legs dropping during the pull",
+   "Bending the knees"
+  ]
+ },
+ {
+  "id": "hf_50",
+  "summary": "A wide-grip pull-up that pulls the body toward one hand while the other arm stays straight, building one-arm strength.",
+  "steps": [
+   "Hang from a bar with an overhand grip much wider than shoulder-width.",
+   "Pull your body toward one hand, bending that arm.",
+   "Keep the other arm straight along the bar.",
+   "Lower slowly to a full hang and repeat toward the other side."
+  ],
+  "cues": [
+   "Straight arm stays locked",
+   "Chin to the working hand",
+   "Control the lower"
+  ],
+  "mistakes": [
+   "Bending the straight arm",
+   "Swinging for momentum"
+  ]
+ },
+ {
+  "id": "hf_51",
+  "summary": "A wide pull-up that travels side to side at the top of the bar, building unilateral lat, biceps and grip strength.",
+  "steps": [
+   "Hang from a bar with an overhand grip slightly wider than shoulder-width.",
+   "Pull up until your chin is above the bar.",
+   "Shift toward one hand by straightening the other arm while staying at bar height.",
+   "Move smoothly across to the other hand, then lower to a full hang."
+  ],
+  "cues": [
+   "Stay at bar height",
+   "Smooth side to side",
+   "Shoulders down"
+  ],
+  "mistakes": [
+   "Dropping down while moving across",
+   "Swinging the legs for momentum"
+  ]
+ },
+ {
+  "id": "hf_52",
+  "summary": "A full pull-up using a single arm, demanding extraordinary lat, biceps and grip strength.",
+  "steps": [
+   "Hang from a bar with one hand, palm facing you or neutral, the other arm free.",
+   "Brace your core and engage the working shoulder.",
+   "Pull until your chin clears the bar while limiting rotation.",
+   "Lower slowly to a full hang, then switch sides."
+  ],
+  "cues": [
+   "Shoulder engaged",
+   "Squeeze the free fist",
+   "Legs together and still"
+  ],
+  "mistakes": [
+   "Starting from a passive, loose shoulder",
+   "Spinning away from the bar",
+   "Dropping quickly from the top"
+  ]
+ },
+ {
+  "id": "hf_53",
+  "summary": "A pull-up gripping towels draped over the bar, greatly increasing the demand on grip and forearms.",
+  "steps": [
+   "Drape two towels over a pull-up bar and grip one firmly in each hand.",
+   "Hang with straight arms and brace your core.",
+   "Pull until your hands are near your chin.",
+   "Lower slowly to straight arms."
+  ],
+  "cues": [
+   "Crush the towels",
+   "Elbows down",
+   "Control the lower"
+  ],
+  "mistakes": [
+   "Losing grip and slipping on the way down",
+   "Swinging for momentum"
+  ]
+ },
+ {
+  "id": "hf_54",
+  "summary": "A pull-up driven with maximum speed so the chest reaches the bar or higher, building pulling power.",
+  "steps": [
+   "Hang from a bar with an overhand grip about shoulder-width apart.",
+   "Brace your core and set your shoulders down.",
+   "Pull as fast and hard as you can, aiming to bring your chest to the bar or above.",
+   "Lower under control to a full hang before the next rep."
+  ],
+  "cues": [
+   "Pull fast and hard",
+   "Chest to the bar",
+   "Reset at the bottom"
+  ],
+  "mistakes": [
+   "Kipping instead of pulling",
+   "Dropping fast into the bottom"
+  ]
+ },
+ {
+  "id": "hf_55",
+  "summary": "A fast pull-up that turns over the bar into a dip and locks out on top, building explosive pull-to-push strength.",
+  "steps": [
+   "Hang from a bar with an overhand grip about shoulder-width apart.",
+   "Pull explosively, driving the bar toward your lower chest.",
+   "As the bar reaches your chest, lean forward and turn your wrists over the bar.",
+   "Press down until your arms are straight with the bar at your waist.",
+   "Lower back through the transition to a hang with control."
+  ],
+  "cues": [
+   "Pull to the lower chest",
+   "Lean over the bar",
+   "Lock out on top"
+  ],
+  "mistakes": [
+   "Pulling straight up instead of around the bar",
+   "One arm going over before the other",
+   "Using a large kip before you can do it strictly"
+  ]
+ },
+ {
+  "id": "hf_56",
+  "summary": "A muscle-up on gymnastic rings using a false grip, demanding control through the transition into a ring dip.",
+  "steps": [
+   "Hang from the rings with a false grip, wrists over the rings.",
+   "Pull the rings down toward your chest, keeping them close.",
+   "Lean forward and roll your shoulders over the rings into the bottom of a dip.",
+   "Press up until your arms are straight above the rings.",
+   "Lower back through the transition to a hang with control."
+  ],
+  "cues": [
+   "Keep the false grip",
+   "Rings close to the body",
+   "Fast transition"
+  ],
+  "mistakes": [
+   "Losing the false grip mid-pull",
+   "Rings drifting away from the body",
+   "Chicken-winging one arm over"
+  ]
+ },
+ {
+  "id": "hf_57",
+  "summary": "A hanging hold with the knees tucked and the back horizontal facing up, building lat and shoulder strength.",
+  "steps": [
+   "Hang from a bar with straight arms and an overhand grip.",
+   "Pull your knees into your chest.",
+   "Press the bar down with straight arms to raise your back level with the floor.",
+   "Hold the position, breathing steadily."
+  ],
+  "cues": [
+   "Arms straight",
+   "Press the bar down",
+   "Hips level with the shoulders"
+  ],
+  "mistakes": [
+   "Bending the elbows",
+   "Hips dropping below the shoulders"
+  ]
+ },
+ {
+  "id": "hf_58",
+  "summary": "A hanging hold with the whole body straight and horizontal facing up, an elite test of lat and core strength.",
+  "steps": [
+   "Hang from a bar with straight arms and an overhand grip.",
+   "Press the bar down with straight arms as you raise your body.",
+   "Extend your legs until your body is straight and parallel to the floor.",
+   "Hold the position, breathing steadily."
+  ],
+  "cues": [
+   "Arms straight",
+   "Squeeze glutes",
+   "Press the bar toward the hips"
+  ],
+  "mistakes": [
+   "Bending the elbows",
+   "Hips piking or sagging"
+  ]
+ },
+ {
+  "id": "hf_59",
+  "summary": "A rowing movement performed from a front lever, pulling the bar toward the waist while staying horizontal.",
+  "steps": [
+   "Hang from a bar and raise into a front lever or tuck front lever.",
+   "Bend your elbows to pull the bar toward your waist.",
+   "Keep your body horizontal throughout the pull.",
+   "Extend your arms slowly back to the lever."
+  ],
+  "cues": [
+   "Body stays level",
+   "Pull to the waist",
+   "Squeeze glutes"
+  ],
+  "mistakes": [
+   "Hips dropping during the pull",
+   "Cutting the row short"
+  ]
+ },
+ {
+  "id": "hf_60",
+  "summary": "A rotation from a hang backward through an inverted hang to a German hang and back, building shoulder mobility.",
+  "steps": [
+   "Hang from a bar or rings with straight arms.",
+   "Tuck your knees and lift them up between your arms as you rotate backward.",
+   "Continue through an inverted hang and lower your feet behind you to a comfortable range.",
+   "Reverse the motion slowly back to the hang."
+  ],
+  "cues": [
+   "Move slowly",
+   "Arms stay straight",
+   "Comfortable range only"
+  ],
+  "mistakes": [
+   "Dropping into the bottom without control",
+   "Bending the arms during the rotation"
+  ]
+ },
+ {
+  "id": "hf_61",
+  "summary": "A face-down horizontal hold with knees tucked, hanging below the bar to build shoulder and biceps strength.",
+  "steps": [
+   "Hang from a bar or rings and rotate backward into an inverted hang.",
+   "Tuck your knees to your chest.",
+   "Lower your back slowly until it is horizontal and facing down.",
+   "Hold the position, breathing steadily."
+  ],
+  "cues": [
+   "Arms straight",
+   "Hips level with shoulders",
+   "Lower slowly"
+  ],
+  "mistakes": [
+   "Bending the elbows",
+   "Dropping below horizontal"
+  ]
+ },
+ {
+  "id": "hf_62",
+  "summary": "A face-down straight-body hold hanging below the bar, placing heavy demand on the shoulders and biceps.",
+  "steps": [
+   "Hang from a bar or rings and rotate backward into an inverted hang.",
+   "Lower your body slowly with straight arms.",
+   "Stop when your body is straight and parallel to the floor, legs together.",
+   "Hold the position, breathing steadily."
+  ],
+  "cues": [
+   "Arms straight",
+   "Squeeze glutes",
+   "Body in one line"
+  ],
+  "mistakes": [
+   "Arching or piking the hips",
+   "Bending the elbows"
+  ]
+ },
+ {
+  "id": "hf_63",
+  "summary": "A pull-up variation that rocks the body toward and away from the bar at the top, isolating the biceps.",
+  "steps": [
+   "Pull up to the top position with your chin above the bar.",
+   "Push your body away from the bar by partially straightening your arms.",
+   "Pull your body back in toward the bar without lowering.",
+   "Lower slowly to a full hang when finished."
+  ],
+  "cues": [
+   "Stay high on the bar",
+   "Move at the elbows",
+   "Controlled rocking"
+  ],
+  "mistakes": [
+   "Dropping down between rocks",
+   "Swinging the legs for momentum"
+  ]
+ },
+ {
+  "id": "hf_64",
+  "summary": "A ring curl that leans forward with the arms behind, then curls back up, a demanding biceps exercise.",
+  "steps": [
+   "Hold the rings at about hip height and stand facing away from the anchor.",
+   "Lean forward with straight arms extended behind you.",
+   "Curl your elbows to pull your body back upright.",
+   "Lower forward slowly to straight arms."
+  ],
+  "cues": [
+   "Body stays straight",
+   "Move at the elbows",
+   "Lower slowly"
+  ],
+  "mistakes": [
+   "Leaning further than you can control",
+   "Bending at the hips"
+  ]
+ },
+ {
+  "id": "hf_65",
+  "summary": "A ring curl leaning back with a straight body, curling yourself up by bending only at the elbows.",
+  "steps": [
+   "Hold the rings with palms up and walk your feet forward to lean back.",
+   "Keep your body straight from head to heels with arms extended.",
+   "Bend only your elbows to curl your hands toward your forehead.",
+   "Lower slowly to straight arms."
+  ],
+  "cues": [
+   "Elbows stay high",
+   "Body in one line",
+   "Squeeze the biceps"
+  ],
+  "mistakes": [
+   "Turning it into a row by pulling the elbows back",
+   "Hips sagging"
+  ]
+ },
+ {
+  "id": "hf_66",
+  "summary": "A transition from the top of a pull-up out to a front lever and back, building lat and core strength.",
+  "steps": [
+   "Pull up to the top position with your chin over the bar.",
+   "Push the bar away with straight arms while raising your hips and legs.",
+   "Rotate out to a front lever or tuck front lever position.",
+   "Pull yourself back up to the top of the pull-up."
+  ],
+  "cues": [
+   "Body stays rigid",
+   "Straighten arms smoothly",
+   "Control both directions"
+  ],
+  "mistakes": [
+   "Dropping the hips in the lever",
+   "Bending at the hips through the transition"
+  ]
+ },
+ {
+  "id": "hf_67",
+  "summary": "A ring pull toward the face with elbows high and outward rotation, training the rear shoulders and upper back.",
+  "steps": [
+   "Hold the rings with palms facing down and lean back with straight arms.",
+   "Keep your body straight from head to heels.",
+   "Pull the rings toward your face with your elbows high and wide.",
+   "Rotate your hands back at the top, then lower slowly."
+  ],
+  "cues": [
+   "Elbows high",
+   "Rotate back at the top",
+   "Body in one line"
+  ],
+  "mistakes": [
+   "Elbows dropping into a row",
+   "Hips sagging"
+  ]
+ },
+ {
+  "id": "hf_68",
+  "summary": "A standing two-leg squat to full comfortable depth, building quadriceps and glute strength.",
+  "steps": [
+   "Stand with your feet shoulder-width apart, toes slightly out.",
+   "Bend your knees and hips, sitting back and down between your heels.",
+   "Lower until your thighs are at least parallel, keeping your chest up.",
+   "Push through your whole foot to return to standing."
+  ],
+  "cues": [
+   "Chest up",
+   "Push knees out",
+   "Heels down"
+  ],
+  "mistakes": [
+   "Knees caving inward",
+   "Heels lifting off the floor",
+   "Rounding the back at the bottom"
+  ]
+ },
+ {
+  "id": "hf_69",
+  "summary": "A full single-leg squat with the free leg straight in front, building leg strength, balance and mobility.",
+  "steps": [
+   "Stand on one leg with the other leg straight and slightly forward.",
+   "Reach your arms forward and bend the standing knee slowly.",
+   "Lower to full depth, keeping the free leg straight and off the floor.",
+   "Drive through the standing foot to rise, then switch sides."
+  ],
+  "cues": [
+   "Slow descent",
+   "Heel stays down",
+   "Free leg straight"
+  ],
+  "mistakes": [
+   "Collapsing into the bottom",
+   "Standing knee caving inward",
+   "Heel lifting off the floor"
+  ]
+ },
+ {
+  "id": "hf_70",
+  "summary": "A single-leg squat with the free leg bent behind you, heel toward the glutes, building quadriceps strength.",
+  "steps": [
+   "Stand on one leg and bend the other knee so the foot is behind you.",
+   "Hold the rear foot or keep it lifted, arms forward for balance.",
+   "Lower until the back knee lightly touches the floor.",
+   "Drive through the standing foot to rise, then switch sides."
+  ],
+  "cues": [
+   "Stay tall",
+   "Knee tracks forward",
+   "Touch the knee down softly"
+  ],
+  "mistakes": [
+   "Dropping the back knee hard",
+   "Standing knee caving inward"
+  ]
+ },
+ {
+  "id": "hf_71",
+  "summary": "An advanced single-leg squat with the free leg crossing behind the standing leg, demanding strength and mobility.",
+  "steps": [
+   "Stand on one leg with your arms reaching forward for balance.",
+   "Bend the standing knee and sweep the free leg behind and across it.",
+   "Lower toward full depth, keeping your hips and shoulders facing forward.",
+   "Drive through the standing foot to rise, then switch sides."
+  ],
+  "cues": [
+   "Hips face forward",
+   "Free leg sweeps behind",
+   "Control the descent"
+  ],
+  "mistakes": [
+   "Twisting the hips open",
+   "Standing heel lifting",
+   "Collapsing into the bottom"
+  ]
+ },
+ {
+  "id": "hf_72",
+  "summary": "A single-leg squat with the free leg floating behind you, building quadriceps and glute strength without support.",
+  "steps": [
+   "Stand on one leg with the other knee bent and the foot lifted behind you.",
+   "Reach your arms forward and lean slightly from the hips.",
+   "Bend the standing knee to lower until the back knee nearly touches the floor.",
+   "Drive through the standing foot to rise, then switch sides."
+  ],
+  "cues": [
+   "Knee over the foot",
+   "Slight forward lean",
+   "Back knee hovers"
+  ],
+  "mistakes": [
+   "Back knee crashing into the floor",
+   "Standing knee caving inward"
+  ]
+ },
+ {
+  "id": "hf_73",
+  "summary": "A squat that leans back with the hips pushed forward so movement happens at the knees, isolating the quadriceps.",
+  "steps": [
+   "Stand with your feet hip-width apart, holding a support lightly if needed.",
+   "Rise onto the balls of your feet and push your hips forward.",
+   "Bend your knees forward and lean back, keeping a straight line from knees to shoulders.",
+   "Lower as far as you can control, then straighten your knees to return."
+  ],
+  "cues": [
+   "Hips stay forward",
+   "Knees travel forward",
+   "Straight line knees to head"
+  ],
+  "mistakes": [
+   "Sitting the hips back into a normal squat",
+   "Dropping lower than you can control"
+  ]
+ },
+ {
+  "id": "hf_74",
+  "summary": "A deep lateral squat where one leg bends fully while the other extends to the side, training quads and adductors.",
+  "steps": [
+   "Stand with your feet in a wide stance, toes turned out slightly.",
+   "Shift to one side and sit deep into that hip, keeping the heel down.",
+   "Keep the other leg straight with its toes pointing up.",
+   "Push back to the middle and repeat to the other side."
+  ],
+  "cues": [
+   "Sit into one hip",
+   "Chest up",
+   "Heel down on the working side"
+  ],
+  "mistakes": [
+   "Working heel lifting",
+   "Rounding the back",
+   "Bending the straight leg"
+  ]
+ },
+ {
+  "id": "hf_75",
+  "summary": "A wide-stance squat that shifts the weight onto one leg while the other stays straight, building one-leg strength.",
+  "steps": [
+   "Stand in a wide stance with your toes pointing forward or slightly out.",
+   "Shift your weight to one side and bend that knee as you lower.",
+   "Keep the other leg straight with its foot flat on the floor.",
+   "Push back up to the middle and repeat to the other side."
+  ],
+  "cues": [
+   "Straight leg stays straight",
+   "Heel down",
+   "Chest up"
+  ],
+  "mistakes": [
+   "Bending the assisting leg",
+   "Working knee caving inward"
+  ]
+ },
+ {
+  "id": "hf_76",
+  "summary": "A split squat with the rear foot raised on a bench, building quadriceps, glute and hamstring strength in each leg.",
+  "steps": [
+   "Stand tall a long stride in front of a bench or chair.",
+   "Place the top of your rear foot on the bench behind you.",
+   "Bend the front knee until the back knee nearly touches the floor.",
+   "Push through the front foot to return to the top, then switch sides."
+  ],
+  "cues": [
+   "Weight on the front foot",
+   "Torso tall",
+   "Front heel down"
+  ],
+  "mistakes": [
+   "Pushing off with the back leg",
+   "Front knee caving inward",
+   "Stance too short"
+  ]
+ },
+ {
+  "id": "hf_77",
+  "summary": "A flowing squat with an arm swing that rises onto the toes at the bottom, training the quadriceps, calves and glutes.",
+  "steps": [
+   "Stand with your feet shoulder-width apart and arms reaching forward.",
+   "Swing your arms back as you squat down, letting your heels rise.",
+   "Lower to the bottom on the balls of your feet.",
+   "Swing your arms forward as you stand up, lowering your heels at the top."
+  ],
+  "cues": [
+   "Smooth rhythm",
+   "Arms drive the rise",
+   "Breathe with the movement"
+  ],
+  "mistakes": [
+   "Losing balance on the toes",
+   "Rushing and losing control"
+  ]
+ }
+]
