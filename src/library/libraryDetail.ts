@@ -135,7 +135,7 @@ export function detailHtml(exercise: SeedExercise, view: DetailView = {}): strin
       ${summaryHtml(exercise)}
       ${sectionHtml(safetyHtml(exercise, jointHistory, excluded))}
       ${sectionHtml(jointLoadHtml(exercise, jointHistory))}
-      ${sectionHtml(stepsHtml(exercise), "ex-steps")}
+      ${sectionHtml(stepsHtml(exercise))}
       ${cuesAndMistakesHtml(exercise)}
       ${standardsHtml(exercise, tier)}
       ${skillPickerHtml(exercise, memory, cascadeHint)}
@@ -161,12 +161,8 @@ function mediaRowHtml(exercise: SeedExercise): string {
 }
 
 /** Wraps one titled block in a section; nothing when the block is empty. */
-function sectionHtml(body: string, cls = ""): string {
-  if (!body) {
-    return "";
-  }
-  const classes = ["ex-section", cls].filter(Boolean).join(" ");
-  return `<section class="${classes}">${body}</section>`;
+function sectionHtml(body: string): string {
+  return body ? `<section class="ex-section">${body}</section>` : "";
 }
 
 function cuesAndMistakesHtml(exercise: SeedExercise): string {
@@ -296,13 +292,14 @@ function skillPickerHtml(
 
 /** Full-bleed scale, one column per tier; the user's tier is marked. */
 function standardsHtml(exercise: SeedExercise, mine: SkillTier): string {
-  if (!exercise.standards) {
+  const standards = exercise.standards;
+  if (!standards) {
     return "";
   }
   const unit = exercise.effort === "hold" ? "<small>s</small>" : "";
   const cells = SKILL_TIERS.map((tier) => {
     const label = `<span>${SKILL_TIER_LABELS[tier]}</span>`;
-    const value = `<strong>${exercise.standards![tier]}${unit}</strong>`;
+    const value = `<strong>${standards[tier]}${unit}</strong>`;
     return tier === mine
       ? `<li class="mine"><span class="you">Your level</span>${label}${value}</li>`
       : `<li>${label}${value}</li>`;

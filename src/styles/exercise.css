@@ -3,6 +3,7 @@
 
 .lib-detail {
   --ex-gutter: 24px;
+  --ex-display-size: 2.4375rem;
   padding-left: var(--ex-gutter);
   padding-right: var(--ex-gutter);
   font-family: var(--font-body, "IBM Plex Sans", Roboto, sans-serif);
@@ -52,7 +53,6 @@
   display: flex;
   align-items: center;
   width: max-content;
-  min-height: 48px;
   margin: 0 0 16px;
   padding: 0;
   border: 0;
@@ -70,7 +70,7 @@
   margin: 4px 0 0;
   font-family: var(--font-display, "IBM Plex Sans Condensed", "Roboto Condensed", sans-serif);
   font-weight: 600;
-  font-size: 2.4375rem;
+  font-size: var(--ex-display-size);
   line-height: 1.05;
   color: var(--foreground);
 }
@@ -92,10 +92,7 @@
 }
 
 .lib-detail .personal-best {
-  margin: 16px 0 0;
-  padding: 0;
-  border: 0;
-  background: none;
+  margin-top: 16px;
 }
 
 .lib-detail .personal-best .eyebrow {
@@ -103,10 +100,9 @@
 }
 
 .lib-detail .personal-best-value {
-  margin: 0;
   font-family: var(--font-display, "IBM Plex Sans Condensed", "Roboto Condensed", sans-serif);
   font-weight: 600;
-  font-size: 2.4375rem;
+  font-size: var(--ex-display-size);
   line-height: 1.1;
   color: var(--foreground);
 }
@@ -173,7 +169,7 @@
   content: counter(ex-step);
   font-family: var(--font-display, "IBM Plex Sans Condensed", "Roboto Condensed", sans-serif);
   font-weight: 600;
-  font-size: 2.4375rem;
+  font-size: var(--ex-display-size);
   line-height: 1;
   color: var(--muted);
 }
@@ -222,8 +218,6 @@
 .lib-detail .skill-standards {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 0;
-  margin: 0;
   padding: 0;
   list-style: none;
   border-top: 1px solid var(--edge);
@@ -234,13 +228,9 @@
   display: flex;
   flex-direction: column-reverse;
   justify-content: flex-end;
-  gap: 0;
   padding: 12px 0;
-  border: 0;
   border-top: 4px solid transparent;
   text-align: center;
-  font-size: 1rem;
-  color: var(--foreground);
 }
 
 .lib-detail .skill-standards li + li {
@@ -261,10 +251,8 @@
 .lib-detail .skill-standards strong {
   font-family: var(--font-display, "IBM Plex Sans Condensed", "Roboto Condensed", sans-serif);
   font-weight: 600;
-  font-size: 2.4375rem;
+  font-size: var(--ex-display-size);
   line-height: 1.1;
-  font-variant-numeric: tabular-nums;
-  color: var(--foreground);
 }
 
 .lib-detail .skill-standards small {
@@ -330,7 +318,6 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
-  margin: 0;
 }
 
 .lib-detail .lib-chain {
@@ -344,11 +331,9 @@
 .lib-detail .ex-exclude button {
   width: 100%;
   min-width: 0;
-  min-height: 48px;
   margin: 0;
   padding: 8px 12px;
   border: 1px solid var(--control-edge);
-  border-radius: 4px;
   background: transparent;
   color: var(--foreground);
   font-size: 1rem;

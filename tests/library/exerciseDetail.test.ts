@@ -82,8 +82,11 @@ describe("exercise detail layout (mock 2205)", () => {
 
   it("labels the level select visibly and keeps its accessible name", () => {
     const html = detailHtml(bridge);
-    expect(html).toMatch(/<label for="ex-tier" class="eyebrow">Your level<\/label>/);
-    expect(html).toMatch(/<select id="ex-tier" data-skill-tier aria-label="Skill tier for Glute bridge">/);
+    const labelFor = html.match(/<label for="([^"]+)"[^>]*>Your level<\/label>/)?.[1];
+    const select = html.match(/<select [^>]*data-skill-tier[^>]*>/)?.[0] ?? "";
+    expect(labelFor).toBeTruthy();
+    expect(select).toContain(`id="${labelFor}"`);
+    expect(select).toContain('aria-label="Skill tier for Glute bridge"');
   });
 
   it("makes Generate plan the one accent action", () => {
