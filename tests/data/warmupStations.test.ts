@@ -299,3 +299,21 @@ describe("warmupStations", () => {
     ]);
   });
 });
+
+describe("per-side stations", () => {
+  it("never pause alternating or two-sided-at-once moves", () => {
+    // Bird dog, walking lunge, toy soldiers, cat-cow, 90/90 switch, cobra, child's pose, forearm stretch.
+    const both = ["hf_116", "fedb_bodyweight_walking_lunge", "ntc_toy_soldiers", "hf_154", "hf_158", "hf_165", "fedb_childs_pose_cooldown", "fedb_kneeling_forearm_stretch"];
+    for (const id of both) {
+      expect(WARMUP_STATION_BY_ID[id]?.perSide, id).toBe(false);
+    }
+  });
+
+  it("tell the user how to split the time between sides", () => {
+    const perSide = Object.values(WARMUP_STATION_BY_ID).filter((station) => station.perSide);
+    expect(perSide.length).toBeGreaterThan(15);
+    for (const station of perSide) {
+      expect(station.cues.join(" "), station.id).toMatch(/per (side|leg)|each side|one side|change leg/i);
+    }
+  });
+});

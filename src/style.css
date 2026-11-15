@@ -193,7 +193,7 @@ button:disabled {
   font-size: 0.85rem;
 }
 
-/* Evidence citation on a warm-up / cool-down station. */
+/* Halfway pause on a per-side station. */
 .side-switch {
   margin: 0.5rem 0;
   padding: 0.6rem 0.9rem;
@@ -209,6 +209,7 @@ button:disabled {
   display: none;
 }
 
+/* Evidence citation on a warm-up / cool-down station. */
 .station-source {
   margin: 0.25rem 0 0.75rem;
   color: var(--muted);

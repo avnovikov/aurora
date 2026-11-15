@@ -99,7 +99,7 @@ export function warmupTransitionSeconds(
 }
 
 /** Extra pause a station takes to change side halfway (0 when not per side). */
-export function sideSwitchSeconds(step: Pick<WarmupStep, "perSide">): number {
+function sideSwitchSeconds(step: Pick<WarmupStep, "perSide">): number {
   return step.perSide === true ? SIDE_SWITCH_SECONDS : 0;
 }
 
