@@ -3,16 +3,19 @@ import type { JointHistoryEntry } from "../domain/program";
 import { assessExercise } from "../safety/jointCare";
 import { onChipClick, onToggleClick } from "./chips";
 import type { AreaFilter, MuscleFilter, StretchFilter } from "./facets";
+import "../styles/library.css";
 import {
+  clearFiltersHtml,
+  countHtml,
   DEFAULT_FILTERS,
   filterPanelsHtml,
   hasActiveFilters,
-  resultCountHtml,
   stretchHintHtml,
   type FilterPanelId,
   type FilterPanelState,
+  type ShowOptions,
 } from "./filterPanels";
-import { exerciseMetaLine } from "./metaLine";
+import { exerciseMetaHtml } from "./metaLine";
 import { escapeHtml } from "./present";
 import type { LevelFilter } from "./search";
 import { isTemplateTarget } from "./targets";
@@ -116,18 +119,37 @@ export function listHtml(
     .join("");
 
   return `
-    <main class="shell">
-      <p class="eyebrow">Library</p>
-      <h1>Exercises</h1>
-      <input class="search" type="search" placeholder="Search exercises" value="${escapeHtml(q.text)}" data-search />
-      ${resultCountHtml(results.length, hasActiveFilters(q))}
-      ${stretchHintHtml(q.hiddenStretches)}
-      ${filterPanelsHtml(q, { hasJointHistory: jointHistory.length > 0, hasExcluded: excluded.size > 0 })}
+    <main class="shell library">
+      ${headerHtml(results.length)}
       <ul class="lib-list">
         ${items}
       </ul>
+      ${dockHtml(q, { hasJointHistory: jointHistory.length > 0, hasExcluded: excluded.size > 0 })}
     </main>
   `;
+}
+
+/** Read-only header: eyebrow, title and the result count. */
+function headerHtml(count: number): string {
+  return `<header class="lib-head">
+        <p class="eyebrow">Library</p>
+        <div class="lib-titlerow">
+          <h1>Exercises</h1>
+          ${countHtml(count)}
+        </div>
+      </header>`;
+}
+
+/** The thumb dock under the list: search, a note line when needed, and the filter triggers. */
+function dockHtml(q: Required<ListQueryState>, showOptions: ShowOptions): string {
+  const dockNote = `${stretchHintHtml(q.hiddenStretches)}${clearFiltersHtml(hasActiveFilters(q))}`;
+  return `<div class="lib-dock">
+        <input class="search" type="search" placeholder="Search exercises" aria-label="Search exercises" value="${escapeHtml(q.text)}" data-search />
+        ${dockNote ? `<div class="lib-dock-note">${dockNote}</div>` : ""}
+        <div class="lib-triggers">
+          ${filterPanelsHtml(q, showOptions)}
+        </div>
+      </div>`;
 }
 
 function jointBadgeHtml(exercise: SeedExercise, history: readonly JointHistoryEntry[]): string {
@@ -158,7 +180,7 @@ function listItemHtml(
     <li>
       <button type="button" class="lib-row" data-exercise-id="${escapeHtml(exercise.id)}">
         <strong>${target}${badge}${escapeHtml(exercise.name)}</strong>
-        <span class="lib-meta">${escapeHtml(exerciseMetaLine(exercise))}</span>
+        <span class="lib-meta">${exerciseMetaHtml(exercise)}</span>
         <span class="lib-desc">${escapeHtml(description)}</span>
       </button>
     </li>

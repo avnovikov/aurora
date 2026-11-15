@@ -12,6 +12,7 @@ import {
 import { listHtml } from "../../src/library/libraryList";
 import { searchExercises } from "../../src/library/search";
 import { exerciseNamed as find } from "../helpers/exercises";
+import { filterTrigger, openPanelIds } from "../helpers/libraryFilters";
 
 const entry = (group: string, role: "primary" | "secondary" | "stabilizer") =>
   ({ group, role }) as never;
@@ -113,14 +114,13 @@ describe("Library list chips", () => {
     const html = listHtml([], new Set(), base);
     expect(html).toContain('data-area="upper"');
     expect(html).toContain('data-muscle="glutes_hips"');
-    expect(html).not.toMatch(/data-panel="body" open/);
+    expect(openPanelIds(html)).not.toContain("body");
   });
 
-  it("opens the panel and marks the choice while a facet is active", () => {
+  it("names the choice on the trigger and marks it while a facet is active", () => {
     const html = listHtml([], new Set(), { ...base, area: "upper", muscle: "chest" });
-    expect(html).toMatch(/data-panel="body" open/);
     expect(html).toMatch(/data-area="upper" class="selected"/);
     expect(html).toMatch(/data-muscle="chest" class="selected"/);
-    expect(html).toContain("Area &amp; muscle · Upper body, Chest");
+    expect(filterTrigger(html, "body").value).toBe("Upper body · Chest");
   });
 });

@@ -35,8 +35,18 @@ export interface ConnectHeartRateResult {
   message: string;
 }
 
+/** Shown on web (and when BLE client is unavailable) instead of pairing. */
+export const PULSE_STRAP_NEEDS_ANDROID_APP =
+  "Pulse strap needs the Aurora Android app (Capacitor). Use Pulse ok / lost to simulate on web.";
+export const PULSE_STRAP_CONNECTED = "Pulse strap connected.";
+export const PULSE_STRAP_ALREADY_CONNECTED = "Pulse strap already connected.";
+export const PULSE_STRAP_DISCONNECTED = "Pulse strap disconnected.";
+
 let activeDeviceId: string | null = null;
 let clientOverride: BleHeartRateClient | null = null;
+let connectInFlight: Promise<ConnectHeartRateResult> | null = null;
+const bpmListeners = new Set<BpmListener>();
+const disconnectListeners = new Set<DisconnectListener>();
 
 export function setBleHeartRateClientForTests(
   client: BleHeartRateClient | null,
@@ -54,6 +64,56 @@ export function isNativePulseAvailable(): boolean {
   return Boolean(cap?.isNativePlatform?.());
 }
 
+export function isHeartRateConnected(): boolean {
+  return activeDeviceId !== null;
+}
+
+/** True while connected or a connect attempt is still running. */
+export function isHeartRateLinkActive(): boolean {
+  return activeDeviceId !== null || connectInFlight !== null;
+}
+
+/** Drop BPM / disconnect listeners without tearing down the BLE link. */
+export function unsubscribeHeartRate(
+  onBpm: BpmListener,
+  onDisconnect?: DisconnectListener,
+): void {
+  bpmListeners.delete(onBpm);
+  if (onDisconnect) {
+    disconnectListeners.delete(onDisconnect);
+  }
+}
+
+function subscribeHeartRate(
+  onBpm: BpmListener,
+  onDisconnect?: DisconnectListener,
+): void {
+  bpmListeners.add(onBpm);
+  if (onDisconnect) {
+    disconnectListeners.add(onDisconnect);
+  }
+}
+
+function clearListeners(): void {
+  bpmListeners.clear();
+  disconnectListeners.clear();
+}
+
+function notifyBpm(bpm: number): void {
+  for (const listener of bpmListeners) {
+    listener(bpm);
+  }
+}
+
+function notifyDisconnected(): void {
+  activeDeviceId = null;
+  const listeners = [...disconnectListeners];
+  clearListeners();
+  for (const listener of listeners) {
+    listener();
+  }
+}
+
 async function resolveClient(): Promise<BleHeartRateClient | null> {
   if (clientOverride) {
     return clientOverride;
@@ -65,27 +125,9 @@ async function resolveClient(): Promise<BleHeartRateClient | null> {
   return mod.BleClient as unknown as BleHeartRateClient;
 }
 
-/**
- * Connect to a BLE heart-rate strap and push BPM updates.
- * Never throws; failures return `{ ok: false, message }`.
- */
-export async function connectHeartRate(
-  onBpm: BpmListener,
-  onDisconnect?: DisconnectListener,
+async function openHeartRateLink(
+  client: BleHeartRateClient,
 ): Promise<ConnectHeartRateResult> {
-  if (activeDeviceId) {
-    return { ok: true, message: "Pulse strap already connected." };
-  }
-
-  const client = await resolveClient();
-  if (!client) {
-    return {
-      ok: false,
-      message:
-        "Pulse strap needs the Aurora Android app (Capacitor). Use Pulse ok / lost to simulate on web.",
-    };
-  }
-
   try {
     await client.initialize({ androidNeverForLocation: true });
     const device = await client.requestDevice({
@@ -95,8 +137,7 @@ export async function connectHeartRate(
     activeDeviceId = device.deviceId;
 
     await client.connect(device.deviceId, () => {
-      activeDeviceId = null;
-      onDisconnect?.();
+      notifyDisconnected();
     });
 
     await client.startNotifications(
@@ -106,12 +147,12 @@ export async function connectHeartRate(
       (value) => {
         const bpm = parseHeartRateMeasurement(value);
         if (bpm !== null) {
-          onBpm(bpm);
+          notifyBpm(bpm);
         }
       },
     );
 
-    return { ok: true, message: "Pulse strap connected." };
+    return { ok: true, message: PULSE_STRAP_CONNECTED };
   } catch (error) {
     await disconnectHeartRate();
     const detail = error instanceof Error ? error.message : "connection failed";
@@ -119,13 +160,53 @@ export async function connectHeartRate(
   }
 }
 
+async function startConnectAttempt(): Promise<ConnectHeartRateResult> {
+  const client = await resolveClient();
+  if (!client) {
+    return { ok: false, message: PULSE_STRAP_NEEDS_ANDROID_APP };
+  }
+  return openHeartRateLink(client);
+}
+
+/**
+ * Connect to a BLE heart-rate strap and push BPM updates.
+ * Registers the given listeners even when already connected (Today → session).
+ * Concurrent callers share one in-flight attempt.
+ * Never throws; failures return `{ ok: false, message }`.
+ */
+export async function connectHeartRate(
+  onBpm: BpmListener,
+  onDisconnect?: DisconnectListener,
+): Promise<ConnectHeartRateResult> {
+  subscribeHeartRate(onBpm, onDisconnect);
+
+  if (activeDeviceId) {
+    return { ok: true, message: PULSE_STRAP_ALREADY_CONNECTED };
+  }
+
+  if (!connectInFlight) {
+    connectInFlight = startConnectAttempt().finally(() => {
+      connectInFlight = null;
+    });
+  }
+
+  const result = await connectInFlight;
+  if (!result.ok) {
+    unsubscribeHeartRate(onBpm, onDisconnect);
+  }
+  return result;
+}
+
 export async function disconnectHeartRate(): Promise<void> {
   const deviceId = activeDeviceId;
+  connectInFlight = null;
   if (!deviceId) {
+    clearListeners();
     return;
   }
   const client = await resolveClient();
   activeDeviceId = null;
+  clearListeners();
   if (!client) {
     return;
   }
