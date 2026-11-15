@@ -147,7 +147,7 @@ function workHtml(item: PlannedWorkItem, state: ViewState): string {
         <button type="button" data-fail-set>Failed</button>
         <button type="button" data-skip>Skip</button>
       </div>
-      <p class="hint">Swipe right → left to finish exercise</p>
+      <p class="hint">Swipe left or right to finish — keep the swipe going</p>
     </div>
   `;
 }

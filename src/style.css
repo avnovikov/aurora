@@ -217,6 +217,16 @@ button:disabled {
 
 .work-stage {
   touch-action: pan-y;
+  will-change: transform, opacity;
+}
+
+.work-stage.is-swiping {
+  user-select: none;
+  cursor: grabbing;
+}
+
+.work-stage.is-swipe-exit {
+  pointer-events: none;
 }
 
 .check-in {
