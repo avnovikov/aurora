@@ -1,4 +1,3 @@
-import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import { onChipClick } from "../library/chips";
 import { addBlockToPlan, addJointCareDay } from "../plan/blockActions";
 import { DAY_KIND_LABELS, skillTitle } from "../plan/dayKinds";
@@ -18,6 +17,7 @@ import {
 import { clearScheduleOverride, loadScheduleOverride } from "../plan/scheduleOverride";
 import { loadAthleteState } from "./athleteState";
 import { enableDragReorder, movedIndex } from "./dragReorder";
+import { exerciseName } from "./formatTemplate";
 import { buildPlanModel, exerciseKey, type PlanUiState } from "./planModel";
 import { planPageHtml } from "./planPage";
 
@@ -201,7 +201,7 @@ function wireExerciseEdits({ root, ui, act, paint }: PlanController): void {
       const { templateId, slotId } = slotOf(el);
       const pick = el.dataset.swapPick!;
       setDayExercise(templateId, slotId, pick);
-      return `Swapped in ${EXERCISE_GRAPH[pick]?.name ?? pick}.`;
+      return `Swapped in ${exerciseName(pick)}.`;
     }),
   );
   on(root, "[data-easier]", (el) => {

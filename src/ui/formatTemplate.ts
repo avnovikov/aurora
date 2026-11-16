@@ -1,5 +1,6 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import type { SessionTemplate, WarmupLevel } from "../domain/program";
+import { displayNameOf } from "../library/displayName";
 import {
   estimateSessionDuration,
   formatDurationLabel,
@@ -7,7 +8,7 @@ import {
 
 /** Display name for an exercise id, falling back to the id itself. */
 export function exerciseName(exerciseId: string): string {
-  return EXERCISE_GRAPH[exerciseId]?.name ?? exerciseId;
+  return displayNameOf(exerciseId, EXERCISE_GRAPH);
 }
 
 /** Target names joined for UI chips and taglines. */

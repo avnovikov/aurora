@@ -1,5 +1,6 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import type { PlanQueue, SessionTemplate } from "../domain/program";
+import { displayExerciseName } from "../library/displayName";
 import { exerciseMetaLine } from "../library/metaLine";
 import { AREA_KINDS, DAY_KIND_LABELS, MOBILITY_TEMPLATE_ID, dayTitle, skillTitle } from "../plan/dayKinds";
 import { easierChoice, swapChoices } from "../plan/dayEdits";
@@ -63,7 +64,7 @@ function dayView(
   const swapOptions: SwapOption[] = swapping
     ? swapChoices(swapping.exerciseId, state, dayExerciseIds).map((exercise) => ({
         id: exercise.id,
-        name: exercise.name,
+        name: displayExerciseName(exercise.name),
         meta: exerciseMetaLine(exercise),
       }))
     : [];

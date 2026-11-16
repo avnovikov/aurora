@@ -1,6 +1,7 @@
 import type { SeedExercise } from "../data/seed";
 import type { SessionTemplate } from "../domain/program";
 import type { ExerciseMemory } from "../domain/types";
+import { displayNameOf } from "../library/displayName";
 import { pickLevelAppropriateStep } from "../plan/pathPlacement";
 import {
   buildChainIds,
@@ -64,6 +65,7 @@ export function buildPlanProgress(input: {
 
 interface TargetRef {
   id: string;
+  /** Display name (sentence case). */
   name: string;
   templateNames: string[];
 }
@@ -88,7 +90,7 @@ function collectTargets(
       }
       byId.set(targetId, {
         id: targetId,
-        name: exercise.name,
+        name: displayNameOf(targetId, graph),
         templateNames: [template.name],
       });
     }
@@ -137,7 +139,7 @@ function notStartedCard(
     templateNames: target.templateNames,
     phase: "not_started",
     currentId: startId,
-    currentName: start?.name ?? startId,
+    currentName: displayNameOf(startId, graph),
     ...personalBestFields(startId, graph, memories),
     nextId,
     nextName: nameOrNull(graph, nextId),
@@ -168,7 +170,7 @@ function activeCard(
     templateNames: target.templateNames,
     phase: "active",
     currentId,
-    currentName: current.name,
+    currentName: displayNameOf(currentId, graph),
     ...personalBestFields(currentId, graph, memories),
     nextId,
     nextName: nameOrNull(graph, nextId),
@@ -189,10 +191,7 @@ function nextOnChain(
 }
 
 function nameOrNull(graph: ChainGraph, id: string | null): string | null {
-  if (!id) {
-    return null;
-  }
-  return graph[id]?.name ?? id;
+  return id ? displayNameOf(id, graph) : null;
 }
 
 function orphanTargetCard(target: TargetRef): PlanProgressCard {
@@ -267,7 +266,7 @@ export function buildPathPreview(
     const id = chainIds[index]!;
     return {
       id,
-      name: graph[id]?.name ?? id,
+      name: displayNameOf(id, graph),
       marker: markerFor(id, startId, nowId, targetId),
     };
   });

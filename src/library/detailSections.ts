@@ -1,5 +1,6 @@
 import type { SeedExercise } from "../data/seed";
 import { doodleMarkup } from "../doodles/doodleMarkup";
+import { displayExerciseName } from "./displayName";
 import { escapeHtml } from "./present";
 
 const MAX_IMAGES = 3;
@@ -10,8 +11,9 @@ export function summaryHtml(exercise: SeedExercise): string {
 
 /** Doodle first; otherwise licensed HTTPS images with their credit line. */
 export function mediaHtml(exercise: SeedExercise): string {
+  const name = displayExerciseName(exercise.name);
   if (exercise.doodlePath) {
-    return doodleMarkup(exercise.doodlePath, exercise.name);
+    return doodleMarkup(exercise.doodlePath, name);
   }
   const images = (exercise.media ?? [])
     .filter((item) => item.mediaType === "image" && item.url.startsWith("https://") && item.license)
@@ -19,7 +21,7 @@ export function mediaHtml(exercise: SeedExercise): string {
   if (images.length === 0) {
     return "";
   }
-  const alt = escapeHtml(exercise.name);
+  const alt = escapeHtml(name);
   const figures = images.map((image) => figureHtml(image.url, alt, `${image.license} · ${image.source}`)).join("");
   return `<div class="lib-media">${figures}</div>`;
 }

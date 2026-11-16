@@ -11,6 +11,7 @@ import {
 } from "./skillPresent";
 import type { SkillTier } from "../domain/types";
 import { toggleHtml } from "./chips";
+import { displayExerciseName } from "./displayName";
 import { exerciseMetaLine } from "./metaLine";
 import { escapeHtml, formatMuscles } from "./present";
 import {
@@ -125,7 +126,7 @@ export function detailHtml(exercise: SeedExercise, view: DetailView = {}): strin
       <button type="button" class="lib-back" data-lib-back>← Back to list</button>
       ${targetBadge}
       <p class="eyebrow">Exercise</p>
-      <h1>${escapeHtml(exercise.name)}</h1>
+      <h1>${escapeHtml(displayExerciseName(exercise.name))}</h1>
       <div class="ex-meta">
         <p class="lib-meta">${escapeHtml(exerciseMetaLine(exercise))}</p>
         <p class="lib-meta">Muscles: ${escapeHtml(formatMuscles(exercise.muscles))}</p>
@@ -281,7 +282,7 @@ function skillPickerHtml(
   return `
     <div class="ex-level">
       <label for="ex-tier" class="eyebrow">Your level</label>
-      <select id="ex-tier" data-skill-tier aria-label="Skill tier for ${escapeHtml(exercise.name)}">
+      <select id="ex-tier" data-skill-tier aria-label="Skill tier for ${escapeHtml(displayExerciseName(exercise.name))}">
         ${options}
       </select>
       ${levelHint}
@@ -341,5 +342,5 @@ function chainLinksHtml(
 }
 
 function chainButtonHtml(id: string, name: string, label: string): string {
-  return `<button type="button" data-chain-id="${escapeHtml(id)}">${escapeHtml(label)} · ${escapeHtml(name)}</button>`;
+  return `<button type="button" data-chain-id="${escapeHtml(id)}">${escapeHtml(label)} · ${escapeHtml(displayExerciseName(name))}</button>`;
 }

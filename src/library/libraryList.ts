@@ -15,6 +15,7 @@ import {
   type FilterPanelState,
   type ShowOptions,
 } from "./filterPanels";
+import { displayExerciseName } from "./displayName";
 import { exerciseMetaHtml } from "./metaLine";
 import { escapeHtml } from "./present";
 import type { LevelFilter } from "./search";
@@ -179,7 +180,7 @@ function listItemHtml(
   return `
     <li>
       <button type="button" class="lib-row" data-exercise-id="${escapeHtml(exercise.id)}">
-        <strong>${target}${badge}${escapeHtml(exercise.name)}</strong>
+        <strong>${target}${badge}${escapeHtml(displayExerciseName(exercise.name))}</strong>
         <span class="lib-meta">${exerciseMetaHtml(exercise)}</span>
         <span class="lib-desc">${escapeHtml(description)}</span>
       </button>

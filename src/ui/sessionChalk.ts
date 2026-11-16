@@ -1,6 +1,7 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import { doodleMarkup } from "../doodles/doodleMarkup";
 import { resolveExerciseTiming } from "../domain/timing";
+import { displayExerciseName } from "../library/displayName";
 import { escapeHtml } from "../library/present";
 import { isNativePulseAvailable } from "../pulse/hrMonitor";
 import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
@@ -200,8 +201,9 @@ function stationHtml(eyebrow: string, step: WarmupStep): string {
   const dose = `
       <p class="session-dose"><span class="session-dose-q">${escapeHtml(step.region)} <span aria-hidden="true">·</span></span> ${doseFigureHtml(`<span data-warmup-left>${step.holdSeconds}</span>`, SECONDS_UNIT_HTML)}</p>
       ${sideSwitchHtml(step)}`;
+  const move = displayExerciseName(step.name);
   return `
-    ${heroHtml({ phase: eyebrow, move: step.name, dose, doodle: doodleMarkup(step.doodlePath, step.name) })}
+    ${heroHtml({ phase: eyebrow, move, dose, doodle: doodleMarkup(step.doodlePath, move) })}
     <section class="session-read">
       ${summaryHtml(EXERCISE_GRAPH[step.stationId]?.description)}
       ${attentionHtml(step.cues)}
@@ -246,7 +248,7 @@ function doneHtml(planned: PlannedSession, state: ViewState): string {
       </section>
     `;
   }
-  const names = steps.map((step) => escapeHtml(step.name)).join(" · ");
+  const names = steps.map((step) => escapeHtml(displayExerciseName(step.name))).join(" · ");
   return `
     <div class="cooldown-offer session-read" data-cooldown-offer>
       <p class="eyebrow">Session done · ${sets}</p>
@@ -300,6 +302,7 @@ function workDoseHtml(reps: number, unit: string): string {
 function workHtml(item: PlannedWorkItem, state: ViewState): string {
   const reps = nextSetReps(state, item.dose.reps);
   const loadKg = state.workState?.addedLoadKg ?? 0;
+  const move = displayExerciseName(item.exerciseName);
   const dose = `${workDoseHtml(reps, workUnit(item))}
       ${doseNoteHtml(item, state.setIndex, reps)}
       ${weightControlsHtml(loadKg, state.addWeightKg)}`;
@@ -307,9 +310,9 @@ function workHtml(item: PlannedWorkItem, state: ViewState): string {
     <div class="work-stage swipe-stage" data-swipe-stage="work">
       ${heroHtml({
         phase: `Set ${state.setIndex} of ${item.dose.sets}`,
-        move: item.exerciseName,
+        move,
         dose,
-        doodle: doodleMarkup(item.doodlePath, item.exerciseName),
+        doodle: doodleMarkup(item.doodlePath, move),
       })}
       <section class="session-read">
         ${summaryHtml(item.summary)}
@@ -329,7 +332,7 @@ function restHtml(planned: PlannedSession, state: ViewState): string {
   const item = currentWork(planned, state);
   const reps = nextSetReps(state, 0);
   const nextLine = item
-    ? `next ${escapeHtml(item.exerciseName)} · Set ${state.setIndex} of ${item.dose.sets}`
+    ? `next ${escapeHtml(displayExerciseName(item.exerciseName))} · Set ${state.setIndex} of ${item.dose.sets}`
     : "next set";
   const getReady = isGetReadyRest(state);
   const getReadyNote = getReady
