@@ -101,7 +101,6 @@ export const FOCUS_BY_ID: Readonly<Record<string, Focus>> = {
   // Hips
   fedb_kneeling_hip_flexor: { joints: [], highlight: ["thigh.far", "pelvis"] },
   wger_1202: { joints: [], highlight: ["thigh.far", "pelvis"] }, // Side-lying hip abduction
-  hf_158: { joints: [], highlight: ["pelvis", "thigh.near", "thigh.far"] }, // 90/90 hip switch
   hip_circles: { joints: [], highlight: ["pelvis", "lumbar"] },
   // Shoulders and shoulder blades
   scap_pushup: SHOULDER_BLADES,

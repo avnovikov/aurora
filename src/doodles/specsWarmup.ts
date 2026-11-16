@@ -32,46 +32,6 @@ function jack(open: boolean): Pose {
   };
 }
 
-// ---------------------------------------------------------------- 90/90 hip switch (front, seated)
-
-/**
- * Seated, seen from the front and a little above: the floor in front of the
- * hips draws lower on screen, the floor behind them higher. Knees to one side:
- * the leg on the other side is the front leg (thigh forward, shin across the
- * front), the leg on that side is the side leg (thigh out, shin back).
- */
-const SWITCH_HIP_NEAR: Point = [-8, -100];
-const SWITCH_HIP_FAR: Point = [8, -100];
-
-function hipSwitch(kneesRight: boolean): Pose {
-  const mirror = (p: Point): Point => [-p[0], p[1]];
-  // Knees to the right: near leg in front (shin across the front), far leg folded flat out to the side.
-  const frontKnee = along(SWITCH_HIP_NEAR, 70, 88);
-  const frontFoot = along(frontKnee, 2, 86);
-  // Side leg folded flat: the shin lies back along the thigh (hidden behind it in a true front view).
-  const sideKnee = along(SWITCH_HIP_FAR, 12, 88);
-  const sideFoot = along(sideKnee, 171, 86);
-  const legs: Pick<Pose, "knees" | "feet" | "toes"> = kneesRight
-    ? {
-        knees: { near: { at: frontKnee }, far: { at: sideKnee } },
-        feet: { near: frontFoot, far: sideFoot },
-        toes: { near: 0, far: -100 },
-      }
-    : {
-        knees: { near: { at: mirror(sideKnee) }, far: { at: mirror(frontKnee) } },
-        feet: { near: mirror(sideFoot), far: mirror(frontFoot) },
-        toes: { near: -80, far: 180 },
-      };
-  return {
-    pelvis: [0, -100],
-    chest: [0, -180],
-    // Hands on the floor behind the hips for support.
-    hands: { near: [-80, -90], far: [80, -90] },
-    elbows: { near: { bend: 1 }, far: { bend: -1 } },
-    ...legs,
-  };
-}
-
 // ---------------------------------------------------------------- deep squat hold
 
 function deepSquat(pelvisY: number): Pose {
@@ -629,17 +589,6 @@ export const WARMUP_DRILL_SPECS: DoodleSpec[] = [
     frames: [
       { hold: 0.15, pose: jack(false) },
       { hold: 0.15, pose: jack(true) },
-    ],
-  },
-  {
-    id: "hf_158",
-    slug: "90-90-hip-switch",
-    title: "90/90 Hip Switch",
-    view: "front",
-    transition: 1,
-    frames: [
-      { hold: 0.5, pose: hipSwitch(true) },
-      { hold: 0.5, pose: hipSwitch(false) },
     ],
   },
   {

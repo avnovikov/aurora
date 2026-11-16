@@ -36,7 +36,6 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "wrist_load": "/doodles/doodle-wrist-load.svg",
   "scap_pushup": "/doodles/doodle-scap-pushup.svg",
   "ntc_jumping_jacks": "/doodles/doodle-jumping-jacks.svg",
-  "hf_158": "/doodles/doodle-90-90-hip-switch.svg",
   "hf_157": "/doodles/doodle-deep-squat-hold.svg",
   "wger_1202": "/doodles/doodle-side-lying-hip-abduction.svg",
   "wger_2667": "/doodles/doodle-single-leg-balance-eyes-closed.svg",

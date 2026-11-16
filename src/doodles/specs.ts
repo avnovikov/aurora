@@ -79,33 +79,37 @@ const HIP_CIRCLE_STEPS = [0, 1, 2, 3, 4, 5, 6, 7].map((i) => (i * Math.PI) / 4);
 const HIP_CIRCLE_REACH = 32;
 const HIP_CIRCLE_DIP = 5;
 
-/** Hands on the floor beside the hips; shoulders stacked over them so the arms are straight and vertical. */
-const TUCK_HAND: Point = [10, -4];
-const TUCK_SHOULDER: Point = [10, -129.6];
+/** Mat top; the hands rest on it. */
+const TUCK_MAT_Y = -4;
+/** Shoulder to fingertips with the elbow locked (upper arm + forearm + hand). */
+const LOCKED_ARM = 126;
 /** A thin mat under the hands, so the gap under the seat and feet reads. */
-const TUCK_MAT: Prop = { kind: "box", x: -90, y: -4, w: 170, h: 4 };
+const TUCK_MAT: Prop = { kind: "box", x: -90, y: TUCK_MAT_Y, w: 170, h: 4 };
 
 /**
- * Tuck L-sit hold: straight vertical arms, hips lifted off the floor just
- * behind the hands, thighs pulled up to the chest, shins folded under, feet
- * clear of the floor. `squeeze` draws the knees a touch higher.
+ * Tuck L-sit hold, side view: torso upright, locked arms straight down beside
+ * the hips, seat lifted just off the mat, thighs pulled up toward the chest
+ * and shins hanging so the feet stay clear. `squeeze` draws the knees higher.
  */
 function tuckLSit(squeeze: 0 | 1): Pose {
-  // Behind the hands and 98 from the shoulder (torso leaning ~30° forward), seat well off the floor.
-  const pelvis: Point = [-40, -45.3];
-  const thigh = squeeze ? -47 : -42;
-  const knee = along(pelvis, thigh, 88);
-  // Shins hang down from the knees just in front of the hands, feet clear of the floor.
-  const ankle = along(knee, squeeze ? 80 : 86, 86);
-  return {
+  const pelvis: Point = [0, -26];
+  const knee = along(pelvis, squeeze ? -66 : -60, 88);
+  const ankle = along(knee, 85, 86);
+  const base: Pose = {
     pelvis,
-    chest: chestToward(pelvis, TUCK_SHOULDER),
-    // Side view: both arms and both legs stack.
-    hands: { near: TUCK_HAND, far: TUCK_HAND },
+    // Torso leans back a touch, so the arm angles forward to the hands.
+    chest: [-8, -105],
     knees: { near: { at: knee }, far: { at: knee } },
     feet: { near: ankle, far: ankle },
-    toes: { near: 10, far: 10 },
+    toes: { near: 20, far: 20 },
   };
+  // A locked arm from the shoulder lands on the mat just ahead of the hips; the elbow sits on that line.
+  const shoulder = solvePose(base).arms.near.root;
+  const drop = TUCK_MAT_Y - shoulder[1];
+  const hand: Point = [round(shoulder[0] + Math.sqrt(LOCKED_ARM ** 2 - drop ** 2)), TUCK_MAT_Y];
+  const elbow = along(shoulder, angle(shoulder, hand), 60);
+  // Side view: both arms and both legs stack.
+  return { ...base, hands: { near: hand, far: hand }, elbows: { near: { at: elbow }, far: { at: elbow } } };
 }
 
 /** Head pushed through between the arms, forward of the arm line. */
