@@ -23,13 +23,13 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
   },
   "hip_circles": {
     "id": "hip_circles",
-    "summary": "A controlled standing mobility drill that moves the hip through slow circles to warm up the glutes and hip joint.",
+    "summary": "A standing mobility drill that rolls the hips in slow, wide circles to loosen the hips and lower back.",
     "steps": [
-      "Stand on one leg beside a wall or sturdy support and hold it lightly for balance.",
-      "Raise the free knee to about hip height.",
-      "Open the knee out to the side, then sweep it back and down to draw a large, slow circle.",
-      "Reverse the direction after a few circles, keeping the standing leg steady.",
-      "Switch sides."
+      "Stand with feet a little wider than hip width, knees soft, hands on your hips.",
+      "Push your hips forward, then sweep them out to one side.",
+      "Carry them back behind you, sticking your bottom out, then round to the other side.",
+      "Keep the circle slow and wide, with your shoulders staying roughly over your feet.",
+      "After a few circles, reverse the direction."
     ],
     "cues": [
       "Slow circles",
@@ -37,8 +37,9 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
       "Keep ribs quiet"
     ],
     "mistakes": [
-      "Rushing the circles and swinging the leg",
-      "Twisting the torso instead of moving at the hip"
+      "Bending sideways at the waist instead of moving the hips",
+      "Locking the knees",
+      "Rushing small, jerky circles"
     ]
   },
   "ankle_rocks": {

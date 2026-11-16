@@ -73,6 +73,12 @@ const SNOW_HEAD: Point = [98, -80];
 /** The upright a supported split squat holds for balance. */
 const SPLIT_POST_X = 98;
 
+/** Points around the hip circle, an eighth of a turn apart, starting hips-forward. */
+const HIP_CIRCLE_STEPS = [0, 1, 2, 3, 4, 5, 6, 7].map((i) => (i * Math.PI) / 4);
+/** Forward/back reach of the hips and how far they drop at the sides of the circle. */
+const HIP_CIRCLE_REACH = 32;
+const HIP_CIRCLE_DIP = 5;
+
 const HYDRANT_KNEE: Point = along([-50, -92], 150, 88);
 
 const TUCK_PELVIS: Point = [-38, -30];
@@ -716,14 +722,9 @@ const SESSION_MOVE_SPECS: DoodleSpec[] = [
     slug: "hip-circles",
     title: "Hip circles",
     replaces: true,
-    view: "front",
-    transition: 0.4,
-    frames: [
-      { hold: 0.1, pose: hipCircle(-20, -171) },
-      { hold: 0.1, pose: hipCircle(0, -174) },
-      { hold: 0.1, pose: hipCircle(20, -171) },
-      { hold: 0.1, pose: hipCircle(0, -173) },
-    ],
+    // Side view: the circle reads as hips pushed forward, then the bottom swept out behind.
+    transition: 0.35,
+    frames: HIP_CIRCLE_STEPS.map((step) => ({ hold: 0, pose: hipCircle(step) })),
   },
   {
     id: "ankle_rocks",
@@ -913,17 +914,23 @@ function marchStand(): Pose {
   };
 }
 
-/** Front-view standing, hands on hips, pelvis at (x, y); feet planted. */
-function hipCircle(x: number, y: number): Pose {
+/**
+ * Side-view standing, hands on hips, knees soft, feet planted. At `phase` 0
+ * the hips are pushed forward, at π they sit back with the bottom out; the
+ * shoulders lean the other way so they stay roughly over the feet.
+ */
+function hipCircle(phase: number): Pose {
+  const x = round(Math.cos(phase) * HIP_CIRCLE_REACH);
+  const pelvis: Point = [x, round(-168 + Math.abs(Math.sin(phase)) * HIP_CIRCLE_DIP)];
+  const chest = chestToward(pelvis, [round(-x * 0.9), pelvis[1] - 98]);
   return {
-    pelvis: [x, y],
-    chest: [round(-x * 0.25), round(y - Math.sqrt(6400 - (x * 1.25) ** 2))],
-    hands: { near: [x - 34, y - 12], far: [x + 34, y - 12] },
-    elbows: { near: { bend: 1 }, far: { bend: -1 } },
-    // Knees bow outward symmetrically (otherwise they cross at the side positions).
-    knees: { near: { bend: 1 }, far: { bend: -1 } },
-    feet: { near: [-14, 0], far: [14, 0] },
-    toes: { near: 180, far: 0 },
+    pelvis,
+    chest,
+    hands: { near: [pelvis[0] + 2, pelvis[1] - 16], far: [pelvis[0] - 2, pelvis[1] - 16] },
+    elbows: { near: { bend: 1 }, far: { bend: 1 } },
+    knees: { near: { bend: -1 }, far: { bend: -1 } },
+    feet: { near: [6, 0], far: [0, 0] },
+    toes: { near: 0, far: 0 },
   };
 }
 
