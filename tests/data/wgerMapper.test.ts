@@ -122,3 +122,25 @@ describe("buildWgerCatalogue", () => {
     expect(listed.filter((name) => !names.has(name))).toEqual([]);
   });
 });
+
+describe("wger move type: reps vs hold", () => {
+  const typeOf = (name: string, category = "Legs"): string => mapWgerExerciseRecord(record({ name, category })).type;
+
+  it("keeps a rep move whose name only brushes a hold keyword as reps", () => {
+    expect(typeOf("Supported Split Squat")).toBe("dynamic");
+    expect(typeOf("Front lever pull-up", "Back")).toBe("dynamic");
+    expect(typeOf("Plank with Alternating Leg Lift", "Abs")).toBe("dynamic");
+    expect(typeOf("Dynamic side plank", "Abs")).toBe("dynamic");
+  });
+
+  it("still types real holds as holds", () => {
+    expect(typeOf("Pull-up Isometric Hold", "Back")).toBe("isometric");
+    expect(typeOf("Pull-Up Top Position Hold", "Back")).toBe("isometric");
+    expect(typeOf("L-Sit (Foot Supported)", "Abs")).toBe("isometric");
+    expect(typeOf("Reverse Plank", "Abs")).toBe("isometric");
+  });
+
+  it("prescribes the supported split squat in reps", () => {
+    expect(WGER_CATALOGUE.find((exercise) => exercise.id === "wger_2557")?.type).toBe("dynamic");
+  });
+});
