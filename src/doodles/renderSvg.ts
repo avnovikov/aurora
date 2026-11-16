@@ -79,6 +79,10 @@ export function propSegments(prop: Prop): [Point, Point][] {
   }
 }
 
+/** Grip ellipse radii on a bar. */
+const GRIP_RX = 8;
+const GRIP_RY = 11;
+
 function propSvg(prop: Prop): string {
   if (prop.kind === "box") {
     return `<rect x="${prop.x}" y="${prop.y}" width="${prop.w}" height="${prop.h}" fill="none"/>`;
@@ -88,16 +92,38 @@ function propSvg(prop: Prop): string {
     .join("");
   const grips =
     prop.kind === "bar"
-      ? (prop.grips ?? []).map((x) => `<ellipse cx="${x}" cy="${prop.y}" rx="8" ry="11" style="fill:${PAPER}"/>`).join("")
+      ? (prop.grips ?? []).map((x) => `<ellipse cx="${x}" cy="${prop.y}" rx="${GRIP_RX}" ry="${GRIP_RY}" style="fill:${PAPER}"/>`).join("")
       : "";
   return lines + grips;
 }
 
-const ASPECT = 16 / 10;
-const PADDING = 36;
+/** Even margin between the drawing (strokes included) and the viewBox edge. */
+const PADDING = 24;
+/** Widest half-stroke drawn (the focus highlight), so caps and joins stay inside. */
+const STROKE_REACH = HIGHLIGHT_WIDTH / 2;
+/** Tall drawings are widened (centred) to at least square, so they are not slivers. */
+const MIN_ASPECT = 1;
+/** The inset is sized against the figure framed at this aspect. */
+const INSET_BASIS_ASPECT = 16 / 10;
+/** Inset ring stroke width. */
+const RING_WIDTH = 4;
+/** Inset label font size, as a share of the ring radius. */
+const LABEL_SHARE = 0.16;
+/** Gap from the ring to the label baseline, in label heights. */
+const LABEL_GAP = 1.2;
+/** How far descenders fall below the baseline, in label heights. */
+const LABEL_DESCENT = 0.3;
 
+/** Every point a prop is drawn through, grips' top and bottom included. */
 function propPoints(prop: Prop): Point[] {
-  return propSegments(prop).flat();
+  const grips =
+    prop.kind === "bar"
+      ? (prop.grips ?? []).flatMap((x): Point[] => [
+          [x, prop.y - GRIP_RY],
+          [x, prop.y + GRIP_RY],
+        ])
+      : [];
+  return [...propSegments(prop).flat(), ...grips];
 }
 
 /** Every drawn figure point (joints plus the head circle's extent). */
@@ -137,29 +163,55 @@ export interface ViewBox {
   h: number;
 }
 
-/** Tight 16:10 box around everything the figure and props touch over the loop. */
-function fitViewBox(points: Point[]): ViewBox {
-  const xs = points.map((p) => p[0]);
-  const ys = points.map((p) => p[1]);
-  let x = Math.min(...xs) - PADDING;
-  let y = Math.min(...ys) - PADDING;
-  let w = Math.max(...xs) + PADDING - x;
-  let h = Math.max(...ys, 0) + PADDING - y;
-  if (w / h < ASPECT) {
-    x -= (h * ASPECT - w) / 2;
-    w = h * ASPECT;
-  } else {
-    y -= (w / ASPECT - h) / 2;
-    h = w / ASPECT;
+/** The box around `points`, grown by `grow` on every side. */
+function bounds(points: Point[], grow = 0): ViewBox {
+  let [minX, minY, maxX, maxY] = [Infinity, Infinity, -Infinity, -Infinity];
+  for (const [x, y] of points) {
+    minX = Math.min(minX, x);
+    minY = Math.min(minY, y);
+    maxX = Math.max(maxX, x);
+    maxY = Math.max(maxY, y);
   }
-  return { x, y, w, h };
+  return { x: minX - grow, y: minY - grow, w: maxX - minX + 2 * grow, h: maxY - minY + 2 * grow };
+}
+
+function union(a: ViewBox, b: ViewBox): ViewBox {
+  const x = Math.min(a.x, b.x);
+  const y = Math.min(a.y, b.y);
+  return { x, y, w: Math.max(a.x + a.w, b.x + b.w) - x, h: Math.max(a.y + a.h, b.y + b.h) - y };
+}
+
+/** The drawing centred with an even PADDING, widened to MIN_ASPECT when tall. */
+function frame(drawing: ViewBox): ViewBox {
+  const h = drawing.h + 2 * PADDING;
+  const w = Math.max(drawing.w + 2 * PADDING, h * MIN_ASPECT);
+  return { x: drawing.x + drawing.w / 2 - w / 2, y: drawing.y - PADDING, w, h };
+}
+
+/** Everything the figure and props touch over the loop (no inset). */
+function figureExtent(spec: DoodleSpec, poses: Solved[]): ViewBox {
+  return bounds([
+    ...poses.flatMap((pose) => figurePoints(pose).map((p) => p.point)),
+    ...(spec.props ?? []).flatMap(propPoints),
+  ], STROKE_REACH);
+}
+
+interface Layout {
+  view: ViewBox;
+  focus?: Focus;
+  inset?: Inset;
+}
+
+function layoutFor(spec: DoodleSpec, poses: Solved[]): Layout {
+  const figure = figureExtent(spec, poses);
+  const focus = FOCUS_BY_ID[spec.id];
+  const inset = insetFor(focus, poses, figure);
+  const drawing = inset ? union(figure, insetExtent(inset, focus?.label)) : figure;
+  return { view: frame(drawing), focus, inset };
 }
 
 export function specViewBox(spec: DoodleSpec, poses: Solved[] = sampleTimeline(spec).poses): ViewBox {
-  return fitViewBox([
-    ...poses.flatMap((pose) => figurePoints(pose).map((p) => p.point)),
-    ...(spec.props ?? []).flatMap(propPoints),
-  ]);
+  return layoutFor(spec, poses).view;
 }
 
 /** Joints a highlighted segment runs through. */
@@ -218,8 +270,8 @@ interface Inset {
   map: Mapper;
 }
 
-/** Inset to the right of the main view, centred on the focus joints' range over the loop. */
-function insetFor(focus: Focus | undefined, poses: Solved[], box: ViewBox): Inset | undefined {
+/** Inset to the right of the figure, zoomed on the focus joints' range over the loop. */
+function insetFor(focus: Focus | undefined, poses: Solved[], figure: ViewBox): Inset | undefined {
   if (!focus?.zoom) return undefined;
   const points = poses.flatMap((pose) =>
     figurePoints(pose)
@@ -227,26 +279,35 @@ function insetFor(focus: Focus | undefined, poses: Solved[], box: ViewBox): Inse
       .map((p) => p.point),
   );
   if (points.length === 0) return undefined;
-  const xs = points.map((p) => p[0]);
-  const ys = points.map((p) => p[1]);
-  const centre: Point = [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...ys) + Math.max(...ys)) / 2];
-  const extent = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)) / 2 + 30;
-  const r = (box.h * INSET_SHARE) / 2;
+  const area = bounds(points);
+  const centre: Point = [area.x + area.w / 2, area.y + area.h / 2];
+  const extent = Math.max(area.w, area.h) / 2 + 30;
+  const r = (Math.max(figure.h, figure.w / INSET_BASIS_ASPECT) * INSET_SHARE) / 2;
   // Zoom in as asked, but never so far that the focus area leaves the circle.
   const zoom = Math.min(focus.zoom, (r * 0.85) / extent);
-  const cx = box.x + box.w + r + PADDING / 2;
-  const cy = box.y + box.h / 2;
+  const cx = figure.x + figure.w + PADDING + r;
+  const cy = figure.y + figure.h / 2;
   const map: Mapper = ([x, y]) => [cx + (x - centre[0]) * zoom, cy + (y - centre[1]) * zoom];
   return { cx, cy, r, zoom, map };
+}
+
+const labelSize = (r: number): number => r * LABEL_SHARE;
+const labelBaseline = (inset: Inset): number => inset.cy + inset.r + labelSize(inset.r) * LABEL_GAP;
+
+/** The inset ring plus, below it, its label (descenders included). */
+function insetExtent(inset: Inset, label: string | undefined): ViewBox {
+  const reach = inset.r + RING_WIDTH / 2;
+  const bottom = label ? labelBaseline(inset) + labelSize(inset.r) * LABEL_DESCENT : inset.cy + reach;
+  return { x: inset.cx - reach, y: inset.cy - reach, w: 2 * reach, h: bottom - (inset.cy - reach) };
 }
 
 function insetSvg(spec: DoodleSpec, focus: Focus, inset: Inset, poses: Solved[], timing: string): string {
   const { cx, cy, r, zoom, map } = inset;
   // Unique per doodle: several SVGs inlined on one page must not share a clip.
   const clipId = `focus-${spec.slug}`;
-  const fontSize = r * 0.16;
+  const fontSize = labelSize(r);
   const label = focus.label
-    ? `<text x="${fmt(cx)}" y="${fmt(cy + r + fontSize * 1.2)}" style="fill:${FOCUS_COLOUR}" stroke="none" font-family="system-ui, sans-serif" font-size="${fmt(fontSize)}" text-anchor="middle">${focus.label}</text>`
+    ? `<text x="${fmt(cx)}" y="${fmt(labelBaseline(inset))}" style="fill:${FOCUS_COLOUR}" stroke="none" font-family="system-ui, sans-serif" font-size="${fmt(fontSize)}" text-anchor="middle">${focus.label}</text>`
     : "";
   return `<clipPath id="${clipId}"><circle cx="${fmt(cx)}" cy="${fmt(cy)}" r="${fmt(r)}"/></clipPath>
 <g clip-path="url(#${clipId})">
@@ -254,7 +315,7 @@ function insetSvg(spec: DoodleSpec, focus: Focus, inset: Inset, poses: Solved[],
 ${highlightSvg(focus, poses, timing, map)}
 ${figureSvg(spec, poses, timing, map, zoom)}
 </g>
-<circle cx="${fmt(cx)}" cy="${fmt(cy)}" r="${fmt(r)}" style="stroke:${FOCUS_COLOUR}" stroke-width="4"/>
+<circle cx="${fmt(cx)}" cy="${fmt(cy)}" r="${fmt(r)}" style="stroke:${FOCUS_COLOUR}" stroke-width="${RING_WIDTH}"/>
 ${label}`;
 }
 
@@ -265,11 +326,8 @@ export function renderDoodleSvg(spec: DoodleSpec): string {
   const timing = `dur="${fmt(timeline.duration)}s" repeatCount="indefinite" calcMode="linear" keyTimes="${timeline.keyTimes
     .map((value) => value.toFixed(4))
     .join(";")}"`;
-  const box = specViewBox(spec, poses);
-  const focus = FOCUS_BY_ID[spec.id];
-  const inset = insetFor(focus, poses, box);
-  const width = inset ? inset.cx + inset.r + PADDING / 2 - box.x : box.w;
-  const view = [box.x, box.y, width, box.h].map(fmt).join(" ");
+  const { view: box, focus, inset } = layoutFor(spec, poses);
+  const view = [box.x, box.y, box.w, box.h].map(fmt).join(" ");
   const props = (spec.props ?? []).map(propSvg).join("");
   const layers = [
     highlightSvg(focus, poses, timing, identity),
@@ -280,7 +338,7 @@ export function renderDoodleSvg(spec: DoodleSpec): string {
     .join("\n");
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${view}" role="img" aria-label="${spec.title}">
 <title>${spec.title}</title>
-<rect x="${fmt(box.x)}" y="${fmt(box.y)}" width="${fmt(width)}" height="${fmt(box.h)}" style="fill:${BACKDROP}"/>
+<rect x="${fmt(box.x)}" y="${fmt(box.y)}" width="${fmt(box.w)}" height="${fmt(box.h)}" style="fill:${BACKDROP}"/>
 <g fill="none" style="stroke:${INK}" stroke-width="${STROKE_WIDTH}" stroke-linecap="round" stroke-linejoin="round">
 ${layers}
 </g>

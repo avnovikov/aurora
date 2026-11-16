@@ -1,5 +1,5 @@
 import { doodleFor } from "../../src/data/doodles";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { EXERCISE_GRAPH } from "../../src/data/exerciseGraph";
 import { GENERATED_DOODLES, REPLACED_DOODLE_IDS } from "../../src/data/generated/doodleMap";
@@ -9,6 +9,21 @@ import { figurePoints, renderDoodleSvg } from "../../src/doodles/renderSvg";
 import { sampleTimeline } from "../../src/doodles/rig";
 import { DOODLE_SPECS } from "../../src/doodles/specs";
 import { validateSpec } from "../../src/doodles/validate";
+
+const NUMBER = /-?\d+(?:\.\d+)?/g;
+/** Coordinates print to 0.1, and floating point differs a little between platforms. */
+const COORD_TOLERANCE = 0.11;
+
+/** Same markup, with every number within COORD_TOLERANCE of its counterpart. */
+function sameDrawing(saved: string, fresh: string): boolean {
+  const a = saved.match(NUMBER) ?? [];
+  const b = fresh.match(NUMBER) ?? [];
+  return (
+    saved.replace(NUMBER, "#") === fresh.replace(NUMBER, "#") &&
+    a.length === b.length &&
+    a.every((value, i) => Math.abs(Number(value) - Number(b[i])) <= COORD_TOLERANCE)
+  );
+}
 
 describe("animated doodles", () => {
   it("pass the rig validator (bone lengths, anatomy, floor, frame, props)", () => {
@@ -20,8 +35,9 @@ describe("animated doodles", () => {
 
   it("are generated for every spec (re-run npm run doodles)", () => {
     expect(Object.keys(GENERATED_DOODLES).sort()).toEqual(DOODLE_SPECS.map((spec) => spec.id).sort());
-    for (const file of Object.values(GENERATED_DOODLES)) {
-      expect(existsSync(new URL(`../../public${file}`, import.meta.url)), file).toBe(true);
+    for (const spec of DOODLE_SPECS) {
+      const file = new URL(`../../public${GENERATED_DOODLES[spec.id]}`, import.meta.url);
+      expect(existsSync(file) && sameDrawing(readFileSync(file, "utf8"), renderDoodleSvg(spec)), spec.slug).toBe(true);
     }
   });
 
