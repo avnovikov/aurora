@@ -1,5 +1,5 @@
 import { solvePose } from "./rig";
-import type { DoodleSpec, Point, Pose } from "./rig";
+import type { DoodleSpec, Point, Pose, Prop } from "./rig";
 
 /** Point `length` from `from` at `degrees` (0 = +x, 90 = down, -90 = up). */
 function along(from: Point, degrees: number, length: number): Point {
@@ -34,15 +34,41 @@ function jack(open: boolean): Pose {
 
 // ---------------------------------------------------------------- 90/90 hip switch (front, seated)
 
+/**
+ * Seated, seen from the front and a little above: the floor in front of the
+ * hips draws lower on screen, the floor behind them higher. Knees to one side:
+ * the leg on the other side is the front leg (thigh forward, shin across the
+ * front), the leg on that side is the side leg (thigh out, shin back).
+ */
+const SWITCH_HIP_NEAR: Point = [-8, -100];
+const SWITCH_HIP_FAR: Point = [8, -100];
+
 function hipSwitch(kneesRight: boolean): Pose {
-  // Feet slide across the floor so both knees fall from one side to the other.
+  const mirror = (p: Point): Point => [-p[0], p[1]];
+  // Knees to the right: near leg in front (shin across the front), far leg folded flat out to the side.
+  const frontKnee = along(SWITCH_HIP_NEAR, 70, 88);
+  const frontFoot = along(frontKnee, 2, 86);
+  // Side leg folded flat: the shin lies back along the thigh (hidden behind it in a true front view).
+  const sideKnee = along(SWITCH_HIP_FAR, 12, 88);
+  const sideFoot = along(sideKnee, 171, 86);
+  const legs: Pick<Pose, "knees" | "feet" | "toes"> = kneesRight
+    ? {
+        knees: { near: { at: frontKnee }, far: { at: sideKnee } },
+        feet: { near: frontFoot, far: sideFoot },
+        toes: { near: 0, far: -100 },
+      }
+    : {
+        knees: { near: { at: mirror(sideKnee) }, far: { at: mirror(frontKnee) } },
+        feet: { near: mirror(sideFoot), far: mirror(frontFoot) },
+        toes: { near: -80, far: 180 },
+      };
   return {
-    pelvis: [0, -12],
-    chest: [0, -92],
-    hands: { near: [-48, -4], far: [48, -4] },
-    feet: kneesRight ? { near: [-50, -4], far: [95, -4] } : { near: [-95, -4], far: [50, -4] },
-    knees: { near: { bend: 1 }, far: { bend: -1 } },
-    toes: { near: 0, far: 0 },
+    pelvis: [0, -100],
+    chest: [0, -180],
+    // Hands on the floor behind the hips for support.
+    hands: { near: [-80, -90], far: [80, -90] },
+    elbows: { near: { bend: 1 }, far: { bend: -1 } },
+    ...legs,
   };
 }
 
@@ -61,31 +87,49 @@ function deepSquat(pelvisY: number): Pose {
   };
 }
 
-// ---------------------------------------------------------------- side lying (head left, legs right)
+// ---------------------------------------------------------------- side lying (front view, head left)
 
-function sideLying(extra: Pose): Pose {
+/**
+ * Lying on the side, seen from the front (belly towards the viewer, head left).
+ * Front view spreads the sides perpendicular to the spine, so the shoulders and
+ * hips stack vertically: near = bottom side on the floor, far = top side. The
+ * camera sits a little above the floor, so the bent knees (forward, towards the
+ * viewer) draw slightly below the hips and rest on the floor line.
+ */
+export const SIDE_LYING_FLOOR: Prop = { kind: "bar", y: 0, x1: -250, x2: 250 };
+const SL_PELVIS: Point = [0, -30];
+export const SL_HIP_BOTTOM: Point = [0, -22];
+export const SL_HIP_TOP: Point = [0, -38];
+const SL_SHOULDER_BOTTOM: Point = [-98, -8];
+export const SL_SHOULDER_TOP: Point = [-98, -52];
+/** Bottom knee forward on the floor; the shin runs back to the foot (higher on screen = further back). */
+export const SL_KNEE_BOTTOM: Point = along(SL_HIP_BOTTOM, (Math.asin(18 / 88) * 180) / Math.PI, 88);
+export const SL_FOOT_BOTTOM: Point = along(SL_KNEE_BOTTOM, -12, 86);
+/** Top knee resting on the bottom knee, top foot on the bottom foot. */
+export const SL_KNEE_TOP: Point = along(SL_HIP_TOP, (Math.asin(26 / 88) * 180) / Math.PI, 88);
+export const SL_FOOT_TOP: Point = along(SL_KNEE_TOP, -12, 86);
+
+/** Shared side-lying base: head resting on the bottom arm stretched overhead, top arm long along the top side, knees bent and stacked. */
+export function sideLying(extra: Pose = {}): Pose {
   return {
-    pelvis: [0, -18],
-    chest: [-80, -18],
-    head: [-134, -30],
+    pelvis: SL_PELVIS,
+    chest: [-80, SL_PELVIS[1]],
+    head: along([-100, SL_PELVIS[1]], 200, 36),
     spine: { bend: -1 },
+    hands: { near: along(SL_SHOULDER_BOTTOM, 181, 125), far: along(SL_SHOULDER_TOP, 4, 125) },
+    elbows: { near: { bend: 1 }, far: { bend: -1 } },
+    knees: { near: { at: SL_KNEE_BOTTOM }, far: { at: SL_KNEE_TOP } },
+    feet: { near: SL_FOOT_BOTTOM, far: SL_FOOT_TOP },
+    toes: { near: 0, far: 0 },
     ...extra,
   };
 }
 
-/** Bottom leg bent for support: thigh up and forward, shin back down to the floor. */
-const BENT_KNEE: Point = along([0, -18], -28, 88);
-const BENT_FOOT: Point = along(BENT_KNEE, 42, 86);
-const BENT_KNEE_FAR: Point = along([0, -18], -31, 88);
-const BENT_FOOT_FAR: Point = along(BENT_KNEE_FAR, 40, 86);
-
+/** Straight top leg raised `deg` degrees from the floor line (negative = towards the ceiling). */
 function hipAbduction(deg: number): Pose {
-  const pelvis: Point = [0, -18];
   return sideLying({
-    hands: { near: [-44, -76], far: [-48, -72] },
-    elbows: { near: { bend: 1 }, far: { bend: 1 } },
-    knees: { near: { at: BENT_KNEE } },
-    feet: { near: BENT_FOOT, far: along(pelvis, deg, 173.9) },
+    knees: { near: { at: SL_KNEE_BOTTOM } },
+    feet: { near: SL_FOOT_BOTTOM, far: along(SL_HIP_TOP, deg, 173.4) },
     toes: { near: 0, far: deg },
   });
 }
@@ -135,29 +179,6 @@ function cow(): Pose {
     chest: [22, -114],
     head: [56, -150],
     spine: { bend: 1 },
-  };
-}
-
-function rockForward(): Pose {
-  const pelvis: Point = [-22, -88];
-  return {
-    pelvis,
-    chest: chestToward(pelvis, [70, -124]),
-    hands: { near: [48, 0], far: [44, 0] },
-    feet: { near: [-136, -4], far: [-132, -4] },
-    toes: { near: 180, far: 180 },
-  };
-}
-
-function rockBack(): Pose {
-  const pelvis: Point = [-98, -78];
-  return {
-    pelvis,
-    chest: chestToward(pelvis, [6, -100]),
-    hands: { near: [48, 0], far: [44, 0] },
-    knees: { near: { at: [-50, -4] }, far: { at: [-50, -4] } },
-    feet: { near: [-136, -4], far: [-136, -4] },
-    toes: { near: 180, far: 180 },
   };
 }
 
@@ -280,89 +301,53 @@ function armCircle(phase: number): Pose {
   };
 }
 
-// ---------------------------------------------------------------- open book / external rotation
+// ---------------------------------------------------------------- side-lying external rotation
 
-function openBook(stage: 0 | 1 | 2): Pose {
-  const nearHands: Point[] = [
-    [-44, -76],
-    [-95, -142],
-    [-150, -100],
-  ];
-  const hands: Pose["hands"] = { near: nearHands[stage], far: [-48, -72] };
-  return sideLying({
-    chest: stage === 2 ? [-78, -26] : [-80, -18],
-    hands,
-    elbows: { near: { bend: 1 }, far: { bend: 1 } },
-    knees: { near: { at: BENT_KNEE }, far: { at: BENT_KNEE_FAR } },
-    feet: { near: BENT_FOOT, far: BENT_FOOT_FAR },
-    toes: { near: 0, far: 0 },
-  });
-}
-
+/** Top elbow pinned at the ribs, bent 90°; the forearm turns from across the belly (`foreDeg` 40) up to the ceiling (-90). */
 function externalRotation(foreDeg: number): Pose {
-  const shoulder: Point = [-98, -18];
-  const elbow = along(shoulder, 12, 60);
+  const elbow = along(SL_SHOULDER_TOP, 8, 60);
   return sideLying({
-    hands: { near: along(elbow, foreDeg, 66), far: [-48, -72] },
-    elbows: { near: { at: elbow }, far: { bend: 1 } },
-    knees: { near: { at: BENT_KNEE }, far: { at: BENT_KNEE_FAR } },
-    feet: { near: BENT_FOOT, far: BENT_FOOT_FAR },
-    toes: { near: 0, far: 0 },
+    hands: { near: along([-98, -8], 181, 125), far: along(elbow, foreDeg, 66) },
+    elbows: { near: { bend: 1 }, far: { at: elbow } },
   });
 }
 
-// ---------------------------------------------------------------- prone Y-T-W
+// ---------------------------------------------------------------- face down, seen from above
 
-function proneBase(): Pose {
-  const pelvis: Point = [-20, -12];
+/**
+ * Lying face down, seen from above (front view laid flat, head right): the
+ * shoulders and hips spread across the body (near = upper side on screen), so
+ * arms moving along or just off the floor keep their full length. Angles are
+ * screen degrees from each shoulder: 180 = along the body towards the feet,
+ * ∓90 = straight out to the side, 0 = overhead.
+ */
+const PRONE_PELVIS: Point = [-40, -150];
+const PRONE_SHOULDER_NEAR: Point = [58, -172];
+const PRONE_SHOULDER_FAR: Point = [58, -128];
+const PRONE_HIP_NEAR: Point = [-40, -158];
+const PRONE_HIP_FAR: Point = [-40, -142];
+
+/** Straight arms at `deg` from each shoulder on the near (upper) side, mirrored on the far side. */
+export function proneFromAbove(deg: number): Pose {
   return {
-    pelvis,
-    chest: chestToward(pelvis, [78, -12]),
-    head: [114, -24],
-    feet: { near: [-194, -6], far: [-194, -6] },
-    toes: { near: 180, far: 180 },
+    pelvis: PRONE_PELVIS,
+    chest: [40, -150],
+    head: [96, -150],
+    hands: { near: along(PRONE_SHOULDER_NEAR, -deg, 125.97), far: along(PRONE_SHOULDER_FAR, deg, 125.97) },
+    elbows: { near: { bend: -1 }, far: { bend: 1 } },
+    feet: { near: along(PRONE_HIP_NEAR, 186, 173.97), far: along(PRONE_HIP_FAR, 174, 173.97) },
+    toes: { near: 186, far: 174 },
   };
 }
 
-function proneShoulder(): Point {
-  return solvePose(proneBase()).arms.near.root;
-}
-
-function proneY(): Pose {
-  const s = proneShoulder();
-  return {
-    ...proneBase(),
-    hands: { near: along(s, -58, 126), far: [141, -121.1] },
-    elbows: { near: { at: [109.8, -62.9] }, far: { at: [108, -64] } },
-  };
-}
-
-function proneT(): Pose {
-  const s = proneShoulder();
-  return {
-    ...proneBase(),
-    hands: { near: along(s, -125, 124), far: along(s, -127, 124) },
-    elbows: { near: { bend: 1 }, far: { bend: 1 } },
-  };
-}
-
+/** W: upper arms angled back towards the hips, elbows bent, hands out level with the head. */
 function proneW(): Pose {
-  const s = proneShoulder();
-  const elbow = along(s, -70, 60);
-  const hand = along(elbow, -160, 66);
+  const elbowNear = along(PRONE_SHOULDER_NEAR, -140, 60);
+  const elbowFar = along(PRONE_SHOULDER_FAR, 140, 60);
   return {
-    ...proneBase(),
-    hands: { near: hand, far: hand },
-    elbows: { near: { at: elbow }, far: { at: elbow } },
-  };
-}
-
-function proneRest(): Pose {
-  const s = proneShoulder();
-  return {
-    ...proneBase(),
-    hands: { near: [round(s[0] - 120), -8], far: [round(s[0] - 122), -8] },
-    elbows: { near: { bend: 1 }, far: { bend: 1 } },
+    ...proneFromAbove(170),
+    hands: { near: along(elbowNear, -50, 66), far: along(elbowFar, 50, 66) },
+    elbows: { near: { at: elbowNear }, far: { at: elbowFar } },
   };
 }
 
@@ -671,10 +656,12 @@ export const WARMUP_DRILL_SPECS: DoodleSpec[] = [
     id: "wger_1202",
     slug: "side-lying-hip-abduction",
     title: "Side Lying Hip Abduction",
+    view: "front",
+    props: [SIDE_LYING_FLOOR],
     transition: 0.9,
     frames: [
-      { hold: 0.4, pose: hipAbduction(-4) },
-      { hold: 0.5, pose: hipAbduction(-38) },
+      { hold: 0.4, pose: hipAbduction(4) },
+      { hold: 0.5, pose: hipAbduction(-40) },
     ],
   },
   {
@@ -718,18 +705,6 @@ export const WARMUP_DRILL_SPECS: DoodleSpec[] = [
     ],
   },
   {
-    id: "hf_167",
-    slug: "wrist-circles",
-    title: "Wrist Circles",
-    transition: 0.9,
-    frames: [
-      { hold: 0.2, pose: allFours() },
-      { hold: 0.3, pose: rockForward() },
-      { hold: 0.2, pose: allFours() },
-      { hold: 0.3, pose: rockBack() },
-    ],
-  },
-  {
     id: "wger_2680",
     slug: "wrist-rocks",
     title: "Wrist rocks",
@@ -760,38 +735,28 @@ export const WARMUP_DRILL_SPECS: DoodleSpec[] = [
     frames: [0, 1, 2, 3, 4, 5, 6, 7].map((phase) => ({ hold: 0, pose: armCircle(phase) })),
   },
   {
-    id: "wger_1822",
-    slug: "open-book",
-    title: "Open Book",
-    transition: 1,
-    frames: [
-      { hold: 0.4, pose: openBook(0) },
-      { hold: 0.2, pose: openBook(1) },
-      { hold: 0.5, pose: openBook(2) },
-    ],
-  },
-  {
     id: "wger_578",
     slug: "side-lying-external-rotation",
     title: "Side-lying External Rotation",
+    view: "front",
+    props: [SIDE_LYING_FLOOR],
     transition: 1.1,
     frames: [
-      { hold: 0.4, pose: externalRotation(0) },
-      { hold: 0.5, pose: externalRotation(-80) },
+      { hold: 0.4, pose: externalRotation(40) },
+      { hold: 0.5, pose: externalRotation(-90) },
     ],
   },
   {
     id: "ntc_prone_ytw",
     slug: "prone-y-t-w-raise",
     title: "Prone Y-T-W raise",
+    view: "front",
     transition: 0.8,
     frames: [
-      { hold: 0.3, pose: proneRest() },
-      { hold: 0.4, pose: proneY() },
-      { hold: 0.3, pose: proneRest() },
-      { hold: 0.4, pose: proneT() },
-      { hold: 0.3, pose: proneRest() },
-      { hold: 0.4, pose: proneW() },
+      // Seen from above the lift itself is invisible, so the arms hold each letter in turn.
+      { hold: 0.7, pose: proneFromAbove(35) },
+      { hold: 0.7, pose: proneFromAbove(90) },
+      { hold: 0.7, pose: proneW() },
     ],
   },
   {
