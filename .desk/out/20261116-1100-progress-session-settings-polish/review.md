@@ -19,7 +19,7 @@ Same scores in Rassvet, Alvorada and Ushas.
 ## What changed (ported into `src/`)
 - All screens: eyebrows and tab-bar labels 12.8px; tab bar 56px on surface, current tab in foreground with a 2px top bar (not colour alone); body taglines 16/24; h1 39/44, h2 25/32; session small text 12.8px.
 - Progress: the ladder as a sequence with decorative arrows, the current step underlined, the target bold; target name 25px above the accent move; PB in foreground at 16px; 40px between targets, no rules.
-- Working set: dose note 16px; doodle compact and centred; bar padding aligned to the content edge; "Pulse: no reading"; hint "Log each set below, or swipe to finish this exercise" (the swipe finishes the exercise, so the reviewer's "move between sets" was corrected).
+- Working set: dose note 16px; doodle compact and centred; bar padding aligned to the content edge; "Pulse: no reading"; hint "Log each set below, or swipe left to log it and rest". The reviewer was right that the swipe should move between sets; the code finished the whole exercise, and was fixed to match (left swipe logs the set and starts rest; on rest it ends the rest; right swipe snaps back).
 - Settings: selected chips in foreground with a 2px border (accent kept for the page); injury questions as labelled groups ("Which knee", "What happened"); 44px chips, 48px inputs; Gear helper "Sessions offer it on moves that take load."
 
 ## Open, for the owner
