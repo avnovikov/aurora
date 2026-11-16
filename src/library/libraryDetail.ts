@@ -24,6 +24,8 @@ import {
 } from "./detailSections";
 import { personalBestHeroHtml, personalBestUnit } from "./personalBest";
 import { isTemplateTarget } from "./targets";
+import { scrollViewportToTop } from "./detailScroll";
+import { backOnly, wireSwipe } from "../ui/sessionSwipe";
 import "../styles/exercise.css";
 
 export interface DetailActions {
@@ -60,6 +62,8 @@ export interface DetailView {
 export interface MountLibraryDetailOptions extends DetailView {
   exercise: SeedExercise;
   actions: DetailActions;
+  /** When false, keep the current scroll (same-exercise re-paint). Default true. */
+  scrollToTop?: boolean;
 }
 
 function wireExcludeToggle(root: HTMLElement, actions: DetailActions, excluded: boolean): void {
@@ -68,14 +72,27 @@ function wireExcludeToggle(root: HTMLElement, actions: DetailActions, excluded: 
   });
 }
 
+/** Left-to-right swipe returns to the list; vertical scroll still wins when it dominates. */
+function wireBackSwipe(root: HTMLElement, onBack: () => void): void {
+  const stage = root.querySelector<HTMLElement>("[data-back-swipe]");
+  if (!stage) {
+    throw new Error("Library detail missing data-back-swipe stage");
+  }
+  wireSwipe(stage, onBack, { allow: backOnly, preferVerticalScroll: true });
+}
+
 export function mountLibraryDetail(
   root: HTMLElement,
   options: MountLibraryDetailOptions,
 ): void {
-  const { exercise, actions, excluded = false } = options;
+  const { exercise, actions, excluded = false, scrollToTop = true } = options;
   root.innerHTML = detailHtml(exercise, options);
+  if (scrollToTop) {
+    scrollViewportToTop();
+  }
 
   wireExcludeToggle(root, actions, excluded);
+  wireBackSwipe(root, actions.onBack);
 
   root.querySelector<HTMLButtonElement>("[data-lib-back]")?.addEventListener("click", () => {
     actions.onBack();
@@ -122,7 +139,7 @@ export function detailHtml(exercise: SeedExercise, view: DetailView = {}): strin
   const tier = currentTier(memory);
 
   return `
-    <main class="shell lib-detail">
+    <main class="shell lib-detail" data-back-swipe>
       <button type="button" class="lib-back" data-lib-back>← Back to list</button>
       ${targetBadge}
       <p class="eyebrow">Exercise</p>
