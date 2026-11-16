@@ -11,6 +11,17 @@
   line-height: 1.5;
   font-variant-numeric: tabular-nums;
   color: var(--foreground);
+  touch-action: pan-y;
+  will-change: transform, opacity;
+}
+
+.lib-detail.is-swiping {
+  user-select: none;
+  cursor: grabbing;
+}
+
+.lib-detail.is-swipe-exit {
+  pointer-events: none;
 }
 
 .lib-detail p,

@@ -39,9 +39,48 @@ export function decideSwipeRelease(input: {
 
 /** Only the forward swipe (right to left) commits; the other way snaps back. */
 export function forwardOnly(decision: SwipeDecision): SwipeDecision {
-  return decision.action === "commit" && decision.direction !== "left"
-    ? { action: "cancel" }
-    : decision;
+  return commitInDirection(decision, "left");
+}
+
+/** Only the back swipe (left to right) commits; the other way snaps back. */
+export function backOnly(decision: SwipeDecision): SwipeDecision {
+  return commitInDirection(decision, "right");
+}
+
+function commitInDirection(decision: SwipeDecision, direction: SwipeDirection): SwipeDecision {
+  const wrongWay = decision.action === "commit" && decision.direction !== direction;
+  if (wrongWay) {
+    return { action: "cancel" };
+  }
+  return decision;
+}
+
+/** Which way a drag has locked while the page can also scroll. */
+export type SwipeAxis = "horizontal" | "vertical" | "pending";
+
+const AXIS_SLOP_PX = 8;
+
+/**
+ * Pending while both axes stay inside the slop.
+ * The longer travel then wins, and a tie stays horizontal.
+ */
+export function swipeAxis(deltaX: number, deltaY: number): SwipeAxis {
+  const travelX = Math.abs(deltaX);
+  const travelY = Math.abs(deltaY);
+  if (travelX < AXIS_SLOP_PX && travelY < AXIS_SLOP_PX) {
+    return "pending";
+  }
+  if (travelX >= travelY) {
+    return "horizontal";
+  }
+  return "vertical";
+}
+
+export interface WireSwipeOptions {
+  /** Which commit directions count; defaults to session forward (left). */
+  allow?: (decision: SwipeDecision) => SwipeDecision;
+  /** Drop the gesture when vertical scrolling wins before a horizontal lock. */
+  preferVerticalScroll?: boolean;
 }
 
 export function exitOffsetPx(width: number, direction: SwipeDirection): number {
@@ -64,20 +103,33 @@ function isInteractiveTarget(target: EventTarget | null): boolean {
   return target instanceof Element && target.closest("button, a, input") !== null;
 }
 
+function releasePointer(stage: HTMLElement, pointerId: number): void {
+  try {
+    stage.releasePointerCapture(pointerId);
+  } catch {
+    // Already released.
+  }
+}
+
 /**
- * Right-to-left swipe on a session stage moves one step forward:
- * a work set is logged with its current values and rest starts,
- * a rest ends early and the next set begins.
- * Tracks 1:1 while the pointer is down, then animates off-screen
- * (or snaps back) so the gesture is visible before advancing.
+ * Horizontal swipe on a stage. The pointer tracks 1:1, then the stage
+ * animates off-screen or snaps back. Session commits forward (left).
+ * Library detail commits back (right) and yields when vertical scroll wins.
  */
-export function wireSwipe(stage: HTMLElement, onForward: () => void): void {
+export function wireSwipe(
+  stage: HTMLElement,
+  onCommit: () => void,
+  options: WireSwipeOptions = {},
+): void {
+  const { allow = forwardOnly, preferVerticalScroll = false } = options;
   let pointerId: number | null = null;
   let startX = 0;
+  let startY = 0;
   let lastX = 0;
   let lastT = 0;
   let velocity = 0;
   let deltaX = 0;
+  let axis: SwipeAxis = "pending";
   let settling = false;
 
   const clearTransition = (): void => {
@@ -96,6 +148,31 @@ export function wireSwipe(stage: HTMLElement, onForward: () => void): void {
     stage.style.opacity = "";
     clearTransition();
     stage.classList.remove("is-swiping", "is-swipe-exit");
+  };
+
+  const abandonForScroll = (event: PointerEvent): void => {
+    pointerId = null;
+    axis = "pending";
+    releasePointer(stage, event.pointerId);
+    resetVisual();
+  };
+
+  const isTracking = (event: PointerEvent): boolean => {
+    return pointerId !== null && event.pointerId === pointerId && !settling;
+  };
+
+  const shouldDragStage = (event: PointerEvent, travelX: number): boolean => {
+    if (!preferVerticalScroll) {
+      return true;
+    }
+    if (axis === "pending") {
+      axis = swipeAxis(travelX, event.clientY - startY);
+    }
+    if (axis === "vertical") {
+      abandonForScroll(event);
+      return false;
+    }
+    return axis === "horizontal";
   };
 
   const settle = (decision: SwipeDecision): void => {
@@ -123,7 +200,7 @@ export function wireSwipe(stage: HTMLElement, onForward: () => void): void {
     stage.style.transform = `translateX(${target}px)`;
     stage.style.opacity = "0";
     window.setTimeout(() => {
-      onForward();
+      onCommit();
       // paint() replaces the stage; still clear in case the step is a no-op.
       resetVisual();
       settling = false;
@@ -136,43 +213,48 @@ export function wireSwipe(stage: HTMLElement, onForward: () => void): void {
     }
     pointerId = event.pointerId;
     startX = event.clientX;
+    startY = event.clientY;
     lastX = event.clientX;
     lastT = event.timeStamp;
     velocity = 0;
     deltaX = 0;
+    axis = "pending";
     clearTransition();
     stage.classList.add("is-swiping");
     stage.setPointerCapture(event.pointerId);
   });
 
   stage.addEventListener("pointermove", (event) => {
-    if (pointerId === null || event.pointerId !== pointerId || settling) {
+    if (!isTracking(event)) {
       return;
     }
     const now = event.timeStamp;
-    const dt = now - lastT;
-    if (dt >= 8) {
-      velocity = (event.clientX - lastX) / dt;
+    const elapsed = now - lastT;
+    if (elapsed >= 8) {
+      velocity = (event.clientX - lastX) / elapsed;
       lastX = event.clientX;
       lastT = now;
     }
     deltaX = event.clientX - startX;
+    if (!shouldDragStage(event, deltaX)) {
+      return;
+    }
     applyDrag(deltaX);
   });
 
   const endPointer = (event: PointerEvent): void => {
-    if (pointerId === null || event.pointerId !== pointerId || settling) {
+    if (!isTracking(event)) {
       return;
     }
     pointerId = null;
-    try {
-      stage.releasePointerCapture(event.pointerId);
-    } catch {
-      // Already released.
+    releasePointer(stage, event.pointerId);
+    if (preferVerticalScroll && axis !== "horizontal") {
+      resetVisual();
+      return;
     }
     const width = Math.max(stage.offsetWidth, 1);
     settle(
-      forwardOnly(
+      allow(
         decideSwipeRelease({
           deltaX,
           velocityPxPerMs: velocity,
