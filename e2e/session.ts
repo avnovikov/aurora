@@ -1,6 +1,15 @@
 import type { Locator, Page } from "@playwright/test";
+import { SWIPE_BACK_MS, SWIPE_EXIT_MS } from "../src/ui/sessionSwipe";
 
 const PROFILE_KEY = "aurora.poc.profile.v1";
+/** Fake time between two touch moves: one 60 Hz frame. */
+const FRAME_MS = 16;
+/** Long enough for the exit or snap-back animation, plus a margin for the repaint. */
+const SETTLE_MS = Math.max(SWIPE_EXIT_MS, SWIPE_BACK_MS) + 140;
+/** More swipes than any warm-up has stations and gaps. */
+const MAX_WARMUP_SWIPES = 40;
+/** The gap rest's eyebrow starts with this, then the next station's name. */
+export const GAP_PREFIX = "Rest · next ";
 
 /**
  * Open the app with a fake clock (timers only move when a test says so),
@@ -24,9 +33,9 @@ export async function startSession(page: Page): Promise<void> {
   await stage(page, "station").waitFor();
 }
 
-/** The current swipe stage of the given kind: station, rest or work. */
-export function stage(page: Page, kind: "station" | "rest" | "work"): Locator {
-  return page.locator(`[data-swipe-stage='${kind}']`);
+/** The current swipe stage of the given kind (station, rest or work), or any stage. */
+export function stage(page: Page, kind?: "station" | "rest" | "work"): Locator {
+  return page.locator(kind ? `[data-swipe-stage='${kind}']` : "[data-swipe-stage]");
 }
 
 /** The eyebrow above the hero: "Warmup", "Rest · next …", "Set 2 of 4". */
@@ -38,9 +47,14 @@ export function moveName(page: Page): Locator {
   return page.locator(".session-move");
 }
 
+/** The move on screen now, as text. */
+export async function currentMove(page: Page): Promise<string> {
+  return (await moveName(page).textContent()) ?? "";
+}
+
 interface SwipeOptions {
   direction?: "left" | "right";
-  /** Touch moves in the drag; each one is 16 ms of fake time. */
+  /** Touch moves in the drag; each one is FRAME_MS of fake time. */
   steps?: number;
   /** Vertical drift of a real thumb, in px. */
   drift?: number;
@@ -69,20 +83,23 @@ export async function swipe(page: Page, target: Locator, options: SwipeOptions =
       type: "touchMove",
       touchPoints: [{ x: x0 + (x1 - x0) * t, y: y + drift * t }],
     });
-    await page.clock.runFor(16);
+    await page.clock.runFor(FRAME_MS);
   }
   await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
-  await page.clock.runFor(500);
+  await page.clock.runFor(SETTLE_MS);
   await cdp.detach();
 }
 
-/** Swipe through warm-up stations and their gaps until the first work set shows. */
-export async function swipeThroughWarmup(page: Page): Promise<void> {
-  for (let i = 0; i < 40; i += 1) {
-    if (await stage(page, "work").count()) {
+/**
+ * Swipe forward from the start of the session until a stage of `kind` shows:
+ * "rest" stops at the first gap between warm-up stations, "work" at the first set.
+ */
+export async function swipeUntil(page: Page, kind: "rest" | "work"): Promise<void> {
+  for (let i = 0; i < MAX_WARMUP_SWIPES; i += 1) {
+    if (await stage(page, kind).count()) {
       return;
     }
-    await swipe(page, page.locator("[data-swipe-stage]"));
+    await swipe(page, stage(page));
   }
-  throw new Error("still no work set after 40 swipes");
+  throw new Error(`no ${kind} stage after ${MAX_WARMUP_SWIPES} swipes`);
 }

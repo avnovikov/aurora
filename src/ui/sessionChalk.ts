@@ -165,26 +165,19 @@ function surfaceHtml(planned: PlannedSession, state: ViewState): Surface {
 }
 
 function warmupHtml(planned: PlannedSession, state: ViewState): string {
-  const step = planned.warmup[state.warmupIndex];
-  if (!step) {
+  if (!planned.warmup[state.warmupIndex]) {
     return `<section class="session-read"><p class="tagline">Warmup complete</p></section>`;
   }
-  if (state.phase === "rest") {
-    return stationGapHtml(planned.warmup[state.warmupIndex + 1], state);
-  }
-  return stationHtml("Warmup", step);
+  return stationOrGapHtml("Warmup", planned.warmup, state.warmupIndex, state);
 }
 
 function cooldownHtml(planned: PlannedSession, state: ViewState): string {
-  const step = cooldownSteps(planned)[state.cooldownIndex];
-  if (!step) {
+  const steps = cooldownSteps(planned);
+  if (!steps[state.cooldownIndex]) {
     return `<section class="session-read"><p class="tagline">Cool-down complete</p></section>`;
   }
-  const station = state.phase === "rest"
-    ? stationGapHtml(cooldownSteps(planned)[state.cooldownIndex + 1], state)
-    : stationHtml("Cool-down", step);
   return `
-    ${station}
+    ${stationOrGapHtml("Cool-down", steps, state.cooldownIndex, state)}
     <div class="work-actions-secondary session-end-cooldown">
       <button type="button" class="btn-quiet" data-cooldown-skip>End cool-down</button>
     </div>
@@ -220,6 +213,21 @@ function stationHtml(eyebrow: string, step: WarmupStep): string {
       </section>
     </div>
   `;
+}
+
+/**
+ * Station `index` while it runs; in its gap (the timer has put the view into
+ * rest, the index not yet advanced) the rest before the station after it.
+ */
+function stationOrGapHtml(
+  eyebrow: string,
+  steps: readonly WarmupStep[],
+  index: number,
+  state: ViewState,
+): string {
+  return state.phase === "rest"
+    ? stationGapHtml(steps[index + 1], state)
+    : stationHtml(eyebrow, steps[index]!);
 }
 
 /** The short rest between two stations: the countdown and the station that comes next. */
