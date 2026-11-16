@@ -8,7 +8,7 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   sonarjs.configs.recommended,
   {
-    files: ["src/**/*.ts", "tests/**/*.ts"],
+    files: ["src/**/*.ts", "tests/**/*.ts", "e2e/**/*.ts"],
     rules: {
       // Cyclomatic complexity (ESLint built-in)
       complexity: ["error", { max: 10 }],

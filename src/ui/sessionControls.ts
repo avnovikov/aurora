@@ -42,6 +42,8 @@ export interface SessionControlHandlers {
   onSkipCooldown: () => void;
   onPulseLostSim: () => void;
   onPulseBpm: (bpm: number) => void;
+  /** Forward swipe on a warm-up or cool-down station: end it now. */
+  onFinishStation: () => void;
   onPulseDisconnected: () => void;
 }
 
@@ -85,6 +87,10 @@ function wireStageSwipe(
   const rest = root.querySelector<HTMLElement>("[data-swipe-stage='rest']");
   if (rest) {
     wireSwipe(rest, handlers.onSkipRest);
+  }
+  const station = root.querySelector<HTMLElement>("[data-swipe-stage='station']");
+  if (station) {
+    wireSwipe(station, handlers.onFinishStation);
   }
 }
 
