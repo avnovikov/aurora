@@ -71,17 +71,33 @@ function emptyStateHtml(): string {
 function cardHtml(card: PlanProgressCard): string {
   const plans = card.templateNames.map(escapeHtml).join(" · ");
   const distance = distanceLine(card);
-  const body =
-    card.phase === "active" ? activeBlockHtml(card) : notStartedBlockHtml(card);
   return `
     <section class="chain-card progress-card" data-target="${escapeHtml(card.targetId)}">
       <p class="eyebrow">Target · ${plans}</p>
       <h2 class="chain-title">${escapeHtml(card.targetName)}</h2>
       ${distance}
       ${pathPreviewHtml(card.pathPreview)}
-      ${body}
-      ${reasonHtml(card)}
+      ${exerciseBlockHtml(card)}
     </section>
+  `;
+}
+
+/** The Now block and its status line, or a pointer when an earlier card already shows that step. */
+function exerciseBlockHtml(card: PlanProgressCard): string {
+  if (card.nowShownUnder !== undefined) {
+    return sharedNowHtml(card, card.nowShownUnder);
+  }
+  const body =
+    card.phase === "active" ? activeBlockHtml(card) : notStartedBlockHtml(card);
+  return `${body}${reasonHtml(card)}`;
+}
+
+function sharedNowHtml(card: PlanProgressCard, ownerName: string): string {
+  const label = card.phase === "active" ? "Now" : "Start";
+  return `
+    <div class="exercise-block">
+      <p class="exercise-next"><span class="exercise-next-label">${label}</span> ${escapeHtml(card.currentName)} · see ${escapeHtml(ownerName)} above</p>
+    </div>
   `;
 }
 

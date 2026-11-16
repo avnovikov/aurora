@@ -37,6 +37,11 @@ export interface PlanProgressCard {
   stepsToTarget: number | null;
   pathPreview: PathPreviewStep[];
   status: ChainStatus;
+  /**
+   * Set when an earlier card already shows `currentId` as its Now step (two
+   * targets on one path, e.g. Pull-up and Muscle-up): that card's target name.
+   */
+  nowShownUnder?: string;
 }
 
 export interface PlanProgressModel {
@@ -59,7 +64,20 @@ export function buildPlanProgress(input: {
   const cards = targets.map((target) =>
     buildCard(target, planExerciseIds, input.graph, input.memories, input.lastResolveFor),
   );
-  return { cards };
+  return { cards: pointSharedNowToFirstCard(cards) };
+}
+
+/** Display only: the first card showing an exercise as Now keeps it; later ones point back. */
+function pointSharedNowToFirstCard(cards: readonly PlanProgressCard[]): PlanProgressCard[] {
+  const ownerByNowId = new Map<string, string>();
+  return cards.map((card) => {
+    const owner = ownerByNowId.get(card.currentId);
+    if (owner !== undefined) {
+      return { ...card, nowShownUnder: owner };
+    }
+    ownerByNowId.set(card.currentId, card.targetName);
+    return card;
+  });
 }
 
 interface TargetRef {
