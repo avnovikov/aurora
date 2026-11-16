@@ -1,3 +1,4 @@
+import { displayExerciseName } from "../library/displayName";
 import type { PlannedSession } from "../rules/planSession";
 import { cooldownOfferLabel, warmupMinutesLabel } from "../rules/sessionDuration";
 import { warmupViewSeconds } from "../rules/warmupPlan";
@@ -34,7 +35,7 @@ export function chalkRailNotches(
   };
   const work = planned.work.map((item, index) => ({
     className: workRailClass(state, index),
-    title: item.label,
+    title: displayExerciseName(item.label),
   }));
   const cooldown = cooldownSteps(planned);
   if (cooldown.length === 0) {
@@ -63,7 +64,7 @@ export function isCooldownSurface(planned: PlannedSession, state: ViewState): bo
 function cooldownChalkLabel(planned: PlannedSession, state: ViewState): string {
   const steps = cooldownSteps(planned);
   const step = steps[state.cooldownIndex];
-  return joinChalk(cooldownOfferLabel(warmupViewSeconds(steps)), step?.name);
+  return joinChalk(cooldownOfferLabel(warmupViewSeconds(steps)), step && displayExerciseName(step.name));
 }
 
 /** True while the athlete is still on the warmup surface (including warmup rest). */
@@ -89,8 +90,8 @@ function warmupChalkLabel(planned: PlannedSession, state: ViewState): string {
   const nextWork = planned.work[0];
   return joinChalk(
     warmupMinutesLabel(warmupViewSeconds(planned.warmup)),
-    step.name,
-    nextWork ? `next ${nextWork.label}` : undefined,
+    displayExerciseName(step.name),
+    nextWork ? `next ${displayExerciseName(nextWork.label)}` : undefined,
   );
 }
 
@@ -102,8 +103,8 @@ function workChalkLabel(planned: PlannedSession, state: ViewState): string {
   const next = planned.work[state.workIndex + 1];
   return joinChalk(
     `${state.workIndex + 1} of ${planned.work.length}`,
-    item.label,
-    next ? `next ${next.label}` : undefined,
+    displayExerciseName(item.label),
+    next ? `next ${displayExerciseName(next.label)}` : undefined,
   );
 }
 

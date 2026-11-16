@@ -1,6 +1,7 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import type { PlanQueue, SessionTemplate } from "../domain/program";
 import type { ExerciseMemory, Pattern, SkillTier } from "../domain/types";
+import { displayExerciseName } from "../library/displayName";
 import {
   chooseTemplateForExercise,
   defaultPlanDayIndex,
@@ -87,8 +88,9 @@ export function generatePlanTowardExercise(input: {
 
   const tomorrowIndex = defaultPlanDayIndex(input.queue.items.length);
   const nextQueue = placeTemplateAt(input.queue, template.id, tomorrowIndex);
-  const targetName =
-    EXERCISE_GRAPH[input.exercise.id]?.name ?? input.exercise.id;
+  const targetName = displayExerciseName(
+    EXERCISE_GRAPH[input.exercise.id]?.name ?? input.exercise.id,
+  );
 
   return {
     templateId: template.id,
@@ -115,7 +117,7 @@ function resolveWorkingStep(
   if (!step) {
     throw new Error(`Unknown working exercise: ${id}`);
   }
-  return { id, name: step.name, pattern: step.pattern };
+  return { id, name: displayExerciseName(step.name), pattern: step.pattern };
 }
 
 function assignWorkingToBestSlot(

@@ -1,5 +1,6 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import type { DayKind, SessionFocus, SessionTemplate } from "../domain/program";
+import { displayExerciseName } from "../library/displayName";
 
 /** The four strength areas the athlete can ask for; Skill needs a named move. */
 export type AreaKind = Extract<DayKind, "upper" | "lower" | "core" | "full">;
@@ -55,7 +56,7 @@ export function kindOfTemplate(template: Pick<SessionTemplate, "kind" | "focus">
 /** "Skill: Freestanding handstand" for a named skill, else the kind's label. */
 export function skillTitle(targetExerciseId: string | undefined): string {
   const name = targetExerciseId ? EXERCISE_GRAPH[targetExerciseId]?.name : undefined;
-  return name ? `${DAY_KIND_LABELS.skill}: ${name}` : DAY_KIND_LABELS.skill;
+  return name ? `${DAY_KIND_LABELS.skill}: ${displayExerciseName(name)}` : DAY_KIND_LABELS.skill;
 }
 
 /**

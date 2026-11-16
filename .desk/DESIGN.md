@@ -166,6 +166,16 @@ IBM Plex Sans for body text and IBM Plex Sans Condensed for headings and big num
 
 A 4px grid. Radius 4 on controls and panels; nothing pill-shaped.
 
+## Exercise names
+
+Show every exercise name in sentence case: "Hollow body hold", not "Hollow Body Hold". Three kinds of word keep their capitals:
+
+- Proper nouns: Bulgarian, Romanian, Nordic, Copenhagen, Cossack, Russian, Jefferson, Spiderman and the rest of the list in `src/library/displayName.ts`.
+- Letter shapes: the single capital in L-sit, V-up, W-raise, Y-T-W.
+- Abbreviations: TRX, IT band, CARs.
+
+`displayExerciseName` applies this at display time. Stored names, ids and anything the planner reads stay as the library has them.
+
 ## Do
 
 - Use the accent once per screen, on the next action or the key number.

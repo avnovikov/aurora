@@ -1,6 +1,7 @@
 import { EXERCISE_GRAPH, requireExercise } from "../data/exerciseGraph";
 import type { SeedExercise } from "../data/seed";
 import type { PlanQueue } from "../domain/program";
+import { displayExerciseName } from "../library/displayName";
 import { libraryFamilyLadderIndex } from "../progress/familyLadderIndex";
 import { shouldAdvanceProgression } from "../rules/skillDose";
 import { substitutesFor } from "../safety/suitableExercise";
@@ -100,7 +101,11 @@ export function excludeFromDay(input: {
   if (substitute) {
     setDayExercise(input.templateId, input.slotId, substitute.id);
   }
-  return { excludedName: exercise.name, substituteName: substitute?.name, undo };
+  return {
+    excludedName: displayExerciseName(exercise.name),
+    substituteName: substitute && displayExerciseName(substitute.name),
+    undo,
+  };
 }
 
 /** The inverse of `excludeFromDay`: the move comes off the exclusion list and the slot is stored as it was. */
@@ -109,7 +114,7 @@ export function undoExclude(undo: ExcludeUndo): { restoredName: string } {
     restoreExercise(undo.exerciseId);
   }
   restoreSlot(undo.slot);
-  return { restoredName: requireExercise(undo.exerciseId).name };
+  return { restoredName: displayExerciseName(requireExercise(undo.exerciseId).name) };
 }
 
 /**
@@ -169,7 +174,7 @@ export function easierInDay(input: {
     throw new Error("No easier step");
   }
   setDayExercise(input.templateId, input.slotId, to.id);
-  return { fromName: from.name, toName: to.name };
+  return { fromName: displayExerciseName(from.name), toName: displayExerciseName(to.name) };
 }
 
 /**

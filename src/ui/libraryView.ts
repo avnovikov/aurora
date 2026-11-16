@@ -1,5 +1,6 @@
 import { LIBRARY_CATALOGUE } from "../data/libraryCatalogue";
 import type { SeedExercise } from "../data/seed";
+import { displayExerciseName } from "../library/displayName";
 import { mountLibraryDetail } from "../library/libraryDetail";
 import { DEFAULT_FILTERS, withPanelState, type FilterPanelId } from "../library/filterPanels";
 import { focusSearchInput, mountLibraryList, type ListQueryState } from "../library/libraryList";
@@ -75,7 +76,7 @@ export function renderLibraryView(root: HTMLElement): void {
       return;
     }
     const days = listUpcomingPlanDays(loadPlanQueue(), templateDisplayName);
-    mountPlanDayPicker(root, exercise.name, days, {
+    mountPlanDayPicker(root, displayExerciseName(exercise.name), days, {
       onCancel: () => {
         pickingPlanForId = null;
         paint();

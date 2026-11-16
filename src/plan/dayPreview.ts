@@ -3,6 +3,7 @@ import { templateToStarter } from "../data/seed";
 import type { EquipmentId, HistoryEntry, JointHistoryEntry, SessionTemplate } from "../domain/program";
 import { resolveExerciseTiming } from "../domain/timing";
 import type { ExerciseMemory, SkillTier } from "../domain/types";
+import { displayExerciseName } from "../library/displayName";
 import { planSession, type PlannedWorkItem } from "../rules/planSession";
 
 /** Everything the planner reads besides the day itself and this morning's check-in. */
@@ -78,9 +79,9 @@ export function previewDay(
   );
   return planned.work.map((item) => ({
     slotId: item.slotId,
-    label: item.label,
+    label: displayExerciseName(item.label),
     exerciseId: item.exerciseId,
-    name: item.exerciseName,
+    name: displayExerciseName(item.exerciseName),
     dose: doseLabel(item),
     note: changeNote(item),
     summary: item.summary,

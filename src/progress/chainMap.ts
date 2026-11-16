@@ -1,6 +1,7 @@
 import type { SessionTemplate } from "../domain/program";
 import { SKILL_TIER_LABELS } from "../domain/skillTier";
 import type { Exercise, ExerciseMemory, RuleId } from "../domain/types";
+import { displayExerciseName } from "../library/displayName";
 import { STALL_BELOW_FLOOR_SESSIONS } from "../rules/resolveSlot";
 import { SESSIONS_AT_STANDARD_TO_ADVANCE, shouldAdvanceProgression } from "../rules/skillDose";
 
@@ -225,7 +226,7 @@ function stallStatus(
   memory: ExerciseMemory,
   graph: ChainGraph,
 ): ChainStatus {
-  const easierName = nameOf(exercise.easierId, graph);
+  const easierName = exercise.easierId ? displayNameOf(exercise.easierId, graph) : undefined;
   const action = easierName
     ? `Aurora may step you back to ${easierName}.`
     : "There is no easier step on this path.";
@@ -236,7 +237,7 @@ function stallStatus(
 }
 
 function advanceStatus(exercise: Exercise, graph: ChainGraph): ChainStatus {
-  const harderName = nameOf(exercise.harderId, graph) ?? "next level";
+  const harderName = exercise.harderId ? displayNameOf(exercise.harderId, graph) : "next level";
   return {
     kind: "advance",
     reason: `Target reps met. Ready to move up to ${harderName}.`,
@@ -260,14 +261,10 @@ function lightDaySuffix(lastResolve: LastResolveSignal | undefined): string {
   return "";
 }
 
-function nameOf(
-  exerciseId: string | undefined,
-  graph: ChainGraph,
-): string | undefined {
-  if (!exerciseId) {
-    return undefined;
-  }
-  return graph[exerciseId]?.name ?? exerciseId;
+/** Display name for an exercise id, falling back to the id itself. */
+export function displayNameOf(exerciseId: string, graph: ChainGraph): string {
+  const name = graph[exerciseId]?.name;
+  return name === undefined ? exerciseId : displayExerciseName(name);
 }
 
 /** Display label for a chain, falling back to the root exercise name. */
