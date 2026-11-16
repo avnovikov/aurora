@@ -9,7 +9,7 @@ import { applySkillDose } from "../rules/skillDose";
 import { areaOf } from "../library/facets";
 import { prehabFor } from "../safety/prehab";
 import { JOINT_LABEL } from "../settings/jointHistory";
-import { DAY_KIND_LABELS, focusOfKind, skillTitle, type AreaKind } from "./dayKinds";
+import { DAY_KIND_LABELS, focusOfKind, storedSkillTitle, type AreaKind } from "./dayKinds";
 import {
   easierStep,
   familyOf,
@@ -269,7 +269,7 @@ function buildDay(input: BlockInput, index: number, base: string, inBlock: Set<s
   used.forEach((id) => inBlock.add(id));
 
   const seed = seedFor(area, isSkill ? input.target : undefined, input.context);
-  const title = isSkill ? skillTitle(input.target) : DAY_KIND_LABELS[input.kind];
+  const title = isSkill ? storedSkillTitle(input.target) : DAY_KIND_LABELS[input.kind];
   return fitToBand({
     id: dayId,
     name: `${title} · ${letter}`,

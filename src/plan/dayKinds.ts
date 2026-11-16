@@ -53,10 +53,19 @@ export function kindOfTemplate(template: Pick<SessionTemplate, "kind" | "focus">
   return template.kind ?? kindOfFocus(template.focus);
 }
 
-/** "Skill: Freestanding handstand" for a named skill, else the kind's label. */
-export function skillTitle(targetExerciseId: string | undefined): string {
+function skillTitleWith(targetExerciseId: string | undefined, format: (name: string) => string): string {
   const name = targetExerciseId ? EXERCISE_GRAPH[targetExerciseId]?.name : undefined;
-  return name ? `${DAY_KIND_LABELS.skill}: ${displayExerciseName(name)}` : DAY_KIND_LABELS.skill;
+  return name ? `${DAY_KIND_LABELS.skill}: ${format(name)}` : DAY_KIND_LABELS.skill;
+}
+
+/** "Skill: Freestanding handstand" for a named skill, else the kind's label (for display). */
+export function skillTitle(targetExerciseId: string | undefined): string {
+  return skillTitleWith(targetExerciseId, displayExerciseName);
+}
+
+/** The same title with the library's own name, as saved in a generated day's name. */
+export function storedSkillTitle(targetExerciseId: string | undefined): string {
+  return skillTitleWith(targetExerciseId, (name) => name);
 }
 
 /**
@@ -65,6 +74,10 @@ export function skillTitle(targetExerciseId: string | undefined): string {
  * the named move) so existing queues read the same as new ones.
  */
 export function dayTitle(template: SessionTemplate): string {
+  if (template.kind === "skill" && template.block) {
+    // Shown from the target, so saved days read in display case too.
+    return `${skillTitle(template.targetExerciseIds[0])} · ${template.block.letter}`;
+  }
   if (template.kind) {
     return template.name;
   }
