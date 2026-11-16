@@ -1,5 +1,5 @@
 import { doodleFor } from "../../src/data/doodles";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { EXERCISE_GRAPH } from "../../src/data/exerciseGraph";
 import { GENERATED_DOODLES, REPLACED_DOODLE_IDS } from "../../src/data/generated/doodleMap";
@@ -20,8 +20,9 @@ describe("animated doodles", () => {
 
   it("are generated for every spec (re-run npm run doodles)", () => {
     expect(Object.keys(GENERATED_DOODLES).sort()).toEqual(DOODLE_SPECS.map((spec) => spec.id).sort());
-    for (const file of Object.values(GENERATED_DOODLES)) {
-      expect(existsSync(new URL(`../../public${file}`, import.meta.url)), file).toBe(true);
+    for (const spec of DOODLE_SPECS) {
+      const file = new URL(`../../public${GENERATED_DOODLES[spec.id]}`, import.meta.url);
+      expect(existsSync(file) && readFileSync(file, "utf8") === renderDoodleSvg(spec), spec.slug).toBe(true);
     }
   });
 

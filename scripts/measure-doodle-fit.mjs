@@ -27,22 +27,28 @@ const port = Number(process.env.CDP_PORT ?? 9417);
 const SAMPLES = 60;
 /** Largest |left − right| or |top − bottom| margin gap, as a share of the viewBox side. */
 const MAX_IMBALANCE = 0.04;
+/** Polls of the DevTools port while Chrome starts, and the pause between them. */
+const STARTUP_POLLS = 50;
+const STARTUP_POLL_MS = 200;
 
 /** Runs in the page: painted extent of one inline <svg> over its whole loop. */
 function measureInPage(samples) {
   const clipped = (el) => el.closest("[clip-path]") !== null;
-  const paintedBox = (el) => {
+  // Stroke widths never animate, so read each shape's once.
+  const halfStroke = (el) => (el.tagName === "text" ? 0 : parseFloat(getComputedStyle(el).strokeWidth) / 2);
+  const paintedBox = ({ el, half }) => {
     const box = el.getBBox();
-    const half = el.tagName === "text" ? 0 : parseFloat(getComputedStyle(el).strokeWidth) / 2;
     return [box.x - half, box.y - half, box.x + box.width + half, box.y + box.height + half];
   };
   const union = (a, b) => [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[2], b[2]), Math.max(a[3], b[3])];
   const duration = (svg) => Math.max(...[...svg.querySelectorAll("animate")].map((a) => a.getSimpleDuration()), 0);
 
   return [...document.querySelectorAll("svg")].map((svg) => {
-    const shapes = [...svg.querySelectorAll("polyline, line, circle, ellipse, rect, text")].filter(
-      (el) => !clipped(el) && el.parentElement !== svg && el.closest("clipPath") === null,
-    );
+    // The backdrop rect is the svg's own child and fills the viewBox, so it is not part of the drawing.
+    const backdrop = svg.querySelector(":scope > rect");
+    const shapes = [...svg.querySelectorAll("polyline, line, circle, ellipse, rect, text")]
+      .filter((el) => el !== backdrop && !clipped(el) && el.closest("clipPath") === null)
+      .map((el) => ({ el, half: halfStroke(el) }));
     const dur = duration(svg);
     svg.pauseAnimations();
     let extent = [Infinity, Infinity, -Infinity, -Infinity];
@@ -77,7 +83,7 @@ async function writeSheet(dir) {
 }
 
 async function devtoolsSocket() {
-  for (let attempt = 0; attempt < 50; attempt++) {
+  for (let attempt = 0; attempt < STARTUP_POLLS; attempt++) {
     try {
       const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
       const page = targets.find((t) => t.type === "page");
@@ -85,12 +91,12 @@ async function devtoolsSocket() {
     } catch {
       // Chrome is still starting.
     }
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, STARTUP_POLL_MS));
   }
   throw new Error(`Chrome did not open port ${port}`);
 }
 
-/** Minimal CDP client: send(method, params) → result. */
+/** Minimal CDP client: send(method, params) → result; once(event) → its params. */
 async function connect() {
   const socket = await devtoolsSocket();
   await new Promise((resolve, reject) => {
@@ -99,8 +105,14 @@ async function connect() {
   });
   let nextId = 1;
   const pending = new Map();
+  const waiting = new Map();
   socket.onmessage = ({ data }) => {
     const message = JSON.parse(data);
+    if (message.method) {
+      waiting.get(message.method)?.(message.params);
+      waiting.delete(message.method);
+      return;
+    }
     const handler = pending.get(message.id);
     if (!handler) return;
     pending.delete(message.id);
@@ -113,15 +125,17 @@ async function connect() {
       pending.set(id, { resolve, reject });
       socket.send(JSON.stringify({ id, method, params }));
     });
-  return { send, close: () => socket.close() };
+  const once = (event) => new Promise((resolve) => waiting.set(event, resolve));
+  return { send, once, close: () => socket.close() };
 }
 
 async function measureAll(pageFile) {
   const cdp = await connect();
   try {
     await cdp.send("Page.enable");
+    const loaded = cdp.once("Page.loadEventFired");
     await cdp.send("Page.navigate", { url: pathToFileURL(pageFile).href });
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    await loaded;
     const { result, exceptionDetails } = await cdp.send("Runtime.evaluate", {
       expression: `(${measureInPage})(${SAMPLES})`,
       returnByValue: true,

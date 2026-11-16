@@ -107,6 +107,12 @@ const MIN_ASPECT = 1;
 const INSET_BASIS_ASPECT = 16 / 10;
 /** Inset ring stroke width. */
 const RING_WIDTH = 4;
+/** Inset label font size, as a share of the ring radius. */
+const LABEL_SHARE = 0.16;
+/** Gap from the ring to the label baseline, in label heights. */
+const LABEL_GAP = 1.2;
+/** How far descenders fall below the baseline, in label heights. */
+const LABEL_DESCENT = 0.3;
 
 /** Every point a prop is drawn through, grips' top and bottom included. */
 function propPoints(prop: Prop): Point[] {
@@ -157,13 +163,16 @@ export interface ViewBox {
   h: number;
 }
 
-/** Box around `points`, grown by the widest half-stroke. */
-function extentOf(points: Point[]): ViewBox {
-  const xs = points.map((p) => p[0]);
-  const ys = points.map((p) => p[1]);
-  const x = Math.min(...xs) - STROKE_REACH;
-  const y = Math.min(...ys) - STROKE_REACH;
-  return { x, y, w: Math.max(...xs) + STROKE_REACH - x, h: Math.max(...ys) + STROKE_REACH - y };
+/** The box around `points`, grown by `grow` on every side. */
+function bounds(points: Point[], grow = 0): ViewBox {
+  let [minX, minY, maxX, maxY] = [Infinity, Infinity, -Infinity, -Infinity];
+  for (const [x, y] of points) {
+    minX = Math.min(minX, x);
+    minY = Math.min(minY, y);
+    maxX = Math.max(maxX, x);
+    maxY = Math.max(maxY, y);
+  }
+  return { x: minX - grow, y: minY - grow, w: maxX - minX + 2 * grow, h: maxY - minY + 2 * grow };
 }
 
 function union(a: ViewBox, b: ViewBox): ViewBox {
@@ -181,14 +190,15 @@ function frame(drawing: ViewBox): ViewBox {
 
 /** Everything the figure and props touch over the loop (no inset). */
 function figureExtent(spec: DoodleSpec, poses: Solved[]): ViewBox {
-  return extentOf([
+  return bounds([
     ...poses.flatMap((pose) => figurePoints(pose).map((p) => p.point)),
     ...(spec.props ?? []).flatMap(propPoints),
-  ]);
+  ], STROKE_REACH);
 }
 
 interface Layout {
   view: ViewBox;
+  focus?: Focus;
   inset?: Inset;
 }
 
@@ -197,7 +207,7 @@ function layoutFor(spec: DoodleSpec, poses: Solved[]): Layout {
   const focus = FOCUS_BY_ID[spec.id];
   const inset = insetFor(focus, poses, figure);
   const drawing = inset ? union(figure, insetExtent(inset, focus?.label)) : figure;
-  return { view: frame(drawing), inset };
+  return { view: frame(drawing), focus, inset };
 }
 
 export function specViewBox(spec: DoodleSpec, poses: Solved[] = sampleTimeline(spec).poses): ViewBox {
@@ -269,10 +279,9 @@ function insetFor(focus: Focus | undefined, poses: Solved[], figure: ViewBox): I
       .map((p) => p.point),
   );
   if (points.length === 0) return undefined;
-  const xs = points.map((p) => p[0]);
-  const ys = points.map((p) => p[1]);
-  const centre: Point = [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...ys) + Math.max(...ys)) / 2];
-  const extent = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)) / 2 + 30;
+  const area = bounds(points);
+  const centre: Point = [area.x + area.w / 2, area.y + area.h / 2];
+  const extent = Math.max(area.w, area.h) / 2 + 30;
   const r = (Math.max(figure.h, figure.w / INSET_BASIS_ASPECT) * INSET_SHARE) / 2;
   // Zoom in as asked, but never so far that the focus area leaves the circle.
   const zoom = Math.min(focus.zoom, (r * 0.85) / extent);
@@ -282,13 +291,13 @@ function insetFor(focus: Focus | undefined, poses: Solved[], figure: ViewBox): I
   return { cx, cy, r, zoom, map };
 }
 
-const labelSize = (r: number): number => r * 0.16;
-const labelBaseline = (inset: Inset): number => inset.cy + inset.r + labelSize(inset.r) * 1.2;
+const labelSize = (r: number): number => r * LABEL_SHARE;
+const labelBaseline = (inset: Inset): number => inset.cy + inset.r + labelSize(inset.r) * LABEL_GAP;
 
 /** The inset ring plus, below it, its label (descenders included). */
 function insetExtent(inset: Inset, label: string | undefined): ViewBox {
   const reach = inset.r + RING_WIDTH / 2;
-  const bottom = label ? labelBaseline(inset) + labelSize(inset.r) * 0.3 : inset.cy + reach;
+  const bottom = label ? labelBaseline(inset) + labelSize(inset.r) * LABEL_DESCENT : inset.cy + reach;
   return { x: inset.cx - reach, y: inset.cy - reach, w: 2 * reach, h: bottom - (inset.cy - reach) };
 }
 
@@ -317,8 +326,7 @@ export function renderDoodleSvg(spec: DoodleSpec): string {
   const timing = `dur="${fmt(timeline.duration)}s" repeatCount="indefinite" calcMode="linear" keyTimes="${timeline.keyTimes
     .map((value) => value.toFixed(4))
     .join(";")}"`;
-  const { view: box, inset } = layoutFor(spec, poses);
-  const focus = FOCUS_BY_ID[spec.id];
+  const { view: box, focus, inset } = layoutFor(spec, poses);
   const view = [box.x, box.y, box.w, box.h].map(fmt).join(" ");
   const props = (spec.props ?? []).map(propSvg).join("");
   const layers = [
