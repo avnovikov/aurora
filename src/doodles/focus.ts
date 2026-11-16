@@ -80,6 +80,25 @@ export const FOCUS_BY_ID: Readonly<Record<string, Focus>> = {
     zoom: 2,
     label: "ankle",
   }, // Single-leg balance
+  hf_93: {
+    joints: ["ankle.near", "toe.near"],
+    highlight: ["shin.near", "foot.near"],
+    zoom: 3,
+    label: "toes up",
+  }, // Tibialis raise
+  // Calf raises: the heel drop and rise on the step edge
+  calf_raise: {
+    joints: ["ankle.near", "toe.near"],
+    highlight: ["shin.near", "foot.near"],
+    zoom: 3.2,
+    label: "heels",
+  },
+  single_leg_calf_raise: {
+    joints: ["ankle.near", "toe.near"],
+    highlight: ["shin.near", "foot.near"],
+    zoom: 3.2,
+    label: "heel",
+  },
   // Hips
   fedb_kneeling_hip_flexor: { joints: [], highlight: ["thigh.far", "pelvis"] },
   wger_1202: { joints: [], highlight: ["thigh.far", "pelvis"] }, // Side-lying hip abduction
@@ -94,6 +113,12 @@ export const FOCUS_BY_ID: Readonly<Record<string, Focus>> = {
     zoom: 2,
     label: "shoulders down",
   }, // Active hang
+  scapular_pull: {
+    joints: ["shoulder.near", "shoulder.far", "neck"],
+    highlight: ["shoulder.near", "shoulder.far", "neck"],
+    zoom: 2,
+    label: "shoulder blades down",
+  },
   wger_578: {
     joints: ["shoulder.near", "elbow.near", "hand.near"],
     highlight: ["upperArm.near", "forearm.near"],
