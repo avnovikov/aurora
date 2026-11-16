@@ -27,12 +27,10 @@ const COUNT_IDS: Record<number, CoachLineId> = {
   1: "one",
 };
 
-/** Spoken + on-screen line at the old "five" mark. */
-const GET_READY_AT_FIVE = "Get ready...";
-
 /**
  * Pure schedule for rest end cues.
- * At 5s: "Get ready..." (not "Five."). Timed next → no 4–1 counts.
+ * At 5s: get_ready variant (not "Five."). Timed next → no 4–1 counts.
+ * On-screen text matches the prebuilt asset that will play.
  */
 export function cueSchedule(
   remainingSeconds: number,
@@ -52,7 +50,7 @@ export function cueSchedule(
     events.push({
       atSecondsLeft: 5,
       kind: "get_ready",
-      text: GET_READY_AT_FIVE,
+      text: ready.text,
       lineId: ready.id,
       assetKey: ready.assetKey,
     });

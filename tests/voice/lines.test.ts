@@ -2,13 +2,17 @@ import { describe, expect, it } from "vitest";
 import { ALL_COACH_LINES, linesFor, pickLine } from "../../src/voice/lines";
 
 describe("coach lines", () => {
-  it("keeps mate flavour on get_ready and go variants", () => {
+  it("keeps light mate colour and multi-variant ready/go", () => {
     const ready = linesFor("get_ready");
     const go = linesFor("go");
     expect(ready.length).toBeGreaterThan(1);
     expect(go.length).toBeGreaterThan(1);
-    expect(ready.some((line) => /mate|la\./i.test(line.text))).toBe(true);
-    expect(go.some((line) => /mate|pop|got this/i.test(line.text))).toBe(true);
+    expect(ALL_COACH_LINES.some((line) => /\bmate\b/i.test(line.text))).toBe(
+      true,
+    );
+    expect(go.some((line) => /got this|controlled|Go\./i.test(line.text))).toBe(
+      true,
+    );
   });
 
   it("pickLine is deterministic for a fixed random", () => {

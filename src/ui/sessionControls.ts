@@ -19,6 +19,7 @@ import {
   PULSE_STRAP_DISCONNECTED,
 } from "../pulse/hrMonitor";
 import type { PlannedSession } from "../rules/planSession";
+import { speakCoachLine } from "../voice/coachVoice";
 import { pulseConnectedAt, pulseLostSim } from "./pulseState";
 import { applyConnectHeartRateResult } from "./sessionPulse";
 import type { ViewState } from "./sessionTypes";
@@ -188,6 +189,9 @@ export function completeSet(
   });
   if (completed > 0) {
     saveMemories(recordBestReps(loadMemories(), item.exerciseId, completed));
+  }
+  if (stopReason === "completed") {
+    void speakCoachLine("set_logged");
   }
   if (state.setIndex >= item.dose.sets || stopReason === "skipped") {
     handlers.onFinishExercise();

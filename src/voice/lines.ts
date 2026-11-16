@@ -1,6 +1,6 @@
 /**
- * Scouse-flavoured coach copy. Delivery is calm male British (prebuilt Daniel);
- * wording is Liverpool-leaning — mate, soft jokes — not a HAL clone.
+ * Calm pro-coach copy with light Scouse colour (occasional “mate”).
+ * Delivery: Piper northern English male via scripts/prebuild-voice.sh.
  */
 
 export type CoachLineId =
@@ -30,22 +30,22 @@ const GET_READY: CoachLine[] = [
   {
     id: "get_ready",
     assetKey: "get_ready_b",
-    text: "Get ready, mate.",
+    text: "Coming up, mate — reset your stance.",
   },
   {
     id: "get_ready",
     assetKey: "get_ready_c",
-    text: "Nearly on, la. Get ready.",
+    text: "Next set in a few — breathe.",
   },
 ];
 
 const GO: CoachLine[] = [
-  { id: "go", assetKey: "go", text: "Go on, mate." },
-  { id: "go", assetKey: "go_b", text: "Go! You've got this." },
+  { id: "go", assetKey: "go", text: "Go." },
+  { id: "go", assetKey: "go_b", text: "You've got this." },
   {
     id: "go",
     assetKey: "go_c",
-    text: "Right, off you pop.",
+    text: "Nice and controlled — go.",
   },
 ];
 
@@ -61,12 +61,12 @@ const PULSE: CoachLine[] = [
   {
     id: "pulse_not_readable",
     assetKey: "pulse_not_readable",
-    text: "Pulse not readable, mate.",
+    text: "Pulse not reading — check the strap, mate.",
   },
   {
     id: "pulse_not_readable",
     assetKey: "pulse_not_readable_b",
-    text: "Can't see your pulse. Check the strap, la.",
+    text: "Can't see your pulse. Tighten the band.",
   },
 ];
 
@@ -74,17 +74,27 @@ const SESSION: CoachLine[] = [
   {
     id: "session_start",
     assetKey: "session_start",
-    text: "Morning, mate. Let's get into it.",
+    text: "Morning. Soft start, then we graft.",
   },
   {
     id: "session_start",
     assetKey: "session_start_b",
-    text: "Rassvet's up. Soft start, then we graft.",
+    text: "Ready when you are, mate.",
+  },
+  {
+    id: "session_start",
+    assetKey: "session_start_c",
+    text: "Let's get moving — nice and steady.",
   },
   {
     id: "warmup_done",
     assetKey: "warmup_done",
-    text: "Warmup done. Time for the real work, mate.",
+    text: "Warmup done. Real work next.",
+  },
+  {
+    id: "warmup_done",
+    assetKey: "warmup_done_b",
+    text: "Body's awake. Time for the main sets.",
   },
   {
     id: "change_side",
@@ -92,19 +102,39 @@ const SESSION: CoachLine[] = [
     text: "Change side, mate.",
   },
   {
+    id: "change_side",
+    assetKey: "change_side_b",
+    text: "Other side when you're ready.",
+  },
+  {
     id: "set_logged",
     assetKey: "set_logged",
     text: "Set in the bank. Nice one.",
   },
   {
+    id: "set_logged",
+    assetKey: "set_logged_b",
+    text: "Good set — shake it out.",
+  },
+  {
+    id: "set_logged",
+    assetKey: "set_logged_c",
+    text: "Logged. Take the rest.",
+  },
+  {
     id: "session_done",
     assetKey: "session_done",
-    text: "Session done, mate. Sound.",
+    text: "Session done. Sound work today.",
   },
   {
     id: "session_done",
     assetKey: "session_done_b",
-    text: "That's you finished. Cup of tea?",
+    text: "That's you finished — recover well.",
+  },
+  {
+    id: "session_done",
+    assetKey: "session_done_c",
+    text: "Nice session. Cup of tea?",
   },
 ];
 

@@ -1,45 +1,64 @@
 #!/usr/bin/env bash
-# Bake male en-GB coach lines with macOS `say` (Daniel).
-# No true Scouse system voice on macOS — copy is Scouse; delivery is calm British male.
-# Re-run after editing src/voice/lines.ts texts (keep assetKey list in sync below).
+# Bake coach lines with Piper northern English male (en_GB-northern_english_male-medium).
+# Copy: calm pro coach + light Scouse colour. Keep in sync with src/voice/lines.ts.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 OUT="$ROOT/public/voice"
-VOICE="${AURORA_SAY_VOICE:-Daniel}"
-RATE="${AURORA_SAY_RATE:-145}"
+MODEL="${AURORA_PIPER_MODEL:-$ROOT/.voice-train/models/en_GB-northern_english_male-medium.onnx}"
+PIPER_BIN="${AURORA_PIPER_BIN:-$ROOT/.voice-train/venv/bin/piper}"
+
+if [[ ! -x "$PIPER_BIN" ]]; then
+  if command -v piper >/dev/null 2>&1; then
+    PIPER_BIN="$(command -v piper)"
+  else
+    echo "piper not found. Set AURORA_PIPER_BIN or install into .voice-train/venv." >&2
+    exit 1
+  fi
+fi
+
+if [[ ! -f "$MODEL" ]]; then
+  echo "Piper model missing: $MODEL" >&2
+  echo "Set AURORA_PIPER_MODEL to en_GB-northern_english_male-medium.onnx" >&2
+  exit 1
+fi
+
 mkdir -p "$OUT"
 
-say_line() {
+bake_line() {
   local key="$1"
   local text="$2"
-  local tmp
-  tmp="$(mktemp -t aurora-voice).aiff"
-  echo "Baking $key ($VOICE @ $RATE): $text"
-  say -v "$VOICE" -r "$RATE" "$text" -o "$tmp"
-  afconvert -f WAVE -d LEI16 "$tmp" "$OUT/$key.wav"
-  rm -f "$tmp"
+  local wav="$OUT/$key.wav"
+  echo "Baking $key: $text"
+  printf '%s\n' "$text" | "$PIPER_BIN" -m "$MODEL" -f "$wav"
 }
 
-say_line get_ready "Get ready..."
-say_line get_ready_b "Get ready, mate."
-say_line get_ready_c "Nearly on, la. Get ready."
-say_line five "Five."
-say_line four "Four."
-say_line three "Three."
-say_line two "Two."
-say_line one "One."
-say_line go "Go on, mate."
-say_line go_b "Go! You've got this."
-say_line go_c "Right, off you pop."
-say_line pulse_not_readable "Pulse not readable, mate."
-say_line pulse_not_readable_b "Can't see your pulse. Check the strap, la."
-say_line session_start "Morning, mate. Let's get into it."
-say_line session_start_b "Rassvet's up. Soft start, then we graft."
-say_line warmup_done "Warmup done. Time for the real work, mate."
-say_line change_side "Change side, mate."
-say_line set_logged "Set in the bank. Nice one."
-say_line session_done "Session done, mate. Sound."
-say_line session_done_b "That's you finished. Cup of tea?"
+# Keep in sync with ALL_COACH_LINES in src/voice/lines.ts
+bake_line get_ready "Get ready..."
+bake_line get_ready_b "Coming up, mate — reset your stance."
+bake_line get_ready_c "Next set in a few — breathe."
+bake_line five "Five."
+bake_line four "Four."
+bake_line three "Three."
+bake_line two "Two."
+bake_line one "One."
+bake_line go "Go."
+bake_line go_b "You've got this."
+bake_line go_c "Nice and controlled — go."
+bake_line pulse_not_readable "Pulse not reading — check the strap, mate."
+bake_line pulse_not_readable_b "Can't see your pulse. Tighten the band."
+bake_line session_start "Morning. Soft start, then we graft."
+bake_line session_start_b "Ready when you are, mate."
+bake_line session_start_c "Let's get moving — nice and steady."
+bake_line warmup_done "Warmup done. Real work next."
+bake_line warmup_done_b "Body's awake. Time for the main sets."
+bake_line change_side "Change side, mate."
+bake_line change_side_b "Other side when you're ready."
+bake_line set_logged "Set in the bank. Nice one."
+bake_line set_logged_b "Good set — shake it out."
+bake_line set_logged_c "Logged. Take the rest."
+bake_line session_done "Session done. Sound work today."
+bake_line session_done_b "That's you finished — recover well."
+bake_line session_done_c "Nice session. Cup of tea?"
 
-echo "Wrote $(ls -1 "$OUT"/*.wav | wc -l | tr -d ' ') wav files to $OUT"
+echo "Wrote $(ls -1 "$OUT"/*.wav | wc -l | tr -d ' ') wav files to $OUT via $(basename "$MODEL")"
