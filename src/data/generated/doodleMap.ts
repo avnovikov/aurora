@@ -135,7 +135,20 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "pullup_dead_hang": "/doodles/doodle-dead-hang.svg",
   "scapular_pull": "/doodles/doodle-scapular-pull.svg",
   "pullup": "/doodles/doodle-pullup.svg",
-  "freestanding_hs": "/doodles/doodle-freestanding-hs.svg"
+  "freestanding_hs": "/doodles/doodle-freestanding-hs.svg",
+  "hf_2": "/doodles/doodle-standard-push-up.svg",
+  "ntc_knee_push_up": "/doodles/doodle-knee-push-up.svg",
+  "ntc_hand_release_push_up": "/doodles/doodle-hand-release-push-up.svg",
+  "ntc_push_up_shoulder_tap": "/doodles/doodle-push-up-shoulder-tap.svg",
+  "ntc_high_plank": "/doodles/doodle-high-plank.svg",
+  "ntc_plank_up_down": "/doodles/doodle-plank-up-down.svg",
+  "ntc_plank_to_down_dog": "/doodles/doodle-plank-to-down-dog.svg",
+  "hf_10": "/doodles/doodle-hindu-push-up.svg",
+  "hf_9": "/doodles/doodle-pseudo-planche-push-up.svg",
+  "hf_31": "/doodles/doodle-planche-lean.svg",
+  "hf_32": "/doodles/doodle-tuck-planche.svg",
+  "ntc_downward_dog": "/doodles/doodle-downward-dog.svg",
+  "hf_24": "/doodles/doodle-bench-dip.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
