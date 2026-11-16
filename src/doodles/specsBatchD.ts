@@ -57,52 +57,6 @@ function legsUp(deg: number): Pose {
   };
 }
 
-// ---------------------------------------------------------------- spiderman push-up
-
-const PUSH_FOOT: Point = [-189, -22];
-const PUSH_REACH = 271.5;
-
-/** Straight body from the feet to the shoulders at `shoulderY`; hands under the chest. */
-function pushUp(shoulderY: number): Pose {
-  const dx = Math.sqrt(PUSH_REACH ** 2 - (shoulderY - PUSH_FOOT[1]) ** 2);
-  const u: Point = [dx / PUSH_REACH, (shoulderY - PUSH_FOOT[1]) / PUSH_REACH];
-  const pelvis: Point = [round(PUSH_FOOT[0] + u[0] * 173.9), round(PUSH_FOOT[1] + u[1] * 173.9)];
-  return {
-    pelvis,
-    chest: [round(pelvis[0] + u[0] * 80), round(pelvis[1] + u[1] * 80)],
-    hands: { near: [60, 0], far: [58, 0] },
-    elbows: { near: { bend: 1 }, far: { bend: 1 } },
-    feet: { near: PUSH_FOOT, far: PUSH_FOOT },
-    toes: { near: 62, far: 62 },
-  };
-}
-
-/** Thigh angle and ankle height of the stepping leg; the knee bends and the shin trails back. */
-function steppingLeg(base: Pose, side: "near" | "far", thighDeg: number, ankleY: number, toe: number): Pose {
-  const pelvis = base.pelvis as Point;
-  const knee = along(pelvis, thighDeg, 88);
-  const ankle: Point = [round(knee[0] - Math.sqrt(86 ** 2 - (ankleY - knee[1]) ** 2)), ankleY];
-  return {
-    ...base,
-    knees: { [side]: { at: knee } },
-    feet: { ...base.feet, [side]: ankle },
-    toes: { ...base.toes, [side]: toe },
-  };
-}
-
-/**
- * One knee drawn forward under the body while the arms bend. A side view can't show the knee
- * travelling out to the side, so it comes in low, under the elbow, without crossing the arm.
- * `stage` 1 drags the foot along the floor under the hips, 2 brings the knee forward at the top,
- * 3 is the bottom (the knee under the elbow).
- */
-function spiderman(side: "near" | "far", stage: 1 | 2 | 3): Pose {
-  // The foot turns over through toes-up (never toes-down through the floor), then trails back.
-  if (stage === 1) return steppingLeg(pushUp(-126), side, 94, -16, -80);
-  if (stage === 2) return steppingLeg(pushUp(-126), side, 42, -10, 186);
-  return steppingLeg(pushUp(-100), side, 46, -8, 186);
-}
-
 // ---------------------------------------------------------------- L-sit and pike compression
 
 const LSIT_HANDS = { near: [-20, 0] as Point, far: [-24, 0] as Point };
@@ -275,26 +229,6 @@ function clamshell(open: number): Pose {
 // ---------------------------------------------------------------- specs
 
 export const BATCH_D_SPECS: DoodleSpec[] = [
-  {
-    id: "hf_13",
-    slug: "spiderman-push-up",
-    title: "Spiderman Push-Up",
-    transition: 0.5,
-    frames: [
-      { hold: 0.3, pose: pushUp(-126) },
-      { hold: 0, pose: spiderman("near", 1) },
-      { hold: 0, pose: spiderman("near", 2) },
-      { hold: 0.5, pose: spiderman("near", 3) },
-      { hold: 0, pose: spiderman("near", 2) },
-      { hold: 0, pose: spiderman("near", 1) },
-      { hold: 0.3, pose: pushUp(-126) },
-      { hold: 0, pose: spiderman("far", 1) },
-      { hold: 0, pose: spiderman("far", 2) },
-      { hold: 0.5, pose: spiderman("far", 3) },
-      { hold: 0, pose: spiderman("far", 2) },
-      { hold: 0, pose: spiderman("far", 1) },
-    ],
-  },
   {
     id: "wger_1294",
     slug: "single-leg-hamstring-curl",

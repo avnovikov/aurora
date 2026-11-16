@@ -110,7 +110,6 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "fedb_flat_bench_lying_leg_raise": "/doodles/doodle-flat-bench-lying-leg-raise.svg",
   "hf_39": "/doodles/doodle-inverted-row.svg",
   "hf_107": "/doodles/doodle-manna.svg",
-  "hf_13": "/doodles/doodle-spiderman-push-up.svg",
   "wger_1294": "/doodles/doodle-single-leg-hamstring-curl.svg",
   "hf_105": "/doodles/doodle-l-sit.svg",
   "hf_123": "/doodles/doodle-pike-compression.svg",
