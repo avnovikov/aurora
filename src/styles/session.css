@@ -296,6 +296,7 @@
 }
 
 .session .work-actions-secondary {
+  display: flex;
   gap: 24px;
   margin-top: 8px;
 }

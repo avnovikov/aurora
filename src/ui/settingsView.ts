@@ -7,10 +7,16 @@ import {
   isValidAddWeight,
   isValidBodyweight,
   loadProfile,
+  MAX_ADD_WEIGHT_KG,
+  MIN_ADD_WEIGHT_KG,
+  MIN_BODYWEIGHT_KG,
   saveProfile,
 } from "../settings/profile";
 import { mountJointHistoryEditor } from "./jointHistoryEditor";
 import { SETTINGS_TABS, isSettingsTab, settingsPageHtml, type SettingsTab } from "./settingsPage";
+
+const BODYWEIGHT_HINT = `Enter your bodyweight as ${MIN_BODYWEIGHT_KG} kg or more.`;
+const ADD_WEIGHT_HINT = `Enter a weight between ${MIN_ADD_WEIGHT_KG} and ${MAX_ADD_WEIGHT_KG} kg.`;
 
 /** The tab last open, kept while the app runs. */
 let lastTab: SettingsTab = "you";
@@ -20,12 +26,14 @@ interface SettingsController {
   profile: UserProfile;
   /** Save the profile and say so. */
   commit: (message?: string) => void;
+  /** Put a short note in the status line ("" clears it). */
+  say: (message: string) => void;
   paint: () => void;
 }
 
 /** A number field that saves when it holds a valid value, and says why when it does not. */
 function wireNumber(
-  { root, commit }: SettingsController,
+  { root, commit, say }: SettingsController,
   attr: string,
   isValid: (kg: number) => boolean,
   apply: (kg: number) => void,
@@ -40,10 +48,7 @@ function wireNumber(
   input.addEventListener("change", () => {
     const kg = Number(input.value);
     if (!isValid(kg)) {
-      const status = root.querySelector<HTMLElement>("[data-settings-status]");
-      if (status) {
-        status.textContent = "";
-      }
+      say("");
       hint.textContent = invalidHint;
       hint.classList.add("is-error");
       input.setAttribute("aria-invalid", "true");
@@ -57,20 +62,17 @@ function wireNumber(
   });
 }
 
-/** The tab an arrow, Home or End key moves to, wrapping at the ends; null for any other key. */
-export function tabKeyTarget(key: string, index: number, last: number): number | null {
-  switch (key) {
-    case "ArrowRight":
-      return index === last ? 0 : index + 1;
-    case "ArrowLeft":
-      return index === 0 ? last : index - 1;
-    case "Home":
-      return 0;
-    case "End":
-      return last;
-    default:
-      return null;
-  }
+/** The tab an arrow, Home or End key moves to from tab `index`, wrapping at the ends; null for any other key. */
+export function tabKeyTarget(key: string, index: number): SettingsTab | null {
+  const count = SETTINGS_TABS.length;
+  const steps: Record<string, number> = {
+    ArrowRight: (index + 1) % count,
+    ArrowLeft: (index - 1 + count) % count,
+    Home: 0,
+    End: count - 1,
+  };
+  const target = steps[key];
+  return target === undefined ? null : SETTINGS_TABS[target].id;
 }
 
 function wireTabs({ root, paint }: SettingsController): void {
@@ -84,14 +86,13 @@ function wireTabs({ root, paint }: SettingsController): void {
     paint();
     root.querySelector<HTMLButtonElement>(`[data-settings-tab="${id}"]`)?.focus();
   };
-  const last = SETTINGS_TABS.length - 1;
   tabs.forEach((tab, index) => {
     tab.addEventListener("click", () => select(tab.dataset.settingsTab));
     tab.addEventListener("keydown", (event) => {
-      const target = tabKeyTarget(event.key, index, last);
+      const target = tabKeyTarget(event.key, index);
       if (target !== null) {
         event.preventDefault();
-        select(SETTINGS_TABS[target]!.id);
+        select(target);
       }
     });
   });
@@ -99,7 +100,7 @@ function wireTabs({ root, paint }: SettingsController): void {
 
 function wireYou(controller: SettingsController): void {
   const { root, profile, commit } = controller;
-  wireNumber(controller, "bw", isValidBodyweight, (kg) => (profile.bodyweightKg = kg), "Enter your bodyweight as 30 kg or more.");
+  wireNumber(controller, "bw", isValidBodyweight, (kg) => (profile.bodyweightKg = kg), BODYWEIGHT_HINT);
   const editor = root.querySelector<HTMLElement>("[data-joint-editor]");
   if (editor) {
     mountJointHistoryEditor(editor, profile.jointHistory, (next) => {
@@ -120,7 +121,7 @@ function wireGear(controller: SettingsController): void {
       commit();
     });
   });
-  wireNumber(controller, "add-weight", isValidAddWeight, (kg) => (profile.addWeightKg = kg), "Enter a weight between 0.5 and 100 kg.");
+  wireNumber(controller, "add-weight", isValidAddWeight, (kg) => (profile.addWeightKg = kg), ADD_WEIGHT_HINT);
 }
 
 function wireTraining({ root, profile, commit }: SettingsController): void {
@@ -157,15 +158,19 @@ function wireApp({ root, profile, commit }: SettingsController): void {
 
 export function renderSettingsView(root: HTMLElement): void {
   const profile = loadProfile();
+  const say = (message: string): void => {
+    const status = root.querySelector<HTMLElement>("[data-settings-status]");
+    if (status) {
+      status.textContent = message;
+    }
+  };
   const controller: SettingsController = {
     root,
     profile,
+    say,
     commit: (message = "Saved.") => {
       saveProfile(profile);
-      const status = root.querySelector<HTMLElement>("[data-settings-status]");
-      if (status) {
-        status.textContent = message;
-      }
+      say(message);
     },
     paint: () => {
       root.innerHTML = settingsPageHtml({ tab: lastTab, profile, deloadActive: loadDeloadActive() });

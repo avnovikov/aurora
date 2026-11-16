@@ -45,6 +45,8 @@ describe("your weight", () => {
     saveProfile({ ...loadProfile(), addWeightKg: 16 });
     expect(loadProfile().addWeightKg).toBe(16);
     expect(isValidAddWeight(0)).toBe(false);
+    expect(isValidAddWeight(0.4)).toBe(false);
+    expect(isValidAddWeight(0.5)).toBe(true);
     expect(isValidAddWeight(-4)).toBe(false);
     expect(isValidAddWeight(Number.NaN)).toBe(false);
     expect(isValidAddWeight(101)).toBe(false);
@@ -109,11 +111,11 @@ describe("settings tabs", () => {
   });
 
   it("moves between tabs with the arrow keys, Home and End, wrapping at the ends", () => {
-    expect(tabKeyTarget("ArrowRight", 0, 3)).toBe(1);
-    expect(tabKeyTarget("ArrowRight", 3, 3)).toBe(0);
-    expect(tabKeyTarget("ArrowLeft", 0, 3)).toBe(3);
-    expect(tabKeyTarget("Home", 2, 3)).toBe(0);
-    expect(tabKeyTarget("End", 0, 3)).toBe(3);
-    expect(tabKeyTarget("Enter", 1, 3)).toBeNull();
+    expect(tabKeyTarget("ArrowRight", 0)).toBe("gear");
+    expect(tabKeyTarget("ArrowRight", 3)).toBe("you");
+    expect(tabKeyTarget("ArrowLeft", 0)).toBe("app");
+    expect(tabKeyTarget("Home", 2)).toBe("you");
+    expect(tabKeyTarget("End", 0)).toBe("app");
+    expect(tabKeyTarget("Enter", 1)).toBeNull();
   });
 });

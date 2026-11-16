@@ -33,6 +33,6 @@ export interface ViewState {
   startedAtMs: number;
   /** Planned total seconds used for the remaining countdown. */
   plannedTotalSeconds: number;
-  /** What "Add weight" puts on (Settings → Gear); the library default when unset. */
-  addWeightKg?: number;
+  /** What "Add weight" puts on (Settings → Gear), resolved once in initialState. */
+  addWeightKg: number;
 }

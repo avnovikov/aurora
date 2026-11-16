@@ -37,8 +37,6 @@ export type { SessionViewOptions } from "./sessionTypes";
 export function renderSessionView(root: HTMLElement, options: SessionViewOptions): void {
   const state = initialState(options);
   let restHandle: RestTimerHandle | null = null;
-  /** What the running rest hands over to when it ends; null when no rest runs. */
-  let afterRest: (() => void) | null = null;
   let warmupHandle: WarmupTimerHandle | null = null;
   let pulseTimer: number | null = null;
   let clockTimer: number | null = null;
@@ -47,7 +45,6 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   const clearWorkTimers = (): void => {
     restHandle?.clear();
     restHandle = null;
-    afterRest = null;
     warmupHandle?.clear();
     warmupHandle = null;
   };
@@ -180,25 +177,16 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     timedNext = false,
   ): void => {
     clearWorkTimers();
-    const done = (): void => {
-      afterRest = null;
-      onDoneRest();
-    };
-    afterRest = done;
-    restHandle = startRestTimer(root, state, withVoice, done, {
+    restHandle = startRestTimer(root, state, withVoice, onDoneRest, {
       timedNext,
     });
   };
 
   /** Forward swipe on a rest: stop the countdown and go straight on. */
   const skipRest = (): void => {
-    const next = afterRest;
-    if (state.phase !== "rest" || !next) {
-      return;
+    if (state.phase === "rest") {
+      restHandle?.finish();
     }
-    clearWorkTimers();
-    state.restLeft = 0;
-    next();
   };
 
   const timedWorkItem = (item: PlannedWorkItem | null): boolean => {

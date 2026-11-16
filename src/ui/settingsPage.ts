@@ -2,7 +2,12 @@ import { PALETTES, type Palette } from "../brand/palettes";
 import type { EquipmentId, UserProfile } from "../domain/program";
 import { chipHtml } from "../library/chips";
 import { escapeHtml } from "../library/present";
-import { ALL_EQUIPMENT, MAX_ADD_WEIGHT_KG } from "../settings/profile";
+import {
+  ALL_EQUIPMENT,
+  MAX_ADD_WEIGHT_KG,
+  MIN_ADD_WEIGHT_KG,
+  MIN_BODYWEIGHT_KG,
+} from "../settings/profile";
 
 export const SETTINGS_TABS = [
   { id: "you", label: "You" },
@@ -30,8 +35,6 @@ export interface SettingsPageModel {
   tab: SettingsTab;
   profile: UserProfile;
   deloadActive: boolean;
-  /** Short "Saved." style note after a change. */
-  status?: string;
 }
 
 function tabBarHtml(active: SettingsTab): string {
@@ -52,7 +55,7 @@ function numberFieldHtml(attr: string, label: string, value: number, hint: strin
 
 function youHtml(profile: UserProfile): string {
   return `
-    ${numberFieldHtml("bw", "Bodyweight (kg)", profile.bodyweightKg, "Used for pull-up and dip load.", 'min="30" step="0.5"')}
+    ${numberFieldHtml("bw", "Bodyweight (kg)", profile.bodyweightKg, "Used for pull-up and dip load.", `min="${MIN_BODYWEIGHT_KG}" step="0.5"`)}
     <p class="eyebrow">Past injuries</p>
     <p class="hint">Moves that load these joints are skipped or eased.</p>
     <div data-joint-editor></div>`;
@@ -72,7 +75,7 @@ function gearHtml(profile: UserProfile): string {
       "Weight you can add (kg)",
       profile.addWeightKg,
       "A dumbbell, kettlebell or vest. Sessions offer it on moves that take load.",
-      `min="0.5" max="${MAX_ADD_WEIGHT_KG}" step="0.5"`,
+      `min="${MIN_ADD_WEIGHT_KG}" max="${MAX_ADD_WEIGHT_KG}" step="0.5"`,
     )}`;
 }
 
@@ -120,13 +123,12 @@ function panelHtml(model: SettingsPageModel): string {
 }
 
 export function settingsPageHtml(model: SettingsPageModel): string {
-  const status = model.status ? escapeHtml(model.status) : "";
   return `
     <main class="shell settings">
       <p class="eyebrow">Settings</p>
       <h1>Your setup</h1>
       ${tabBarHtml(model.tab)}
-      <p class="settings-status" role="status" data-settings-status>${status}</p>
+      <p class="settings-status" role="status" data-settings-status></p>
       <section class="settings-panel" id="settings-panel" role="tabpanel" aria-labelledby="settings-tab-${model.tab}">
         ${panelHtml(model)}
       </section>

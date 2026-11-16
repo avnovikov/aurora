@@ -1,7 +1,6 @@
 import type { StopReason } from "../domain/types";
 import {
   appendSet,
-  DEFAULT_ADDED_LOAD_KG,
   editAddedLoad,
   editNextReps,
   prescribedForNextSet,
@@ -58,8 +57,7 @@ export function wireSessionControls(
     "[data-skip]": () => completeSet(planned, state, "skipped", handlers),
     "[data-reps-minus]": () => adjustNextReps(state, -1, handlers),
     "[data-reps-plus]": () => adjustNextReps(state, 1, handlers),
-    "[data-add-weight]": () =>
-      adjustAddedLoad(state, state.addWeightKg ?? DEFAULT_ADDED_LOAD_KG, handlers),
+    "[data-add-weight]": () => adjustAddedLoad(state, state.addWeightKg, handlers),
     "[data-load-minus]": () => adjustAddedLoadBy(state, -1, handlers),
     "[data-load-plus]": () => adjustAddedLoadBy(state, 1, handlers),
     "[data-cooldown-start]": () => handlers.onStartCooldown(),

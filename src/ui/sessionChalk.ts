@@ -5,7 +5,7 @@ import { escapeHtml } from "../library/present";
 import { isNativePulseAvailable } from "../pulse/hrMonitor";
 import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
 import { formatClock, sessionClockSnapshot } from "../session/sessionClock";
-import { DEFAULT_ADDED_LOAD_KG, prescribedForNextSet } from "../session/setLog";
+import { prescribedForNextSet } from "../session/setLog";
 import { cooldownOfferLabel } from "../rules/sessionDuration";
 import { SIDE_SWITCH_SECONDS, warmupViewSeconds, type WarmupStep } from "../rules/warmupPlan";
 import {
@@ -18,18 +18,20 @@ import { cooldownSteps, currentWork, isGetReadyRest } from "./sessionState";
 import type { ViewState } from "./sessionTypes";
 import { doseNoteHtml } from "./sessionDoseNote";
 import { weightControlsHtml } from "./sessionWeightControls";
+import { IDLE_CHIP } from "./todayPulse";
 import "../styles/session.css";
 
 export function shellHtml(planned: PlannedSession, state: ViewState): string {
   const light = planned.lightDay || planned.deload ? "light-day" : "";
+  const { body, barActions } = surfaceHtml(planned, state);
   return `
     <main class="shell session ${light}">
       <header class="session-top">
         ${sessionClockHtml(state)}
         ${chalkHtml(planned, state)}
       </header>
-      ${bodyHtml(planned, state)}
-      ${pulseBarHtml(state, isWorkSurface(planned, state) ? WORK_ACTIONS_HTML : "")}
+      ${body}
+      ${pulseBarHtml(state, barActions)}
     </main>
   `;
 }
@@ -42,17 +44,6 @@ const WORK_ACTIONS_HTML = `
           <button type="button" class="btn-quiet" data-skip>Skip set</button>
         </div>`;
 
-/** The screen shows a working set (not warm-up, rest, cool-down or the end). */
-function isWorkSurface(planned: PlannedSession, state: ViewState): boolean {
-  if (isWarmupSurface(planned, state) || isCooldownSurface(planned, state)) {
-    return false;
-  }
-  if (state.phase === "done" || (state.phase === "rest" && state.workState)) {
-    return false;
-  }
-  return currentWork(planned, state) !== null;
-}
-
 /** Pinned to the bottom, in thumb reach: the set actions (during work), the pulse reading and the Strap controls. */
 function pulseBarHtml(state: ViewState, actions: string): string {
   const pulseClass = state.pulse.connected && state.bpm === null ? " pulse-lost" : "";
@@ -63,7 +54,7 @@ function pulseBarHtml(state: ViewState, actions: string): string {
       <footer class="session-bar pulse-row${pulseClass}">
         ${actions}
         ${status}
-        <p class="pulse-chip">Pulse${state.bpm === null ? ": no reading" : ` ${state.bpm}`}</p>
+        <p class="pulse-chip">${state.bpm === null ? IDLE_CHIP : `Pulse ${state.bpm}`}</p>
         <details class="pulse-more strap">
           <summary>Strap</summary>
           <div class="strap-actions">${pulseControlsHtml()}</div>
@@ -142,24 +133,34 @@ function stepsHtml(item: PlannedWorkItem): string {
 }
 
 
-function bodyHtml(planned: PlannedSession, state: ViewState): string {
+interface Surface {
+  body: string;
+  /** Set actions for the bottom bar; only a working set has them. */
+  barActions: string;
+}
+
+function offWork(body: string): Surface {
+  return { body, barActions: "" };
+}
+
+function surfaceHtml(planned: PlannedSession, state: ViewState): Surface {
   if (isWarmupSurface(planned, state)) {
-    return warmupHtml(planned, state);
+    return offWork(warmupHtml(planned, state));
   }
   if (isCooldownSurface(planned, state)) {
-    return cooldownHtml(planned, state);
+    return offWork(cooldownHtml(planned, state));
   }
   if (state.phase === "done") {
-    return doneHtml(planned, state);
+    return offWork(doneHtml(planned, state));
   }
   if (state.phase === "rest" && state.workState) {
-    return restHtml(planned, state);
+    return offWork(restHtml(planned, state));
   }
   const item = currentWork(planned, state);
   if (!item) {
-    return `<section class="session-read"><p class="tagline">No work items.</p></section>`;
+    return offWork(`<section class="session-read"><p class="tagline">No work items.</p></section>`);
   }
-  return workHtml(item, state);
+  return { body: workHtml(item, state), barActions: WORK_ACTIONS_HTML };
 }
 
 function warmupHtml(planned: PlannedSession, state: ViewState): string {
@@ -301,7 +302,7 @@ function workHtml(item: PlannedWorkItem, state: ViewState): string {
   const loadKg = state.workState?.addedLoadKg ?? 0;
   const dose = `${workDoseHtml(reps, workUnit(item))}
       ${doseNoteHtml(item, state.setIndex, reps)}
-      ${weightControlsHtml(loadKg, state.addWeightKg ?? DEFAULT_ADDED_LOAD_KG)}`;
+      ${weightControlsHtml(loadKg, state.addWeightKg)}`;
   return `
     <div class="work-stage swipe-stage" data-swipe-stage="work">
       ${heroHtml({

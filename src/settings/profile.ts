@@ -17,17 +17,21 @@ const DEFAULT_PROFILE: UserProfile = {
   addWeightKg: DEFAULT_ADDED_LOAD_KG,
 };
 
-/** The heaviest weight Settings accepts for "Your weight". */
+/** The lightest and heaviest added weight Settings accepts. */
+export const MIN_ADD_WEIGHT_KG = 0.5;
 export const MAX_ADD_WEIGHT_KG = 100;
 
-/** A usable "Your weight": more than zero, at most MAX_ADD_WEIGHT_KG. */
+/** The lightest bodyweight Settings accepts. */
+export const MIN_BODYWEIGHT_KG = 30;
+
+/** A usable added weight: MIN_ADD_WEIGHT_KG to MAX_ADD_WEIGHT_KG. */
 export function isValidAddWeight(kg: number): boolean {
-  return Number.isFinite(kg) && kg > 0 && kg <= MAX_ADD_WEIGHT_KG;
+  return Number.isFinite(kg) && kg >= MIN_ADD_WEIGHT_KG && kg <= MAX_ADD_WEIGHT_KG;
 }
 
-/** A usable bodyweight in kg. */
+/** A usable bodyweight in kg: MIN_BODYWEIGHT_KG or more. */
 export function isValidBodyweight(kg: number): boolean {
-  return Number.isFinite(kg) && kg >= 30;
+  return Number.isFinite(kg) && kg >= MIN_BODYWEIGHT_KG;
 }
 
 function freshDefault(): UserProfile {

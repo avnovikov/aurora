@@ -1,7 +1,7 @@
 import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
 import { warmupTransitionSeconds, type WarmupStep } from "../rules/warmupPlan";
 import { estimatePlannedSessionSeconds } from "../rules/sessionDuration";
-import { createEmptyLog, type ActiveWorkState } from "../session/setLog";
+import { createEmptyLog, DEFAULT_ADDED_LOAD_KG, type ActiveWorkState } from "../session/setLog";
 import { INITIAL_PULSE } from "./pulseState";
 import type { SessionViewOptions, ViewState } from "./sessionTypes";
 
@@ -23,7 +23,7 @@ export function initialState(options: SessionViewOptions): ViewState {
       pulseStatus: null,
       startedAtMs: resolveStartedAtMs(resume.startedAt, resume.savedAt),
       plannedTotalSeconds,
-      addWeightKg: options.addWeightKg,
+      addWeightKg: options.addWeightKg ?? DEFAULT_ADDED_LOAD_KG,
     };
     if (state.phase === "work" || state.phase === "rest") {
       state.workState = restoreWorkState(
@@ -48,7 +48,7 @@ export function initialState(options: SessionViewOptions): ViewState {
     pulseStatus: null,
     startedAtMs: Date.now(),
     plannedTotalSeconds,
-    addWeightKg: options.addWeightKg,
+    addWeightKg: options.addWeightKg ?? DEFAULT_ADDED_LOAD_KG,
   };
 }
 
