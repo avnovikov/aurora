@@ -71,18 +71,32 @@ function emptyStateHtml(): string {
 function cardHtml(card: PlanProgressCard): string {
   const plans = card.templateNames.map(escapeHtml).join(" · ");
   const distance = distanceLine(card);
-  const body =
-    card.phase === "active" ? activeBlockHtml(card) : notStartedBlockHtml(card);
   return `
     <section class="chain-card progress-card" data-target="${escapeHtml(card.targetId)}">
       <p class="eyebrow">Target · ${plans}</p>
       <h2 class="chain-title">${escapeHtml(card.targetName)}</h2>
       ${distance}
       ${pathPreviewHtml(card.pathPreview)}
-      ${body}
-      ${reasonHtml(card)}
+      ${exerciseBlockHtml(card)}
     </section>
   `;
+}
+
+/** The Now block and its status line, or a pointer when an earlier card already shows that step. */
+function exerciseBlockHtml(card: PlanProgressCard): string {
+  if (card.nowShownUnder !== undefined) {
+    const label = card.phase === "active" ? "Now" : "Start";
+    const line = exerciseLineHtml(label, `${card.currentName} · see ${card.nowShownUnder} above`);
+    return `<div class="exercise-block">${line}</div>`;
+  }
+  const body =
+    card.phase === "active" ? activeBlockHtml(card) : notStartedBlockHtml(card);
+  return `${body}${reasonHtml(card)}`;
+}
+
+/** "Next Pull-up" style line: a small label, then the name. */
+function exerciseLineHtml(label: string, text: string): string {
+  return `<p class="exercise-next"><span class="exercise-next-label">${label}</span> ${escapeHtml(text)}</p>`;
 }
 
 /** The status line; at the target a "sessions to move up" count would point past it, so none shows. */
@@ -105,9 +119,7 @@ function distanceLine(card: PlanProgressCard): string {
 }
 
 function notStartedBlockHtml(card: PlanProgressCard): string {
-  const next = card.nextName
-    ? `<p class="exercise-next"><span class="exercise-next-label">Then</span> ${escapeHtml(card.nextName)}</p>`
-    : "";
+  const next = card.nextName ? exerciseLineHtml("Then", card.nextName) : "";
   return `
     <div class="exercise-block">
       <p class="exercise-current" aria-current="step">${escapeHtml(card.currentName)}</p>
@@ -122,7 +134,7 @@ function activeBlockHtml(card: PlanProgressCard): string {
   // At the target the harder move is beyond it, not the next step toward it.
   const label = card.stepsToTarget === 0 ? "Beyond" : "Next";
   const next = card.nextName
-    ? `<p class="exercise-next"><span class="exercise-next-label">${label}</span> ${escapeHtml(card.nextName)}</p>`
+    ? exerciseLineHtml(label, card.nextName)
     : `<p class="exercise-next is-end">At the top of this path</p>`;
   return `
     <div class="exercise-block">

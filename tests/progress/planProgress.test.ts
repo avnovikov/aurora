@@ -57,6 +57,36 @@ describe("buildPlanProgress", () => {
   });
 });
 
+describe("buildPlanProgress shared Now step", () => {
+  const memories = {
+    pullup: { ...emptyMemory("pullup"), bestReps: 6, skillTier: "intermediate" as const },
+    bulgarian_split: { ...emptyMemory("bulgarian_split"), bestReps: 10, skillTier: "beginner" as const },
+    pistol_squat: emptyMemory("pistol_squat"),
+    hollow_hold: { ...emptyMemory("hollow_hold"), bestReps: 25, skillTier: "beginner" as const },
+  };
+  const model = buildPlanProgress({
+    templates: SESSION_TEMPLATES,
+    graph: EXERCISE_GRAPH,
+    memories,
+  });
+
+  it("shows each exercise as Now under one target only", () => {
+    const ownedNowIds = model.cards
+      .filter((card) => card.nowShownUnder === undefined)
+      .map((card) => card.currentId);
+    expect(new Set(ownedNowIds).size).toBe(ownedNowIds.length);
+  });
+
+  it("points the later Pull-up card back to the Muscle-up card", () => {
+    const muscleUp = model.cards.find((card) => card.targetId === "muscle_up");
+    const pullup = model.cards.find((card) => card.targetId === "pullup");
+    expect(muscleUp?.currentId).toBe("pullup");
+    expect(muscleUp?.nowShownUnder).toBeUndefined();
+    expect(pullup?.currentId).toBe("pullup");
+    expect(pullup?.nowShownUnder).toBe(muscleUp?.targetName);
+  });
+});
+
 describe("buildPathPreview", () => {
   it("keeps start, neighbours, and target", () => {
     const chain = [
