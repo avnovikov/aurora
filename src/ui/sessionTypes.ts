@@ -7,6 +7,8 @@ export interface SessionViewOptions {
   planned: PlannedSession;
   resume?: PersistedSession;
   onDone: (setCount: number) => void;
+  /** The athlete's own weight from Settings; "Add weight" starts there. */
+  addWeightKg?: number;
 }
 
 /**
@@ -31,4 +33,6 @@ export interface ViewState {
   startedAtMs: number;
   /** Planned total seconds used for the remaining countdown. */
   plannedTotalSeconds: number;
+  /** What "Add weight" puts on (Settings → Gear), resolved once in initialState. */
+  addWeightKg: number;
 }

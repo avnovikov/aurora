@@ -1,5 +1,6 @@
 import type { EquipmentId, UserProfile } from "../domain/program";
 import { DEFAULT_PALETTE, isPaletteKey } from "../brand/palettes";
+import { DEFAULT_ADDED_LOAD_KG } from "../session/setLog";
 import { loadDeloadActive } from "./deload";
 import { isJointHistory } from "./jointHistory";
 import { isCoachMuted, setCoachMuted } from "../voice/coachVoice";
@@ -13,7 +14,25 @@ const DEFAULT_PROFILE: UserProfile = {
   jointHistory: [],
   setupDone: false,
   palette: DEFAULT_PALETTE,
+  addWeightKg: DEFAULT_ADDED_LOAD_KG,
 };
+
+/** The lightest and heaviest added weight Settings accepts. */
+export const MIN_ADD_WEIGHT_KG = 0.5;
+export const MAX_ADD_WEIGHT_KG = 100;
+
+/** The lightest bodyweight Settings accepts. */
+export const MIN_BODYWEIGHT_KG = 30;
+
+/** A usable added weight: MIN_ADD_WEIGHT_KG to MAX_ADD_WEIGHT_KG. */
+export function isValidAddWeight(kg: number): boolean {
+  return Number.isFinite(kg) && kg >= MIN_ADD_WEIGHT_KG && kg <= MAX_ADD_WEIGHT_KG;
+}
+
+/** A usable bodyweight in kg: MIN_BODYWEIGHT_KG or more. */
+export function isValidBodyweight(kg: number): boolean {
+  return Number.isFinite(kg) && kg >= MIN_BODYWEIGHT_KG;
+}
 
 function freshDefault(): UserProfile {
   return {
@@ -75,8 +94,11 @@ export const ALL_EQUIPMENT: EquipmentId[] = [
 ];
 
 function assertProfile(profile: UserProfile): void {
-  if (!Number.isFinite(profile.bodyweightKg) || profile.bodyweightKg < 30) {
+  if (!isValidBodyweight(profile.bodyweightKg)) {
     throw new Error(`bodyweightKg looks invalid: ${profile.bodyweightKg}`);
+  }
+  if (!isValidAddWeight(profile.addWeightKg)) {
+    throw new Error(`addWeightKg looks invalid: ${profile.addWeightKg}`);
   }
   if (!Array.isArray(profile.equipment)) {
     throw new Error("equipment must be an array");

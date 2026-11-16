@@ -29,9 +29,9 @@ export const SIDES: readonly JointSide[] = ["left", "right", "both"];
 
 export const INJURY_KINDS: ReadonlyArray<{ id: InjuryKind; label: string }> = [
   { id: "dislocation", label: "Dislocation" },
-  { id: "ligament", label: "Ligament / tendon" },
+  { id: "ligament", label: "Ligament or tendon" },
   { id: "surgery", label: "Surgery" },
-  { id: "other", label: "Other / niggles" },
+  { id: "other", label: "Other niggles" },
 ];
 
 /** The lower back has no left/right. */

@@ -36,6 +36,8 @@ function speakDueCues(
 
 export interface RestTimerHandle {
   clear: () => void;
+  /** End the rest now: stop the countdown and hand over as if it ran out. */
+  finish: () => void;
 }
 
 export interface RestTimerOptions {
@@ -62,6 +64,12 @@ export function startRestTimer(
 
   paintRest();
 
+  const finish = (): void => {
+    window.clearInterval(timerId);
+    state.restLeft = 0;
+    onDoneRest();
+  };
+
   const timerId = window.setInterval(() => {
     state.restLeft -= 1;
     paintRest();
@@ -69,13 +77,13 @@ export function startRestTimer(
       speakDueCues(state.restLeft, schedule, spokenForRest);
     }
     if (state.restLeft <= 0) {
-      window.clearInterval(timerId);
-      onDoneRest();
+      finish();
     }
   }, 1000);
 
   return {
     clear: () => window.clearInterval(timerId),
+    finish,
   };
 }
 

@@ -18,32 +18,43 @@ import { cooldownSteps, currentWork, isGetReadyRest } from "./sessionState";
 import type { ViewState } from "./sessionTypes";
 import { doseNoteHtml } from "./sessionDoseNote";
 import { weightControlsHtml } from "./sessionWeightControls";
+import { IDLE_CHIP } from "./todayPulse";
 import "../styles/session.css";
 
 export function shellHtml(planned: PlannedSession, state: ViewState): string {
   const light = planned.lightDay || planned.deload ? "light-day" : "";
+  const { body, barActions } = surfaceHtml(planned, state);
   return `
     <main class="shell session ${light}">
       <header class="session-top">
         ${sessionClockHtml(state)}
         ${chalkHtml(planned, state)}
       </header>
-      ${bodyHtml(planned, state)}
-      ${pulseBarHtml(state)}
+      ${body}
+      ${pulseBarHtml(state, barActions)}
     </main>
   `;
 }
 
-/** Pinned to the bottom, in thumb reach: the pulse reading and the Strap controls. */
-function pulseBarHtml(state: ViewState): string {
+/** Log set and its alternatives: pinned in the bottom bar so they are always in thumb reach. */
+const WORK_ACTIONS_HTML = `
+        <div class="work-actions">
+          <button type="button" class="cta" data-log-set>Log set</button>
+          <button type="button" class="btn-quiet" data-fail-set>Couldn't finish</button>
+          <button type="button" class="btn-quiet" data-skip>Skip set</button>
+        </div>`;
+
+/** Pinned to the bottom, in thumb reach: the set actions (during work), the pulse reading and the Strap controls. */
+function pulseBarHtml(state: ViewState, actions: string): string {
   const pulseClass = state.pulse.connected && state.bpm === null ? " pulse-lost" : "";
   const status = state.pulseStatus
     ? `<p class="session-bar-status" data-pulse-status>${escapeHtml(state.pulseStatus)}</p>`
     : "";
   return `
       <footer class="session-bar pulse-row${pulseClass}">
+        ${actions}
         ${status}
-        <p class="pulse-chip" role="status">Pulse ${state.bpm ?? "—"}</p>
+        <p class="pulse-chip">${state.bpm === null ? IDLE_CHIP : `Pulse ${state.bpm}`}</p>
         <details class="pulse-more strap">
           <summary>Strap</summary>
           <div class="strap-actions">${pulseControlsHtml()}</div>
@@ -122,24 +133,34 @@ function stepsHtml(item: PlannedWorkItem): string {
 }
 
 
-function bodyHtml(planned: PlannedSession, state: ViewState): string {
+interface Surface {
+  body: string;
+  /** Set actions for the bottom bar; only a working set has them. */
+  barActions: string;
+}
+
+function offWork(body: string): Surface {
+  return { body, barActions: "" };
+}
+
+function surfaceHtml(planned: PlannedSession, state: ViewState): Surface {
   if (isWarmupSurface(planned, state)) {
-    return warmupHtml(planned, state);
+    return offWork(warmupHtml(planned, state));
   }
   if (isCooldownSurface(planned, state)) {
-    return cooldownHtml(planned, state);
+    return offWork(cooldownHtml(planned, state));
   }
   if (state.phase === "done") {
-    return doneHtml(planned, state);
+    return offWork(doneHtml(planned, state));
   }
   if (state.phase === "rest" && state.workState) {
-    return restHtml(planned, state);
+    return offWork(restHtml(planned, state));
   }
   const item = currentWork(planned, state);
   if (!item) {
-    return `<section class="session-read"><p class="tagline">No work items.</p></section>`;
+    return offWork(`<section class="session-read"><p class="tagline">No work items.</p></section>`);
   }
-  return workHtml(item, state);
+  return { body: workHtml(item, state), barActions: WORK_ACTIONS_HTML };
 }
 
 function warmupHtml(planned: PlannedSession, state: ViewState): string {
@@ -250,9 +271,9 @@ function nextSetReps(state: ViewState, fallback: number): number {
 function repsStepperHtml(rowClass: string, valueHtml: string): string {
   return `
       <div class="row ${rowClass}">
-        <button type="button" class="rest-step" data-reps-minus>−</button>
+        <button type="button" class="rest-step" data-reps-minus aria-label="One fewer">−</button>
         ${valueHtml}
-        <button type="button" class="rest-step" data-reps-plus>+</button>
+        <button type="button" class="rest-step" data-reps-plus aria-label="One more">+</button>
       </div>`;
 }
 
@@ -281,9 +302,9 @@ function workHtml(item: PlannedWorkItem, state: ViewState): string {
   const loadKg = state.workState?.addedLoadKg ?? 0;
   const dose = `${workDoseHtml(reps, workUnit(item))}
       ${doseNoteHtml(item, state.setIndex, reps)}
-      ${weightControlsHtml(loadKg)}`;
+      ${weightControlsHtml(loadKg, state.addWeightKg)}`;
   return `
-    <div class="work-stage" data-swipe-stage>
+    <div class="work-stage swipe-stage" data-swipe-stage="work">
       ${heroHtml({
         phase: `Set ${state.setIndex} of ${item.dose.sets}`,
         move: item.exerciseName,
@@ -298,14 +319,7 @@ function workHtml(item: PlannedWorkItem, state: ViewState): string {
           <summary>Why this dose</summary>
           <p class="reason">${escapeHtml(item.reason)}</p>
         </details>
-        <div class="work-actions">
-          <button type="button" class="cta" data-log-set>Log set</button>
-          <div class="work-actions-secondary">
-            <button type="button" class="btn-quiet" data-fail-set>Failed</button>
-            <button type="button" class="btn-quiet" data-skip>Skip</button>
-          </div>
-        </div>
-        <p class="hint">Swipe left or right to finish</p>
+        <p class="hint">Log each set below, or swipe left to log it and rest</p>
       </section>
     </div>
   `;
@@ -322,7 +336,7 @@ function restHtml(planned: PlannedSession, state: ViewState): string {
     ? `<p class="tagline">Easy rest after the ramp: walk, breathe, stay warm.</p>`
     : "";
   return `
-    <div class="rest-stage">
+    <div class="rest-stage swipe-stage" data-swipe-stage="rest">
       <section class="session-hero">
         <p class="eyebrow session-phase">${getReady ? "Get ready" : "Rest"} · ${nextLine}</p>
         <p class="session-dose">${doseFigureHtml(`<span class="reps" data-rest-left>${state.restLeft}</span>`, SECONDS_UNIT_HTML)}</p>
@@ -332,6 +346,7 @@ function restHtml(planned: PlannedSession, state: ViewState): string {
       <section class="session-read">
         <p class="tagline">Next set reps</p>
         ${repsStepperHtml("rest-reps-row", `<span class="reps-edit">${reps}</span>`)}
+        <p class="hint">Swipe left to end the rest now</p>
       </section>
     </div>
   `;

@@ -182,6 +182,13 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     });
   };
 
+  /** Forward swipe on a rest: stop the countdown and go straight on. */
+  const skipRest = (): void => {
+    if (state.phase === "rest") {
+      restHandle?.finish();
+    }
+  };
+
   const timedWorkItem = (item: PlannedWorkItem | null): boolean => {
     if (!item) {
       return false;
@@ -215,6 +222,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     onStartRest: (withVoice, onDone) =>
       startRest(onDone, withVoice, timedWorkItem(currentWork(options.planned, state))),
     onFinishExercise: finishExercise,
+    onSkipRest: skipRest,
     onFinishAll: finishAll,
     onStartCooldown: () => {
       startCooldown(options.planned, state);

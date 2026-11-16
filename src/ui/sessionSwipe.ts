@@ -37,6 +37,13 @@ export function decideSwipeRelease(input: {
   return { action: "cancel" };
 }
 
+/** Only the forward swipe (right to left) commits; the other way snaps back. */
+export function forwardOnly(decision: SwipeDecision): SwipeDecision {
+  return decision.action === "commit" && decision.direction !== "left"
+    ? { action: "cancel" }
+    : decision;
+}
+
 export function exitOffsetPx(width: number, direction: SwipeDirection): number {
   assertPositiveWidth(width);
   const travel = width + 24;
@@ -58,11 +65,13 @@ function isInteractiveTarget(target: EventTarget | null): boolean {
 }
 
 /**
- * Horizontal swipe on the work stage finishes the exercise.
+ * Right-to-left swipe on a session stage moves one step forward:
+ * a work set is logged with its current values and rest starts,
+ * a rest ends early and the next set begins.
  * Tracks 1:1 while the pointer is down, then animates off-screen
  * (or snaps back) so the gesture is visible before advancing.
  */
-export function wireSwipe(stage: HTMLElement, onFinish: () => void): void {
+export function wireSwipe(stage: HTMLElement, onForward: () => void): void {
   let pointerId: number | null = null;
   let startX = 0;
   let lastX = 0;
@@ -114,8 +123,8 @@ export function wireSwipe(stage: HTMLElement, onFinish: () => void): void {
     stage.style.transform = `translateX(${target}px)`;
     stage.style.opacity = "0";
     window.setTimeout(() => {
-      onFinish();
-      // paint() replaces the stage; still clear in case finish is a no-op.
+      onForward();
+      // paint() replaces the stage; still clear in case the step is a no-op.
       resetVisual();
       settling = false;
     }, duration);
@@ -163,11 +172,13 @@ export function wireSwipe(stage: HTMLElement, onFinish: () => void): void {
     }
     const width = Math.max(stage.offsetWidth, 1);
     settle(
-      decideSwipeRelease({
-        deltaX,
-        velocityPxPerMs: velocity,
-        width,
-      }),
+      forwardOnly(
+        decideSwipeRelease({
+          deltaX,
+          velocityPxPerMs: velocity,
+          width,
+        }),
+      ),
     );
   };
 

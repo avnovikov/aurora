@@ -58,6 +58,7 @@ export function bootApp(root: HTMLElement): void {
     renderSessionView(root, {
       planned: resume.planned,
       resume,
+      addWeightKg: profile.addWeightKg,
       onDone: (setCount) => showEvaluation(root, setCount, resume.planned),
     });
     return;
@@ -124,6 +125,7 @@ function showTodayHome(root: HTMLElement): void {
         loadPlanQueue(),
         loadScheduleOverride(),
       );
+      const profile = loadProfile();
       const planned = planSession(
         readiness,
         templateToStarter(template),
@@ -132,13 +134,14 @@ function showTodayHome(root: HTMLElement): void {
           history: loadHistory(),
           focus: template.focus,
           deloadActive: loadDeloadActive(),
-          jointHistory: loadProfile().jointHistory,
-          equipment: loadProfile().equipment,
+          jointHistory: profile.jointHistory,
+          equipment: profile.equipment,
           excluded: loadExcluded(),
         },
       );
       renderSessionView(root, {
         planned,
+        addWeightKg: profile.addWeightKg,
         onDone: (setCount) => showEvaluation(root, setCount, planned),
       });
     },

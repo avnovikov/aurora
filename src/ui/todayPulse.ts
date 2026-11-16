@@ -9,7 +9,8 @@ import {
   type DisconnectListener,
 } from "../pulse/hrMonitor";
 
-const IDLE_CHIP = "Pulse —";
+/** The pulse chip before any reading arrives (Today and the session bar). */
+export const IDLE_CHIP = "Pulse: no reading";
 
 export function todayPulseHtml(): string {
   return `

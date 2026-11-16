@@ -1,112 +1,185 @@
-import { PALETTES, applyPalette, isPaletteKey, type Palette } from "../brand/palettes";
-import type { EquipmentId } from "../domain/program";
-import { escapeHtml } from "../library/present";
+import { applyPalette, isPaletteKey } from "../brand/palettes";
+import type { EquipmentId, UserProfile } from "../domain/program";
 import { setChipPressed } from "../library/chips";
-import { mountJointHistoryEditor } from "./jointHistoryEditor";
 import { loadDeloadActive, saveDeloadActive } from "../settings/deload";
 import {
-  ALL_EQUIPMENT,
   exportBackupJson,
+  isValidAddWeight,
+  isValidBodyweight,
   loadProfile,
+  MAX_ADD_WEIGHT_KG,
+  MIN_ADD_WEIGHT_KG,
+  MIN_BODYWEIGHT_KG,
   saveProfile,
 } from "../settings/profile";
+import { mountJointHistoryEditor } from "./jointHistoryEditor";
+import { SETTINGS_TABS, isSettingsTab, settingsPageHtml, type SettingsTab } from "./settingsPage";
 
-/** A pick-one palette chip: label, with the meaning as a small second line. */
-function paletteChipHtml(palette: Palette, selected: boolean): string {
-  return `<button type="button" class="palette-chip${selected ? " selected" : ""}" data-palette-key="${palette.key}" aria-pressed="${selected}"><span class="palette-label">${escapeHtml(palette.label)}</span><small class="palette-meaning">${escapeHtml(palette.meaning)}</small></button>`;
+const BODYWEIGHT_HINT = `Enter your bodyweight as ${MIN_BODYWEIGHT_KG} kg or more.`;
+const ADD_WEIGHT_HINT = `Enter a weight between ${MIN_ADD_WEIGHT_KG} and ${MAX_ADD_WEIGHT_KG} kg.`;
+
+/** The tab last open, kept while the app runs. */
+let lastTab: SettingsTab = "you";
+
+interface SettingsController {
+  root: HTMLElement;
+  profile: UserProfile;
+  /** Save the profile and say so. */
+  commit: (message?: string) => void;
+  /** Put a short note in the status line ("" clears it). */
+  say: (message: string) => void;
+  paint: () => void;
+}
+
+/** A number field that saves when it holds a valid value, and says why when it does not. */
+function wireNumber(
+  { root, commit, say }: SettingsController,
+  attr: string,
+  isValid: (kg: number) => boolean,
+  apply: (kg: number) => void,
+  invalidHint: string,
+): void {
+  const input = root.querySelector<HTMLInputElement>(`[data-${attr}]`);
+  const hint = root.querySelector<HTMLElement>(`[data-${attr}-hint]`);
+  if (!input || !hint) {
+    return;
+  }
+  const original = hint.textContent ?? "";
+  input.addEventListener("change", () => {
+    const kg = Number(input.value);
+    if (!isValid(kg)) {
+      say("");
+      hint.textContent = invalidHint;
+      hint.classList.add("is-error");
+      input.setAttribute("aria-invalid", "true");
+      return;
+    }
+    hint.textContent = original;
+    hint.classList.remove("is-error");
+    input.removeAttribute("aria-invalid");
+    apply(kg);
+    commit();
+  });
+}
+
+/** The tab an arrow, Home or End key moves to from tab `index`, wrapping at the ends; null for any other key. */
+export function tabKeyTarget(key: string, index: number): SettingsTab | null {
+  const count = SETTINGS_TABS.length;
+  const steps: Record<string, number> = {
+    ArrowRight: (index + 1) % count,
+    ArrowLeft: (index - 1 + count) % count,
+    Home: 0,
+    End: count - 1,
+  };
+  const target = steps[key];
+  return target === undefined ? null : SETTINGS_TABS[target].id;
+}
+
+function wireTabs({ root, paint }: SettingsController): void {
+  const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-settings-tab]"));
+  // Repainting replaces the tabs; focus goes back to the chosen one (WCAG 2.4.3).
+  const select = (id: string | undefined): void => {
+    if (!isSettingsTab(id) || id === lastTab) {
+      return;
+    }
+    lastTab = id;
+    paint();
+    root.querySelector<HTMLButtonElement>(`[data-settings-tab="${id}"]`)?.focus();
+  };
+  tabs.forEach((tab, index) => {
+    tab.addEventListener("click", () => select(tab.dataset.settingsTab));
+    tab.addEventListener("keydown", (event) => {
+      const target = tabKeyTarget(event.key, index);
+      if (target !== null) {
+        event.preventDefault();
+        select(target);
+      }
+    });
+  });
+}
+
+function wireYou(controller: SettingsController): void {
+  const { root, profile, commit } = controller;
+  wireNumber(controller, "bw", isValidBodyweight, (kg) => (profile.bodyweightKg = kg), BODYWEIGHT_HINT);
+  const editor = root.querySelector<HTMLElement>("[data-joint-editor]");
+  if (editor) {
+    mountJointHistoryEditor(editor, profile.jointHistory, (next) => {
+      profile.jointHistory = next;
+      commit();
+    });
+  }
+}
+
+function wireGear(controller: SettingsController): void {
+  const { root, profile, commit } = controller;
+  root.querySelectorAll<HTMLButtonElement>("[data-eq]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const id = button.dataset.eq as EquipmentId;
+      const has = profile.equipment.includes(id);
+      profile.equipment = has ? profile.equipment.filter((item) => item !== id) : [...profile.equipment, id];
+      setChipPressed(button, !has);
+      commit();
+    });
+  });
+  wireNumber(controller, "add-weight", isValidAddWeight, (kg) => (profile.addWeightKg = kg), ADD_WEIGHT_HINT);
+}
+
+function wireTraining({ root, profile, commit }: SettingsController): void {
+  root.querySelector<HTMLInputElement>("[data-deload]")?.addEventListener("change", (event) => {
+    const on = (event.target as HTMLInputElement).checked;
+    saveDeloadActive(on);
+    commit(on ? "Deload week on." : "Deload week off.");
+  });
+  root.querySelector<HTMLInputElement>("[data-mute]")?.addEventListener("change", (event) => {
+    profile.voiceMuted = (event.target as HTMLInputElement).checked;
+    commit();
+  });
+}
+
+function wireApp({ root, profile, commit }: SettingsController): void {
+  const chips = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-palette-key]"));
+  chips.forEach((button) => {
+    button.addEventListener("click", () => {
+      const key = button.dataset.paletteKey;
+      if (!isPaletteKey(key)) {
+        return;
+      }
+      profile.palette = applyPalette(key);
+      chips.forEach((chip) => setChipPressed(chip, chip === button));
+      commit();
+    });
+  });
+  root.querySelector("[data-export]")?.addEventListener("click", () => {
+    const out = root.querySelector<HTMLElement>("[data-export-out]")!;
+    out.hidden = false;
+    out.textContent = exportBackupJson();
+  });
 }
 
 export function renderSettingsView(root: HTMLElement): void {
   const profile = loadProfile();
-
-  const paint = (): void => {
-    const deloadActive = loadDeloadActive();
-    root.innerHTML = `
-      <main class="shell">
-        <p class="eyebrow">Settings</p>
-        <h1>Profile</h1>
-        <label class="field">Bodyweight (kg)
-          <input type="number" min="30" step="0.5" value="${profile.bodyweightKg}" data-bw />
-        </label>
-        <p class="tagline">Equipment you have</p>
-        <div class="row wrap">
-          ${ALL_EQUIPMENT.map(
-            (item) =>
-              `<button type="button" data-eq="${item}" class="${profile.equipment.includes(item) ? "selected" : ""}">${item}</button>`,
-          ).join("")}
-        </div>
-        <p class="tagline">Palette</p>
-        <div class="palette-list" role="group" aria-label="Palette">
-          ${PALETTES.map((palette) => paletteChipHtml(palette, palette.key === profile.palette)).join("")}
-        </div>
-        <p class="tagline">Past joint injuries</p>
-        <div data-joint-editor></div>
-        <label class="field row">
-          <input type="checkbox" data-mute ${profile.voiceMuted ? "checked" : ""} />
-          Mute coach voice
-        </label>
-        <label class="field row">
-          <input type="checkbox" data-deload ${deloadActive ? "checked" : ""} />
-          Deload week (light dose, no level-ups)
-        </label>
-        <button type="button" class="cta" data-save>Save</button>
-        <button type="button" data-export>Export backup JSON</button>
-        <pre class="export" data-export-out hidden></pre>
-      </main>
-    `;
-
-    root.querySelectorAll<HTMLButtonElement>("[data-eq]").forEach((button) => {
-      button.addEventListener("click", () => {
-        const id = button.dataset.eq as EquipmentId;
-        if (profile.equipment.includes(id)) {
-          profile.equipment = profile.equipment.filter((item) => item !== id);
-        } else {
-          profile.equipment = [...profile.equipment, id];
-        }
-        paint();
-      });
-    });
-
-    // Live preview and saved at once; only the palette is written, so other
-    // unsaved edits on this page still wait for Save.
-    const paletteChips = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-palette-key]"));
-    paletteChips.forEach((button) => {
-      button.addEventListener("click", () => {
-        const key = button.dataset.paletteKey;
-        if (!isPaletteKey(key)) return;
-        profile.palette = applyPalette(key);
-        saveProfile({ ...loadProfile(), palette: profile.palette });
-        paletteChips.forEach((chip) => setChipPressed(chip, chip === button));
-      });
-    });
-
-    mountJointHistoryEditor(
-      root.querySelector<HTMLElement>("[data-joint-editor]")!,
-      profile.jointHistory,
-      (next) => {
-        profile.jointHistory = next;
-      },
-    );
-
-    root.querySelector("[data-save]")?.addEventListener("click", () => {
-      const bw = root.querySelector<HTMLInputElement>("[data-bw]")!;
-      const mute = root.querySelector<HTMLInputElement>("[data-mute]")!;
-      profile.bodyweightKg = Number(bw.value);
-      profile.voiceMuted = mute.checked;
-      saveProfile(profile);
-    });
-
-    root.querySelector<HTMLInputElement>("[data-deload]")?.addEventListener(
-      "change",
-      (event) => saveDeloadActive((event.target as HTMLInputElement).checked),
-    );
-
-    root.querySelector("[data-export]")?.addEventListener("click", () => {
-      const out = root.querySelector<HTMLElement>("[data-export-out]")!;
-      out.hidden = false;
-      out.textContent = exportBackupJson();
-    });
+  const say = (message: string): void => {
+    const status = root.querySelector<HTMLElement>("[data-settings-status]");
+    if (status) {
+      status.textContent = message;
+    }
   };
-
-  paint();
+  const controller: SettingsController = {
+    root,
+    profile,
+    say,
+    commit: (message = "Saved.") => {
+      saveProfile(profile);
+      say(message);
+    },
+    paint: () => {
+      root.innerHTML = settingsPageHtml({ tab: lastTab, profile, deloadActive: loadDeloadActive() });
+      wireTabs(controller);
+      wireYou(controller);
+      wireGear(controller);
+      wireTraining(controller);
+      wireApp(controller);
+    },
+  };
+  controller.paint();
 }
