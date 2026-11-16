@@ -108,20 +108,24 @@ const MID_HAND: Point = [MID_BAR[0] - 92, MID_BAR[1]];
 
 /**
  * Hanging face up under the bar from the hands and the hooked knees.
- * Bottom: arms straight down from the bar. Top: elbows bent and driven down, chest up to the bar.
+ * Bottom: arms straight down from the bar. Top: elbows bent and driven down, chest up under the bar,
+ * the head tipped back below it.
  */
 function midRow(top: boolean): Pose {
   // Top: chest at the bar, the shoulders just past the hands so the elbows drive down towards the feet.
-  const shoulder: Point = top ? [MID_HAND[0] - 22, MID_BAR[1] + 30] : [MID_HAND[0], round(MID_BAR[1] + ARM_REACH + 0.4)];
+  const shoulder: Point = top ? [MID_HAND[0] - 16, MID_BAR[1] + 46] : [MID_HAND[0], round(MID_BAR[1] + ARM_REACH + 0.4)];
   // Thighs hang from the hooked knees; the pelvis sits a torso from the shoulder.
   const pelvis = meet(MID_KNEE, 88, shoulder, SHOULDER_REACH, -1);
-  const chest = along(pelvis, angle(pelvis, shoulder), 80);
+  const spine = angle(pelvis, shoulder);
+  const chest = along(pelvis, spine, 80);
   // Shins fold back over the bar and hang down behind it.
   const shin = angle(MID_KNEE, pelvis) - 50;
   const farKnee: Point = along(pelvis, angle(pelvis, MID_KNEE) + 2, 88);
   return {
     pelvis,
     chest,
+    // Top: the head stays under the bar, tipped back past the hands (the chest, not the chin, comes to the bar).
+    head: top ? along(along(chest, spine, 20), spine - 40, 36) : undefined,
     hands: { near: MID_HAND, far: [MID_HAND[0] + 3, MID_HAND[1]] },
     // Bottom: elbows pinned on the hand-shoulder line so the arms hang dead straight.
     elbows: top

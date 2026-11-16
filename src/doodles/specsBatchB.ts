@@ -1,10 +1,11 @@
 import { solveJoint } from "./rig";
 import type { DoodleSpec, Point, Pose } from "./rig";
+import { SIDE_LYING_FLOOR, SL_FOOT_BOTTOM, SL_FOOT_TOP, SL_KNEE_BOTTOM, SL_KNEE_TOP, sideLying } from "./specsWarmup";
 
 /**
  * Batch B: bar and bodyweight moves from section 2 of docs/doodles-to-prepare.md,
  * posed from their catalogue descriptions. Floor at y = 0, up is negative, facing +x.
- * Import only from ./rig — never from ./specs (that would be circular).
+ * Import only from ./rig and other batch files — never from ./specs (that would be circular).
  */
 
 /** Point `length` from `from` at `degrees` (0 = +x, 90 = down, -90 = up). */
@@ -45,42 +46,18 @@ function straightBody(ankle: Point, shoulderY: number): { pelvis: Point; chest: 
   return { pelvis: toward(ankle, shoulder, 174), chest: toward(ankle, shoulder, 254), shoulder };
 }
 
-// ---------------------------------------------------------------- clamshells (front view, head left)
+// ---------------------------------------------------------------- reverse clamshell (front view, head left)
 
 /**
- * Side-lying in the front view (as ntc_clamshell): the hips stack 16 apart,
- * near = bottom side, far = top side, both legs drawn so the knees and feet read separately.
- */
-const CLAM_PELVIS: Point = [0, -24];
-const CLAM_BOTTOM_HIP: Point = [CLAM_PELVIS[0], CLAM_PELVIS[1] + 8];
-const CLAM_TOP_HIP: Point = [CLAM_PELVIS[0], CLAM_PELVIS[1] - 8];
-/** Bottom leg rests on the floor: hips and knees bent, the foot back on the floor. */
-const CLAM_KNEE: Point = along(CLAM_BOTTOM_HIP, -40, 88);
-const CLAM_FOOT: Point = along(CLAM_KNEE, (Math.asin((-4 - CLAM_KNEE[1]) / 86) * 180) / Math.PI, 86);
-/** Top knee resting on the bottom knee. */
-const CLAM_KNEE_TOP: Point = along(CLAM_TOP_HIP, angle(CLAM_TOP_HIP, [CLAM_KNEE[0], CLAM_KNEE[1] - 9]), 88);
-/** Top foot resting on the bottom foot. */
-const CLAM_FOOT_TOP: Point = along(CLAM_KNEE_TOP, angle(CLAM_KNEE_TOP, [CLAM_FOOT[0], CLAM_FOOT[1] - 9]), 86);
-const CLAM_SHOULDER_BOTTOM: Point = [-98, -2];
-const CLAM_SHOULDER_TOP: Point = [-98, -46];
-
-/**
- * Rest stacks the legs; `footUp` lifts the top foot with the knees together
- * (reverse clamshell). The top shin turns up about the knee and stays clearly bent.
+ * Shared side-lying base (specsWarmup): knees bent and stacked. `footUp` keeps
+ * the knees together and turns the top shin up about the knee, so the top foot
+ * rises towards the ceiling.
  */
 function clam(footUp: boolean): Pose {
-  const foot = footUp ? along(CLAM_KNEE_TOP, 24, 86) : CLAM_FOOT_TOP;
-  return {
-    pelvis: CLAM_PELVIS,
-    chest: [-80, CLAM_PELVIS[1]],
-    head: [-134, -40],
-    spine: { bend: -1 },
-    // Bottom arm straight overhead along the floor as a pillow; top arm long along the top side.
-    hands: { near: along(CLAM_SHOULDER_BOTTOM, 180, 125.5), far: along(CLAM_SHOULDER_TOP, 3, 125.5) },
-    knees: { near: { at: CLAM_KNEE }, far: { at: CLAM_KNEE_TOP } },
-    feet: { near: CLAM_FOOT, far: foot },
-    toes: { near: 0, far: 0 },
-  };
+  return sideLying({
+    knees: { near: { at: SL_KNEE_BOTTOM }, far: { at: SL_KNEE_TOP } },
+    feet: { near: SL_FOOT_BOTTOM, far: footUp ? along(SL_KNEE_TOP, -45, 86) : SL_FOOT_TOP },
+  });
 }
 
 // ---------------------------------------------------------------- crow pose
@@ -371,6 +348,7 @@ export const BATCH_B_SPECS: DoodleSpec[] = [
     slug: "reverse-clamshell",
     title: "Reverse Clamshell",
     view: "front",
+    props: [SIDE_LYING_FLOOR],
     transition: 0.9,
     frames: [
       { hold: 0.4, pose: clam(false) },

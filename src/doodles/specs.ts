@@ -5,7 +5,7 @@ import { BATCH_D_SPECS } from "./specsBatchD";
 import { BATCH_E_SPECS } from "./specsBatchE";
 import { BATCH_F_SPECS } from "./specsBatchF";
 import { STRETCH_SPECS } from "./specsStretch";
-import { WARMUP_DRILL_SPECS } from "./specsWarmup";
+import { proneFromAbove, WARMUP_DRILL_SPECS } from "./specsWarmup";
 import { solvePose } from "./rig";
 import type { DoodleSpec, Point, Pose } from "./rig";
 
@@ -24,13 +24,12 @@ import type { DoodleSpec, Point, Pose } from "./rig";
  *   single-leg-rdl             chest, hands, feet, toes
  *   glute-bridge-march         chest, head, hands, elbow bend, feet, toes
  *   sliding-leg-curl           chest, head, hands, elbow bend, feet, toes
- *   fire-hydrant               hands, feet, toes; spine from hands; near knee when lifted
  *   parallel-bar-knee-raise    chest, hands, feet, toes; knees when raised
  *   donkey-kick                hands, feet, toes; spine from hands; near knee when kicking
  *   forearm-plank              chest, elbows, hands, feet, toes
  *   prone-scapular-retraction  chest, hands, feet, knee bend, toes
  *   elbow-lever                chest, elbows, hands, feet, toes
- *   reverse-snow-angel         chest, hands, elbow bend, feet, knee bend, toes
+ *   reverse-snow-angel (front) seen from above: chest, head, hands, feet, toes (proneFromAbove)
  *   arch-hang                  head, hands, feet, toes; spine from hands, then chest + arch bend
  *   active-hang (front)        chest, hands, feet, toes; elbow bend when active
  *   tuck-l-sit                 hands, feet, toes; spine from hands; knees when tucked
@@ -67,9 +66,6 @@ function allFours(): Pose {
 const SUPINE_CHORD = 77;
 const SUPINE_BEND: 1 | -1 = -1;
 
-/** Head lifted forward off the floor for the overhead snow-angel frame. */
-const SNOW_HEAD: Point = [98, -80];
-
 /** The upright a supported split squat holds for balance. */
 const SPLIT_POST_X = 98;
 
@@ -78,8 +74,6 @@ const HIP_CIRCLE_STEPS = [0, 1, 2, 3, 4, 5, 6, 7].map((i) => (i * Math.PI) / 4);
 /** Forward/back reach of the hips and how far they drop at the sides of the circle. */
 const HIP_CIRCLE_REACH = 32;
 const HIP_CIRCLE_DIP = 5;
-
-const HYDRANT_KNEE: Point = along([-50, -92], 150, 88);
 
 const TUCK_PELVIS: Point = [-38, -30];
 const TUCK_KNEE_NEAR: Point = along(TUCK_PELVIS, -55, 88);
@@ -270,24 +264,6 @@ const SESSION_MOVE_SPECS: DoodleSpec[] = [
     ],
   },
   {
-    id: "ntc_fire_hydrant",
-    slug: "fire-hydrant",
-    title: "Fire hydrant",
-    frames: [
-      { hold: 0.4, pose: allFours() },
-      {
-        hold: 0.6,
-        pose: {
-          ...allFours(),
-          // Knee lifts out from under the hip, bent 90 degrees, shin angled up and back.
-          knees: { near: { at: HYDRANT_KNEE } },
-          feet: { near: along(HYDRANT_KNEE, 240, 86), far: [-132, -4] },
-          toes: { near: 190, far: 180 },
-        },
-      },
-    ],
-  },
-  {
     id: "fedb_knee_hip_raise_on_parallel_bars",
     slug: "parallel-bar-knee-raise",
     title: "Knee raise on parallel bars",
@@ -368,11 +344,14 @@ const SESSION_MOVE_SPECS: DoodleSpec[] = [
     id: "ntc_reverse_snow_angel",
     slug: "reverse-snow-angel",
     title: "Reverse snow angel",
+    // Seen from above: straight arms sweep just off the floor from the hips, out through a T, to overhead.
+    view: "front",
     transition: 0.6,
     frames: [
-      // Hands slide along the floor from the hips to overhead, arms long and low; the elbows fold under the chest on the way.
-      { hold: 0.4, pose: snowAngel(-1) },
-      { hold: 0.5, pose: snowAngel(1) },
+      { hold: 0.4, pose: proneFromAbove(172) },
+      { hold: 0.05, pose: proneFromAbove(90) },
+      { hold: 0.5, pose: proneFromAbove(22) },
+      { hold: 0.05, pose: proneFromAbove(90) },
     ],
   },
   {
@@ -618,22 +597,6 @@ const SESSION_MOVE_SPECS: DoodleSpec[] = [
     frames: [
       { hold: 0.5, pose: reverseCrunch(false) },
       { hold: 0.6, pose: reverseCrunch(true) },
-    ],
-  },
-  {
-    id: "ntc_floor_windshield_wiper",
-    slug: "floor-windshield-wiper",
-    title: "Floor windshield wiper",
-    transition: 0.3,
-    frames: [
-      { hold: 0.4, pose: lyingLegs(-88) },
-      { hold: 0.05, pose: lyingLegs(-65) },
-      { hold: 0.5, pose: lyingLegs(-35) },
-      { hold: 0.05, pose: lyingLegs(-65) },
-      { hold: 0.05, pose: lyingLegs(-88) },
-      { hold: 0.05, pose: lyingLegs(-108) },
-      { hold: 0.5, pose: lyingLegs(-130) },
-      { hold: 0.05, pose: lyingLegs(-108) },
     ],
   },
   {
@@ -1037,16 +1000,6 @@ function proneHands(shoulderY: number, handY: number): Pose["hands"] {
   const s = shoulderOf(pelvis, chestToward(pelvis, [78, shoulderY]));
   const reach = (r: number): Point => [round(s[0] - Math.sqrt(r * r - (s[1] - handY) ** 2)), handY];
   return { near: reach(125.6), far: reach(125.9) };
-}
-
-/** Prone with chest and head lifted; hands on the floor either by the hips (-1) or reaching overhead under the head (1). */
-function snowAngel(side: -1 | 1): Pose {
-  const base: Pose = { ...lyingFaceDown(-70, {}), head: SNOW_HEAD };
-  const shoulder = solvePose(base).arms.near.root;
-  const handY = -7;
-  const dx = Math.sqrt(125.3 ** 2 - (shoulder[1] - handY) ** 2);
-  const x = round(shoulder[0] + side * dx);
-  return { ...base, hands: { near: [x, handY], far: [x - 1, handY] }, elbows: { near: { bend: 1 }, far: { bend: 1 } } };
 }
 
 /** Forearms down, elbows under the shoulders, on the toes; `pelvisY` breathes the hold. */
