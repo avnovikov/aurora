@@ -310,7 +310,9 @@ describe("per-side stations", () => {
   });
 
   it("tell the user how to split the time between sides", () => {
-    const perSide = Object.values(WARMUP_STATION_BY_ID).filter((station) => station.perSide);
+    const perSide = Object.values(WARMUP_STATION_BY_ID).filter(
+      (station) => station.perSide || station.prescription?.scope === "perSide",
+    );
     expect(perSide.length).toBeGreaterThan(15);
     for (const station of perSide) {
       expect(station.cues.join(" "), station.id).toMatch(/per (side|leg)|each side|one side|change leg/i);

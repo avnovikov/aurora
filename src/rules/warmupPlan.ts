@@ -1,5 +1,9 @@
 import type { LoadRegion } from "../data/seed";
 import type { StationPhase, WarmupStation } from "../data/warmupStations";
+import {
+  expandHoldPrescription,
+  type HoldSide,
+} from "../domain/prescription";
 
 /**
  * One station in the prebuilt warm-up or cool-down view (not a work exercise prescription).
@@ -16,15 +20,21 @@ export interface WarmupStep {
   gapSecondsAfter: number;
   doodlePath?: string;
   cues: string[];
-  /** One side then the other: the hold pauses halfway to change side (older sessions lack it). */
+  /**
+   * One side then the other: the hold pauses halfway to change side.
+   * Absent when a prescription already expanded into separate side steps.
+   */
   perSide?: boolean;
+  /** When the step is one side of an expanded per-side prescription. */
+  side?: HoldSide;
 }
 
 /** Fallback when a station omits holdSeconds (10–15s band). */
 const DEFAULT_HOLD_SECONDS = 12;
-/** Fixed break between consecutive stations. */
-const SAME_AREA_GAP = 10;
-const CROSS_AREA_GAP = 10;
+/** Fixed break between consecutive stations (same or different area). */
+const STATION_GAP_SECONDS = 10;
+const SAME_AREA_GAP = STATION_GAP_SECONDS;
+const CROSS_AREA_GAP = STATION_GAP_SECONDS;
 /** Pause at the halfway point of a per-side station to change side. */
 export const SIDE_SWITCH_SECONDS = 5;
 
@@ -43,39 +53,58 @@ function gapBetween(previous: LoadRegion, next: LoadRegion): number {
   return sameArea(previous, next) ? SAME_AREA_GAP : CROSS_AREA_GAP;
 }
 
+function stepName(station: WarmupStation, side: HoldSide | undefined): string {
+  return side ? `${station.name} (${side})` : station.name;
+}
+
+function stepFromStation(
+  station: WarmupStation,
+  holdSeconds: number,
+  side?: HoldSide,
+): WarmupStep {
+  return {
+    stationId: station.id,
+    name: stepName(station, side),
+    phase: station.phase,
+    source: station.source,
+    region: displayRegion(station),
+    holdSeconds,
+    gapSecondsAfter: 0,
+    doodlePath: station.doodlePath,
+    cues: [...station.cues],
+    perSide: false,
+    side,
+  };
+}
+
+function stepsForStation(station: WarmupStation): WarmupStep[] {
+  assertStation(station);
+  if (station.prescription?.effort === "hold") {
+    return expandHoldPrescription(station.prescription).map((segment) =>
+      stepFromStation(station, segment.seconds, segment.side),
+    );
+  }
+  const holdSeconds =
+    station.holdSeconds > 0 ? station.holdSeconds : DEFAULT_HOLD_SECONDS;
+  return [
+    {
+      ...stepFromStation(station, holdSeconds),
+      perSide: station.perSide,
+    },
+  ];
+}
+
 /**
  * Materialise a prebuilt warmup sequence for the session view.
- * Each station once, in template order — no fill-to-target planner.
+ * Stations with a hold prescription expand into one step per segment.
  */
 export function buildWarmupView(stations: WarmupStation[]): WarmupStep[] {
   if (stations.length === 0) {
     throw new Error("Warmup sequence must not be empty");
   }
 
-  const steps: WarmupStep[] = stations.map((station) => {
-    assertStation(station);
-    const holdSeconds =
-      station.holdSeconds > 0 ? station.holdSeconds : DEFAULT_HOLD_SECONDS;
-    return {
-      stationId: station.id,
-      name: station.name,
-      phase: station.phase,
-      source: station.source,
-      region: displayRegion(station),
-      holdSeconds,
-      gapSecondsAfter: 0,
-      doodlePath: station.doodlePath,
-      cues: [...station.cues],
-      perSide: station.perSide,
-    };
-  });
-
-  for (let index = 0; index < steps.length - 1; index += 1) {
-    const current = steps[index];
-    const next = steps[index + 1];
-    current.gapSecondsAfter = gapBetween(current.region, next.region);
-  }
-
+  const steps: WarmupStep[] = stations.flatMap(stepsForStation);
+  applyGapsBetweenSteps(steps);
   return steps;
 }
 
@@ -109,6 +138,18 @@ export function warmupViewSeconds(steps: readonly WarmupStep[]): number {
     (sum, step) => sum + step.holdSeconds + sideSwitchSeconds(step) + step.gapSecondsAfter,
     0,
   );
+}
+
+/** Same station (expanded rounds / sides): brief pause, not a full break. */
+function applyGapsBetweenSteps(steps: WarmupStep[]): void {
+  for (let index = 0; index < steps.length - 1; index += 1) {
+    const current = steps[index];
+    const next = steps[index + 1];
+    current.gapSecondsAfter =
+      current.stationId === next.stationId
+        ? SIDE_SWITCH_SECONDS
+        : gapBetween(current.region, next.region);
+  }
 }
 
 function assertStation(station: WarmupStation): void {

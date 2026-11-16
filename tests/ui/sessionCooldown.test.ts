@@ -32,9 +32,10 @@ function afterLastWork(planned: PlannedSession): ViewState {
 describe("cool-down phase", () => {
   it("plans the template's cool-down after the work", () => {
     const legs = plan("tmpl_legs");
-    expect(cooldownSteps(legs).map((step) => step.stationId)).toEqual(
-      SESSION_TEMPLATES.find((item) => item.id === "tmpl_legs")!.cooldownStationIds,
-    );
+    const ids = SESSION_TEMPLATES.find((item) => item.id === "tmpl_legs")!.cooldownStationIds!;
+    // Prescriptions expand per-side / multi-hold stations into multiple steps.
+    expect([...new Set(cooldownSteps(legs).map((step) => step.stationId))]).toEqual(ids);
+    expect(cooldownSteps(legs).length).toBeGreaterThan(ids.length);
     expect(cooldownSteps(legs).every((step) => step.source)).toBe(true);
     expect(cooldownSteps(plan("tmpl_mobility"))).toEqual([]);
   });

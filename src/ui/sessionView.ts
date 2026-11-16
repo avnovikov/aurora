@@ -32,10 +32,20 @@ import { pulseConnectedAt, pulseDisconnected } from "./pulseState";
 import { attachSessionPulse, paintPulseReading } from "./sessionPulse";
 import type { SessionViewOptions } from "./sessionTypes";
 import { startStationHold, type WarmupTimerHandle } from "./sessionWarmup";
+import { prefetchDoodles } from "../doodles/doodleMarkup";
 
 export type { SessionViewOptions } from "./sessionTypes";
 
+function prefetchSessionDoodles(planned: SessionViewOptions["planned"]): void {
+  const warmupAndCooldown = [...planned.warmup, ...(planned.cooldown ?? [])];
+  prefetchDoodles([
+    ...warmupAndCooldown.map((step) => step.doodlePath),
+    ...planned.work.map((item) => item.doodlePath),
+  ]);
+}
+
 export function renderSessionView(root: HTMLElement, options: SessionViewOptions): void {
+  prefetchSessionDoodles(options.planned);
   const state = initialState(options);
   let restHandle: RestTimerHandle | null = null;
   let warmupHandle: WarmupTimerHandle | null = null;

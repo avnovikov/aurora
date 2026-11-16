@@ -1,3 +1,7 @@
+import type { ExercisePrescription } from "./prescription";
+
+export type { ExercisePrescription } from "./prescription";
+
 export type MuscleRole = "primary" | "secondary" | "stabilizer";
 
 export type MuscleGroup =
@@ -91,6 +95,11 @@ export interface Exercise {
   defaultRestSeconds?: number;
   /** Literature-inspired rep/hold floors per tier. */
   standards?: ExerciseStandards;
+  /**
+   * Pre-parsed dose from description (rounds × amount, total or per side).
+   * Warm-up expands it; work clamps tier-standard picks into the band.
+   */
+  prescription?: ExercisePrescription;
 }
 
 export interface WeakLink {
