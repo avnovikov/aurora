@@ -86,3 +86,36 @@ describe("planSession", () => {
     expect(session.deload).toBe(false);
   });
 });
+
+describe("planSession same-day duplicates", () => {
+  const abs = templateToStarter(SESSION_TEMPLATES.find((t) => t.id === "tmpl_abs")!);
+
+  it("keeps an intentional repeat when the slot allows it (Abs hollow finisher)", () => {
+    const session = planSession(readiness, abs, {});
+    const hollows = session.work.filter((item) => item.exerciseId === "hollow_hold");
+    expect(hollows).toHaveLength(2);
+    expect(session.work.some((item) => item.ruleIds.includes("same_day_duplicate"))).toBe(false);
+  });
+
+  it("swaps a later unauthorised repeat of the same move", () => {
+    const doubled = {
+      ...abs,
+      id: "tmpl_dup_knee",
+      slots: [
+        abs.slots[2]!, // hanging knee raise
+        {
+          ...abs.slots[2]!,
+          id: "core_hang_again",
+          label: "Knee raise again",
+          allowConsecutiveRepeat: false,
+        },
+      ],
+    };
+    const session = planSession(readiness, doubled, {});
+    expect(session.work).toHaveLength(2);
+    expect(session.work[0]!.exerciseId).toBe("hanging_knee_raise");
+    expect(session.work[1]!.exerciseId).not.toBe("hanging_knee_raise");
+    expect(session.work[1]!.ruleIds).toContain("same_day_duplicate");
+    expect(session.work[1]!.reason).toMatch(/Same-day duplicate/);
+  });
+});

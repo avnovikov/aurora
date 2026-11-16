@@ -66,8 +66,20 @@ export function pickSlotExerciseForVariety(
   };
 }
 
+/**
+ * Another plannable move for this slot that is not already used today
+ * (and not on yesterday's list when `avoid` includes it).
+ */
+export function findSlotAlternate(
+  slot: Pick<TemplateSlot, "pattern" | "exerciseId">,
+  alreadyChosenToday: ReadonlySet<string>,
+  avoidYesterday: ReadonlySet<string> = new Set(),
+): SeedExercise | null {
+  return findAlternate(slot, avoidYesterday, alreadyChosenToday);
+}
+
 function findAlternate(
-  slot: TemplateSlot,
+  slot: Pick<TemplateSlot, "pattern" | "exerciseId">,
   avoid: ReadonlySet<string>,
   alreadyChosenToday: ReadonlySet<string>,
 ): SeedExercise | null {

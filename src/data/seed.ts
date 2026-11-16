@@ -743,6 +743,8 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
         dose: { sets: 3, reps: 25, targetRir: 2, addedLoadKg: 0 },
         restSeconds: 45,
         pinned: false,
+        // Intentional second hollow: same move twice is the Abs finisher pattern.
+        allowConsecutiveRepeat: true,
       },
     ],
   },

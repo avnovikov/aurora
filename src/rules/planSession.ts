@@ -23,6 +23,7 @@ import type {
 import { chooseSuitableExercise, type SuitableChoice } from "../safety/suitableExercise";
 import { emptyMemory } from "../session/history";
 import {
+  findSlotAlternate,
   lastConsecutiveSameZone,
   pickSlotExerciseForVariety,
 } from "./consecutiveVariety";
@@ -197,32 +198,85 @@ function planWorkItem(
   };
 }
 
+/** True when this slot may repeat a move already used earlier today. */
+function allowsSameDayRepeat(slot: SeedSlot): boolean {
+  return slot.allowConsecutiveRepeat === true || slot.pinned === true;
+}
+
+/**
+ * Plan each slot, then if resolve/care landed on a move already used today,
+ * swap the later slot to another valid move (unless the slot may repeat).
+ */
 function planWorkWithVariety(
   program: StarterProgram,
   context: SlotContext,
   previousExerciseIds: readonly string[] | null,
 ): PlannedWorkItem[] {
-  if (!previousExerciseIds || previousExerciseIds.length === 0) {
-    return program.slots.map((slot) =>
-      planWorkItem(slot, slot.exerciseId, context),
-    );
-  }
+  const usedToday = new Set<string>();
+  const previous = previousExerciseIds ?? [];
+  const hasPrevious = previous.length > 0;
 
-  const chosenToday = new Set<string>();
   return program.slots.map((slot) => {
-    const pick = pickSlotExerciseForVariety(
-      slot,
-      previousExerciseIds,
-      chosenToday,
-    );
-    chosenToday.add(pick.exerciseId);
-    return planWorkItem(
-      slot,
-      pick.exerciseId,
-      context,
-      pick.swapped ? pick.reason : undefined,
-    );
+    let startId = slot.exerciseId;
+    let varietyReason: string | undefined;
+
+    if (hasPrevious) {
+      const pick = pickSlotExerciseForVariety(slot, previous, usedToday);
+      startId = pick.exerciseId;
+      if (pick.swapped) {
+        varietyReason = pick.reason;
+      }
+    }
+
+    let item = planWorkItem(slot, startId, context, varietyReason);
+
+    if (usedToday.has(item.exerciseId) && !allowsSameDayRepeat(slot)) {
+      item = swapAwayDuplicate(slot, item, context, usedToday, previous);
+    }
+
+    usedToday.add(item.exerciseId);
+    return item;
   });
+}
+
+/** Replace a colliding move with another valid one; keeps the original if none fit. */
+function swapAwayDuplicate(
+  slot: SeedSlot,
+  item: PlannedWorkItem,
+  context: SlotContext,
+  usedToday: ReadonlySet<string>,
+  previous: readonly string[],
+): PlannedWorkItem {
+  const yesterday = new Set(previous);
+  // Prefer an alternate for the slot's pattern; if resolve lands on another
+  // used id, try once more from that landing point.
+  let preferredId = slot.exerciseId;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const alternate = findSlotAlternate(
+      { pattern: slot.pattern, exerciseId: preferredId },
+      usedToday,
+      yesterday,
+    );
+    if (!alternate) {
+      return item;
+    }
+    const swapped = planWorkItem(
+      slot,
+      alternate.id,
+      context,
+      `Same-day duplicate · ${alternate.name}`,
+    );
+    if (!usedToday.has(swapped.exerciseId)) {
+      return {
+        ...swapped,
+        ruleIds: swapped.ruleIds.includes("same_day_duplicate")
+          ? swapped.ruleIds
+          : [...swapped.ruleIds, "same_day_duplicate"],
+      };
+    }
+    preferredId = swapped.exerciseId;
+  }
+  return item;
 }
 
 /**
