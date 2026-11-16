@@ -44,6 +44,16 @@ interface Classification {
 const MOBILITY_MOTION = ["circles", "swing", " cars ", "rotation", "rock", "switch", "open book", "roll"];
 const ISOMETRIC_WORDS = [" hold ", " hang ", "isometric", "isometry", "stance", " l sit", " plank ", "lever ", "planche ", "support", "vacuum", "draw in"];
 const ECCENTRIC_WORDS = ["negative", "eccentric"];
+/**
+ * Names that say the move travels through reps, which beats a hold keyword:
+ * "Supported Split Squat" is not a support hold, "Front lever pull-up" is not
+ * a lever hold, "Plank with Alternating Leg Lift" is not a plank hold.
+ */
+const MOVING_WORDS = [" split squat", " dynamic ", " pull up", " reach", " leg lift", " floor touch", " extension"];
+/** Names that say "this is a hold" outright, whatever else they mention. */
+const EXPLICIT_HOLD_WORDS = [" hold ", "isometric", "isometry"];
+/** Mobility drills named for a movement, not a held position. */
+const MOBILITY_MOVING_WORDS = [" good morning", " tilts ", " turns ", " crossover "];
 
 /** Per-row licence credit, e.g. "wger.de exercise 42 (CC-BY-SA-4.0, author)". */
 export function wgerAttribution(record: Pick<WgerExerciseRecord, "id" | "license" | "licenseAuthor">): string {
@@ -165,7 +175,10 @@ function inferType(name: string, pattern: Pattern): ExerciseType {
     return "eccentric";
   }
   if (pattern === "mobility") {
-    return hasKeyword(name, MOBILITY_MOTION) ? "dynamic" : "isometric";
+    return hasKeyword(name, [...MOBILITY_MOTION, ...MOBILITY_MOVING_WORDS]) ? "dynamic" : "isometric";
   }
-  return hasKeyword(name, ISOMETRIC_WORDS) ? "isometric" : "dynamic";
+  if (hasKeyword(name, EXPLICIT_HOLD_WORDS)) {
+    return "isometric";
+  }
+  return hasKeyword(name, ISOMETRIC_WORDS) && !hasKeyword(name, MOVING_WORDS) ? "isometric" : "dynamic";
 }

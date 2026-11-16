@@ -9056,17 +9056,18 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
   },
   "wger_1286": {
     "id": "wger_1286",
-    "summary": "An advanced planche hold where you lean the shoulders far past the hands until the feet lift, building straight-arm pushing strength.",
+    "summary": "A plank that jumps both feet in toward the hands and straight back out, building core and shoulder strength with power.",
     "steps": [
-      "Start in a planche lean with hands on the floor or parallettes, fingers angled out.",
-      "Lock your elbows, protract your shoulders, and lean forward until your shoulders pass your hands.",
-      "Tuck your knees and lift your feet off the floor, balancing on your hands.",
-      "Hold the position, breathing steadily, then lower your feet with control."
+      "Start in a high plank, hands under the shoulders and feet hip-width apart.",
+      "Brace so your body makes a straight line from head to heels.",
+      "Jump both feet in toward your hands, bending the knees.",
+      "As your feet land, jump them straight back out to the plank.",
+      "Keep the shoulders over the hands for every rep."
     ],
     "cues": [
-      "Elbows locked",
-      "Round the upper back",
-      "Lean, don't jump"
+      "Shoulders over hands",
+      "Land softly",
+      "Hips level"
     ],
     "mistakes": [
       "Bending the elbows to find balance",
@@ -9526,17 +9527,17 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
   },
   "wger_1863": {
     "id": "wger_1863",
-    "summary": "A lying twist that lowers both bent knees to one side to stretch the hips, glutes and lower back.",
+    "summary": "A lying twist that lowers both bent knees side to side to loosen the hips, glutes and lower back.",
     "steps": [
-      "Lie on your back with arms out to the sides and knees bent, feet together.",
+      "Lie on your back with your arms out to the sides, knees bent and together, feet on the floor.",
       "Slowly lower both knees to one side, keeping your shoulders and arms on the floor.",
-      "Rest there until you feel a stretch through the hips and lower back.",
-      "Hold 20–30 seconds, return to center, then switch sides."
+      "Pause briefly, then bring the knees back to the centre.",
+      "Lower them to the other side and keep alternating."
     ],
     "cues": [
       "Shoulders stay down",
-      "Knees together",
-      "Breathe out to relax"
+      "Slow and controlled",
+      "Knees together"
     ],
     "mistakes": []
   },
@@ -10771,17 +10772,17 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
   },
   "wger_1845": {
     "id": "wger_1845",
-    "summary": "A wide-legged seated forward hinge with hands behind the head that stretches the hamstrings, inner thighs, and lower back.",
+    "summary": "A wide-legged seated hinge with hands behind the head, moved down and up for reps to loosen the hamstrings, inner thighs and lower back.",
     "steps": [
       "Sit with your legs straight and spread wide in a straddle.",
-      "Place your hands lightly behind your head with elbows out.",
-      "Hinge forward from the hips, keeping your back long, until you feel a stretch.",
-      "Hold the position, breathing steadily."
+      "Place your hands on the back of your head.",
+      "Hinge from the hips to bring your chest toward the floor, keeping the back long.",
+      "Sit back up tall and repeat."
     ],
     "cues": [
       "Hinge from the hips",
-      "Back long",
-      "Knees face up"
+      "Long back",
+      "Knees straight"
     ],
     "mistakes": [
       "Rounding the upper back to go lower",
@@ -11383,17 +11384,17 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
   },
   "wger_1397": {
     "id": "wger_1397",
-    "summary": "A wide-stance standing hinge with hands behind the head that stretches the hamstrings and inner thighs while engaging the back.",
+    "summary": "A wide-stance standing hinge with hands behind the head, moved down and up for reps to loosen the hamstrings and inner thighs.",
     "steps": [
-      "Stand with feet wider than shoulder-width apart and toes turned slightly out.",
-      "Place your hands lightly behind your head with elbows out.",
-      "Hinge at the hips to lower your upper body, keeping your back straight and chest open.",
-      "Hold the position, breathing steadily."
+      "Stand with feet wider than shoulder width, toes turned slightly out.",
+      "Place your hands on the back of your head.",
+      "Hinge at the hips and lower your chest toward the floor, keeping the back straight.",
+      "Stand back up by driving the hips forward, then repeat."
     ],
     "cues": [
-      "Hinge, don't bend",
+      "Hips back",
       "Chest open",
-      "Elbows wide"
+      "Back straight"
     ],
     "mistakes": [
       "Rounding the back to go lower",
@@ -11526,12 +11527,13 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
   },
   "wger_2557": {
     "id": "wger_2557",
-    "summary": "A supported split-squat hold at the bottom position that builds strength in the quadriceps and glutes with help for balance.",
+    "summary": "A split squat with a hand on a support for balance that builds the quadriceps and glutes one leg at a time.",
     "steps": [
-      "Stand in a split stance with one foot a stride in front of the other, holding a wall, rack, or chair back.",
+      "Stand in a split stance, one foot a stride in front of the other, with a hand on a wall, rack or chair back.",
       "Lower your hips straight down by bending both knees until the back knee is just above the floor.",
       "Keep your torso upright and your front heel down.",
-      "Hold the position, breathing steadily, then stand up and switch sides."
+      "Push through the front foot to stand back up, using the support only for balance.",
+      "Finish your reps, then switch sides."
     ],
     "cues": [
       "Torso tall",

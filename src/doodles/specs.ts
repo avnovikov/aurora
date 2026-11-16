@@ -70,6 +70,9 @@ const SUPINE_BEND: 1 | -1 = -1;
 /** Head lifted forward off the floor for the overhead snow-angel frame. */
 const SNOW_HEAD: Point = [98, -80];
 
+/** The upright a supported split squat holds for balance. */
+const SPLIT_POST_X = 98;
+
 const HYDRANT_KNEE: Point = along([-50, -92], 150, 88);
 
 const TUCK_PELVIS: Point = [-38, -30];
@@ -469,11 +472,12 @@ const SESSION_MOVE_SPECS: DoodleSpec[] = [
     id: "wger_2557",
     slug: "supported-split-squat",
     title: "Supported split squat",
-    props: [{ kind: "box", x: 100, y: -92, w: 60, h: 92 }],
-    transition: 1.2,
+    // A rep move: one hand on an upright (rack, door frame, chair back) for balance only.
+    props: [{ kind: "box", x: SPLIT_POST_X, y: -250, w: 8, h: 250 }],
+    transition: 1,
     frames: [
-      { hold: 0.5, pose: supportedSplit(-95) },
-      { hold: 0.5, pose: supportedSplit(-92) },
+      { hold: 0.4, pose: supportedSplit([-10, -150]) },
+      { hold: 0.4, pose: supportedSplit([-14, -104]) },
     ],
   },
   {
@@ -1164,14 +1168,14 @@ function handstand(): Pose {
 }
 
 /** Split stance with the near hand resting on a box; the back knee is solved just above the floor. */
-function supportedSplit(pelvisY: number): Pose {
-  const pelvis: Point = [0, pelvisY];
+function supportedSplit(pelvis: Point): Pose {
+  // Torso upright; the near hand slides on the upright at chest height, the other rests on the hip.
   return {
     pelvis,
-    // Torso upright, with a slight lean so the hand reaches the box.
-    chest: along(pelvis, -72, 80),
-    hands: { near: [108, -92], far: [107, -92] },
-    feet: { near: [70, 0], far: [-96, -20] },
+    chest: [pelvis[0], pelvis[1] - 80],
+    hands: { near: [SPLIT_POST_X, pelvis[1] - 40], far: [pelvis[0] + 8, pelvis[1] - 14] },
+    elbows: { far: { bend: 1 } },
+    feet: { near: [44, 0], far: [-112, -20] },
     toes: { near: 0, far: 80 },
   };
 }
