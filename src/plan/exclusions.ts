@@ -4,7 +4,8 @@ const store = createKeyValueStore("aurora.poc.excludedExercises.v1");
 
 /**
  * Exercises the athlete never wants planned ("not for me"). One list for the
- * whole app: generation and the planner skip these, the Library shows them.
+ * whole app: work slots and warm-up stations swap or drop these; the Library
+ * shows them.
  */
 export function loadExcluded(): string[] {
   const raw = store.read();

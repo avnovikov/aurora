@@ -39,6 +39,8 @@ export interface SessionControlHandlers {
   onSkipRest: () => void;
   /** Forward swipe on a warm-up or cool-down station: end it now. */
   onFinishStation: () => void;
+  /** Warm-up "Not for me": exclude the move; finish the current station as planned. */
+  onWarmupNotForMe: (exerciseId: string) => void;
   onFinishAll: () => void;
   onStartCooldown: () => void;
   onSkipCooldown: () => void;
@@ -69,6 +71,13 @@ export function wireSessionControls(
   for (const [selector, onClick] of Object.entries(clicks)) {
     root.querySelector(selector)?.addEventListener("click", onClick);
   }
+  root.querySelector<HTMLElement>("[data-warmup-not-for-me]")?.addEventListener("click", (event) => {
+    const exerciseId = (event.currentTarget as HTMLElement).dataset.exerciseId;
+    if (!exerciseId) {
+      return;
+    }
+    handlers.onWarmupNotForMe(exerciseId);
+  });
   wirePulseSimButtons(root, state, handlers);
   wirePulseConnectButtons(root, state, handlers);
   wireStageSwipe(root, planned, state, handlers);

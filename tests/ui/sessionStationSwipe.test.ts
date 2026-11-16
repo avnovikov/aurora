@@ -99,7 +99,16 @@ describe("the gap between warm-up stations", () => {
 });
 
 function step(partial: Partial<WarmupStep>): WarmupStep {
-  return { stationId: "s", name: "Station", region: "legs", holdSeconds: 30, gapSecondsAfter: 0, cues: [], ...partial };
+  return {
+    stationId: "s",
+    exerciseId: "s",
+    name: "Station",
+    region: "legs",
+    holdSeconds: 30,
+    gapSecondsAfter: 0,
+    cues: [],
+    ...partial,
+  };
 }
 
 function nullRoot(): HTMLElement {

@@ -18,7 +18,10 @@ function memory(exerciseId: string, over: Partial<ExerciseMemory>): ExerciseMemo
 
 describe("planSession warm-up level", () => {
   const legs = templateToStarter(SESSION_TEMPLATES.find((t) => t.id === "tmpl_legs")!);
-  const ids = (session: ReturnType<typeof planSession>) => session.warmup.map((step) => step.stationId);
+  /** Station ids in order (prescription expansion can repeat an id). */
+  const ids = (session: ReturnType<typeof planSession>) => [
+    ...new Set(session.warmup.map((step) => step.stationId)),
+  ];
 
   it("plans the beginner warm-up when the target family tier is unknown", () => {
     const session = planSession(readiness, legs, {});
@@ -36,6 +39,18 @@ describe("planSession warm-up level", () => {
   it("lets the caller override the level", () => {
     const session = planSession(readiness, legs, {}, { warmupLevel: "intermediate" });
     expect(ids(session)).toEqual(legs.warmupByLevel.intermediate);
+  });
+
+  it("swaps excluded Raise stations for a similar Raise", () => {
+    const session = planSession(readiness, legs, {}, {
+      excluded: ["pulse_raiser_march", "ntc_jumping_jacks"],
+    });
+    const raiseIds = session.warmup
+      .filter((step) => step.phase === "raise")
+      .map((step) => step.exerciseId);
+    expect(raiseIds).toContain("ntc_toy_soldiers");
+    expect(raiseIds).not.toContain("pulse_raiser_march");
+    expect(raiseIds).not.toContain("ntc_jumping_jacks");
   });
 });
 

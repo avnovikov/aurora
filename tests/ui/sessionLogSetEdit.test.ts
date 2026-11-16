@@ -46,6 +46,8 @@ function handlers(): SessionControlHandlers {
     onStartRest: vi.fn((_voice, onDone) => onDone()),
     onFinishExercise: vi.fn(),
     onSkipRest: vi.fn(),
+    onFinishStation: vi.fn(),
+    onWarmupNotForMe: vi.fn(),
     onFinishAll: vi.fn(),
     onStartCooldown: vi.fn(),
     onSkipCooldown: vi.fn(),

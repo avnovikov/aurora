@@ -172,14 +172,19 @@ function dayHtml(day: PlanDayView, total: number, makeOptions: readonly DayOptio
   const first = day.index === 0;
   const last = day.index >= total - 1;
   const later = first && total > 1 ? actionHtml("later", String(day.index), "To the end") : "";
+  const when = whenLabel(day.index);
+  const removeAria = escapeHtml(`Remove: ${day.title}, ${when}`);
   return `
     <li class="plan-day-item${first ? " is-today-item" : ""}">
       <span class="plan-drag" data-drag-handle title="Drag to move this day" aria-hidden="true"></span>
       <details class="lib-filters plan-day${first ? " is-today" : ""}" data-day="${day.index}"${day.open ? " open" : ""}>
         <summary>
-          <span class="plan-day-when">${whenLabel(day.index)}</span>
+          <span class="plan-day-when">${when}</span>
           <span class="plan-day-title">${escapeHtml(day.title)}</span>
           <span class="plan-day-time">${escapeHtml(day.duration)}</span>
+          <button type="button" class="plan-day-remove" data-remove aria-label="${removeAria}">
+            <span aria-hidden="true">×</span>
+          </button>
         </summary>
         <p class="lib-meta plan-day-meta">${escapeHtml(day.meta)}</p>
         <ol class="plan-exercises">${day.items.map((item) => exerciseHtml(item, day)).join("")}</ol>
@@ -191,9 +196,6 @@ function dayHtml(day: PlanDayView, total: number, makeOptions: readonly DayOptio
             <button type="button" data-move="up"${first ? " disabled" : ""}>Earlier</button>
             <button type="button" data-move="down"${last ? " disabled" : ""}>Later</button>
             ${later}
-          </div>
-          <div class="row remove">
-            <button type="button" data-remove>Remove</button>
           </div>
         </div>
       </details>

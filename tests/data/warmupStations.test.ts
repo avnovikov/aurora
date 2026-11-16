@@ -90,11 +90,14 @@ describe("warmupStations", () => {
     }
   });
 
-  it("gives every template a list per level, each starting with toy soldiers in RAMP order", () => {
+  it("gives every template a list per level, each starting with march then jumping jacks in RAMP order", () => {
     for (const item of SESSION_TEMPLATES) {
       for (const level of WARMUP_LEVELS) {
         const ids = item.warmupByLevel[level];
-        expect(ids[0], `${item.id} ${level}`).toBe("ntc_toy_soldiers");
+        expect(ids.slice(0, 2), `${item.id} ${level}`).toEqual([
+          "pulse_raiser_march",
+          "ntc_jumping_jacks",
+        ]);
         const ranks = ids.map((id) => STATION_PHASES.indexOf(requireWarmupStation(id).phase));
         expect(ranks, `${item.id} ${level}`).toEqual([...ranks].sort((a, b) => a - b));
         expect(ranks.every((rank) => rank < STATION_PHASES.indexOf("cooldown")), item.id).toBe(true);
@@ -125,11 +128,8 @@ describe("warmupStations", () => {
     }
   });
 
-  it("never uses jumping jacks or marching as a warm-up station", () => {
-    for (const item of SESSION_TEMPLATES) {
-      expect(allWarmupIds(item), item.id).not.toContain("ntc_jumping_jacks");
-      expect(allWarmupIds(item), item.id).not.toContain("pulse_raiser_march");
-    }
+  it("keeps toy soldiers in the catalogue as the usual Raise substitute", () => {
+    expect(WARMUP_STATION_BY_ID.ntc_toy_soldiers?.phase).toBe("raise");
     expect(EXERCISE_GRAPH.ntc_jumping_jacks).toBeDefined();
     expect(EXERCISE_GRAPH.pulse_raiser_march).toBeDefined();
   });
@@ -223,7 +223,7 @@ describe("warmupStations", () => {
   });
 
   it("matches the v3 lists per session and level", () => {
-    const after = (id: string, level: WarmupLevel) => template(id).warmupByLevel[level].slice(1);
+    const after = (id: string, level: WarmupLevel) => template(id).warmupByLevel[level].slice(2);
     expect(after("tmpl_legs", "beginner")).toEqual([
       "ankle_rocks",
       "ntc_single_leg_balance",
@@ -317,5 +317,18 @@ describe("per-side stations", () => {
     for (const station of perSide) {
       expect(station.cues.join(" "), station.id).toMatch(/per (side|leg)|each side|one side|change leg/i);
     }
+  });
+
+  it("expands per-side warm-up stations into separate timers, not one long blob", () => {
+    const ankle = buildWarmupView([requireWarmupStation("ankle_rocks")]);
+    expect(ankle.map((step) => step.holdSeconds)).toEqual([40, 40]);
+    expect(ankle.map((step) => step.side)).toEqual(["left", "right"]);
+
+    const balance = buildWarmupView([requireWarmupStation("ntc_single_leg_balance")]);
+    expect(balance.map((step) => step.holdSeconds)).toEqual([30, 30]);
+    expect(balance.every((step) => step.holdSeconds <= 30)).toBe(true);
+
+    const swings = buildWarmupView([requireWarmupStation("ntc_leg_swings")]);
+    expect(swings.map((step) => step.holdSeconds)).toEqual([30, 30, 30, 30]);
   });
 });

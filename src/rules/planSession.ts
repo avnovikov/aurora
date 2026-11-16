@@ -28,6 +28,7 @@ import {
   pickSlotExerciseForVariety,
 } from "./consecutiveVariety";
 import { resolveSlot } from "./resolveSlot";
+import { resolveWarmupStations } from "./resolveWarmupStations";
 import { warmupLevelFor } from "./warmupLevel";
 import { buildCooldownView, buildWarmupView, type WarmupStep } from "./warmupPlan";
 
@@ -279,6 +280,20 @@ function swapAwayDuplicate(
   return item;
 }
 
+function planWarmup(
+  program: StarterProgram,
+  memories: Record<string, ExerciseMemory>,
+  options: PlanSessionOptions,
+): { warmup: WarmupStep[]; warmupLevel: WarmupLevel } {
+  const warmupLevel = pickWarmupLevel(program, memories, options.warmupLevel);
+  const excluded = options.excluded ?? [];
+  const stations = resolveWarmupStations(warmupStationsFor(program, warmupLevel), excluded);
+  if (stations.length === 0) {
+    throw new Error(`Warm-up for ${program.id} resolved empty after exclusions`);
+  }
+  return { warmup: buildWarmupView(stations), warmupLevel };
+}
+
 /**
  * Freezes today's session: warmup + resolved working slots.
  * When the last completed session was the same zone, non-anchor slots rotate.
@@ -307,8 +322,7 @@ export function planSession(
     },
     previous?.exerciseIds ?? null,
   );
-  const warmupLevel = pickWarmupLevel(program, memories, options.warmupLevel);
-  const warmup = buildWarmupView(warmupStationsFor(program, warmupLevel));
+  const { warmup, warmupLevel } = planWarmup(program, memories, options);
   const cooldown = buildCooldownView(cooldownStationsFor(program));
   return {
     programId: program.id,

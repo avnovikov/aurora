@@ -24,8 +24,10 @@ function workItem(
 }
 
 function warmupStep(name: string, holdSeconds = 12): WarmupStep {
+  const stationId = name.toLowerCase().replace(/\s+/g, "_");
   return {
-    stationId: name.toLowerCase().replace(/\s+/g, "_"),
+    stationId,
+    exerciseId: stationId,
     name,
     region: "hips",
     holdSeconds,
