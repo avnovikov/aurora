@@ -53,19 +53,28 @@ export function kindOfTemplate(template: Pick<SessionTemplate, "kind" | "focus">
   return template.kind ?? kindOfFocus(template.focus);
 }
 
-function skillTitleWith(targetExerciseId: string | undefined, format: (name: string) => string): string {
-  const name = targetExerciseId ? EXERCISE_GRAPH[targetExerciseId]?.name : undefined;
-  return name ? `${DAY_KIND_LABELS.skill}: ${format(name)}` : DAY_KIND_LABELS.skill;
+function skillName(targetExerciseId: string | undefined): string | undefined {
+  return targetExerciseId ? EXERCISE_GRAPH[targetExerciseId]?.name : undefined;
 }
 
-/** "Skill: Freestanding handstand" for a named skill, else the kind's label (for display). */
-export function skillTitle(targetExerciseId: string | undefined): string {
-  return skillTitleWith(targetExerciseId, displayExerciseName);
+function titleFor(name: string | undefined): string {
+  return name ? `${DAY_KIND_LABELS.skill}: ${name}` : DAY_KIND_LABELS.skill;
 }
 
-/** The same title with the library's own name, as saved in a generated day's name. */
+/** "Skill: Freestanding Handstand", with the library's own name: what a generated day saves. */
 export function storedSkillTitle(targetExerciseId: string | undefined): string {
-  return skillTitleWith(targetExerciseId, (name) => name);
+  return titleFor(skillName(targetExerciseId));
+}
+
+/** "Skill: Freestanding handstand": the same title as the screen shows it. */
+export function skillTitle(targetExerciseId: string | undefined): string {
+  const name = skillName(targetExerciseId);
+  return titleFor(name && displayExerciseName(name));
+}
+
+/** A generated day's name, "<title> · <letter>"; generateBlock saves it and dayTitle shows it. */
+export function blockDayName(title: string, letter: string): string {
+  return `${title} · ${letter}`;
 }
 
 /**
@@ -76,7 +85,7 @@ export function storedSkillTitle(targetExerciseId: string | undefined): string {
 export function dayTitle(template: SessionTemplate): string {
   if (template.kind === "skill" && template.block) {
     // Shown from the target, so saved days read in display case too.
-    return `${skillTitle(template.targetExerciseIds[0])} · ${template.block.letter}`;
+    return blockDayName(skillTitle(template.targetExerciseIds[0]), template.block.letter);
   }
   if (template.kind) {
     return template.name;

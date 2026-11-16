@@ -1,7 +1,7 @@
 import type { SessionTemplate } from "../domain/program";
 import { SKILL_TIER_LABELS } from "../domain/skillTier";
 import type { Exercise, ExerciseMemory, RuleId } from "../domain/types";
-import { displayExerciseName } from "../library/displayName";
+import { displayNameOf } from "../library/displayName";
 import { STALL_BELOW_FLOOR_SESSIONS } from "../rules/resolveSlot";
 import { SESSIONS_AT_STANDARD_TO_ADVANCE, shouldAdvanceProgression } from "../rules/skillDose";
 
@@ -259,12 +259,6 @@ function lightDaySuffix(lastResolve: LastResolveSignal | undefined): string {
     return " · last session was a light day";
   }
   return "";
-}
-
-/** Display name for an exercise id, falling back to the id itself. */
-export function displayNameOf(exerciseId: string, graph: ChainGraph): string {
-  const name = graph[exerciseId]?.name;
-  return name === undefined ? exerciseId : displayExerciseName(name);
 }
 
 /** Display label for a chain, falling back to the root exercise name. */

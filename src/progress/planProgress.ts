@@ -1,11 +1,10 @@
 import type { SeedExercise } from "../data/seed";
 import type { SessionTemplate } from "../domain/program";
 import type { ExerciseMemory } from "../domain/types";
-import { displayExerciseName } from "../library/displayName";
+import { displayNameOf } from "../library/displayName";
 import { pickLevelAppropriateStep } from "../plan/pathPlacement";
 import {
   buildChainIds,
-  displayNameOf,
   hasTrainingSignal,
   inferChainStatus,
   pickCurrentId,
@@ -91,7 +90,7 @@ function collectTargets(
       }
       byId.set(targetId, {
         id: targetId,
-        name: displayExerciseName(exercise.name),
+        name: displayNameOf(targetId, graph),
         templateNames: [template.name],
       });
     }
@@ -140,7 +139,7 @@ function notStartedCard(
     templateNames: target.templateNames,
     phase: "not_started",
     currentId: startId,
-    currentName: start ? displayExerciseName(start.name) : startId,
+    currentName: displayNameOf(startId, graph),
     ...personalBestFields(startId, graph, memories),
     nextId,
     nextName: nameOrNull(graph, nextId),
@@ -171,7 +170,7 @@ function activeCard(
     templateNames: target.templateNames,
     phase: "active",
     currentId,
-    currentName: displayExerciseName(current.name),
+    currentName: displayNameOf(currentId, graph),
     ...personalBestFields(currentId, graph, memories),
     nextId,
     nextName: nameOrNull(graph, nextId),

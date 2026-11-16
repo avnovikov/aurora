@@ -50,6 +50,24 @@ function keepsItsCase(word: string): boolean {
  * Display only: stored names, ids and planner input stay as they are.
  */
 export function displayExerciseName(name: string): string {
+  const known = shown.get(name);
+  if (known !== undefined) {
+    return known;
+  }
   const lowered = name.replace(WORD, (word) => (keepsItsCase(word) ? word : word.toLowerCase()));
-  return lowered.charAt(0).toUpperCase() + lowered.slice(1);
+  const result = lowered.charAt(0).toUpperCase() + lowered.slice(1);
+  shown.set(name, result);
+  return result;
+}
+
+/** Names already cased; the Library is finite, and the session repaints the same few. */
+const shown = new Map<string, string>();
+
+/** The display name for an exercise id, or the id itself (uncased) when the graph lacks it. */
+export function displayNameOf(
+  exerciseId: string,
+  graph: Readonly<Record<string, { name: string } | undefined>>,
+): string {
+  const name = graph[exerciseId]?.name;
+  return name === undefined ? exerciseId : displayExerciseName(name);
 }

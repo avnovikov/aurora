@@ -1,7 +1,7 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import type { PlanQueue, SessionTemplate } from "../domain/program";
 import type { ExerciseMemory, Pattern, SkillTier } from "../domain/types";
-import { displayExerciseName } from "../library/displayName";
+import { displayExerciseName, displayNameOf } from "../library/displayName";
 import {
   chooseTemplateForExercise,
   defaultPlanDayIndex,
@@ -64,7 +64,7 @@ export function addExerciseToPlanDay(input: {
     slotId,
     exerciseId: working.id,
     exerciseName: working.name,
-    message: `Added ${working.name} to ${template.name} (stays until you outgrow this level).`,
+    message: `Added ${displayExerciseName(working.name)} to ${template.name} (stays until you outgrow this level).`,
   };
 }
 
@@ -88,9 +88,7 @@ export function generatePlanTowardExercise(input: {
 
   const tomorrowIndex = defaultPlanDayIndex(input.queue.items.length);
   const nextQueue = placeTemplateAt(input.queue, template.id, tomorrowIndex);
-  const targetName = displayExerciseName(
-    EXERCISE_GRAPH[input.exercise.id]?.name ?? input.exercise.id,
-  );
+  const targetName = displayNameOf(input.exercise.id, EXERCISE_GRAPH);
 
   return {
     templateId: template.id,
@@ -98,7 +96,7 @@ export function generatePlanTowardExercise(input: {
     targetExerciseId: input.exercise.id,
     workingExerciseId: working.id,
     queue: nextQueue,
-    message: `Generated ${template.name} toward ${targetName}: work ${working.name}, queued for tomorrow.`,
+    message: `Generated ${template.name} toward ${targetName}: work ${displayExerciseName(working.name)}, queued for tomorrow.`,
   };
 }
 
@@ -117,7 +115,7 @@ function resolveWorkingStep(
   if (!step) {
     throw new Error(`Unknown working exercise: ${id}`);
   }
-  return { id, name: displayExerciseName(step.name), pattern: step.pattern };
+  return { id, name: step.name, pattern: step.pattern };
 }
 
 function assignWorkingToBestSlot(
