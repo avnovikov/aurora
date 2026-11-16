@@ -75,6 +75,21 @@ export function rewriteWarmupStepsAfterExclude(
   return withWarmupGaps([...head, ...rebuildWarmupTail(head, tailSource, excluded)]);
 }
 
+/** Expanded steps from one station share an exercise id; treat each once. */
+function groupStepsByExercise(steps: readonly WarmupStep[]): WarmupStep[][] {
+  const groups: WarmupStep[][] = [];
+  for (const step of steps) {
+    const exerciseId = warmupStepExerciseId(step);
+    const last = groups[groups.length - 1];
+    if (last && warmupStepExerciseId(last[0]!) === exerciseId) {
+      last.push(step);
+      continue;
+    }
+    groups.push([step]);
+  }
+  return groups;
+}
+
 function rebuildWarmupTail(
   head: readonly WarmupStep[],
   tailSource: readonly WarmupStep[],
@@ -82,19 +97,20 @@ function rebuildWarmupTail(
 ): WarmupStep[] {
   const excludedIds = new Set(excluded);
   const used = new Set(head.map(warmupStepExerciseId));
+  const groups = groupStepsByExercise(tailSource);
   const rebuilt: WarmupStep[] = [];
-  for (let index = 0; index < tailSource.length; index += 1) {
-    const step = tailSource[index]!;
-    const exerciseId = warmupStepExerciseId(step);
+  for (let index = 0; index < groups.length; index += 1) {
+    const group = groups[index]!;
+    const exerciseId = warmupStepExerciseId(group[0]!);
     if (!excludedIds.has(exerciseId)) {
       used.add(exerciseId);
-      rebuilt.push(step);
+      rebuilt.push(...group);
       continue;
     }
-    const upcoming = tailSource.slice(index + 1).map(warmupStepExerciseId);
+    const upcoming = groups.slice(index + 1).map((next) => warmupStepExerciseId(next[0]!));
     const blocked = new Set([...used, ...excludedIds, ...upcoming]);
     const replacement = substituteFor(
-      stationFromStep(step),
+      stationFromStep(group[0]!),
       blocked,
       excluded,
       WARMUP_STATIONS,

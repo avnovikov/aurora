@@ -92,4 +92,22 @@ describe("rewriteWarmupStepsAfterExclude", () => {
     expect(nextIds).not.toContain("ntc_jumping_jacks");
     expect(nextIds.some((id) => id === "ntc_toy_soldiers" || id === "ankle_rocks")).toBe(true);
   });
+
+  it("substitutes one multi-segment station once, not once per expanded step", () => {
+    const steps = buildWarmupView([
+      station("pulse_raiser_march"),
+      station("ntc_leg_swings"),
+      station("ankle_rocks"),
+    ]);
+    const swingSteps = steps.filter((step) => step.exerciseId === "ntc_leg_swings");
+    expect(swingSteps.length).toBeGreaterThan(1);
+
+    const next = rewriteWarmupStepsAfterExclude(steps, 0, ["ntc_leg_swings"]);
+    const tail = next.slice(1);
+    const uniqueTail = [...new Set(tail.map((step) => step.exerciseId))];
+    expect(uniqueTail).not.toContain("ntc_leg_swings");
+    // One substitute station (may expand to a few sides) + ankle_rocks — not one substitute per swing step.
+    expect(uniqueTail.length).toBeLessThanOrEqual(3);
+    expect(tail.length).toBeLessThanOrEqual(swingSteps.length + 2);
+  });
 });

@@ -243,6 +243,8 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
         state.warmupIndex,
         excludeExercise(exerciseId),
       );
+      // Keep the hold running; only persist the rewritten list.
+      persist();
     },
     onFinishAll: finishAll,
     onStartCooldown: () => {
