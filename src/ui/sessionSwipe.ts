@@ -70,10 +70,13 @@ export function swipeAxis(deltaX: number, deltaY: number): SwipeAxis {
   if (travelX < AXIS_SLOP_PX && travelY < AXIS_SLOP_PX) {
     return "pending";
   }
-  if (travelX >= travelY) {
+  if (travelX > travelY) {
     return "horizontal";
   }
-  return "vertical";
+  if (travelY > travelX) {
+    return "vertical";
+  }
+  return "pending";
 }
 
 export interface WireSwipeOptions {
@@ -100,7 +103,10 @@ function prefersReducedMotion(): boolean {
 }
 
 function isInteractiveTarget(target: EventTarget | null): boolean {
-  return target instanceof Element && target.closest("button, a, input") !== null;
+  return (
+    target instanceof Element &&
+    target.closest("button, a, input, select, label, textarea") !== null
+  );
 }
 
 function releasePointer(stage: HTMLElement, pointerId: number): void {
@@ -207,6 +213,17 @@ export function wireSwipe(
     }, duration);
   };
 
+  const captureWhenReady = (event: PointerEvent): void => {
+    if (preferVerticalScroll && axis !== "horizontal") {
+      return;
+    }
+    try {
+      stage.setPointerCapture(event.pointerId);
+    } catch {
+      // Capture is optional once the browser already owns the pointer.
+    }
+  };
+
   stage.addEventListener("pointerdown", (event) => {
     if (settling || pointerId !== null || isInteractiveTarget(event.target)) {
       return;
@@ -220,8 +237,10 @@ export function wireSwipe(
     deltaX = 0;
     axis = "pending";
     clearTransition();
-    stage.classList.add("is-swiping");
-    stage.setPointerCapture(event.pointerId);
+    if (!preferVerticalScroll) {
+      stage.classList.add("is-swiping");
+      captureWhenReady(event);
+    }
   });
 
   stage.addEventListener("pointermove", (event) => {
@@ -238,6 +257,10 @@ export function wireSwipe(
     deltaX = event.clientX - startX;
     if (!shouldDragStage(event, deltaX)) {
       return;
+    }
+    if (preferVerticalScroll && !stage.classList.contains("is-swiping")) {
+      stage.classList.add("is-swiping");
+      captureWhenReady(event);
     }
     applyDrag(deltaX);
   });
@@ -265,5 +288,13 @@ export function wireSwipe(
   };
 
   stage.addEventListener("pointerup", endPointer);
-  stage.addEventListener("pointercancel", endPointer);
+  stage.addEventListener("pointercancel", (event) => {
+    if (!isTracking(event)) {
+      return;
+    }
+    pointerId = null;
+    axis = "pending";
+    releasePointer(stage, event.pointerId);
+    resetVisual();
+  });
 }

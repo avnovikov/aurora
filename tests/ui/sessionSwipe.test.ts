@@ -120,8 +120,8 @@ describe("swipeAxis", () => {
     expect(swipeAxis(20, 5)).toBe("horizontal");
   });
 
-  it("treats an equal travel as horizontal", () => {
-    expect(swipeAxis(12, 12)).toBe("horizontal");
+  it("stays pending on an equal travel until one axis leads", () => {
+    expect(swipeAxis(12, 12)).toBe("pending");
   });
 
   it("locks vertical when scrolling dominates", () => {

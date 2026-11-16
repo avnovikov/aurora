@@ -62,6 +62,8 @@ export interface DetailView {
 export interface MountLibraryDetailOptions extends DetailView {
   exercise: SeedExercise;
   actions: DetailActions;
+  /** When false, keep the current scroll (same-exercise re-paint). Default true. */
+  scrollToTop?: boolean;
 }
 
 function wireExcludeToggle(root: HTMLElement, actions: DetailActions, excluded: boolean): void {
@@ -83,9 +85,11 @@ export function mountLibraryDetail(
   root: HTMLElement,
   options: MountLibraryDetailOptions,
 ): void {
-  const { exercise, actions, excluded = false } = options;
+  const { exercise, actions, excluded = false, scrollToTop = true } = options;
   root.innerHTML = detailHtml(exercise, options);
-  scrollViewportToTop();
+  if (scrollToTop) {
+    scrollViewportToTop();
+  }
 
   wireExcludeToggle(root, actions, excluded);
   wireBackSwipe(root, actions.onBack);

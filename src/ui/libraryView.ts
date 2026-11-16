@@ -2,6 +2,11 @@ import { LIBRARY_CATALOGUE } from "../data/libraryCatalogue";
 import type { SeedExercise } from "../data/seed";
 import { displayExerciseName } from "../library/displayName";
 import { mountLibraryDetail } from "../library/libraryDetail";
+import {
+  readScrollY,
+  restoreScrollY,
+  shouldScrollDetailToTop,
+} from "../library/detailScroll";
 import { DEFAULT_FILTERS, withPanelState, type FilterPanelId } from "../library/filterPanels";
 import { focusSearchInput, mountLibraryList, type ListQueryState } from "../library/libraryList";
 import { mountPlanDayPicker } from "../library/libraryPlanPick";
@@ -43,6 +48,10 @@ export function renderLibraryView(root: HTMLElement): void {
   };
   let openPanels: FilterPanelId[] = [];
   let selectedId: string | null = null;
+  /** Exercise currently shown on detail; null while the list is up. */
+  let detailExerciseId: string | null = null;
+  /** Window scroll of the list, restored when leaving detail. */
+  let listScrollY = 0;
   let pickingPlanForId: string | null = null;
   let planStatus: string | null = null;
   let cascadeHint: string | null = null;
@@ -103,11 +112,17 @@ export function renderLibraryView(root: HTMLElement): void {
       paint();
       return;
     }
+    const scrollToTop = shouldScrollDetailToTop(detailExerciseId, exerciseId);
+    if (detailExerciseId === null) {
+      listScrollY = readScrollY();
+    }
+    detailExerciseId = exerciseId;
     const memory = loadMemories()[exerciseId] ?? emptyMemory(exerciseId);
     mountLibraryDetail(root, {
       exercise,
       targetIds,
       catalogueById: CATALOGUE_BY_ID,
+      scrollToTop,
       actions: {
         onBack: () => clearPlanStatusAndSelect(null),
         onOpenExercise: clearPlanStatusAndSelect,
@@ -153,6 +168,7 @@ export function renderLibraryView(root: HTMLElement): void {
   };
 
   const paintList = (): void => {
+    detailExerciseId = null;
     const { forJoints, onlyGear, excludedOnly, ...query } = filters;
     const excluded = loadExcluded();
     const { results, hiddenStretches } = selectLibraryResults({
@@ -197,6 +213,7 @@ export function renderLibraryView(root: HTMLElement): void {
         },
       },
     });
+    restoreScrollY(listScrollY);
   };
 
   paint();
