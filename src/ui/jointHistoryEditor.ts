@@ -13,15 +13,20 @@ import {
 const SIDE_LABEL: Record<JointSide, string> = { left: "Left", right: "Right", both: "Both" };
 
 function detailHtml(entry: JointHistoryEntry): string {
+  const joint = JOINT_LABEL[entry.joint].toLowerCase();
+  const sideId = `hj-side-label-${entry.joint}`;
+  const kindId = `hj-kind-label-${entry.joint}`;
+  // A sided joint is named in "Which knee"; a single one needs its name on the kind question.
   const sides = isSided(entry.joint)
-    ? `<div class="row wrap" role="group" aria-label="Which ${JOINT_LABEL[entry.joint].toLowerCase()}">${SIDES.map((side) =>
+    ? `<p class="hj-label" id="${sideId}">Which ${joint}</p><div class="row wrap" role="group" aria-labelledby="${sideId}">${SIDES.map((side) =>
         chipHtml("hj-side", `${entry.joint}:${side}`, SIDE_LABEL[side], entry.side === side),
       ).join("")}</div>`
     : "";
-  const kinds = `<div class="row wrap" role="group" aria-label="What happened to your ${JOINT_LABEL[entry.joint].toLowerCase()}">${INJURY_KINDS.map((kind) =>
+  const kindLabel = isSided(entry.joint) ? "What happened" : `What happened to your ${joint}`;
+  const kinds = `<p class="hj-label" id="${kindId}">${kindLabel}</p><div class="row wrap" role="group" aria-labelledby="${kindId}">${INJURY_KINDS.map((kind) =>
     chipHtml("hj-kind", `${entry.joint}:${kind.id}`, kind.label, entry.kind === kind.id),
   ).join("")}</div>`;
-  return `<div class="hj-detail"><p class="tagline">${JOINT_LABEL[entry.joint]}</p>${sides}${kinds}</div>`;
+  return `<div class="hj-detail">${sides}${kinds}</div>`;
 }
 
 function jointHistoryEditorHtml(entries: readonly JointHistoryEntry[]): string {

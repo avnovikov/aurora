@@ -67,9 +67,10 @@ body {
 
 .eyebrow {
   color: var(--muted);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  font-size: 0.75rem;
+  font-size: 12.8px;
+  line-height: 16px;
 }
 
 h1,
@@ -78,10 +79,13 @@ h2 {
   font-weight: 700;
   color: var(--brass);
   margin: 0.35rem 0 0.75rem;
+  font-size: 25px;
+  line-height: 32px;
 }
 
 h1 {
-  font-size: 2.4rem;
+  font-size: 39px;
+  line-height: 44px;
 }
 
 h2 {
@@ -90,13 +94,14 @@ h2 {
 
 .tagline,
 .about,
-.reason,
-.hint {
+.reason {
   color: var(--muted);
-  font-size: 0.95rem;
+  font-size: 16px;
+  line-height: 24px;
 }
 
 .hint {
+  color: var(--muted);
   font-size: 0.8rem;
 }
 
@@ -194,10 +199,11 @@ button:disabled {
 
 /* How this work set is done (reps in reserve, pyramid holds). */
 .dose-note {
-  margin: 0.25rem 0 0.5rem;
+  margin: 8px 0 0;
   color: var(--foreground);
-  font-size: 0.9rem;
+  font-size: 16px;
   text-align: center;
+  line-height: 24px;
 }
 
 /* Halfway pause on a per-side station. */
@@ -298,7 +304,7 @@ button:disabled {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 0;
-  background: var(--surface-sunk);
+  background: var(--surface);
   border-top: 1px solid var(--edge);
   z-index: 20;
 }
@@ -308,13 +314,17 @@ button:disabled {
   border-radius: 0;
   background: transparent;
   color: var(--muted);
-  font-size: 0.75rem;
-  min-height: 48px;
-  padding: 0.75rem 0.2rem;
+  font-size: 12.8px;
+  min-height: 56px;
+  padding: 12px 4px;
+  line-height: 16px;
+  border-top: 2px solid transparent;
 }
 
 .tab-bar button.active {
-  color: var(--brass);
+  color: var(--foreground);
+  font-weight: 600;
+  border-top-color: var(--foreground);
 }
 
 .lib-list,
@@ -349,10 +359,12 @@ button:disabled {
 }
 
 .personal-best-inline {
-  margin: 0.35rem 0 0;
-  color: var(--brass);
-  font-size: 0.85rem;
-  letter-spacing: 0.03em;
+  margin: 4px 0 0;
+  color: var(--foreground);
+  font-size: 16px;
+  letter-spacing: 0;
+  line-height: 24px;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Row and detail metadata: area · muscles · level · gear. Recedes behind the name. */
@@ -583,45 +595,47 @@ button:disabled {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem 0.5rem;
-  margin: 0.5rem 0 0.75rem;
+  gap: 4px 8px;
+  margin: 12px 0 16px;
   padding: 0;
 }
 
 .path-step {
   font-size: 0.8rem;
   color: var(--muted);
-  padding: 0.15rem 0.4rem;
-  border: 1px solid var(--edge);
+  padding: 4px 0;
+  border: 0;
 }
 
 .path-step.path-start,
 .path-step.path-now {
   color: var(--foreground);
-  border-color: var(--control-edge);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
 }
 
 .path-step.path-target {
   color: var(--foreground);
-  border-color: var(--foreground);
   font-weight: 600;
 }
 
 .chain-card {
-  margin-top: 1.25rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--edge);
+  margin-top: 32px;
+  padding-bottom: 24px;
+  border-bottom: 0;
 }
 
 .chain-title {
-  margin: 0 0 0.25rem;
+  margin: 0;
   color: var(--foreground);
-  font-size: 1.25rem;
+  font-size: 25px;
+  line-height: 28px;
 }
 
 .exercise-block {
-  margin: 0 0 0.5rem;
-  padding: 0.65rem 0.75rem;
+  margin: 0;
+  padding: 12px 16px;
   border-left: 2px solid var(--brass);
   background: var(--surface);
 }
@@ -635,17 +649,19 @@ button:disabled {
 }
 
 .exercise-next {
-  margin: 0.35rem 0 0;
+  margin: 4px 0 0;
   color: var(--muted);
-  font-size: 0.85rem;
+  font-size: 16px;
+  line-height: 24px;
 }
 
 .exercise-next-label {
   margin-right: 0.35rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  font-size: 0.75rem;
+  font-size: 12.8px;
   color: var(--muted);
+  line-height: 16px;
 }
 
 .exercise-next.is-end {
@@ -653,9 +669,11 @@ button:disabled {
 }
 
 .chain-reason {
-  margin: 0;
-  font-size: 0.85rem;
+  margin: 8px 0 0;
+  font-size: 12.8px;
   color: var(--muted);
+  line-height: 16px;
+  font-variant-numeric: tabular-nums;
 }
 
 .chain-reason.chain-advance,
@@ -671,7 +689,9 @@ button:disabled {
   border-radius: 4px;
 }
 .hj-detail {
-  margin: 0.5rem 0 1rem;
+  margin: 8px 0 24px;
+  padding-left: 16px;
+  border-left: 2px solid var(--edge);
 }
 
 .lib-filters {
@@ -816,7 +836,7 @@ button[data-kind="toggle"][aria-pressed="true"]::before {
   font-size: 0.85rem;
 }
 .settings-panel > .eyebrow {
-  margin-top: 1.5rem;
+  margin-top: 32px;
 }
 .settings-panel > .eyebrow:first-child {
   margin-top: 0.5rem;
@@ -837,5 +857,69 @@ button[data-kind="toggle"][aria-pressed="true"]::before {
   margin: 0;
 }
 .settings-autosave {
-  margin-top: 2rem;
+  margin-top: 24px;
+}
+
+/* Progress: the ladder reads as a sequence; the arrows are decorative. */
+.path-step + .path-step::before {
+  content: "→";
+  content: "→" / "";
+  display: inline-block;
+  margin-right: 8px;
+  color: var(--muted);
+  font-weight: 400;
+  text-decoration: none;
+}
+.progress-card > .tagline {
+  margin: 4px 0 0;
+  color: var(--foreground);
+  font-variant-numeric: tabular-nums;
+}
+.progress-card > .eyebrow {
+  margin: 0 0 4px;
+}
+.progress-card + .progress-card {
+  border-top: 0;
+  margin-top: 40px;
+}
+
+/* Settings: selected chips in foreground (accent stays for the page), injury questions as labelled groups. */
+.settings .row {
+  gap: 8px;
+  margin: 8px 0 24px;
+}
+.settings .row button {
+  min-height: 44px;
+  padding: 8px 16px;
+  border-radius: 4px;
+}
+.settings .row button.selected,
+.settings .row button[aria-pressed="true"] {
+  border: 2px solid var(--foreground);
+  padding: 7px 15px;
+  color: var(--foreground);
+  font-weight: 600;
+  background: color-mix(in srgb, var(--foreground) 12%, var(--surface));
+}
+.settings .field input[type="number"] {
+  min-height: 48px;
+  margin-top: 8px;
+  padding: 12px;
+  border-radius: 4px;
+}
+.settings-panel > .eyebrow + .hint {
+  margin: 4px 0 0;
+}
+.hj-label {
+  margin: 0;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+.hj-detail .row {
+  margin: 8px 0 0;
+}
+.hj-detail .row + .hj-label {
+  margin-top: 24px;
 }

@@ -9,7 +9,7 @@ import {
   type DisconnectListener,
 } from "../pulse/hrMonitor";
 
-const IDLE_CHIP = "Pulse no reading";
+const IDLE_CHIP = "Pulse: no reading";
 
 export function todayPulseHtml(): string {
   return `

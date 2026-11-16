@@ -71,7 +71,7 @@ function gearHtml(profile: UserProfile): string {
       "add-weight",
       "Weight you can add (kg)",
       profile.addWeightKg,
-      "A dumbbell, kettlebell or vest. Sessions offer it when you add weight to a move.",
+      "A dumbbell, kettlebell or vest. Sessions offer it on moves that take load.",
       `min="0.5" max="${MAX_ADD_WEIGHT_KG}" step="0.5"`,
     )}`;
 }

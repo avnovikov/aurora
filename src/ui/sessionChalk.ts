@@ -63,7 +63,7 @@ function pulseBarHtml(state: ViewState, actions: string): string {
       <footer class="session-bar pulse-row${pulseClass}">
         ${actions}
         ${status}
-        <p class="pulse-chip">Pulse ${state.bpm ?? "no reading"}</p>
+        <p class="pulse-chip">Pulse${state.bpm === null ? ": no reading" : ` ${state.bpm}`}</p>
         <details class="pulse-more strap">
           <summary>Strap</summary>
           <div class="strap-actions">${pulseControlsHtml()}</div>
@@ -318,7 +318,7 @@ function workHtml(item: PlannedWorkItem, state: ViewState): string {
           <summary>Why this dose</summary>
           <p class="reason">${escapeHtml(item.reason)}</p>
         </details>
-        <p class="hint">Log the set below, or swipe left or right</p>
+        <p class="hint">Log each set below, or swipe to finish this exercise</p>
       </section>
     </div>
   `;
