@@ -20,8 +20,8 @@ export function doseNoteHtml(item: PlannedWorkItem, setIndex: number, units: num
     return `<p class="dose-note" data-dose-note>${holds}</p>`;
   }
   if (resolveExerciseTiming(exercise).effort === "hold") {
-    return `<p class="dose-note" data-dose-note>Seconds · stop before you shake</p>`;
+    return `<p class="dose-note" data-dose-note>Seconds · stop before your form breaks</p>`;
   }
   const rir = item.dose.targetRir;
-  return `<p class="dose-note" data-dose-note>Stop with ${rir} rep${rir === 1 ? "" : "s"} in the tank</p>`;
+  return `<p class="dose-note" data-dose-note>Stop with ${rir} rep${rir === 1 ? "" : "s"} left in reserve</p>`;
 }

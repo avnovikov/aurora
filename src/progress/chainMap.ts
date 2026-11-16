@@ -208,7 +208,7 @@ function inferMemoryStatus(
   if (!memory || !hasTrainingSignal(memory)) {
     return {
       kind: "no_history",
-      reason: "No history yet — log a session or set a level in Library",
+      reason: "No history yet. Log a session or set your level in Library.",
     };
   }
   if (memory.sessionsBelowFloor >= STALL_BELOW_FLOOR_SESSIONS) {
@@ -227,11 +227,11 @@ function stallStatus(
 ): ChainStatus {
   const easierName = nameOf(exercise.easierId, graph);
   const action = easierName
-    ? `Aurora may step you back to ${easierName}`
-    : "there is no easier step on this path";
+    ? `Aurora may step you back to ${easierName}.`
+    : "There is no easier step on this path.";
   return {
     kind: "stall",
-    reason: `Stuck: ${memory.sessionsBelowFloor} sessions in a row below the minimum; ${action}`,
+    reason: `${memory.sessionsBelowFloor} sessions in a row below the minimum. ${action}`,
   };
 }
 
@@ -239,7 +239,7 @@ function advanceStatus(exercise: Exercise, graph: ChainGraph): ChainStatus {
   const harderName = nameOf(exercise.harderId, graph) ?? "next level";
   return {
     kind: "advance",
-    reason: `Standard met: ready to move up to ${harderName}`,
+    reason: `Target reps met. Ready to move up to ${harderName}.`,
   };
 }
 
@@ -249,7 +249,7 @@ function holdStatus(memory: ExerciseMemory): ChainStatus {
   const done = Math.min(memory.sessionsAtStandard, SESSIONS_AT_STANDARD_TO_ADVANCE);
   return {
     kind: "hold",
-    reason: `${tierNote}${done} of ${SESSIONS_AT_STANDARD_TO_ADVANCE} sessions at the standard to move up`,
+    reason: `${tierNote}${done} of ${SESSIONS_AT_STANDARD_TO_ADVANCE} sessions at target reps to move up`,
   };
 }
 

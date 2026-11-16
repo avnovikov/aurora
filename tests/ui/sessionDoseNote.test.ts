@@ -25,6 +25,6 @@ describe("doseNoteHtml", () => {
   });
 
   it("shows reps in reserve on rep sets", () => {
-    expect(doseNoteHtml(item("Prisoner Squat"), 1, 12)).toContain("Stop with 3 reps in the tank");
+    expect(doseNoteHtml(item("Prisoner Squat"), 1, 12)).toContain("Stop with 3 reps left in reserve");
   });
 });

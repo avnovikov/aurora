@@ -147,6 +147,7 @@
 .session-dose.work-reps-row {
   flex-wrap: nowrap;
   align-items: center;
+  justify-content: space-between;
   gap: 16px;
   margin: 24px 0 0;
 }
@@ -439,13 +440,14 @@
 
 /* Keep focused controls clear of the sticky pulse bar (WCAG 2.4.11). */
 html:has(.shell.session) {
-  scroll-padding-bottom: 96px;
+  scroll-padding-bottom: 200px;
 }
 
 /* Working set: Log set lives in the sticky bottom bar, above the pulse. */
 .session-bar .work-actions {
   flex: 1 1 100%;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   margin: 0 0 4px;
@@ -453,6 +455,9 @@ html:has(.shell.session) {
 .session-bar .work-actions .cta {
   flex: 1 1 auto;
   margin: 0;
+  background: var(--foreground);
+  color: var(--background);
+  border-color: var(--foreground);
   min-height: 52px;
 }
 .session-bar .work-actions .btn-quiet {

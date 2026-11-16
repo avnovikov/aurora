@@ -9,6 +9,7 @@ import { shellHtml } from "../../src/ui/sessionChalk";
 import { initialState } from "../../src/ui/sessionState";
 import type { ViewState } from "../../src/ui/sessionTypes";
 import { EQUIPMENT_LABEL, SETTINGS_TABS, settingsPageHtml } from "../../src/ui/settingsPage";
+import { tabKeyTarget } from "../../src/ui/settingsView";
 import { useMemoryStorage } from "../helpers/storage";
 
 useMemoryStorage();
@@ -52,8 +53,8 @@ describe("your weight", () => {
 
   it("is what the session's Add weight offers", () => {
     const planned = planLegs();
-    expect(shellHtml(planned, view(planned, "work", 16))).toContain("Add weight · 16 kg");
-    expect(shellHtml(planned, view(planned, "work"))).toContain(`Add weight · ${DEFAULT_ADDED_LOAD_KG} kg`);
+    expect(shellHtml(planned, view(planned, "work", 16))).toContain("Add your 16 kg");
+    expect(shellHtml(planned, view(planned, "work"))).toContain(`Add your ${DEFAULT_ADDED_LOAD_KG} kg`);
   });
 });
 
@@ -70,9 +71,9 @@ describe("working set: Log set in thumb reach", () => {
 });
 
 describe("progress status in plain words", () => {
-  it("says how many sessions at the standard are left before moving up", () => {
+  it("says how many sessions at target reps are left before moving up", () => {
     const status = inferChainStatus(SEED_GRAPH.bodyweight_squat!, memory({ sessionsAtStandard: 1, skillTier: "beginner" }), SEED_GRAPH);
-    expect(status.reason).toBe("Beginner level · 1 of 2 sessions at the standard to move up");
+    expect(status.reason).toBe("Beginner level · 1 of 2 sessions at target reps to move up");
     expect(status.reason).not.toMatch(/×|Hold:/);
   });
 });
@@ -97,5 +98,22 @@ describe("settings tabs", () => {
     expect(gear).toContain(EQUIPMENT_LABEL.bar);
     expect(gear).toContain("Dumbbell or kettlebell");
     expect(gear).not.toContain("data-save");
+  });
+
+  it("calls the weight you add Added weight, so it is not confused with bodyweight, and links each hint to its field", () => {
+    const gear = html("gear");
+    expect(gear).toContain("Added weight");
+    expect(gear).not.toContain("Your weight");
+    expect(gear).toContain('aria-describedby="add-weight-hint"');
+    expect(gear).toContain('id="add-weight-hint"');
+  });
+
+  it("moves between tabs with the arrow keys, Home and End, wrapping at the ends", () => {
+    expect(tabKeyTarget("ArrowRight", 0, 3)).toBe(1);
+    expect(tabKeyTarget("ArrowRight", 3, 3)).toBe(0);
+    expect(tabKeyTarget("ArrowLeft", 0, 3)).toBe(3);
+    expect(tabKeyTarget("Home", 2, 3)).toBe(0);
+    expect(tabKeyTarget("End", 0, 3)).toBe(3);
+    expect(tabKeyTarget("Enter", 1, 3)).toBeNull();
   });
 });

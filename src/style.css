@@ -195,7 +195,7 @@ button:disabled {
 /* How this work set is done (reps in reserve, pyramid holds). */
 .dose-note {
   margin: 0.25rem 0 0.5rem;
-  color: var(--brass);
+  color: var(--foreground);
   font-size: 0.9rem;
   text-align: center;
 }
@@ -553,7 +553,7 @@ button:disabled {
   margin-top: 0.35rem;
   padding: 0.65rem;
   background: var(--panel);
-  border: 1px solid var(--edge);
+  border: 1px solid var(--control-edge);
   color: var(--foreground);
   font: inherit;
 }
@@ -597,13 +597,13 @@ button:disabled {
 
 .path-step.path-start,
 .path-step.path-now {
-  color: var(--brass);
-  border-color: var(--brass);
+  color: var(--foreground);
+  border-color: var(--control-edge);
 }
 
 .path-step.path-target {
-  color: var(--brass);
-  border-color: var(--brass);
+  color: var(--foreground);
+  border-color: var(--foreground);
   font-weight: 600;
 }
 
@@ -614,23 +614,22 @@ button:disabled {
 }
 
 .chain-title {
-  margin: 0 0 0.5rem;
-  font-size: 1rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  margin: 0 0 0.25rem;
+  color: var(--foreground);
+  font-size: 1.25rem;
 }
 
 .exercise-block {
   margin: 0 0 0.5rem;
   padding: 0.65rem 0.75rem;
   border-left: 2px solid var(--brass);
-  background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent);
+  background: var(--surface);
 }
 
 .exercise-current {
   margin: 0;
   color: var(--brass);
-  font-size: 1.15rem;
+  font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.02em;
 }
@@ -645,8 +644,8 @@ button:disabled {
   margin-right: 0.35rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  font-size: 0.7rem;
-  color: var(--muted-dim);
+  font-size: 0.75rem;
+  color: var(--muted);
 }
 
 .exercise-next.is-end {
@@ -807,12 +806,12 @@ button[data-kind="toggle"][aria-pressed="true"]::before {
   margin: 0;
 }
 .settings-tab.selected {
-  color: var(--accent);
+  color: var(--foreground);
   border-bottom-color: var(--accent);
 }
 .settings-status {
   min-height: 1.25rem;
-  margin: 0.25rem 0 0;
+  margin: 0.5rem 0;
   color: var(--accent);
   font-size: 0.85rem;
 }
@@ -824,6 +823,18 @@ button[data-kind="toggle"][aria-pressed="true"]::before {
 }
 .settings .hint.is-error {
   color: var(--alert);
+}
+.settings .field.row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 44px;
+  margin: 0.25rem 0;
+}
+.settings .field.row input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  margin: 0;
 }
 .settings-autosave {
   margin-top: 2rem;

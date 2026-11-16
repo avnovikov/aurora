@@ -192,7 +192,7 @@ describe("pulse bar", () => {
     const planned = planLegs();
     const html = shellHtml(planned, warmupView(planned));
     const bar = slice(html, '<footer class="session-bar', "</footer>");
-    expect(bar).toContain("Pulse —");
+    expect(bar).toContain("Pulse no reading");
     expect(bar).toMatch(/<summary>Strap<\/summary>/);
     expect(bar).toContain('class="strap-actions"');
     expect(bar).toContain("data-sim-pulse-ok");

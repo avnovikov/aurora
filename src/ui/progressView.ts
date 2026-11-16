@@ -12,7 +12,7 @@ import { personalBestProgressHtml } from "../library/personalBest";
 import { escapeHtml } from "../library/present";
 import type { AppTab } from "./shell";
 
-const NO_HR_HISTORY_NOTE = "Resting HR trend: no HR history yet";
+const NO_HR_HISTORY_NOTE = "Resting heart rate: no readings yet";
 
 export interface ProgressViewOptions {
   onJumpTab?: (tab: AppTab) => void;
@@ -32,7 +32,7 @@ export function renderProgressView(
   root.innerHTML = `
     <main class="shell progress-shell">
       <p class="eyebrow">Progress</p>
-      <h1>Toward your targets</h1>
+      <h1>Towards your targets</h1>
       ${bodyHtml(model.cards)}
       <p class="hint">${NO_HR_HISTORY_NOTE}</p>
     </main>
@@ -58,8 +58,8 @@ function bodyHtml(cards: readonly PlanProgressCard[]): string {
 function emptyStateHtml(): string {
   return `
     <section class="progress-empty">
-      <p class="tagline">Progress follows the skills you aim the plan at — not the whole catalogue.</p>
-      <p class="hint">In Library, open a skill with a path and tap Generate plan, or set a target on Plan.</p>
+      <p class="tagline">Progress tracks the skills you set as targets.</p>
+      <p class="hint">Open a skill in Library and choose Generate plan, or set a target in Plan.</p>
       <div class="row wrap progress-empty-actions">
         <button type="button" class="cta" data-tab-jump="library">Open Library</button>
         <button type="button" data-tab-jump="plan">Open Plan</button>
@@ -80,20 +80,28 @@ function cardHtml(card: PlanProgressCard): string {
       ${distance}
       ${pathPreviewHtml(card.pathPreview)}
       ${body}
-      <p class="chain-reason chain-${card.status.kind}">${escapeHtml(card.status.reason)}</p>
+      ${reasonHtml(card)}
     </section>
   `;
 }
 
+/** The status line; at the target a "sessions to move up" count would point past it, so none shows. */
+function reasonHtml(card: PlanProgressCard): string {
+  if (card.stepsToTarget === 0 && card.status.kind === "hold") {
+    return "";
+  }
+  return `<p class="chain-reason chain-${card.status.kind}">${escapeHtml(card.status.reason)}</p>`;
+}
+
 function distanceLine(card: PlanProgressCard): string {
   if (card.stepsToTarget === null) {
-    return `<p class="tagline">Path not linked yet</p>`;
+    return `<p class="tagline">No progression for this skill yet</p>`;
   }
   if (card.stepsToTarget === 0) {
     return `<p class="tagline">Target reached</p>`;
   }
   const noun = card.stepsToTarget === 1 ? "step" : "steps";
-  return `<p class="tagline">${card.stepsToTarget} ${noun} away</p>`;
+  return `<p class="tagline">${card.stepsToTarget} ${noun} to go</p>`;
 }
 
 function notStartedBlockHtml(card: PlanProgressCard): string {
@@ -103,7 +111,7 @@ function notStartedBlockHtml(card: PlanProgressCard): string {
   return `
     <div class="exercise-block">
       <p class="exercise-current" aria-current="step">${escapeHtml(card.currentName)}</p>
-      <p class="hint">Suggested start on this path</p>
+      <p class="hint">Suggested starting point</p>
       ${pathPersonalBestHtml(card)}
       ${next}
     </div>

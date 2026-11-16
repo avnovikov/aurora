@@ -57,25 +57,41 @@ function wireNumber(
   });
 }
 
+/** The tab an arrow, Home or End key moves to, wrapping at the ends; null for any other key. */
+export function tabKeyTarget(key: string, index: number, last: number): number | null {
+  switch (key) {
+    case "ArrowRight":
+      return index === last ? 0 : index + 1;
+    case "ArrowLeft":
+      return index === 0 ? last : index - 1;
+    case "Home":
+      return 0;
+    case "End":
+      return last;
+    default:
+      return null;
+  }
+}
+
 function wireTabs({ root, paint }: SettingsController): void {
   const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-settings-tab]"));
-  const select = (id: string | undefined, focus = false): void => {
+  // Repainting replaces the tabs; focus goes back to the chosen one (WCAG 2.4.3).
+  const select = (id: string | undefined): void => {
     if (!isSettingsTab(id) || id === lastTab) {
       return;
     }
     lastTab = id;
     paint();
-    if (focus) {
-      root.querySelector<HTMLButtonElement>(`[data-settings-tab="${id}"]`)?.focus();
-    }
+    root.querySelector<HTMLButtonElement>(`[data-settings-tab="${id}"]`)?.focus();
   };
+  const last = SETTINGS_TABS.length - 1;
   tabs.forEach((tab, index) => {
     tab.addEventListener("click", () => select(tab.dataset.settingsTab));
     tab.addEventListener("keydown", (event) => {
-      const step = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
-      if (step) {
+      const target = tabKeyTarget(event.key, index, last);
+      if (target !== null) {
         event.preventDefault();
-        select(SETTINGS_TABS[(index + step + tabs.length) % tabs.length]!.id, true);
+        select(SETTINGS_TABS[target]!.id);
       }
     });
   });
@@ -83,7 +99,7 @@ function wireTabs({ root, paint }: SettingsController): void {
 
 function wireYou(controller: SettingsController): void {
   const { root, profile, commit } = controller;
-  wireNumber(controller, "bw", isValidBodyweight, (kg) => (profile.bodyweightKg = kg), "Enter 30 kg or more.");
+  wireNumber(controller, "bw", isValidBodyweight, (kg) => (profile.bodyweightKg = kg), "Enter your bodyweight as 30 kg or more.");
   const editor = root.querySelector<HTMLElement>("[data-joint-editor]");
   if (editor) {
     mountJointHistoryEditor(editor, profile.jointHistory, (next) => {
@@ -104,7 +120,7 @@ function wireGear(controller: SettingsController): void {
       commit();
     });
   });
-  wireNumber(controller, "add-weight", isValidAddWeight, (kg) => (profile.addWeightKg = kg), "Enter a weight from 0.5 to 100 kg.");
+  wireNumber(controller, "add-weight", isValidAddWeight, (kg) => (profile.addWeightKg = kg), "Enter a weight between 0.5 and 100 kg.");
 }
 
 function wireTraining({ root, profile, commit }: SettingsController): void {

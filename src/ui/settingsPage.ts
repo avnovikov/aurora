@@ -45,16 +45,16 @@ function tabBarHtml(active: SettingsTab): string {
 function numberFieldHtml(attr: string, label: string, value: number, hint: string, limits: string): string {
   return `
     <label class="field">${label}
-      <input type="number" inputmode="decimal" ${limits} value="${value}" data-${attr} />
+      <input type="number" inputmode="decimal" ${limits} value="${value}" data-${attr} aria-describedby="${attr}-hint" />
     </label>
-    <p class="hint" data-${attr}-hint>${hint}</p>`;
+    <p class="hint" id="${attr}-hint" aria-live="polite" data-${attr}-hint>${hint}</p>`;
 }
 
 function youHtml(profile: UserProfile): string {
   return `
     ${numberFieldHtml("bw", "Bodyweight (kg)", profile.bodyweightKg, "Used for pull-up and dip load.", 'min="30" step="0.5"')}
-    <p class="eyebrow">Past joint injuries</p>
-    <p class="hint">Aurora skips or eases moves that load these joints.</p>
+    <p class="eyebrow">Past injuries</p>
+    <p class="hint">Moves that load these joints are skipped or eased.</p>
     <div data-joint-editor></div>`;
 }
 
@@ -66,12 +66,12 @@ function gearHtml(profile: UserProfile): string {
     <p class="eyebrow">Equipment you have</p>
     <p class="hint">Sessions only plan moves you have the gear for.</p>
     <div class="row wrap">${chips}</div>
-    <p class="eyebrow">Your weight</p>
+    <p class="eyebrow">Added weight</p>
     ${numberFieldHtml(
       "add-weight",
-      "Weight you own (kg)",
+      "Weight you can add (kg)",
       profile.addWeightKg,
-      "A dumbbell, kettlebell or vest. In a session, Add weight starts here.",
+      "A dumbbell, kettlebell or vest. Sessions offer it when you add weight to a move.",
       `min="0.5" max="${MAX_ADD_WEIGHT_KG}" step="0.5"`,
     )}`;
 }
@@ -82,7 +82,7 @@ function trainingHtml(profile: UserProfile, deloadActive: boolean): string {
       <input type="checkbox" data-deload ${deloadActive ? "checked" : ""} />
       Deload week
     </label>
-    <p class="hint">A lighter dose for a week, with no level-ups.</p>
+    <p class="hint">Lighter sessions for a week, with no moves up a level.</p>
     <label class="field row">
       <input type="checkbox" data-mute ${profile.voiceMuted ? "checked" : ""} />
       Mute coach voice
@@ -101,7 +101,7 @@ function appHtml(profile: UserProfile): string {
       ${PALETTES.map((palette) => paletteChipHtml(palette, palette.key === profile.palette)).join("")}
     </div>
     <p class="eyebrow">Backup</p>
-    <p class="hint">Everything is stored on this phone only. Export a copy to keep it safe.</p>
+    <p class="hint">Everything stays on this phone. Export a copy to keep it safe.</p>
     <button type="button" data-export>Export backup</button>
     <pre class="export" data-export-out hidden></pre>`;
 }

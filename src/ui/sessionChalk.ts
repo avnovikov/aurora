@@ -38,8 +38,8 @@ export function shellHtml(planned: PlannedSession, state: ViewState): string {
 const WORK_ACTIONS_HTML = `
         <div class="work-actions">
           <button type="button" class="cta" data-log-set>Log set</button>
-          <button type="button" class="btn-quiet" data-fail-set>Failed</button>
-          <button type="button" class="btn-quiet" data-skip>Skip</button>
+          <button type="button" class="btn-quiet" data-fail-set>Couldn't finish</button>
+          <button type="button" class="btn-quiet" data-skip>Skip set</button>
         </div>`;
 
 /** The screen shows a working set (not warm-up, rest, cool-down or the end). */
@@ -63,7 +63,7 @@ function pulseBarHtml(state: ViewState, actions: string): string {
       <footer class="session-bar pulse-row${pulseClass}">
         ${actions}
         ${status}
-        <p class="pulse-chip" role="status">Pulse ${state.bpm ?? "—"}</p>
+        <p class="pulse-chip">Pulse ${state.bpm ?? "no reading"}</p>
         <details class="pulse-more strap">
           <summary>Strap</summary>
           <div class="strap-actions">${pulseControlsHtml()}</div>
@@ -270,9 +270,9 @@ function nextSetReps(state: ViewState, fallback: number): number {
 function repsStepperHtml(rowClass: string, valueHtml: string): string {
   return `
       <div class="row ${rowClass}">
-        <button type="button" class="rest-step" data-reps-minus>−</button>
+        <button type="button" class="rest-step" data-reps-minus aria-label="One fewer">−</button>
         ${valueHtml}
-        <button type="button" class="rest-step" data-reps-plus>+</button>
+        <button type="button" class="rest-step" data-reps-plus aria-label="One more">+</button>
       </div>`;
 }
 
