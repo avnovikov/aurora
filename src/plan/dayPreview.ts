@@ -39,10 +39,18 @@ function doseLabel(item: PlannedWorkItem): string {
   return `${item.dose.sets} × ${item.dose.reps}${hold ? " s" : ""}`;
 }
 
-const SWAP_RULES: ReadonlySet<string> = new Set(["joint_history", "equipment", "excluded", "advance", "stall_regress", "pain"]);
+const SWAP_RULES: ReadonlySet<string> = new Set([
+  "joint_history",
+  "equipment",
+  "excluded",
+  "advance",
+  "stall_regress",
+  "pain",
+  "same_day_duplicate",
+]);
 
 /** The parts of the planner's reason that say a move was changed (not its dose bookkeeping). */
-const CHANGE_WORDS = /swapped|Advanced|Regressed/;
+const CHANGE_WORDS = /swapped|Advanced|Regressed|Same-day duplicate/;
 
 function changeNote(item: PlannedWorkItem): string | undefined {
   if (!item.ruleIds.some((rule) => SWAP_RULES.has(rule))) {

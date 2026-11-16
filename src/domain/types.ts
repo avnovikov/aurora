@@ -158,7 +158,9 @@ export type RuleId =
   | "advance"
   | "stall_weak_link"
   | "stall_regress"
-  | "hold";
+  | "hold"
+  /** Later slot would have repeated a move already used today; swapped. */
+  | "same_day_duplicate";
 
 export interface ResolveResult {
   exerciseId: string;
