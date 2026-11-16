@@ -12,6 +12,7 @@ vi.mock("../../src/voice/coachVoice", () => ({
 function step(holdSeconds: number): WarmupStep {
   return {
     stationId: "test_hold",
+    exerciseId: "test_hold",
     name: "Test hold",
     region: "core",
     holdSeconds,

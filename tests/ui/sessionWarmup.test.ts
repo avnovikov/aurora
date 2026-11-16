@@ -6,6 +6,7 @@ import type { ViewState } from "../../src/ui/sessionTypes";
 function step(partial: Partial<WarmupStep>): WarmupStep {
   return {
     stationId: "s",
+    exerciseId: "s",
     name: "Station",
     region: "legs",
     holdSeconds: 10,

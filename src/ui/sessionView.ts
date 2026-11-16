@@ -10,6 +10,8 @@ import {
   shouldShoutPulseLost,
   shoutPulseNotReadable,
 } from "../voice/pulseAlert";
+import { excludeExercise } from "../plan/exclusions";
+import { rewriteWarmupStepsAfterExclude } from "../rules/resolveWarmupStations";
 import { shellHtml } from "./sessionChalk";
 import { wireSessionControls, type SessionControlHandlers } from "./sessionControls";
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
@@ -235,6 +237,13 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     onFinishExercise: finishExercise,
     onSkipRest: skipRest,
     onFinishStation: () => warmupHandle?.finish(),
+    onWarmupNotForMe: (exerciseId) => {
+      options.planned.warmup = rewriteWarmupStepsAfterExclude(
+        options.planned.warmup,
+        state.warmupIndex,
+        excludeExercise(exerciseId),
+      );
+    },
     onFinishAll: finishAll,
     onStartCooldown: () => {
       startCooldown(options.planned, state);

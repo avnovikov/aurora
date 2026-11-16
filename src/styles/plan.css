@@ -111,10 +111,6 @@ main.plan .row button.selected {
   font-weight: 600;
 }
 
-main.plan .row.remove {
-  margin-top: 16px;
-}
-
 main.plan .chip-row-label {
   margin: 24px 0 8px;
 }
@@ -238,14 +234,14 @@ main.plan .plan-day > *:not(summary) {
 
 main.plan .plan-day > summary {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas: "when when" "title time";
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-areas: "when when remove" "title time remove";
   column-gap: 8px;
   align-items: baseline;
   align-content: center;
   min-height: 64px;
   margin: 0;
-  padding: 12px 56px 12px 12px;
+  padding: 12px;
   border-bottom: 0;
   font-weight: 400;
 }
@@ -266,6 +262,31 @@ main.plan .plan-day > summary {
   color: var(--muted);
   text-align: right;
   white-space: nowrap;
+}
+
+.plan-day-remove {
+  grid-area: remove;
+  align-self: center;
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font: 400 28px/1 var(--plan-display);
+  cursor: pointer;
+}
+
+.plan-day-remove:hover,
+.plan-day-remove:focus-visible {
+  color: var(--foreground);
+  background: var(--edge);
 }
 
 /* Today: a bigger title, and its duration is the page's one accent figure. */

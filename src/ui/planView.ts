@@ -58,6 +58,20 @@ function dayIndexOf(element: Element): number {
   return Number(element.closest<HTMLElement>("[data-day]")?.dataset.day);
 }
 
+function dayTitleNear(element: Element): string {
+  return (
+    element.closest<HTMLElement>("[data-day]")
+      ?.querySelector(".plan-day-title")
+      ?.textContent?.trim() || "day"
+  );
+}
+
+/** Clicks on controls inside <summary> must not toggle the day open/closed. */
+function stopSummaryToggle(event: Event): void {
+  event.preventDefault();
+  event.stopPropagation();
+}
+
 function slotOf(element: Element): SlotRef {
   const row = element.closest<HTMLElement>("[data-slot]")!;
   const index = dayIndexOf(element);
@@ -172,12 +186,17 @@ function wireDayEdits({ root, ui, act }: PlanController): void {
       return "Moved today's session to the end of the plan.";
     }),
   );
-  on(root, "[data-remove]", (el) =>
-    act(() => {
-      savePlanQueue(removeQueueItem(loadPlanQueue(), dayIndexOf(el)));
-      ui.openDays = new Set();
-    }),
-  );
+  root.querySelectorAll<HTMLElement>("[data-remove]").forEach((element) => {
+    element.addEventListener("click", (event) => {
+      stopSummaryToggle(event);
+      const title = dayTitleNear(element);
+      act(() => {
+        savePlanQueue(removeQueueItem(loadPlanQueue(), dayIndexOf(element)));
+        ui.openDays = new Set();
+        return `Removed ${title}.`;
+      });
+    });
+  });
 }
 
 function wireExerciseEdits({ root, ui, act, paint }: PlanController): void {

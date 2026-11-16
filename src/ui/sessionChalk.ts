@@ -8,7 +8,12 @@ import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
 import { formatClock, sessionClockSnapshot } from "../session/sessionClock";
 import { prescribedForNextSet } from "../session/setLog";
 import { cooldownOfferLabel } from "../rules/sessionDuration";
-import { SIDE_SWITCH_SECONDS, warmupViewSeconds, type WarmupStep } from "../rules/warmupPlan";
+import {
+  SIDE_SWITCH_SECONDS,
+  warmupStepExerciseId,
+  warmupViewSeconds,
+  type WarmupStep,
+} from "../rules/warmupPlan";
 import {
   chalkNowLabel,
   chalkRailNotches,
@@ -192,6 +197,10 @@ function sideSwitchHtml(step: WarmupStep): string {
   return `<p class="side-switch" data-side-switch hidden>Change side · <span data-side-switch-left>${SIDE_SWITCH_SECONDS}</span></p>`;
 }
 
+function warmupNotForMeHtml(exerciseId: string, move: string): string {
+  return `<p class="work-actions-secondary"><button type="button" class="btn-quiet" data-warmup-not-for-me data-exercise-id="${escapeHtml(exerciseId)}" aria-label="Not for me: ${escapeHtml(move)}">Not for me</button></p>`;
+}
+
 /** One timed station (warm-up or cool-down) with its evidence citation in small text. */
 function stationHtml(eyebrow: string, step: WarmupStep): string {
   const source = step.source
@@ -202,13 +211,16 @@ function stationHtml(eyebrow: string, step: WarmupStep): string {
       <p class="rest-cue" data-hold-cue aria-live="polite"></p>
       ${sideSwitchHtml(step)}`;
   const move = displayExerciseName(step.name);
+  const exerciseId = warmupStepExerciseId(step);
+  const notForMe = eyebrow === "Warmup" ? warmupNotForMeHtml(exerciseId, move) : "";
   return `
     <div class="station-stage swipe-stage" data-swipe-stage="station">
       ${heroHtml({ phase: eyebrow, move, dose, doodle: doodleMarkup(step.doodlePath, move) })}
       <section class="session-read">
-        ${summaryHtml(EXERCISE_GRAPH[step.stationId]?.description)}
+        ${summaryHtml(EXERCISE_GRAPH[exerciseId]?.description)}
         ${attentionHtml(step.cues)}
         ${source}
+        ${notForMe}
         <p class="hint">Swipe left to finish this one now</p>
       </section>
     </div>

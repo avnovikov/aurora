@@ -570,15 +570,18 @@ for (let i = 0; i < SEED_EXERCISES.length; i += 1) {
   SEED_EXERCISES[i] = withSeedStandards(SEED_EXERCISES[i]);
 }
 
-/** Raise for every warm-up (v2/v3): toy soldiers, controlled, building amplitude. */
-const WARMUP_RAISE = "ntc_toy_soldiers";
+/**
+ * Raise for every warm-up: march then jumping jacks.
+ * "Not for me" swaps them via resolveWarmupStations (often to toy soldiers).
+ */
+const WARMUP_RAISE = ["pulse_raiser_march", "ntc_jumping_jacks"] as const;
 
 /** Raise + the session's mobilise drills, then each level's activate and ramp. */
 function tieredWarmup(
   mobilise: readonly string[],
   byLevel: Readonly<Record<WarmupLevel, readonly string[]>>,
 ): WarmupLists {
-  const head = [WARMUP_RAISE, ...mobilise];
+  const head = [...WARMUP_RAISE, ...mobilise];
   return {
     beginner: [...head, ...byLevel.beginner],
     intermediate: [...head, ...byLevel.intermediate],
@@ -977,7 +980,14 @@ export const SESSION_TEMPLATES: SessionTemplate[] = [
     targetMinutes: MOBILITY_BAND,
     // v3 Mobility: one list, no ramp (no strength work follows) and no
     // transition rest; controlled dynamic drills (Behm 2016; Opplert 2018).
-    warmupByLevel: sameForEveryLevel(["ntc_toy_soldiers", "ntc_leg_swings", "hf_169", "ankle_rocks", "hf_154"]),
+    warmupByLevel: sameForEveryLevel([
+      "pulse_raiser_march",
+      "ntc_jumping_jacks",
+      "ntc_leg_swings",
+      "hf_169",
+      "ankle_rocks",
+      "hf_154",
+    ]),
     cooldownStationIds: [],
     // Every slot is pinned: resolveSlot never advances / regresses these
     // exercises, and the variety rule never swaps them for strength work.

@@ -10,6 +10,8 @@ import {
  */
 export interface WarmupStep {
   stationId: string;
+  /** Library exercise this station shows (older persisted sessions may lack it). */
+  exerciseId?: string;
   name: string;
   /** RAMP phase or cooldown (older persisted sessions may lack it). */
   phase?: StationPhase;
@@ -27,6 +29,11 @@ export interface WarmupStep {
   perSide?: boolean;
   /** When the step is one side of an expanded per-side prescription. */
   side?: HoldSide;
+}
+
+/** Library id for a materialised warm-up step (persisted steps may omit `exerciseId`). */
+export function warmupStepExerciseId(step: Pick<WarmupStep, "exerciseId" | "stationId">): string {
+  return step.exerciseId || step.stationId;
 }
 
 /** Fallback when a station omits holdSeconds (10–15s band). */
@@ -64,6 +71,7 @@ function stepFromStation(
 ): WarmupStep {
   return {
     stationId: station.id,
+    exerciseId: station.exerciseId,
     name: stepName(station, side),
     phase: station.phase,
     source: station.source,
@@ -95,6 +103,14 @@ function stepsForStation(station: WarmupStation): WarmupStep[] {
 }
 
 /**
+ * Expand stations into timed steps (hold prescriptions → segments).
+ * Does not assign inter-step gaps; use `withWarmupGaps` or `buildWarmupView`.
+ */
+export function expandWarmupStations(stations: readonly WarmupStation[]): WarmupStep[] {
+  return stations.flatMap(stepsForStation);
+}
+
+/**
  * Materialise a prebuilt warmup sequence for the session view.
  * Stations with a hold prescription expand into one step per segment.
  */
@@ -103,9 +119,14 @@ export function buildWarmupView(stations: WarmupStation[]): WarmupStep[] {
     throw new Error("Warmup sequence must not be empty");
   }
 
-  const steps: WarmupStep[] = stations.flatMap(stepsForStation);
-  applyGapsBetweenSteps(steps);
-  return steps;
+  return withWarmupGaps(expandWarmupStations(stations));
+}
+
+/** Recalculate gaps after splicing or filtering a warm-up step list. */
+export function withWarmupGaps(steps: readonly WarmupStep[]): WarmupStep[] {
+  const next = steps.map((step) => ({ ...step, gapSecondsAfter: 0 }));
+  applyGapsBetweenSteps(next);
+  return next;
 }
 
 /** Cool-down view: same timed stations as the warm-up, but may be empty. */

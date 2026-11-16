@@ -86,6 +86,20 @@ export function holdBand(
   return { effort: "hold", rounds, amountMin, amountMax, scope };
 }
 
+/**
+ * Per-side (or per-leg) warm-up dose: separate timers, not one blob with a mid switch.
+ * `holdSeconds` stays the total work time for overrides / estimates.
+ */
+function perSideHold(
+  secondsPerSide: number,
+  rounds = 1,
+): Pick<StationSpec, "holdSeconds" | "prescription"> {
+  return {
+    holdSeconds: secondsPerSide * rounds * 2,
+    prescription: holdDose(rounds, secondsPerSide, "perSide"),
+  };
+}
+
 /** [C] marks coaching consensus where no trial exists (v3 evidence base). */
 const SRC = {
   raise: "Raise: temperature (Fradkin 2010; Blazevich 2019)",
@@ -123,7 +137,21 @@ const STRETCH_SIDES_CUE = "30 s per side";
 const STRETCH_HOLD_SECONDS = 60;
 
 const STATION_SPECS: StationSpec[] = [
-  // Raise
+  // Raise (default: march + jacks ≈ 80 s; toy soldiers is the usual "Not for me" substitute)
+  {
+    id: "pulse_raiser_march",
+    phase: "raise",
+    regions: ["general", "legs"],
+    holdSeconds: 40,
+    source: SRC.raise,
+  },
+  {
+    id: "ntc_jumping_jacks",
+    phase: "raise",
+    regions: ["general"],
+    holdSeconds: 40,
+    source: SRC.raise,
+  },
   {
     id: "ntc_toy_soldiers",
     phase: "raise",
@@ -142,13 +170,18 @@ const STATION_SPECS: StationSpec[] = [
     cues: ["Slow circles", "Both directions", "Keep ribs quiet"],
   },
   {
+    // Coach apps ~40–60 s/side; expand so it is not one 90 s blob.
     id: "ankle_rocks",
     phase: "mobilise",
     regions: ["legs"],
-    holdSeconds: 90,
+    ...perSideHold(40),
     source: SRC.dorsiflexion,
-    cues: ["Knee to the wall, foot a hand's width back", "Knee tracks over mid-foot", "Heel stays down as long as possible", "45 s per side"],
-    perSide: true,
+    cues: [
+      "Knee to the wall, foot a hand's width back",
+      "Knee tracks over mid-foot",
+      "Heel stays down as long as possible",
+      "40 s per side",
+    ],
   },
   {
     id: "wrist_load",
@@ -159,16 +192,33 @@ const STATION_SPECS: StationSpec[] = [
     cues: ["Fingers spread", "Shift weight gently", "Stop before sharp pain"],
   },
   { id: "wger_2680", phase: "mobilise", regions: ["skill"], holdSeconds: 60, source: SRC.wrist }, // Wrist rocks
-  { id: "ntc_leg_swings", phase: "mobilise", regions: ["legs"], holdSeconds: 120, source: SRC.dynamic, extraCues: ["Front-to-back, then side-to-side: 30 s each, then change leg", "Controlled swings, never ballistic"], perSide: true },
-  { id: "hf_155", phase: "mobilise", regions: ["pull"], holdSeconds: 60, source: SRC.thoracic, extraCues: ["30 s per side"], perSide: true }, // Quadruped thoracic rotation
+  {
+    // Trainers: 30 s front-to-back then 30 s side-to-side per leg (Wodmentor / EōS).
+    id: "ntc_leg_swings",
+    phase: "mobilise",
+    regions: ["legs"],
+    ...perSideHold(30, 2),
+    source: SRC.dynamic,
+    extraCues: [
+      "Round 1: front-to-back 30 s per leg; round 2: side-to-side 30 s per leg",
+      "Controlled swings, never ballistic",
+    ],
+  },
+  {
+    id: "hf_155",
+    phase: "mobilise",
+    regions: ["pull"],
+    ...perSideHold(30),
+    source: SRC.thoracic,
+    extraCues: ["30 s per side"],
+  }, // Quadruped thoracic rotation
   {
     id: "wger_1711", // Sleeper stretch
     phase: "mobilise",
     regions: ["pull"],
-    holdSeconds: 40,
+    ...perSideHold(20),
     source: SRC.sleeper,
     extraCues: ["Gentle: 20 s per side, no pain"],
-    perSide: true,
   },
   { id: "hf_151", phase: "mobilise", regions: ["push", "pull"], holdSeconds: 45, source: SRC.shoulder }, // Shoulder dislocates
   { id: "hf_152", phase: "mobilise", regions: ["push"], holdSeconds: 45, source: SRC.serratus }, // Wall angel
@@ -184,7 +234,15 @@ const STATION_SPECS: StationSpec[] = [
   { id: "hf_158", phase: "mobilise", regions: ["legs"], holdSeconds: 45, source: SRC.mobilise }, // 90/90 hip switch
   { id: "hf_157", phase: "mobilise", regions: ["legs"], holdSeconds: 30, source: SRC.dorsiflexion }, // Deep squat hold
   { id: "hf_154", phase: "mobilise", regions: ["core"], holdSeconds: 60, source: SRC.dynamic }, // Cat-cow
-  { id: "hf_169", phase: "mobilise", regions: ["legs"], holdSeconds: 90, source: SRC.dynamic, extraCues: ["45 s per side"], perSide: true }, // World's greatest stretch
+  {
+    // Dynamic WGS: ~30 s/side (Peloton / Equinox 3–5 s positions × reps), not a 45 s static hold.
+    id: "hf_169",
+    phase: "mobilise",
+    regions: ["legs"],
+    ...perSideHold(30),
+    source: SRC.dynamic,
+    extraCues: ["30 s per side, move through the positions"],
+  },
   // Activate
   {
     id: "glute_bridge",
@@ -194,14 +252,60 @@ const STATION_SPECS: StationSpec[] = [
     source: SRC.core,
     cues: ["Ribs down", "Squeeze glutes at the top", "Do not arch the low back"],
   },
-  { id: "fedb_single_leg_glute_bridge", phase: "activate", regions: ["legs"], holdSeconds: 60, source: SRC.strength, extraCues: ["30 s per leg"], perSide: true },
+  {
+    id: "fedb_single_leg_glute_bridge",
+    phase: "activate",
+    regions: ["legs"],
+    ...perSideHold(30),
+    source: SRC.strength,
+    extraCues: ["30 s per leg"],
+  },
   { id: "fedb_bodyweight_walking_lunge", phase: "activate", regions: ["legs"], holdSeconds: 60, source: SRC.strength, extraCues: ["Slow and controlled, knee over the toes"] },
-  { id: "ntc_single_leg_balance", phase: "activate", regions: ["legs"], holdSeconds: 90, source: SRC.balance, extraCues: ["45 s per leg"], perSide: true },
-  { id: "wger_2667", phase: "activate", regions: ["legs"], holdSeconds: 90, source: SRC.balance, extraCues: ["45 s per leg; open the eyes if you wobble off"], perSide: true }, // Single-leg balance, eyes closed
-  { id: "wger_1202", phase: "activate", regions: ["legs"], holdSeconds: 60, source: SRC.gluteMed, extraCues: ["30 s per side"], perSide: true }, // Side-lying hip abduction
-  { id: "ntc_push_up_plus", phase: "activate", regions: ["push", "skill"], holdSeconds: 60, source: SRC.serratus, extraCues: ["2 × 10 slow reps"] },
+  {
+    // FIFA 11+: 30 s per leg (we use one set in the warm-up; progress via eyes-closed variant).
+    id: "ntc_single_leg_balance",
+    phase: "activate",
+    regions: ["legs"],
+    ...perSideHold(30),
+    source: SRC.balance,
+    extraCues: ["30 s per leg"],
+  },
+  {
+    id: "wger_2667",
+    phase: "activate",
+    regions: ["legs"],
+    ...perSideHold(30),
+    source: SRC.balance,
+    extraCues: ["30 s per leg; open the eyes if you wobble off"],
+  }, // Single-leg balance, eyes closed
+  {
+    id: "wger_1202",
+    phase: "activate",
+    regions: ["legs"],
+    ...perSideHold(30),
+    source: SRC.gluteMed,
+    extraCues: ["30 s per side"],
+  }, // Side-lying hip abduction
+  {
+    // Warm-up activation: ~2 × 10 slow reps (Cools/Ekstrom; coach warm-up 2×8–12).
+    id: "ntc_push_up_plus",
+    phase: "activate",
+    regions: ["push", "skill"],
+    holdSeconds: 40,
+    source: SRC.serratus,
+    extraCues: ["2 × 10 slow reps"],
+    prescription: holdDose(2, 20),
+  },
   { id: "ntc_prone_ytw", phase: "activate", regions: ["pull"], holdSeconds: 60, source: SRC.lowerTrap }, // Prone Y-T-W raise
-  { id: "wger_578", phase: "activate", regions: ["pull"], holdSeconds: 60, source: SRC.cuff, extraCues: ["30 s per side, light and slow"], perSide: true }, // Side-lying external rotation
+  {
+    // Reinold/Squat U: light cuff work ~15–20 slow reps ≈ 30 s per side in a warm-up timer.
+    id: "wger_578",
+    phase: "activate",
+    regions: ["pull"],
+    ...perSideHold(30),
+    source: SRC.cuff,
+    extraCues: ["30 s per side, light and slow"],
+  }, // Side-lying external rotation
   { id: "scapular_pull", phase: "activate", regions: ["pull"], holdSeconds: 45, source: SRC.scapula, extraCues: ["Easy reps, arms stay straight"] }, // Scapular pull-up
   {
     id: "hf_99",
@@ -263,23 +367,31 @@ const STATION_SPECS: StationSpec[] = [
     prescription: holdBand(2, 10, 15),
   }),
   ramp({ id: "bodyweight_squat", regions: ["legs"], holdSeconds: 60 }),
-  ramp({ id: "wger_2557", regions: ["legs"], holdSeconds: 60, extraCues: ["30 s per leg"], perSide: true }), // Supported split squat
-  ramp({ id: "fedb_split_squats", regions: ["legs"], holdSeconds: 60, extraCues: ["30 s per leg"], perSide: true }), // Split squat
+  ramp({
+    id: "wger_2557",
+    regions: ["legs"],
+    ...perSideHold(30),
+    extraCues: ["30 s per leg"],
+  }), // Supported split squat
+  ramp({
+    id: "fedb_split_squats",
+    regions: ["legs"],
+    ...perSideHold(30),
+    extraCues: ["30 s per leg"],
+  }), // Split squat
   ramp({
     id: "wger_1948", // 1-leg box squat
     regions: ["legs"],
-    holdSeconds: 60,
+    ...perSideHold(30),
     // To a high box, well short of pistol depth: an intermediate dose.
     difficulty: "intermediate",
     extraCues: ["High box — stop well short of a full pistol", "30 s per leg"],
-    perSide: true,
   }),
   ramp({
     id: "ntc_assisted_pistol",
     regions: ["legs"],
-    holdSeconds: 60,
+    ...perSideHold(30),
     extraCues: ["Partial depth, hands on the support", "30 s per leg"],
-    perSide: true,
   }),
   ramp({
     id: "pullup_dead_hang",
