@@ -124,6 +124,8 @@ export interface UserProfile {
   setupDone: boolean;
   /** Colour palette chosen in Settings; see src/brand/palettes.ts. */
   palette: PaletteKey;
+  /** The weight the athlete owns (dumbbell, kettlebell, vest): what "Add weight" puts on in a session. */
+  addWeightKg: number;
 }
 
 export type SessionEvaluation = "easy" | "on_target" | "failed" | "wiped";

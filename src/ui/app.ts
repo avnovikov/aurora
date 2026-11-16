@@ -58,6 +58,7 @@ export function bootApp(root: HTMLElement): void {
     renderSessionView(root, {
       planned: resume.planned,
       resume,
+      addWeightKg: profile.addWeightKg,
       onDone: (setCount) => showEvaluation(root, setCount, resume.planned),
     });
     return;
@@ -139,6 +140,7 @@ function showTodayHome(root: HTMLElement): void {
       );
       renderSessionView(root, {
         planned,
+        addWeightKg: loadProfile().addWeightKg,
         onDone: (setCount) => showEvaluation(root, setCount, planned),
       });
     },

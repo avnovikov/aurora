@@ -23,6 +23,7 @@ export function initialState(options: SessionViewOptions): ViewState {
       pulseStatus: null,
       startedAtMs: resolveStartedAtMs(resume.startedAt, resume.savedAt),
       plannedTotalSeconds,
+      addWeightKg: options.addWeightKg,
     };
     if (state.phase === "work" || state.phase === "rest") {
       state.workState = restoreWorkState(
@@ -47,6 +48,7 @@ export function initialState(options: SessionViewOptions): ViewState {
     pulseStatus: null,
     startedAtMs: Date.now(),
     plannedTotalSeconds,
+    addWeightKg: options.addWeightKg,
   };
 }
 

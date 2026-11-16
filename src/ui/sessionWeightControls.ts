@@ -1,12 +1,12 @@
 /**
  * Optional added-load controls for the work stage.
- * Zero kg → “Add weight”; otherwise − / kg / +.
+ * Zero kg → “Add 12 kg” (the athlete's own weight); otherwise − / kg / +.
  */
-export function weightControlsHtml(loadKg: number): string {
+export function weightControlsHtml(loadKg: number, addKg: number): string {
   if (loadKg <= 0) {
     return `
       <div class="row work-load-row">
-        <button type="button" class="btn-quiet" data-add-weight>Add weight</button>
+        <button type="button" class="btn-quiet" data-add-weight>Add weight · ${addKg} kg</button>
       </div>
     `;
   }

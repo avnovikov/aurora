@@ -5,7 +5,7 @@ import { escapeHtml } from "../library/present";
 import { isNativePulseAvailable } from "../pulse/hrMonitor";
 import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
 import { formatClock, sessionClockSnapshot } from "../session/sessionClock";
-import { prescribedForNextSet } from "../session/setLog";
+import { DEFAULT_ADDED_LOAD_KG, prescribedForNextSet } from "../session/setLog";
 import { cooldownOfferLabel } from "../rules/sessionDuration";
 import { SIDE_SWITCH_SECONDS, warmupViewSeconds, type WarmupStep } from "../rules/warmupPlan";
 import {
@@ -29,19 +29,39 @@ export function shellHtml(planned: PlannedSession, state: ViewState): string {
         ${chalkHtml(planned, state)}
       </header>
       ${bodyHtml(planned, state)}
-      ${pulseBarHtml(state)}
+      ${pulseBarHtml(state, isWorkSurface(planned, state) ? WORK_ACTIONS_HTML : "")}
     </main>
   `;
 }
 
-/** Pinned to the bottom, in thumb reach: the pulse reading and the Strap controls. */
-function pulseBarHtml(state: ViewState): string {
+/** Log set and its alternatives: pinned in the bottom bar so they are always in thumb reach. */
+const WORK_ACTIONS_HTML = `
+        <div class="work-actions">
+          <button type="button" class="cta" data-log-set>Log set</button>
+          <button type="button" class="btn-quiet" data-fail-set>Failed</button>
+          <button type="button" class="btn-quiet" data-skip>Skip</button>
+        </div>`;
+
+/** The screen shows a working set (not warm-up, rest, cool-down or the end). */
+function isWorkSurface(planned: PlannedSession, state: ViewState): boolean {
+  if (isWarmupSurface(planned, state) || isCooldownSurface(planned, state)) {
+    return false;
+  }
+  if (state.phase === "done" || (state.phase === "rest" && state.workState)) {
+    return false;
+  }
+  return currentWork(planned, state) !== null;
+}
+
+/** Pinned to the bottom, in thumb reach: the set actions (during work), the pulse reading and the Strap controls. */
+function pulseBarHtml(state: ViewState, actions: string): string {
   const pulseClass = state.pulse.connected && state.bpm === null ? " pulse-lost" : "";
   const status = state.pulseStatus
     ? `<p class="session-bar-status" data-pulse-status>${escapeHtml(state.pulseStatus)}</p>`
     : "";
   return `
       <footer class="session-bar pulse-row${pulseClass}">
+        ${actions}
         ${status}
         <p class="pulse-chip" role="status">Pulse ${state.bpm ?? "—"}</p>
         <details class="pulse-more strap">
@@ -281,7 +301,7 @@ function workHtml(item: PlannedWorkItem, state: ViewState): string {
   const loadKg = state.workState?.addedLoadKg ?? 0;
   const dose = `${workDoseHtml(reps, workUnit(item))}
       ${doseNoteHtml(item, state.setIndex, reps)}
-      ${weightControlsHtml(loadKg)}`;
+      ${weightControlsHtml(loadKg, state.addWeightKg ?? DEFAULT_ADDED_LOAD_KG)}`;
   return `
     <div class="work-stage" data-swipe-stage>
       ${heroHtml({
@@ -298,14 +318,7 @@ function workHtml(item: PlannedWorkItem, state: ViewState): string {
           <summary>Why this dose</summary>
           <p class="reason">${escapeHtml(item.reason)}</p>
         </details>
-        <div class="work-actions">
-          <button type="button" class="cta" data-log-set>Log set</button>
-          <div class="work-actions-secondary">
-            <button type="button" class="btn-quiet" data-fail-set>Failed</button>
-            <button type="button" class="btn-quiet" data-skip>Skip</button>
-          </div>
-        </div>
-        <p class="hint">Swipe left or right to finish</p>
+        <p class="hint">Log the set below, or swipe left or right</p>
       </section>
     </div>
   `;

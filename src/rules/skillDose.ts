@@ -62,6 +62,9 @@ export function applySkillDose(
 /**
  * Fast path onto the harder progression when performance already proves readiness.
  */
+/** Sessions at the standard before a move is ready for its harder step. */
+export const SESSIONS_AT_STANDARD_TO_ADVANCE = 2;
+
 export function shouldAdvanceProgression(
   exercise: Exercise,
   memory: ExerciseMemory,
@@ -69,7 +72,7 @@ export function shouldAdvanceProgression(
   if (!exercise.harderId) {
     return false;
   }
-  if (memory.sessionsAtStandard >= 2) {
+  if (memory.sessionsAtStandard >= SESSIONS_AT_STANDARD_TO_ADVANCE) {
     return true;
   }
   const tier = effectiveSkillTier(memory, exercise);

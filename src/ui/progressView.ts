@@ -90,7 +90,7 @@ function distanceLine(card: PlanProgressCard): string {
     return `<p class="tagline">Path not linked yet</p>`;
   }
   if (card.stepsToTarget === 0) {
-    return `<p class="tagline">At the target</p>`;
+    return `<p class="tagline">Target reached</p>`;
   }
   const noun = card.stepsToTarget === 1 ? "step" : "steps";
   return `<p class="tagline">${card.stepsToTarget} ${noun} away</p>`;
@@ -111,8 +111,10 @@ function notStartedBlockHtml(card: PlanProgressCard): string {
 }
 
 function activeBlockHtml(card: PlanProgressCard): string {
+  // At the target the harder move is beyond it, not the next step toward it.
+  const label = card.stepsToTarget === 0 ? "Beyond" : "Next";
   const next = card.nextName
-    ? `<p class="exercise-next"><span class="exercise-next-label">Next</span> ${escapeHtml(card.nextName)}</p>`
+    ? `<p class="exercise-next"><span class="exercise-next-label">${label}</span> ${escapeHtml(card.nextName)}</p>`
     : `<p class="exercise-next is-end">At the top of this path</p>`;
   return `
     <div class="exercise-block">

@@ -441,3 +441,22 @@
 html:has(.shell.session) {
   scroll-padding-bottom: 96px;
 }
+
+/* Working set: Log set lives in the sticky bottom bar, above the pulse. */
+.session-bar .work-actions {
+  flex: 1 1 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 4px;
+}
+.session-bar .work-actions .cta {
+  flex: 1 1 auto;
+  margin: 0;
+  min-height: 52px;
+}
+.session-bar .work-actions .btn-quiet {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 12px;
+}

@@ -2,7 +2,7 @@ import type { SessionTemplate } from "../domain/program";
 import { SKILL_TIER_LABELS } from "../domain/skillTier";
 import type { Exercise, ExerciseMemory, RuleId } from "../domain/types";
 import { STALL_BELOW_FLOOR_SESSIONS } from "../rules/resolveSlot";
-import { shouldAdvanceProgression } from "../rules/skillDose";
+import { SESSIONS_AT_STANDARD_TO_ADVANCE, shouldAdvanceProgression } from "../rules/skillDose";
 
 export { STALL_BELOW_FLOOR_SESSIONS };
 
@@ -227,11 +227,11 @@ function stallStatus(
 ): ChainStatus {
   const easierName = nameOf(exercise.easierId, graph);
   const action = easierName
-    ? `may step back to ${easierName}`
-    : "no easier step on this chain";
+    ? `Aurora may step you back to ${easierName}`
+    : "there is no easier step on this path";
   return {
     kind: "stall",
-    reason: `Stall: below floor ×${memory.sessionsBelowFloor} — ${action}`,
+    reason: `Stuck: ${memory.sessionsBelowFloor} sessions in a row below the minimum; ${action}`,
   };
 }
 
@@ -239,16 +239,17 @@ function advanceStatus(exercise: Exercise, graph: ChainGraph): ChainStatus {
   const harderName = nameOf(exercise.harderId, graph) ?? "next level";
   return {
     kind: "advance",
-    reason: `Ready to advance to ${harderName} (standard met)`,
+    reason: `Standard met: ready to move up to ${harderName}`,
   };
 }
 
 function holdStatus(memory: ExerciseMemory): ChainStatus {
   const tier = memory.skillTier ?? memory.declaredTier;
-  const tierNote = tier ? `${SKILL_TIER_LABELS[tier]} · ` : "";
+  const tierNote = tier ? `${SKILL_TIER_LABELS[tier]} level · ` : "";
+  const done = Math.min(memory.sessionsAtStandard, SESSIONS_AT_STANDARD_TO_ADVANCE);
   return {
     kind: "hold",
-    reason: `Hold: ${tierNote}at standard ×${memory.sessionsAtStandard}`,
+    reason: `${tierNote}${done} of ${SESSIONS_AT_STANDARD_TO_ADVANCE} sessions at the standard to move up`,
   };
 }
 
