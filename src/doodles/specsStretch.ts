@@ -109,13 +109,26 @@ function childsPose(breathe: number): Pose {
   };
 }
 
-/** Standing, one arm straight out at shoulder height, fingers drawn back by the other hand. */
-function wristStretch(pull: number, breathe: number): Pose {
+/**
+ * Standing, the near arm straight out at shoulder height; the wrist bends so
+ * the fingers point `wrist` degrees (0 = in line, 90 = straight down, more =
+ * drawn back towards the body) and the other hand holds the fingers.
+ */
+function wristStretch(wrist: number): Pose {
   const pelvis: Point = [0, -170];
+  // Shoulder at [0, -268]; forearm end (wrist) 118 straight ahead of it.
+  const wristJoint: Point = [117.9, -268];
+  const r = (wrist * Math.PI) / 180;
+  const fingers: Point = [round(wristJoint[0] + 8 * Math.cos(r)), round(wristJoint[1] + 8 * Math.sin(r))];
+  // The other hand cups the fingers from in front (kept within an arm's reach of its shoulder).
+  const grip: Point = [fingers[0] + 3, fingers[1] + 2];
+  const reach = Math.hypot(grip[0], grip[1] + 268);
+  const far: Point = reach > 121 ? [round((grip[0] * 121) / reach), round(-268 + ((grip[1] + 268) * 121) / reach)] : grip;
   return {
     pelvis,
-    chest: [0 + breathe, -250],
-    hands: { near: [122, -262], far: [round(124 - pull), -258] },
+    chest: [0, -250],
+    hands: { near: wristJoint, far },
+    wrists: { near: wrist },
     feet: { near: [0, 0], far: [-4, 0] },
     toes: { near: 0, far: 0 },
   };
@@ -228,9 +241,8 @@ export const STRETCH_SPECS: DoodleSpec[] = [
     title: "Wrist stretch",
     transition: 1.2,
     frames: [
-      { hold: 0.5, pose: wristStretch(0, 0) },
-      { hold: 1.2, pose: wristStretch(10, 4) },
-      { hold: 1.2, pose: wristStretch(14, -2) },
+      { hold: 0.6, pose: wristStretch(10) },
+      { hold: 1.8, pose: wristStretch(112) },
     ],
   },
   {

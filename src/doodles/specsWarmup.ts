@@ -94,15 +94,16 @@ function hipAbduction(deg: number): Pose {
 
 function balance(sway: 0 | 1): Pose {
   const pelvis: Point = sway ? [4, -166] : [0, -168];
-  const knee = along(pelvis, sway ? 36 : 42, 88);
+  // Free leg: knee bent ~90° so the foot is clearly lifted behind, well off the floor.
+  const knee = along(pelvis, sway ? 66 : 70, 88);
   return {
     pelvis,
     chest: [pelvis[0] + (sway ? 2 : 0), pelvis[1] - 80],
     hands: sway ? { near: [96, -236], far: [-84, -272] } : { near: [100, -262], far: [-90, -250] },
     elbows: { near: { bend: 1 }, far: { bend: 1 } },
     knees: { far: { at: knee } },
-    feet: { near: [0, 0], far: along(knee, sway ? 96 : 102, 86) },
-    toes: { near: 0, far: 70 },
+    feet: { near: [0, 0], far: along(knee, sway ? 152 : 158, 86) },
+    toes: { near: 0, far: 120 },
   };
 }
 
@@ -158,6 +159,39 @@ function rockBack(): Pose {
     feet: { near: [-136, -4], far: [-136, -4] },
     toes: { near: 180, far: 180 },
   };
+}
+
+const ROCK_HAND: Point = [48, 0];
+const ROCK_KNEE: Point = [-50, -4];
+
+/**
+ * All fours with the hands planted and the arms locked: the shoulders sit an
+ * arm's length from the hands at `shoulderDeg` (−90 = straight over the
+ * wrists, < −90 behind them, > −90 in front). Knees stay put; the hips ride
+ * on the thighs to follow.
+ */
+function wristRock(shoulderDeg: number): Pose {
+  const shoulder = along(ROCK_HAND, shoulderDeg, 125.95);
+  // Pelvis: 88 from the knee and 98 from the shoulder, on the upper side.
+  const d = Math.hypot(shoulder[0] - ROCK_KNEE[0], shoulder[1] - ROCK_KNEE[1]);
+  const a = (88 ** 2 - 98 ** 2 + d ** 2) / (2 * d);
+  const h = Math.sqrt(Math.max(0, 88 ** 2 - a ** 2));
+  const u: Point = [(shoulder[0] - ROCK_KNEE[0]) / d, (shoulder[1] - ROCK_KNEE[1]) / d];
+  const pelvis: Point = [ROCK_KNEE[0] + u[0] * a + u[1] * h, ROCK_KNEE[1] + u[1] * a - u[0] * h];
+  // Chest 80 along the straight spine (unrounded, so the spine stays exactly straight).
+  const chest: Point = [pelvis[0] + ((shoulder[0] - pelvis[0]) * 80) / 98, pelvis[1] + ((shoulder[1] - pelvis[1]) * 80) / 98];
+  const base: Pose = {
+    pelvis,
+    chest,
+    hands: { near: ROCK_HAND, far: ROCK_HAND },
+    knees: { near: { at: ROCK_KNEE }, far: { at: ROCK_KNEE } },
+    feet: { near: [-136, -4], far: [-136, -4] },
+    toes: { near: 180, far: 180 },
+  };
+  // Elbow on the straight shoulder–hand line, so the arm stays locked.
+  const root = solvePose(base).arms.near.root;
+  const elbow = along(root, angle(root, ROCK_HAND), 60);
+  return { ...base, elbows: { near: { at: elbow }, far: { at: elbow } } };
 }
 
 // ---------------------------------------------------------------- side plank (head left, feet right)
@@ -225,12 +259,22 @@ function wallAngel(up: boolean): Pose {
 
 // ---------------------------------------------------------------- arm circles (front)
 
-/** Arms straight out to the sides; the hands trace a small circle (offset in the frontal plane). */
-function armCircle(reach: number, dy: number): Pose {
+/**
+ * Arms straight out to the sides at shoulder height. Seen from the front, a
+ * small circle of each hand shows as the straight arm rising and falling;
+ * both hands go up together and down together (same direction of circling).
+ * `phase` is the position around the circle in eighths of a turn.
+ */
+const ARM_CIRCLE_TILT = 11;
+function armCircle(phase: number): Pose {
+  const tilt = ARM_CIRCLE_TILT * Math.sin((phase * Math.PI) / 4);
+  // Shoulders sit 22 either side of the chest top (front view).
   return {
     pelvis: [0, -174],
     chest: [0, -254],
-    hands: { near: [-22 - reach, -272 + dy], far: [22 + reach, -272 - dy] },
+    hands: { near: along([-22, -272], 180 + tilt, 125.95), far: along([22, -272], -tilt, 125.95) },
+    // Elbows pinned on the shoulder-hand line so the arms stay dead straight.
+    elbows: { near: { at: along([-22, -272], 180 + tilt, 60) }, far: { at: along([22, -272], -tilt, 60) } },
     feet: { near: [-14, 0], far: [14, 0] },
     toes: { near: 180, far: 0 },
   };
@@ -691,8 +735,9 @@ export const WARMUP_DRILL_SPECS: DoodleSpec[] = [
     title: "Wrist rocks",
     transition: 1.2,
     frames: [
-      { hold: 0.4, pose: rockBack() },
-      { hold: 0.5, pose: rockForward() },
+      // Shoulders behind the wrists, then rocked clearly in front of them; arms straight throughout.
+      { hold: 0.4, pose: wristRock(-108) },
+      { hold: 0.5, pose: wristRock(-72) },
     ],
   },
   {
@@ -711,13 +756,8 @@ export const WARMUP_DRILL_SPECS: DoodleSpec[] = [
     slug: "arm-circles",
     title: "Arm circles",
     view: "front",
-    transition: 0.25,
-    frames: [
-      { hold: 0.05, pose: armCircle(124, 0) },
-      { hold: 0.05, pose: armCircle(118, -32) },
-      { hold: 0.05, pose: armCircle(108, 0) },
-      { hold: 0.05, pose: armCircle(118, 32) },
-    ],
+    transition: 0.16,
+    frames: [0, 1, 2, 3, 4, 5, 6, 7].map((phase) => ({ hold: 0, pose: armCircle(phase) })),
   },
   {
     id: "wger_1822",

@@ -375,7 +375,7 @@ function mannaPose(pelvis: Point, handX: number, legs: number): Pose {
   return {
     pelvis,
     chest: along(pelvis, torsoDeg, 80),
-    head: along(along(pelvis, torsoDeg, 100), torsoDeg + 25, 36),
+    head: along(along(pelvis, torsoDeg, 100), torsoDeg - 30, 36),
     hands: { near: hand, far: [handX - 3, 0] },
     elbows: { near: { bend: 1 }, far: { bend: 1 } },
     feet: { near: along(pelvis, legs, 173.9), far: along(pelvis, legs - 1, 173.6) },
@@ -513,7 +513,7 @@ export const BATCH_C_SPECS: DoodleSpec[] = [
     transition: 0.9,
     frames: [
       { hold: 0.4, pose: benchLegs(-6) },
-      { hold: 0.5, pose: benchTuck(-122, 8) },
+      { hold: 0.5, pose: benchTuck(-128, 18) },
     ],
   },
   {
@@ -547,7 +547,7 @@ export const BATCH_C_SPECS: DoodleSpec[] = [
     transition: 1.4,
     frames: [
       { hold: 0.5, pose: mannaPose([18, -30], 0, -40) },
-      { hold: 1.5, pose: mannaPose([48, -60], 0, -98) },
+      { hold: 1.5, pose: mannaPose([48, -60], 0, -117) },
     ],
   },
 ];
