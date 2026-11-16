@@ -21,6 +21,13 @@ const count = (html: string, needle: string) => html.split(needle).length - 1;
 describe("Today page", () => {
   const html = todayHomeHtml(model());
 
+  it("shows an empty state when nothing is planned", () => {
+    const empty = todayHomeHtml(model({ next: null, upcoming: [] }));
+    expect(empty).toContain("Nothing planned yet");
+    expect(empty).toContain("data-open-plan");
+    expect(empty).not.toContain("data-checkin");
+  });
+
   it("has one h1 and names today's session once, in the card", () => {
     expect(count(html, "<h1")).toBe(1);
     expect(html).toContain('<h2 id="today-session">Lower body</h2>');

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { EXERCISE_GRAPH } from "../../src/data/exerciseGraph";
 import { LIBRARY_CATALOGUE } from "../../src/data/libraryCatalogue";
-import { SESSION_TEMPLATES, templateToStarter } from "../../src/data/seed";
+import { DEFAULT_PLAN_QUEUE, SESSION_TEMPLATES, templateToStarter } from "../../src/data/seed";
 import type { JointHistoryEntry } from "../../src/domain/program";
 import { detailHtml } from "../../src/library/libraryDetail";
 import { DEFAULT_FILTERS, filterPanelsHtml, hasActiveFilters } from "../../src/library/filterPanels";
@@ -37,7 +37,7 @@ const care = (over: Partial<StepContext> = {}) => generateJointCareDay(ctx(over)
 const names = (day: { slots: Array<{ exerciseId: string }> }) => day.slots.map((slot) => EXERCISE_GRAPH[slot.exerciseId]!.name);
 const mobility = SESSION_TEMPLATES.find((t) => t.id === "tmpl_mobility")!;
 
-useMemoryStorage();
+useMemoryStorage(() => ({ "aurora.poc.planQueue.v1": JSON.stringify(DEFAULT_PLAN_QUEUE) }));
 
 describe("Joint care day", () => {
   it("uses only prehab moves for the declared joints, taking turns between them", () => {

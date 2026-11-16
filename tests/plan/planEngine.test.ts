@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { EXERCISE_GRAPH } from "../../src/data/exerciseGraph";
-import { SESSION_TEMPLATES, templateToStarter } from "../../src/data/seed";
+import { DEFAULT_PLAN_QUEUE, SESSION_TEMPLATES, templateToStarter } from "../../src/data/seed";
 import type { JointHistoryEntry, SessionTemplate } from "../../src/domain/program";
 import { resolveExerciseTiming } from "../../src/domain/timing";
 import type { ExerciseMemory } from "../../src/domain/types";
@@ -41,7 +41,7 @@ const block = (kind: BlockKind, context = ctx(), count?: number): SessionTemplat
   generateBlock({ kind, target: kind === "skill" ? "freestanding_hs" : undefined, context, count, newId: () => "t" });
 const names = (day: SessionTemplate): string[] => day.slots.map((slot) => EXERCISE_GRAPH[slot.exerciseId]!.name);
 
-useMemoryStorage();
+useMemoryStorage(() => ({ "aurora.poc.planQueue.v1": JSON.stringify(DEFAULT_PLAN_QUEUE) }));
 
 describe("generated days keep the library's dosing rules", () => {
   const INTERMEDIATE = {

@@ -156,8 +156,15 @@ function wireApp({ root, profile, commit }: SettingsController): void {
   });
 }
 
-export function renderSettingsView(root: HTMLElement): void {
+export interface SettingsViewOptions {
+  /** First-run: setup chrome + Continue; does not set setupDone. */
+  onContinue?: () => void;
+}
+
+export function renderSettingsView(root: HTMLElement, options: SettingsViewOptions = {}): void {
+  const { onContinue } = options;
   const profile = loadProfile();
+  const setup = onContinue !== undefined;
   const say = (message: string): void => {
     const status = root.querySelector<HTMLElement>("[data-settings-status]");
     if (status) {
@@ -173,12 +180,23 @@ export function renderSettingsView(root: HTMLElement): void {
       say(message);
     },
     paint: () => {
-      root.innerHTML = settingsPageHtml({ tab: lastTab, profile, deloadActive: loadDeloadActive() });
+      root.innerHTML = settingsPageHtml({
+        tab: lastTab,
+        profile,
+        deloadActive: loadDeloadActive(),
+        setup,
+      });
       wireTabs(controller);
       wireYou(controller);
       wireGear(controller);
       wireTraining(controller);
       wireApp(controller);
+      if (onContinue) {
+        root.querySelector("[data-setup-continue]")?.addEventListener("click", () => {
+          saveProfile(profile);
+          onContinue();
+        });
+      }
     },
   };
   controller.paint();

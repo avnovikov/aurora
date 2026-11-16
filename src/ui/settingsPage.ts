@@ -35,6 +35,8 @@ export interface SettingsPageModel {
   tab: SettingsTab;
   profile: UserProfile;
   deloadActive: boolean;
+  /** First-run: hide Backup / Deload and show Continue. */
+  setup?: boolean;
 }
 
 function tabBarHtml(active: SettingsTab): string {
@@ -79,15 +81,23 @@ function gearHtml(profile: UserProfile): string {
     )}`;
 }
 
-function trainingHtml(profile: UserProfile, deloadActive: boolean): string {
+function deloadFieldHtml(deloadActive: boolean): string {
+  const checked = deloadActive ? "checked" : "";
   return `
     <label class="field row">
-      <input type="checkbox" data-deload ${deloadActive ? "checked" : ""} />
+      <input type="checkbox" data-deload ${checked} />
       Deload week
     </label>
-    <p class="hint">Lighter sessions for a week, with no moves up a level.</p>
+    <p class="hint">Lighter sessions for a week, with no moves up a level.</p>`;
+}
+
+function trainingHtml(profile: UserProfile, deloadActive: boolean, setup: boolean): string {
+  const deload = setup ? "" : deloadFieldHtml(deloadActive);
+  const muted = profile.voiceMuted ? "checked" : "";
+  return `
+    ${deload}
     <label class="field row">
-      <input type="checkbox" data-mute ${profile.voiceMuted ? "checked" : ""} />
+      <input type="checkbox" data-mute ${muted} />
       Mute coach voice
     </label>`;
 }
@@ -97,35 +107,48 @@ function paletteChipHtml(palette: Palette, selected: boolean): string {
   return `<button type="button" class="palette-chip${selected ? " selected" : ""}" data-palette-key="${palette.key}" aria-pressed="${selected}"><span class="palette-label">${escapeHtml(palette.label)}</span><small class="palette-meaning">${escapeHtml(palette.meaning)}</small></button>`;
 }
 
-function appHtml(profile: UserProfile): string {
+function appHtml(profile: UserProfile, setup: boolean): string {
+  const backup = setup
+    ? ""
+    : `
+    <p class="eyebrow">Backup</p>
+    <p class="hint">Everything stays on this phone. Export a copy to keep it safe.</p>
+    <button type="button" data-export>Export backup</button>
+    <pre class="export" data-export-out hidden></pre>`;
   return `
     <p class="eyebrow">Palette</p>
     <div class="palette-list" role="group" aria-label="Palette">
       ${PALETTES.map((palette) => paletteChipHtml(palette, palette.key === profile.palette)).join("")}
     </div>
-    <p class="eyebrow">Backup</p>
-    <p class="hint">Everything stays on this phone. Export a copy to keep it safe.</p>
-    <button type="button" data-export>Export backup</button>
-    <pre class="export" data-export-out hidden></pre>`;
+    ${backup}`;
+}
+
+function inSetupMode(model: SettingsPageModel): boolean {
+  return Boolean(model.setup);
 }
 
 function panelHtml(model: SettingsPageModel): string {
+  const setup = inSetupMode(model);
   switch (model.tab) {
     case "you":
       return youHtml(model.profile);
     case "gear":
       return gearHtml(model.profile);
     case "training":
-      return trainingHtml(model.profile, model.deloadActive);
+      return trainingHtml(model.profile, model.deloadActive, setup);
     case "app":
-      return appHtml(model.profile);
+      return appHtml(model.profile, setup);
   }
 }
 
 export function settingsPageHtml(model: SettingsPageModel): string {
+  const setup = inSetupMode(model);
+  const continueCta = setup
+    ? `<button type="button" class="cta" data-setup-continue>Continue</button>`
+    : "";
   return `
     <main class="shell settings">
-      <p class="eyebrow">Settings</p>
+      <p class="eyebrow">${setup ? "Setup" : "Settings"}</p>
       <h1>Your setup</h1>
       ${tabBarHtml(model.tab)}
       <p class="settings-status" role="status" data-settings-status></p>
@@ -133,5 +156,6 @@ export function settingsPageHtml(model: SettingsPageModel): string {
         ${panelHtml(model)}
       </section>
       <p class="hint settings-autosave">Changes save as you make them.</p>
+      ${continueCta}
     </main>`;
 }

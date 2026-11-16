@@ -193,7 +193,7 @@ function dayHtml(day: PlanDayView, total: number, makeOptions: readonly DayOptio
             ${later}
           </div>
           <div class="row remove">
-            <button type="button" data-remove${total <= 1 ? " disabled" : ""}>Remove</button>
+            <button type="button" data-remove>Remove</button>
           </div>
         </div>
       </details>
@@ -239,18 +239,27 @@ function levelPanelHtml(level: PlanPageModel["level"]): string {
  */
 export function planPageHtml(model: PlanPageModel): string {
   const count = model.days.length;
+  const hasDays = count > 0;
   const status = model.status ? `<p class="plan-status" data-plan-status aria-live="polite">${escapeHtml(model.status)}</p>` : "";
+  const empty = hasDays
+    ? ""
+    : `<p class="tagline" data-plan-empty>No days yet. Add an area below to build the first block.</p>`;
+  const dayWord = count === 1 ? "day" : "days";
+  const countLine = hasDays
+    ? `<p class="lib-count">${count} ${dayWord} · open a day to see its exercises, drag ⠿ to reorder</p>`
+    : `<p class="lib-count">0 days</p>`;
   return `
     <main class="shell plan">
       <p class="eyebrow">Plan</p>
       <h1>Coming up</h1>
-      <p class="lib-count">${count} ${count === 1 ? "day" : "days"} · open a day to see its exercises, drag ⠿ to reorder</p>
+      ${countLine}
+      ${empty}
       ${status}
       <ol class="plan-days" aria-label="Days coming up">
         ${model.days.map((day) => dayHtml(day, count, model.makeOptions)).join("")}
       </ol>
       ${levelPanelHtml(model.level)}
-      ${addPanelHtml(model)}
+      ${addPanelHtml({ ...model, addOpen: model.addOpen || !hasDays })}
       <p class="hint">Exercises shown are for a normal morning. A poor night's sleep or a deload week makes the day lighter.</p>
     </main>
   `;

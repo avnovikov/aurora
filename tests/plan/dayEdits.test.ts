@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { EXERCISE_GRAPH, requireExercise } from "../../src/data/exerciseGraph";
-import { TEMPLATE_BY_ID } from "../../src/data/seed";
+import { DEFAULT_PLAN_QUEUE, TEMPLATE_BY_ID } from "../../src/data/seed";
 import type { ExerciseMemory } from "../../src/domain/types";
 import { addBlockToPlan } from "../../src/plan/blockActions";
 import { easierChoice, easierInDay, excludeFromDay, setDayExercise, undoExclude } from "../../src/plan/dayEdits";
@@ -35,7 +35,7 @@ function ladderEasier(exerciseId: string, avoid: readonly string[] = []) {
   return easierStep(family, { exercise: requireExercise(exerciseId), rank }, state(), new Set(avoid))?.exercise;
 }
 
-useMemoryStorage();
+useMemoryStorage(() => ({ "aurora.poc.planQueue.v1": JSON.stringify(DEFAULT_PLAN_QUEUE) }));
 
 describe("Easier", () => {
   it("takes the move's own Easier link, as the exercise page shows it", () => {

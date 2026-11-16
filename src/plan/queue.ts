@@ -1,5 +1,6 @@
 import { DEFAULT_PLAN_QUEUE } from "../data/seed";
 import type { PlanQueue, SessionTemplate } from "../domain/program";
+import { loadProfile } from "../settings/profile";
 import type { ScheduleOverride } from "./scheduleOverride";
 import { prunePlanDays } from "./planDays";
 import { loadScheduleOverride } from "./scheduleOverride";
@@ -7,27 +8,36 @@ import { assertKnownTemplate, findTemplate, isKnownTemplate, resolveTemplate } f
 
 const KEY = "aurora.poc.planQueue.v1";
 
+/** Legacy installs that finished setup before empty queues existed never wrote a key. */
+function missingKeyFallback(): PlanQueue {
+  if (loadProfile().setupDone) {
+    return structuredClone(DEFAULT_PLAN_QUEUE);
+  }
+  return { items: [] };
+}
+
 export function loadPlanQueue(): PlanQueue {
   const raw = localStorage.getItem(KEY);
   if (!raw) {
-    return structuredClone(DEFAULT_PLAN_QUEUE);
+    return missingKeyFallback();
   }
   try {
     const parsed = JSON.parse(raw) as PlanQueue;
-    if (!Array.isArray(parsed.items) || parsed.items.length === 0) {
-      return structuredClone(DEFAULT_PLAN_QUEUE);
+    if (!Array.isArray(parsed.items)) {
+      return missingKeyFallback();
     }
-    return parsed;
+    // Explicit empty stays empty — do not reseed the default programme.
+    return { items: [...parsed.items] };
   } catch {
-    return structuredClone(DEFAULT_PLAN_QUEUE);
+    return missingKeyFallback();
   }
 }
 
 export function savePlanQueue(queue: PlanQueue): void {
-  if (queue.items.length === 0) {
-    throw new Error("Plan queue must not be empty");
+  if (!Array.isArray(queue.items)) {
+    throw new Error("Plan queue items must be an array");
   }
-  localStorage.setItem(KEY, JSON.stringify(queue));
+  localStorage.setItem(KEY, JSON.stringify({ items: [...queue.items] }));
   // Generated days that are neither queued nor today's override are done with.
   prunePlanDays([...queue.items, loadScheduleOverride()?.templateId]);
 }
@@ -91,9 +101,6 @@ export function completeNext(queue: PlanQueue): PlanQueue {
   if (template?.repeat) {
     nextItems.push(head);
   }
-  if (nextItems.length === 0) {
-    return structuredClone(DEFAULT_PLAN_QUEUE);
-  }
   return { items: nextItems };
 }
 
@@ -142,11 +149,7 @@ export function moveQueueItem(
 
 export function removeQueueItem(queue: PlanQueue, index: number): PlanQueue {
   assertIndex(queue, index);
-  if (queue.items.length <= 1) {
-    throw new Error("Plan queue must keep at least one session");
-  }
-  const items = queue.items.filter((_, i) => i !== index);
-  return { items };
+  return { items: queue.items.filter((_, i) => i !== index) };
 }
 
 /** Append a known template id without mutating the loaded queue. */
