@@ -477,9 +477,7 @@ html:has(.shell.session) {
 .session-bar .work-actions .cta + .btn-quiet {
   margin-left: -12px;
 }
+/* Centring comes from the doodle's own viewBox (fitted in renderSvg.ts). */
 .session .doodle {
-  display: block;
-  margin: 8px auto;
-  width: auto;
   max-height: 7rem;
 }
