@@ -77,20 +77,30 @@ function pushUp(shoulderY: number): Pose {
   };
 }
 
-/**
- * One knee drawn forward towards the elbow while the body lowers: `stage` 1 is the start (knee
- * swinging forward under the hips), 2 the bottom (knee beside the elbow).
- */
-function spiderman(side: "near" | "far", stage: 1 | 2): Pose {
-  const base = pushUp(stage === 2 ? -56 : -110);
+/** Thigh angle and ankle height of the stepping leg; the knee bends and the shin trails back. */
+function steppingLeg(base: Pose, side: "near" | "far", thighDeg: number, ankleY: number, toe: number): Pose {
   const pelvis = base.pelvis as Point;
-  const knee = along(pelvis, stage === 2 ? -2 : 40, 88);
+  const knee = along(pelvis, thighDeg, 88);
+  const ankle: Point = [round(knee[0] - Math.sqrt(86 ** 2 - (ankleY - knee[1]) ** 2)), ankleY];
   return {
     ...base,
     knees: { [side]: { at: knee } },
-    feet: { ...base.feet, [side]: along(knee, stage === 2 ? 150 : 172, 86) },
-    toes: { ...base.toes, [side]: 175 },
+    feet: { ...base.feet, [side]: ankle },
+    toes: { ...base.toes, [side]: toe },
   };
+}
+
+/**
+ * One knee drawn forward under the body while the arms bend. A side view can't show the knee
+ * travelling out to the side, so it comes in low, under the elbow, without crossing the arm.
+ * `stage` 1 drags the foot along the floor under the hips, 2 brings the knee forward at the top,
+ * 3 is the bottom (the knee under the elbow).
+ */
+function spiderman(side: "near" | "far", stage: 1 | 2 | 3): Pose {
+  // The foot turns over through toes-up (never toes-down through the floor), then trails back.
+  if (stage === 1) return steppingLeg(pushUp(-126), side, 94, -16, -80);
+  if (stage === 2) return steppingLeg(pushUp(-126), side, 42, -10, 186);
+  return steppingLeg(pushUp(-100), side, 46, -8, 186);
 }
 
 // ---------------------------------------------------------------- L-sit and pike compression
@@ -121,15 +131,37 @@ function lSitHold(lift: number): Pose {
   };
 }
 
-/** Seated pike, chest folded towards the thighs, hands by the knees; `lift` raises the straight legs. */
+/** Shoulder a locked arm (shoulder to fingertip) from `hand` and a torso length from `pelvis`, the upper option. */
+function lockedShoulder(pelvis: Point, hand: Point): Point {
+  const torso = 98;
+  const arm = 125.97;
+  const d = Math.hypot(hand[0] - pelvis[0], hand[1] - pelvis[1]);
+  const a = (torso ** 2 - arm ** 2 + d ** 2) / (2 * d);
+  const h = Math.sqrt(torso ** 2 - a ** 2);
+  const u: Point = [(hand[0] - pelvis[0]) / d, (hand[1] - pelvis[1]) / d];
+  const base: Point = [pelvis[0] + u[0] * a, pelvis[1] + u[1] * a];
+  const options: Point[] = [
+    [base[0] - u[1] * h, base[1] + u[0] * h],
+    [base[0] + u[1] * h, base[1] - u[0] * h],
+  ];
+  return options[0][1] < options[1][1] ? options[0] : options[1];
+}
+
+const PIKE_PELVIS: Point = [-40, -16];
+/** Hands flat beside the knees. */
+const PIKE_HAND: Point = [64, -2];
+
+/** Seated pike, leaning forward over locked arms with the hands by the knees; `lift` raises the straight legs. */
 function pikeCompression(lift: number): Pose {
-  const pelvis: Point = [-40, -16];
-  const chest = along(pelvis, -34, 80);
+  const pelvis = PIKE_PELVIS;
+  const shoulder = lockedShoulder(pelvis, PIKE_HAND);
+  const torso = (Math.atan2(shoulder[1] - pelvis[1], shoulder[0] - pelvis[0]) * 180) / Math.PI;
   return {
     pelvis,
-    chest,
-    head: along(along(chest, -34, 20), -14, 36),
-    hands: { near: [90, -2], far: [86, -2] },
+    chest: along(pelvis, torso, 80),
+    // Eyes down towards the knees.
+    head: along(along(pelvis, torso, 100), torso + 40, 36),
+    hands: { near: PIKE_HAND, far: [PIKE_HAND[0] - 3, PIKE_HAND[1]] },
     elbows: { near: { bend: 1 }, far: { bend: 1 } },
     feet: { near: along(pelvis, 3 - lift, 173.6), far: along(pelvis, 3 - lift, 173.2) },
     toes: { near: 12 - lift, far: 12 - lift },
@@ -214,27 +246,28 @@ function copenhagen(lifted: boolean): Pose {
 
 const CLAM_PELVIS: Point = [0, -24];
 
-/** Side-lying, head on the lower arm, knees bent; `open` lifts the top knee with the feet together. */
+/** Bottom (near) leg: hip 8 below the pelvis in the front view, knee forward and up, foot on the floor. */
+const CLAM_BOTTOM_KNEE = along([CLAM_PELVIS[0], CLAM_PELVIS[1] + 8], -24, 88);
+const CLAM_BOTTOM_FOOT = along(CLAM_BOTTOM_KNEE, 30, 86);
+
+/**
+ * Side-lying, head resting on the straight lower arm, knees bent, feet together. With fixed bone
+ * lengths the top knee can only rise if the hip-to-ankle distance shrinks, so `open` (0..1) slides
+ * the top ankle a little along the bottom foot (it stays resting on it, never lifting).
+ */
 function clamshell(open: number): Pose {
-  // Front view stacks the hips 16 apart: near (bottom) 8 below the pelvis, far (top) 8 above.
-  const bottomHip: Point = [CLAM_PELVIS[0], CLAM_PELVIS[1] + 8];
-  const topHip: Point = [CLAM_PELVIS[0], CLAM_PELVIS[1] - 8];
-  const bottomKnee = along(bottomHip, -24, 88);
-  const bottomFoot = along(bottomKnee, 30, 86);
-  const topKnee = along(topHip, -30 - open, 88);
-  // The top foot stays as close to the bottom foot as the shin allows.
-  const toward = Math.atan2(bottomFoot[1] - 10 - topKnee[1], bottomFoot[0] - topKnee[0]) * (180 / Math.PI);
-  const topFoot = along(topKnee, toward, 86);
+  const topAnkle: Point = [round(CLAM_BOTTOM_FOOT[0] - 22 * open), round(CLAM_BOTTOM_FOOT[1] - 12 - 4 * open)];
   return {
     pelvis: CLAM_PELVIS,
     chest: [-80, CLAM_PELVIS[1]],
-    head: [-134, -38],
+    // Head rests on the lower arm.
+    head: [-134, -30],
     spine: { bend: -1 },
-    // Bottom arm long overhead along the floor as a pillow; top arm long along the top side.
-    hands: { near: [-222, -4], far: [24, -38] },
-    elbows: { near: { bend: 1 }, far: { bend: 1 } },
-    knees: { near: { at: bottomKnee }, far: { at: topKnee } },
-    feet: { near: bottomFoot, far: topFoot },
+    // Lower arm straight overhead along the floor as the pillow; top arm straight along the top side.
+    hands: { near: [-223.5, -3], far: [26, -44] },
+    elbows: { near: { bend: 1 }, far: { bend: -1 } },
+    knees: { near: { at: CLAM_BOTTOM_KNEE }, far: { bend: -1 } },
+    feet: { near: CLAM_BOTTOM_FOOT, far: topAnkle },
     toes: { near: 0, far: 0 },
   };
 }
@@ -249,13 +282,17 @@ export const BATCH_D_SPECS: DoodleSpec[] = [
     transition: 0.5,
     frames: [
       { hold: 0.3, pose: pushUp(-126) },
-      { hold: 0.05, pose: spiderman("near", 1) },
-      { hold: 0.5, pose: spiderman("near", 2) },
-      { hold: 0.05, pose: spiderman("near", 1) },
+      { hold: 0, pose: spiderman("near", 1) },
+      { hold: 0, pose: spiderman("near", 2) },
+      { hold: 0.5, pose: spiderman("near", 3) },
+      { hold: 0, pose: spiderman("near", 2) },
+      { hold: 0, pose: spiderman("near", 1) },
       { hold: 0.3, pose: pushUp(-126) },
-      { hold: 0.05, pose: spiderman("far", 1) },
-      { hold: 0.5, pose: spiderman("far", 2) },
-      { hold: 0.05, pose: spiderman("far", 1) },
+      { hold: 0, pose: spiderman("far", 1) },
+      { hold: 0, pose: spiderman("far", 2) },
+      { hold: 0.5, pose: spiderman("far", 3) },
+      { hold: 0, pose: spiderman("far", 2) },
+      { hold: 0, pose: spiderman("far", 1) },
     ],
   },
   {
@@ -334,7 +371,7 @@ export const BATCH_D_SPECS: DoodleSpec[] = [
     transition: 1,
     frames: [
       { hold: 0.4, pose: clamshell(0) },
-      { hold: 0.5, pose: clamshell(26) },
+      { hold: 0.5, pose: clamshell(1) },
     ],
   },
 ];

@@ -199,60 +199,82 @@ function hspuTilt(forearmDeg: number, upperDeg: number, bodyDeg: number): Pose {
   };
 }
 
-const BLOCK_H = 40;
-const DEFICIT_HAND: Point = [52, -BLOCK_H - 1];
+/** Tall blocks under the hands, well clear of the wall so only the heels touch it. */
+const BLOCK_H = 70;
+const DEFICIT_HAND: Point = [116, -BLOCK_H - 1];
 const DEFICIT_WALL_X = 17;
+/** Ankle x with the heel resting on the wall's face (wall face at x 31 plus the stroke). */
+const DEFICIT_HEEL_X = DEFICIT_WALL_X + 14 + 7;
+const DEFICIT_TOP: Point = [DEFICIT_HAND[0], round(DEFICIT_HAND[1] - LOCKED)];
+/** Bottom: shoulders just above the block tops, head in front of the blocks and below the hands. */
+const DEFICIT_BOTTOM: Point = [DEFICIT_HAND[0] + 52, DEFICIT_HAND[1] - 4];
 
-/** Wall handstand on blocks: the heels rest on the wall behind. */
-function deficitTop(): Pose {
-  const shoulder: Point = [52, DEFICIT_HAND[1] - 126];
-  const dir = -94.2;
+/**
+ * Wall handstand push-up on blocks, `depth` 0 (arms locked) to 1 (bottom). The straight body runs
+ * from the shoulder up to the heels on the wall, so it never lies along the wall.
+ */
+function deficit(depth: number): Pose {
+  const shoulder: Point = [
+    // The shoulders travel forward early, then mostly down, so the forearms stay near vertical.
+    round(DEFICIT_TOP[0] + (DEFICIT_BOTTOM[0] - DEFICIT_TOP[0]) * Math.sqrt(depth)),
+    round(DEFICIT_TOP[1] + (DEFICIT_BOTTOM[1] - DEFICIT_TOP[1]) * depth),
+  ];
+  const heelY = shoulder[1] - Math.sqrt(BODY ** 2 - (shoulder[0] - DEFICIT_HEEL_X) ** 2);
+  const dir = angle(shoulder, [DEFICIT_HEEL_X, heelY]);
   const pelvis = along(shoulder, dir, 98);
+  const farHand: Point = [DEFICIT_HAND[0] - 2, DEFICIT_HAND[1]];
   return {
     pelvis,
-    chest: along(pelvis, dir + 180, 80),
-    head: [75, shoulder[1] + 29],
-    hands: { near: DEFICIT_HAND, far: [DEFICIT_HAND[0] - 2, DEFICIT_HAND[1]] },
-    feet: { near: along(pelvis, dir, 174), far: along(pelvis, dir, 174) },
-    toes: { near: -75, far: -75 },
-  };
-}
-
-/** Bottom of the deficit push-up: forearms near vertical, head below the hands, in front of the blocks. */
-function deficitBottom(upperDeg: number, forearmDeg: number): Pose {
-  const elbow = along(DEFICIT_HAND, forearmDeg, 66);
-  const shoulder = along(elbow, upperDeg, 60);
-  // Body leans back from the shoulders so the heels stay on the wall.
-  const dir = angle(shoulder, [DEFICIT_WALL_X + 17, shoulder[1] - 263]);
-  const pelvis = along(shoulder, dir, 98);
-  const chest = along(shoulder, dir, 18);
-  const neck = along(chest, dir + 180, 20);
-  return {
-    pelvis,
-    chest,
-    head: along(neck, dir + 180, 36),
-    hands: { near: DEFICIT_HAND, far: DEFICIT_HAND },
-    elbows: { near: { at: elbow }, far: { at: elbow } },
-    feet: { near: along(pelvis, dir, 174), far: along(pelvis, dir, 174) },
-    toes: { near: -75, far: -75 },
+    chest: along(shoulder, dir, 18),
+    // Eyes on the floor in front of the hands at the top; the head drops in line at the bottom.
+    head: along(shoulder, dir + 180 - 30 * (1 - depth), 38),
+    hands: { near: DEFICIT_HAND, far: farHand },
+    // Elbows fold up over the hands.
+    elbows: { near: { bend: 1 }, far: { bend: 1 } },
+    feet: { near: along(pelvis, dir, 174), far: along(pelvis, dir, 173) },
+    toes: { near: -85, far: -85 },
   };
 }
 
 // ---------------------------------------------------------------- cat plank
 
+/** Shoulder height of the cat plank: arms locked straight down to the floor. */
+const CAT_SHOULDER_Y = -125.95;
+
+/**
+ * Hands and knees, knees hovering, arms locked and pushing the floor away. The pelvis stays put;
+ * `breathe` 1 draws the chest back a little so the upper back rounds more (the waist humps up).
+ */
 function catPlank(breathe: 0 | 1): Pose {
-  const pelvis: Point = [-50, -96 - breathe * 2];
-  const knee = along(pelvis, 79.5 - breathe, 88);
-  const ankle = along(knee, 184, 86);
+  const pelvis: Point = [-50, -103];
+  const chestX = 27 - breathe * 1.5;
+  // Raise the chest until the shoulder sits a locked arm above the floor.
+  let lo = -150;
+  let hi = -100;
+  for (let i = 0; i < 40; i += 1) {
+    const mid = (lo + hi) / 2;
+    const y = solvePose({ pelvis, chest: [chestX, mid], spine: { bend: -1 } }).arms.near.root[1];
+    if (y < CAT_SHOULDER_Y) lo = mid;
+    else hi = mid;
+  }
+  const chest: Point = [chestX, round((lo + hi) / 2)];
+  const shoulder = solvePose({ pelvis, chest, spine: { bend: -1 } }).arms.near.root;
+  const hand = round(shoulder[0]);
+  const knee = along(pelvis, 86, 88);
+  // Toes tucked: the ankle sits 14 above the floor so the foot reaches down to it.
+  const ankle: Point = [round(knee[0] - Math.sqrt(86 ** 2 - (knee[1] + 14) ** 2)), -14];
+  const toe = round(Math.asin(-ankle[1] / 20) * (180 / Math.PI));
   return {
     pelvis,
-    chest: [26, -110 - breathe * 3],
-    head: [76, -96 - breathe * 2],
+    chest,
+    // Head hangs forward and a little down, eyes to the floor between the hands.
+    head: along(along(shoulder, 0, 2), 42, 36),
     spine: { bend: -1 },
-    hands: { near: [48, 0], far: [44, 0] },
+    hands: { near: [hand, 0], far: [hand - 3, 0] },
+    elbows: { near: { bend: 1 }, far: { bend: 1 } },
     knees: { near: { at: knee }, far: { at: knee } },
     feet: { near: ankle, far: ankle },
-    toes: { near: round(Math.asin(-ankle[1] / 20) * (180 / Math.PI)), far: round(Math.asin(-ankle[1] / 20) * (180 / Math.PI)) },
+    toes: { near: toe, far: toe },
   };
 }
 
@@ -329,14 +351,33 @@ function invertedRow(shoulderY: number): Pose {
 
 // ---------------------------------------------------------------- manna
 
-/** Seated support: hands under the hips, shoulders behind them; `torso` and `legs` are angles from the pelvis. */
-function mannaPose(pelvis: Point, torso: number, legs: number): Pose {
-  const shoulder = along(pelvis, torso, 98);
-  const handX = round(shoulder[0] + Math.sqrt(125.4 ** 2 - shoulder[1] ** 2));
+/**
+ * Support with locked arms: hands on the floor at `handX` (beside or behind the hips), the shoulder
+ * a locked arm from the hand and a torso length from the pelvis, on the side behind the hands.
+ * `legs` is the angle of the straight legs from the pelvis.
+ */
+function mannaPose(pelvis: Point, handX: number, legs: number): Pose {
+  const hand: Point = [handX, 0];
+  const d = Math.hypot(pelvis[0] - hand[0], pelvis[1] - hand[1]);
+  const torso = 98;
+  // Circle–circle intersection: shoulder `torso` from the pelvis and LOCKED from the hand.
+  const a = (torso ** 2 - LOCKED ** 2 + d ** 2) / (2 * d);
+  const h = Math.sqrt(torso ** 2 - a ** 2);
+  const u: Point = [(hand[0] - pelvis[0]) / d, (hand[1] - pelvis[1]) / d];
+  const base: Point = [pelvis[0] + u[0] * a, pelvis[1] + u[1] * a];
+  const options: Point[] = [
+    [base[0] - u[1] * h, base[1] + u[0] * h],
+    [base[0] + u[1] * h, base[1] - u[0] * h],
+  ];
+  // The higher one: shoulders up and back behind the hands.
+  const shoulder = options[0][1] < options[1][1] ? options[0] : options[1];
+  const torsoDeg = angle(pelvis, shoulder);
   return {
     pelvis,
-    chest: along(pelvis, torso, 80),
-    hands: { near: [handX, 0], far: [handX - 2, 0] },
+    chest: along(pelvis, torsoDeg, 80),
+    head: along(along(pelvis, torsoDeg, 100), torsoDeg + 25, 36),
+    hands: { near: hand, far: [handX - 3, 0] },
+    elbows: { near: { bend: 1 }, far: { bend: 1 } },
     feet: { near: along(pelvis, legs, 173.9), far: along(pelvis, legs - 1, 173.6) },
     toes: { near: legs, far: legs },
   };
@@ -453,15 +494,15 @@ export const BATCH_C_SPECS: DoodleSpec[] = [
     slug: "deficit-handstand-push-up",
     title: "Deficit Handstand Push-Up",
     props: [
-      { kind: "box", x: DEFICIT_WALL_X, y: -520, w: 14, h: 520 },
-      { kind: "box", x: 45, y: -BLOCK_H, w: 14, h: BLOCK_H },
+      { kind: "box", x: DEFICIT_WALL_X, y: -500, w: 14, h: 500 },
+      { kind: "box", x: DEFICIT_HAND[0] - 11, y: -BLOCK_H, w: 20, h: BLOCK_H },
     ],
     transition: 0.7,
     frames: [
-      { hold: 0.5, pose: deficitTop() },
-      { hold: 0, pose: deficitBottom(-50, -92) },
-      { hold: 0.4, pose: deficitBottom(20, -95) },
-      { hold: 0, pose: deficitBottom(-50, -92) },
+      { hold: 0.5, pose: deficit(0) },
+      { hold: 0, pose: deficit(0.5) },
+      { hold: 0.4, pose: deficit(1) },
+      { hold: 0, pose: deficit(0.5) },
     ],
   },
   {
@@ -505,8 +546,8 @@ export const BATCH_C_SPECS: DoodleSpec[] = [
     title: "Manna",
     transition: 1.4,
     frames: [
-      { hold: 0.5, pose: mannaPose([20, -30], -115, -45) },
-      { hold: 1.5, pose: mannaPose([30, -40], -150, -100) },
+      { hold: 0.5, pose: mannaPose([18, -30], 0, -40) },
+      { hold: 1.5, pose: mannaPose([48, -60], 0, -98) },
     ],
   },
 ];
