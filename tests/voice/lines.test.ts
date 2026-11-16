@@ -15,6 +15,12 @@ describe("coach lines", () => {
     );
   });
 
+  it("has Scouse halfway variants for station holds", () => {
+    const halfway = linesFor("halfway");
+    expect(halfway.length).toBeGreaterThan(1);
+    expect(halfway.some((line) => /halfway|half done/i.test(line.text))).toBe(true);
+  });
+
   it("pickLine is deterministic for a fixed random", () => {
     const first = pickLine("session_start", () => 0);
     const again = pickLine("session_start", () => 0);
