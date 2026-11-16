@@ -4,12 +4,12 @@ import { BATCH_C_SPECS } from "./specsBatchC";
 import { BATCH_D_SPECS } from "./specsBatchD";
 import { BATCH_E_SPECS } from "./specsBatchE";
 import { BATCH_F_SPECS } from "./specsBatchF";
+import { BATCH_G_SPECS } from "./specsBatchG";
 import { BATCH_H_SPECS } from "./specsBatchH";
 import { BATCH_I_SPECS } from "./specsBatchI";
 import { BATCH_J_SPECS } from "./specsBatchJ";
 import { STRETCH_SPECS } from "./specsStretch";
 import { proneFromAbove, WARMUP_DRILL_SPECS } from "./specsWarmup";
-import { BATCH_G_SPECS } from "./specsBatchG";
 import { solvePose } from "./rig";
 import type { DoodleSpec, Point, Pose, Prop } from "./rig";
 

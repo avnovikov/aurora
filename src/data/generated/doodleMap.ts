@@ -130,9 +130,6 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "scapular_pull": "/doodles/doodle-scapular-pull.svg",
   "pullup": "/doodles/doodle-pullup.svg",
   "freestanding_hs": "/doodles/doodle-freestanding-hs.svg",
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   "hf_2": "/doodles/doodle-standard-push-up.svg",
   "ntc_knee_push_up": "/doodles/doodle-knee-push-up.svg",
   "ntc_hand_release_push_up": "/doodles/doodle-hand-release-push-up.svg",
@@ -145,8 +142,7 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "hf_31": "/doodles/doodle-planche-lean.svg",
   "hf_32": "/doodles/doodle-tuck-planche.svg",
   "ntc_downward_dog": "/doodles/doodle-downward-dog.svg",
-  "hf_24": "/doodles/doodle-bench-dip.svg"
-=======
+  "hf_24": "/doodles/doodle-bench-dip.svg",
   "fedb_bodyweight_walking_lunge": "/doodles/doodle-bodyweight-walking-lunge.svg",
   "hf_79": "/doodles/doodle-forward-lunge.svg",
   "ntc_reverse_lunge_knee_drive": "/doodles/doodle-reverse-lunge-to-knee-drive.svg",
@@ -157,9 +153,7 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "hf_73": "/doodles/doodle-sissy-squat.svg",
   "fedb_single_leg_glute_bridge": "/doodles/doodle-single-leg-glute-bridge.svg",
   "ntc_low_lunge": "/doodles/doodle-low-lunge.svg",
-  "ntc_lizard": "/doodles/doodle-lizard.svg"
->>>>>>> feature/doodles-h
-=======
+  "ntc_lizard": "/doodles/doodle-lizard.svg",
   "hf_139": "/doodles/doodle-burpee.svg",
   "ntc_squat_thrust": "/doodles/doodle-squat-thrust.svg",
   "hf_121": "/doodles/doodle-mountain-climber.svg",
@@ -171,9 +165,7 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "ntc_lateral_shuffle": "/doodles/doodle-lateral-shuffle.svg",
   "ntc_crab_toe_touch": "/doodles/doodle-crab-toe-touch.svg",
   "hf_117": "/doodles/doodle-superman-hold.svg",
-  "ntc_swimmers": "/doodles/doodle-swimmers.svg"
->>>>>>> feature/doodles-i
-=======
+  "ntc_swimmers": "/doodles/doodle-swimmers.svg",
   "ntc_leg_swings": "/doodles/doodle-leg-swings.svg",
   "wger_2523": "/doodles/doodle-serratus-wall-slide-stretch.svg",
   "ntc_figure_four": "/doodles/doodle-figure-four-stretch.svg",
@@ -183,7 +175,6 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "hf_57": "/doodles/doodle-tuck-front-lever.svg",
   "hf_45": "/doodles/doodle-wide-grip-pull-up.svg",
   "hf_60": "/doodles/doodle-skin-the-cat.svg"
->>>>>>> feature/doodles-j
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
