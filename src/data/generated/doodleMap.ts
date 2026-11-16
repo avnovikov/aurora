@@ -130,6 +130,7 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "scapular_pull": "/doodles/doodle-scapular-pull.svg",
   "pullup": "/doodles/doodle-pullup.svg",
   "freestanding_hs": "/doodles/doodle-freestanding-hs.svg",
+<<<<<<< HEAD
   "hf_2": "/doodles/doodle-standard-push-up.svg",
   "ntc_knee_push_up": "/doodles/doodle-knee-push-up.svg",
   "ntc_hand_release_push_up": "/doodles/doodle-hand-release-push-up.svg",
@@ -143,6 +144,19 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "hf_32": "/doodles/doodle-tuck-planche.svg",
   "ntc_downward_dog": "/doodles/doodle-downward-dog.svg",
   "hf_24": "/doodles/doodle-bench-dip.svg"
+=======
+  "fedb_bodyweight_walking_lunge": "/doodles/doodle-bodyweight-walking-lunge.svg",
+  "hf_79": "/doodles/doodle-forward-lunge.svg",
+  "ntc_reverse_lunge_knee_drive": "/doodles/doodle-reverse-lunge-to-knee-drive.svg",
+  "hf_94": "/doodles/doodle-jump-squat.svg",
+  "ntc_sumo_squat": "/doodles/doodle-sumo-squat.svg",
+  "ntc_squat_pulse": "/doodles/doodle-squat-pulses.svg",
+  "hf_78": "/doodles/doodle-wall-sit.svg",
+  "hf_73": "/doodles/doodle-sissy-squat.svg",
+  "fedb_single_leg_glute_bridge": "/doodles/doodle-single-leg-glute-bridge.svg",
+  "ntc_low_lunge": "/doodles/doodle-low-lunge.svg",
+  "ntc_lizard": "/doodles/doodle-lizard.svg"
+>>>>>>> feature/doodles-h
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
