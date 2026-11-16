@@ -131,6 +131,7 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "pullup": "/doodles/doodle-pullup.svg",
   "freestanding_hs": "/doodles/doodle-freestanding-hs.svg",
 <<<<<<< HEAD
+<<<<<<< HEAD
   "hf_2": "/doodles/doodle-standard-push-up.svg",
   "ntc_knee_push_up": "/doodles/doodle-knee-push-up.svg",
   "ntc_hand_release_push_up": "/doodles/doodle-hand-release-push-up.svg",
@@ -157,6 +158,20 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "ntc_low_lunge": "/doodles/doodle-low-lunge.svg",
   "ntc_lizard": "/doodles/doodle-lizard.svg"
 >>>>>>> feature/doodles-h
+=======
+  "hf_139": "/doodles/doodle-burpee.svg",
+  "ntc_squat_thrust": "/doodles/doodle-squat-thrust.svg",
+  "hf_121": "/doodles/doodle-mountain-climber.svg",
+  "hf_142": "/doodles/doodle-bear-crawl.svg",
+  "ntc_high_knees": "/doodles/doodle-high-knees.svg",
+  "ntc_fast_feet": "/doodles/doodle-fast-feet.svg",
+  "ntc_squat_jacks": "/doodles/doodle-squat-jacks.svg",
+  "ntc_ski_hops": "/doodles/doodle-ski-hops.svg",
+  "ntc_lateral_shuffle": "/doodles/doodle-lateral-shuffle.svg",
+  "ntc_crab_toe_touch": "/doodles/doodle-crab-toe-touch.svg",
+  "hf_117": "/doodles/doodle-superman-hold.svg",
+  "ntc_swimmers": "/doodles/doodle-swimmers.svg"
+>>>>>>> feature/doodles-i
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
