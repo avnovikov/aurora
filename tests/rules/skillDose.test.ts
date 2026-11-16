@@ -55,4 +55,24 @@ describe("skillDose", () => {
       ),
     ).toBe(false);
   });
+
+  it("clamps tier-standard reps into the Library prescription band", () => {
+    const capped = {
+      ...SEED_GRAPH.pullup,
+      prescription: {
+        effort: "reps" as const,
+        rounds: 1,
+        amountMin: 3,
+        amountMax: 6,
+        scope: "total" as const,
+      },
+    };
+    const result = applySkillDose(
+      { sets: 4, reps: 5, targetRir: 2, addedLoadKg: 0 },
+      capped,
+      memory({ declaredTier: "intermediate" }),
+    );
+    // Intermediate pull-up working reps would be 8; clamp to max 6.
+    expect(result.dose.reps).toBe(6);
+  });
 });

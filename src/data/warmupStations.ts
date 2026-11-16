@@ -1,3 +1,4 @@
+import type { ExercisePrescription } from "../domain/prescription";
 import type { Difficulty, SkillTier } from "../domain/types";
 import { doodleFor } from "./doodles";
 import { EXERCISE_GRAPH } from "./exerciseGraph";
@@ -34,8 +35,16 @@ export interface WarmupStation {
   difficulty: Difficulty;
   doodlePath?: string;
   cues: string[];
-  /** One side then the other: the hold pauses halfway to change side. */
+  /**
+   * One side then the other: the hold pauses halfway to change side.
+   * Ignored when `prescription` expands into separate per-side steps.
+   */
   perSide: boolean;
+  /**
+   * Pre-parsed hold dose. When set, `buildWarmupView` expands into one step
+   * per segment (Library dose wins over a single blob timer).
+   */
+  prescription?: ExercisePrescription;
 }
 
 interface StationSpec {
@@ -54,6 +63,27 @@ interface StationSpec {
   extraCues?: string[];
   /** One side then the other (not alternating reps): pause halfway to change side. */
   perSide?: boolean;
+  /** Pre-parsed hold dose; expands to multiple timed steps in the warm-up view. */
+  prescription?: ExercisePrescription;
+}
+
+/** Fixed hold prescription for station specs. */
+export function holdDose(
+  rounds: number,
+  seconds: number,
+  scope: ExercisePrescription["scope"] = "total",
+): ExercisePrescription {
+  return holdBand(rounds, seconds, seconds, scope);
+}
+
+/** Hold prescription with a seconds band (warm-up expands at amountMin). */
+export function holdBand(
+  rounds: number,
+  amountMin: number,
+  amountMax: number,
+  scope: ExercisePrescription["scope"] = "total",
+): ExercisePrescription {
+  return { effort: "hold", rounds, amountMin, amountMax, scope };
 }
 
 /** [C] marks coaching consensus where no trial exists (v3 evidence base). */
@@ -149,6 +179,7 @@ const STATION_SPECS: StationSpec[] = [
     holdSeconds: 40,
     source: SRC.shortStatic,
     extraCues: ["Two 20 s holds"],
+    prescription: holdDose(2, 20),
   },
   { id: "hf_158", phase: "mobilise", regions: ["legs"], holdSeconds: 45, source: SRC.mobilise }, // 90/90 hip switch
   { id: "hf_157", phase: "mobilise", regions: ["legs"], holdSeconds: 30, source: SRC.dorsiflexion }, // Deep squat hold
@@ -172,8 +203,24 @@ const STATION_SPECS: StationSpec[] = [
   { id: "ntc_prone_ytw", phase: "activate", regions: ["pull"], holdSeconds: 60, source: SRC.lowerTrap }, // Prone Y-T-W raise
   { id: "wger_578", phase: "activate", regions: ["pull"], holdSeconds: 60, source: SRC.cuff, extraCues: ["30 s per side, light and slow"], perSide: true }, // Side-lying external rotation
   { id: "scapular_pull", phase: "activate", regions: ["pull"], holdSeconds: 45, source: SRC.scapula, extraCues: ["Easy reps, arms stay straight"] }, // Scapular pull-up
-  { id: "hf_99", phase: "activate", regions: ["core"], holdSeconds: 90, source: SRC.core, extraCues: ["3 × 20–30 s"] }, // Forearm plank
-  { id: "hf_100", phase: "activate", regions: ["core"], holdSeconds: 90, source: SRC.core, extraCues: ["2 × 20 s on one side, then the other"], perSide: true }, // Side plank
+  {
+    id: "hf_99",
+    phase: "activate",
+    regions: ["core"],
+    holdSeconds: 90,
+    source: SRC.core,
+    extraCues: ["3 × 20–30 s"],
+    prescription: holdBand(3, 20, 30),
+  }, // Forearm plank
+  {
+    id: "hf_100",
+    phase: "activate",
+    regions: ["core"],
+    holdSeconds: 90,
+    source: SRC.core,
+    extraCues: ["2 × 20 s on one side, then the other"],
+    prescription: holdDose(2, 20, "perSide"),
+  }, // Side plank — four timers, not one blob + mid switch
   { id: "wger_2690", phase: "activate", regions: ["pull"], holdSeconds: 30, source: SRC.scapula }, // Active hang
   { id: "hf_116", phase: "activate", regions: ["core"], holdSeconds: 60, source: SRC.bracing }, // Bird dog
   { id: "dead_bug", phase: "activate", regions: ["core"], holdSeconds: 60, source: SRC.bracing, extraCues: ["Slow: exhale as the limbs reach"] }, // Dead bug
@@ -184,7 +231,14 @@ const STATION_SPECS: StationSpec[] = [
     holdSeconds: 45,
     cues: ["Arms locked", "Only the shoulder blades move", "Long neck"],
   }),
-  ramp({ id: "wger_2691", regions: ["skill"], holdSeconds: 45, easyCue: RAMP_HOLD_CUE, extraCues: ["2 × 15–20 s"] }), // Pike hold
+  ramp({
+    id: "wger_2691",
+    regions: ["skill"],
+    holdSeconds: 45,
+    easyCue: RAMP_HOLD_CUE,
+    extraCues: ["2 × 15–20 s"],
+    prescription: holdBand(2, 15, 20),
+  }), // Pike hold
   ramp({
     id: "ntc_wall_walk_up_45",
     exerciseId: "ntc_wall_walk_up",
@@ -206,6 +260,7 @@ const STATION_SPECS: StationSpec[] = [
     holdSeconds: 45,
     easyCue: RAMP_HOLD_CUE,
     extraCues: ["Two easy 10–15 s holds, walk down between"],
+    prescription: holdBand(2, 10, 15),
   }),
   ramp({ id: "bodyweight_squat", regions: ["legs"], holdSeconds: 60 }),
   ramp({ id: "wger_2557", regions: ["legs"], holdSeconds: 60, extraCues: ["30 s per leg"], perSide: true }), // Supported split squat
@@ -264,6 +319,7 @@ const STATION_SPECS: StationSpec[] = [
     holdSeconds: 45,
     easyCue: RAMP_HOLD_CUE,
     extraCues: ["Tuck: knees bent over the hips", "2 × 15 s"],
+    prescription: holdDose(2, 15),
   }),
   ramp({
     id: "hollow_hold_ramp",
@@ -272,6 +328,7 @@ const STATION_SPECS: StationSpec[] = [
     holdSeconds: 45,
     easyCue: RAMP_HOLD_CUE,
     extraCues: ["~50% effort: stop long before shaking", "2 × 15–20 s"],
+    prescription: holdBand(2, 15, 20),
   }),
   ramp({ id: "hf_103", regions: ["core"], holdSeconds: 30 }), // Hollow body rock
   ramp({ id: "fedb_incline_push_up", regions: ["push"], holdSeconds: 45 }), // Incline push-up
@@ -293,6 +350,7 @@ const STATION_SPECS: StationSpec[] = [
     holdSeconds: 60,
     source: SRC.stretchShoulder,
     extraCues: ["Arms long to stretch the lats; two 30 s holds"],
+    prescription: holdDose(2, 30),
   },
   {
     id: "hf_158_cooldown",
@@ -302,7 +360,7 @@ const STATION_SPECS: StationSpec[] = [
     holdSeconds: 60,
     source: SRC.stretch,
     extraCues: ["Hold each side 30 s instead of switching"],
-    perSide: true,
+    prescription: holdDose(1, 30, "perSide"),
   },
 ];
 
@@ -318,12 +376,28 @@ function ramp({ easyCue = RAMP_CUE, ...spec }: RampSpec): StationSpec {
 
 /** Cool-down stretch for both sides at once: two 30 s holds. */
 function cooldown(id: string, regions: LoadRegion[], source: string): StationSpec {
-  return { id, phase: "cooldown", regions, holdSeconds: STRETCH_HOLD_SECONDS, source, extraCues: [STRETCH_CUE] };
+  return {
+    id,
+    phase: "cooldown",
+    regions,
+    holdSeconds: STRETCH_HOLD_SECONDS,
+    source,
+    extraCues: [STRETCH_CUE],
+    prescription: holdDose(2, 30),
+  };
 }
 
-/** Cool-down stretch done one side then the other (halfway change-side pause). */
+/** Cool-down stretch: 30 s left then 30 s right as separate timers. */
 function cooldownPerSide(id: string, regions: LoadRegion[], source: string): StationSpec {
-  return { ...cooldown(id, regions, source), extraCues: [STRETCH_SIDES_CUE], perSide: true };
+  return {
+    id,
+    phase: "cooldown",
+    regions,
+    holdSeconds: STRETCH_HOLD_SECONDS,
+    source,
+    extraCues: [STRETCH_SIDES_CUE],
+    prescription: holdDose(1, 30, "perSide"),
+  };
 }
 
 /** Library level as a move difficulty (a move is never "novice"). */
@@ -350,6 +424,7 @@ function resolveStation(spec: StationSpec): WarmupStation {
     doodlePath: doodleFor(exerciseId, exercise.doodlePath),
     cues: [...baseCues, ...(spec.extraCues ?? [])],
     perSide: spec.perSide === true,
+    prescription: spec.prescription,
   };
 }
 

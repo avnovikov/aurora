@@ -4,7 +4,11 @@ import { FOCUS_BY_ID } from "../../src/doodles/focus";
 import * as rig from "../../src/doodles/rig";
 import { renderDoodleSvg } from "../../src/doodles/renderSvg";
 import { DOODLE_SPECS } from "../../src/doodles/specs";
-import { doodleMarkup } from "../../src/doodles/doodleMarkup";
+import {
+  clearDoodleCache,
+  doodleMarkup,
+  prefetchDoodles,
+} from "../../src/doodles/doodleMarkup";
 
 /** Hex colours left after removing every `var(--name, #hex)` fallback. */
 function bareHex(svg: string): string[] {
@@ -29,6 +33,20 @@ describe("palette-aware doodle SVG", () => {
     for (const role of ["ink", "paper", "focus", "backdrop"]) {
       expect(svg).toContain(`var(--doodle-${role},`);
     }
+  });
+});
+
+describe("prefetchDoodles", () => {
+  it("fills the cache so the first markup call does not re-sample", () => {
+    clearDoodleCache();
+    const spy = vi.spyOn(rig, "sampleTimeline");
+    prefetchDoodles(["glute_bridge", undefined, "no_such_exercise"]);
+    const samplesAfterPrefetch = spy.mock.calls.length;
+    expect(samplesAfterPrefetch).toBeGreaterThan(0);
+    doodleMarkup("glute_bridge", "Glute bridge");
+    expect(spy.mock.calls.length).toBe(samplesAfterPrefetch);
+    spy.mockRestore();
+    clearDoodleCache();
   });
 });
 

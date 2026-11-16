@@ -1,3 +1,4 @@
+import { clampToPrescription } from "../domain/prescription";
 import {
   inferTierFromBest,
   maxTier,
@@ -51,7 +52,10 @@ export function applySkillDose(
   }
   const tier = effectiveSkillTier(memory, exercise);
   const targetRir = rirForTier(dose.targetRir, tier);
-  const working = capDose(workingRepsForTier(standards, tier, targetRir), exercise, tier);
+  let working = capDose(workingRepsForTier(standards, tier, targetRir), exercise, tier);
+  if (exercise.prescription) {
+    working = clampToPrescription(working, exercise.prescription);
+  }
   return {
     dose: { ...dose, reps: working, targetRir },
     tier,
@@ -59,11 +63,12 @@ export function applySkillDose(
   };
 }
 
+/** Sessions at the standard before a move is ready for its harder step. */
+export const SESSIONS_AT_STANDARD_TO_ADVANCE = 2;
+
 /**
  * Fast path onto the harder progression when performance already proves readiness.
  */
-/** Sessions at the standard before a move is ready for its harder step. */
-export const SESSIONS_AT_STANDARD_TO_ADVANCE = 2;
 
 export function shouldAdvanceProgression(
   exercise: Exercise,

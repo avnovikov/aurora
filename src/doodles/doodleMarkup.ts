@@ -25,8 +25,38 @@ function svgFor(spec: DoodleSpec): string {
   return svg;
 }
 
+/**
+ * Drop cached SVGs. Colours use CSS variables so a palette change does not
+ * require this; call when specs change or tests need a clean cache.
+ */
+export function clearDoodleCache(): void {
+  SVG_CACHE.clear();
+}
+
+/**
+ * Pre-render doodles for a session (warm-up / cool-down / work) so the first
+ * station animates immediately. Safe to call with missing ids/paths.
+ */
+export function prefetchDoodles(idsOrPaths: readonly (string | undefined)[]): void {
+  for (const idOrPath of idsOrPaths) {
+    if (!idOrPath) {
+      continue;
+    }
+    const spec = animatedSpecFor(idOrPath);
+    if (spec) {
+      svgFor(spec);
+    }
+  }
+}
+
+/** Animated spec for an exercise id or doodle path, when one exists. */
+function animatedSpecFor(idOrPath: string): DoodleSpec | undefined {
+  const path = resolveDoodlePath(idOrPath);
+  return path ? SPEC_BY_PATH.get(path) : undefined;
+}
+
 /** The doodle path an exercise shows (hand-drawn or animated), or the path itself. */
-function resolvePath(idOrPath: string): string | undefined {
+function resolveDoodlePath(idOrPath: string): string | undefined {
   return idOrPath.startsWith("/") ? idOrPath : EXERCISE_GRAPH[idOrPath]?.doodlePath;
 }
 
@@ -36,7 +66,10 @@ function resolvePath(idOrPath: string): string | undefined {
  * active palette; a hand-drawn JPG stays an `<img class="doodle">`.
  */
 export function doodleMarkup(idOrPath: string | undefined, title: string): string {
-  const path = idOrPath ? resolvePath(idOrPath) : undefined;
+  if (!idOrPath) {
+    return "";
+  }
+  const path = resolveDoodlePath(idOrPath);
   if (!path) {
     return "";
   }
