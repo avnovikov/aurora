@@ -5,6 +5,8 @@ import type { ViewState } from "./sessionTypes";
 
 export interface WarmupTimerHandle {
   clear: () => void;
+  /** End the station now (the forward swipe): as if its clock ran out. */
+  finish: () => void;
 }
 
 export interface WarmupRunnerCallbacks {
@@ -89,19 +91,29 @@ export function startStationHold(
     return left <= 0;
   };
 
+  let finished = false;
+  const finish = (): void => {
+    if (finished) {
+      return;
+    }
+    finished = true;
+    window.clearInterval(timerId);
+    finishHold();
+  };
+
   const timerId = window.setInterval(() => {
     if (switchLeft > 0) {
       tickSwitch();
       return;
     }
     if (tickHold()) {
-      window.clearInterval(timerId);
-      finishHold();
+      finish();
     }
   }, 1000);
 
   return {
     clear: () => window.clearInterval(timerId),
+    finish,
   };
 }
 

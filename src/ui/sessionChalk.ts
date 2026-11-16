@@ -19,7 +19,7 @@ import { cooldownSteps, currentWork, isGetReadyRest } from "./sessionState";
 import type { ViewState } from "./sessionTypes";
 import { doseNoteHtml } from "./sessionDoseNote";
 import { weightControlsHtml } from "./sessionWeightControls";
-import { IDLE_CHIP } from "./todayPulse";
+import { isPulseLost, pulseChipText } from "./sessionPulse";
 import "../styles/session.css";
 
 export function shellHtml(planned: PlannedSession, state: ViewState): string {
@@ -47,7 +47,7 @@ const WORK_ACTIONS_HTML = `
 
 /** Pinned to the bottom, in thumb reach: the set actions (during work), the pulse reading and the Strap controls. */
 function pulseBarHtml(state: ViewState, actions: string): string {
-  const pulseClass = state.pulse.connected && state.bpm === null ? " pulse-lost" : "";
+  const pulseClass = isPulseLost(state) ? " pulse-lost" : "";
   const status = state.pulseStatus
     ? `<p class="session-bar-status" data-pulse-status>${escapeHtml(state.pulseStatus)}</p>`
     : "";
@@ -55,7 +55,7 @@ function pulseBarHtml(state: ViewState, actions: string): string {
       <footer class="session-bar pulse-row${pulseClass}">
         ${actions}
         ${status}
-        <p class="pulse-chip">${state.bpm === null ? IDLE_CHIP : `Pulse ${state.bpm}`}</p>
+        <p class="pulse-chip">${pulseChipText(state)}</p>
         <details class="pulse-more strap">
           <summary>Strap</summary>
           <div class="strap-actions">${pulseControlsHtml()}</div>
@@ -165,20 +165,19 @@ function surfaceHtml(planned: PlannedSession, state: ViewState): Surface {
 }
 
 function warmupHtml(planned: PlannedSession, state: ViewState): string {
-  const step = planned.warmup[state.warmupIndex];
-  if (!step) {
+  if (!planned.warmup[state.warmupIndex]) {
     return `<section class="session-read"><p class="tagline">Warmup complete</p></section>`;
   }
-  return stationHtml("Warmup", step);
+  return stationOrGapHtml("Warmup", planned.warmup, state.warmupIndex, state);
 }
 
 function cooldownHtml(planned: PlannedSession, state: ViewState): string {
-  const step = cooldownSteps(planned)[state.cooldownIndex];
-  if (!step) {
+  const steps = cooldownSteps(planned);
+  if (!steps[state.cooldownIndex]) {
     return `<section class="session-read"><p class="tagline">Cool-down complete</p></section>`;
   }
   return `
-    ${stationHtml("Cool-down", step)}
+    ${stationOrGapHtml("Cool-down", steps, state.cooldownIndex, state)}
     <div class="work-actions-secondary session-end-cooldown">
       <button type="button" class="btn-quiet" data-cooldown-skip>End cool-down</button>
     </div>
@@ -204,13 +203,55 @@ function stationHtml(eyebrow: string, step: WarmupStep): string {
       ${sideSwitchHtml(step)}`;
   const move = displayExerciseName(step.name);
   return `
-    ${heroHtml({ phase: eyebrow, move, dose, doodle: doodleMarkup(step.doodlePath, move) })}
-    <section class="session-read">
-      ${summaryHtml(EXERCISE_GRAPH[step.stationId]?.description)}
-      ${attentionHtml(step.cues)}
-      ${source}
-    </section>
+    <div class="station-stage swipe-stage" data-swipe-stage="station">
+      ${heroHtml({ phase: eyebrow, move, dose, doodle: doodleMarkup(step.doodlePath, move) })}
+      <section class="session-read">
+        ${summaryHtml(EXERCISE_GRAPH[step.stationId]?.description)}
+        ${attentionHtml(step.cues)}
+        ${source}
+        <p class="hint">Swipe left to finish this one now</p>
+      </section>
+    </div>
   `;
+}
+
+/**
+ * Station `index` while it runs; in its gap (the timer has put the view into
+ * rest, the index not yet advanced) the rest before the station after it.
+ */
+function stationOrGapHtml(
+  eyebrow: string,
+  steps: readonly WarmupStep[],
+  index: number,
+  state: ViewState,
+): string {
+  return state.phase === "rest"
+    ? stationGapHtml(steps[index + 1], state)
+    : stationHtml(eyebrow, steps[index]!);
+}
+
+/** The short rest between two stations: the countdown and the station that comes next. */
+function stationGapHtml(next: WarmupStep | undefined, state: ViewState): string {
+  const nextLine = next ? `next ${escapeHtml(displayExerciseName(next.name))}` : "next station";
+  return `
+    <div class="rest-stage swipe-stage" data-swipe-stage="rest">
+      ${restHeroHtml(`Rest · ${nextLine}`, state)}
+      <section class="session-read">
+        <p class="hint">Swipe left to start it now</p>
+      </section>
+    </div>
+  `;
+}
+
+/** The rest countdown as the hero, under its eyebrow; extra lines go after the cue. */
+function restHeroHtml(eyebrow: string, state: ViewState, extra = ""): string {
+  return `
+      <section class="session-hero">
+        <p class="eyebrow session-phase">${eyebrow}</p>
+        <p class="session-dose">${doseFigureHtml(`<span class="reps" data-rest-left>${state.restLeft}</span>`, SECONDS_UNIT_HTML)}</p>
+        <p class="rest-cue" data-rest-cue></p>
+        ${extra}
+      </section>`;
 }
 
 interface HeroParts {
@@ -341,12 +382,7 @@ function restHtml(planned: PlannedSession, state: ViewState): string {
     : "";
   return `
     <div class="rest-stage swipe-stage" data-swipe-stage="rest">
-      <section class="session-hero">
-        <p class="eyebrow session-phase">${getReady ? "Get ready" : "Rest"} · ${nextLine}</p>
-        <p class="session-dose">${doseFigureHtml(`<span class="reps" data-rest-left>${state.restLeft}</span>`, SECONDS_UNIT_HTML)}</p>
-        <p class="rest-cue" data-rest-cue></p>
-        ${getReadyNote}
-      </section>
+      ${restHeroHtml(`${getReady ? "Get ready" : "Rest"} · ${nextLine}`, state, getReadyNote)}
       <section class="session-read">
         <p class="tagline">Next set reps</p>
         ${repsStepperHtml("rest-reps-row", `<span class="reps-edit">${reps}</span>`)}

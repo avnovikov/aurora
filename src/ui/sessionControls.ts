@@ -37,6 +37,8 @@ export interface SessionControlHandlers {
   onFinishExercise: () => void;
   /** End the running rest now and go on to what it was waiting for. */
   onSkipRest: () => void;
+  /** Forward swipe on a warm-up or cool-down station: end it now. */
+  onFinishStation: () => void;
   onFinishAll: () => void;
   onStartCooldown: () => void;
   onSkipCooldown: () => void;
@@ -78,14 +80,18 @@ function wireStageSwipe(
   state: ViewState,
   handlers: SessionControlHandlers,
 ): void {
-  const work = root.querySelector<HTMLElement>("[data-swipe-stage='work']");
-  if (work) {
-    wireSwipe(work, () => completeSet(planned, state, "completed", handlers));
-  }
-  const rest = root.querySelector<HTMLElement>("[data-swipe-stage='rest']");
-  if (rest) {
-    wireSwipe(rest, handlers.onSkipRest);
-  }
+  // One step forward per stage: log the set, end the rest, finish the station.
+  const forward: Record<string, () => void> = {
+    work: () => completeSet(planned, state, "completed", handlers),
+    rest: handlers.onSkipRest,
+    station: handlers.onFinishStation,
+  };
+  root.querySelectorAll<HTMLElement>("[data-swipe-stage]").forEach((stage) => {
+    const onForward = forward[stage.dataset.swipeStage ?? ""];
+    if (onForward) {
+      wireSwipe(stage, onForward);
+    }
+  });
 }
 
 function wirePulseConnectButtons(

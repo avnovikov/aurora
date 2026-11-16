@@ -23,12 +23,13 @@ import {
   enterDone,
   enterWorkAfterWarmup,
   initialState,
+  needsWorkState,
   persistPhase,
   startCooldown,
   syncWorkState,
 } from "./sessionState";
 import { pulseConnectedAt, pulseDisconnected } from "./pulseState";
-import { attachSessionPulse } from "./sessionPulse";
+import { attachSessionPulse, paintPulseReading } from "./sessionPulse";
 import type { SessionViewOptions } from "./sessionTypes";
 import { startStationHold, type WarmupTimerHandle } from "./sessionWarmup";
 
@@ -79,7 +80,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   };
 
   const paint = (): void => {
-    if ((state.phase === "work" || state.phase === "rest") && !state.workState) {
+    if (needsWorkState(options.planned, state)) {
       state.workState = syncWorkState(options.planned, state);
     }
     root.innerHTML = shellHtml(options.planned, state);
@@ -223,6 +224,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       startRest(onDone, withVoice, timedWorkItem(currentWork(options.planned, state))),
     onFinishExercise: finishExercise,
     onSkipRest: skipRest,
+    onFinishStation: () => warmupHandle?.finish(),
     onFinishAll: finishAll,
     onStartCooldown: () => {
       startCooldown(options.planned, state);
@@ -237,7 +239,8 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     onPulseBpm: (bpm) => {
       state.bpm = bpm;
       state.pulse = pulseConnectedAt(state.pulse, Date.now());
-      paint();
+      // In place: a full repaint once a second would cut off a swipe mid-drag.
+      paintPulseReading(root, state);
     },
     onPulseDisconnected: () => {
       state.pulse = pulseDisconnected(state.pulse);

@@ -87,6 +87,18 @@ export function enterWorkAfterWarmup(planned: PlannedSession, state: ViewState):
   return rest;
 }
 
+/**
+ * The work set needs its state once the warm-up is over. A rest during the
+ * warm-up is a gap between stations, not the get-ready before the first set.
+ */
+export function needsWorkState(planned: PlannedSession, state: ViewState): boolean {
+  return (
+    (state.phase === "work" || state.phase === "rest") &&
+    state.workState === null &&
+    state.warmupIndex >= planned.warmup.length
+  );
+}
+
 /** True during the warm-up → work rest (the only rest before a first set). */
 export function isGetReadyRest(state: ViewState): boolean {
   return state.phase === "rest" && state.workState !== null && state.workIndex === 0 && state.setIndex === 1;
