@@ -132,6 +132,7 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "freestanding_hs": "/doodles/doodle-freestanding-hs.svg",
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   "hf_2": "/doodles/doodle-standard-push-up.svg",
   "ntc_knee_push_up": "/doodles/doodle-knee-push-up.svg",
   "ntc_hand_release_push_up": "/doodles/doodle-hand-release-push-up.svg",
@@ -172,6 +173,17 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "hf_117": "/doodles/doodle-superman-hold.svg",
   "ntc_swimmers": "/doodles/doodle-swimmers.svg"
 >>>>>>> feature/doodles-i
+=======
+  "ntc_leg_swings": "/doodles/doodle-leg-swings.svg",
+  "wger_2523": "/doodles/doodle-serratus-wall-slide-stretch.svg",
+  "ntc_figure_four": "/doodles/doodle-figure-four-stretch.svg",
+  "ntc_butterfly_stretch": "/doodles/doodle-butterfly-stretch.svg",
+  "ntc_walking_knee_hug": "/doodles/doodle-walking-knee-hug.svg",
+  "hf_25": "/doodles/doodle-parallel-bar-dip.svg",
+  "hf_57": "/doodles/doodle-tuck-front-lever.svg",
+  "hf_45": "/doodles/doodle-wide-grip-pull-up.svg",
+  "hf_60": "/doodles/doodle-skin-the-cat.svg"
+>>>>>>> feature/doodles-j
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
