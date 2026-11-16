@@ -303,7 +303,7 @@ function workHtml(item: PlannedWorkItem, state: ViewState): string {
       ${doseNoteHtml(item, state.setIndex, reps)}
       ${weightControlsHtml(loadKg, state.addWeightKg ?? DEFAULT_ADDED_LOAD_KG)}`;
   return `
-    <div class="work-stage" data-swipe-stage>
+    <div class="work-stage swipe-stage" data-swipe-stage="work">
       ${heroHtml({
         phase: `Set ${state.setIndex} of ${item.dose.sets}`,
         move: item.exerciseName,
@@ -318,7 +318,7 @@ function workHtml(item: PlannedWorkItem, state: ViewState): string {
           <summary>Why this dose</summary>
           <p class="reason">${escapeHtml(item.reason)}</p>
         </details>
-        <p class="hint">Log each set below, or swipe to finish this exercise</p>
+        <p class="hint">Log each set below, or swipe left to log it and rest</p>
       </section>
     </div>
   `;
@@ -335,7 +335,7 @@ function restHtml(planned: PlannedSession, state: ViewState): string {
     ? `<p class="tagline">Easy rest after the ramp: walk, breathe, stay warm.</p>`
     : "";
   return `
-    <div class="rest-stage">
+    <div class="rest-stage swipe-stage" data-swipe-stage="rest">
       <section class="session-hero">
         <p class="eyebrow session-phase">${getReady ? "Get ready" : "Rest"} · ${nextLine}</p>
         <p class="session-dose">${doseFigureHtml(`<span class="reps" data-rest-left>${state.restLeft}</span>`, SECONDS_UNIT_HTML)}</p>
@@ -345,6 +345,7 @@ function restHtml(planned: PlannedSession, state: ViewState): string {
       <section class="session-read">
         <p class="tagline">Next set reps</p>
         ${repsStepperHtml("rest-reps-row", `<span class="reps-edit">${reps}</span>`)}
+        <p class="hint">Swipe left to end the rest now</p>
       </section>
     </div>
   `;

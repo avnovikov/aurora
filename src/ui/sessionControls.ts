@@ -35,6 +35,8 @@ export interface SessionControlHandlers {
   onPaint: () => void;
   onStartRest: (withVoice: boolean, onDone: () => void) => void;
   onFinishExercise: () => void;
+  /** End the running rest now and go on to what it was waiting for. */
+  onSkipRest: () => void;
   onFinishAll: () => void;
   onStartCooldown: () => void;
   onSkipCooldown: () => void;
@@ -68,16 +70,22 @@ export function wireSessionControls(
   }
   wirePulseSimButtons(root, state, handlers);
   wirePulseConnectButtons(root, state, handlers);
-  wireStageSwipe(root, handlers);
+  wireStageSwipe(root, planned, state, handlers);
 }
 
 function wireStageSwipe(
   root: HTMLElement,
+  planned: PlannedSession,
+  state: ViewState,
   handlers: SessionControlHandlers,
 ): void {
-  const stage = root.querySelector<HTMLElement>("[data-swipe-stage]");
-  if (stage) {
-    wireSwipe(stage, handlers.onFinishExercise);
+  const work = root.querySelector<HTMLElement>("[data-swipe-stage='work']");
+  if (work) {
+    wireSwipe(work, () => completeSet(planned, state, "completed", handlers));
+  }
+  const rest = root.querySelector<HTMLElement>("[data-swipe-stage='rest']");
+  if (rest) {
+    wireSwipe(rest, handlers.onSkipRest);
   }
 }
 
@@ -163,7 +171,7 @@ function wirePulseSimButtons(
   });
 }
 
-/** Exported for unit tests; session wiring calls this from Log set / Failed / Skip. */
+/** Exported for unit tests; session wiring calls this from Log set / Failed / Skip and the forward swipe. */
 export function completeSet(
   planned: PlannedSession,
   state: ViewState,

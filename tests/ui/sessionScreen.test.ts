@@ -165,7 +165,7 @@ describe("dose as hero", () => {
   it("keeps the swipe stage, Log set and steppers inside the work hero", () => {
     const planned = planLegs();
     const html = shellHtml(planned, workView(planned));
-    const stage = html.indexOf("data-swipe-stage");
+    const stage = html.indexOf('data-swipe-stage="work"');
     expect(stage).toBeGreaterThan(-1);
     expect(html.indexOf("session-hero")).toBeGreaterThan(stage);
     expect(html.indexOf("data-log-set")).toBeGreaterThan(stage);
@@ -184,6 +184,29 @@ describe("dose as hero", () => {
     expect(dose).toMatch(/class="session-dose-unit" aria-hidden="true">s</);
     expect(html).toContain("Rest · next");
     expect(html).toContain("data-rest-cue");
+  });
+});
+
+describe("forward swipe", () => {
+  it("tells the athlete a left swipe logs the set and rests", () => {
+    const planned = planLegs();
+    const html = shellHtml(planned, workView(planned));
+    expect(html).toContain("swipe left to log it and rest");
+    expect(html).not.toContain("swipe to finish this exercise");
+  });
+
+  it("makes the rest a swipe stage that ends the rest early", () => {
+    const planned = planLegs();
+    const state = workView(planned);
+    state.phase = "rest";
+    state.setIndex = 2;
+    state.restLeft = 90;
+    const html = shellHtml(planned, state);
+    expect(html).toContain('data-swipe-stage="rest"');
+    expect(html).not.toContain('data-swipe-stage="work"');
+    expect(slice(html, 'data-swipe-stage="rest"', "</section>\n    </div>")).toContain(
+      "Swipe left to end the rest now",
+    );
   });
 });
 

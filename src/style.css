@@ -277,17 +277,17 @@ button:disabled {
   align-items: center;
 }
 
-.work-stage {
+.swipe-stage {
   touch-action: pan-y;
   will-change: transform, opacity;
 }
 
-.work-stage.is-swiping {
+.swipe-stage.is-swiping {
   user-select: none;
   cursor: grabbing;
 }
 
-.work-stage.is-swipe-exit {
+.swipe-stage.is-swipe-exit {
   pointer-events: none;
 }
 
