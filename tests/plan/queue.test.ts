@@ -37,15 +37,14 @@ describe("plan queue", () => {
     expect(next.items).toEqual(["tmpl_bars", "tmpl_legs", "tmpl_abs"]);
   });
 
-  it("removeQueueItem deletes a slot and keeps at least one", () => {
+  it("removeQueueItem deletes a slot and may leave the plan empty", () => {
     const next = removeQueueItem(
       { items: ["tmpl_legs", "tmpl_abs", "tmpl_bars"] },
       1,
     );
     expect(next.items).toEqual(["tmpl_legs", "tmpl_bars"]);
-    expect(() => removeQueueItem({ items: ["tmpl_legs"] }, 0)).toThrow(
-      "at least one session",
-    );
+    // Since first-run onboarding (#76) an empty plan is allowed.
+    expect(removeQueueItem({ items: ["tmpl_legs"] }, 0).items).toEqual([]);
   });
 
   it("appendQueueItem adds a known template without mutating input", () => {
