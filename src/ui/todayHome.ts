@@ -9,8 +9,8 @@ import { templateDurationLabel, templateTargetsLabel } from "./formatTemplate";
 import { todayPulseHtml } from "./todayPulse";
 
 export interface TodayHomeModel {
-  /** Today's session (the queue head, or the override). */
-  next: SessionTemplate;
+  /** Today's session (the queue head, or the override). Null when the plan is empty. */
+  next: SessionTemplate | null;
   /** Today's session replaces the queue head for today only. */
   isOverride: boolean;
   /** Queue preview, today's session first. */
@@ -30,6 +30,25 @@ export interface TodayHomeModel {
  */
 export function todayHomeHtml(model: TodayHomeModel): string {
   const { next } = model;
+  if (!next) {
+    return `
+    <main class="shell today">
+      <div class="today-card">
+        <section class="today-read">
+          <header>
+            <p class="eyebrow">Aurora · Rassvet</p>
+            <h1>Today</h1>
+          </header>
+          <section class="today-session" aria-labelledby="today-session">
+            <p class="eyebrow">Next up</p>
+            <h2 id="today-session">Nothing planned yet</h2>
+            <p class="tagline">Add days on Plan when you are ready.</p>
+            <button type="button" class="cta" data-open-plan>Open Plan</button>
+          </section>
+        </section>
+      </div>
+    </main>`;
+  }
   const targets = templateTargetsLabel(next.targetExerciseIds, ", ");
   const toward = targets ? `<p class="today-goal">Toward ${escapeHtml(targets)}</p>` : "";
   const core = templateHitsCore(next) ? `<p class="spark">Core area loaded</p>` : "";

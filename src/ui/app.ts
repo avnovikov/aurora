@@ -29,8 +29,8 @@ import { overrideControlsHtml, wireOverrideControls } from "./overrideControls";
 import { advancePlanAfterSession, renderPlanView } from "./planView";
 import { renderProgressView } from "./progressView";
 import { renderSessionView } from "./sessionView";
+import { renderOnboarding } from "./onboarding";
 import { renderSettingsView } from "./settingsView";
-import { renderSetupView } from "./setupView";
 import { renderShell, type AppTab } from "./shell";
 import { todayHomeHtml } from "./todayHome";
 import { wireTodayPulse } from "./todayPulse";
@@ -64,7 +64,7 @@ export function bootApp(root: HTMLElement): void {
     return;
   }
   if (!profile.setupDone) {
-    renderSetupView(root, () => showTab(root, "today"));
+    renderOnboarding(root, (tab) => showTab(root, tab));
     return;
   }
   showTab(root, "today");
@@ -95,7 +95,9 @@ function showTab(root: HTMLElement, tab: AppTab): void {
 function showTodayHome(root: HTMLElement): void {
   const queue = loadPlanQueue();
   const override = loadScheduleOverride();
-  const next = peekNextTemplate(queue, override);
+  const empty = queue.items.length === 0 && override === null;
+  const next = empty ? null : peekNextTemplate(queue, override);
+  const upcoming = empty ? [] : peekUpcomingWithOverride(queue, 3, override);
 
   renderShell(
     root,
@@ -103,16 +105,23 @@ function showTodayHome(root: HTMLElement): void {
     `<div data-panel>${todayHomeHtml({
       next,
       isOverride: override !== null,
-      upcoming: peekUpcomingWithOverride(queue, 3, override),
+      upcoming,
       deloadActive: loadDeloadActive(),
-      overrideHtml: overrideControlsHtml(override),
-      warmupLevel: warmupLevelFor({ targetExerciseIds: next.targetExerciseIds, memories: loadMemories() }),
+      overrideHtml: empty ? "" : overrideControlsHtml(override),
+      warmupLevel: next
+        ? warmupLevelFor({ targetExerciseIds: next.targetExerciseIds, memories: loadMemories() })
+        : undefined,
     })}</div>`,
     (tab) => showTab(root, tab),
   );
 
-  wireOverrideControls(root, () => showTodayHome(root));
   clearTodayPulse();
+  if (!next) {
+    root.querySelector("[data-open-plan]")?.addEventListener("click", () => showTab(root, "plan"));
+    return;
+  }
+
+  wireOverrideControls(root, () => showTodayHome(root));
   disposeTodayPulse = wireTodayPulse(root);
   renderCheckIn(root.querySelector("[data-checkin]")!, {
     onStart: (readiness) => {

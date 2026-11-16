@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { EXERCISE_GRAPH } from "../../src/data/exerciseGraph";
-import { templateToStarter } from "../../src/data/seed";
+import { DEFAULT_PLAN_QUEUE, templateToStarter } from "../../src/data/seed";
 import type { JointHistoryEntry } from "../../src/domain/program";
 import { addBlockToPlan } from "../../src/plan/blockActions";
 import { excludeFromDay, makeDay, setDayExercise, swapChoices } from "../../src/plan/dayEdits";
@@ -37,7 +37,7 @@ const count = (html: string, needle: string) => html.split(needle).length - 1;
 /** One exercise row's markup, found by its slot. */
 const rowOf = (html: string, slotId: string) => html.match(new RegExp(`<li [^>]*data-slot="${slotId}"[\\s\\S]*?</li>`))![0];
 
-useMemoryStorage();
+useMemoryStorage(() => ({ "aurora.poc.planQueue.v1": JSON.stringify(DEFAULT_PLAN_QUEUE) }));
 
 describe("day preview", () => {
   it("is the planner's real session for a normal morning, not the stored defaults", () => {
@@ -125,6 +125,13 @@ describe("day edits", () => {
 describe("Plan page", () => {
   const model = () => buildPlanModel(loadPlanQueue(), state(), ui());
 
+  it("opens Add days and explains when the plan is empty", () => {
+    const html = planPageHtml(buildPlanModel({ items: [] }, state(), ui()));
+    expect(html).toContain("data-plan-empty");
+    expect(html).toContain('data-add-days open');
+    expect(html).toContain("0 days");
+  });
+
   it("is a readable list of days with no dropdowns", () => {
     const html = planPageHtml(model());
     expect(html).toContain("<h1>Coming up</h1>");
@@ -178,7 +185,8 @@ describe("Plan page", () => {
     expect(count(html, 'data-move="down" disabled')).toBe(1);
     expect(count(html, "data-later")).toBe(1);
     const single = planPageHtml(buildPlanModel({ items: ["tmpl_legs"] }, state(), ui()));
-    expect(single).toMatch(/data-remove disabled/);
+    expect(single).toContain("data-remove");
+    expect(single).not.toMatch(/data-remove disabled/);
     expect(single).not.toContain("data-later");
     expect(single).toContain("1 day ·");
   });

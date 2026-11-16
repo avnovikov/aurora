@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { EXERCISE_GRAPH } from "../../src/data/exerciseGraph";
-import { templateToStarter } from "../../src/data/seed";
+import { DEFAULT_PLAN_QUEUE, templateToStarter } from "../../src/data/seed";
 import { previewDay, previewQueue, type AthleteState } from "../../src/plan/dayPreview";
 import { generateBlock } from "../../src/plan/generateBlock";
 import { familyTier, type StepContext } from "../../src/plan/ladderSteps";
@@ -20,7 +20,7 @@ import { effectiveSkillTier } from "../../src/rules/skillDose";
 import { emptyMemory } from "../../src/session/history";
 import { useMemoryStorage } from "../helpers/storage";
 
-useMemoryStorage();
+useMemoryStorage(() => ({ "aurora.poc.planQueue.v1": JSON.stringify(DEFAULT_PLAN_QUEUE) }));
 
 const state = (over: Partial<AthleteState> = {}): AthleteState => ({
   memories: {},
