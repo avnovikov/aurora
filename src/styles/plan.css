@@ -234,8 +234,8 @@ main.plan .plan-day > *:not(summary) {
 
 main.plan .plan-day > summary {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
-  grid-template-areas: "when when remove" "title time remove";
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "when when" "title time";
   column-gap: 8px;
   align-items: baseline;
   align-content: center;
@@ -264,29 +264,45 @@ main.plan .plan-day > summary {
   white-space: nowrap;
 }
 
-.plan-day-remove {
-  grid-area: remove;
-  align-self: center;
-  justify-self: end;
-  display: inline-flex;
+/* Make / Move / Remove: one closed disclosure under the exercises (#124). */
+main.plan .plan-day-edit {
+  margin: 16px 12px 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--edge);
+}
+
+main.plan .plan-day-edit > summary {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
+  justify-content: space-between;
+  min-height: 48px;
   margin: 0;
   padding: 0;
   border: 0;
-  border-radius: 8px;
-  background: transparent;
+  font: 600 16px/1.25 var(--plan-display);
   color: var(--muted);
-  font: 400 28px/1 var(--plan-display);
   cursor: pointer;
 }
 
-.plan-day-remove:hover,
-.plan-day-remove:focus-visible {
-  color: var(--foreground);
-  background: var(--edge);
+main.plan .plan-day-edit > summary::after {
+  content: "+";
+  font: 400 25px/1 var(--plan-body);
+  color: var(--muted);
+}
+
+main.plan .plan-day-edit[open] > summary::after {
+  content: "\2212";
+}
+
+main.plan .plan-day-edit > *:not(summary) {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+main.plan .plan-day-edit .chip-row-label:first-of-type {
+  margin-top: 8px;
 }
 
 /* Today: a bigger title, and its duration is the page's one accent figure. */

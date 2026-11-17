@@ -37,6 +37,7 @@ import { renderSessionView } from "./sessionView";
 import { renderOnboarding } from "./onboarding";
 import { renderSettingsView } from "./settingsView";
 import { renderShell, type AppTab } from "./shell";
+import { resetTabScroll } from "./tabScroll";
 import { todayHomeHtml } from "./todayHome";
 import { wireTodayPulse } from "./todayPulse";
 
@@ -77,6 +78,7 @@ export function bootApp(root: HTMLElement): void {
 }
 
 function showTab(root: HTMLElement, tab: AppTab): void {
+  resetTabScroll();
   if (tab === "today") {
     showTodayHome(root);
     return;
