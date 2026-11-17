@@ -50,7 +50,7 @@ export function clampToPrescription(
   amount: number,
   prescription: Pick<ExercisePrescription, "amountMin" | "amountMax">,
 ): number {
-  if (!(prescription.amountMin <= prescription.amountMax)) {
+  if (prescription.amountMin > prescription.amountMax) {
     throw new Error(
       `prescription amountMin (${prescription.amountMin}) must be ≤ amountMax (${prescription.amountMax})`,
     );
@@ -70,8 +70,8 @@ function assertHoldPrescription(prescription: ExercisePrescription): void {
     );
   }
   if (
-    !(prescription.amountMin > 0) ||
-    !(prescription.amountMax > 0) ||
+    prescription.amountMin <= 0 ||
+    prescription.amountMax <= 0 ||
     prescription.amountMin > prescription.amountMax
   ) {
     throw new Error(

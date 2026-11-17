@@ -8,24 +8,43 @@ export interface PulseWatchState {
   lastShoutAtMs: number | null;
 }
 
-const SILENCE_MS = 5000;
-const REPEAT_MS = 15000;
+/** Coral on the session bar after this much silence. */
+export const PULSE_LOST_UI_MS = 5_000;
+/** Coach shout after this much silence (longer than coral — room movement is noisy). */
+export const PULSE_LOST_SHOUT_MS = 15_000;
+/** Minimum gap between shout repeats while the strap stays silent. */
+export const PULSE_LOST_REPEAT_MS = 15_000;
+
+function isSilentFor(
+  state: PulseWatchState,
+  nowMs: number,
+  silenceMs: number,
+): boolean {
+  if (!state.connected || state.lastValidAtMs === null) {
+    return false;
+  }
+  return nowMs - state.lastValidAtMs >= silenceMs;
+}
+
+/** True when the strap has been silent long enough for the coral lost style. */
+export function shouldShowPulseLost(
+  state: PulseWatchState,
+  nowMs: number,
+): boolean {
+  return isSilentFor(state, nowMs, PULSE_LOST_UI_MS);
+}
 
 export function shouldShoutPulseLost(
   state: PulseWatchState,
   nowMs: number,
 ): boolean {
-  if (!state.connected || state.lastValidAtMs === null) {
+  if (!isSilentFor(state, nowMs, PULSE_LOST_SHOUT_MS)) {
     return false;
   }
-  const silentFor = nowMs - state.lastValidAtMs;
-  if (silentFor < SILENCE_MS) {
-    return false;
-  }
-  if (state.lastShoutAtMs === null) {
-    return true;
-  }
-  return nowMs - state.lastShoutAtMs >= REPEAT_MS;
+  return (
+    state.lastShoutAtMs === null ||
+    nowMs - state.lastShoutAtMs >= PULSE_LOST_REPEAT_MS
+  );
 }
 
 export function shoutPulseNotReadable(): void {

@@ -1,4 +1,7 @@
-import type { PulseWatchState } from "../voice/pulseAlert";
+import {
+  PULSE_LOST_SHOUT_MS,
+  type PulseWatchState,
+} from "../voice/pulseAlert";
 
 export const INITIAL_PULSE: PulseWatchState = {
   connected: false,
@@ -25,11 +28,14 @@ export function pulseDisconnected(previous: PulseWatchState): PulseWatchState {
   };
 }
 
+/** Past the shout threshold so the sim button fires the coach line. */
+const PULSE_LOST_SIM_SILENCE_MS = PULSE_LOST_SHOUT_MS + 1_000;
+
 /** Simulator: treat the strap as connected but silent long enough to shout. */
 export function pulseLostSim(nowMs: number): PulseWatchState {
   return {
     connected: true,
-    lastValidAtMs: nowMs - 6000,
+    lastValidAtMs: nowMs - PULSE_LOST_SIM_SILENCE_MS,
     lastShoutAtMs: null,
   };
 }
