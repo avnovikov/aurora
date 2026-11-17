@@ -129,7 +129,7 @@ export function renderLibraryView(root: HTMLElement): void {
         onDeclareTier: (id, tier) => {
           const result = declareSkillTier(loadMemories(), id, tier);
           saveMemories(result.memories);
-          cascadeHint = cascadeHintFor(result.cascadedCount);
+          cascadeHint = cascadeHintFor(result.inferredCount);
           paint();
         },
         onGeneratePlan: () => {
@@ -219,10 +219,10 @@ export function renderLibraryView(root: HTMLElement): void {
   paint();
 }
 
-function cascadeHintFor(cascadedCount: number): string | null {
-  if (cascadedCount === 0) {
+function cascadeHintFor(inferredCount: number): string | null {
+  if (inferredCount === 0) {
     return null;
   }
-  const moves = cascadedCount === 1 ? "move" : "moves";
-  return `Updated ${cascadedCount} related ${moves} in this family.`;
+  const moves = inferredCount === 1 ? "move" : "moves";
+  return `${inferredCount} related ${moves} now inferred from your levels.`;
 }

@@ -11,24 +11,24 @@ import type {
   ExerciseMemory,
   SkillTier,
 } from "../domain/types";
+import { evidenceTier } from "../progress/levelEvidence";
 import { capDose, rirForTier } from "./doseCaps";
 
 const DEFAULT_TIER: SkillTier = "beginner";
 
 /**
- * Effective skill tier: max(declared, inferred-from-best, stored).
+ * Effective skill tier from evidence (#112): tested, live inferred and plan
+ * default, plus best reps against standards for memories not yet migrated.
  */
 export function effectiveSkillTier(
   memory: ExerciseMemory,
   exercise: Exercise,
+  now: Date = new Date(),
 ): SkillTier {
-  let tier: SkillTier = memory.skillTier ?? memory.declaredTier ?? DEFAULT_TIER;
+  let tier: SkillTier = evidenceTier(memory, now) ?? DEFAULT_TIER;
   const standards = standardsFor(exercise);
   if (standards && memory.bestReps !== undefined) {
     tier = maxTier(tier, inferTierFromBest(memory.bestReps, standards));
-  }
-  if (memory.declaredTier) {
-    tier = maxTier(tier, memory.declaredTier);
   }
   return tier;
 }

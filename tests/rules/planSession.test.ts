@@ -30,7 +30,7 @@ describe("planSession warm-up level", () => {
   });
 
   it("picks the level from the athlete's tier in the target family", () => {
-    const memories = { bulgarian_split: memory("bulgarian_split", { skillTier: "elite" }) };
+    const memories = { bulgarian_split: memory("bulgarian_split", { declaredTier: "elite" }) };
     const session = planSession(readiness, legs, memories);
     expect(session.warmupLevel).toBe("advanced");
     expect(ids(session)).toEqual(legs.warmupByLevel.advanced);

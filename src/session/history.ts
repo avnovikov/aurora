@@ -1,12 +1,13 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
-import { maxTier } from "../domain/skillTier";
 import type { Exercise, ExerciseMemory, SkillTier } from "../domain/types";
 import type {
   HistoryEntry,
   LegacySessionEvaluation,
   SessionEvaluation,
 } from "../domain/program";
-import { cascadeFamilyTiers } from "../progress/cascadeFamilyTiers";
+import type { FamilyLadderIndex } from "../progress/familyLadderIndex";
+import { inferTiers } from "../progress/inferTiers";
+import { refreshSkillTier } from "../progress/levelEvidence";
 import { effectiveSkillTier } from "../rules/skillDose";
 import { createKeyValueStore, type KeyValueStore } from "../storage/keyValueStore";
 import { HISTORY_KEY, MEMORY_KEY } from "../storage/storageKeys";
@@ -75,8 +76,11 @@ export function appendHistory(entry: Omit<HistoryEntry, "id">): HistoryEntry[] {
   return updated;
 }
 
-export function loadMemories(): Record<string, ExerciseMemory> {
-  return readJson(memoryStore, {} as Record<string, ExerciseMemory>);
+export function loadMemories(now: Date = new Date()): Record<string, ExerciseMemory> {
+  const raw = readJson(memoryStore, {} as Record<string, ExerciseMemory>);
+  return Object.fromEntries(
+    Object.entries(raw).map(([id, memory]) => [id, refreshSkillTier(memory, now)]),
+  );
 }
 
 export function saveMemories(memories: Record<string, ExerciseMemory>): void {
@@ -190,36 +194,30 @@ function isBelowFloorSet(entry: SetLogEntry): boolean {
 
 export interface DeclareSkillTierResult {
   memories: Record<string, ExerciseMemory>;
-  /** Related family moves whose floor rose (not the exercise you picked). */
-  cascadedCount: number;
+  /** Related family moves that now carry an inferred tier. */
+  inferredCount: number;
 }
 
-/**
- * Manual tier pick from Library, then raise same-or-easier family floors.
- * Session logging can call `cascadeFamilyTiers` later with the same math.
- */
+/** Manual tier pick from Library (tested evidence), then re-run inference (#112). */
 export function declareSkillTier(
   memories: Record<string, ExerciseMemory>,
   exerciseId: string,
   tier: SkillTier,
+  now: Date = new Date(),
+  index?: FamilyLadderIndex,
 ): DeclareSkillTierResult {
   const current = memories[exerciseId] ?? emptyMemory(exerciseId);
-  const withSource: Record<string, ExerciseMemory> = {
+  const withPick = {
     ...memories,
-    [exerciseId]: {
-      ...current,
-      declaredTier: tier,
-      skillTier: maxTier(current.skillTier ?? tier, tier),
-    },
+    [exerciseId]: refreshSkillTier(
+      { ...current, declaredTier: tier, declaredAt: now.toISOString() },
+      now,
+    ),
   };
-  const { memories: cascadedMemories, raisedIds } = cascadeFamilyTiers({
-    memories: withSource,
-    sourceId: exerciseId,
-    declaredTier: tier,
-  });
+  const result = inferTiers({ memories: withPick, now, index });
   return {
-    memories: cascadedMemories,
-    cascadedCount: raisedIds.length,
+    memories: result.memories,
+    inferredCount: result.inferredIds.filter((id) => id !== exerciseId).length,
   };
 }
 

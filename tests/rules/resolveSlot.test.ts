@@ -99,7 +99,7 @@ describe("resolveSlot", () => {
       baseInput({
         memory: memory({
           exerciseId: "squat",
-          skillTier: "advanced",
+          declaredTier: "advanced",
           sessionsAtStandard: 0,
         }),
       }),
