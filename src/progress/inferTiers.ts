@@ -5,7 +5,7 @@ import {
   type FamilyLadderMember,
   libraryFamilyLadderIndex,
 } from "./familyLadderIndex";
-import { liveInferredTier, refreshSkillTier, testedTier } from "./levelEvidence";
+import { refreshSkillTier, testedTier } from "./levelEvidence";
 
 /** Tested family members needed before an untested one is inferred (#112 rule 3). */
 export const MIN_SUPPORTERS = 2;
@@ -81,12 +81,13 @@ function candidateFor(
   return null;
 }
 
-function bounded(candidate: Candidate, current: ExerciseMemory | undefined, confirming: boolean, now: Date): SkillTier {
+function bounded(candidate: Candidate, current: ExerciseMemory | undefined, confirming: boolean): SkillTier {
   let tier = candidate.tier;
   for (const cap of current?.failedCaps ?? []) {
     tier = minTier(tier, cap.tier);
   }
-  const previous = current ? liveInferredTier(current, now) : undefined;
+  // Rule 9: the jump bound survives expiry; the TTL only decides whether the tier counts as live evidence.
+  const previous = current?.inferred?.tier;
   if (previous && tierIndex(tier) > tierIndex(previous)) {
     tier = confirming ? (nextSkillTier(previous) ?? previous) : previous;
   }
@@ -110,7 +111,7 @@ function updatedMember(
   if (!candidate) {
     return current?.inferred ? withoutInferred(current, input.now) : undefined;
   }
-  const tier = bounded(candidate, current, confirming, input.now);
+  const tier = bounded(candidate, current, confirming);
   const keepAt = current?.inferred?.tier === tier ? current.inferred.at : input.now.toISOString();
   return refreshSkillTier(
     { ...(current ?? blank(member.id)), inferred: { tier, from: candidate.from, at: keepAt } },

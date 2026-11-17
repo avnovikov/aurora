@@ -1,7 +1,7 @@
 import { SKILL_TIERS, stepDown, tierIndex } from "../domain/skillTier";
 import type { ExerciseMemory, SkillTier } from "../domain/types";
 import { type FamilyLadderIndex, libraryFamilyLadderIndex } from "./familyLadderIndex";
-import { testedTier } from "./levelEvidence";
+import { evidenceTier, testedTier } from "./levelEvidence";
 
 /** Share of a pattern's families that must be tested (#112 rule 6); judgement. */
 const FAMILY_SHARE = 1 / 3;
@@ -83,11 +83,18 @@ export function suggestionFor(
   memories: Record<string, ExerciseMemory>,
   patternOf: (exerciseId: string) => string | undefined,
   index?: FamilyLadderIndex,
+  now: Date = new Date(),
 ): TierSuggestion | undefined {
   const memory = memories[exerciseId];
   // Early exit: a tested move's own family is tested, so suggestTiers never suggests for it; skip the computation.
   if (memory && testedTier(memory)) {
     return undefined;
   }
-  return suggestTiers({ memories, patternOf, index }).get(exerciseId);
+  const suggestion = suggestTiers({ memories, patternOf, index }).get(exerciseId);
+  // A suggestion never lowers a level the move already has.
+  const current = memory ? evidenceTier(memory, now) : undefined;
+  if (suggestion && current && tierIndex(suggestion.tier) <= tierIndex(current)) {
+    return undefined;
+  }
+  return suggestion;
 }

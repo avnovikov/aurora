@@ -81,4 +81,15 @@ describe("inferTiers", () => {
     expect(out.mid?.inferred).toBeUndefined();
     expect(out.mid?.skillTier).toBe("beginner");
   });
+
+  it("the jump bound survives expiry (rule 9)", () => {
+    const old = new Date(NOW.getTime() - 30 * 86_400_000).toISOString();
+    const memories = {
+      next: declared("next", "elite"),
+      top: declared("top", "elite"),
+      mid: { ...emptyMemory("mid"), inferred: { tier: "beginner" as const, from: ["next", "top"], at: old } },
+    };
+    expect(run(memories).memories.mid?.inferred?.tier).toBe("beginner");
+    expect(run(memories, { confirmingFamilies: new Set(["f"]) }).memories.mid?.inferred?.tier).toBe("intermediate");
+  });
 });

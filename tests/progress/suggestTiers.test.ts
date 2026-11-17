@@ -93,6 +93,10 @@ describe("suggestTiers (#112 rule 6)", () => {
       const m = { ...memories, m2a: at("beginner", "m2a") };
       expect(suggestionFor("m2a", m, patternOf, idx)).toBeUndefined();
     });
+    it("never lowers a level: a plan-default move at the suggested tier gets none", () => {
+      const m = { ...memories, m3a: { ...emptyMemory("m3a"), planTier: "intermediate" as const } };
+      expect(suggestionFor("m3a", m, patternOf, idx, new Date("2026-11-17T12:00:00Z"))).toBeUndefined();
+    });
     it("gives an untested move in an untested family its suggestion", () => {
       expect(suggestionFor("m3a", memories, patternOf, idx)?.tier).toBe("intermediate");
     });

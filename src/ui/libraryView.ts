@@ -167,7 +167,7 @@ export function renderLibraryView(root: HTMLElement): void {
         declaredTier: memory.declaredTier,
         bestReps: memory.bestReps,
         source: describeLevelSource(memory, now, (id) => EXERCISE_GRAPH[id]?.name ?? id),
-        suggestion: suggestionFor(exerciseId, memories, (id) => EXERCISE_GRAPH[id]?.pattern),
+        suggestion: suggestionFor(exerciseId, memories, (id) => EXERCISE_GRAPH[id]?.pattern, undefined, now),
       },
       planStatus,
       cascadeHint: inferenceHint,
