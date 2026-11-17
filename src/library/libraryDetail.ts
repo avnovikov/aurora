@@ -29,6 +29,11 @@ import { personalBestHeroHtml, personalBestUnit } from "./personalBest";
 import { isTemplateTarget } from "./targets";
 import { scrollViewportToTop } from "./detailScroll";
 import { backOnly, wireSwipe } from "../ui/sessionSwipe";
+import type { HistoryFeedRow } from "../progress/historyFeed";
+import {
+  historyFeedListHtml,
+  legacyHistoryBannerHtml,
+} from "../progress/historyFeedPresent";
 import "../styles/exercise.css";
 
 const RETEST_WEEKS = Math.floor(RETEST_AFTER_DAYS / 7);
@@ -64,6 +69,10 @@ export interface DetailView {
   inferenceHint?: string | null;
   /** The user excluded this move ("not for me"). */
   excluded?: boolean;
+  /** Logged sets for this exercise (same feed as History). */
+  loggedSets?: readonly HistoryFeedRow[];
+  /** True when any of those rows are legacy session summaries. */
+  loggedSetsHaveLegacy?: boolean;
 }
 
 export interface MountLibraryDetailOptions extends DetailView {
@@ -136,19 +145,11 @@ export function mountLibraryDetail(
 }
 
 export function detailHtml(exercise: SeedExercise, view: DetailView = {}): string {
-  const {
-    targetIds = new Set<string>(),
-    catalogueById = {},
-    memory = {},
-    jointHistory = [],
-    planStatus = null,
-    inferenceHint = null,
-    excluded = false,
-  } = view;
-  const targetBadge = isTemplateTarget(exercise.id, targetIds)
+  const resolved = resolveDetailView(view);
+  const targetBadge = isTemplateTarget(exercise.id, resolved.targetIds)
     ? `<p class="lib-badge">Target</p>`
     : "";
-  const tier = currentTier(memory);
+  const tier = currentTier(resolved.memory);
 
   return `
     <main class="shell lib-detail" data-back-swipe>
@@ -160,22 +161,63 @@ export function detailHtml(exercise: SeedExercise, view: DetailView = {}): strin
         <p class="lib-meta">${escapeHtml(exerciseMetaLine(exercise))}</p>
         <p class="lib-meta">Muscles: ${escapeHtml(formatMuscles(exercise.muscles))}</p>
       </div>
-      ${personalBestHeroHtml(memory.bestReps, personalBestUnit(exercise))}
+      ${personalBestHeroHtml(resolved.memory.bestReps, personalBestUnit(exercise))}
       ${mediaRowHtml(exercise)}
       ${summaryHtml(exercise)}
-      ${sectionHtml(safetyHtml(exercise, jointHistory, excluded))}
-      ${sectionHtml(jointLoadHtml(exercise, jointHistory))}
+      ${sectionHtml(safetyHtml(exercise, resolved.jointHistory, resolved.excluded))}
+      ${sectionHtml(jointLoadHtml(exercise, resolved.jointHistory))}
       ${sectionHtml(stepsHtml(exercise))}
       ${cuesAndMistakesHtml(exercise)}
       ${standardsHtml(exercise, tier)}
-      ${skillPickerHtml(exercise, memory, inferenceHint)}
+      ${skillPickerHtml(exercise, resolved.memory, resolved.inferenceHint)}
       <div class="ex-tray">
-        ${planActionsHtml(exercise, planStatus)}
-        ${chainLinksHtml(exercise, catalogueById)}
-        ${excludedHtml(excluded)}
+        ${planActionsHtml(exercise, resolved.planStatus)}
+        ${chainLinksHtml(exercise, resolved.catalogueById)}
+        ${excludedHtml(resolved.excluded)}
       </div>
       ${sourcesHtml(exercise)}
+      ${loggedSetsSectionHtml(resolved.loggedSets, resolved.loggedSetsHaveLegacy)}
     </main>
+  `;
+}
+
+interface ResolvedDetailView {
+  targetIds: ReadonlySet<string>;
+  catalogueById: Record<string, SeedExercise>;
+  memory: DetailMemoryView;
+  jointHistory: readonly JointHistoryEntry[];
+  planStatus: string | null;
+  inferenceHint: string | null;
+  excluded: boolean;
+  loggedSets: readonly HistoryFeedRow[];
+  loggedSetsHaveLegacy: boolean;
+}
+
+function resolveDetailView(view: DetailView): ResolvedDetailView {
+  return {
+    targetIds: view.targetIds ?? new Set<string>(),
+    catalogueById: view.catalogueById ?? {},
+    memory: view.memory ?? {},
+    jointHistory: view.jointHistory ?? [],
+    planStatus: view.planStatus ?? null,
+    inferenceHint: view.inferenceHint ?? null,
+    excluded: view.excluded ?? false,
+    loggedSets: view.loggedSets ?? [],
+    loggedSetsHaveLegacy: view.loggedSetsHaveLegacy ?? false,
+  };
+}
+
+function loggedSetsSectionHtml(
+  rows: readonly HistoryFeedRow[],
+  hasLegacy: boolean,
+): string {
+  return `
+    <section class="ex-section ex-logged-sets">
+      <p class="eyebrow">Logged sets</p>
+      <h2 class="chain-title">From your sessions</h2>
+      ${legacyHistoryBannerHtml(hasLegacy, rows.length)}
+      ${historyFeedListHtml(rows)}
+    </section>
   `;
 }
 

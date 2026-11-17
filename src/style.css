@@ -689,9 +689,27 @@ button:disabled {
   padding-bottom: 0.5rem;
 }
 
-.history-ex {
+.history-ex,
+.history-ex-link {
   margin: 0;
   font-weight: 600;
+}
+
+.history-ex-link {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--brass);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ex-logged-sets {
+  margin-top: 1.25rem;
 }
 
 .history-meta {

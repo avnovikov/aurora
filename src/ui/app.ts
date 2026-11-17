@@ -44,9 +44,11 @@ import { todayHomeHtml } from "./todayHome";
 import { wireTodayPulse } from "./todayPulse";
 
 const PANEL_RENDERERS: Partial<
-  Record<Exclude<AppTab, "today" | "progress" | "history">, (panel: HTMLElement) => void>
+  Record<
+    Exclude<AppTab, "today" | "progress" | "history" | "library">,
+    (panel: HTMLElement) => void
+  >
 > = {
-  library: renderLibraryView,
   body: renderBodyView,
   plan: renderPlanView,
   settings: renderSettingsView,
@@ -54,6 +56,8 @@ const PANEL_RENDERERS: Partial<
 
 let disposeTodayPulse: (() => void) | null = null;
 let historyFilter: HistoryFilter = { kind: "all" };
+/** Set when History opens an exercise; consumed on the next Library paint. */
+let libraryFocusId: string | null = null;
 
 function clearTodayPulse(): void {
   disposeTodayPulse?.();
@@ -107,7 +111,14 @@ function showTab(
     renderHistoryView(panel, {
       filter: historyFilter,
       onClearFilter: () => openHistory(root, { kind: "all" }),
+      onOpenExercise: (exerciseId) => openLibraryExercise(root, exerciseId),
     });
+    return;
+  }
+  if (tab === "library") {
+    const initialExerciseId = libraryFocusId ?? undefined;
+    libraryFocusId = null;
+    renderLibraryView(panel, { initialExerciseId });
     return;
   }
   const renderPanel = PANEL_RENDERERS[tab];
@@ -115,6 +126,11 @@ function showTab(
     throw new Error(`No panel renderer for tab: ${tab}`);
   }
   renderPanel(panel);
+}
+
+function openLibraryExercise(root: HTMLElement, exerciseId: string): void {
+  libraryFocusId = exerciseId;
+  showTab(root, "library");
 }
 
 function openHistory(root: HTMLElement, filter: HistoryFilter): void {
