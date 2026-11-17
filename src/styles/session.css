@@ -301,6 +301,44 @@
   margin-top: 8px;
 }
 
+.session-work-adjust {
+  padding: 0 24px 8px;
+}
+
+.session-work-adjust-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.session-work-adjust .btn-quiet {
+  min-height: 44px;
+  padding: 8px 12px;
+}
+
+.session-work-swap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.session-work-adjust-status {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.session-work-adjust .btn-quiet[aria-disabled="true"] {
+  border-color: var(--edge);
+  color: var(--muted);
+  cursor: default;
+}
+
+.session-work-adjust-pending {
+  padding-top: 8px;
+}
+
 .session .session-end-cooldown {
   padding: 0 24px 32px;
 }

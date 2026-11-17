@@ -31,17 +31,32 @@ import { weightControlsHtml } from "./sessionWeightControls";
 import { isPulseLost, pulseChipText } from "./sessionPulse";
 import "../styles/session.css";
 
-export function shellHtml(planned: PlannedSession, state: ViewState): string {
+/** Mid-session Swap / Easier / Skip today / Never again controls on the work stage. */
+export interface WorkAdjustUi {
+  easierAvailable: boolean;
+  swapOpen: boolean;
+  swapOptions: readonly { id: string; name: string }[];
+  status?: string;
+  showUndo?: boolean;
+}
+
+export function shellHtml(
+  planned: PlannedSession,
+  state: ViewState,
+  adjust: WorkAdjustUi | null = null,
+): string {
   const light = planned.lightDay || planned.deload ? "light-day" : "";
-  const { body, barActions } = surfaceHtml(planned, state);
+  const surface = surfaceHtml(planned, state, adjust);
+  const pendingUndo = pendingAdjustNoticeHtml(adjust, surface.workToolbar);
   return `
     <main class="shell session ${light}">
       <header class="session-top">
         ${sessionClockHtml(state)}
         ${chalkHtml(planned, state)}
       </header>
-      ${body}
-      ${pulseBarHtml(state, barActions)}
+      ${pendingUndo}
+      ${surface.body}
+      ${pulseBarHtml(state, surface.barActions)}
     </main>
   `;
 }
@@ -166,13 +181,19 @@ interface Surface {
   body: string;
   /** Set actions for the bottom bar; only a working set has them. */
   barActions: string;
+  /** True when the full work adjust toolbar is already inside `body`. */
+  workToolbar: boolean;
 }
 
 function offWork(body: string): Surface {
-  return { body, barActions: "" };
+  return { body, barActions: "", workToolbar: false };
 }
 
-function surfaceHtml(planned: PlannedSession, state: ViewState): Surface {
+function surfaceHtml(
+  planned: PlannedSession,
+  state: ViewState,
+  adjust: WorkAdjustUi | null,
+): Surface {
   if (isWarmupSurface(planned, state)) {
     return offWork(warmupHtml(planned, state));
   }
@@ -189,7 +210,11 @@ function surfaceHtml(planned: PlannedSession, state: ViewState): Surface {
   if (!item) {
     return offWork(`<section class="session-read"><p class="tagline">No work items.</p></section>`);
   }
-  return { body: workHtml(item, state), barActions: WORK_ACTIONS_HTML };
+  return {
+    body: workHtml(item, state, adjust),
+    barActions: WORK_ACTIONS_HTML,
+    workToolbar: true,
+  };
 }
 
 function warmupHtml(planned: PlannedSession, state: ViewState): string {
@@ -376,7 +401,80 @@ function workDoseHtml(reps: number, unit: string): string {
   return repsStepperHtml("session-dose work-reps-row", figure);
 }
 
-function workHtml(item: PlannedWorkItem, state: ViewState): string {
+/** Quiet toolbar button: `Label: move` for the aria-label. */
+function workAdjustAction(dataAttr: string, label: string, move: string, extra = ""): string {
+  return `<button type="button" class="btn-quiet" ${dataAttr}${extra} aria-label="${escapeHtml(label)}: ${escapeHtml(move)}">${label}</button>`;
+}
+
+function easierAdjustHtml(available: boolean, move: string): string {
+  if (available) {
+    return workAdjustAction("data-work-easier", "Easier", move);
+  }
+  return `${workAdjustAction(
+    "data-work-easier",
+    "Easier",
+    move,
+    ` aria-disabled="true" aria-describedby="work-no-easier"`,
+  )}<span class="visually-hidden" id="work-no-easier">No easier step</span>`;
+}
+
+function swapPicksHtml(adjust: WorkAdjustUi): string {
+  if (!adjust.swapOpen) {
+    return "";
+  }
+  if (adjust.swapOptions.length === 0) {
+    return `<p class="lib-meta" data-work-swap-empty>No other move fits this slot with your gear, joints and exclusions.</p>`;
+  }
+  const picks = adjust.swapOptions
+    .map(
+      (option) =>
+        `<button type="button" class="btn-quiet" data-work-swap-pick="${escapeHtml(option.id)}">${escapeHtml(option.name)}</button>`,
+    )
+    .join("");
+  return `<div class="session-work-swap" role="group" aria-label="Swap for">${picks}</div>`;
+}
+
+function workAdjustStatusHtml(adjust: WorkAdjustUi): string {
+  if (!adjust.status) {
+    return "";
+  }
+  return `<p class="session-work-adjust-status" role="status" data-work-adjust-status>${escapeHtml(adjust.status)}</p>`;
+}
+
+function workAdjustUndoHtml(adjust: WorkAdjustUi): string {
+  if (!adjust.showUndo) {
+    return "";
+  }
+  return `<button type="button" class="btn-quiet" data-work-undo aria-label="Undo exclusion">Undo</button>`;
+}
+
+/** Status + Undo when Never again advanced off the work stage (next rest / done / cool-down). */
+function pendingAdjustNoticeHtml(adjust: WorkAdjustUi | null, workToolbar: boolean): string {
+  if (!adjust?.showUndo || workToolbar) {
+    return "";
+  }
+  return `<div class="session-work-adjust session-work-adjust-pending">${workAdjustStatusHtml(adjust)}${workAdjustUndoHtml(adjust)}</div>`;
+}
+
+/** Toolbar above the hero: Swap · Easier · Skip today · Never again. */
+function workAdjustHtml(adjust: WorkAdjustUi | null, move: string): string {
+  if (!adjust) {
+    return "";
+  }
+  return `
+    <div class="session-work-adjust">
+      <div class="session-work-adjust-row">
+        ${workAdjustAction("data-work-swap", "Swap", move, ` aria-pressed="${adjust.swapOpen ? "true" : "false"}"`)}
+        ${easierAdjustHtml(adjust.easierAvailable, move)}
+        ${workAdjustAction("data-work-skip-today", "Skip today", move)}
+        ${workAdjustAction("data-work-never", "Never again", move)}
+      </div>
+      ${swapPicksHtml(adjust)}
+      ${workAdjustStatusHtml(adjust)}${workAdjustUndoHtml(adjust)}
+    </div>`;
+}
+
+function workHtml(item: PlannedWorkItem, state: ViewState, adjust: WorkAdjustUi | null): string {
   const reps = nextSetReps(state, item.dose.reps);
   const loadKg = state.workState?.addedLoadKg ?? 0;
   const move = displayExerciseName(item.exerciseName);
@@ -385,6 +483,7 @@ function workHtml(item: PlannedWorkItem, state: ViewState): string {
       ${weightControlsHtml(loadKg, state.addWeightKg)}`;
   return `
     <div class="work-stage swipe-stage" data-swipe-stage="work">
+      ${workAdjustHtml(adjust, move)}
       ${heroHtml({
         phase: `Set ${state.setIndex} of ${item.dose.sets}`,
         move,

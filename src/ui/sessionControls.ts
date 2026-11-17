@@ -45,6 +45,18 @@ export interface SessionControlHandlers {
   onFinishStation: () => void;
   /** Warm-up "Not for me": exclude the move; finish the current station as planned. */
   onWarmupNotForMe: (exerciseId: string) => void;
+  /** Work toolbar: toggle swap picker. */
+  onWorkSwap: () => void;
+  /** Work toolbar: step the Plan slot one easier and rewrite the live item. */
+  onWorkEasier: () => void;
+  /** Work toolbar: drop this move for today only and advance. */
+  onWorkSkipToday: () => void;
+  /** Work toolbar: exclude forever, substitute when possible. */
+  onWorkNever: () => void;
+  /** Work toolbar: pick a swap candidate. */
+  onWorkSwapPick: (exerciseId: string) => void;
+  /** Undo the last Never again on this slot. */
+  onWorkUndo: () => void;
   onFinishAll: () => void;
   onStartCooldown: () => void;
   onSkipCooldown: () => void;
@@ -82,9 +94,42 @@ export function wireSessionControls(
     }
     handlers.onWarmupNotForMe(exerciseId);
   });
+  wireWorkAdjustControls(root, handlers);
   wirePulseSimButtons(root, state, handlers);
   wirePulseConnectButtons(root, state, handlers);
   wireStageSwipe(root, planned, state, handlers);
+}
+
+function isAriaDisabled(el: HTMLElement): boolean {
+  return el.getAttribute("aria-disabled") === "true";
+}
+
+function wireWorkAdjustControls(root: HTMLElement, handlers: SessionControlHandlers): void {
+  const clicks: Record<string, (el: HTMLElement) => void> = {
+    "[data-work-swap]": () => handlers.onWorkSwap(),
+    "[data-work-easier]": (el) => {
+      if (isAriaDisabled(el)) {
+        return;
+      }
+      handlers.onWorkEasier();
+    },
+    "[data-work-skip-today]": () => handlers.onWorkSkipToday(),
+    "[data-work-never]": () => handlers.onWorkNever(),
+    "[data-work-undo]": () => handlers.onWorkUndo(),
+  };
+  for (const [selector, onClick] of Object.entries(clicks)) {
+    const el = root.querySelector<HTMLElement>(selector);
+    el?.addEventListener("click", () => onClick(el));
+  }
+  root.querySelectorAll<HTMLElement>("[data-work-swap-pick]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const exerciseId = button.dataset.workSwapPick;
+      if (!exerciseId) {
+        return;
+      }
+      handlers.onWorkSwapPick(exerciseId);
+    });
+  });
 }
 
 function wireStageSwipe(
