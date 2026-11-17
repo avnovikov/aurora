@@ -270,7 +270,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       clearWorkTimers();
       finishAll();
     },
-    onPulseLostSim: maybePulseShout,
+    onPulseLostSim: tickPulseWatch,
     onPulseBpm: (bpm) => {
       state.bpm = bpm;
       state.pulse = pulseConnectedAt(state.pulse, Date.now());
@@ -289,15 +289,17 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     wireSessionControls(root, options.planned, state, handlers);
   };
 
-  function maybePulseShout(): void {
+  /** Coral from silence age, then shout once past the longer voice threshold. */
+  function tickPulseWatch(): void {
     const now = Date.now();
+    paintPulseReading(root, state, now);
     if (shouldShoutPulseLost(state.pulse, now)) {
       shoutPulseNotReadable();
       state.pulse = { ...state.pulse, lastShoutAtMs: now };
     }
   }
 
-  pulseTimer = window.setInterval(maybePulseShout, 2000);
+  pulseTimer = window.setInterval(tickPulseWatch, 2000);
   clockTimer = window.setInterval(paintClock, 1000);
 
   attachSessionPulse(state, handlers);

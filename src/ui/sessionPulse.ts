@@ -3,6 +3,7 @@ import {
   isHeartRateLinkActive,
   type ConnectHeartRateResult,
 } from "../pulse/hrMonitor";
+import { shouldShowPulseLost } from "../voice/pulseAlert";
 import { pulseConnectedAt } from "./pulseState";
 import type { ViewState } from "./sessionTypes";
 import { IDLE_CHIP } from "./todayPulse";
@@ -52,19 +53,28 @@ export function pulseChipText(state: ViewState): string {
   return state.bpm === null ? IDLE_CHIP : `Pulse ${state.bpm}`;
 }
 
-/** Strap connected but no reading: the bar shows the pulse as lost. */
-export function isPulseLost(state: ViewState): boolean {
-  return state.pulse.connected && state.bpm === null;
+/** Strap silent long enough for coral; voice waits longer. */
+export function isPulseLost(
+  state: ViewState,
+  nowMs: number = Date.now(),
+): boolean {
+  return shouldShowPulseLost(state.pulse, nowMs);
 }
 
 /**
  * Show a new reading without repainting the session: a strap reports about
  * once a second, and a full repaint would drop a swipe in progress.
  */
-export function paintPulseReading(root: HTMLElement, state: ViewState): void {
+export function paintPulseReading(
+  root: HTMLElement,
+  state: ViewState,
+  nowMs: number = Date.now(),
+): void {
   const chip = root.querySelector(".pulse-chip");
   if (chip) {
     chip.textContent = pulseChipText(state);
   }
-  root.querySelector(".session-bar")?.classList.toggle("pulse-lost", isPulseLost(state));
+  root
+    .querySelector(".session-bar")
+    ?.classList.toggle("pulse-lost", isPulseLost(state, nowMs));
 }

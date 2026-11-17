@@ -12,8 +12,10 @@ import { INITIAL_PULSE } from "../../src/ui/pulseState";
 import {
   applyConnectHeartRateResult,
   attachSessionPulse,
+  isPulseLost,
 } from "../../src/ui/sessionPulse";
 import type { ViewState } from "../../src/ui/sessionTypes";
+import { PULSE_LOST_UI_MS } from "../../src/voice/pulseAlert";
 
 afterEach(async () => {
   await disconnectHeartRate();
@@ -60,6 +62,33 @@ function bareState(): ViewState {
     plannedTotalSeconds: 1800,
   };
 }
+
+describe("isPulseLost", () => {
+  function linkedWithLastValidAt(lastValidAtMs: number): ViewState {
+    const state = bareState();
+    state.bpm = 72;
+    state.pulse = {
+      connected: true,
+      lastValidAtMs,
+      lastShoutAtMs: null,
+    };
+    return state;
+  }
+
+  it("stays quiet for brief gaps under five seconds", () => {
+    const lastValidAtMs = 10_000;
+    expect(
+      isPulseLost(linkedWithLastValidAt(lastValidAtMs), lastValidAtMs + PULSE_LOST_UI_MS - 1),
+    ).toBe(false);
+  });
+
+  it("marks lost for coral after five seconds of silence", () => {
+    const lastValidAtMs = 10_000;
+    expect(
+      isPulseLost(linkedWithLastValidAt(lastValidAtMs), lastValidAtMs + PULSE_LOST_UI_MS),
+    ).toBe(true);
+  });
+});
 
 describe("applyConnectHeartRateResult", () => {
   it("clears status on success so the session bar stays quiet when linked", () => {

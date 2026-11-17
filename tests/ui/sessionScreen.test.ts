@@ -19,6 +19,7 @@ import { chalkNowLabel, chalkRailNotches } from "../../src/ui/sessionChalkStrip"
 import { INITIAL_PULSE } from "../../src/ui/pulseState";
 import { initialState } from "../../src/ui/sessionState";
 import type { ViewState } from "../../src/ui/sessionTypes";
+import { PULSE_LOST_UI_MS } from "../../src/voice/pulseAlert";
 import { useMemoryStorage } from "../helpers/storage";
 
 afterEach(async () => {
@@ -255,12 +256,29 @@ describe("pulse bar", () => {
     const state = warmupView(planned);
     state.bpm = 62;
     expect(shellHtml(planned, state)).toContain("Pulse 62");
-    state.bpm = null;
-    state.pulse = { ...state.pulse, connected: true };
+    state.pulse = {
+      connected: true,
+      lastValidAtMs: Date.now() - (PULSE_LOST_UI_MS + 1_000),
+      lastShoutAtMs: null,
+    };
     state.pulseStatus = PULSE_STRAP_DISCONNECTED;
     const bar = pulseBar(shellHtml(planned, state));
     expect(bar).toContain("pulse-lost");
     expect(bar).toContain("data-pulse-status");
+  });
+
+  it("does not flash lost the moment a reading is briefly missing", () => {
+    const planned = planLegs();
+    const state = warmupView(planned);
+    state.bpm = null;
+    state.pulse = {
+      connected: true,
+      lastValidAtMs: Date.now() - Math.floor(PULSE_LOST_UI_MS / 5),
+      lastShoutAtMs: null,
+    };
+    expect(pulseBar(shellHtml(planned, state))).not.toMatch(
+      /session-bar pulse-row pulse-lost/,
+    );
   });
 
   it("hides connected status text when the strap is already linked", () => {
