@@ -11,8 +11,8 @@ import { emptyMemory } from "../session/history";
  * A plan level is a dose default (#112): a floor for planned moves, never
  * evidence. Results that already earned a higher tier are kept.
  */
-function isBelow(memory: ExerciseMemory, exercise: SeedExercise, level: SkillTier): boolean {
-  return tierIndex(effectiveSkillTier(memory, exercise)) < tierIndex(level);
+function isBelow(memory: ExerciseMemory, exercise: SeedExercise, level: SkillTier, now: Date = new Date()): boolean {
+  return tierIndex(effectiveSkillTier(memory, exercise, now)) < tierIndex(level);
 }
 
 /**
@@ -30,16 +30,17 @@ export function memoryAtLevel(
   memory: ExerciseMemory | undefined,
   exercise: SeedExercise,
   planLevel: SkillTier | undefined,
+  now: Date = new Date(),
 ): ExerciseMemory {
   const current = memory ?? emptyMemory(exercise.id);
   if (!planLevel) {
     return current;
   }
   const level = levelForMove(exercise, planLevel);
-  if (!isBelow(current, exercise, level)) {
+  if (!isBelow(current, exercise, level, now)) {
     return current;
   }
-  return refreshSkillTier({ ...current, planTier: level }, new Date());
+  return refreshSkillTier({ ...current, planTier: level }, now);
 }
 
 /**
@@ -50,6 +51,7 @@ export function declareLevelForDays(
   memories: Record<string, ExerciseMemory>,
   days: readonly SessionTemplate[],
   planLevel: SkillTier,
+  now: Date = new Date(),
 ): Record<string, ExerciseMemory> {
   const next = { ...memories };
   for (const slot of days.flatMap((day) => day.slots)) {
@@ -57,7 +59,12 @@ export function declareLevelForDays(
     if (!exercise || slot.pinned) {
       continue;
     }
-    next[exercise.id] = memoryAtLevel(next[exercise.id], exercise, planLevel);
+    const before = next[exercise.id];
+    const updated = memoryAtLevel(before, exercise, planLevel, now);
+    // A move with no memory gets a record only when the plan level sets one.
+    if (updated !== before && (before !== undefined || updated.planTier !== undefined)) {
+      next[exercise.id] = updated;
+    }
   }
   return next;
 }

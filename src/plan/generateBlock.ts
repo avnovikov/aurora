@@ -165,7 +165,7 @@ const OTHER_SETS = 3;
 function doseFor(exercise: SeedExercise, ctx: StepContext, lead: Lead | undefined): TemplateSlot["dose"] {
   const sets = lead ? LEAD_SETS[lead] : OTHER_SETS;
   // With a plan level set, dose as the planner will once that level is declared on the move.
-  const memory = memoryAtLevel(ctx.memories[exercise.id], exercise, ctx.level);
+  const memory = memoryAtLevel(ctx.memories[exercise.id], exercise, ctx.level, new Date());
   return applySkillDose({ sets, reps: 8, targetRir: 2, addedLoadKg: 0 }, exercise, memory).dose;
 }
 

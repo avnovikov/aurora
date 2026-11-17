@@ -32,7 +32,7 @@ export function placeBlock(queue: PlanQueue, dayIds: readonly string[], index: n
 /** With a plan level set, record it on the generated moves so sessions are dosed at that level. */
 function declarePlanLevel(days: readonly SessionTemplate[], level: SkillTier | undefined): void {
   if (level) {
-    saveMemories(declareLevelForDays(loadMemories(), days, level));
+    saveMemories(declareLevelForDays(loadMemories(), days, level, new Date()));
   }
 }
 

@@ -4,6 +4,18 @@ import { declareLevelForDays, levelForMove, memoryAtLevel } from "../../src/plan
 
 describe("plan level is a dose default (#112 rule 10)", () => {
   const pullup = EXERCISE_GRAPH.pullup!;
+  const NOW = new Date("2026-11-17T12:00:00Z");
+
+  it("memoryAtLevel with an explicit now still sets planTier", () => {
+    const m = memoryAtLevel(undefined, pullup, "intermediate", NOW);
+    expect(m.planTier).toBe(levelForMove(pullup, "intermediate"));
+  });
+
+  it("declareLevelForDays stores no empty record for a move already at the level", () => {
+    const day = { id: "d", slots: [{ id: "s1", exerciseId: "pullup" }] } as never;
+    const out = declareLevelForDays({}, [day], "beginner", NOW);
+    expect(pullup.id in out).toBe(false);
+  });
 
   it("memoryAtLevel sets planTier, never declaredTier", () => {
     const m = memoryAtLevel(undefined, pullup, "intermediate");
