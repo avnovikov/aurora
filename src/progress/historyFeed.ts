@@ -7,8 +7,11 @@ export type HistoryFilter =
   | { kind: "pattern"; pattern: Pattern; exerciseIds: readonly string[] }
   | { kind: "exercise"; exerciseId: string };
 
+export type HistoryFeedRowKind = "set" | "legacy_session";
+
 export interface HistoryFeedRow {
   key: string;
+  kind: HistoryFeedRowKind;
   exerciseId: string;
   exerciseName: string;
   setIndex: number;
@@ -17,17 +20,20 @@ export interface HistoryFeedRow {
   when: string;
   sessionId: string;
   stopReason: string;
+  /** Total sets in the session (legacy rows only — per-set detail was never stored). */
+  sessionSetCount?: number;
 }
 
 export interface HistoryFeedModel {
   filter: HistoryFilter;
   rows: HistoryFeedRow[];
-  /** True when sessions exist but have no set payloads (legacy). */
+  /** True when at least one legacy (no-sets) session contributed rows or was seen. */
   hasLegacyOnly: boolean;
 }
 
 /**
  * Flatten history set records newest-first; apply pattern or exercise filter.
+ * Sessions saved before set payloads existed get one summary row per exercise.
  */
 export function buildHistoryFeed(input: {
   history: readonly HistoryEntry[];
@@ -35,7 +41,7 @@ export function buildHistoryFeed(input: {
   filter?: HistoryFilter;
 }): HistoryFeedModel {
   const filter = input.filter ?? { kind: "all" };
-  const { rows, hasLegacyOnly } = flattenFilteredSets(
+  const { rows, hasLegacyOnly } = flattenFilteredHistory(
     input.history,
     input.graph,
     filter,
@@ -44,7 +50,7 @@ export function buildHistoryFeed(input: {
   return { filter, rows, hasLegacyOnly };
 }
 
-function flattenFilteredSets(
+function flattenFilteredHistory(
   history: readonly HistoryEntry[],
   graph: Record<string, Exercise>,
   filter: HistoryFilter,
@@ -57,27 +63,39 @@ function flattenFilteredSets(
     if (!sets || sets.length === 0) {
       if (session.exerciseIds.length > 0 || session.setCount > 0) {
         hasLegacyOnly = true;
+        rows.push(...legacyRowsForSession(session, graph, filter));
       }
       continue;
     }
     for (const set of sets) {
-      if (!passesFilter(set, filter, graph)) {
+      if (!passesExerciseFilter(set.exerciseId, filter, graph)) {
         continue;
       }
-      rows.push(toFeedRow(session, set, graph));
+      rows.push(toSetFeedRow(session, set, graph));
     }
   }
 
   return { rows, hasLegacyOnly };
 }
 
-function toFeedRow(
+function legacyRowsForSession(
+  session: HistoryEntry,
+  graph: Record<string, Exercise>,
+  filter: HistoryFilter,
+): HistoryFeedRow[] {
+  return session.exerciseIds
+    .filter((exerciseId) => passesExerciseFilter(exerciseId, filter, graph))
+    .map((exerciseId) => toLegacyFeedRow(session, exerciseId, graph));
+}
+
+function toSetFeedRow(
   session: HistoryEntry,
   set: HistorySetRecord,
   graph: Record<string, Exercise>,
 ): HistoryFeedRow {
   return {
     key: `${session.id}:${set.exerciseId}:${set.setIndex}:${set.loggedAt}`,
+    kind: "set",
     exerciseId: set.exerciseId,
     exerciseName: displayNameOf(set.exerciseId, graph),
     setIndex: set.setIndex,
@@ -89,6 +107,26 @@ function toFeedRow(
   };
 }
 
+function toLegacyFeedRow(
+  session: HistoryEntry,
+  exerciseId: string,
+  graph: Record<string, Exercise>,
+): HistoryFeedRow {
+  return {
+    key: `${session.id}:legacy:${exerciseId}`,
+    kind: "legacy_session",
+    exerciseId,
+    exerciseName: displayNameOf(exerciseId, graph),
+    setIndex: 0,
+    completedReps: 0,
+    prescribedReps: 0,
+    when: session.completedAt,
+    sessionId: session.id,
+    stopReason: "completed",
+    sessionSetCount: session.setCount,
+  };
+}
+
 function compareWhenDesc(a: HistoryFeedRow, b: HistoryFeedRow): number {
   if (a.when === b.when) {
     return 0;
@@ -96,8 +134,8 @@ function compareWhenDesc(a: HistoryFeedRow, b: HistoryFeedRow): number {
   return a.when < b.when ? 1 : -1;
 }
 
-function passesFilter(
-  set: HistorySetRecord,
+function passesExerciseFilter(
+  exerciseId: string,
   filter: HistoryFilter,
   graph: Record<string, Exercise>,
 ): boolean {
@@ -105,11 +143,11 @@ function passesFilter(
     case "all":
       return true;
     case "exercise":
-      return set.exerciseId === filter.exerciseId;
+      return exerciseId === filter.exerciseId;
     case "pattern":
-      if (filter.exerciseIds.includes(set.exerciseId)) {
+      if (filter.exerciseIds.includes(exerciseId)) {
         return true;
       }
-      return graph[set.exerciseId]?.pattern === filter.pattern;
+      return graph[exerciseId]?.pattern === filter.pattern;
   }
 }
