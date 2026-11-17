@@ -58,6 +58,8 @@ interface SwipeOptions {
   steps?: number;
   /** Vertical drift of a real thumb, in px. */
   drift?: number;
+  /** Where the finger lifts, as a share of the target width from its left edge. */
+  releaseAt?: number;
 }
 
 /**
@@ -67,12 +69,13 @@ interface SwipeOptions {
  */
 export async function swipe(page: Page, target: Locator, options: SwipeOptions = {}): Promise<void> {
   const { direction = "left", steps = 12, drift = 12 } = options;
+  const releaseAt = options.releaseAt ?? (direction === "left" ? 0.1 : 0.9);
   const box = await target.boundingBox();
   if (!box) {
     throw new Error("swipe target is not on screen");
   }
   const y = box.y + Math.min(box.height / 2, 240);
-  const [from, to] = direction === "left" ? [0.8, 0.2] : [0.2, 0.8];
+  const [from, to] = direction === "left" ? [0.85, releaseAt] : [0.15, releaseAt];
   const x0 = box.x + box.width * from;
   const x1 = box.x + box.width * to;
   const cdp = await page.context().newCDPSession(page);

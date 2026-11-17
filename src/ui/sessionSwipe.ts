@@ -1,7 +1,14 @@
-/** Commit when dragged past this share of stage width. */
-export const SWIPE_COMMIT_RATIO = 1 / 3;
-/** Flick speed (px/ms) that commits even short of the distance. */
-export const SWIPE_FLICK_PX_PER_MS = 0.1;
+/** Minimum horizontal travel, as a share of stage width, before a commit. */
+export const SWIPE_MIN_TRAVEL_RATIO = 1 / 4;
+/** The finger must be let go inside this far edge share of the stage. */
+export const SWIPE_RELEASE_ZONE_RATIO = 1 / 5;
+/**
+ * Most vertical travel per unit of horizontal travel (Android ViewPager's
+ * `dx * 0.5 > dy` rule, about 26.6 degrees). A drag along the horizontal or
+ * one notch above or below it (22.5 degrees) counts. A drag at 45 degrees
+ * or steeper does not.
+ */
+export const SWIPE_MAX_SLOPE = 0.5;
 /** Off-screen exit after a commit (visible finish). */
 export const SWIPE_EXIT_MS = 360;
 /** Snap-back when the swipe is cancelled. */
@@ -13,28 +20,34 @@ export type SwipeDecision =
   | { action: "commit"; direction: SwipeDirection }
   | { action: "cancel" };
 
+/** True while a drag stays close enough to horizontal to count as a swipe. */
+export function withinSwipeAngle(deltaX: number, deltaY: number): boolean {
+  return Math.abs(deltaY) <= Math.abs(deltaX) * SWIPE_MAX_SLOPE;
+}
+
+/**
+ * A deliberate swipe only. Speed never commits: a short or fast flick snaps back.
+ * The drag must
+ * - travel a quarter of the width,
+ * - stay within the angle, and
+ * - be let go inside the last fifth of the stage on the side it moved toward.
+ * `releaseX` is measured from the stage's left edge.
+ */
 export function decideSwipeRelease(input: {
   deltaX: number;
-  velocityPxPerMs: number;
+  deltaY: number;
+  releaseX: number;
   width: number;
 }): SwipeDecision {
-  const width = input.width;
+  const { deltaX, deltaY, releaseX, width } = input;
   assertPositiveWidth(width);
-  const threshold = width * SWIPE_COMMIT_RATIO;
-  const flick = Math.abs(input.velocityPxPerMs) >= SWIPE_FLICK_PX_PER_MS;
-  if (flick) {
-    return {
-      action: "commit",
-      direction: input.velocityPxPerMs < 0 ? "left" : "right",
-    };
+  if (Math.abs(deltaX) < width * SWIPE_MIN_TRAVEL_RATIO || !withinSwipeAngle(deltaX, deltaY)) {
+    return { action: "cancel" };
   }
-  if (Math.abs(input.deltaX) >= threshold) {
-    return {
-      action: "commit",
-      direction: input.deltaX < 0 ? "left" : "right",
-    };
-  }
-  return { action: "cancel" };
+  const zone = width * SWIPE_RELEASE_ZONE_RATIO;
+  const direction: SwipeDirection = deltaX < 0 ? "left" : "right";
+  const inZone = direction === "left" ? releaseX <= zone : releaseX >= width - zone;
+  return inZone ? { action: "commit", direction } : { action: "cancel" };
 }
 
 /** Only the forward swipe (right to left) commits; the other way snaps back. */
@@ -131,10 +144,13 @@ export function wireSwipe(
   let pointerId: number | null = null;
   let startX = 0;
   let startY = 0;
-  let lastX = 0;
-  let lastT = 0;
-  let velocity = 0;
   let deltaX = 0;
+  let deltaY = 0;
+  let releaseX = 0;
+  /** Stage left edge at touch-down; the drag transform moves the live rect. */
+  let stageLeft = 0;
+  /** Once a drag leaves the angle it is dead until the finger lifts. */
+  let offAxis = false;
   let axis: SwipeAxis = "pending";
   let settling = false;
 
@@ -231,10 +247,11 @@ export function wireSwipe(
     pointerId = event.pointerId;
     startX = event.clientX;
     startY = event.clientY;
-    lastX = event.clientX;
-    lastT = event.timeStamp;
-    velocity = 0;
     deltaX = 0;
+    deltaY = 0;
+    releaseX = 0;
+    stageLeft = stage.getBoundingClientRect().left;
+    offAxis = false;
     axis = "pending";
     clearTransition();
     if (!preferVerticalScroll) {
@@ -247,14 +264,9 @@ export function wireSwipe(
     if (!isTracking(event)) {
       return;
     }
-    const now = event.timeStamp;
-    const elapsed = now - lastT;
-    if (elapsed >= 8) {
-      velocity = (event.clientX - lastX) / elapsed;
-      lastX = event.clientX;
-      lastT = now;
-    }
     deltaX = event.clientX - startX;
+    deltaY = event.clientY - startY;
+    releaseX = event.clientX - stageLeft;
     if (!shouldDragStage(event, deltaX)) {
       return;
     }
@@ -262,7 +274,10 @@ export function wireSwipe(
       stage.classList.add("is-swiping");
       captureWhenReady(event);
     }
-    applyDrag(deltaX);
+    if (!offAxis && swipeAxis(deltaX, deltaY) !== "pending") {
+      offAxis = !withinSwipeAngle(deltaX, deltaY);
+    }
+    applyDrag(offAxis ? 0 : deltaX);
   });
 
   const endPointer = (event: PointerEvent): void => {
@@ -276,15 +291,10 @@ export function wireSwipe(
       return;
     }
     const width = Math.max(stage.offsetWidth, 1);
-    settle(
-      allow(
-        decideSwipeRelease({
-          deltaX,
-          velocityPxPerMs: velocity,
-          width,
-        }),
-      ),
-    );
+    const decision = offAxis
+      ? ({ action: "cancel" } as const)
+      : decideSwipeRelease({ deltaX, deltaY, releaseX, width });
+    settle(allow(decision));
   };
 
   stage.addEventListener("pointerup", endPointer);
