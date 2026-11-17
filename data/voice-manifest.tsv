@@ -1,0 +1,31 @@
+assetKey	model	text
+get_ready	en_GB-northern_english_male-medium.onnx	Get ready...
+get_ready_b	en_GB-northern_english_male-medium.onnx	Coming up, mate — reset your stance.
+get_ready_c	en_GB-northern_english_male-medium.onnx	Next set in a few — breathe.
+five	en_GB-northern_english_male-medium.onnx	Five.
+four	en_GB-northern_english_male-medium.onnx	Four.
+three	en_GB-northern_english_male-medium.onnx	Three.
+two	en_GB-northern_english_male-medium.onnx	Two.
+one	en_GB-northern_english_male-medium.onnx	One.
+go	en_GB-northern_english_male-medium.onnx	Go.
+go_b	en_GB-northern_english_male-medium.onnx	You've got this.
+go_c	en_GB-northern_english_male-medium.onnx	Nice and controlled — go.
+halfway	en_GB-northern_english_male-medium.onnx	Halfway there, mate.
+halfway_b	en_GB-northern_english_male-medium.onnx	That's half — hold it there.
+halfway_c	en_GB-northern_english_male-medium.onnx	Halfway, love. Nice and steady.
+halfway_d	en_GB-northern_english_male-medium.onnx	Halfway — keep the reps coming.
+pulse_not_readable	en_GB-northern_english_male-medium.onnx	Pulse not reading — check the strap, mate.
+pulse_not_readable_b	en_GB-northern_english_male-medium.onnx	Can't see your pulse. Tighten the band.
+session_start	en_GB-northern_english_male-medium.onnx	Morning. Soft start, then we graft.
+session_start_b	en_GB-northern_english_male-medium.onnx	Ready when you are, mate.
+session_start_c	en_GB-northern_english_male-medium.onnx	Let's get moving — nice and steady.
+warmup_done	en_GB-northern_english_male-medium.onnx	Warmup done. Real work next.
+warmup_done_b	en_GB-northern_english_male-medium.onnx	Body's awake. Time for the main sets.
+change_side	en_GB-northern_english_male-medium.onnx	Change side, mate.
+change_side_b	en_GB-northern_english_male-medium.onnx	Other side when you're ready.
+set_logged	en_GB-northern_english_male-medium.onnx	Set in the bank. Nice one.
+set_logged_b	en_GB-northern_english_male-medium.onnx	Good set — shake it out.
+set_logged_c	en_GB-northern_english_male-medium.onnx	Logged. Take the rest.
+session_done	en_GB-northern_english_male-medium.onnx	Session done. Sound work today.
+session_done_b	en_GB-northern_english_male-medium.onnx	That's you finished — recover well.
+session_done_c	en_GB-northern_english_male-medium.onnx	Nice session. Cup of tea?

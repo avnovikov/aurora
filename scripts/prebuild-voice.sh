@@ -24,6 +24,10 @@ if [[ ! -f "$MODEL" ]]; then
 fi
 
 mkdir -p "$OUT"
+# Which model baked each line, rewritten whole on every run so one run = one
+# voice. tests/voice/voicePack.test.ts checks it against src/voice/lines.ts.
+MANIFEST="$ROOT/data/voice-manifest.tsv"
+printf 'assetKey\tmodel\ttext\n' > "$MANIFEST"
 
 bake_line() {
   local key="$1"
@@ -31,6 +35,7 @@ bake_line() {
   local wav="$OUT/$key.wav"
   echo "Baking $key: $text"
   printf '%s\n' "$text" | "$PIPER_BIN" -m "$MODEL" -f "$wav"
+  printf '%s\t%s\t%s\n' "$key" "$(basename "$MODEL")" "$text" >> "$MANIFEST"
 }
 
 # Keep in sync with ALL_COACH_LINES in src/voice/lines.ts
@@ -48,6 +53,7 @@ bake_line go_c "Nice and controlled — go."
 bake_line halfway "Halfway there, mate."
 bake_line halfway_b "That's half — hold it there."
 bake_line halfway_c "Halfway, love. Nice and steady."
+bake_line halfway_d "Halfway — keep the reps coming."
 bake_line pulse_not_readable "Pulse not reading — check the strap, mate."
 bake_line pulse_not_readable_b "Can't see your pulse. Tighten the band."
 bake_line session_start "Morning. Soft start, then we graft."
