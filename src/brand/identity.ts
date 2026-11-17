@@ -9,5 +9,5 @@ export function productTitleLine(): string {
 }
 
 export function aboutBlurb(): string {
-  return `${PRODUCT_NAME} (${SOUL_NAME}, ${SOUL_NAME_CYRILLIC}) is a private morning coach: sleep, pulse, load, and stalls drive the dose.`;
+  return `${PRODUCT_NAME} (${SOUL_NAME}, ${SOUL_NAME_CYRILLIC}) is private calisthenics training: sleep, pulse, load, and stalls drive the dose.`;
 }

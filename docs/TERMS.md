@@ -7,7 +7,7 @@ These terms apply when you install or use Aurora (Rassvet), including the Androi
 
 ## 1. What Aurora is
 
-Aurora is a private morning training coach. You write the week as slots; the app picks exercise and dose from sleep, pulse, load, missed reps, and stalls. It is personal software, not a clinical or medical product.
+Aurora is private calisthenics training software. You set who you are and what to train; the app keeps a plan queue and picks exercise and dose from sleep, pulse, load, missed reps, and stalls. It is personal software, not a clinical or medical product.
 
 ## 2. Local-only data
 
