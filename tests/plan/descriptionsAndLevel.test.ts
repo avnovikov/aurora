@@ -196,11 +196,14 @@ describe("session screen: doodle, description, what to pay attention to", () => 
       log: { entries: [] },
       workState: null,
       restLeft: 0,
+      holdLeft: 0,
+      sideSwitchLeft: 0,
       pulse: { connected: false, lastValidAtMs: null, lastShoutAtMs: null },
       bpm: null,
       pulseStatus: null,
       startedAtMs: 0,
       plannedTotalSeconds: 1800,
+      addWeightKg: 0,
       ...over,
     }) as ViewState;
 

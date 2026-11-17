@@ -30,6 +30,8 @@ function blankState(): ViewState {
     setIndex: 1,
     cooldownIndex: 0,
     restLeft: 0,
+    holdLeft: 0,
+    sideSwitchLeft: 0,
     workState: null,
     log: { entries: [] },
     bpm: null,
@@ -37,6 +39,7 @@ function blankState(): ViewState {
     pulseStatus: null,
     startedAtMs: Date.now(),
     plannedTotalSeconds: 0,
+    addWeightKg: 0,
   };
 }
 

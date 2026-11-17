@@ -1,6 +1,7 @@
 import { clearSession, saveSession } from "../session/storage";
 import { formatClock, sessionClockSnapshot } from "../session/sessionClock";
 import { startWakeLock } from "../session/wakeLock";
+import { theoreticalRemainingSeconds } from "./sessionClockProgress";
 import { speakCoachLine } from "../voice/coachVoice";
 import {
   disconnectHeartRate,
@@ -37,7 +38,7 @@ import { loadMemories } from "../session/history";
 import { pulseConnectedAt, pulseDisconnected } from "./pulseState";
 import { attachSessionPulse, paintPulseReading } from "./sessionPulse";
 import type { SessionViewOptions } from "./sessionTypes";
-import { startStationHold, type WarmupTimerHandle } from "./sessionWarmup";
+import { seedStationHold, startStationHold, type WarmupTimerHandle } from "./sessionWarmup";
 import { prefetchDoodles } from "../doodles/doodleMarkup";
 import { loadAthleteState } from "./athleteState";
 import { createSlowSetCueController } from "./slowSetCue";
@@ -133,8 +134,8 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     }
     const clock = sessionClockSnapshot(
       state.startedAtMs,
-      state.plannedTotalSeconds,
       Date.now(),
+      theoreticalRemainingSeconds(options.planned, state),
     );
     elapsed.textContent = formatClock(clock.elapsedSeconds);
     left.textContent = formatClock(clock.remainingSeconds);
@@ -304,8 +305,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       }
       return;
     }
-    paint();
-    runStationHold("warmup");
+    seedAndRunStationHold("warmup");
   };
 
   const advanceCooldownStep = (): void => {
@@ -313,8 +313,18 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       finishAll();
       return;
     }
+    seedAndRunStationHold("cooldown");
+  };
+
+  /** Seed holdLeft before paint so Left uses the full station, then start the timer. */
+  const seedAndRunStationHold = (kind: "warmup" | "cooldown"): void => {
+    const step =
+      kind === "warmup"
+        ? options.planned.warmup[state.warmupIndex]
+        : cooldownSteps(options.planned)[state.cooldownIndex];
+    seedStationHold(state, step);
     paint();
-    runStationHold("cooldown");
+    runStationHold(kind);
   };
 
   /** Run the current warm-up or cool-down station; only warm-up gaps get the voice cue. */
@@ -441,8 +451,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     onFinishAll: finishAll,
     onStartCooldown: () => {
       startCooldown(options.planned, state);
-      paint();
-      runStationHold("cooldown");
+      seedAndRunStationHold("cooldown");
     },
     onSkipCooldown: () => {
       clearWorkTimers();
@@ -481,10 +490,11 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   clockTimer = window.setInterval(paintClock, 1000);
 
   attachSessionPulse(state, handlers);
-  paint();
   if (state.phase === "warmup") {
-    runStationHold("warmup");
+    seedAndRunStationHold("warmup");
   } else if (state.phase === "cooldown") {
-    runStationHold("cooldown");
+    seedAndRunStationHold("cooldown");
+  } else {
+    paint();
   }
 }

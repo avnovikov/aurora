@@ -1,5 +1,6 @@
 /**
- * Elapsed / remaining clock for an active session (wall-clock seconds).
+ * Elapsed / remaining clock for an active session.
+ * Elapsed is wall-clock; remaining is theoretical time still ahead (caller-supplied).
  */
 
 export interface SessionClockSnapshot {
@@ -19,19 +20,19 @@ export function formatClock(totalSeconds: number): string {
 
 export function sessionClockSnapshot(
   startedAtMs: number,
-  plannedTotalSeconds: number,
   nowMs: number,
+  theoreticalRemainingSeconds: number,
 ): SessionClockSnapshot {
-  assertFiniteMs(startedAtMs, "startedAtMs");
-  assertFiniteMs(nowMs, "nowMs");
-  assertNonNegativeSeconds(plannedTotalSeconds, "plannedTotalSeconds");
+  assertFinite(startedAtMs, "startedAtMs");
+  assertFinite(nowMs, "nowMs");
+  assertFinite(theoreticalRemainingSeconds, "theoreticalRemainingSeconds");
   if (nowMs < startedAtMs) {
     throw new Error(
       `nowMs must be >= startedAtMs; got now=${nowMs} start=${startedAtMs}`,
     );
   }
   const elapsedSeconds = Math.floor((nowMs - startedAtMs) / 1000);
-  const remainingSeconds = Math.max(0, Math.floor(plannedTotalSeconds) - elapsedSeconds);
+  const remainingSeconds = Math.max(0, Math.floor(theoreticalRemainingSeconds));
   return {
     elapsedSeconds,
     remainingSeconds,
@@ -39,7 +40,7 @@ export function sessionClockSnapshot(
   };
 }
 
-function assertFiniteMs(value: number, name: string): void {
+function assertFinite(value: number, name: string): void {
   if (!Number.isFinite(value)) {
     throw new Error(`${name} must be a finite number; got ${value}`);
   }

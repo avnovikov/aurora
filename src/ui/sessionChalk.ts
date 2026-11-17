@@ -13,6 +13,7 @@ import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
 import { formatClock, sessionClockSnapshot } from "../session/sessionClock";
 import { prescribedForNextSet } from "../session/setLog";
 import { cooldownOfferLabel } from "../rules/sessionDuration";
+import { theoreticalRemainingSeconds } from "./sessionClockProgress";
 import {
   SIDE_SWITCH_SECONDS,
   stationEffort,
@@ -53,7 +54,7 @@ export function shellHtml(
   return `
     <main class="shell session ${light}">
       <header class="session-top">
-        ${sessionClockHtml(state)}
+        ${sessionClockHtml(planned, state)}
         ${chalkHtml(planned, state)}
       </header>
       ${pendingUndo}
@@ -108,11 +109,15 @@ function pulseBarHtml(state: ViewState, actions: string): string {
 }
 
 /** "Elapsed 0:01 · Left 31:40", each number in its own hook for the 1 s repaint. */
-function sessionClockHtml(state: ViewState, nowMs: number = Date.now()): string {
+function sessionClockHtml(
+  planned: PlannedSession,
+  state: ViewState,
+  nowMs: number = Date.now(),
+): string {
   const clock = sessionClockSnapshot(
     state.startedAtMs,
-    state.plannedTotalSeconds,
     nowMs,
+    theoreticalRemainingSeconds(planned, state),
   );
   return `<div class="session-clock" data-session-clock>
           <p class="session-clock-part"><span class="session-clock-label">Elapsed</span> <span class="session-clock-num" data-session-elapsed>${formatClock(clock.elapsedSeconds)}</span></p>
