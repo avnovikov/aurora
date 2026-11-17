@@ -40,7 +40,9 @@ describe(`device snapshot ${SNAPSHOT}`, () => {
       (m) => m.sessionsAtStandard > 0 || m.sessionsBelowFloor > 0,
     );
     expect(counted).toEqual([]);
-    expect(memories.calf_raise).toMatchObject({ bestReps: 60 });
+    // v1 cached tier has no evidence fields until migration (#112 Task 6) derives loggedTier from bestReps; Task 6 restores "elite" here.
+    expect(memories.calf_raise.skillTier).toBeUndefined();
+    expect(memories.calf_raise.bestReps).toBe(60);
     // Skipped in the session: no best reps, tier from the athlete's own pick.
     expect(memories.hf_84.bestReps).toBeUndefined();
     expect(memories.hf_84.declaredTier).toBe("intermediate");

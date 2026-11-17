@@ -54,7 +54,7 @@ export function renderLibraryView(root: HTMLElement): void {
   let listScrollY = 0;
   let pickingPlanForId: string | null = null;
   let planStatus: string | null = null;
-  let cascadeHint: string | null = null;
+  let inferenceHint: string | null = null;
   const { jointHistory, equipment } = loadProfile();
   const targetIds = collectTemplateTargetIds(listAllTemplates());
 
@@ -73,7 +73,7 @@ export function renderLibraryView(root: HTMLElement): void {
   const clearPlanStatusAndSelect = (exerciseId: string | null): void => {
     selectedId = exerciseId;
     planStatus = null;
-    cascadeHint = null;
+    inferenceHint = null;
     paint();
   };
 
@@ -129,7 +129,7 @@ export function renderLibraryView(root: HTMLElement): void {
         onDeclareTier: (id, tier) => {
           const result = declareSkillTier(loadMemories(), id, tier);
           saveMemories(result.memories);
-          cascadeHint = cascadeHintFor(result.inferredCount);
+          inferenceHint = inferenceHintFor(result.inferredCount);
           paint();
         },
         onGeneratePlan: () => {
@@ -163,7 +163,7 @@ export function renderLibraryView(root: HTMLElement): void {
         bestReps: memory.bestReps,
       },
       planStatus,
-      cascadeHint,
+      cascadeHint: inferenceHint,
     });
   };
 
@@ -208,7 +208,7 @@ export function renderLibraryView(root: HTMLElement): void {
         onSelect: (id) => {
           selectedId = id;
           planStatus = null;
-          cascadeHint = null;
+          inferenceHint = null;
           paint();
         },
       },
@@ -219,7 +219,7 @@ export function renderLibraryView(root: HTMLElement): void {
   paint();
 }
 
-function cascadeHintFor(inferredCount: number): string | null {
+function inferenceHintFor(inferredCount: number): string | null {
   if (inferredCount === 0) {
     return null;
   }
