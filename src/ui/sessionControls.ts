@@ -13,7 +13,7 @@ import {
   recordSetDuration,
   saveMemories,
 } from "../session/history";
-import { elapsedSetSeconds, shouldArmSlowSetCue } from "../session/setDuration";
+import { loggedSetDurationSeconds, shouldArmSlowSetCue } from "../session/setDuration";
 import {
   connectHeartRate,
   disconnectHeartRate,
@@ -221,9 +221,12 @@ function adjustAddedLoadBy(
   delta: number,
   handlers: SessionControlHandlers,
 ): void {
-  updateWorkState(state, ["work"], (work) => {
-    return editAddedLoad(work, Math.max(0, work.addedLoadKg + delta));
-  }, handlers);
+  updateWorkState(
+    state,
+    ["work"],
+    (work) => editAddedLoad(work, Math.max(0, work.addedLoadKg + delta)),
+    handlers,
+  );
 }
 
 function wirePulseSimButtons(
@@ -258,10 +261,7 @@ export function completeSet(
   const prescribed = prescribedForNextSet(work);
   const completed = stopReason === "skipped" ? 0 : prescribed;
   handlers.onWorkSetEnding(item.exerciseId);
-  const durationSeconds =
-    stopReason !== "skipped" && work.setStartedAtMs !== undefined
-      ? elapsedSetSeconds(work.setStartedAtMs)
-      : undefined;
+  const durationSeconds = loggedSetDurationSeconds(work.setStartedAtMs, stopReason);
   state.log = appendSet(state.log, {
     slotId: item.slotId,
     exerciseId: item.exerciseId,
@@ -272,19 +272,7 @@ export function completeSet(
     stopReason,
     ...(durationSeconds !== undefined ? { durationSeconds } : {}),
   });
-  let memories = loadMemories();
-  if (completed > 0) {
-    memories = recordBestReps(memories, item.exerciseId, completed);
-  }
-  if (durationSeconds !== undefined) {
-    memories = recordSetDuration(memories, item.exerciseId, durationSeconds);
-    if (shouldArmSlowSetCue(durationSeconds)) {
-      handlers.onSlowSetArmed(item.exerciseId);
-    }
-  }
-  if (completed > 0 || durationSeconds !== undefined) {
-    saveMemories(memories);
-  }
+  persistSetMemory(item.exerciseId, completed, durationSeconds, handlers);
   if (stopReason === "completed") {
     void speakCoachLine("set_logged");
   }
@@ -313,6 +301,28 @@ export function restBeforeNextExercise(
     return undefined;
   }
   return slotRestSeconds;
+}
+
+function persistSetMemory(
+  exerciseId: string,
+  completedReps: number,
+  durationSeconds: number | undefined,
+  handlers: Pick<SessionControlHandlers, "onSlowSetArmed">,
+): void {
+  if (completedReps <= 0 && durationSeconds === undefined) {
+    return;
+  }
+  let memories = loadMemories();
+  if (completedReps > 0) {
+    memories = recordBestReps(memories, exerciseId, completedReps);
+  }
+  if (durationSeconds !== undefined) {
+    memories = recordSetDuration(memories, exerciseId, durationSeconds);
+    if (shouldArmSlowSetCue(durationSeconds)) {
+      handlers.onSlowSetArmed(exerciseId);
+    }
+  }
+  saveMemories(memories);
 }
 
 function beginRest(

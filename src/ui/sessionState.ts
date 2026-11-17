@@ -152,11 +152,7 @@ export function syncWorkState(
     return null;
   }
   const prior = state.workState;
-  const sameSet =
-    prior &&
-    prior.slotId === item.slotId &&
-    prior.exerciseId === item.exerciseId &&
-    prior.setIndex === state.setIndex;
+  const keepClock = isSameActiveSet(prior, item, state.setIndex);
   return {
     slotId: item.slotId,
     exerciseId: item.exerciseId,
@@ -164,16 +160,32 @@ export function syncWorkState(
     prescribedReps: item.dose.reps,
     addedLoadKg: item.dose.addedLoadKg,
     nextRepsOverride: prior?.nextRepsOverride,
-    setStartedAtMs: sameSet ? prior.setStartedAtMs : undefined,
+    setStartedAtMs: keepClock ? prior.setStartedAtMs : undefined,
   };
 }
 
-/** Stamp (or refresh) the rep-set duration clock when a work screen is shown. */
-export function stampSetStartedAt(
+/** Start the set clock once per painted work set (rep sets only; caller gates). */
+export function ensureSetClockStarted(
   work: ActiveWorkState,
   nowMs: number = Date.now(),
 ): ActiveWorkState {
+  if (work.setStartedAtMs !== undefined) {
+    return work;
+  }
   return { ...work, setStartedAtMs: nowMs };
+}
+
+function isSameActiveSet(
+  prior: ActiveWorkState | null | undefined,
+  item: PlannedWorkItem,
+  setIndex: number,
+): prior is ActiveWorkState {
+  return (
+    prior != null &&
+    prior.slotId === item.slotId &&
+    prior.exerciseId === item.exerciseId &&
+    prior.setIndex === setIndex
+  );
 }
 
 function restoreWorkState(

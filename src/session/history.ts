@@ -4,6 +4,7 @@ import type { Exercise, ExerciseMemory, SkillTier } from "../domain/types";
 import type { HistoryEntry, SessionEvaluation } from "../domain/program";
 import { cascadeFamilyTiers } from "../progress/cascadeFamilyTiers";
 import { effectiveSkillTier } from "../rules/skillDose";
+import { assertNonNegativeWholeSeconds } from "./setDuration";
 
 const HISTORY_KEY = "aurora.poc.history.v1";
 const MEMORY_KEY = "aurora.poc.memory.v1";
@@ -132,14 +133,12 @@ export function recordSetDuration(
   exerciseId: string,
   durationSeconds: number,
 ): Record<string, ExerciseMemory> {
-  if (!Number.isFinite(durationSeconds) || durationSeconds < 0 || !Number.isInteger(durationSeconds)) {
-    throw new Error(`durationSeconds must be a non-negative integer; got ${durationSeconds}`);
-  }
+  assertNonNegativeWholeSeconds(durationSeconds);
   const current = memories[exerciseId] ?? emptyMemory(exerciseId);
-  const n = current.setDurationSampleCount ?? 0;
-  const avg = current.avgSetDurationSeconds ?? 0;
-  const nextCount = n + 1;
-  const nextAvg = Math.round((avg * n + durationSeconds) / nextCount);
+  const sampleCount = current.setDurationSampleCount ?? 0;
+  const previousAvg = current.avgSetDurationSeconds ?? 0;
+  const nextCount = sampleCount + 1;
+  const nextAvg = Math.round((previousAvg * sampleCount + durationSeconds) / nextCount);
   return {
     ...memories,
     [exerciseId]: {

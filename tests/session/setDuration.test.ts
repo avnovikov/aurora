@@ -3,6 +3,7 @@ import { emptyMemory } from "../../src/session/history";
 import {
   elapsedSetSeconds,
   FALLBACK_SLOW_SET_CUE_DELAY_SECONDS,
+  loggedSetDurationSeconds,
   shouldArmSlowSetCue,
   slowSetCueDelaySeconds,
   SLOW_SET_SECONDS,
@@ -12,6 +13,18 @@ describe("elapsedSetSeconds", () => {
   it("floors whole seconds and never goes negative", () => {
     expect(elapsedSetSeconds(1000, 4500)).toBe(3);
     expect(elapsedSetSeconds(5000, 4000)).toBe(0);
+  });
+});
+
+describe("loggedSetDurationSeconds", () => {
+  it("omits duration on skip or missing start stamp", () => {
+    expect(loggedSetDurationSeconds(1000, "skipped", 5000)).toBeUndefined();
+    expect(loggedSetDurationSeconds(undefined, "completed", 5000)).toBeUndefined();
+  });
+
+  it("measures whole seconds when the clock ran", () => {
+    expect(loggedSetDurationSeconds(1000, "completed", 4500)).toBe(3);
+    expect(loggedSetDurationSeconds(1000, "muscular_failure", 4500)).toBe(3);
   });
 });
 

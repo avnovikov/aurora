@@ -29,18 +29,18 @@ import {
   initialState,
   needsWorkState,
   persistPhase,
-  stampSetStartedAt,
+  ensureSetClockStarted,
   startCooldown,
   syncWorkState,
 } from "./sessionState";
 import { loadMemories } from "../session/history";
-import { slowSetCueDelaySeconds } from "../session/setDuration";
 import { pulseConnectedAt, pulseDisconnected } from "./pulseState";
 import { attachSessionPulse, paintPulseReading } from "./sessionPulse";
 import type { SessionViewOptions } from "./sessionTypes";
 import { startStationHold, type WarmupTimerHandle } from "./sessionWarmup";
 import { prefetchDoodles } from "../doodles/doodleMarkup";
 import { loadAthleteState } from "./athleteState";
+import { createSlowSetCueController } from "./slowSetCue";
 import {
   applyEasierWork,
   applyNeverAgainWork,
@@ -70,6 +70,23 @@ interface WorkAdjustChrome {
   undoWorkIndex?: number;
 }
 
+function exerciseForWorkItem(item: PlannedWorkItem | null) {
+  if (!item) {
+    return undefined;
+  }
+  return EXERCISE_GRAPH[item.exerciseId];
+}
+
+function isHoldWorkItem(item: PlannedWorkItem | null): boolean {
+  const exercise = exerciseForWorkItem(item);
+  return exercise !== undefined && resolveExerciseTiming(exercise).effort === "hold";
+}
+
+function isRepWorkItem(item: PlannedWorkItem | null): boolean {
+  const exercise = exerciseForWorkItem(item);
+  return exercise !== undefined && resolveExerciseTiming(exercise).effort !== "hold";
+}
+
 export function renderSessionView(root: HTMLElement, options: SessionViewOptions): void {
   prefetchSessionDoodles(options.planned);
   const state = initialState(options);
@@ -78,73 +95,20 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   let pulseTimer: number | null = null;
   let clockTimer: number | null = null;
   let workAdjust: WorkAdjustChrome = { swapOpen: false };
-  let pendingSlowSetCueExerciseId: string | null = null;
-  let slowSetCueTimer: number | null = null;
-  let slowSetCueScheduledFor: { exerciseId: string; setIndex: number } | null = null;
   const wakeLock = startWakeLock();
-
-  const clearSlowSetCueTimer = (): void => {
-    if (slowSetCueTimer !== null) {
-      window.clearTimeout(slowSetCueTimer);
-      slowSetCueTimer = null;
-    }
-  };
+  const slowSetCue = createSlowSetCueController({
+    speakPaceNudge: () => {
+      void speakCoachLine("set_pace_nudge");
+    },
+    memoryFor: (exerciseId) => loadMemories()[exerciseId],
+  });
 
   const clearWorkTimers = (): void => {
     restHandle?.clear();
     restHandle = null;
     warmupHandle?.clear();
     warmupHandle = null;
-    clearSlowSetCueTimer();
-  };
-
-  const isRepWorkItem = (item: PlannedWorkItem | null): boolean => {
-    if (!item) {
-      return false;
-    }
-    const exercise = EXERCISE_GRAPH[item.exerciseId];
-    return exercise !== undefined && resolveExerciseTiming(exercise).effort !== "hold";
-  };
-
-  const cancelSlowSetCueFor = (exerciseId: string): void => {
-    if (pendingSlowSetCueExerciseId !== exerciseId) {
-      return;
-    }
-    clearSlowSetCueTimer();
-    pendingSlowSetCueExerciseId = null;
-    slowSetCueScheduledFor = null;
-  };
-
-  /** One mid-set pace nudge for the armed exercise; skipped if this set ends first. */
-  const scheduleSlowSetCueIfNeeded = (): void => {
-    if (state.phase !== "work" || !pendingSlowSetCueExerciseId) {
-      return;
-    }
-    const item = currentWork(options.planned, state);
-    if (!isRepWorkItem(item) || item!.exerciseId !== pendingSlowSetCueExerciseId) {
-      return;
-    }
-    const key = { exerciseId: item!.exerciseId, setIndex: state.setIndex };
-    if (
-      slowSetCueScheduledFor &&
-      slowSetCueScheduledFor.exerciseId === key.exerciseId &&
-      slowSetCueScheduledFor.setIndex === key.setIndex
-    ) {
-      return;
-    }
-    clearSlowSetCueTimer();
-    slowSetCueScheduledFor = key;
-    const delayMs = slowSetCueDelaySeconds(loadMemories()[key.exerciseId]) * 1000;
-    const armedId = key.exerciseId;
-    slowSetCueTimer = window.setTimeout(() => {
-      slowSetCueTimer = null;
-      if (pendingSlowSetCueExerciseId !== armedId) {
-        return;
-      }
-      pendingSlowSetCueExerciseId = null;
-      slowSetCueScheduledFor = null;
-      void speakCoachLine("set_pace_nudge");
-    }, delayMs);
+    slowSetCue.clear();
   };
 
   const dispose = (): void => {
@@ -273,14 +237,19 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     if (needsWorkState(options.planned, state)) {
       state.workState = syncWorkState(options.planned, state);
     }
-    if (state.phase === "work" && state.workState && isRepWorkItem(currentWork(options.planned, state))) {
-      if (state.workState.setStartedAtMs === undefined) {
-        state.workState = stampSetStartedAt(state.workState);
-      }
+    const workItem = currentWork(options.planned, state);
+    const repWork = isRepWorkItem(workItem);
+    if (state.phase === "work" && state.workState && repWork) {
+      state.workState = ensureSetClockStarted(state.workState);
     }
     root.innerHTML = shellHtml(options.planned, state, workAdjustUi());
     wireControls();
-    scheduleSlowSetCueIfNeeded();
+    slowSetCue.scheduleIfNeeded({
+      phase: state.phase,
+      setIndex: state.setIndex,
+      item: workItem,
+      isRepWork: repWork,
+    });
     persist();
   };
 
@@ -386,17 +355,6 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     }
   };
 
-  const timedWorkItem = (item: PlannedWorkItem | null): boolean => {
-    if (!item) {
-      return false;
-    }
-    const exercise = EXERCISE_GRAPH[item.exerciseId];
-    if (!exercise) {
-      return false;
-    }
-    return resolveExerciseTiming(exercise).effort === "hold";
-  };
-
   const finishExercise = (restBeforeNext?: number): void => {
     // Keep Never-again Undo across advance (plan/exclusion restore); drop live-item snapshot.
     if (workAdjust.undo) {
@@ -430,7 +388,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
           paint();
         },
         true,
-        timedWorkItem(currentWork(options.planned, state)),
+        isHoldWorkItem(currentWork(options.planned, state)),
       );
       return;
     }
@@ -441,7 +399,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   const handlers: SessionControlHandlers = {
     onPaint: paint,
     onStartRest: (withVoice, onDone) =>
-      startRest(onDone, withVoice, timedWorkItem(currentWork(options.planned, state))),
+      startRest(onDone, withVoice, isHoldWorkItem(currentWork(options.planned, state))),
     onFinishExercise: finishExercise,
     onSkipRest: skipRest,
     onFinishStation: () => warmupHandle?.finish(),
@@ -475,11 +433,10 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       paint();
     },
     onWorkSetEnding: (exerciseId) => {
-      cancelSlowSetCueFor(exerciseId);
+      slowSetCue.cancelFor(exerciseId);
     },
     onSlowSetArmed: (exerciseId) => {
-      pendingSlowSetCueExerciseId = exerciseId;
-      slowSetCueScheduledFor = null;
+      slowSetCue.arm(exerciseId);
     },
     onFinishAll: finishAll,
     onStartCooldown: () => {

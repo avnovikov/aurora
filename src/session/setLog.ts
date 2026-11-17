@@ -1,4 +1,5 @@
 import type { StopReason } from "../domain/types";
+import { assertNonNegativeWholeSeconds } from "./setDuration";
 
 /** Prefill when the athlete turns on optional added load for a set. */
 export const DEFAULT_ADDED_LOAD_KG = 12;
@@ -78,6 +79,7 @@ export function workStateAfterLoggedSet(
     prescribedReps: loggedReps,
     nextRepsOverride: loggedReps,
     addedLoadKg: 0,
+    setStartedAtMs: undefined,
   };
 }
 
@@ -112,9 +114,6 @@ function assertAppendable(
   assertPositiveInteger(entry.prescribedReps, "prescribedReps must be >= 1");
   assertNonNegativeFinite(entry.completedReps, "completedReps must be >= 0");
   if (entry.durationSeconds !== undefined) {
-    assertNonNegativeFinite(entry.durationSeconds, "durationSeconds must be >= 0");
-    if (!Number.isInteger(entry.durationSeconds)) {
-      throw new Error(`durationSeconds must be a whole number; got ${entry.durationSeconds}`);
-    }
+    assertNonNegativeWholeSeconds(entry.durationSeconds);
   }
 }
