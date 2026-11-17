@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getPlanDay, listPlanDays } from "../../src/plan/planDays";
 import { loadPlanLevel } from "../../src/plan/planLevel";
 import { loadPlanQueue } from "../../src/plan/queue";
@@ -24,7 +24,12 @@ describe(`device snapshot ${SNAPSHOT}`, () => {
 
   // The snapshot holds memory under the v1 key; boot migrates it to v2 first.
   beforeEach(() => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(NOW);
     ensureMemoryMigrated(NOW);
+  });
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it("records where it came from", () => {
@@ -110,5 +115,6 @@ describe(`device snapshot ${SNAPSHOT}`, () => {
     expect(isBulgarian18).toBe(false);
     // Today it resolves to Step-up 4x7 (beginner dose, rules skill_dose + hold).
     expect(slot.exerciseId).toBe("step_up");
+    expect(slot.dose).toMatchObject({ sets: 4, reps: 7 });
   });
 });

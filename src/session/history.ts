@@ -173,12 +173,13 @@ function clearCapsFrom(next: Memories, exerciseId: string, now: Date): void {
   }
 }
 
-/** Failed set: drop the inferred tier and cap harder rungs in the family. */
+/** Replace any earlier cap from the same source with this one. */
 function withCapFrom(target: ExerciseMemory, cap: FailedCap): ExerciseMemory {
   const others = (target.failedCaps ?? []).filter((c) => c.from !== cap.from);
   return { ...target, failedCaps: [...others, cap] };
 }
 
+/** Failed set: drop the inferred tier and cap harder rungs in the family. */
 function capHarderRungs(
   next: Memories,
   exerciseId: string,

@@ -53,8 +53,9 @@ function migrateIfNeeded(now: Date): void {
     },
     standardsOf: (id) => EXERCISE_GRAPH[id]?.standards ?? null,
   });
-  v2Store.write(JSON.stringify(memories));
+  // Confirm list first: v2 is the "done" marker, so a failed v2 write makes the next boot redo both.
   confirmStore.write(JSON.stringify(levelsToConfirm));
+  v2Store.write(JSON.stringify(memories));
 }
 
 export function loadLevelsToConfirm(): string[] {

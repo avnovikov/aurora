@@ -52,6 +52,27 @@ function migrateRow(
   }
 }
 
+const COUNTER_KEYS = ["sessionsAtStandard", "sessionsBelowFloor", "lastAddedLoadKg", "weakLinkSessionsRemaining"] as const;
+const OPTIONAL_NUMBER_KEYS = ["bestReps", "avgSetDurationSeconds", "setDurationSampleCount"] as const;
+
+function isNonNegativeFinite(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0;
+}
+
+/** Make every numeric field safe for later planning: counters fall back to 0, optional numbers are dropped. */
+function sanitizeNumbers(copy: ExerciseMemory): void {
+  for (const key of COUNTER_KEYS) {
+    if (!isNonNegativeFinite(copy[key])) {
+      copy[key] = 0;
+    }
+  }
+  for (const key of OPTIONAL_NUMBER_KEYS) {
+    if (copy[key] !== undefined && !isNonNegativeFinite(copy[key])) {
+      delete copy[key];
+    }
+  }
+}
+
 /** A row the migration cannot read: copy it through without derived level fields, and say which. */
 function passThrough(id: string, old: ExerciseMemory, error: unknown): { memory: ExerciseMemory; ambiguous: boolean } {
   console.warn(`Aurora: memory row "${id}" could not be migrated; kept without derived levels`, error);
@@ -63,6 +84,7 @@ function passThrough(id: string, old: ExerciseMemory, error: unknown): { memory:
       delete copy[key];
     }
   }
+  sanitizeNumbers(copy);
   return { memory: copy, ambiguous: false };
 }
 

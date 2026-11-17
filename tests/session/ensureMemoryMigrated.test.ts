@@ -1,4 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { EXERCISE_GRAPH } from "../../src/data/exerciseGraph";
+import { effectiveSkillTier } from "../../src/rules/skillDose";
 import { emptyMemory, loadMemories } from "../../src/session/history";
 import { ensureMemoryMigrated, loadLevelsToConfirm } from "../../src/session/ensureMemoryMigrated";
 import { LEVELS_TO_CONFIRM_KEY, MEMORY_KEY, MEMORY_V2_KEY, PLAN_LEVEL_KEY } from "../../src/storage/storageKeys";
@@ -96,5 +98,27 @@ describe("ensureMemoryMigrated (#112)", () => {
   it("loadLevelsToConfirm keeps only strings", () => {
     localStorage.setItem(LEVELS_TO_CONFIRM_KEY, JSON.stringify(["hf_84", 3, null]));
     expect(loadLevelsToConfirm()).toEqual(["hf_84"]);
+  });
+
+  it("a passed-through bad row cannot crash tier lookup later", () => {
+    localStorage.setItem(MEMORY_KEY, v1With("hf_71", { bestReps: -1 }));
+    ensureMemoryMigrated(NOW);
+    const memory = loadMemories(NOW).hf_71!;
+    expect(memory).not.toHaveProperty("bestReps");
+    expect(() => effectiveSkillTier(memory, EXERCISE_GRAPH.hf_71!, NOW)).not.toThrow();
+  });
+
+  it("does not throw and leaves v2 absent when the v2 write fails", () => {
+    localStorage.setItem(MEMORY_KEY, v1With("hf_84", { declaredTier: "intermediate" }));
+    const realSet = localStorage.setItem.bind(localStorage);
+    localStorage.setItem = (key: string, value: string) => {
+      if (key === MEMORY_V2_KEY) {
+        throw new Error("quota");
+      }
+      realSet(key, value);
+    };
+    expect(() => ensureMemoryMigrated(NOW)).not.toThrow();
+    expect(warn).toHaveBeenCalledWith("Aurora: memory migration failed; v1 left untouched", expect.any(Error));
+    expect(localStorage.getItem(MEMORY_V2_KEY)).toBeNull();
   });
 });

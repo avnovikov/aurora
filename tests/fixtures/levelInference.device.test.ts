@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { EXERCISE_GRAPH } from "../../src/data/exerciseGraph";
 import { levelForMove } from "../../src/plan/levelDeclare";
 import { migrateMemoriesV1 } from "../../src/session/memoryMigration";
@@ -13,6 +13,14 @@ describe("level inference on the 2026-11-17 Pixel 10 snapshot (#112)", () => {
     now: NOW,
     planLevelFor: (id) => (EXERCISE_GRAPH[id] ? levelForMove(EXERCISE_GRAPH[id]!, "intermediate") : undefined),
     standardsOf: (id) => EXERCISE_GRAPH[id]?.standards ?? null,
+  });
+
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(NOW);
+  });
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it("nothing is elite unless picked or logged", () => {

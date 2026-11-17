@@ -317,6 +317,12 @@ describe("failure caps per source (#112 rule 2)", () => {
     expect(afterPass.high?.failedCaps?.map((c) => c.from)).toEqual(["low"]);
   });
 
+  it("two consecutive failures on one move leave exactly one self-cap", () => {
+    const twice = run(run({}, fail("low")), fail("low"));
+    expect(twice.low?.failedCaps?.filter((c) => c.from === "low")).toHaveLength(1);
+    expect(twice.low?.failedCaps).toHaveLength(1);
+  });
+
   it("another move's clean session does not clear a cap", () => {
     const failed = run({}, fail("low"));
     const out = run(failed, pass("high"));
