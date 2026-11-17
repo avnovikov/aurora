@@ -36,7 +36,7 @@ import {
 } from "./sessionState";
 import { loadMemories } from "../session/history";
 import { pulseConnectedAt, pulseDisconnected } from "./pulseState";
-import { attachSessionPulse, paintPulseReading } from "./sessionPulse";
+import { attachSessionPulse, paintPulseReading, sessionHeartRateZone } from "./sessionPulse";
 import type { SessionViewOptions } from "./sessionTypes";
 import { seedStationHold, startStationHold, type WarmupTimerHandle } from "./sessionWarmup";
 import { prefetchDoodles } from "../doodles/doodleMarkup";
@@ -287,7 +287,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     // Defer so the Log-set / swipe pointer event cannot click through
     // into the evaluation buttons that replace this view.
     window.setTimeout(() => {
-      options.onDone(state.log.entries.length);
+      options.onDone(state.log);
     }, 0);
   };
 
@@ -355,6 +355,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     clearWorkTimers();
     restHandle = startRestTimer(root, state, withVoice, onDoneRest, {
       timedNext,
+      readZone: () => sessionHeartRateZone(state),
     });
   };
 

@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   connectHeartRate,
   disconnectHeartRate,
@@ -17,6 +17,7 @@ import {
   isPulseLost,
   paintPulseReading,
   pulseChipHtml,
+  sessionHeartRateZone,
 } from "../../src/ui/sessionPulse";
 import type { ViewState } from "../../src/ui/sessionTypes";
 import { PULSE_LOST_UI_MS } from "../../src/voice/pulseAlert";
@@ -69,6 +70,38 @@ function bareState(): ViewState {
     addWeightKg: 0,
   };
 }
+
+describe("sessionHeartRateZone", () => {
+  useMemoryStorage();
+
+  beforeEach(() => {
+    saveProfile({
+      ...loadProfile(),
+      restingHeartRateBpm: 60,
+      maxHeartRateBpm: 180,
+    });
+  });
+
+  it("returns nothing when idle", () => {
+    expect(sessionHeartRateZone(bareState(), 10_000)).toBeNull();
+  });
+
+  it("colours a live reading from the profile bands", () => {
+    const state = bareState();
+    const now = 10_000;
+    state.bpm = 100;
+    state.pulse = { connected: true, lastValidAtMs: now, lastShoutAtMs: null };
+    expect(sessionHeartRateZone(state, now)).toBe("easy");
+  });
+
+  it("returns nothing when the strap is lost", () => {
+    const state = bareState();
+    const now = 10_000;
+    state.bpm = 100;
+    state.pulse = { connected: true, lastValidAtMs: now, lastShoutAtMs: null };
+    expect(sessionHeartRateZone(state, now + PULSE_LOST_UI_MS)).toBeNull();
+  });
+});
 
 describe("isPulseLost", () => {
   function linkedWithLastValidAt(lastValidAtMs: number): ViewState {

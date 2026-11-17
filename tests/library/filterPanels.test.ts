@@ -19,6 +19,14 @@ import {
 const panelIds = (html: string): string[] =>
   [...html.matchAll(/<details class="lib-filters" data-panel="(\w+)"/g)].map((m) => m[1]!);
 
+const FILTER_SHEET_CLOSE_BUTTON =
+  /<button type="button" class="lib-sheet-close" data-close-filters aria-label="Close filters">×<\/button>/;
+
+/** Inner HTML of each filter sheet, in panel order. */
+function filterSheetBodies(html: string): string[] {
+  return [...html.matchAll(/<div class="lib-sheet">([\s\S]*?)<\/div><\/details>/g)].map((m) => m[1]!);
+}
+
 describe("filter panels", () => {
   const html = listHtml([], new Set(), base, { jointHistory: KNEE_HISTORY });
 
@@ -55,6 +63,16 @@ describe("filter panels", () => {
   it("gives every panel the same markup shape", () => {
     expect(html.match(/<details class="lib-filters" data-panel="\w+" name="lib-filter"( open)?><summary>/g)).toHaveLength(3);
     expect(html.match(/<\/details>/g)).toHaveLength(3);
+  });
+
+  it("puts a Filters header and close control in every sheet", () => {
+    const sheets = filterSheetBodies(html);
+    expect(sheets).toHaveLength(3);
+    for (const sheet of sheets) {
+      expect(sheet).toMatch(/^<div class="lib-sheet-hdr">/);
+      expect(sheet).toMatch(/<span class="t-label">Filters<\/span>/);
+      expect(sheet).toMatch(FILTER_SHEET_CLOSE_BUTTON);
+    }
   });
 
   it("collapses all three by default, even with the stretch default selected", () => {

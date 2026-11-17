@@ -23,6 +23,9 @@ export interface CueScheduleOptions {
 /** Banter only when initial rest is strictly longer than this (fires at halfway). */
 export const REST_BANTER_AFTER_SECONDS = 30;
 
+/** Extra seconds added while the pulse stays above steady. */
+export const REST_ADD_SECONDS = 30;
+
 /** Seconds left when "Get ready" is spoken (when rest is at least this long). */
 export const GET_READY_AT_SECONDS_LEFT = 10;
 

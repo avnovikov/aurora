@@ -66,7 +66,10 @@ function profileHeartRateBounds(): HeartRateBounds {
 }
 
 /** Band for a live reading, or null when there is nothing to colour (idle or lost). */
-function liveReadingZone(state: ViewState, nowMs: number): HeartRateZone | null {
+export function sessionHeartRateZone(
+  state: ViewState,
+  nowMs: number = Date.now(),
+): HeartRateZone | null {
   if (state.bpm === null || isPulseLost(state, nowMs)) {
     return null;
   }
@@ -79,7 +82,7 @@ function zoneAttribute(zone: HeartRateZone | null): string {
 
 /** The session-bar chip, including the band so the first paint is already coloured. */
 export function pulseChipHtml(state: ViewState, nowMs: number = Date.now()): string {
-  return `<p class="pulse-chip"${zoneAttribute(liveReadingZone(state, nowMs))}>${pulseChipText(state)}</p>`;
+  return `<p class="pulse-chip"${zoneAttribute(sessionHeartRateZone(state, nowMs))}>${pulseChipText(state)}</p>`;
 }
 
 function setChipZone(chip: Element, zone: HeartRateZone | null): void {
@@ -110,7 +113,7 @@ export function paintPulseReading(
   const chip = root.querySelector(".pulse-chip");
   if (chip) {
     chip.textContent = pulseChipText(state);
-    setChipZone(chip, liveReadingZone(state, nowMs));
+    setChipZone(chip, sessionHeartRateZone(state, nowMs));
   }
   root
     .querySelector(".session-bar")

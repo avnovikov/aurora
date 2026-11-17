@@ -34,6 +34,8 @@ describe("resistance bands", () => {
       "Band pull-aparts",
       "Banded Clamshell",
       "Banded Scapular Retraction",
+      // wger tags it bodyweight, but the text anchors a band below the knee (#111 audit).
+      "Reverse Wood Chops",
       "Seated Band Row",
     ]);
     expect(isWgerCandidate(record("Face pulls with yellow/green band", ["Resistance band"]))).toBe(false);

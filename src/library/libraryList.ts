@@ -50,6 +50,27 @@ function withListDefaults(query: ListQueryState): Required<ListQueryState> {
   return { ...DEFAULT_FILTERS, hiddenStretches: 0, openPanels: [], ...query };
 }
 
+const CLOSE_FILTERS_SELECTOR = "[data-close-filters]";
+
+function filterPanelForCloseButton(button: HTMLElement): HTMLDetailsElement | null {
+  return button.closest<HTMLDetailsElement>("details[data-panel]");
+}
+
+function closeFilterSheetFromButton(event: Event, button: HTMLButtonElement): void {
+  event.preventDefault();
+  event.stopPropagation();
+  const panel = filterPanelForCloseButton(button);
+  if (panel) {
+    panel.open = false;
+  }
+}
+
+function wireFilterSheetClose(root: HTMLElement): void {
+  root.querySelectorAll<HTMLButtonElement>(CLOSE_FILTERS_SELECTOR).forEach((button) => {
+    button.addEventListener("click", (event) => closeFilterSheetFromButton(event, button));
+  });
+}
+
 /** Who is looking: decides the joint badges, the Excluded mark and which filters are offered. */
 export interface ListViewer {
   jointHistory?: readonly JointHistoryEntry[];
@@ -83,6 +104,8 @@ export function mountLibraryList(root: HTMLElement, options: MountLibraryListOpt
       actions.onPanelToggle(panel.dataset.panel as FilterPanelId, panel.open),
     );
   });
+
+  wireFilterSheetClose(root);
 
   root.querySelector<HTMLInputElement>("[data-search]")?.addEventListener("input", (event) => {
     actions.onSearch((event.target as HTMLInputElement).value);

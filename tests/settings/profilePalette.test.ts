@@ -30,6 +30,37 @@ describe("profile palette", () => {
     });
   });
 
+  describe("with gear saved before the #111 items existed", () => {
+    useMemoryStorage(() => ({
+      [KEY]: JSON.stringify({
+        bodyweightKg: 80,
+        equipment: ["body", "bar", "parallettes", "dumbbell", "band"],
+        voiceMuted: false,
+        jointHistory: [],
+        setupDone: true,
+      }),
+    }));
+    it("loads the selection unchanged, and saves new items", () => {
+      const profile = loadProfile();
+      expect(profile.equipment).toEqual(["body", "bar", "parallettes", "dumbbell", "band"]);
+      expect(profile.setupDone).toBe(true);
+      saveProfile({ ...profile, equipment: [...profile.equipment, "dip_bars", "towel"] });
+      expect(loadProfile().equipment).toEqual(["body", "bar", "parallettes", "dumbbell", "band", "dip_bars", "towel"]);
+    });
+  });
+
+  describe("with a gear id this build does not know", () => {
+    useMemoryStorage(() => ({
+      [KEY]: JSON.stringify({ bodyweightKg: 80, equipment: ["body", "jetpack", "rings"], setupDone: true }),
+    }));
+    it("drops that id and keeps the rest of the profile; saving one is refused", () => {
+      const profile = loadProfile();
+      expect(profile.equipment).toEqual(["body", "rings"]);
+      expect(profile.setupDone).toBe(true);
+      expect(() => saveProfile({ ...profile, equipment: ["jetpack" as never] })).toThrow(/unknown/);
+    });
+  });
+
   describe("with an unknown saved palette", () => {
     useMemoryStorage(() => ({ [KEY]: JSON.stringify({ setupDone: true, palette: "neon" }) }));
     it("keeps the rest of the profile and falls back to Rassvet", () => {

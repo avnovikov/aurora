@@ -1964,9 +1964,6 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   "wger_1907": [
     "wger.de exercise 1907 (CC-BY-SA-4.0, cybro)"
   ],
-  "wger_688": [
-    "wger.de exercise 688 (CC-BY-SA-3.0, http://www.carinatum.com/)"
-  ],
   "wger_1090": [
     "wger.de exercise 1090 (CC-BY-SA-4.0, clafal)"
   ],

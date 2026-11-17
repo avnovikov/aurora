@@ -53,7 +53,7 @@ export function prehabFor(
   catalogue: readonly SeedExercise[],
   equipment?: readonly EquipmentId[],
 ): SeedExercise[] {
-  const hasGear = (item: SeedExercise): boolean => missingGear(item.requires, equipment).length === 0;
+  const hasGear = (item: SeedExercise): boolean => missingGear(item, equipment).length === 0;
   const byName = new Map(catalogue.map((item) => [item.name.toLowerCase(), item]));
   const seen = new Set<string>();
   const found: SeedExercise[] = [];

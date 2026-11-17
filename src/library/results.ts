@@ -26,7 +26,7 @@ function poolFor(input: LibraryResultsInput): SeedExercise[] {
   const { catalogue, forJoints, onlyGear, jointHistory, equipment, excludedOnly } = input;
   const base = forJoints ? prehabFor(jointHistory, catalogue, equipment) : catalogue;
   const pool = excludedOnly ? base.filter((item) => excludedOnly.includes(item.id)) : base;
-  return onlyGear ? pool.filter((item) => missingGear(item.requires, equipment).length === 0) : pool;
+  return onlyGear ? pool.filter((item) => missingGear(item, equipment).length === 0) : pool;
 }
 
 /**

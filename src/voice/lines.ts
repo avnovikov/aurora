@@ -15,6 +15,8 @@ export type CoachLineId =
   | "halfway"
   | "rest_banter"
   | "pulse_not_readable"
+  | "rest_go_on"
+  | "rest_extend"
   | "session_start"
   | "warmup_done"
   | "change_side"
@@ -75,6 +77,21 @@ const PULSE: CoachLine[] = [
     text: "Can't see your pulse. Tighten the band.",
   },
 ];
+
+export const REST_GO_ON: CoachLine = {
+  id: "rest_go_on",
+  assetKey: "rest_go_on",
+  text: "You seem rested, mate. Want to go on?",
+};
+
+export const REST_EXTEND: CoachLine = {
+  id: "rest_extend",
+  assetKey: "rest_extend",
+  // Keep in sync with REST_ADD_SECONDS in restCue.ts (enforced in restPulse.test.ts).
+  text: "Still up, mate. Another 30.",
+};
+
+const REST_PULSE: CoachLine[] = [REST_GO_ON, REST_EXTEND];
 
 const HALFWAY: CoachLine[] = [
   { id: "halfway", assetKey: "halfway", text: "Halfway there, mate." },
@@ -200,6 +217,7 @@ export const ALL_COACH_LINES: CoachLine[] = [
   ...HALFWAY,
   ...REST_BANTER,
   ...PULSE,
+  ...REST_PULSE,
   ...SESSION,
 ];
 

@@ -68,6 +68,10 @@ export const WGER_DENY: readonly string[] = [
   "Seated Bench Press",
   "Spider Curl",
   "Talons fesses",
+  // #111: the source record is one sentence (Chest, Pull-up bar, no media); the
+  // floor-crunch steps were written by our pipeline, and Cross-Body Crunch already
+  // covers the floor move.
+  "Upper External Oblique",
   "Walking",
   "Wall Drills",
   "punches",

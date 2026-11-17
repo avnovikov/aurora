@@ -1,11 +1,5 @@
 import type { SessionEvaluation } from "../domain/program";
-
-const OPTIONS: Array<{ id: SessionEvaluation; label: string }> = [
-  { id: "easy", label: "Easy" },
-  { id: "on_target", label: "On target" },
-  { id: "failed", label: "Difficult / failed" },
-  { id: "wiped", label: "Wiped" },
-];
+import { SESSION_EVALUATION_CHOICES, sessionEvaluationLabel } from "../session/history";
 
 /** Ignore ghost clicks from the session Log/swipe that just finished. */
 export const EVALUATION_ARM_MS = 400;
@@ -24,9 +18,9 @@ export function renderEvaluationView(
       <h1>How was that?</h1>
       <p class="tagline">${setCount} sets logged. This feeds tomorrow's dose and next-level guesses.</p>
       <div class="row wrap" data-eval-actions>
-        ${OPTIONS.map(
-          (option) =>
-            `<button type="button" class="cta" data-eval="${option.id}" disabled>${option.label}</button>`,
+        ${SESSION_EVALUATION_CHOICES.map(
+          (id) =>
+            `<button type="button" class="cta" data-eval="${id}" disabled>${sessionEvaluationLabel(id)}</button>`,
         ).join("")}
       </div>
       <p class="hint" data-eval-wait>Tap when ready — waiting a moment so the last set does not auto-pick.</p>
