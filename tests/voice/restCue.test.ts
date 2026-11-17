@@ -29,6 +29,13 @@ describe("cueSchedule", () => {
     ]);
   });
 
+  it("adds banter at the first second past 30", () => {
+    const events = cueSchedule(31, () => 0);
+    const banter = events.find((event) => event.kind === "rest_banter");
+
+    expect(banter?.atSecondsLeft).toBe(16);
+  });
+
   it("skips Get ready when rest is shorter than ten seconds", () => {
     const events = cueSchedule(8, () => 0);
 

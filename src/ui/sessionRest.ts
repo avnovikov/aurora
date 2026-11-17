@@ -1,5 +1,9 @@
 import { speakExactLine } from "../voice/coachVoice";
-import { cueSchedule, type RestCueEvent } from "../voice/restCue";
+import {
+  cueSchedule,
+  isOnScreenRestCue,
+  type RestCueEvent,
+} from "../voice/restCue";
 import type { ViewState } from "./sessionTypes";
 
 function cueAt(
@@ -15,13 +19,13 @@ export function restCueText(
   schedule: readonly RestCueEvent[],
 ): string | null {
   const due = cueAt(left, schedule);
-  if (!due || due.kind === "rest_banter") {
+  if (!due || !isOnScreenRestCue(due.kind)) {
     return null;
   }
   return due.text;
 }
 
-function speakDueCues(
+function speakRestCue(
   left: number,
   schedule: readonly RestCueEvent[],
   spoken: Set<number>,
@@ -36,6 +40,15 @@ function speakDueCues(
     assetKey: due.assetKey,
     text: due.text,
   });
+}
+
+function paintRest(
+  root: HTMLElement,
+  left: number,
+  schedule: readonly RestCueEvent[],
+): void {
+  setText(root, "[data-rest-left]", String(Math.max(left, 0)));
+  setText(root, "[data-rest-cue]", restCueText(left, schedule) ?? "");
 }
 
 export interface RestTimerHandle {
@@ -61,12 +74,7 @@ export function startRestTimer(
     ? cueSchedule(state.restLeft, { timedNext: options.timedNext === true })
     : [];
 
-  const paintRest = (): void => {
-    setText(root, "[data-rest-left]", String(Math.max(state.restLeft, 0)));
-    setText(root, "[data-rest-cue]", restCueText(state.restLeft, schedule) ?? "");
-  };
-
-  paintRest();
+  paintRest(root, state.restLeft, schedule);
 
   const finish = (): void => {
     window.clearInterval(timerId);
@@ -76,9 +84,9 @@ export function startRestTimer(
 
   const timerId = window.setInterval(() => {
     state.restLeft -= 1;
-    paintRest();
+    paintRest(root, state.restLeft, schedule);
     if (withVoice) {
-      speakDueCues(state.restLeft, schedule, spokenForRest);
+      speakRestCue(state.restLeft, schedule, spokenForRest);
     }
     if (state.restLeft <= 0) {
       finish();
