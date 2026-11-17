@@ -23,7 +23,7 @@ export function todayPulseHtml(): string {
 }
 
 /**
- * Auto-connect on native, show status + Connect/retry otherwise.
+ * Wire status + Connect (no auto-connect on open).
  * Returns dispose that unsubscribes BPM listeners (call before Start).
  */
 interface TodayPulseMount {
@@ -87,12 +87,10 @@ export function wireTodayPulse(root: HTMLElement): () => void {
 
   connectBtn.addEventListener("click", runConnect);
 
-  if (isNativePulseAvailable()) {
-    runConnect();
-  } else {
+  if (!isNativePulseAvailable()) {
     statusEl.textContent = PULSE_STRAP_NEEDS_ANDROID_APP;
-    showConnect(true);
   }
+  showConnect(true);
 
   return () => {
     unsubscribeHeartRate(onBpm, onDisconnect);
