@@ -18,8 +18,21 @@ declare global {
 const MISSING_BRIDGE_ON_NATIVE =
   "AuroraSecure bridge is missing on a native shell; refusing plaintext storage";
 
+/**
+ * The installed bridge, with a missing key always read as null. Android's
+ * @JavascriptInterface turns a Java null String into undefined, and callers
+ * test `=== null` (#122: undefined made the plaintext migration delete data).
+ */
 export function getAuroraSecure(): AuroraSecureBridge | undefined {
-  return (globalThis as { AuroraSecure?: AuroraSecureBridge }).AuroraSecure;
+  const raw = (globalThis as { AuroraSecure?: AuroraSecureBridge }).AuroraSecure;
+  if (!raw) {
+    return undefined;
+  }
+  return {
+    getItem: (key) => raw.getItem(key) ?? null,
+    setItem: (key, value) => raw.setItem(key, value),
+    removeItem: (key) => raw.removeItem(key),
+  };
 }
 
 /** True when Capacitor reports a native shell (Android/iOS). */

@@ -26,10 +26,15 @@ public final class SecureEnvelope {
     requireNonNull(key, "key");
     requireNonNull(plaintext, "plaintext");
     try {
-      byte[] iv = new byte[IV_LENGTH_BYTES];
-      RANDOM.nextBytes(iv);
+      // The cipher picks the IV: Android Keystore keys with randomized encryption
+      // required reject a caller-provided IV ("Caller-provided IV not permitted").
       Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-      cipher.init(Cipher.ENCRYPT_MODE, key, new GCMParameterSpec(TAG_LENGTH_BITS, iv));
+      cipher.init(Cipher.ENCRYPT_MODE, key, RANDOM);
+      byte[] iv = cipher.getIV();
+      if (iv == null || iv.length != IV_LENGTH_BYTES) {
+        throw new IllegalStateException(
+            "Unexpected GCM IV length: " + (iv == null ? "none" : iv.length));
+      }
       byte[] ciphertext = cipher.doFinal(plaintext);
       ByteBuffer buffer = ByteBuffer.allocate(1 + IV_LENGTH_BYTES + ciphertext.length);
       buffer.put((byte) VERSION);
