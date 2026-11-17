@@ -6,6 +6,7 @@ import { createEmptyLog, editNextReps, DEFAULT_ADDED_LOAD_KG } from "../../src/s
 import { shellHtml } from "../../src/ui/sessionChalk";
 import {
   completeSet,
+  restBeforeNextExercise,
   type SessionControlHandlers,
 } from "../../src/ui/sessionControls";
 import { INITIAL_PULSE } from "../../src/ui/pulseState";
@@ -113,7 +114,55 @@ describe("completeSet sticky reps", () => {
     completeSet(planned, state, "skipped", h);
 
     expect(state.log.entries[0]?.completedReps).toBe(0);
-    expect(h.onFinishExercise).toHaveBeenCalled();
+    expect(h.onFinishExercise).toHaveBeenCalledWith(undefined);
     expect(state.workState?.prescribedReps).toBe(before);
+  });
+
+  it("after the last set, rests before the next exercise using that slot's rest", () => {
+    const planned = planLegs();
+    expect(planned.work.length).toBeGreaterThan(1);
+    const item = planned.work[0]!;
+    const state = workState(planned);
+    state.setIndex = item.dose.sets;
+    state.workState = { ...state.workState!, setIndex: item.dose.sets };
+    const h = handlers();
+
+    completeSet(planned, state, "completed", h);
+
+    expect(h.onFinishExercise).toHaveBeenCalledWith(item.restSeconds);
+    expect(h.onStartRest).not.toHaveBeenCalled();
+  });
+
+  it("after the last exercise's last set, finishes without an inter-exercise rest", () => {
+    const planned = planLegs();
+    const last = planned.work.length - 1;
+    const item = planned.work[last]!;
+    const state = workState(planned);
+    state.workIndex = last;
+    state.setIndex = item.dose.sets;
+    state.workState = {
+      slotId: item.slotId,
+      exerciseId: item.exerciseId,
+      setIndex: item.dose.sets,
+      prescribedReps: item.dose.reps,
+      addedLoadKg: 0,
+    };
+    const h = handlers();
+
+    completeSet(planned, state, "completed", h);
+
+    expect(h.onFinishExercise).toHaveBeenCalledWith(undefined);
+  });
+});
+
+describe("restBeforeNextExercise", () => {
+  it("uses the slot rest when another exercise follows a completed set", () => {
+    expect(restBeforeNextExercise("completed", 0, 3, 90)).toBe(90);
+  });
+
+  it("skips rest on skip, last exercise, or zero seconds", () => {
+    expect(restBeforeNextExercise("skipped", 0, 3, 90)).toBeUndefined();
+    expect(restBeforeNextExercise("completed", 2, 3, 90)).toBeUndefined();
+    expect(restBeforeNextExercise("completed", 0, 3, 0)).toBeUndefined();
   });
 });
