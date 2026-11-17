@@ -168,28 +168,29 @@ function lSitHeels(lift: number): Pose {
   };
 }
 
-// ---------------------------------------------------------------- parallel bar hold (on the low parallettes)
+// ---------------------------------------------------------------- parallel bar hold
 
 /**
- * Straight-arm support on the same low parallettes as the L hold: arms locked,
- * shoulders pressed down, torso upright over the hands. The handles are too low
- * for hanging legs, so the knees tuck up in front and the shins fold back
- * under them, feet clear of the floor and of the handles.
- */
-function parallettesSupport(breathe: number): Pose {
-  // Shoulders a little behind the hands so the locked arms read apart from the upright torso.
-  const shoulder: Point = [-34, round(PT_Y - Math.sqrt(125.2 ** 2 - 36 ** 2) + breathe)];
-  const chest: Point = [shoulder[0], shoulder[1] + 18];
-  const pelvis: Point = [shoulder[0], chest[1] + 80];
-  const knee = along(pelvis, -36, 88);
-  const farKnee = along(pelvis, -37, 88);
+ * Drawn on dip bars (the listed alternative gear): on low parallettes a
+ * straight-arm support with the legs tucked reads as sitting on a stool.
+ * Rail height: the straight body hangs between the rails with the feet well clear of the floor. */
+const PB_RAIL = -236;
+const PB_BARS: Prop = { kind: "parallelBars", y: PB_RAIL, x1: -110, x2: 190 };
+
+/** Straight-arm support between the rails: arms locked, shoulders down, body straight and still, feet off the floor. */
+function barSupport(): Pose {
+  const hand: Point = [48, PB_RAIL];
+  const shoulder: Point = [44, PB_RAIL - 125.8];
+  // Spine leaning a touch forward of the hands so the locked arms read apart from the torso.
+  const chest = along(shoulder, 104, 18);
+  const pelvis = along(chest, 104, 80);
   return {
     pelvis,
     chest,
-    hands: PT_HANDS,
-    knees: { near: { at: knee }, far: { at: farKnee } },
-    feet: { near: along(knee, 96, 86), far: along(farKnee, 95, 86) },
-    toes: { near: 20, far: 20 },
+    hands: { near: hand, far: [hand[0] - 3, hand[1]] },
+    knees: straightKnees(pelvis, along(pelvis, 94, LEG), along(pelvis, 95, LEG)),
+    feet: { near: along(pelvis, 94, LEG), far: along(pelvis, 95, LEG) },
+    toes: { near: 70, far: 70 },
   };
 }
 
@@ -258,11 +259,10 @@ export const BATCH_Q_SPECS: DoodleSpec[] = [
     id: "wger_1808",
     slug: "parallel-bar-hold",
     title: "Parallel Bar Hold",
-    props: [PARALLETTES],
+    props: [PB_BARS],
     transition: 1.4,
     frames: [
-      { hold: 1.2, pose: parallettesSupport(0) },
-      { hold: 1.2, pose: parallettesSupport(1) },
+      { hold: 2.4, pose: barSupport() },
     ],
   },
 ];
