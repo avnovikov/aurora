@@ -23,6 +23,15 @@ function parseV1(raw: string): Record<string, ExerciseMemory> | null {
 
 /** Run once at boot, before anything loads memory: build memory v2 from the raw v1 store if v2 does not exist yet. */
 export function ensureMemoryMigrated(now: Date = new Date()): void {
+  try {
+    migrateIfNeeded(now);
+  } catch (error) {
+    // Never brick boot; v2 stays unwritten so v1 remains recoverable.
+    console.warn("Aurora: memory migration failed; v1 left untouched", error);
+  }
+}
+
+function migrateIfNeeded(now: Date): void {
   if (v2Store.read()) {
     return;
   }
@@ -51,7 +60,8 @@ export function ensureMemoryMigrated(now: Date = new Date()): void {
 export function loadLevelsToConfirm(): string[] {
   try {
     const raw = confirmStore.read();
-    return raw ? (JSON.parse(raw) as string[]) : [];
+    const parsed: unknown = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === "string") : [];
   } catch {
     return [];
   }

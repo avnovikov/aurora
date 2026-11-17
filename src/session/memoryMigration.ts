@@ -1,4 +1,4 @@
-import { inferTierFromBest } from "../domain/skillTier";
+import { inferTierFromBest, SKILL_TIERS } from "../domain/skillTier";
 import type { ExerciseMemory, ExerciseStandards, SkillTier } from "../domain/types";
 import { inferTiers } from "../progress/inferTiers";
 import { refreshSkillTier } from "../progress/levelEvidence";
@@ -40,6 +40,32 @@ function migrateOne(
   return { memory: refreshSkillTier(next, ctx.now), ambiguous };
 }
 
+function migrateRow(
+  id: string,
+  old: ExerciseMemory,
+  ctx: MemoryMigrationContext,
+): { memory: ExerciseMemory; ambiguous: boolean } {
+  try {
+    return migrateOne(id, old, ctx);
+  } catch (error) {
+    return passThrough(id, old, error);
+  }
+}
+
+/** A row the migration cannot read: copy it through without derived level fields, and say which. */
+function passThrough(id: string, old: ExerciseMemory, error: unknown): { memory: ExerciseMemory; ambiguous: boolean } {
+  console.warn(`Aurora: memory row "${id}" could not be migrated; kept without derived levels`, error);
+  const copy: ExerciseMemory = { ...old };
+  delete copy.skillTier;
+  delete copy.inferred;
+  for (const key of ["declaredTier", "loggedTier", "planTier"] as const) {
+    if (copy[key] !== undefined && !SKILL_TIERS.includes(copy[key])) {
+      delete copy[key];
+    }
+  }
+  return { memory: copy, ambiguous: false };
+}
+
 /** v1 → v2 (#112): give every level its source, then re-infer from scratch. */
 export function migrateMemoriesV1(
   v1: Record<string, ExerciseMemory>,
@@ -48,7 +74,7 @@ export function migrateMemoriesV1(
   const levelsToConfirm: string[] = [];
   const memories: Record<string, ExerciseMemory> = {};
   for (const [id, old] of Object.entries(v1)) {
-    const { memory, ambiguous } = migrateOne(id, old, ctx);
+    const { memory, ambiguous } = migrateRow(id, old, ctx);
     memories[id] = memory;
     if (ambiguous) {
       levelsToConfirm.push(id);

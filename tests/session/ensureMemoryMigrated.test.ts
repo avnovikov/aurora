@@ -66,4 +66,35 @@ describe("ensureMemoryMigrated (#112)", () => {
     expect(localStorage.getItem(MEMORY_V2_KEY)).toBe(v2);
     expect(localStorage.getItem(LEVELS_TO_CONFIRM_KEY)).toBe(confirm);
   });
+
+  it("survives rows it cannot migrate: warns, still writes v2, migrates the good row", () => {
+    localStorage.setItem(
+      MEMORY_KEY,
+      JSON.stringify({
+        calf_raise: { ...emptyMemory("calf_raise"), bestReps: 60 },
+        hf_71: { ...emptyMemory("hf_71"), bestReps: -1 },
+        hf_87: { ...emptyMemory("hf_87"), declaredTier: "legendary", loggedTier: "beginner" },
+      }),
+    );
+    expect(() => ensureMemoryMigrated(NOW)).not.toThrow();
+    expect(localStorage.getItem(MEMORY_V2_KEY)).not.toBeNull();
+    expect(warn).toHaveBeenCalled();
+    let memories: ReturnType<typeof loadMemories> = {};
+    expect(() => {
+      memories = loadMemories(NOW);
+    }).not.toThrow();
+    expect(memories.calf_raise?.skillTier).toBe("elite");
+    expect(memories.hf_71).toBeDefined();
+    expect(memories.hf_87).toBeDefined();
+  });
+
+  it.each(["{}", "null", '"x"', "42"])("loadLevelsToConfirm returns [] for non-array %s", (raw) => {
+    localStorage.setItem(LEVELS_TO_CONFIRM_KEY, raw);
+    expect(loadLevelsToConfirm()).toEqual([]);
+  });
+
+  it("loadLevelsToConfirm keeps only strings", () => {
+    localStorage.setItem(LEVELS_TO_CONFIRM_KEY, JSON.stringify(["hf_84", 3, null]));
+    expect(loadLevelsToConfirm()).toEqual(["hf_84"]);
+  });
 });
