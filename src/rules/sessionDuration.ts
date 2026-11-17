@@ -1,15 +1,14 @@
-import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import { stationsFor } from "../data/warmupStations";
-import { resolveExerciseTiming } from "../domain/timing";
-import { holdRepeats, pyramidSetSeconds } from "./doseCaps";
 import type {
   SessionDurationTarget,
   SessionTemplate,
   TemplateSlot,
   WarmupLevel,
 } from "../domain/program";
-import type { Dose, Exercise } from "../domain/types";
+import type { Exercise } from "../domain/types";
+import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import type { PlannedSession } from "./planSession";
+import { estimatePlannedWorkSeconds, estimateSetWorkFrom } from "./sessionRemaining";
 import { DEFAULT_WARMUP_LEVEL } from "./warmupLevel";
 import {
   buildCooldownView,
@@ -18,6 +17,9 @@ import {
   warmupViewSeconds,
   WARMUP_GAPS,
 } from "./warmupPlan";
+
+export type { SessionProgress } from "./sessionRemaining";
+export { estimateRemainingSessionSeconds } from "./sessionRemaining";
 
 /** Fallback when a template has no warmup stations listed. */
 export const DEFAULT_WARMUP_SECONDS = 60;
@@ -48,26 +50,11 @@ export interface SessionDurationEstimate {
   target: SessionDurationTarget;
 }
 
-function estimateSetWorkSeconds(
-  dose: Dose,
-  exercise: Exercise,
-): number {
-  assertDose(dose);
-  const repeats = holdRepeats(exercise, dose.sets, dose.reps);
-  if (repeats) {
-    return repeats.reduce((sum, count) => sum + pyramidSetSeconds(count, dose.reps), 0);
-  }
-  const timing = resolveExerciseTiming(exercise);
-  const unitSeconds =
-    timing.effort === "hold" ? dose.reps : dose.reps * timing.secondsPerRep;
-  return dose.sets * unitSeconds;
-}
-
 export function estimateSlotSeconds(
   slot: TemplateSlot,
   exercise: Exercise = requireExercise(slot.exerciseId),
 ): number {
-  const work = estimateSetWorkSeconds(slot.dose, exercise);
+  const work = estimateSetWorkFrom(slot.dose, exercise);
   const restGaps = Math.max(0, slot.dose.sets - 1) * slot.restSeconds;
   return work + restGaps;
 }
@@ -122,16 +109,7 @@ export function estimatePlannedSessionSeconds(planned: PlannedSession): number {
   const transitionSeconds =
     planned.work.length === 0 ? 0 : warmupTransitionSeconds(planned.warmup);
   const warmupSeconds = warmupViewSeconds(planned.warmup) + transitionSeconds;
-  const workSeconds = planned.work.reduce((sum, item) => {
-    const exercise = EXERCISE_GRAPH[item.exerciseId];
-    if (!exercise) {
-      return sum;
-    }
-    const effort = estimateSetWorkSeconds(item.dose, exercise);
-    const rests = Math.max(0, item.dose.sets - 1) * item.restSeconds;
-    return sum + effort + rests;
-  }, 0);
-  return warmupSeconds + workSeconds;
+  return warmupSeconds + estimatePlannedWorkSeconds(planned.work);
 }
 
 /** Warmup chalk copy from the prebuilt sequence length. */
@@ -209,15 +187,6 @@ function requireExercise(exerciseId: string): Exercise {
     throw new Error(`Unknown exercise for duration estimate: ${exerciseId}`);
   }
   return exercise;
-}
-
-function assertDose(dose: Dose): void {
-  if (!Number.isInteger(dose.sets) || dose.sets < 1) {
-    throw new Error(`dose.sets must be a positive integer; got ${dose.sets}`);
-  }
-  if (!Number.isFinite(dose.reps) || dose.reps <= 0) {
-    throw new Error(`dose.reps must be positive; got ${dose.reps}`);
-  }
 }
 
 function assertWarmupSeconds(warmupSeconds: number): void {

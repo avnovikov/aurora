@@ -1,5 +1,9 @@
 import { speakExactLine } from "../voice/coachVoice";
-import { cueSchedule, type RestCueEvent } from "../voice/restCue";
+import {
+  cueSchedule,
+  isOnScreenRestCue,
+  type RestCueEvent,
+} from "../voice/restCue";
 import type { ViewState } from "./sessionTypes";
 
 function cueAt(
@@ -14,10 +18,14 @@ export function restCueText(
   left: number,
   schedule: readonly RestCueEvent[],
 ): string | null {
-  return cueAt(left, schedule)?.text ?? null;
+  const due = cueAt(left, schedule);
+  if (!due || !isOnScreenRestCue(due.kind)) {
+    return null;
+  }
+  return due.text;
 }
 
-function speakDueCues(
+function speakRestCue(
   left: number,
   schedule: readonly RestCueEvent[],
   spoken: Set<number>,
@@ -34,6 +42,15 @@ function speakDueCues(
   });
 }
 
+function paintRest(
+  root: HTMLElement,
+  left: number,
+  schedule: readonly RestCueEvent[],
+): void {
+  setText(root, "[data-rest-left]", String(Math.max(left, 0)));
+  setText(root, "[data-rest-cue]", restCueText(left, schedule) ?? "");
+}
+
 export interface RestTimerHandle {
   clear: () => void;
   /** End the rest now: stop the countdown and hand over as if it ran out. */
@@ -41,7 +58,7 @@ export interface RestTimerHandle {
 }
 
 export interface RestTimerOptions {
-  /** Next work is a hold / timed station — no 4–1 countdown. */
+  /** Next work is a hold / timed station — no 5–1 countdown. */
   timedNext?: boolean;
 }
 
@@ -57,12 +74,7 @@ export function startRestTimer(
     ? cueSchedule(state.restLeft, { timedNext: options.timedNext === true })
     : [];
 
-  const paintRest = (): void => {
-    setText(root, "[data-rest-left]", String(Math.max(state.restLeft, 0)));
-    setText(root, "[data-rest-cue]", restCueText(state.restLeft, schedule) ?? "");
-  };
-
-  paintRest();
+  paintRest(root, state.restLeft, schedule);
 
   const finish = (): void => {
     window.clearInterval(timerId);
@@ -72,9 +84,9 @@ export function startRestTimer(
 
   const timerId = window.setInterval(() => {
     state.restLeft -= 1;
-    paintRest();
+    paintRest(root, state.restLeft, schedule);
     if (withVoice) {
-      speakDueCues(state.restLeft, schedule, spokenForRest);
+      speakRestCue(state.restLeft, schedule, spokenForRest);
     }
     if (state.restLeft <= 0) {
       finish();

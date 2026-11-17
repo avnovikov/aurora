@@ -165,6 +165,13 @@ function sideSwitchSeconds(step: Pick<WarmupStep, "perSide">): number {
   return step.perSide === true ? SIDE_SWITCH_SECONDS : 0;
 }
 
+/** Hold second (counting down) where a per-side station pauses to change side. */
+export function sideSwitchAt(
+  step: Pick<WarmupStep, "holdSeconds" | "perSide">,
+): number | null {
+  return step.perSide === true ? Math.floor(step.holdSeconds / 2) : null;
+}
+
 /** Total wall-clock seconds for a materialised warmup view. */
 export function warmupViewSeconds(steps: readonly WarmupStep[]): number {
   return steps.reduce(

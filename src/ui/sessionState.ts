@@ -4,6 +4,7 @@ import { estimatePlannedSessionSeconds } from "../rules/sessionDuration";
 import { createEmptyLog, DEFAULT_ADDED_LOAD_KG, type ActiveWorkState } from "../session/setLog";
 import { INITIAL_PULSE } from "./pulseState";
 import type { SessionViewOptions, ViewState } from "./sessionTypes";
+import { seedStationHold } from "./sessionWarmup";
 
 export function initialState(options: SessionViewOptions): ViewState {
   const plannedTotalSeconds = estimatePlannedSessionSeconds(options.planned);
@@ -18,6 +19,8 @@ export function initialState(options: SessionViewOptions): ViewState {
       log: resume.log,
       workState: null,
       restLeft: 0,
+      holdLeft: 0,
+      sideSwitchLeft: 0,
       pulse: { ...INITIAL_PULSE },
       bpm: null,
       pulseStatus: null,
@@ -31,10 +34,14 @@ export function initialState(options: SessionViewOptions): ViewState {
         state,
         resume.nextRepsOverride,
       );
+    } else if (state.phase === "warmup") {
+      seedStationHold(state, options.planned.warmup[state.warmupIndex]);
+    } else if (state.phase === "cooldown") {
+      seedStationHold(state, cooldownSteps(options.planned)[state.cooldownIndex]);
     }
     return state;
   }
-  return {
+  const state: ViewState = {
     phase: "warmup",
     warmupIndex: 0,
     workIndex: 0,
@@ -43,6 +50,8 @@ export function initialState(options: SessionViewOptions): ViewState {
     log: createEmptyLog(),
     workState: null,
     restLeft: 0,
+    holdLeft: 0,
+    sideSwitchLeft: 0,
     pulse: { ...INITIAL_PULSE },
     bpm: null,
     pulseStatus: null,
@@ -50,6 +59,8 @@ export function initialState(options: SessionViewOptions): ViewState {
     plannedTotalSeconds,
     addWeightKg: options.addWeightKg ?? DEFAULT_ADDED_LOAD_KG,
   };
+  seedStationHold(state, options.planned.warmup[0]);
+  return state;
 }
 
 export function currentWork(planned: PlannedSession, state: ViewState): PlannedWorkItem | null {
