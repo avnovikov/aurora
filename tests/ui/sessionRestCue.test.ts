@@ -28,4 +28,15 @@ describe("restCueText", () => {
       "Nearly there, mate.",
     );
   });
+
+  it("hides mid-rest banter from the on-screen cue", () => {
+    const banter: RestCueEvent = {
+      atSecondsLeft: 45,
+      kind: "rest_banter",
+      text: "Still here? Good — shake it out.",
+      lineId: "rest_banter",
+      assetKey: "rest_banter",
+    };
+    expect(restCueText(45, [banter])).toBeNull();
+  });
 });

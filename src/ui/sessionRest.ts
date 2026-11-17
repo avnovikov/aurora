@@ -14,7 +14,11 @@ export function restCueText(
   left: number,
   schedule: readonly RestCueEvent[],
 ): string | null {
-  return cueAt(left, schedule)?.text ?? null;
+  const due = cueAt(left, schedule);
+  if (!due || due.kind === "rest_banter") {
+    return null;
+  }
+  return due.text;
 }
 
 function speakDueCues(
@@ -41,7 +45,7 @@ export interface RestTimerHandle {
 }
 
 export interface RestTimerOptions {
-  /** Next work is a hold / timed station — no 4–1 countdown. */
+  /** Next work is a hold / timed station — no 5–1 countdown. */
   timedNext?: boolean;
 }
 

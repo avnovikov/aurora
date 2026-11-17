@@ -1,6 +1,6 @@
 import { pickLine, type CoachLineId } from "./lines";
 
-export type RestCueKind = "get_ready" | "count" | "go";
+export type RestCueKind = "rest_banter" | "get_ready" | "count" | "go";
 
 export interface RestCueEvent {
   atSecondsLeft: number;
@@ -13,14 +13,15 @@ export interface RestCueEvent {
 
 export interface CueScheduleOptions {
   /**
-   * Next work is a timed hold (or a timed station). Skip 4–1 countdown —
-   * only "Get ready..." then "Go".
+   * Next work is a timed hold (or a timed station). Skip 5–1 countdown —
+   * only mid-banter (when long), "Get ready..." then "Go".
    */
   timedNext?: boolean;
   random?: () => number;
 }
 
 const COUNT_IDS: Record<number, CoachLineId> = {
+  5: "five",
   4: "four",
   3: "three",
   2: "two",
@@ -28,9 +29,9 @@ const COUNT_IDS: Record<number, CoachLineId> = {
 };
 
 /**
- * Pure schedule for rest end cues.
- * At 5s: get_ready variant (not "Five."). Timed next → no 4–1 counts.
- * On-screen text matches the prebuilt asset that will play.
+ * Pure schedule for rest voice cues.
+ * Rest > 30s: banter at ceil(rest/2). Rest ≥ 10s: get_ready at 10.
+ * Not timedNext: count 5–1. Always: go at 0.
  */
 export function cueSchedule(
   remainingSeconds: number,
@@ -45,18 +46,31 @@ export function cueSchedule(
     throw new Error(`remainingSeconds must be >= 0; got ${remainingSeconds}`);
   }
   const events: RestCueEvent[] = [];
-  if (remainingSeconds >= 5) {
+
+  if (remainingSeconds > 30) {
+    const banter = pickLine("rest_banter", random);
+    events.push({
+      atSecondsLeft: Math.ceil(remainingSeconds / 2),
+      kind: "rest_banter",
+      text: banter.text,
+      lineId: banter.id,
+      assetKey: banter.assetKey,
+    });
+  }
+
+  if (remainingSeconds >= 10) {
     const ready = pickLine("get_ready", random);
     events.push({
-      atSecondsLeft: 5,
+      atSecondsLeft: 10,
       kind: "get_ready",
       text: ready.text,
       lineId: ready.id,
       assetKey: ready.assetKey,
     });
   }
+
   if (!timedNext) {
-    const countFrom = Math.min(4, Math.floor(remainingSeconds));
+    const countFrom = Math.min(5, Math.floor(remainingSeconds));
     for (let n = countFrom; n >= 1; n -= 1) {
       const lineId = COUNT_IDS[n];
       const line = pickLine(lineId, () => 0);
@@ -69,6 +83,7 @@ export function cueSchedule(
       });
     }
   }
+
   const go = pickLine("go", random);
   events.push({
     atSecondsLeft: 0,
