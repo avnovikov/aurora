@@ -4,6 +4,10 @@ import { loadPlanLevel } from "../../src/plan/planLevel";
 import { loadPlanQueue } from "../../src/plan/queue";
 import { resetTemplateOverridesForTests, resolveTemplate } from "../../src/plan/templates";
 import { ensureMemoryMigrated, loadLevelsToConfirm } from "../../src/session/ensureMemoryMigrated";
+import { templateToStarter } from "../../src/data/seed";
+import { planSession } from "../../src/rules/planSession";
+import { loadExcluded } from "../../src/plan/exclusions";
+import { loadDeloadActive } from "../../src/settings/deload";
 import { loadHistory, loadMemories } from "../../src/session/history";
 import { loadProfile } from "../../src/settings/profile";
 import { deviceStorage, loadDeviceSnapshot } from "../helpers/deviceSnapshot";
@@ -88,5 +92,23 @@ describe(`device snapshot ${SNAPSHOT}`, () => {
     const legs = resolveTemplate("tmpl_legs");
     const split = legs.slots.find((s) => s.id === "legs_split");
     expect(split?.exerciseId).toBe("wger_1208");
+  });
+
+  it("Lower body · C no longer resolves its single-leg slot to Bulgarian split squat 4x18 (#112)", () => {
+    const template = getPlanDay("day_a5192cfe6fc")!;
+    const profile = loadProfile();
+    const planned = planSession({ painJoints: [] }, templateToStarter(template), loadMemories(NOW), {
+      history: loadHistory(),
+      focus: template.focus,
+      deloadActive: loadDeloadActive(),
+      jointHistory: profile.jointHistory,
+      equipment: profile.equipment,
+      excluded: loadExcluded(),
+    });
+    const slot = planned.work.find((w) => w.slotId.endsWith("_single_leg"))!;
+    const isBulgarian18 = slot.exerciseId === "bulgarian_split" && slot.dose.reps === 18;
+    expect(isBulgarian18).toBe(false);
+    // Today it resolves to Step-up 4x7 (beginner dose, rules skill_dose + hold).
+    expect(slot.exerciseId).toBe("step_up");
   });
 });
