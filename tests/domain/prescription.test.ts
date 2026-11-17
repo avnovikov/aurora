@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  clampToPrescription,
   expandHoldPrescription,
   type ExercisePrescription,
 } from "../../src/domain/prescription";
@@ -56,5 +57,19 @@ describe("expandHoldPrescription", () => {
     expect(() =>
       expandHoldPrescription(hold({ rounds: 1, amountMin: 30, amountMax: 20 })),
     ).toThrow(/amountMin/i);
+  });
+});
+
+describe("NaN amounts", () => {
+  it("are rejected, not silently passed through the band checks", () => {
+    expect(() =>
+      expandHoldPrescription(hold({ rounds: 1, amountMin: Number.NaN, amountMax: 20 })),
+    ).toThrow(/amountMin/i);
+    expect(() =>
+      expandHoldPrescription(hold({ rounds: 1, amountMin: 20, amountMax: Number.NaN })),
+    ).toThrow(/amountMin/i);
+    expect(() => clampToPrescription(10, { amountMin: Number.NaN, amountMax: 20 })).toThrow(
+      /amountMin/i,
+    );
   });
 });

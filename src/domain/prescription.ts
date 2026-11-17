@@ -45,12 +45,17 @@ export function expandHoldPrescription(
   return segments;
 }
 
+/** Both band ends are real numbers (NaN would slip past every comparison). */
+function hasAmountBand(prescription: Pick<ExercisePrescription, "amountMin" | "amountMax">): boolean {
+  return Number.isFinite(prescription.amountMin) && Number.isFinite(prescription.amountMax);
+}
+
 /** Clamp a working amount into the prescription band (work dosing). */
 export function clampToPrescription(
   amount: number,
   prescription: Pick<ExercisePrescription, "amountMin" | "amountMax">,
 ): number {
-  if (prescription.amountMin > prescription.amountMax) {
+  if (!hasAmountBand(prescription) || prescription.amountMin > prescription.amountMax) {
     throw new Error(
       `prescription amountMin (${prescription.amountMin}) must be ≤ amountMax (${prescription.amountMax})`,
     );
@@ -70,6 +75,7 @@ function assertHoldPrescription(prescription: ExercisePrescription): void {
     );
   }
   if (
+    !hasAmountBand(prescription) ||
     prescription.amountMin <= 0 ||
     prescription.amountMax <= 0 ||
     prescription.amountMin > prescription.amountMax
