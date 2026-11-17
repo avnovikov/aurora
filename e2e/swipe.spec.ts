@@ -39,6 +39,18 @@ test.describe("warm-up swipe", () => {
     await expect(moveName(page)).toHaveText(first);
   });
 
+  test("letting go outside the left fifth snaps back", async ({ page }) => {
+    const first = await currentMove(page);
+    await swipe(page, stage(page, "station"), { releaseAt: 0.3 });
+    await expect(moveName(page)).toHaveText(first);
+  });
+
+  test("a diagonal swipe (up and left at 45 degrees) snaps back", async ({ page }) => {
+    const first = await currentMove(page);
+    await swipe(page, stage(page, "station"), { slope: 1 });
+    await expect(moveName(page)).toHaveText(first);
+  });
+
   test("the whole warm-up can be swiped through to the first set", async ({ page }) => {
     await swipeUntil(page, "work");
     await expect(phaseLine(page)).toHaveText(/^Set 1 of \d+/);

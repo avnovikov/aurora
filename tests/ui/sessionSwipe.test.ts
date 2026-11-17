@@ -5,68 +5,46 @@ import {
   exitOffsetPx,
   forwardOnly,
   swipeAxis,
-  SWIPE_COMMIT_RATIO,
-  SWIPE_FLICK_PX_PER_MS,
+  SWIPE_MAX_SLOPE,
+  SWIPE_RELEASE_ZONE_RATIO,
 } from "../../src/ui/sessionSwipe";
 
 describe("decideSwipeRelease", () => {
   const width = 300;
-  const threshold = width * SWIPE_COMMIT_RATIO;
+  const zone = width * SWIPE_RELEASE_ZONE_RATIO; // 60
+  const startAt = width * 0.8;
+  /** A horizontal swipe from 80% of the width, let go at `releaseX`. */
+  const left = (releaseX: number) =>
+    decideSwipeRelease({ deltaX: releaseX - startAt, releaseX, width });
+  /** A horizontal swipe from 20% of the width, let go at `releaseX`. */
+  const right = (releaseX: number) =>
+    decideSwipeRelease({ deltaX: releaseX - width * 0.2, releaseX, width });
 
-  it("cancels a short slow drag", () => {
-    expect(
-      decideSwipeRelease({
-        deltaX: threshold - 1,
-        velocityPxPerMs: 0,
-        width,
-      }),
-    ).toEqual({ action: "cancel" });
+  it("commits a left swipe let go inside the left fifth", () => {
+    expect(left(zone)).toEqual({ action: "commit", direction: "left" });
+    expect(left(10)).toEqual({ action: "commit", direction: "left" });
   });
 
-  it("commits left when dragged past a third of the width", () => {
-    expect(
-      decideSwipeRelease({
-        deltaX: -threshold,
-        velocityPxPerMs: 0,
-        width,
-      }),
-    ).toEqual({ action: "commit", direction: "left" });
+  it("snaps back when let go outside the left fifth, however far it went", () => {
+    expect(left(zone + 1)).toEqual({ action: "cancel" });
+    expect(left(width / 2)).toEqual({ action: "cancel" });
   });
 
-  it("commits right when dragged past a third of the width", () => {
-    expect(
-      decideSwipeRelease({
-        deltaX: threshold,
-        velocityPxPerMs: 0,
-        width,
-      }),
-    ).toEqual({ action: "commit", direction: "right" });
+  it("snaps back a short drag that starts inside the zone", () => {
+    expect(decideSwipeRelease({ deltaX: -20, releaseX: 20, width })).toEqual({
+      action: "cancel",
+    });
   });
 
-  it("commits from a left flick even short of the distance", () => {
-    expect(
-      decideSwipeRelease({
-        deltaX: -20,
-        velocityPxPerMs: -SWIPE_FLICK_PX_PER_MS,
-        width,
-      }),
-    ).toEqual({ action: "commit", direction: "left" });
-  });
-
-  it("commits from a right flick even short of the distance", () => {
-    expect(
-      decideSwipeRelease({
-        deltaX: 20,
-        velocityPxPerMs: SWIPE_FLICK_PX_PER_MS,
-        width,
-      }),
-    ).toEqual({ action: "commit", direction: "right" });
+  it("mirrors for a right swipe: let go inside the right fifth", () => {
+    expect(right(width - zone)).toEqual({ action: "commit", direction: "right" });
+    expect(right(width - zone - 1)).toEqual({ action: "cancel" });
   });
 
   it("rejects non-positive width", () => {
-    expect(() =>
-      decideSwipeRelease({ deltaX: 100, velocityPxPerMs: 0, width: 0 }),
-    ).toThrow(/positive/);
+    expect(() => decideSwipeRelease({ deltaX: 100, releaseX: 0, width: 0 })).toThrow(
+      /positive/,
+    );
   });
 });
 
@@ -112,19 +90,26 @@ describe("backOnly", () => {
 });
 
 describe("swipeAxis", () => {
+  const run = 180;
+  const rise = (radians: number) => Math.round(run * Math.tan(radians));
+
   it("stays pending while the pointer has barely moved", () => {
     expect(swipeAxis(4, 3)).toBe("pending");
   });
 
-  it("locks horizontal when sideways motion dominates", () => {
-    expect(swipeAxis(20, 5)).toBe("horizontal");
+  it("is horizontal along the line and one notch either side (left-left-up/down, 22.5 degrees)", () => {
+    expect(swipeAxis(-run, 0)).toBe("horizontal");
+    expect(swipeAxis(-run, -rise(Math.PI / 8))).toBe("horizontal");
+    expect(swipeAxis(-run, rise(Math.PI / 8))).toBe("horizontal");
   });
 
-  it("stays pending on an equal travel until one axis leads", () => {
-    expect(swipeAxis(12, 12)).toBe("pending");
+  it("is vertical from up-left (45 degrees) and steeper (up-up-left, 67.5 degrees)", () => {
+    expect(swipeAxis(-run, -run)).toBe("vertical");
+    expect(swipeAxis(-run, -rise((3 * Math.PI) / 8))).toBe("vertical");
   });
 
-  it("locks vertical when scrolling dominates", () => {
-    expect(swipeAxis(5, 20)).toBe("vertical");
+  it("draws the line at SWIPE_MAX_SLOPE", () => {
+    expect(swipeAxis(-run, run * SWIPE_MAX_SLOPE)).toBe("horizontal");
+    expect(swipeAxis(-run, run * SWIPE_MAX_SLOPE + 1)).toBe("vertical");
   });
 });
