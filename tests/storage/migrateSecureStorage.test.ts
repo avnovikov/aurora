@@ -86,4 +86,20 @@ describe("createKeyValueStore with AuroraSecure", () => {
     vi.doUnmock("@capacitor/core");
     vi.resetModules();
   });
+  it("copies keys when the real Android bridge returns undefined for a missing key (#122)", () => {
+    // @JavascriptInterface turns a Java null String into undefined, not null.
+    const secure = new Map<string, string>();
+    (globalThis as { AuroraSecure?: unknown }).AuroraSecure = {
+      getItem: (key: string) => secure.get(key),
+      setItem: (key: string, value: string) => void secure.set(key, value),
+      removeItem: (key: string) => void secure.delete(key),
+    };
+    localStorage.setItem(PROFILE_KEY, '{"bodyweightKg":80}');
+
+    migratePlaintextToSecureStorage();
+
+    expect(secure.get(PROFILE_KEY)).toBe('{"bodyweightKg":80}');
+    expect(localStorage.getItem(PROFILE_KEY)).toBeNull();
+    expect(createKeyValueStore(HISTORY_KEY).read()).toBeNull();
+  });
 });

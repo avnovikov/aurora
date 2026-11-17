@@ -29,6 +29,17 @@ public class SecureEnvelopeTest {
   }
 
   @Test
+  public void eachSealUsesAFreshTwelveByteIv() {
+    SecretKey key = TestKeys.softwareAes256();
+    byte[] a = SecureEnvelope.seal(key, new byte[] {7});
+    byte[] b = SecureEnvelope.seal(key, new byte[] {7});
+    assertEquals(1 + SecureEnvelope.IV_LENGTH_BYTES + 1 + SecureEnvelope.TAG_LENGTH_BYTES, a.length);
+    org.junit.Assert.assertFalse(java.util.Arrays.equals(
+        java.util.Arrays.copyOfRange(a, 1, 1 + SecureEnvelope.IV_LENGTH_BYTES),
+        java.util.Arrays.copyOfRange(b, 1, 1 + SecureEnvelope.IV_LENGTH_BYTES)));
+  }
+
+  @Test
   public void rejectsWrongKey() {
     byte[] sealed = SecureEnvelope.seal(TestKeys.softwareAes256(), new byte[] {9});
     assertThrows(
