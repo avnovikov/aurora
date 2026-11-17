@@ -45,7 +45,7 @@ describe("inferTiers", () => {
   it("a failure cap limits inference", () => {
     const capped: ExerciseMemory = {
       ...emptyMemory("mid"),
-      failedCap: { tier: "beginner", from: "low", at: NOW.toISOString() },
+      failedCaps: [{ tier: "beginner", from: "low", at: NOW.toISOString() }],
     };
     const out = run({ top: declared("top", "elite"), next: declared("next", "elite"), mid: capped }).memories;
     expect(out.mid?.inferred?.tier).toBe("beginner");

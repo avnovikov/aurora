@@ -152,7 +152,8 @@ export interface ExerciseMemory {
   lastSessionAt?: string;
   /** Derived by `inferTiers`; never set by hand. */
   inferred?: InferredTier;
-  failedCap?: FailedCap;
+  /** Ceilings on inference from failed sets on easier rungs, one per failing exercise (#112 rule 2). */
+  failedCaps?: FailedCap[];
   /** Dose default from the plan level; never evidence. */
   planTier?: SkillTier;
 }

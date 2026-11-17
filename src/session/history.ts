@@ -8,7 +8,7 @@ import type {
 import { libraryFamilyLadderIndex, type FamilyLadderIndex } from "../progress/familyLadderIndex";
 import { inferTiers } from "../progress/inferTiers";
 import { evidenceTier, liveInferredTier, refreshSkillTier } from "../progress/levelEvidence";
-import { inferTierFromBest, maxTier, minTier } from "../domain/skillTier";
+import { inferTierFromBest, maxTier } from "../domain/skillTier";
 import { createKeyValueStore, type KeyValueStore } from "../storage/keyValueStore";
 import { HISTORY_KEY, MEMORY_KEY } from "../storage/storageKeys";
 import { assertNonNegativeWholeSeconds } from "./setDuration";
@@ -157,9 +157,14 @@ function confirmInferred(
 
 function clearCapsFrom(next: Memories, exerciseId: string): void {
   for (const [id, memory] of Object.entries(next)) {
-    if (memory.failedCap?.from === exerciseId) {
+    if (memory.failedCaps?.some((cap) => cap.from === exerciseId)) {
       const copy = { ...memory };
-      delete copy.failedCap;
+      const kept = memory.failedCaps.filter((cap) => cap.from !== exerciseId);
+      if (kept.length > 0) {
+        copy.failedCaps = kept;
+      } else {
+        delete copy.failedCaps;
+      }
       next[id] = copy;
     }
   }
@@ -185,8 +190,8 @@ function capHarderRungs(
       continue;
     }
     const target = next[member.id] ?? emptyMemory(member.id);
-    const tier = target.failedCap ? minTier(target.failedCap.tier, failedAt) : failedAt;
-    next[member.id] = { ...target, failedCap: { tier, from: exerciseId, at: nowIso } };
+    const others = (target.failedCaps ?? []).filter((cap) => cap.from !== exerciseId);
+    next[member.id] = { ...target, failedCaps: [...others, { tier: failedAt, from: exerciseId, at: nowIso }] };
   }
 }
 

@@ -83,8 +83,8 @@ function candidateFor(
 
 function bounded(candidate: Candidate, current: ExerciseMemory | undefined, confirming: boolean, now: Date): SkillTier {
   let tier = candidate.tier;
-  if (current?.failedCap) {
-    tier = minTier(tier, current.failedCap.tier);
+  for (const cap of current?.failedCaps ?? []) {
+    tier = minTier(tier, cap.tier);
   }
   const previous = current ? liveInferredTier(current, now) : undefined;
   if (previous && tierIndex(tier) > tierIndex(previous)) {

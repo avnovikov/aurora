@@ -6,7 +6,7 @@ import {
   normalizeSessionEvaluation,
   sessionEvaluationLabel,
 } from "../../src/session/history";
-import { buildFamilyLadderIndex } from "../../src/progress/familyLadderIndex";
+import { buildFamilyLadderIndex, type FamilyLadderIndex } from "../../src/progress/familyLadderIndex";
 import type { SetLogEntry, WorkoutLog } from "../../src/session/setLog";
 
 function memory(
@@ -32,6 +32,9 @@ function entry(
     ...(over.durationSeconds !== undefined ? { durationSeconds: over.durationSeconds } : {}),
   });
 }
+
+const NOW_FIXED = new Date("2026-11-17T12:00:00Z");
+const EMPTY_INDEX = buildFamilyLadderIndex([]);
 
 function log(...entries: SetLogEntry[]): WorkoutLog {
   return { entries };
@@ -80,9 +83,10 @@ describe("applySetLogToMemory", () => {
           stopReason: "completed",
         }),
       ),
+      { now: NOW_FIXED, index: EMPTY_INDEX },
     );
-    expect(next.squat).toMatchObject(
-      memory("squat", { sessionsAtStandard: 2, sessionsBelowFloor: 0 }),
+    expect(next.squat).toEqual(
+      memory("squat", { sessionsAtStandard: 2, sessionsBelowFloor: 0, lastSessionAt: NOW_FIXED.toISOString() }),
     );
   });
 
@@ -145,9 +149,10 @@ describe("applySetLogToMemory", () => {
           stopReason: "muscular_failure",
         }),
       ),
+      { now: NOW_FIXED, index: EMPTY_INDEX },
     );
-    expect(next.squat).toMatchObject(
-      memory("squat", { sessionsAtStandard: 0, sessionsBelowFloor: 1 }),
+    expect(next.squat).toEqual(
+      memory("squat", { sessionsAtStandard: 0, sessionsBelowFloor: 1, lastSessionAt: NOW_FIXED.toISOString() }),
     );
   });
 
@@ -165,9 +170,10 @@ describe("applySetLogToMemory", () => {
           stopReason: "completed",
         }),
       ),
+      { now: NOW_FIXED, index: EMPTY_INDEX },
     );
-    expect(next.squat).toMatchObject(
-      memory("squat", { sessionsAtStandard: 0, sessionsBelowFloor: 1 }),
+    expect(next.squat).toEqual(
+      memory("squat", { sessionsAtStandard: 0, sessionsBelowFloor: 1, lastSessionAt: NOW_FIXED.toISOString() }),
     );
   });
 
@@ -185,10 +191,10 @@ describe("applySetLogToMemory", () => {
           stopReason: "muscular_failure",
         }),
       ),
-      { lightDay: true },
+      { lightDay: true, now: NOW_FIXED, index: EMPTY_INDEX },
     );
-    expect(next.squat).toMatchObject(
-      memory("squat", { sessionsAtStandard: 0, sessionsBelowFloor: 1 }),
+    expect(next.squat).toEqual(
+      memory("squat", { sessionsAtStandard: 0, sessionsBelowFloor: 1, lastSessionAt: NOW_FIXED.toISOString() }),
     );
   });
 
@@ -247,6 +253,73 @@ describe("inferred tiers at session close (#112 rule 7, rule 2)", () => {
       { now: NOW, index },
     );
     expect(out.hollow_hold?.inferred).toBeUndefined();
-    expect(out.ab_wheel?.failedCap).toMatchObject({ tier: "intermediate", from: "hollow_hold" });
+    expect(out.ab_wheel?.failedCaps).toMatchObject([{ tier: "intermediate", from: "hollow_hold" }]);
+  });
+});
+
+describe("failure caps per source (#112 rule 2)", () => {
+  const NOW = new Date("2026-11-17T12:00:00Z");
+  const index: FamilyLadderIndex = {
+    byId: new Map([
+      ["low", { id: "low", name: "Low", familyId: "f", rank: 1 }],
+      ["mid", { id: "mid", name: "Mid", familyId: "f", rank: 2 }],
+      ["high", { id: "high", name: "High", familyId: "f", rank: 3 }],
+    ]),
+    byFamily: new Map([
+      [
+        "f",
+        [
+          { id: "low", name: "Low", familyId: "f", rank: 1 },
+          { id: "mid", name: "Mid", familyId: "f", rank: 2 },
+          { id: "high", name: "High", familyId: "f", rank: 3 },
+        ],
+      ],
+    ]),
+  };
+  const fail = (id: string) =>
+    entry({ exerciseId: id, completedReps: 5, prescribedReps: 10, stopReason: "muscular_failure" });
+  const pass = (id: string) =>
+    entry({ exerciseId: id, completedReps: 10, prescribedReps: 10, stopReason: "completed" });
+  const run = (memories: Record<string, ExerciseMemory>, e: SetLogEntry, lightDay = false) =>
+    applySetLogToMemory(memories, log(e), { now: NOW, index, lightDay });
+
+  it("a light-day failure keeps the inferred tier and sets no caps", () => {
+    const tested = (id: string) =>
+      memory(id, { declaredTier: "intermediate", declaredAt: NOW.toISOString() });
+    const start = {
+      low: memory("low", {
+        inferred: { tier: "beginner", from: ["high", "mid"], at: NOW.toISOString() },
+      }),
+      mid: tested("mid"),
+      high: tested("high"),
+    };
+    const out = run(start, fail("low"), true);
+    expect(out.low?.inferred).toEqual(start.low.inferred);
+    expect(out.mid?.failedCaps).toBeUndefined();
+    expect(out.high?.failedCaps).toBeUndefined();
+    expect(out.low?.sessionsBelowFloor).toBe(0);
+  });
+
+  it("a failure caps harder rungs until the same move is at standard again", () => {
+    const failed = run({}, fail("low"));
+    expect(failed.mid?.failedCaps).toMatchObject([{ from: "low" }]);
+    expect(failed.high?.failedCaps).toMatchObject([{ from: "low" }]);
+    const cleared = run(failed, pass("low"));
+    expect(cleared.mid && "failedCaps" in cleared.mid).toBe(false);
+    expect(cleared.high && "failedCaps" in cleared.high).toBe(false);
+  });
+
+  it("keeps one cap per failing source", () => {
+    const afterLow = run({}, fail("low"));
+    const afterMid = run(afterLow, fail("mid"));
+    expect(afterMid.high?.failedCaps?.map((c) => c.from).sort()).toEqual(["low", "mid"]);
+    const afterPass = run(afterMid, pass("mid"));
+    expect(afterPass.high?.failedCaps?.map((c) => c.from)).toEqual(["low"]);
+  });
+
+  it("another move's clean session does not clear a cap", () => {
+    const failed = run({}, fail("low"));
+    const out = run(failed, pass("high"));
+    expect(out.high?.failedCaps?.map((c) => c.from)).toEqual(["low"]);
   });
 });
