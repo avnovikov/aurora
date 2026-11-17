@@ -84,6 +84,18 @@ export function mountLibraryList(root: HTMLElement, options: MountLibraryListOpt
     );
   });
 
+  root.querySelectorAll<HTMLButtonElement>("[data-close-filters]").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const panel = button.closest<HTMLDetailsElement>("details[data-panel]");
+      if (!panel) {
+        return;
+      }
+      panel.open = false;
+    });
+  });
+
   root.querySelector<HTMLInputElement>("[data-search]")?.addEventListener("input", (event) => {
     actions.onSearch((event.target as HTMLInputElement).value);
   });
