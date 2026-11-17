@@ -173,7 +173,14 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "hf_25": "/doodles/doodle-parallel-bar-dip.svg",
   "hf_57": "/doodles/doodle-tuck-front-lever.svg",
   "hf_45": "/doodles/doodle-wide-grip-pull-up.svg",
-  "hf_60": "/doodles/doodle-skin-the-cat.svg"
+  "hf_60": "/doodles/doodle-skin-the-cat.svg",
+  "fedb_push_ups_with_feet_elevated": "/doodles/doodle-push-ups-with-feet-elevated.svg",
+  "ntc_spiderman_plank": "/doodles/doodle-spiderman-plank.svg",
+  "hf_22": "/doodles/doodle-freestanding-handstand-push-up.svg",
+  "wger_1766": "/doodles/doodle-plank-reach.svg",
+  "wger_1410": "/doodles/doodle-plank-with-alternating-leg-lift.svg",
+  "wger_1406": "/doodles/doodle-plank-to-elbow-extension.svg",
+  "wger_312": "/doodles/doodle-incline-plank-with-alternate-floor-touch.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
