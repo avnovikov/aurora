@@ -1,18 +1,67 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import { maxTier } from "../domain/skillTier";
 import type { Exercise, ExerciseMemory, SkillTier } from "../domain/types";
-import type { HistoryEntry, SessionEvaluation } from "../domain/program";
+import type {
+  HistoryEntry,
+  LegacySessionEvaluation,
+  SessionEvaluation,
+} from "../domain/program";
 import { cascadeFamilyTiers } from "../progress/cascadeFamilyTiers";
 import { effectiveSkillTier } from "../rules/skillDose";
 import { createKeyValueStore, type KeyValueStore } from "../storage/keyValueStore";
 import { HISTORY_KEY, MEMORY_KEY } from "../storage/storageKeys";
 import { assertNonNegativeWholeSeconds } from "./setDuration";
+import type { SetLogEntry, WorkoutLog } from "./setLog";
 
 const historyStore = createKeyValueStore(HISTORY_KEY);
 const memoryStore = createKeyValueStore(MEMORY_KEY);
 
+const EVALUATION_LABELS: Record<SessionEvaluation, string> = {
+  easy: "Easy",
+  on_target: "On target",
+  difficult: "Difficult",
+  wiped: "Wiped",
+};
+
+/** Evaluation buttons and history normalization use this order. */
+export const SESSION_EVALUATION_CHOICES: readonly SessionEvaluation[] = Object.keys(
+  EVALUATION_LABELS,
+) as SessionEvaluation[];
+
+type StoredHistoryEntry = Omit<HistoryEntry, "evaluation"> & {
+  evaluation: LegacySessionEvaluation;
+};
+
+function isSessionEvaluation(value: string): value is SessionEvaluation {
+  return Object.hasOwn(EVALUATION_LABELS, value);
+}
+
+/** Map legacy `"failed"` history values to `"difficult"`. */
+export function normalizeSessionEvaluation(
+  value: LegacySessionEvaluation | string,
+): SessionEvaluation {
+  if (value === "failed") {
+    return "difficult";
+  }
+  if (isSessionEvaluation(value)) {
+    return value;
+  }
+  throw new Error(`Unknown session evaluation: ${value}`);
+}
+
+/** Display label for a session rating (legacy `"failed"` reads as Difficult). */
+export function sessionEvaluationLabel(
+  value: LegacySessionEvaluation | string,
+): string {
+  return EVALUATION_LABELS[normalizeSessionEvaluation(value)];
+}
+
 export function loadHistory(): HistoryEntry[] {
-  return readJson(historyStore, [] as HistoryEntry[]);
+  const raw = readJson(historyStore, [] as StoredHistoryEntry[]);
+  return raw.map((entry) => ({
+    ...entry,
+    evaluation: normalizeSessionEvaluation(entry.evaluation),
+  }));
 }
 
 export function appendHistory(entry: Omit<HistoryEntry, "id">): HistoryEntry[] {
@@ -34,35 +83,109 @@ export function saveMemories(memories: Record<string, ExerciseMemory>): void {
   memoryStore.write(JSON.stringify(memories));
 }
 
+export interface ApplySetLogOptions {
+  /** Light-day (and deload) misses do not count toward stall. */
+  lightDay?: boolean;
+}
+
+type ExerciseSessionOutcome = "untouched" | "at_standard" | "below_floor" | "not_standard";
+
 /**
- * After a session, bump standard/below-floor counts from evaluation.
- * Rough POC signal so the resolver can guess the next level.
+ * After a session, bump standard/below-floor counts from each exercise's own
+ * set log — never from the session-feeling rating.
  */
-export function applyEvaluationToMemory(
+export function applySetLogToMemory(
   memories: Record<string, ExerciseMemory>,
-  exerciseIds: string[],
-  evaluation: SessionEvaluation,
+  log: WorkoutLog,
+  options: ApplySetLogOptions = {},
 ): Record<string, ExerciseMemory> {
+  const byExercise = groupEntriesByExercise(log.entries);
+  if (byExercise.size === 0) {
+    return memories;
+  }
+  const lightDay = options.lightDay === true;
   const next = { ...memories };
-  for (const exerciseId of exerciseIds) {
+  for (const [exerciseId, entries] of byExercise) {
+    const outcome = outcomeForExercise(entries);
+    if (outcome === "untouched") {
+      continue;
+    }
     const current = next[exerciseId] ?? emptyMemory(exerciseId);
-    if (evaluation === "easy" || evaluation === "on_target") {
-      next[exerciseId] = {
+    next[exerciseId] = memoryAfterSessionOutcome(current, outcome, lightDay);
+  }
+  return next;
+}
+
+function memoryAfterSessionOutcome(
+  current: ExerciseMemory,
+  outcome: Exclude<ExerciseSessionOutcome, "untouched">,
+  lightDay: boolean,
+): ExerciseMemory {
+  switch (outcome) {
+    case "at_standard":
+      return {
         ...current,
         sessionsAtStandard: current.sessionsAtStandard + 1,
         sessionsBelowFloor: 0,
       };
-    } else if (evaluation === "failed") {
-      next[exerciseId] = {
+    case "below_floor":
+      if (lightDay) {
+        return { ...current, sessionsAtStandard: 0 };
+      }
+      return {
         ...current,
         sessionsBelowFloor: current.sessionsBelowFloor + 1,
         sessionsAtStandard: 0,
       };
+    case "not_standard":
+      return { ...current, sessionsAtStandard: 0 };
+  }
+}
+
+function groupEntriesByExercise(
+  entries: readonly SetLogEntry[],
+): Map<string, SetLogEntry[]> {
+  const byExercise = new Map<string, SetLogEntry[]>();
+  for (const entry of entries) {
+    const list = byExercise.get(entry.exerciseId);
+    if (list) {
+      list.push(entry);
     } else {
-      next[exerciseId] = { ...current, sessionsAtStandard: 0 };
+      byExercise.set(entry.exerciseId, [entry]);
     }
   }
-  return next;
+  return byExercise;
+}
+
+function outcomeForExercise(entries: readonly SetLogEntry[]): ExerciseSessionOutcome {
+  if (entries.length === 0) {
+    throw new Error("outcomeForExercise requires at least one log entry");
+  }
+  const worked = entries.filter(isWorkedSet);
+  if (worked.length === 0) {
+    return "untouched";
+  }
+  if (worked.some(isBelowFloorSet)) {
+    return "below_floor";
+  }
+  const allAtPrescribed = worked.every(
+    (entry) => entry.completedReps >= entry.prescribedReps,
+  );
+  const hadSkip = entries.some((entry) => entry.stopReason === "skipped");
+  if (allAtPrescribed && !hadSkip) {
+    return "at_standard";
+  }
+  return "not_standard";
+}
+
+function isWorkedSet(entry: SetLogEntry): boolean {
+  return entry.stopReason !== "skipped";
+}
+
+function isBelowFloorSet(entry: SetLogEntry): boolean {
+  return (
+    entry.stopReason === "muscular_failure" && entry.completedReps < entry.prescribedReps
+  );
 }
 
 export interface DeclareSkillTierResult {

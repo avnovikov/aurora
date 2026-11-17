@@ -12,11 +12,11 @@ import { planSession, type PlannedSession } from "../rules/planSession";
 import { warmupLevelFor } from "../rules/warmupLevel";
 import {
   appendHistory,
-  applyEvaluationToMemory,
   loadHistory,
   loadMemories,
   saveMemories,
 } from "../session/history";
+import type { WorkoutLog } from "../session/setLog";
 import { loadSession } from "../session/storage";
 import { loadDeloadActive } from "../settings/deload";
 import { loadProfile } from "../settings/profile";
@@ -28,6 +28,7 @@ import { renderLibraryView } from "./libraryView";
 import { overrideControlsHtml, wireOverrideControls } from "./overrideControls";
 import { advancePlanAfterSession, renderPlanView } from "./planView";
 import { renderProgressView } from "./progressView";
+import { commitSessionEvaluation } from "./sessionEvaluation";
 import { renderSessionView } from "./sessionView";
 import { renderOnboarding } from "./onboarding";
 import { renderSettingsView } from "./settingsView";
@@ -59,7 +60,7 @@ export function bootApp(root: HTMLElement): void {
       planned: resume.planned,
       resume,
       addWeightKg: profile.addWeightKg,
-      onDone: (setCount) => showEvaluation(root, setCount, resume.planned),
+      onDone: (log) => showEvaluation(root, log, resume.planned),
     });
     return;
   }
@@ -151,7 +152,7 @@ function showTodayHome(root: HTMLElement): void {
       renderSessionView(root, {
         planned,
         addWeightKg: profile.addWeightKg,
-        onDone: (setCount) => showEvaluation(root, setCount, planned),
+        onDone: (log) => showEvaluation(root, log, planned),
       });
     },
   }, `Start ${dayTitle(next)}`);
@@ -159,21 +160,18 @@ function showTodayHome(root: HTMLElement): void {
 
 function showEvaluation(
   root: HTMLElement,
-  setCount: number,
+  log: WorkoutLog,
   planned: PlannedSession,
 ): void {
-  renderEvaluationView(root, setCount, (evaluation: SessionEvaluation) => {
-    const exerciseIds = planned.work.map((item) => item.exerciseId);
-    appendHistory({
-      completedAt: new Date().toISOString(),
-      templateId: planned.programId,
-      templateName: planned.sessionLabel,
+  renderEvaluationView(root, log.entries.length, (evaluation: SessionEvaluation) => {
+    const result = commitSessionEvaluation({
       evaluation,
-      setCount,
-      exerciseIds,
+      planned,
+      log,
+      memories: loadMemories(),
     });
-    const memories = applyEvaluationToMemory(loadMemories(), exerciseIds, evaluation);
-    saveMemories(memories);
+    appendHistory(result.history);
+    saveMemories(result.memories);
     advancePlanAfterSession();
     showTab(root, "today");
   });
