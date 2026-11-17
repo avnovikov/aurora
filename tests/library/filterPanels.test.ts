@@ -57,6 +57,18 @@ describe("filter panels", () => {
     expect(html.match(/<\/details>/g)).toHaveLength(3);
   });
 
+  it("puts a Filters header and close control in every sheet", () => {
+    const closeButton =
+      /<button type="button" class="lib-sheet-close" data-close-filters aria-label="Close filters">×<\/button>/;
+    const sheets = [...html.matchAll(/<div class="lib-sheet">([\s\S]*?)<\/div><\/details>/g)].map((m) => m[1]!);
+    expect(sheets).toHaveLength(3);
+    for (const sheet of sheets) {
+      expect(sheet).toMatch(/^<div class="lib-sheet-hdr">/);
+      expect(sheet).toMatch(/<span class="t-label">Filters<\/span>/);
+      expect(sheet).toMatch(closeButton);
+    }
+  });
+
   it("collapses all three by default, even with the stretch default selected", () => {
     expect(openPanelIds(html)).toEqual([]);
     expect(html).toMatch(/data-stretch="hide" class="selected"/);
