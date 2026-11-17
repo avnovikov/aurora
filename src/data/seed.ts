@@ -28,8 +28,13 @@ export interface SeedExercise extends Exercise {
   difficulty?: SkillTier;
   /** Evidence-based safety notes shown in the Library. */
   cautions?: string[];
-  /** Gear this move needs beyond bodyweight (Library only; never auto-planned). */
+  /**
+   * Gear this move needs beyond bodyweight, all of it. Set only by
+   * enrichCatalogue from src/data/generated/equipment.ts; never hand-set here.
+   */
   requires?: EquipmentId[];
+  /** Alternative gear sets; owning every item of any one also makes the move usable. */
+  orRequires?: EquipmentId[][];
   /** How-to steps (curated house style). */
   steps?: string[];
   /** Common faults to avoid. */

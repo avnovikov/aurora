@@ -1,6 +1,6 @@
 import { EXERCISE_GRAPH, plannableByPattern } from "../data/exerciseGraph";
 import type { SeedExercise } from "../data/seed";
-import type { EquipmentId, JointHistoryEntry } from "../domain/program";
+import type { EquipmentId, GearNeeds, JointHistoryEntry } from "../domain/program";
 import { tierIndex } from "../domain/skillTier";
 import type { Pattern } from "../domain/types";
 import { libraryFamilyLadderIndex } from "../progress/familyLadderIndex";
@@ -18,11 +18,10 @@ export interface SuitableChoice {
   cautions: string[];
 }
 
-interface Candidate {
+interface Candidate extends GearNeeds {
   id: string;
   name: string;
   pattern: Pattern;
-  requires?: readonly EquipmentId[];
 }
 
 function gearReason(missing: readonly EquipmentId[]): string {
@@ -82,7 +81,7 @@ function usableAlternatives(
   const pool = plannableByPattern().get(exercise.pattern) ?? [];
   return pool
     .filter((candidate) => candidate.id !== exercise.id && !excluded.includes(candidate.id))
-    .filter((candidate) => missingGear(candidate.requires, equipment).length === 0)
+    .filter((candidate) => missingGear(candidate, equipment).length === 0)
     .map((candidate) => ({ candidate, verdict: assessExercise(candidate.name, history) }))
     .filter(({ verdict }) => !verdict.avoid)
     .map(({ candidate, verdict }) => ({ candidate, cautions: verdict.cautions }));
@@ -128,7 +127,7 @@ export function chooseSuitableExercise(
   excluded: readonly string[] = [],
 ): SuitableChoice {
   const own = assessExercise(exercise.name, history);
-  const missing = missingGear(exercise.requires, equipment);
+  const missing = missingGear(exercise, equipment);
   const isExcluded = excluded.includes(exercise.id);
   if (!own.avoid && missing.length === 0 && !isExcluded) {
     return { id: exercise.id, name: exercise.name, cautions: own.cautions };

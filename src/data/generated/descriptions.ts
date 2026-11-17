@@ -11946,26 +11946,6 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
       "Bouncing the back knee off the floor"
     ]
   },
-  "wger_688": {
-    "id": "wger_688",
-    "summary": "A lying cross-body crunch that rotates one shoulder toward the opposite knee, targeting the obliques.",
-    "steps": [
-      "Lie on your back with knees bent, feet flat, and hands lightly behind your head.",
-      "Lift your shoulders off the floor and rotate one shoulder toward the opposite knee.",
-      "Pause briefly while squeezing the side of your waist.",
-      "Lower with control and alternate sides."
-    ],
-    "cues": [
-      "Shoulder to knee",
-      "Elbows wide",
-      "Exhale on the twist"
-    ],
-    "mistakes": [
-      "Pulling on the neck",
-      "Only moving the elbow, not the shoulder",
-      "Rushing with momentum"
-    ]
-  },
   "wger_1090": {
     "id": "wger_1090",
     "summary": "A push-up from an inverted-V position that shifts load to the shoulders and triceps, building overhead pressing strength.",

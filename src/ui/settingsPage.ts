@@ -33,6 +33,16 @@ export const EQUIPMENT_LABEL: Record<EquipmentId, string> = {
   parallettes: "Parallettes",
   dumbbell: "Dumbbell or kettlebell",
   band: "Resistance band",
+  partner: "Partner",
+  suspension: "Suspension straps (TRX)",
+  towel: "Towel or strap",
+  sliders: "Sliders",
+  dip_bars: "Dip bars",
+  stick: "Stick or dowel",
+  ab_wheel: "Ab wheel",
+  adjustable_bench: "Incline or decline bench",
+  vertical_pole: "Vertical pole",
+  leg_press: "Leg press",
 };
 
 export interface SettingsPageModel {
@@ -96,7 +106,7 @@ function gearHtml(profile: UserProfile): string {
   ).join("");
   return `
     <p class="eyebrow">Equipment you have</p>
-    <p class="hint">Sessions only plan moves you have the gear for.</p>
+    <p class="hint">Sessions only plan moves you have the gear for. A bench, chair, wall and somewhere to anchor your feet (a bed or sofa) are always assumed.</p>
     <div class="row wrap">${chips}</div>
     <p class="eyebrow">Added weight</p>
     ${numberFieldHtml(

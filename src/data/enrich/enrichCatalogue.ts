@@ -5,9 +5,9 @@ import type { SeedExercise } from "../seed";
 import { isSeedId } from "../sourceRank";
 import { DESCRIPTION_SOURCES } from "../generated/descriptionSources";
 import { DESCRIPTIONS } from "../generated/descriptions";
+import { curatedEquipmentFor } from "../curatedEquipment";
 import { doodleFor } from "../doodles";
 import { cautionsFor } from "./cautions";
-import { requiresFor } from "./equipment";
 import { placeOnLadder, type LadderPlacement } from "./ladder";
 import { wireLadderProgressions, type Placed } from "./progressions";
 import { standardsFor } from "./standards";
@@ -61,10 +61,12 @@ function respectsDifficulty(
 export function enrichCatalogue(catalogue: SeedExercise[]): SeedExercise[] {
   const placements = new Map<string, LadderPlacement>();
   const placed: Placed[] = [];
+  // Every exercise must have audited gear (#111); a missing entry throws here.
+  const gear = new Map(catalogue.map((exercise) => [exercise.id, curatedEquipmentFor(exercise.id)]));
   for (const exercise of catalogue) {
     // Gear-dependent moves stay off the ladders: nobody should be advanced or
     // regressed into a move they cannot do without the gear.
-    const placement = exercise.requires?.includes("band") ? undefined : placeOnLadder(exercise.name);
+    const placement = gear.get(exercise.id)!.requires.includes("band") ? undefined : placeOnLadder(exercise.name);
     if (placement) {
       placements.set(exercise.id, placement);
       placed.push({ exercise, placement });
@@ -104,9 +106,15 @@ export function enrichCatalogue(catalogue: SeedExercise[]): SeedExercise[] {
     if (cautions.length > 0) {
       enriched.cautions = cautions;
     }
-    const requires = requiresFor(exercise.name, exercise.requires);
+    // Curated gear is the only source: anything set upstream is replaced.
+    delete enriched.requires;
+    delete enriched.orRequires;
+    const { requires, orRequires } = gear.get(exercise.id)!;
     if (requires.length > 0) {
-      enriched.requires = requires;
+      enriched.requires = [...requires];
+      if (orRequires?.length) {
+        enriched.orRequires = orRequires.map((set) => [...set]);
+      }
     }
     if (wantsStandards(exercise, placement)) {
       const { effort } = resolveExerciseTiming(exercise);

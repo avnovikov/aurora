@@ -452,10 +452,7 @@ export const WGER_CATALOGUE: SeedExercise[] = [
       "Return: Slowly and with control, bring your hands back to the starting position."
     ],
     "description": "Stand tall with your feet shoulder-width apart, chest out, and shoulders back. Hold the resistance band with both hands, palms facing up or facing each other, depending on the band type. Bend your elbows at a 90-degree angle and glue your upper arms to your sides. The band should have some tension in the starting position, with your hands closer together in front of your stomach. Rotate Outward: While keeping your elbows tucked into your sides, slowly move your hands away from each other, stretching the band. Squeeze: Squeeze your shoulder blades together and down as you rotate your hands outward. Range of Motion: Rotate your hands as far outward as you comfortably can without allowing your elbows to leave your sides. Hold: Hold the end position for 1–2 seconds to maximize muscle engagement. Return: Slowly and with control, bring your hands back to the starting position.",
-    "attribution": "wger.de exercise 1826 (CC-BY-SA-4.0, beagle)",
-    "requires": [
-      "band"
-    ]
+    "attribution": "wger.de exercise 1826 (CC-BY-SA-4.0, beagle)"
   },
   {
     "id": "wger_1380",
@@ -480,10 +477,7 @@ export const WGER_CATALOGUE: SeedExercise[] = [
       "Slowly bring your arms back to the starting position, controlling the tension on the band."
     ],
     "description": "Hold the band with your arms extended in front of you at shoulder height. Keep your elbows slightly bent but fixed throughout the movement. Pull the band apart by spreading your arms until the band touches or comes close to your chest. Slowly bring your arms back to the starting position, controlling the tension on the band.",
-    "attribution": "wger.de exercise 1380 (CC-BY-SA-4.0, schwolfar)",
-    "requires": [
-      "band"
-    ]
+    "attribution": "wger.de exercise 1380 (CC-BY-SA-4.0, schwolfar)"
   },
   {
     "id": "wger_2494",
@@ -519,10 +513,7 @@ export const WGER_CATALOGUE: SeedExercise[] = [
         "mediaType": "image"
       }
     ],
-    "attribution": "wger.de exercise 2494 (CC-BY-SA-4.0, Rehab Hero)",
-    "requires": [
-      "band"
-    ]
+    "attribution": "wger.de exercise 2494 (CC-BY-SA-4.0, Rehab Hero)"
   },
   {
     "id": "wger_1842",
@@ -558,10 +549,7 @@ export const WGER_CATALOGUE: SeedExercise[] = [
       "stable and your hips aligned."
     ],
     "description": "Position Side plank with the elbow and the forearm on the ground and the legs slightly bent. Stretch a doubled-up resistance band between your thighs, just above the knee. Execution Lift your upper knee while keeping your feet close together, like a “shell opening,” then slowly return to the starting position. Keep your core stable and your hips aligned.",
-    "attribution": "wger.de exercise 1842 (CC-BY-SA-4.0, Croak6728)",
-    "requires": [
-      "band"
-    ]
+    "attribution": "wger.de exercise 1842 (CC-BY-SA-4.0, Croak6728)"
   },
   {
     "id": "wger_1877",
@@ -587,10 +575,7 @@ export const WGER_CATALOGUE: SeedExercise[] = [
       "Attach one end of resistance band to wall/upright/... at shoulder height. Insert arm into the loop, at the tricep. Step back until band is pulled straight. Pull back elbow and shoulder against the resistance of the band."
     ],
     "description": "Attach one end of resistance band to wall/upright/... at shoulder height. Insert arm into the loop, at the tricep. Step back until band is pulled straight. Pull back elbow and shoulder against the resistance of the band.",
-    "attribution": "wger.de exercise 1877 (CC-BY-SA-4.0, hurr99)",
-    "requires": [
-      "band"
-    ]
+    "attribution": "wger.de exercise 1877 (CC-BY-SA-4.0, hurr99)"
   },
   {
     "id": "wger_57",
@@ -4264,10 +4249,7 @@ export const WGER_CATALOGUE: SeedExercise[] = [
       "Sit on the floor with your legs straight out in front of you and your back tall. Loop a resistance band around the soles of both feet and hold one end in each hand, arms extended and a slight bend in the knees. Pull the band toward your lower ribs by driving your elbows straight back and squeezing your shoulder blades together. Keep your chest up and your torso still rather than rocking backward to move the band. Extend the arms slowly to return. Because the torso stays upright and supported, this is a useful row when a bent-over position is uncomfortable, and it needs no anchor point."
     ],
     "description": "Sit on the floor with your legs straight out in front of you and your back tall. Loop a resistance band around the soles of both feet and hold one end in each hand, arms extended and a slight bend in the knees. Pull the band toward your lower ribs by driving your elbows straight back and squeezing your shoulder blades together. Keep your chest up and your torso still rather than rocking backward to move the band. Extend the arms slowly to return. Because the torso stays upright and supported, this is a useful row when a bent-over position is uncomfortable, and it needs no anchor point.",
-    "attribution": "wger.de exercise 2635 (CC-BY-SA-4.0, trs1800)",
-    "requires": [
-      "band"
-    ]
+    "attribution": "wger.de exercise 2635 (CC-BY-SA-4.0, trs1800)"
   },
   {
     "id": "wger_1477",
@@ -6360,28 +6342,6 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "No stops during movement, hands on the hips.",
     "attribution": "wger.de exercise 1907 (CC-BY-SA-4.0, cybro)"
-  },
-  {
-    "id": "wger_688",
-    "name": "Upper External Oblique",
-    "pattern": "core_compression",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "abdominals",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "core"
-    ],
-    "cues": [
-      "Exercise for upper external oblique muscles"
-    ],
-    "description": "Exercise for upper external oblique muscles",
-    "attribution": "wger.de exercise 688 (CC-BY-SA-3.0, http://www.carinatum.com/)"
   },
   {
     "id": "wger_1090",
