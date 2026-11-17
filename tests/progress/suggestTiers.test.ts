@@ -1,19 +1,8 @@
 import { describe, expect, it } from "vitest";
 import type { SkillTier } from "../../src/domain/types";
-import type { FamilyLadderIndex, FamilyLadderMember } from "../../src/progress/familyLadderIndex";
 import { suggestionFor, suggestTiers } from "../../src/progress/suggestTiers";
 import { emptyMemory } from "../../src/session/history";
-
-function indexOf(families: Record<string, string[]>): FamilyLadderIndex {
-  const byId = new Map<string, FamilyLadderMember>();
-  const byFamily = new Map<string, FamilyLadderMember[]>();
-  for (const [familyId, ids] of Object.entries(families)) {
-    const members = ids.map((id, rank) => ({ id, name: id, familyId, rank }));
-    byFamily.set(familyId, members);
-    for (const m of members) byId.set(m.id, m);
-  }
-  return { byId, byFamily };
-}
+import { indexOf } from "../helpers/ladderIndex";
 
 describe("suggestTiers (#112 rule 6)", () => {
   const index = indexOf({ f1: ["a1", "a2"], f2: ["b1", "b2"], f3: ["c1", "c2"], f4: ["d1", "d2"], f5: ["e1", "e2"], f6: ["g1", "g2"] });

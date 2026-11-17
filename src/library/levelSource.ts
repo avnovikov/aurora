@@ -25,8 +25,9 @@ export function describeLevelSource(
   if (at(memory.loggedTier)) {
     return { label: "Logged sets", retest };
   }
-  if (at(liveInferredTier(memory, now)) && memory.inferred) {
-    return { label: `Inferred from ${memory.inferred.from.map(nameOf).join(" + ")}`, retest };
+  const inferred = memory.inferred;
+  if (inferred && at(liveInferredTier(memory, now))) {
+    return { label: `Inferred from ${inferred.from.map(nameOf).join(" + ")}`, retest };
   }
   return { label: "Plan default", retest };
 }

@@ -1,16 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { ExerciseMemory } from "../../src/domain/types";
-import type { FamilyLadderIndex, FamilyLadderMember } from "../../src/progress/familyLadderIndex";
 import { inferTiers } from "../../src/progress/inferTiers";
 import { emptyMemory } from "../../src/session/history";
+import { indexOf } from "../helpers/ladderIndex";
 
 const NOW = new Date("2026-11-17T12:00:00Z");
-const member = (id: string, rank: number): FamilyLadderMember => ({ id, name: id, familyId: "f", rank });
-const MEMBERS = [member("top", 4), member("top2", 4), member("next", 3), member("mid", 2), member("low", 1)];
-const index: FamilyLadderIndex = {
-  byId: new Map(MEMBERS.map((m) => [m.id, m])),
-  byFamily: new Map([["f", MEMBERS]]),
-};
+const index = indexOf({ f: [["top", 4], ["top2", 4], ["next", 3], ["mid", 2], ["low", 1]] });
 const declared = (id: string, tier: ExerciseMemory["declaredTier"]): ExerciseMemory => ({
   ...emptyMemory(id),
   declaredTier: tier,

@@ -61,7 +61,7 @@ export interface DetailView {
   jointHistory?: readonly JointHistoryEntry[];
   planStatus?: string | null;
   /** Short note after a declare raised related family levels. */
-  cascadeHint?: string | null;
+  inferenceHint?: string | null;
   /** The user excluded this move ("not for me"). */
   excluded?: boolean;
 }
@@ -142,7 +142,7 @@ export function detailHtml(exercise: SeedExercise, view: DetailView = {}): strin
     memory = {},
     jointHistory = [],
     planStatus = null,
-    cascadeHint = null,
+    inferenceHint = null,
     excluded = false,
   } = view;
   const targetBadge = isTemplateTarget(exercise.id, targetIds)
@@ -168,7 +168,7 @@ export function detailHtml(exercise: SeedExercise, view: DetailView = {}): strin
       ${sectionHtml(stepsHtml(exercise))}
       ${cuesAndMistakesHtml(exercise)}
       ${standardsHtml(exercise, tier)}
-      ${skillPickerHtml(exercise, memory, cascadeHint)}
+      ${skillPickerHtml(exercise, memory, inferenceHint)}
       <div class="ex-tray">
         ${planActionsHtml(exercise, planStatus)}
         ${chainLinksHtml(exercise, catalogueById)}
@@ -311,7 +311,7 @@ function levelEvidenceHtml(memory: DetailMemoryView): string {
 function skillPickerHtml(
   exercise: SeedExercise,
   memory: DetailMemoryView,
-  cascadeHint: string | null = null,
+  inferenceHint: string | null = null,
 ): string {
   if (!exercise.standards) {
     return "";
@@ -321,8 +321,8 @@ function skillPickerHtml(
     const selected = tier === current ? "selected" : "";
     return `<option value="${tier}" ${selected}>${SKILL_TIER_LABELS[tier]}</option>`;
   }).join("");
-  const cascade = cascadeHint
-    ? `<p class="hint" data-cascade-hint>${escapeHtml(cascadeHint)}</p>`
+  const hintHtml = inferenceHint
+    ? `<p class="hint" data-inference-hint>${escapeHtml(inferenceHint)}</p>`
     : "";
   const levelHint =
     memory.bestReps === undefined
@@ -336,7 +336,7 @@ function skillPickerHtml(
       </select>
       ${levelHint}
       ${levelEvidenceHtml(memory)}
-      ${cascade}
+      ${hintHtml}
     </div>
   `;
 }

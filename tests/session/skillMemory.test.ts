@@ -5,7 +5,7 @@ import {
   emptyMemory,
   recordBestReps,
 } from "../../src/session/history";
-import type { FamilyLadderIndex } from "../../src/progress/familyLadderIndex";
+import { indexOf } from "../helpers/ladderIndex";
 
 describe("skill memory", () => {
   it("stores a declared tier from Library", () => {
@@ -24,12 +24,7 @@ describe("skill memory", () => {
 
 describe("declare (#112)", () => {
   const NOW = new Date("2026-11-17T12:00:00Z");
-  const member = (id: string, rank: number) => ({ id, name: id, familyId: "f", rank });
-  const members = [member("top", 4), member("next", 3), member("mid", 2)];
-  const index: FamilyLadderIndex = {
-    byId: new Map(members.map((m) => [m.id, m])),
-    byFamily: new Map([["f", members]]),
-  };
+  const index = indexOf({ f: [["top", 4], ["next", 3], ["mid", 2]] });
 
   it("records the pick with a time and does not promote the family from one pick", () => {
     const { memories, inferredCount } = declareSkillTier({}, "top", "advanced", NOW, index);
