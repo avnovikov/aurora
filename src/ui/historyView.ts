@@ -30,6 +30,7 @@ export function renderHistoryView(
       <p class="eyebrow">History</p>
       <h1>Logged sets</h1>
       ${filterChipHtml(filter, Boolean(options.onClearFilter))}
+      ${legacyBannerHtml(feed.hasLegacyOnly, feed.rows.length)}
       ${bodyHtml(feed.rows, feed.hasLegacyOnly)}
     </main>
   `;
@@ -58,6 +59,13 @@ function filterLabel(filter: Exclude<HistoryFilter, { kind: "all" }>): string {
   return `Pattern · ${patternLabel(filter.pattern)}`;
 }
 
+function legacyBannerHtml(hasLegacy: boolean, rowCount: number): string {
+  if (!hasLegacy || rowCount === 0) {
+    return "";
+  }
+  return `<p class="hint">Some rows are session summaries — per-set reps were not stored yet for those workouts.</p>`;
+}
+
 function bodyHtml(
   rows: readonly HistoryFeedRow[],
   hasLegacyOnly: boolean,
@@ -80,9 +88,19 @@ function rowHtml(row: HistoryFeedRow): string {
   return `
     <li class="history-row">
       <p class="history-ex">${escapeHtml(row.exerciseName)}</p>
-      <p class="history-meta">Set ${row.setIndex} · ${row.completedReps} / ${row.prescribedReps} · ${escapeHtml(formatWhen(row.when))}</p>
+      <p class="history-meta">${escapeHtml(rowMeta(row))}</p>
     </li>
   `;
+}
+
+function rowMeta(row: HistoryFeedRow): string {
+  const when = formatWhen(row.when);
+  if (row.kind === "legacy_session") {
+    const sets = row.sessionSetCount ?? 0;
+    const noun = sets === 1 ? "set" : "sets";
+    return `${sets} ${noun} that session (summary) · ${when}`;
+  }
+  return `Set ${row.setIndex} · ${row.completedReps} / ${row.prescribedReps} · ${when}`;
 }
 
 function formatWhen(iso: string): string {
