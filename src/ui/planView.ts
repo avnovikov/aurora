@@ -1,5 +1,6 @@
 import { onChipClick } from "../library/chips";
-import { addBlockToPlan, addJointCareDay } from "../plan/blockActions";
+import type { PlanQueue, SessionTemplate } from "../domain/program";
+import { addBlockToPlan, addJointCareDay, replenishBlockOnQueue } from "../plan/blockActions";
 import { DAY_KIND_LABELS, skillTitle } from "../plan/dayKinds";
 import { easierInDay, excludeFromDay, makeDay, setDayExercise, undoExclude, type ExcludeUndo } from "../plan/dayEdits";
 import type { BlockKind } from "../plan/generateBlock";
@@ -14,7 +15,12 @@ import {
   savePlanQueue,
   skipNext,
 } from "../plan/queue";
-import { clearScheduleOverride, loadScheduleOverride } from "../plan/scheduleOverride";
+import {
+  clearScheduleOverride,
+  loadScheduleOverride,
+  type ScheduleOverride,
+} from "../plan/scheduleOverride";
+import { findTemplate } from "../plan/templates";
 import { loadAthleteState } from "./athleteState";
 import { enableDragReorder, movedIndex } from "./dragReorder";
 import { exerciseName } from "./formatTemplate";
@@ -328,10 +334,29 @@ export function renderPlanView(root: HTMLElement): void {
   controller.paint();
 }
 
-/** Used after session evaluation */
+/** The day just trained: override when set, otherwise the queue head. */
+function finishedSessionBeforeAdvance(
+  override: ScheduleOverride | null,
+  queue: PlanQueue,
+): SessionTemplate | undefined {
+  const finishedId = override?.templateId ?? queue.items[0];
+  return finishedId ? findTemplate(finishedId) : undefined;
+}
+
+/** Used after session evaluation: advance the queue and top up the finished block. */
 export function advancePlanAfterSession(): void {
   const override = loadScheduleOverride();
-  const nextQueue = completeToday(loadPlanQueue(), override);
+  const queue = loadPlanQueue();
+  const finished = finishedSessionBeforeAdvance(override, queue);
+
+  let nextQueue = completeToday(queue, override);
   clearScheduleOverride();
+  if (finished) {
+    nextQueue = replenishBlockOnQueue({
+      finished,
+      queue: nextQueue,
+      context: loadAthleteState(),
+    });
+  }
   savePlanQueue(nextQueue);
 }
