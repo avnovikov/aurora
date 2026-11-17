@@ -13,6 +13,7 @@ export type CoachLineId =
   | "one"
   | "go"
   | "halfway"
+  | "rest_banter"
   | "pulse_not_readable"
   | "session_start"
   | "warmup_done"
@@ -84,6 +85,29 @@ const HALFWAY: CoachLine[] = [
     text: "Halfway, love. Nice and steady.",
   },
   { id: "halfway", assetKey: "halfway_d", text: "Halfway — keep the reps coming.", only: "reps" },
+];
+
+const REST_BANTER: CoachLine[] = [
+  {
+    id: "rest_banter",
+    assetKey: "rest_banter",
+    text: "Still here? Good — shake it out.",
+  },
+  {
+    id: "rest_banter",
+    assetKey: "rest_banter_b",
+    text: "Resting hard is a skill, that.",
+  },
+  {
+    id: "rest_banter",
+    assetKey: "rest_banter_c",
+    text: "Breathe. The next set's not going anywhere.",
+  },
+  {
+    id: "rest_banter",
+    assetKey: "rest_banter_d",
+    text: "Halfway through the sit-about. You're winning.",
+  },
 ];
 
 const SESSION: CoachLine[] = [
@@ -174,6 +198,7 @@ export const ALL_COACH_LINES: CoachLine[] = [
   ...COUNTS,
   ...GO,
   ...HALFWAY,
+  ...REST_BANTER,
   ...PULSE,
   ...SESSION,
 ];
