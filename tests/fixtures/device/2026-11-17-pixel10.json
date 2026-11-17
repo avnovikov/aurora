@@ -1,0 +1,1142 @@
+{
+  "capturedAt": "2026-11-17T12:22:35.574Z",
+  "device": "Pixel 10",
+  "app": {
+    "package": "com.aurora.rassvet",
+    "versionName": "1.0"
+  },
+  "localStorage": {
+    "aurora.poc.history.v1": [
+      {
+        "completedAt": "2026-11-17T09:54:20.038Z",
+        "templateId": "day_a5192cfe6fa",
+        "templateName": "Lower body · A",
+        "evaluation": "failed",
+        "setCount": 15,
+        "exerciseIds": [
+          "hf_71",
+          "hf_84",
+          "hf_87",
+          "calf_raise",
+          "wger_1605"
+        ],
+        "id": "hist_4_1794909260038"
+      }
+    ],
+    "aurora.poc.memory.v1": {
+      "wall_handstand": {
+        "exerciseId": "wall_handstand",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "beginner"
+      },
+      "elevated_pike": {
+        "exerciseId": "elevated_pike",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "beginner"
+      },
+      "scap_pushup": {
+        "exerciseId": "scap_pushup",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "beginner"
+      },
+      "hanging_knee_raise": {
+        "exerciseId": "hanging_knee_raise",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "declaredTier": "intermediate",
+        "skillTier": "intermediate"
+      },
+      "wger_1252": {
+        "exerciseId": "wger_1252",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "declaredTier": "intermediate",
+        "skillTier": "intermediate"
+      },
+      "hf_108": {
+        "exerciseId": "hf_108",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "declaredTier": "advanced",
+        "skillTier": "elite"
+      },
+      "freestanding_hs": {
+        "exerciseId": "freestanding_hs",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0
+      },
+      "bodyweight_squat": {
+        "exerciseId": "bodyweight_squat",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "beginner"
+      },
+      "wger_1208": {
+        "exerciseId": "wger_1208",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "beginner"
+      },
+      "hip_hinge": {
+        "exerciseId": "hip_hinge",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "nordic_curl": {
+        "exerciseId": "nordic_curl",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0
+      },
+      "calf_raise": {
+        "exerciseId": "calf_raise",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "bestReps": 60,
+        "skillTier": "elite"
+      },
+      "bulgarian_split": {
+        "exerciseId": "bulgarian_split",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "declaredTier": "advanced",
+        "skillTier": "advanced"
+      },
+      "cossack_squat": {
+        "exerciseId": "cossack_squat",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "step_up": {
+        "exerciseId": "step_up",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "reverse_lunge": {
+        "exerciseId": "reverse_lunge",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "hf_79": {
+        "exerciseId": "hf_79",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "hf_81": {
+        "exerciseId": "hf_81",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "hf_82": {
+        "exerciseId": "hf_82",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "hf_90": {
+        "exerciseId": "hf_90",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "hf_91": {
+        "exerciseId": "hf_91",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "ntc_reverse_lunge_knee_drive": {
+        "exerciseId": "ntc_reverse_lunge_knee_drive",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "fedb_bodyweight_walking_lunge": {
+        "exerciseId": "fedb_bodyweight_walking_lunge",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "fedb_crossover_reverse_lunge": {
+        "exerciseId": "fedb_crossover_reverse_lunge",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "fedb_split_squats": {
+        "exerciseId": "fedb_split_squats",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "fedb_suspended_split_squat": {
+        "exerciseId": "fedb_suspended_split_squat",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "wger_1324": {
+        "exerciseId": "wger_1324",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "wger_986": {
+        "exerciseId": "wger_986",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "wger_2557": {
+        "exerciseId": "wger_2557",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "wger_1907": {
+        "exerciseId": "wger_1907",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "dead_bug": {
+        "exerciseId": "dead_bug",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "hollow_hold": {
+        "exerciseId": "hollow_hold",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "hf_99": {
+        "exerciseId": "hf_99",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "glute_bridge": {
+        "exerciseId": "glute_bridge",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "hf_111": {
+        "exerciseId": "hf_111",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "declaredTier": "novice",
+        "skillTier": "novice"
+      },
+      "hf_105": {
+        "exerciseId": "hf_105",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "novice"
+      },
+      "hf_110": {
+        "exerciseId": "hf_110",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "novice"
+      },
+      "hf_122": {
+        "exerciseId": "hf_122",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "ntc_floor_windshield_wiper": {
+        "exerciseId": "ntc_floor_windshield_wiper",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "beginner"
+      },
+      "fedb_flat_bench_leg_pull_in": {
+        "exerciseId": "fedb_flat_bench_leg_pull_in",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "fedb_flat_bench_lying_leg_raise": {
+        "exerciseId": "fedb_flat_bench_lying_leg_raise",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "fedb_hanging_pike": {
+        "exerciseId": "fedb_hanging_pike",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "novice"
+      },
+      "fedb_knee_hip_raise_on_parallel_bars": {
+        "exerciseId": "fedb_knee_hip_raise_on_parallel_bars",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "intermediate"
+      },
+      "fedb_leg_pull_in": {
+        "exerciseId": "fedb_leg_pull_in",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "fedb_seated_flat_bench_leg_pull_in": {
+        "exerciseId": "fedb_seated_flat_bench_leg_pull_in",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "fedb_seated_leg_tucks": {
+        "exerciseId": "fedb_seated_leg_tucks",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "wger_1889": {
+        "exerciseId": "wger_1889",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "wger_2756": {
+        "exerciseId": "wger_2756",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "novice"
+      },
+      "wger_382": {
+        "exerciseId": "wger_382",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "novice"
+      },
+      "wger_1853": {
+        "exerciseId": "wger_1853",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "beginner"
+      },
+      "wger_1105": {
+        "exerciseId": "wger_1105",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "wger_1704": {
+        "exerciseId": "wger_1704",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "beginner"
+      },
+      "hf_103": {
+        "exerciseId": "hf_103",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "declaredTier": "intermediate",
+        "skillTier": "intermediate"
+      },
+      "hf_116": {
+        "exerciseId": "hf_116",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "hf_124": {
+        "exerciseId": "hf_124",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "intermediate"
+      },
+      "ntc_high_plank": {
+        "exerciseId": "ntc_high_plank",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "ntc_plank_up_down": {
+        "exerciseId": "ntc_plank_up_down",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "intermediate"
+      },
+      "ntc_plank_hip_dips": {
+        "exerciseId": "ntc_plank_hip_dips",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "intermediate"
+      },
+      "ntc_bear_plank": {
+        "exerciseId": "ntc_bear_plank",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "ntc_spiderman_plank": {
+        "exerciseId": "ntc_spiderman_plank",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "intermediate"
+      },
+      "ntc_plank_to_down_dog": {
+        "exerciseId": "ntc_plank_to_down_dog",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "intermediate"
+      },
+      "ntc_lateral_plank_walk": {
+        "exerciseId": "ntc_lateral_plank_walk",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "intermediate"
+      },
+      "wger_1911": {
+        "exerciseId": "wger_1911",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "wger_312": {
+        "exerciseId": "wger_312",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "intermediate"
+      },
+      "wger_1766": {
+        "exerciseId": "wger_1766",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "intermediate"
+      },
+      "wger_1410": {
+        "exerciseId": "wger_1410",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "intermediate"
+      },
+      "wger_1406": {
+        "exerciseId": "wger_1406",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "intermediate"
+      },
+      "wger_500": {
+        "exerciseId": "wger_500",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "hf_101": {
+        "exerciseId": "hf_101",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "declaredTier": "intermediate",
+        "skillTier": "intermediate"
+      },
+      "hf_100": {
+        "exerciseId": "hf_100",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "ntc_side_plank_hip_lift": {
+        "exerciseId": "ntc_side_plank_hip_lift",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "intermediate"
+      },
+      "wger_1288": {
+        "exerciseId": "wger_1288",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "intermediate"
+      },
+      "hf_87": {
+        "exerciseId": "hf_87",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "declaredTier": "intermediate",
+        "skillTier": "intermediate",
+        "bestReps": 20
+      },
+      "hf_88": {
+        "exerciseId": "hf_88",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "ntc_glute_bridge_march": {
+        "exerciseId": "ntc_glute_bridge_march",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "ntc_frog_pumps": {
+        "exerciseId": "ntc_frog_pumps",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "ntc_fire_hydrant": {
+        "exerciseId": "ntc_fire_hydrant",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "ntc_clamshell": {
+        "exerciseId": "ntc_clamshell",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "fedb_glute_kickback": {
+        "exerciseId": "fedb_glute_kickback",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "fedb_pelvic_tilt_into_bridge": {
+        "exerciseId": "fedb_pelvic_tilt_into_bridge",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "fedb_side_leg_raises": {
+        "exerciseId": "fedb_side_leg_raises",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "fedb_single_leg_glute_bridge": {
+        "exerciseId": "fedb_single_leg_glute_bridge",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "wger_1096": {
+        "exerciseId": "wger_1096",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "wger_1141": {
+        "exerciseId": "wger_1141",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "wger_2449": {
+        "exerciseId": "wger_2449",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "wger_1956": {
+        "exerciseId": "wger_1956",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "wger_990": {
+        "exerciseId": "wger_990",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "wger_1514": {
+        "exerciseId": "wger_1514",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "wger_2448": {
+        "exerciseId": "wger_2448",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "wger_1202": {
+        "exerciseId": "wger_1202",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "wger_1913": {
+        "exerciseId": "wger_1913",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "intermediate"
+      },
+      "wger_1103": {
+        "exerciseId": "wger_1103",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "hf_84": {
+        "exerciseId": "hf_84",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "declaredTier": "intermediate",
+        "skillTier": "intermediate"
+      },
+      "hf_85": {
+        "exerciseId": "hf_85",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "advanced"
+      },
+      "fedb_hyperextensions_with_no_hyperextension_bench": {
+        "exerciseId": "fedb_hyperextensions_with_no_hyperextension_bench",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "wger_1392": {
+        "exerciseId": "wger_1392",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "wger_1809": {
+        "exerciseId": "wger_1809",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "elite"
+      },
+      "wger_1294": {
+        "exerciseId": "wger_1294",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "skillTier": "intermediate"
+      },
+      "hf_71": {
+        "exerciseId": "hf_71",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "bestReps": 20,
+        "skillTier": "elite"
+      },
+      "wger_1605": {
+        "exerciseId": "wger_1605",
+        "sessionsAtStandard": 0,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "bestReps": 10,
+        "skillTier": "beginner"
+      }
+    },
+    "aurora.poc.planDays.v1": {
+      "day_a5192cfe6fb": {
+        "id": "day_a5192cfe6fb",
+        "name": "Lower body · B",
+        "focus": "legs",
+        "kind": "lower",
+        "block": {
+          "id": "blk_a5192cfe6f",
+          "letter": "B",
+          "emphasis": "easier"
+        },
+        "targetExerciseIds": [
+          "pistol_squat"
+        ],
+        "warmupByLevel": {
+          "beginner": [
+            "ntc_toy_soldiers",
+            "ankle_rocks",
+            "ntc_single_leg_balance",
+            "glute_bridge",
+            "bodyweight_squat",
+            "wger_2557"
+          ],
+          "intermediate": [
+            "ntc_toy_soldiers",
+            "ankle_rocks",
+            "ntc_single_leg_balance",
+            "fedb_single_leg_glute_bridge",
+            "fedb_bodyweight_walking_lunge",
+            "fedb_split_squats",
+            "wger_1948"
+          ],
+          "advanced": [
+            "ntc_toy_soldiers",
+            "ankle_rocks",
+            "wger_2667",
+            "fedb_single_leg_glute_bridge",
+            "fedb_bodyweight_walking_lunge",
+            "wger_1948",
+            "ntc_assisted_pistol"
+          ]
+        },
+        "cooldownStationIds": [
+          "fedb_calf_stretch_hands_against_wall",
+          "wger_1239",
+          "fedb_kneeling_hip_flexor",
+          "hf_158_cooldown"
+        ],
+        "slots": [
+          {
+            "id": "day_a5192cfe6fb_single_leg",
+            "label": "Single-leg squat",
+            "exerciseId": "wger_2557",
+            "pattern": "squat",
+            "dose": {
+              "sets": 4,
+              "reps": 60,
+              "targetRir": 2,
+              "addedLoadKg": 0
+            },
+            "restSeconds": 90,
+            "pinned": false
+          },
+          {
+            "id": "day_a5192cfe6fb_hamstring",
+            "label": "Hamstring",
+            "exerciseId": "wger_1913",
+            "pattern": "squat",
+            "dose": {
+              "sets": 3,
+              "reps": 12,
+              "targetRir": 3,
+              "addedLoadKg": 0
+            },
+            "restSeconds": 90,
+            "pinned": false
+          },
+          {
+            "id": "day_a5192cfe6fb_glute",
+            "label": "Glute",
+            "exerciseId": "hf_88",
+            "pattern": "squat",
+            "dose": {
+              "sets": 3,
+              "reps": 20,
+              "targetRir": 2,
+              "addedLoadKg": 0
+            },
+            "restSeconds": 90,
+            "pinned": false
+          },
+          {
+            "id": "day_a5192cfe6fb_calf",
+            "label": "Calf",
+            "exerciseId": "hf_93",
+            "pattern": "squat",
+            "dose": {
+              "sets": 3,
+              "reps": 12,
+              "targetRir": 3,
+              "addedLoadKg": 0
+            },
+            "restSeconds": 90,
+            "pinned": false
+          },
+          {
+            "id": "day_a5192cfe6fb_care",
+            "label": "Knee care",
+            "exerciseId": "wger_1605",
+            "pattern": "hinge",
+            "dose": {
+              "sets": 2,
+              "reps": 10,
+              "targetRir": 3,
+              "addedLoadKg": 0
+            },
+            "restSeconds": 90,
+            "pinned": true
+          }
+        ],
+        "repeat": false,
+        "targetMinutes": {
+          "minMinutes": 25,
+          "maxMinutes": 45
+        }
+      },
+      "day_a5192cfe6fc": {
+        "id": "day_a5192cfe6fc",
+        "name": "Lower body · C",
+        "focus": "legs",
+        "kind": "lower",
+        "block": {
+          "id": "blk_a5192cfe6f",
+          "letter": "C",
+          "emphasis": "focus"
+        },
+        "targetExerciseIds": [
+          "pistol_squat"
+        ],
+        "warmupByLevel": {
+          "beginner": [
+            "ntc_toy_soldiers",
+            "ankle_rocks",
+            "ntc_single_leg_balance",
+            "glute_bridge",
+            "bodyweight_squat",
+            "wger_2557"
+          ],
+          "intermediate": [
+            "ntc_toy_soldiers",
+            "ankle_rocks",
+            "ntc_single_leg_balance",
+            "fedb_single_leg_glute_bridge",
+            "fedb_bodyweight_walking_lunge",
+            "fedb_split_squats",
+            "wger_1948"
+          ],
+          "advanced": [
+            "ntc_toy_soldiers",
+            "ankle_rocks",
+            "wger_2667",
+            "fedb_single_leg_glute_bridge",
+            "fedb_bodyweight_walking_lunge",
+            "wger_1948",
+            "ntc_assisted_pistol"
+          ]
+        },
+        "cooldownStationIds": [
+          "fedb_calf_stretch_hands_against_wall",
+          "wger_1239",
+          "fedb_kneeling_hip_flexor",
+          "hf_158_cooldown"
+        ],
+        "slots": [
+          {
+            "id": "day_a5192cfe6fc_single_leg",
+            "label": "Single-leg squat",
+            "exerciseId": "step_up",
+            "pattern": "squat",
+            "dose": {
+              "sets": 4,
+              "reps": 20,
+              "targetRir": 2,
+              "addedLoadKg": 0
+            },
+            "restSeconds": 90,
+            "pinned": false
+          },
+          {
+            "id": "day_a5192cfe6fc_hamstring",
+            "label": "Hamstring",
+            "exerciseId": "wger_1294",
+            "pattern": "hinge",
+            "dose": {
+              "sets": 3,
+              "reps": 15,
+              "targetRir": 2,
+              "addedLoadKg": 0
+            },
+            "restSeconds": 90,
+            "pinned": false
+          },
+          {
+            "id": "day_a5192cfe6fc_glute",
+            "label": "Glute",
+            "exerciseId": "wger_1913",
+            "pattern": "hinge",
+            "dose": {
+              "sets": 3,
+              "reps": 15,
+              "targetRir": 2,
+              "addedLoadKg": 0
+            },
+            "restSeconds": 90,
+            "pinned": false
+          },
+          {
+            "id": "day_a5192cfe6fc_calf",
+            "label": "Calf",
+            "exerciseId": "single_leg_calf_raise",
+            "pattern": "conditioning",
+            "dose": {
+              "sets": 3,
+              "reps": 12,
+              "targetRir": 3,
+              "addedLoadKg": 0
+            },
+            "restSeconds": 45,
+            "pinned": false
+          },
+          {
+            "id": "day_a5192cfe6fc_care",
+            "label": "Knee care",
+            "exerciseId": "wger_1605",
+            "pattern": "hinge",
+            "dose": {
+              "sets": 2,
+              "reps": 10,
+              "targetRir": 3,
+              "addedLoadKg": 0
+            },
+            "restSeconds": 90,
+            "pinned": true
+          }
+        ],
+        "repeat": false,
+        "targetMinutes": {
+          "minMinutes": 25,
+          "maxMinutes": 45
+        }
+      }
+    },
+    "aurora.poc.planLevel.v1": "intermediate",
+    "aurora.poc.planQueue.v1": {
+      "items": [
+        "day_a5192cfe6fb",
+        "day_a5192cfe6fc"
+      ]
+    },
+    "aurora.poc.profile.v1": {
+      "bodyweightKg": 85,
+      "equipment": [
+        "body",
+        "bar",
+        "parallettes",
+        "dumbbell",
+        "band"
+      ],
+      "voiceMuted": false,
+      "jointHistory": [
+        {
+          "joint": "shoulder",
+          "side": "right",
+          "kind": "surgery"
+        },
+        {
+          "joint": "knee",
+          "side": "both",
+          "kind": "ligament"
+        }
+      ],
+      "setupDone": true,
+      "palette": "eos",
+      "addWeightKg": 12
+    },
+    "aurora.poc.templateOverrides.v1": {
+      "tmpl_legs": {
+        "slotExerciseIds": {
+          "legs_split": "wger_1208"
+        }
+      },
+      "tmpl_skill_hs": {
+        "slotExerciseIds": {
+          "skill_wall_hs": "ntc_wall_walk_up",
+          "skill_free": "hf_122",
+          "skill_scap": "pullup_dead_hang"
+        },
+        "targetExerciseIds": [
+          "hf_111"
+        ]
+      }
+    }
+  }
+}
