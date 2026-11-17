@@ -3,15 +3,19 @@ import { displayNameOf } from "../library/displayName";
 import { escapeHtml } from "../library/present";
 import {
   buildHistoryFeed,
-  type HistoryFeedRow,
   type HistoryFilter,
 } from "../progress/historyFeed";
+import {
+  historyFeedListHtml,
+  legacyHistoryBannerHtml,
+} from "../progress/historyFeedPresent";
 import { patternLabel } from "../progress/patternLabels";
 import { loadHistory } from "../session/history";
 
 export interface HistoryViewOptions {
   filter?: HistoryFilter;
   onClearFilter?: () => void;
+  onOpenExercise?: (exerciseId: string) => void;
 }
 
 export function renderHistoryView(
@@ -30,13 +34,22 @@ export function renderHistoryView(
       <p class="eyebrow">History</p>
       <h1>Logged sets</h1>
       ${filterChipHtml(filter, Boolean(options.onClearFilter))}
-      ${legacyBannerHtml(feed.hasLegacyOnly, feed.rows.length)}
-      ${bodyHtml(feed.rows, feed.hasLegacyOnly)}
+      ${legacyHistoryBannerHtml(feed.hasLegacyOnly, feed.rows.length)}
+      ${bodyHtml(feed.rows, feed.hasLegacyOnly, Boolean(options.onOpenExercise))}
     </main>
   `;
 
   root.querySelector("[data-clear-filter]")?.addEventListener("click", () => {
     options.onClearFilter?.();
+  });
+
+  root.querySelectorAll<HTMLButtonElement>("[data-open-exercise]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const exerciseId = button.dataset.openExercise;
+      if (exerciseId) {
+        options.onOpenExercise?.(exerciseId);
+      }
+    });
   });
 }
 
@@ -59,16 +72,10 @@ function filterLabel(filter: Exclude<HistoryFilter, { kind: "all" }>): string {
   return `Pattern · ${patternLabel(filter.pattern)}`;
 }
 
-function legacyBannerHtml(hasLegacy: boolean, rowCount: number): string {
-  if (!hasLegacy || rowCount === 0) {
-    return "";
-  }
-  return `<p class="hint">Some rows are session summaries — per-set reps were not stored yet for those workouts.</p>`;
-}
-
 function bodyHtml(
-  rows: readonly HistoryFeedRow[],
+  rows: Parameters<typeof historyFeedListHtml>[0],
   hasLegacyOnly: boolean,
+  linkTitles: boolean,
 ): string {
   if (rows.length === 0) {
     const hint = hasLegacyOnly
@@ -81,37 +88,5 @@ function bodyHtml(
       </section>
     `;
   }
-  return `<ol class="history-feed">${rows.map(rowHtml).join("")}</ol>`;
-}
-
-function rowHtml(row: HistoryFeedRow): string {
-  return `
-    <li class="history-row">
-      <p class="history-ex">${escapeHtml(row.exerciseName)}</p>
-      <p class="history-meta">${escapeHtml(rowMeta(row))}</p>
-    </li>
-  `;
-}
-
-function rowMeta(row: HistoryFeedRow): string {
-  const when = formatWhen(row.when);
-  if (row.kind === "legacy_session") {
-    const sets = row.sessionSetCount ?? 0;
-    const noun = sets === 1 ? "set" : "sets";
-    return `${sets} ${noun} that session (summary) · ${when}`;
-  }
-  return `Set ${row.setIndex} · ${row.completedReps} / ${row.prescribedReps} · ${when}`;
-}
-
-function formatWhen(iso: string): string {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) {
-    return iso;
-  }
-  return date.toLocaleString("en-GB", {
-    day: "numeric",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return historyFeedListHtml(rows, { linkTitles });
 }

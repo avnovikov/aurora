@@ -27,10 +27,17 @@ import { listAllTemplates, resolveTemplate } from "../plan/templates";
 import {
   declareSkillTier,
   emptyMemory,
+  loadHistory,
   loadMemories,
   saveMemories,
 } from "../session/history";
+import { buildHistoryFeed } from "../progress/historyFeed";
 import { loadProfile } from "../settings/profile";
+
+export interface LibraryViewOptions {
+  /** Open this exercise's detail immediately (e.g. from History). */
+  initialExerciseId?: string;
+}
 
 /** Every list filter with a value; "hiddenStretches" is computed, not chosen. */
 type ListFilters = Required<Omit<ListQueryState, "hiddenStretches" | "openPanels">>;
@@ -43,14 +50,17 @@ function templateDisplayName(templateId: string): string {
   return dayTitle(resolveTemplate(templateId));
 }
 
-export function renderLibraryView(root: HTMLElement): void {
+export function renderLibraryView(
+  root: HTMLElement,
+  options: LibraryViewOptions = {},
+): void {
   const filters: ListFilters = { text: "", ...DEFAULT_FILTERS };
   const setFilter = <K extends keyof ListFilters>(key: K, value: ListFilters[K]): void => {
     filters[key] = value;
     paint();
   };
   let openPanels: FilterPanelId[] = [];
-  let selectedId: string | null = null;
+  let selectedId: string | null = options.initialExerciseId ?? null;
   /** Exercise currently shown on detail; null while the list is up. */
   let detailExerciseId: string | null = null;
   /** Window scroll of the list, restored when leaving detail. */
@@ -123,11 +133,18 @@ export function renderLibraryView(root: HTMLElement): void {
     const now = new Date();
     const memories = loadMemories(now);
     const memory = memories[exerciseId] ?? emptyMemory(exerciseId);
+    const logged = buildHistoryFeed({
+      history: loadHistory(),
+      graph: EXERCISE_GRAPH,
+      filter: { kind: "exercise", exerciseId },
+    });
     mountLibraryDetail(root, {
       exercise,
       targetIds,
       catalogueById: CATALOGUE_BY_ID,
       scrollToTop,
+      loggedSets: logged.rows,
+      loggedSetsHaveLegacy: logged.hasLegacyOnly,
       actions: {
         onBack: () => clearPlanStatusAndSelect(null),
         onOpenExercise: clearPlanStatusAndSelect,
