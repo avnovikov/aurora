@@ -287,7 +287,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     // Defer so the Log-set / swipe pointer event cannot click through
     // into the evaluation buttons that replace this view.
     window.setTimeout(() => {
-      options.onDone(state.log.entries.length);
+      options.onDone(state.log);
     }, 0);
   };
 

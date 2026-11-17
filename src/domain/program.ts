@@ -132,7 +132,10 @@ export interface UserProfile {
   maxHeartRateBpm: number;
 }
 
-export type SessionEvaluation = "easy" | "on_target" | "failed" | "wiped";
+/** How the whole session felt. Legacy history may still store `"failed"`. */
+export type SessionEvaluation = "easy" | "on_target" | "difficult" | "wiped";
+/** Stored value before the difficult rename; normalize on read. */
+export type LegacySessionEvaluation = SessionEvaluation | "failed";
 
 export interface HistoryEntry {
   id: string;
