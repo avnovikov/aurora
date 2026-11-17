@@ -29,6 +29,9 @@ export const DEFAULT_SESSION_TARGET: SessionDurationTarget = {
   maxMinutes: 45,
 };
 
+/** Minutes outside the soft band that still omit "(target …)" on the Plan label (#126). */
+export const TARGET_LABEL_SLACK_MINUTES = 5;
+
 /**
  * Hard ceiling for warm-up + work (minutes). The template band is a soft
  * target shown in the label; only this cap is enforced. The optional
@@ -93,12 +96,24 @@ export function estimateSessionDuration(
   };
 }
 
+/** True when the estimate is in-band or only a few minutes outside (#126). */
+export function nearTargetForLabel(estimate: SessionDurationEstimate): boolean {
+  const slack = TARGET_LABEL_SLACK_MINUTES;
+  const { minMinutes, maxMinutes } = estimate.target;
+  const minutes = estimate.totalMinutesRounded;
+  return minutes >= minMinutes - slack && minutes <= maxMinutes + slack;
+}
+
 export function formatDurationLabel(estimate: SessionDurationEstimate): string {
-  const band = `${estimate.target.minMinutes}–${estimate.target.maxMinutes} min`;
-  if (estimate.withinTarget) {
-    return `≈ ${estimate.totalMinutesRounded} min`;
+  const approx = `≈ ${estimate.totalMinutesRounded} min`;
+  if (nearTargetForLabel(estimate)) {
+    return approx;
   }
-  return `≈ ${estimate.totalMinutesRounded} min (target ${band})`;
+  return `${approx} (target ${targetBandLabel(estimate.target)})`;
+}
+
+function targetBandLabel(target: SessionDurationTarget): string {
+  return `${target.minMinutes}–${target.maxMinutes} min`;
 }
 
 /**

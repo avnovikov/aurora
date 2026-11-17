@@ -48,12 +48,22 @@ describe("estimateSessionDuration", () => {
     }
   });
 
-  it("treats the template band as a soft target shown in the label", () => {
+  it("omits the target suffix when the estimate is only slightly outside the band (#126)", () => {
+    const base = estimateSessionDuration(SESSION_TEMPLATES.find((t) => t.id === "tmpl_legs")!);
+    const near = {
+      ...base,
+      totalMinutesRounded: 47,
+      withinTarget: false,
+      target: DEFAULT_SESSION_TARGET,
+    };
+    expect(formatDurationLabel(near)).toBe("≈ 47 min");
+  });
+
+  it("keeps the target suffix when the estimate is clearly outside the soft band", () => {
     const legs = SESSION_TEMPLATES.find((t) => t.id === "tmpl_legs")!;
     const band = legs.targetMinutes ?? DEFAULT_SESSION_TARGET;
-    // Stretch the warm-up so the estimate leaves the band but stays under the cap.
     const { workSeconds } = estimateSessionDuration(legs);
-    const long = estimateSessionDuration(legs, "beginner", (band.maxMinutes + 5) * 60 - workSeconds);
+    const long = estimateSessionDuration(legs, "beginner", (band.maxMinutes + 12) * 60 - workSeconds);
     expect(long.withinTarget).toBe(false);
     expect(long.withinHardCap).toBe(true);
     expect(formatDurationLabel(long)).toMatch(/\(target \d+–\d+ min\)$/);
