@@ -213,7 +213,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     return resolveExerciseTiming(exercise).effort === "hold";
   };
 
-  const finishExercise = (): void => {
+  const finishExercise = (restBeforeNext?: number): void => {
     state.workIndex += 1;
     state.setIndex = 1;
     state.workState = null;
@@ -226,6 +226,20 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       return;
     }
     state.workState = syncWorkState(options.planned, state);
+    if (restBeforeNext !== undefined && restBeforeNext > 0) {
+      state.phase = "rest";
+      state.restLeft = restBeforeNext;
+      paint();
+      startRest(
+        () => {
+          state.phase = "work";
+          paint();
+        },
+        true,
+        timedWorkItem(currentWork(options.planned, state)),
+      );
+      return;
+    }
     state.phase = "work";
     paint();
   };

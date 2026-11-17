@@ -34,7 +34,11 @@ export type SetStopReason = Extract<
 export interface SessionControlHandlers {
   onPaint: () => void;
   onStartRest: (withVoice: boolean, onDone: () => void) => void;
-  onFinishExercise: () => void;
+  /**
+   * Leave the current exercise. When `restBeforeNext` is set, rest that many
+   * seconds on the next exercise before the first set (same as between sets).
+   */
+  onFinishExercise: (restBeforeNext?: number) => void;
   /** End the running rest now and go on to what it was waiting for. */
   onSkipRest: () => void;
   /** Forward swipe on a warm-up or cool-down station: end it now. */
@@ -215,13 +219,39 @@ export function completeSet(
     void speakCoachLine("set_logged");
   }
   if (state.setIndex >= item.dose.sets || stopReason === "skipped") {
-    handlers.onFinishExercise();
+    handlers.onFinishExercise(
+      restBeforeNextExercise(stopReason, state.workIndex, planned.work.length, item.restSeconds),
+    );
     return;
   }
   state.setIndex += 1;
   state.workState = workStateAfterLoggedSet(work, state.setIndex, prescribed);
+  beginRest(state, handlers, item.restSeconds);
+}
+
+/** Rest after the last set of an exercise only when another exercise follows and the set was not skipped. */
+export function restBeforeNextExercise(
+  stopReason: SetStopReason,
+  workIndex: number,
+  workCount: number,
+  slotRestSeconds: number,
+): number | undefined {
+  if (stopReason === "skipped" || workIndex >= workCount - 1) {
+    return undefined;
+  }
+  if (slotRestSeconds <= 0) {
+    return undefined;
+  }
+  return slotRestSeconds;
+}
+
+function beginRest(
+  state: ViewState,
+  handlers: SessionControlHandlers,
+  restSeconds: number,
+): void {
   state.phase = "rest";
-  state.restLeft = item.restSeconds;
+  state.restLeft = restSeconds;
   handlers.onPaint();
   handlers.onStartRest(true, () => {
     state.phase = "work";
