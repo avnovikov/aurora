@@ -85,6 +85,7 @@ export function suggestionFor(
   index?: FamilyLadderIndex,
 ): TierSuggestion | undefined {
   const memory = memories[exerciseId];
+  // Early exit: a tested move's own family is tested, so suggestTiers never suggests for it; skip the computation.
   if (memory && testedTier(memory)) {
     return undefined;
   }

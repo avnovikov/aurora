@@ -54,10 +54,14 @@ describe("suggestTiers (#112 rule 6)", () => {
   });
 
   it("(c) inferred and plan defaults are not evidence", () => {
-    const idx = indexOf(fam(2));
+    // 4 families, needed = 2. If inferred/planTier counted, 3 families would be tested
+    // and the untouched family m3 would receive a suggestion, so size 0 proves the exclusion.
+    const idx = indexOf(fam(4));
+    const inferred = { tier: "advanced" as const, from: ["x"], at: "2026-11-17T00:00:00Z" };
     const memories = {
-      m0a: { ...emptyMemory("m0a"), inferred: { tier: "advanced" as const, from: ["x"], at: "2026-11-17T00:00:00Z" } },
-      m1a: { ...emptyMemory("m1a"), planTier: "advanced" as const },
+      m0a: { ...emptyMemory("m0a"), inferred },
+      m1a: { ...emptyMemory("m1a"), inferred },
+      m2a: { ...emptyMemory("m2a"), planTier: "advanced" as const },
     };
     expect(suggestTiers({ memories, index: idx, patternOf }).size).toBe(0);
   });
@@ -84,7 +88,8 @@ describe("suggestTiers (#112 rule 6)", () => {
   describe("suggestionFor", () => {
     const idx = indexOf(fam(6));
     const memories = { m0a: at("advanced", "m0a"), m1a: at("advanced", "m1a"), m2a: at("novice", "m2a") };
-    it("gives a tested move nothing", () => {
+    it("a move with its own tested level gets no suggestion", () => {
+      // Holds by construction: the move's own family is tested, so suggestTiers never suggests for it.
       const m = { ...memories, m2a: at("beginner", "m2a") };
       expect(suggestionFor("m2a", m, patternOf, idx)).toBeUndefined();
     });
