@@ -17,13 +17,13 @@ const round = (value: number): number => Math.round(value * 10) / 10;
 const angle = (from: Point, to: Point): number => (Math.atan2(to[1] - from[1], to[0] - from[0]) * 180) / Math.PI;
 
 /** Ankle to shoulder of a straight body (leg 173.9 + pelvis-to-shoulder 98). */
-const BODY = 271.9;
+export const BODY = 271.9;
 
 /**
  * Straight body pivoting on fixed ankles: the shoulder sits at height `shoulderY`
  * on the circle of radius BODY around `foot`. Returns pelvis and chest.
  */
-function straightBody(foot: Point, shoulderY: number, dirX: 1 | -1 = 1): { pelvis: Point; chest: Point; shoulder: Point } {
+export function straightBody(foot: Point, shoulderY: number, dirX: 1 | -1 = 1): { pelvis: Point; chest: Point; shoulder: Point } {
   const dx = Math.sqrt(BODY ** 2 - (shoulderY - foot[1]) ** 2);
   const shoulder: Point = [foot[0] + dirX * dx, shoulderY];
   const deg = angle(foot, shoulder);
@@ -31,10 +31,10 @@ function straightBody(foot: Point, shoulderY: number, dirX: 1 | -1 = 1): { pelvi
 }
 
 /** Arm length with the elbow locked (shoulder to fingertip, a hair short of 126). */
-const LOCKED = 125.97;
+export const LOCKED = 125.97;
 
 /** Shoulder height at which a straight body on `foot` reaches `hand` with a locked arm. */
-function lockedShoulderY(foot: Point, hand: Point, dirX: 1 | -1 = 1, below = false): number {
+export function lockedShoulderY(foot: Point, hand: Point, dirX: 1 | -1 = 1, below = false): number {
   // Searches between "too far" (a full arm above or below the hand) and "too close".
   let lo = below ? hand[1] + LOCKED : hand[1] - LOCKED;
   let hi = below ? hand[1] + 1 : hand[1] - 1;
@@ -52,7 +52,7 @@ function lockedShoulderY(foot: Point, hand: Point, dirX: 1 | -1 = 1, below = fal
  * The pelvis is blended in a straight line between keyframes, so the midway frame keeps the
  * chord short enough that the legs stay (nearly) straight.
  */
-function rep(at: (shoulderY: number) => Pose, top: number, bottom: number, holdTop: number, holdBottom: number): Keyframe[] {
+export function rep(at: (shoulderY: number) => Pose, top: number, bottom: number, holdTop: number, holdBottom: number): Keyframe[] {
   const mid = at(round((top + bottom) / 2));
   return [
     { hold: holdTop, pose: at(top) },
@@ -64,10 +64,10 @@ function rep(at: (shoulderY: number) => Pose, top: number, bottom: number, holdT
 
 // ---------------------------------------------------------------- push-ups on the floor
 
-const PLANK_FOOT: Point = [-190, -18];
+export const PLANK_FOOT: Point = [-190, -18];
 
 /** Floor push-up with the hands at `handX`; `shoulderY` -123 is the top, about -48 the bottom. */
-function pushUp(shoulderY: number | "top", handX: number, foot: Point = PLANK_FOOT): Pose {
+export function pushUp(shoulderY: number | "top", handX: number, foot: Point = PLANK_FOOT): Pose {
   const y = shoulderY === "top" ? pushUpTop(handX, foot) : shoulderY;
   const { pelvis, chest } = straightBody(foot, y);
   return {
@@ -81,7 +81,7 @@ function pushUp(shoulderY: number | "top", handX: number, foot: Point = PLANK_FO
 }
 
 /** Shoulder height of the top of a floor push-up (arms locked). */
-const pushUpTop = (handX: number, foot: Point = PLANK_FOOT): number => lockedShoulderY(foot, [handX, 0]);
+export const pushUpTop = (handX: number, foot: Point = PLANK_FOOT): number => lockedShoulderY(foot, [handX, 0]);
 
 /** Diamond push-up: hands together under the chest, a little behind the shoulders. */
 const DIAMOND_HAND_X = 40;
@@ -100,7 +100,7 @@ function oneArm(shoulderY: number): Pose {
 }
 
 /** High plank; `tap` lifts that hand to the opposite shoulder. */
-function shoulderTap(tap: "near" | "far" | null): Pose {
+export function shoulderTap(tap: "near" | "far" | null): Pose {
   const base = pushUp("top", 62);
   if (!tap) return base;
   const { shoulder } = straightBody(PLANK_FOOT, lockedShoulderY(PLANK_FOOT, [62, 0]));
@@ -375,7 +375,7 @@ function mannaPose(pelvis: Point, handX: number, legs: number): Pose {
   return {
     pelvis,
     chest: along(pelvis, torsoDeg, 80),
-    head: along(along(pelvis, torsoDeg, 100), torsoDeg + 25, 36),
+    head: along(along(pelvis, torsoDeg, 100), torsoDeg - 30, 36),
     hands: { near: hand, far: [handX - 3, 0] },
     elbows: { near: { bend: 1 }, far: { bend: 1 } },
     feet: { near: along(pelvis, legs, 173.9), far: along(pelvis, legs - 1, 173.6) },
@@ -513,7 +513,7 @@ export const BATCH_C_SPECS: DoodleSpec[] = [
     transition: 0.9,
     frames: [
       { hold: 0.4, pose: benchLegs(-6) },
-      { hold: 0.5, pose: benchTuck(-122, 8) },
+      { hold: 0.5, pose: benchTuck(-128, 18) },
     ],
   },
   {
@@ -547,7 +547,7 @@ export const BATCH_C_SPECS: DoodleSpec[] = [
     transition: 1.4,
     frames: [
       { hold: 0.5, pose: mannaPose([18, -30], 0, -40) },
-      { hold: 1.5, pose: mannaPose([48, -60], 0, -98) },
+      { hold: 1.5, pose: mannaPose([48, -60], 0, -117) },
     ],
   },
 ];

@@ -4,10 +4,14 @@ import { BATCH_C_SPECS } from "./specsBatchC";
 import { BATCH_D_SPECS } from "./specsBatchD";
 import { BATCH_E_SPECS } from "./specsBatchE";
 import { BATCH_F_SPECS } from "./specsBatchF";
+import { BATCH_G_SPECS } from "./specsBatchG";
+import { BATCH_H_SPECS } from "./specsBatchH";
+import { BATCH_I_SPECS } from "./specsBatchI";
+import { BATCH_J_SPECS } from "./specsBatchJ";
 import { STRETCH_SPECS } from "./specsStretch";
-import { WARMUP_DRILL_SPECS } from "./specsWarmup";
+import { proneFromAbove, WARMUP_DRILL_SPECS } from "./specsWarmup";
 import { solvePose } from "./rig";
-import type { DoodleSpec, Point, Pose } from "./rig";
+import type { DoodleSpec, Point, Pose, Prop } from "./rig";
 
 /**
  * Poses for the most-scheduled Library moves without a doodle, written from
@@ -24,17 +28,16 @@ import type { DoodleSpec, Point, Pose } from "./rig";
  *   single-leg-rdl             chest, hands, feet, toes
  *   glute-bridge-march         chest, head, hands, elbow bend, feet, toes
  *   sliding-leg-curl           chest, head, hands, elbow bend, feet, toes
- *   fire-hydrant               hands, feet, toes; spine from hands; near knee when lifted
- *   parallel-bar-knee-raise    chest, hands, feet, toes; knees when raised
+ *   parallel-bar-knee-raise    chest, hands, knees, feet, toes; mid-span, legs hanging, knees raised
  *   donkey-kick                hands, feet, toes; spine from hands; near knee when kicking
  *   forearm-plank              chest, elbows, hands, feet, toes
- *   prone-scapular-retraction  chest, hands, feet, knee bend, toes
+ *   prone-scapular-retraction  chest, hands, elbows, feet, toes; straight arms lift 18° off the floor
  *   elbow-lever                chest, elbows, hands, feet, toes
- *   reverse-snow-angel         chest, hands, elbow bend, feet, knee bend, toes
+ *   reverse-snow-angel (front) seen from above: chest, head, hands, feet, toes (proneFromAbove)
  *   arch-hang                  head, hands, feet, toes; spine from hands, then chest + arch bend
- *   active-hang (front)        chest, hands, feet, toes; elbow bend when active
- *   tuck-l-sit                 hands, feet, toes; spine from hands; knees when tucked
- *   press-to-handstand         hands, feet, toes; spine from hands, chest pinned once inverted
+ *   active-hang (front)        chest, head, hands, elbows, knees, feet, toes; only the head/shoulders move
+ *   tuck-l-sit                 hands, chest, knees, feet; static hold with the knees tucked
+ *   press-to-handstand         hands, feet, toes; spine from hands, chest pinned once inverted; legs move together
  */
 
 /** Point `length` from `from` at `degrees` (0 = +x, 90 = down, -90 = up). */
@@ -67,33 +70,61 @@ function allFours(): Pose {
 const SUPINE_CHORD = 77;
 const SUPINE_BEND: 1 | -1 = -1;
 
-/** Head lifted forward off the floor for the overhead snow-angel frame. */
-const SNOW_HEAD: Point = [98, -80];
+/** The upright a supported split squat holds for balance. */
+const SPLIT_POST_X = 98;
 
-const HYDRANT_KNEE: Point = along([-50, -92], 150, 88);
+/** Points around the hip circle, an eighth of a turn apart, starting hips-forward. */
+const HIP_CIRCLE_STEPS = [0, 1, 2, 3, 4, 5, 6, 7].map((i) => (i * Math.PI) / 4);
+/** Forward/back reach of the hips and how far they drop at the sides of the circle. */
+const HIP_CIRCLE_REACH = 32;
+const HIP_CIRCLE_DIP = 5;
 
-const TUCK_PELVIS: Point = [-38, -30];
-const TUCK_KNEE_NEAR: Point = along(TUCK_PELVIS, -55, 88);
-const TUCK_KNEE_FAR: Point = along(TUCK_PELVIS, -53, 88);
+/** Mat top; the hands rest on it. */
+const TUCK_MAT_Y = -4;
+/** Shoulder to fingertips with the elbow locked (upper arm + forearm + hand). */
+const LOCKED_ARM = 126;
+/** A thin mat under the hands, so the gap under the seat and feet reads. */
+const TUCK_MAT: Prop = { kind: "box", x: -90, y: TUCK_MAT_Y, w: 170, h: 4 };
 
-/** Straight arms down to the floor, hips clear of the floor, chest pinned so the back rounds. */
-function tuckBase(): Pose {
-  return {
-    pelvis: TUCK_PELVIS,
-    chest: [-4, -101],
-    spine: { bend: -1 },
-    hands: { near: [42, 0], far: [38, 0] },
+/**
+ * Tuck L-sit hold, side view: torso upright, locked arms straight down beside
+ * the hips, seat lifted just off the mat, thighs pulled up toward the chest
+ * and shins hanging so the feet stay clear. `squeeze` draws the knees higher.
+ */
+function tuckLSit(squeeze: 0 | 1): Pose {
+  const pelvis: Point = [0, -26];
+  const knee = along(pelvis, squeeze ? -66 : -60, 88);
+  const ankle = along(knee, 85, 86);
+  const base: Pose = {
+    pelvis,
+    // Torso leans back a touch, so the arm angles forward to the hands.
+    chest: [-8, -105],
+    knees: { near: { at: knee }, far: { at: knee } },
+    feet: { near: ankle, far: ankle },
+    toes: { near: 20, far: 20 },
   };
+  // A locked arm from the shoulder lands on the mat just ahead of the hips; the elbow sits on that line.
+  const shoulder = solvePose(base).arms.near.root;
+  const drop = TUCK_MAT_Y - shoulder[1];
+  const hand: Point = [round(shoulder[0] + Math.sqrt(LOCKED_ARM ** 2 - drop ** 2)), TUCK_MAT_Y];
+  const elbow = along(shoulder, angle(shoulder, hand), 60);
+  // Side view: both arms and both legs stack.
+  return { ...base, hands: { near: hand, far: hand }, elbows: { near: { at: elbow }, far: { at: elbow } } };
 }
 
 /** Head pushed through between the arms, forward of the arm line. */
 const PRESS_HEAD: Point = [92, -104];
 const PRESS_CHEST: Point = [60.5, -143.6];
 
-const KR_ROUND = 3.4;
-const KR_PELVIS: Point = [-25, -240];
-/** Raised thigh angle for the knee raise (above the hip). */
-const KR_THIGH = -42;
+/** Front-view hang with elbows and knees pinned on their straight lines, so nothing kinks. */
+const ACTIVE_HANG: Pose = {
+  ...frontBarHang(-201, 56, 174.75),
+  elbows: { near: { at: [-38.2, -356.8] }, far: { at: [38.2, -356.8] } },
+  knees: { near: { at: [-11, -113] }, far: { at: [11, -113] } },
+};
+
+/** Parallel-bar rail height for the knee raise: hanging feet stay well clear of the floor. */
+const KR_RAIL = -236;
 
 const SESSION_MOVE_SPECS: DoodleSpec[] = [
   {
@@ -261,51 +292,17 @@ const SESSION_MOVE_SPECS: DoodleSpec[] = [
     ],
   },
   {
-    id: "ntc_fire_hydrant",
-    slug: "fire-hydrant",
-    title: "Fire hydrant",
-    frames: [
-      { hold: 0.4, pose: allFours() },
-      {
-        hold: 0.6,
-        pose: {
-          ...allFours(),
-          // Knee lifts out from under the hip, bent 90 degrees, shin angled up and back.
-          knees: { near: { at: HYDRANT_KNEE } },
-          feet: { near: along(HYDRANT_KNEE, 240, 86), far: [-132, -4] },
-          toes: { near: 190, far: 180 },
-        },
-      },
-    ],
-  },
-  {
     id: "fedb_knee_hip_raise_on_parallel_bars",
     slug: "parallel-bar-knee-raise",
     title: "Knee raise on parallel bars",
-    props: [{ kind: "parallelBars", y: -216, x1: -40, x2: 170 }], // uprights clear of the knee swing
+    // Figure in the middle of the span; uprights well clear of the hanging legs and the knee raise.
+    props: [{ kind: "parallelBars", y: KR_RAIL, x1: -130, x2: 230 }],
+    transition: 0.9,
     frames: [
-      {
-        hold: 0.4,
-        pose: {
-          // Arms straight from the shoulders down to the rails, body hanging below, legs straight down.
-          ...dipSupport(0),
-          feet: { near: [-21, -72], far: [-27, -72] },
-          toes: { near: 70, far: 70 },
-        },
-      },
-      {
-        hold: 0.5,
-        pose: {
-          ...dipSupport(KR_ROUND),
-          // Thighs come up above hip height in front of the rail; shins hang; back rounds a little.
-          knees: { near: { at: kneeRaiseKnee(KR_THIGH) }, far: { at: kneeRaiseKnee(KR_THIGH + 3) } },
-          feet: {
-            near: along(kneeRaiseKnee(KR_THIGH), 112, 86),
-            far: along(kneeRaiseKnee(KR_THIGH + 3), 114, 86),
-          },
-          toes: { near: 80, far: 80 },
-        },
-      },
+      // Straight-arm support, legs hanging straight down in the air.
+      { hold: 0.5, pose: kneeRaise(false) },
+      // Knees up past hip height, shins hanging, pelvis curling up (back rounds a little).
+      { hold: 0.5, pose: kneeRaise(true) },
     ],
   },
   {
@@ -340,9 +337,9 @@ const SESSION_MOVE_SPECS: DoodleSpec[] = [
     slug: "prone-scapular-retraction",
     title: "Prone scapular retraction",
     frames: [
-      // Hands beside the hips; at the squeeze the chest and hands lift a touch.
-      { hold: 0.5, pose: lyingFaceDown(-30, proneHands(-30, -4)) },
-      { hold: 0.6, pose: lyingFaceDown(-38, proneHands(-38, -10)) },
+      // Arms long by the sides, hands on the floor; with the squeeze the straight arms lift ~18°.
+      { hold: 0.5, pose: proneRetraction(0) },
+      { hold: 0.7, pose: proneRetraction(1) },
     ],
   },
   {
@@ -359,11 +356,14 @@ const SESSION_MOVE_SPECS: DoodleSpec[] = [
     id: "ntc_reverse_snow_angel",
     slug: "reverse-snow-angel",
     title: "Reverse snow angel",
+    // Seen from above: straight arms sweep just off the floor from the hips, out through a T, to overhead.
+    view: "front",
     transition: 0.6,
     frames: [
-      // Hands slide along the floor from the hips to overhead, arms long and low; the elbows fold under the chest on the way.
-      { hold: 0.4, pose: snowAngel(-1) },
-      { hold: 0.5, pose: snowAngel(1) },
+      { hold: 0.4, pose: proneFromAbove(172) },
+      { hold: 0.05, pose: proneFromAbove(90) },
+      { hold: 0.5, pose: proneFromAbove(22) },
+      { hold: 0.05, pose: proneFromAbove(90) },
     ],
   },
   {
@@ -407,47 +407,22 @@ const SESSION_MOVE_SPECS: DoodleSpec[] = [
     props: [{ kind: "bar", y: -420, x1: -150, x2: 150, grips: [-56, 56] }],
     transition: 1.3,
     frames: [
-      // Passive: arms fully long. Active: shoulders pull down, the body rises a few units.
-      // Passive: shoulders shrugged up around the ears, head sunk.
-      { hold: 0.8, pose: { ...frontBarHang(-201, 56, 172), head: [0, -332] } },
-      {
-        hold: 1.2,
-        pose: {
-          // Active: shoulders drawn down away from the ears, so the head rises 5 and the hips and
-          // legs lift 6 as the lumbar spine curves; arms stay straight.
-          ...frontBarHang(-207, 56, 172),
-          pelvis: [20, -207],
-          chest: [0, -281],
-          feet: { near: [-12, -40], far: [12, -40] },
-        },
-      },
+      // Passive: shoulders shrugged up around the ears, head sunk. Active: shoulders drawn down,
+      // the head rises out of them. Arms stay locked and the legs hang straight and still
+      // (the shoulder-blade drop itself is shown in the zoomed inset).
+      { hold: 0.8, pose: { ...ACTIVE_HANG, head: [0, -332] } },
+      { hold: 1.6, pose: { ...ACTIVE_HANG, head: [0, -337] } },
     ],
   },
   {
     id: "wger_1704",
     slug: "tuck-l-sit",
     title: "Tuck L-sit",
+    props: [TUCK_MAT],
     transition: 1.1,
     frames: [
-      {
-        hold: 0.5,
-        pose: {
-          // Floor L-sit prep: hands on the floor beside and just ahead of the hips, arms straight, hips lifted, feet on the floor.
-          ...tuckBase(),
-          feet: { near: [74, -4], far: [70, -4] },
-          toes: { near: 0, far: 0 },
-        },
-      },
-      {
-        hold: 1.2,
-        pose: {
-          // Hips stay lifted; knees pulled up to the chest, shins tucked back, feet off the floor, back rounded.
-          ...tuckBase(),
-          knees: { near: { at: TUCK_KNEE_NEAR }, far: { at: TUCK_KNEE_FAR } },
-          feet: { near: along(TUCK_KNEE_NEAR, 100, 86), far: along(TUCK_KNEE_FAR, 102, 86) },
-          toes: { near: 30, far: 30 },
-        },
-      },
+      { hold: 1.4, pose: tuckLSit(0) },
+      { hold: 0.8, pose: tuckLSit(1) },
     ],
   },
   {
@@ -469,11 +444,12 @@ const SESSION_MOVE_SPECS: DoodleSpec[] = [
     id: "wger_2557",
     slug: "supported-split-squat",
     title: "Supported split squat",
-    props: [{ kind: "box", x: 100, y: -92, w: 60, h: 92 }],
-    transition: 1.2,
+    // A rep move: one hand on an upright (rack, door frame, chair back) for balance only.
+    props: [{ kind: "box", x: SPLIT_POST_X, y: -250, w: 8, h: 250 }],
+    transition: 1,
     frames: [
-      { hold: 0.5, pose: supportedSplit(-95) },
-      { hold: 0.5, pose: supportedSplit(-92) },
+      { hold: 0.4, pose: supportedSplit([-10, -150]) },
+      { hold: 0.4, pose: supportedSplit([-14, -104]) },
     ],
   },
   {
@@ -611,22 +587,6 @@ const SESSION_MOVE_SPECS: DoodleSpec[] = [
     ],
   },
   {
-    id: "ntc_floor_windshield_wiper",
-    slug: "floor-windshield-wiper",
-    title: "Floor windshield wiper",
-    transition: 0.3,
-    frames: [
-      { hold: 0.4, pose: lyingLegs(-88) },
-      { hold: 0.05, pose: lyingLegs(-65) },
-      { hold: 0.5, pose: lyingLegs(-35) },
-      { hold: 0.05, pose: lyingLegs(-65) },
-      { hold: 0.05, pose: lyingLegs(-88) },
-      { hold: 0.05, pose: lyingLegs(-108) },
-      { hold: 0.5, pose: lyingLegs(-130) },
-      { hold: 0.05, pose: lyingLegs(-108) },
-    ],
-  },
-  {
     id: "hf_110",
     slug: "hanging-leg-raise",
     title: "Hanging leg raise",
@@ -666,20 +626,13 @@ const SESSION_MOVE_SPECS: DoodleSpec[] = [
     slug: "toes-to-bar",
     title: "Toes to bar",
     props: [{ kind: "bar", y: -420, x1: -110, x2: 110, grips: [0] }],
-    transition: 0.3,
+    transition: 0.6,
     frames: [
-      { hold: 0.4, pose: hangingLegs(88, -34) },
-      { hold: 0.05, pose: hangingLegs(60, -34) },
-      { hold: 0.05, pose: hangingLegs(30, -34) },
-      { hold: 0.05, pose: toesMid(-1) },
-      { hold: 0.05, pose: toesMid() },
-      { hold: 0.05, pose: toesMid(1) },
-      { hold: 0.5, pose: toesToBar() },
-      { hold: 0.05, pose: toesMid(1) },
-      { hold: 0.05, pose: toesMid() },
-      { hold: 0.05, pose: toesMid(-1) },
-      { hold: 0.05, pose: hangingLegs(30, -34) },
-      { hold: 0.05, pose: hangingLegs(60, -34) },
+      // Dead hang, then straight legs forward to an L, then hips back and up into a pike, toes at the bar.
+      { hold: 0.4, pose: toesToBarPose([0, -196], along([0, -196], 89, 173.85)) },
+      { hold: 0.05, pose: toesToBarPose([-6, -198], along([-6, -198], 0, 173.85)) },
+      { hold: 0.5, pose: toesToBarPose([-80, -258], [12, -402], -20) },
+      { hold: 0.05, pose: toesToBarPose([-6, -198], along([-6, -198], 0, 173.85)) },
     ],
   },
   {
@@ -712,14 +665,9 @@ const SESSION_MOVE_SPECS: DoodleSpec[] = [
     slug: "hip-circles",
     title: "Hip circles",
     replaces: true,
-    view: "front",
-    transition: 0.4,
-    frames: [
-      { hold: 0.1, pose: hipCircle(-20, -171) },
-      { hold: 0.1, pose: hipCircle(0, -174) },
-      { hold: 0.1, pose: hipCircle(20, -171) },
-      { hold: 0.1, pose: hipCircle(0, -173) },
-    ],
+    // Side view: the circle reads as hips pushed forward, then the bottom swept out behind.
+    transition: 0.35,
+    frames: HIP_CIRCLE_STEPS.map((step) => ({ hold: 0, pose: hipCircle(step) })),
   },
   {
     id: "ankle_rocks",
@@ -779,7 +727,7 @@ const SESSION_MOVE_SPECS: DoodleSpec[] = [
 ];
 
 /** Session moves, then warm-up drills, then cool-down stretches. */
-export const DOODLE_SPECS: DoodleSpec[] = [...SESSION_MOVE_SPECS, ...WARMUP_DRILL_SPECS, ...STRETCH_SPECS, ...BATCH_A_SPECS, ...BATCH_B_SPECS, ...BATCH_C_SPECS, ...BATCH_D_SPECS, ...BATCH_E_SPECS, ...BATCH_F_SPECS];
+export const DOODLE_SPECS: DoodleSpec[] = [...SESSION_MOVE_SPECS, ...WARMUP_DRILL_SPECS, ...STRETCH_SPECS, ...BATCH_A_SPECS, ...BATCH_B_SPECS, ...BATCH_C_SPECS, ...BATCH_D_SPECS, ...BATCH_E_SPECS, ...BATCH_F_SPECS, ...BATCH_G_SPECS, ...BATCH_H_SPECS, ...BATCH_I_SPECS, ...BATCH_J_SPECS];
 
 /** Lying on the back, straight legs pivoting at the hips; `deg` is the leg angle (-88 up, -6 near the floor). */
 function lyingLegs(deg: number): Pose {
@@ -819,30 +767,30 @@ function hangingLegs(deg: number, headX = 34): Pose {
   };
 }
 
-/** Toes meeting the bar: torso leaning back, body piked, arms pulling. */
-function toesToBar(): Pose {
-  const pelvis: Point = [-78, -252];
-  return {
-    pelvis,
-    chest: along(pelvis, -66, 80),
-    head: along(along(pelvis, -66, 80), -110, 55),
-    hands: { near: [4, -420], far: [0, -420] },
-    feet: { near: [8, -400], far: [4, -400] },
-    toes: { near: -90, far: -90 },
-  };
-}
-
-/** Halfway up to the bar: hips tucked back, head ducked behind the arms. */
-function toesMid(t = 0): Pose {
-  const pelvis: Point = [-40 - 20 * t, -224 - 14 * t];
-  const chest = along(pelvis, -77 + 8 * t, 80);
+/**
+ * Toes to bar, facing +x throughout: straight arms, the spine leaning from the
+ * hands; straight legs rise forward from the hips to `ankle`. The head looks
+ * forward (+x), tilted a little off the spine line so it clears the arms.
+ */
+function toesToBarPose(pelvis: Point, ankle: Point, toe?: number): Pose {
+  const hand: Point = [2, -420];
+  // Shoulder 98 from the pelvis and an arm's length (125.6) from the bar: the solution in front, under the bar.
+  const d = Math.hypot(hand[0] - pelvis[0], hand[1] - pelvis[1]);
+  const along1 = (98 ** 2 - 125.6 ** 2 + d ** 2) / (2 * d);
+  const h = Math.sqrt(Math.max(0, 98 ** 2 - along1 ** 2));
+  const u: Point = [(hand[0] - pelvis[0]) / d, (hand[1] - pelvis[1]) / d];
+  const shoulder: Point = [pelvis[0] + u[0] * along1 - u[1] * h, pelvis[1] + u[1] * along1 + u[0] * h];
+  const spine = angle(pelvis, shoulder);
+  const chest = along(pelvis, spine, 80);
+  const legDeg = angle(pelvis, ankle);
   return {
     pelvis,
     chest,
-    head: along(chest, -125 + 10 * t, 54),
-    hands: { near: [4, -420], far: [0, -420] },
-    feet: { near: along(pelvis, -62 + 3 * t, 173), far: along(pelvis, -63 + 3 * t, 172.8) },
-    toes: { near: -62, far: -62 },
+    // Head up and forward, clear of the arms.
+    head: along(chest, Math.min(spine + 40, -40), 54),
+    hands: { near: [hand[0] + 2, hand[1]], far: [hand[0] - 2, hand[1]] },
+    feet: { near: ankle, far: along(pelvis, legDeg - 1, Math.min(173.85, Math.hypot(ankle[0] - pelvis[0], ankle[1] - pelvis[1]))) },
+    toes: { near: toe ?? legDeg, far: toe ?? legDeg },
   };
 }
 
@@ -859,21 +807,28 @@ function wiperLegs(deg: number): Pose {
   };
 }
 
-/** Inverted against a wall: hands on the floor, body leaning back so the heels rest on the wall. */
-function wallHandstand(nod: 0 | 1): Pose {
-  const hand: Point = [52, 0];
-  const shoulder: Point = [52, -126];
-  const dir = -94.2;
+/**
+ * Chest-to-wall handstand: hands planted well out from the wall (face at
+ * x = 31), arms straight and vertical, body in one straight line leaning in
+ * so the toes rest on the wall, head tucked between the arms on the wall side.
+ * `push` presses the floor away a little (shoulders open, head clears the floor).
+ */
+function wallHandstand(push: 0 | 1): Pose {
+  const hand: Point = [92, 0];
+  const shoulder = along(hand, -91, 125.9);
+  // Straight line shoulder → hips → ankles; the ankle sits a foot's length off the wall.
+  const dir = -98.2;
   const pelvis = along(shoulder, dir, 98);
+  const ankle = along(pelvis, dir, 173.85);
   const chest = along(pelvis, dir + 180, 80);
   return {
     pelvis,
     chest,
-    // Head between the arms (Opus review: was hanging 38 units in front of them).
-    head: nod ? [77, -100] : [75, -97],
-    hands: { near: hand, far: [hand[0] - 2, 0] },
-    feet: { near: along(pelvis, dir, 174), far: along(pelvis, dir, 174) },
-    toes: { near: -75, far: -75 },
+    head: along(along(shoulder, dir + 180, 30 - push * 3), dir - 90, 24),
+    hands: { near: hand, far: hand },
+    elbows: { near: { at: along(shoulder, 89, 60) }, far: { at: along(shoulder, 89, 60) } },
+    feet: { near: ankle, far: ankle },
+    toes: { near: 180, far: 180 },
   };
 }
 
@@ -909,17 +864,23 @@ function marchStand(): Pose {
   };
 }
 
-/** Front-view standing, hands on hips, pelvis at (x, y); feet planted. */
-function hipCircle(x: number, y: number): Pose {
+/**
+ * Side-view standing, hands on hips, knees soft, feet planted. At `phase` 0
+ * the hips are pushed forward, at π they sit back with the bottom out; the
+ * shoulders lean the other way so they stay roughly over the feet.
+ */
+function hipCircle(phase: number): Pose {
+  const x = round(Math.cos(phase) * HIP_CIRCLE_REACH);
+  const pelvis: Point = [x, round(-168 + Math.abs(Math.sin(phase)) * HIP_CIRCLE_DIP)];
+  const chest = chestToward(pelvis, [round(-x * 0.9), pelvis[1] - 98]);
   return {
-    pelvis: [x, y],
-    chest: [round(-x * 0.25), round(y - Math.sqrt(6400 - (x * 1.25) ** 2))],
-    hands: { near: [x - 34, y - 12], far: [x + 34, y - 12] },
-    elbows: { near: { bend: 1 }, far: { bend: -1 } },
-    // Knees bow outward symmetrically (otherwise they cross at the side positions).
-    knees: { near: { bend: 1 }, far: { bend: -1 } },
-    feet: { near: [-14, 0], far: [14, 0] },
-    toes: { near: 180, far: 0 },
+    pelvis,
+    chest,
+    hands: { near: [pelvis[0] + 2, pelvis[1] - 16], far: [pelvis[0] - 2, pelvis[1] - 16] },
+    elbows: { near: { bend: 1 }, far: { bend: 1 } },
+    knees: { near: { bend: -1 }, far: { bend: -1 } },
+    feet: { near: [6, 0], far: [0, 0] },
+    toes: { near: 0, far: 0 },
   };
 }
 
@@ -1020,22 +981,23 @@ function lyingFaceDown(shoulderY: number, hands: Pose["hands"]): Pose {
   };
 }
 
-/** Hands beside the hips at height `handY`, arms long (near 123, far 125 from the shoulder). */
-function proneHands(shoulderY: number, handY: number): Pose["hands"] {
-  const pelvis: Point = [-20, -12];
-  const s = shoulderOf(pelvis, chestToward(pelvis, [78, shoulderY]));
-  const reach = (r: number): Point => [round(s[0] - Math.sqrt(r * r - (s[1] - handY) ** 2)), handY];
-  return { near: reach(125.6), far: reach(125.9) };
-}
-
-/** Prone with chest and head lifted; hands on the floor either by the hips (-1) or reaching overhead under the head (1). */
-function snowAngel(side: -1 | 1): Pose {
-  const base: Pose = { ...lyingFaceDown(-70, {}), head: SNOW_HEAD };
+/**
+ * Face down, arms straight by the sides. At rest the hands lie on the floor
+ * beside the hips; with the shoulder-blade squeeze the arms lift 18° off the
+ * floor (and the chest a touch), so they read as their own line above the body.
+ */
+function proneRetraction(lift: 0 | 1): Pose {
+  const base = lyingFaceDown(lift ? -28 : -24, {});
   const shoulder = solvePose(base).arms.near.root;
-  const handY = -7;
-  const dx = Math.sqrt(125.3 ** 2 - (shoulder[1] - handY) ** 2);
-  const x = round(shoulder[0] + side * dx);
-  return { ...base, hands: { near: [x, handY], far: [x - 1, handY] }, elbows: { near: { bend: 1 }, far: { bend: 1 } } };
+  const rest = 180 - (Math.asin((-3 - shoulder[1]) / 125.9) * 180) / Math.PI;
+  const deg = lift ? rest + 18 : rest;
+  const hand = along(shoulder, deg, 125.9);
+  const elbow = along(shoulder, deg, 60);
+  return {
+    ...base,
+    hands: { near: hand, far: hand },
+    elbows: { near: { at: elbow }, far: { at: elbow } },
+  };
 }
 
 /** Forearms down, elbows under the shoulders, on the toes; `pelvisY` breathes the hold. */
@@ -1079,24 +1041,28 @@ function elbowLever(pelvisY: number, tilt: number): Pose {
   };
 }
 
-/** Pelvis for the knee raise; `round` pulls it towards the chest so the back rounds. */
-function krPelvis(round: number): Point {
-  const chest = chestToward(KR_PELVIS, [2, -334]);
-  const d = Math.hypot(chest[0] - KR_PELVIS[0], chest[1] - KR_PELVIS[1]);
-  return [KR_PELVIS[0] + ((chest[0] - KR_PELVIS[0]) / d) * round, KR_PELVIS[1] + ((chest[1] - KR_PELVIS[1]) / d) * round];
-}
-
-function kneeRaiseKnee(thigh: number): Point {
-  return along(krPelvis(KR_ROUND), thigh, 88);
-}
-
-/** Support on the parallel bars: arms straight and locked, shoulders behind the hands. */
-function dipSupport(round: number): Pose {
+/**
+ * Support between parallel bars: hands on the rail beside the hips, arms
+ * straight and vertical, torso nearly upright and still. `raised` lifts the thighs
+ * above horizontal with the shins hanging.
+ */
+function kneeRaise(raised: boolean): Pose {
+  const hand: Point = [48, KR_RAIL];
+  const shoulder: Point = [44, KR_RAIL - 125.8];
+  // Straight spine, chest leaning a touch forward over the hands so the arms read apart from the torso.
+  const chest = along(shoulder, 101, 18);
+  const pelvis = along(chest, 101, 80);
+  const legDeg = raised ? -32 : 90;
+  const knee = along(pelvis, legDeg, 88);
+  const ankle = raised ? along(knee, 100, 86) : along(pelvis, legDeg, 173.85);
   return {
-    pelvis: krPelvis(round),
-    chest: chestToward(KR_PELVIS, [2, -334]),
-    spine: { bend: -1 },
-    hands: { near: [47, -216], far: [43, -216] },
+    pelvis,
+    chest,
+    hands: { near: hand, far: [hand[0] - 3, hand[1]] },
+    // Side view: both legs stack.
+    knees: { near: { at: knee }, far: { at: knee } },
+    feet: { near: ankle, far: ankle },
+    toes: raised ? { near: 80, far: 80 } : { near: 60, far: 60 },
   };
 }
 
@@ -1115,30 +1081,31 @@ function frontBarHang(pelvisY: number, grip: number, legLength: number, elbows?:
   };
 }
 
-/** Standing pike, hands on the floor in front of the feet. */
+/** Standing pike, hands on the floor in front of the feet, legs straight and together. */
 function pressPike(): Pose {
-  const pelvis: Point = [-20, -170];
+  const ankle: Point = [-30, -4];
   return {
-    pelvis,
+    pelvis: along(ankle, -87, 173.4),
     hands: { near: [56, 0], far: [52, 0] },
-    feet: { near: [-34, 0], far: [-30, 0] },
+    feet: { near: ankle, far: [ankle[0] + 3, ankle[1]] },
     toes: { near: 0, far: 0 },
   };
 }
 
-/** Shoulders pushed over the hands, arms straight, feet just leaving the floor. */
+/** Shoulders pushed forward over the hands, arms straight, up on the toes, legs still straight. */
 function pressLean(): Pose {
-  const pelvis: Point = [-10, -176];
+  const ankle: Point = [-30, -12];
+  const pelvis = along(ankle, -79, 173.4);
   return {
     pelvis,
-    chest: [58.2, -134.2],
+    chest: chestToward(pelvis, [72, -126]),
     hands: { near: [56, 0], far: [52, 0] },
-    feet: { near: [-24, -14], far: [-20, -14] },
-    toes: { near: 40, far: 40 },
+    feet: { near: ankle, far: [ankle[0] + 3, ankle[1]] },
+    toes: { near: 30, far: 30 },
   };
 }
 
-/** Hips stacked over the hands, straight legs rising behind towards vertical. */
+/** Hips stacked over the shoulders first; both straight legs still piked low, feet just off the floor. */
 function pressHipsOver(): Pose {
   const pelvis: Point = [54, -223.5];
   return {
@@ -1146,8 +1113,8 @@ function pressHipsOver(): Pose {
     chest: PRESS_CHEST,
     head: PRESS_HEAD,
     hands: { near: [52, -1], far: [50, -1.5] },
-    feet: { near: along(pelvis, -131, 173.5), far: along(pelvis, -132, 173) },
-    toes: { near: -60, far: -60 },
+    feet: { near: along(pelvis, 124, 173.5), far: along(pelvis, 123, 173.5) },
+    toes: { near: 124, far: 123 },
   };
 }
 
@@ -1164,14 +1131,14 @@ function handstand(): Pose {
 }
 
 /** Split stance with the near hand resting on a box; the back knee is solved just above the floor. */
-function supportedSplit(pelvisY: number): Pose {
-  const pelvis: Point = [0, pelvisY];
+function supportedSplit(pelvis: Point): Pose {
+  // Torso upright; the near hand slides on the upright at chest height, the other rests on the hip.
   return {
     pelvis,
-    // Torso upright, with a slight lean so the hand reaches the box.
-    chest: along(pelvis, -72, 80),
-    hands: { near: [108, -92], far: [107, -92] },
-    feet: { near: [70, 0], far: [-96, -20] },
+    chest: [pelvis[0], pelvis[1] - 80],
+    hands: { near: [SPLIT_POST_X, pelvis[1] - 40], far: [pelvis[0] + 8, pelvis[1] - 14] },
+    elbows: { far: { bend: 1 } },
+    feet: { near: [44, 0], far: [-112, -20] },
     toes: { near: 0, far: 80 },
   };
 }

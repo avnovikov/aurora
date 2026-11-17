@@ -40,31 +40,55 @@ function straightBody(ankle: Point, deg: number): Pick<Pose, "pelvis" | "chest">
 
 // ---------------------------------------------------------------- bear plank
 
-/** All fours on the toes; `hover` lifts the knees off the floor with the back level. */
-function bearPlank(hover: boolean): Pose {
-  const pelvis: Point = hover ? [-50, -108] : [-50, -92];
-  const knee: Point = [-50, pelvis[1] + 88];
-  const shin = hover ? 178 : 186;
+/**
+ * Bear plank: hands and tucked toes on the floor, thighs vertical under the
+ * hips, knees bent ~90° and hovering just off the floor, back level. `lift`
+ * raises the knees a little higher for the small pulse.
+ */
+function bearPlank(lift: boolean): Pose {
+  const kneeY = lift ? -36 : -28;
+  const pelvis: Point = [-50, kneeY - 88];
+  const knee: Point = [-50, kneeY];
+  const farKnee: Point = [knee[0] + 3, knee[1]];
+  // Shin slopes down to the ankle; the ankle sits ~16 up on the tucked toes.
+  const shin = 180 - (Math.asin((-16 - kneeY) / 86) * 180) / Math.PI;
   const ankle = along(knee, shin, 86);
   // Toes tucked under: the ball of the foot stays on the floor.
   const toe = (Math.asin(Math.min(1, (-2 - ankle[1]) / 20)) * 180) / Math.PI;
   return {
     pelvis,
     hands: { near: [48, 0], far: [44, 0] },
-    knees: { near: { at: knee }, far: { at: [knee[0] + 3, knee[1]] } },
-    feet: { near: ankle, far: along([knee[0] + 3, knee[1]], shin, 86) },
+    knees: { near: { at: knee }, far: { at: farKnee } },
+    feet: { near: ankle, far: along(farKnee, shin, 86) },
     toes: { near: round(toe), far: round(toe) },
   };
 }
 
 // ---------------------------------------------------------------- pike hold
 
-function pikeHold(pelvisY: number): Pose {
+const PIKE_HAND: Point = [60, 0];
+const PIKE_ANKLE: Point = [-118, -6];
+
+/**
+ * Inverted V: straight legs from the feet up to the hips at the apex, a
+ * straight back and straight arms in one line down to the hands, head
+ * between the arms. `tuck` draws the head a little further in (a breath in the hold).
+ */
+function pikeHold(tuck: number): Pose {
+  // Hips 98 + a locked arm (126) from the hands so back and arms form one straight line.
+  const pelvis = meet(PIKE_ANKLE, LEG_REACH - 0.1, PIKE_HAND, SHOULDER_REACH + 125.95, -1);
+  const line = angle(pelvis, PIKE_HAND);
+  const shoulder = along(pelvis, line, SHOULDER_REACH);
   return {
-    pelvis: [-28, pelvisY],
-    hands: { near: [66, 0], far: [60, 0] },
-    feet: { near: [-78, 0], far: [-74, 0] },
-    toes: { near: 0, far: 0 },
+    pelvis,
+    chest: along(pelvis, line, 80),
+    // Head tucked between the arms, just inside the V.
+    head: along(along(shoulder, line, 30 + tuck), line + 90, 24),
+    hands: { near: PIKE_HAND, far: PIKE_HAND },
+    // Elbows on the shoulder–hand line: arms locked.
+    elbows: { near: { at: along(shoulder, line, 60) }, far: { at: along(shoulder, line, 60) } },
+    feet: { near: PIKE_ANKLE, far: PIKE_ANKLE },
+    toes: { near: 18, far: 18 },
   };
 }
 
@@ -108,20 +132,24 @@ const MID_HAND: Point = [MID_BAR[0] - 92, MID_BAR[1]];
 
 /**
  * Hanging face up under the bar from the hands and the hooked knees.
- * Bottom: arms straight down from the bar. Top: elbows bent and driven down, chest up to the bar.
+ * Bottom: arms straight down from the bar. Top: elbows bent and driven down, chest up under the bar,
+ * the head tipped back below it.
  */
 function midRow(top: boolean): Pose {
   // Top: chest at the bar, the shoulders just past the hands so the elbows drive down towards the feet.
-  const shoulder: Point = top ? [MID_HAND[0] - 22, MID_BAR[1] + 30] : [MID_HAND[0], round(MID_BAR[1] + ARM_REACH + 0.4)];
+  const shoulder: Point = top ? [MID_HAND[0] - 16, MID_BAR[1] + 46] : [MID_HAND[0], round(MID_BAR[1] + ARM_REACH + 0.4)];
   // Thighs hang from the hooked knees; the pelvis sits a torso from the shoulder.
   const pelvis = meet(MID_KNEE, 88, shoulder, SHOULDER_REACH, -1);
-  const chest = along(pelvis, angle(pelvis, shoulder), 80);
+  const spine = angle(pelvis, shoulder);
+  const chest = along(pelvis, spine, 80);
   // Shins fold back over the bar and hang down behind it.
   const shin = angle(MID_KNEE, pelvis) - 50;
   const farKnee: Point = along(pelvis, angle(pelvis, MID_KNEE) + 2, 88);
   return {
     pelvis,
     chest,
+    // Top: the head stays under the bar, tipped back past the hands (the chest, not the chin, comes to the bar).
+    head: top ? along(along(chest, spine, 20), spine - 40, 36) : undefined,
     hands: { near: MID_HAND, far: [MID_HAND[0] + 3, MID_HAND[1]] },
     // Bottom: elbows pinned on the hand-shoulder line so the arms hang dead straight.
     elbows: top
@@ -298,8 +326,8 @@ export const BATCH_A_SPECS: DoodleSpec[] = [
     title: "Bear plank hold",
     transition: 1,
     frames: [
-      { hold: 0.6, pose: bearPlank(false) },
-      { hold: 2, pose: bearPlank(true) },
+      { hold: 2, pose: bearPlank(false) },
+      { hold: 0.5, pose: bearPlank(true) },
     ],
   },
   {
@@ -308,8 +336,8 @@ export const BATCH_A_SPECS: DoodleSpec[] = [
     title: "Pike Hold (Floor)",
     transition: 1.6,
     frames: [
-      { hold: 1.2, pose: pikeHold(-166) },
-      { hold: 1.2, pose: pikeHold(-163) },
+      { hold: 1.2, pose: pikeHold(0) },
+      { hold: 1.2, pose: pikeHold(-4) },
     ],
   },
   {

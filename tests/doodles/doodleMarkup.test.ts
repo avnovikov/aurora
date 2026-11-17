@@ -44,7 +44,7 @@ describe("prefetchDoodles", () => {
     const samplesAfterPrefetch = spy.mock.calls.length;
     expect(samplesAfterPrefetch).toBeGreaterThan(0);
     doodleMarkup("glute_bridge", "Glute bridge");
-    expect(spy.mock.calls.length).toBe(samplesAfterPrefetch);
+    expect(spy.mock.calls).toHaveLength(samplesAfterPrefetch);
     spy.mockRestore();
     clearDoodleCache();
   });

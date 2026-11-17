@@ -46,17 +46,6 @@ function singleLegBridge(pelvisY: number, heelX: number): Pose {
   };
 }
 
-/** Lying on the back, straight legs raised at `deg` (-90 vertical) with the knees together. */
-function legsUp(deg: number): Pose {
-  const base = lyingFaceUp([-12, -20]);
-  const pelvis = base.pelvis as Point;
-  return {
-    ...base,
-    feet: { near: along(pelvis, deg, 173.9), far: along(pelvis, deg - 1, 173.4) },
-    toes: { near: deg, far: deg },
-  };
-}
-
 // ---------------------------------------------------------------- L-sit and pike compression
 
 const LSIT_HANDS = { near: [-20, 0] as Point, far: [-24, 0] as Point };
@@ -258,18 +247,6 @@ export const BATCH_D_SPECS: DoodleSpec[] = [
     frames: [
       { hold: 0.4, pose: pikeCompression(0) },
       { hold: 0.6, pose: pikeCompression(14) },
-    ],
-  },
-  {
-    id: "wger_1909",
-    slug: "leg-wheel",
-    title: "Leg Wheel",
-    transition: 0.35,
-    frames: [
-      { hold: 0.05, pose: legsUp(-80) },
-      { hold: 0.05, pose: legsUp(-88) },
-      { hold: 0.05, pose: legsUp(-96) },
-      { hold: 0.05, pose: legsUp(-88) },
     ],
   },
   {

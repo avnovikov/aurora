@@ -109,13 +109,26 @@ function childsPose(breathe: number): Pose {
   };
 }
 
-/** Standing, one arm straight out at shoulder height, fingers drawn back by the other hand. */
-function wristStretch(pull: number, breathe: number): Pose {
+/**
+ * Standing, the near arm straight out at shoulder height; the wrist bends so
+ * the fingers point `wrist` degrees (0 = in line, 90 = straight down, more =
+ * drawn back towards the body) and the other hand holds the fingers.
+ */
+function wristStretch(wrist: number): Pose {
   const pelvis: Point = [0, -170];
+  // Shoulder at [0, -268]; forearm end (wrist) 118 straight ahead of it.
+  const wristJoint: Point = [117.9, -268];
+  const r = (wrist * Math.PI) / 180;
+  const fingers: Point = [round(wristJoint[0] + 8 * Math.cos(r)), round(wristJoint[1] + 8 * Math.sin(r))];
+  // The other hand cups the fingers from in front (kept within an arm's reach of its shoulder).
+  const grip: Point = [fingers[0] + 3, fingers[1] + 2];
+  const reach = Math.hypot(grip[0], grip[1] + 268);
+  const far: Point = reach > 121 ? [round((grip[0] * 121) / reach), round(-268 + ((grip[1] + 268) * 121) / reach)] : grip;
   return {
     pelvis,
-    chest: [0 + breathe, -250],
-    hands: { near: [122, -262], far: [round(124 - pull), -258] },
+    chest: [0, -250],
+    hands: { near: wristJoint, far },
+    wrists: { near: wrist },
     feet: { near: [0, 0], far: [-4, 0] },
     toes: { near: 0, far: 0 },
   };
@@ -137,30 +150,31 @@ function forearmStretch(back: number): Pose {
   };
 }
 
-const ALL_FOURS_PELVIS: Point = [-50, -92];
-const ALL_FOURS_LEGS = {
-  feet: { near: [-136, -4], far: [-132, -4] } as Pose["feet"],
-  toes: { near: 180, far: 180 } as Pose["toes"],
-};
-
+/**
+ * Doorway seen from the front: the figure stands in it, already stepped
+ * through, so the frame is behind and beside the shoulders. A side view can't
+ * show this: a forearm up the frame behind the shoulder draws as an elbow
+ * bending backwards.
+ */
 const DOOR: { kind: "box"; x: number; y: number; w: number; h: number } = {
   kind: "box",
-  x: 62,
-  y: -400,
-  w: 14,
-  h: 400,
+  x: -88,
+  y: -430,
+  w: 176,
+  h: 430,
 };
 
-/** Forearm up the door frame, elbow at shoulder height, stepping through. */
-function doorwayPec(sx: number, sy: number): Pose {
-  const pelvis: Point = [sx, sy + 98];
+/** Near forearm vertical on the frame, elbow at shoulder height; the free arm hangs (`sway` drifts it a little while holding). */
+function doorwayPec(sway: number): Pose {
+  const shoulderY = -272;
+  const elbow: Point = [-82, shoulderY];
   return {
-    pelvis,
-    chest: [sx, sy + 18],
-    hands: { near: [52, -334], far: [52, -334] },
-    elbows: { near: { at: [52, -268] }, far: { at: [52, -268] } },
-    feet: { near: [34, 0], far: [-50, 0] },
-    toes: { near: 0, far: 0 },
+    pelvis: [0, -174],
+    chest: [0, -254],
+    hands: { near: [elbow[0], shoulderY - 66], far: [36 + sway, -150] },
+    elbows: { near: { at: elbow }, far: { bend: -1 } },
+    feet: { near: [-16, 0], far: [16, 0] },
+    toes: { near: 180, far: 0 },
   };
 }
 
@@ -228,9 +242,8 @@ export const STRETCH_SPECS: DoodleSpec[] = [
     title: "Wrist stretch",
     transition: 1.2,
     frames: [
-      { hold: 0.5, pose: wristStretch(0, 0) },
-      { hold: 1.2, pose: wristStretch(10, 4) },
-      { hold: 1.2, pose: wristStretch(14, -2) },
+      { hold: 0.6, pose: wristStretch(10) },
+      { hold: 1.8, pose: wristStretch(112) },
     ],
   },
   {
@@ -245,90 +258,15 @@ export const STRETCH_SPECS: DoodleSpec[] = [
     ],
   },
   {
-    id: "ntc_thread_the_needle",
-    slug: "thread-the-needle",
-    title: "Thread the needle",
-    transition: 1.4,
-    frames: [
-      {
-        hold: 0.4,
-        pose: {
-          pelvis: ALL_FOURS_PELVIS,
-          hands: { near: [48, 0], far: [44, 0] },
-          ...ALL_FOURS_LEGS,
-        },
-      },
-      {
-        hold: 0.6,
-        pose: {
-          pelvis: ALL_FOURS_PELVIS,
-          chest: [26, -66],
-          hands: { near: [-25, -4], far: [44, 0] },
-          ...ALL_FOURS_LEGS,
-        },
-      },
-      {
-        hold: 0.3,
-        pose: {
-          pelvis: ALL_FOURS_PELVIS,
-          chest: [28, -84],
-          hands: { near: [-70, -100], far: [44, 0] },
-          elbows: { near: { bend: 1 } },
-          ...ALL_FOURS_LEGS,
-        },
-      },
-      {
-        hold: 0.3,
-        pose: {
-          pelvis: ALL_FOURS_PELVIS,
-          chest: [30, -94],
-          hands: { near: [-40, -180], far: [44, 0] },
-          elbows: { near: { bend: 1 } },
-          ...ALL_FOURS_LEGS,
-        },
-      },
-      {
-        hold: 0.8,
-        pose: {
-          pelvis: ALL_FOURS_PELVIS,
-          chest: [30, -100],
-          hands: { near: [40, -226], far: [44, 0] },
-          elbows: { near: { bend: 1 } },
-          ...ALL_FOURS_LEGS,
-        },
-      },
-      {
-        hold: 0.1,
-        pose: {
-          pelvis: ALL_FOURS_PELVIS,
-          chest: [30, -94],
-          hands: { near: [-40, -180], far: [44, 0] },
-          elbows: { near: { bend: 1 } },
-          ...ALL_FOURS_LEGS,
-        },
-      },
-      {
-        hold: 0.1,
-        pose: {
-          pelvis: ALL_FOURS_PELVIS,
-          chest: [28, -84],
-          hands: { near: [-70, -100], far: [44, 0] },
-          elbows: { near: { bend: 1 } },
-          ...ALL_FOURS_LEGS,
-        },
-      },
-    ],
-  },
-  {
     id: "wger_1713",
     slug: "doorway-pectoral-stretch",
     title: "Doorway pectoral stretch",
+    view: "front",
     props: [DOOR],
-    transition: 1.4,
+    transition: 1.2,
     frames: [
-      { hold: 0.5, pose: doorwayPec(-8, -266) },
-      { hold: 1.2, pose: doorwayPec(-6.8, -256) },
-      { hold: 1.2, pose: doorwayPec(-7.6, -261) },
+      { hold: 1.2, pose: doorwayPec(0) },
+      { hold: 1.2, pose: doorwayPec(-4) },
     ],
   },
 ];

@@ -287,6 +287,13 @@ export function validateSpec(spec: DoodleSpec): SpecReport {
     (pose, i) => !timeline.keyframeIndex.includes(i) && belowFloor(pose).length > 0,
   ).length;
 
+  // An unsolvable pin can leave NaN joints, which every distance check above silently passes.
+  const nonFinite = timeline.poses.filter((pose) =>
+    figurePoints(pose).some(({ point }) => !Number.isFinite(point[0]) || !Number.isFinite(point[1])),
+  ).length;
+  if (nonFinite > 0) {
+    errors.push(`${nonFinite} sampled poses have non-finite joints`);
+  }
   if (maxBoneLengthErrorAllSamples > BONE_TOLERANCE) {
     errors.push(`bone length error ${maxBoneLengthErrorAllSamples} > ${BONE_TOLERANCE}`);
   }

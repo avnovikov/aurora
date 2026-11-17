@@ -1,10 +1,11 @@
 import { solveJoint } from "./rig";
 import type { DoodleSpec, Point, Pose } from "./rig";
+import { SIDE_LYING_FLOOR, SL_FOOT_BOTTOM, SL_FOOT_TOP, SL_KNEE_BOTTOM, SL_KNEE_TOP, sideLying } from "./specsWarmup";
 
 /**
  * Batch B: bar and bodyweight moves from section 2 of docs/doodles-to-prepare.md,
  * posed from their catalogue descriptions. Floor at y = 0, up is negative, facing +x.
- * Import only from ./rig — never from ./specs (that would be circular).
+ * Import only from ./rig and other batch files — never from ./specs (that would be circular).
  */
 
 /** Point `length` from `from` at `degrees` (0 = +x, 90 = down, -90 = up). */
@@ -45,95 +46,58 @@ function straightBody(ankle: Point, shoulderY: number): { pelvis: Point; chest: 
   return { pelvis: toward(ankle, shoulder, 174), chest: toward(ankle, shoulder, 254), shoulder };
 }
 
-// ---------------------------------------------------------------- clamshells (front view, head left)
+// ---------------------------------------------------------------- reverse clamshell (front view, head left)
 
 /**
- * Side-lying in the front view (as ntc_clamshell): the hips stack 16 apart,
- * near = bottom side, far = top side, both legs drawn so the knees and feet read separately.
- */
-const CLAM_PELVIS: Point = [0, -24];
-const CLAM_BOTTOM_HIP: Point = [CLAM_PELVIS[0], CLAM_PELVIS[1] + 8];
-const CLAM_TOP_HIP: Point = [CLAM_PELVIS[0], CLAM_PELVIS[1] - 8];
-/** Bottom leg rests on the floor: hips and knees bent, the foot back on the floor. */
-const CLAM_KNEE: Point = along(CLAM_BOTTOM_HIP, -40, 88);
-const CLAM_FOOT: Point = along(CLAM_KNEE, (Math.asin((-4 - CLAM_KNEE[1]) / 86) * 180) / Math.PI, 86);
-/** Top knee resting on the bottom knee. */
-const CLAM_KNEE_TOP: Point = along(CLAM_TOP_HIP, angle(CLAM_TOP_HIP, [CLAM_KNEE[0], CLAM_KNEE[1] - 9]), 88);
-/** Top foot resting on the bottom foot. */
-const CLAM_FOOT_TOP: Point = along(CLAM_KNEE_TOP, angle(CLAM_KNEE_TOP, [CLAM_FOOT[0], CLAM_FOOT[1] - 9]), 86);
-const CLAM_SHOULDER_BOTTOM: Point = [-98, -2];
-const CLAM_SHOULDER_TOP: Point = [-98, -46];
-
-/**
- * Rest stacks the legs; `footUp` lifts the top foot with the knees together
- * (reverse clamshell). The top shin turns up about the knee and stays clearly bent.
+ * Shared side-lying base (specsWarmup): knees bent and stacked. `footUp` keeps
+ * the knees together and turns the top shin up about the knee, so the top foot
+ * rises towards the ceiling.
  */
 function clam(footUp: boolean): Pose {
-  const foot = footUp ? along(CLAM_KNEE_TOP, 24, 86) : CLAM_FOOT_TOP;
-  return {
-    pelvis: CLAM_PELVIS,
-    chest: [-80, CLAM_PELVIS[1]],
-    head: [-134, -40],
-    spine: { bend: -1 },
-    // Bottom arm straight overhead along the floor as a pillow; top arm long along the top side.
-    hands: { near: along(CLAM_SHOULDER_BOTTOM, 180, 125.5), far: along(CLAM_SHOULDER_TOP, 3, 125.5) },
-    knees: { near: { at: CLAM_KNEE }, far: { at: CLAM_KNEE_TOP } },
-    feet: { near: CLAM_FOOT, far: foot },
-    toes: { near: 0, far: 0 },
-  };
+  return sideLying({
+    knees: { near: { at: SL_KNEE_BOTTOM }, far: { at: SL_KNEE_TOP } },
+    feet: { near: SL_FOOT_BOTTOM, far: footUp ? along(SL_KNEE_TOP, -45, 86) : SL_FOOT_TOP },
+  });
 }
 
 // ---------------------------------------------------------------- crow pose
 
-const CROW_HANDS: Pose["hands"] = { near: [80, 0], far: [78, 0] };
-/** Balanced: elbows bent over the wrists, upper arms angled up and forward to the shoulders. */
-const CROW_ELBOW: Point = [63, -64];
-const CROW_SHOULDER: Point = along(CROW_ELBOW, -55, 60);
-/** Hips high behind the shoulders, back rounded forward. */
-const CROW_PELVIS: Point = along(CROW_SHOULDER, 205, 98);
-/** Knee resting on the back of the upper arm, just above the elbow. */
-const CROW_KNEE_REST: Point = along(CROW_ELBOW, -55, 30);
+const CROW_HAND: Point = [80, 0];
 
-/** Leaning in: knees onto the upper arms, still up on the toes. */
-function crowLean(): Pose {
-  const elbow: Point = [65, -64];
-  const shoulder = along(elbow, -62, 60);
-  const pelvis = along(shoulder, 190, 98);
-  const knee = toward(pelvis, along(elbow, -62, 24), 88);
-  const ankle: Point = [round(knee[0] - Math.sqrt(86 ** 2 - (knee[1] + 18) ** 2)), -18];
+/**
+ * Crow: hands planted, elbows bent over the wrists, both knees on the backs of
+ * the upper arms, back near level so the head stays about hip height. `shift`
+ * (0 → 1) is the small forward lean that takes the weight off the toes; the
+ * feet then fold up behind towards the seat. Both legs move together.
+ */
+function crow(shift: number): Pose {
+  // Forearm + hand (66) up from the planted hand, leaning back a little less once the weight shifts.
+  const forearm = -110 + 5 * shift;
+  const elbow = along(CROW_HAND, forearm, 65.6);
+  const shoulder = along(elbow, -66 + 6 * shift, 60);
+  // Hips high behind the shoulders.
+  const pelvis = along(shoulder, 214 - 2 * shift, 98);
+  // Knee resting on the back of the upper arm, a little above the elbow.
+  const knee = toward(pelvis, along(elbow, -66 + 6 * shift, 18), 88);
+  const kneeAt: Point = [round(knee[0]), round(knee[1])];
+  // On the toes with the ankles ~14 up, or folded up behind towards the seat.
+  const ankle: Point =
+    shift < 1
+      ? [round(kneeAt[0] - Math.sqrt(86 ** 2 - (kneeAt[1] + 14) ** 2)), -14]
+      : along(kneeAt, angle(pelvis, kneeAt) + 157, 86);
+  const chest = toward(pelvis, shoulder, 80);
   return {
     pelvis,
-    chest: toward(pelvis, shoulder, 80),
-    hands: { near: [80, 0], far: [80, 0] },
+    chest,
+    // Gaze slightly ahead: the head stays up, about level with the hips.
+    head: along(chest, angle(pelvis, shoulder) - 30, 54),
+    // Both sides together (side view): the far limbs sit behind the near ones.
+    hands: { near: CROW_HAND, far: CROW_HAND },
     elbows: { near: { at: elbow }, far: { at: elbow } },
-    knees: { near: { at: knee }, far: { at: knee } },
+    knees: { near: { at: kneeAt }, far: { at: kneeAt } },
     feet: { near: ankle, far: ankle },
-    toes: { near: 60, far: 60 },
-  };
-}
-
-function crow(balanced: boolean): Pose {
-  if (!balanced) {
-    // Deep squat, hands planted ahead, knees against the backs of the upper arms, feet on the floor.
-    const pelvis: Point = [-34, -48];
-    return {
-      pelvis,
-      chest: chestToward(pelvis, [75, -110]),
-      hands: CROW_HANDS,
-      feet: { near: [4, -4], far: [2, -4] },
-      toes: { near: 0, far: 0 },
-    };
-  }
-  // Weight forward over the hands, hips high; knees on the upper arms, feet tucked below and behind the hips.
-  const knee = toward(CROW_PELVIS, [CROW_KNEE_REST[0] - 5, CROW_KNEE_REST[1] - 4], 88);
-  return {
-    pelvis: CROW_PELVIS,
-    chest: toward(CROW_PELVIS, CROW_SHOULDER, 80),
-    hands: CROW_HANDS,
-    elbows: { near: { at: CROW_ELBOW }, far: { at: CROW_ELBOW } },
-    knees: { near: { at: knee }, far: { at: knee } },
-    feet: { near: along(knee, 176, 86), far: along(knee, 174, 86) },
-    toes: { near: 170, far: 170 },
+    // On the balls of the feet, then pointed back once tucked.
+    toes: shift < 1 ? { near: 34, far: 34 } : { near: 150, far: 150 },
   };
 }
 
@@ -344,10 +308,18 @@ function pushUp(ankle: Point, shoulderY: number, handX: number, hands?: Pose["ha
 
 const CLAP_HANDS = 60;
 
+/** Explosive push: body rising, arms locked, hands just leaving the floor under the shoulders. */
+function clapLaunch(): Pose {
+  const { shoulder } = straightBody(PUSH_ANKLE, -140);
+  const hand = along(shoulder, 87, 125.8);
+  return pushUp(PUSH_ANKLE, -140, CLAP_HANDS, { near: hand, far: hand });
+}
+
+/** Peak: chest high, both hands off the floor and pressed together under the chest (side view: they overlap). */
 function clapAir(): Pose {
-  const { shoulder } = straightBody(PUSH_ANKLE, -152);
-  const clap: Point = [round(shoulder[0] + 44), round(shoulder[1] + 78)];
-  return pushUp(PUSH_ANKLE, -152, CLAP_HANDS, { near: clap, far: [clap[0] - 1, clap[1]] });
+  const { shoulder } = straightBody(PUSH_ANKLE, -168);
+  const clap: Point = [round(shoulder[0] + 22), round(shoulder[1] + 62)];
+  return pushUp(PUSH_ANKLE, -168, CLAP_HANDS, { near: clap, far: clap });
 }
 
 const DECLINE_BOX = { kind: "box" as const, x: -250, y: -50, w: 90, h: 50 };
@@ -371,6 +343,7 @@ export const BATCH_B_SPECS: DoodleSpec[] = [
     slug: "reverse-clamshell",
     title: "Reverse Clamshell",
     view: "front",
+    props: [SIDE_LYING_FLOOR],
     transition: 0.9,
     frames: [
       { hold: 0.4, pose: clam(false) },
@@ -383,10 +356,8 @@ export const BATCH_B_SPECS: DoodleSpec[] = [
     title: "Crow Pose",
     transition: 0.7,
     frames: [
-      { hold: 0.5, pose: crow(false) },
-      { hold: 0.1, pose: crowLean() },
-      { hold: 1.6, pose: crow(true) },
-      { hold: 0.1, pose: crowLean() },
+      { hold: 0.6, pose: crow(0) },
+      { hold: 1.8, pose: crow(1) },
     ],
   },
   {
@@ -476,7 +447,10 @@ export const BATCH_B_SPECS: DoodleSpec[] = [
     frames: [
       { hold: 0.4, pose: pushUp(PUSH_ANKLE, -125.5, CLAP_HANDS) },
       { hold: 0.15, pose: pushUp(PUSH_ANKLE, -50, CLAP_HANDS) },
-      { hold: 0.15, pose: clapAir() },
+      { hold: 0, pose: clapLaunch() },
+      { hold: 0.25, pose: clapAir() },
+      // Land on soft elbows, then press back to the top.
+      { hold: 0.1, pose: pushUp(PUSH_ANKLE, -100, CLAP_HANDS) },
     ],
   },
   {

@@ -1663,7 +1663,7 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "id": "wger_1286",
     "name": "Dynamic Planche",
     "pattern": "horizontal_push",
-    "type": "isometric",
+    "type": "dynamic",
     "muscles": [
       {
         "group": "abdominals",
@@ -1694,7 +1694,7 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "id": "wger_1288",
     "name": "Dynamic side plank",
     "pattern": "core_anti_extension",
-    "type": "isometric",
+    "type": "dynamic",
     "muscles": [
       {
         "group": "abdominals",
@@ -2057,7 +2057,7 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "id": "wger_1252",
     "name": "Front lever pull-up",
     "pattern": "vertical_pull",
-    "type": "isometric",
+    "type": "dynamic",
     "muscles": [
       {
         "group": "biceps",
@@ -2293,7 +2293,7 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "id": "wger_1018",
     "name": "Head tilts",
     "pattern": "mobility",
-    "type": "isometric",
+    "type": "dynamic",
     "muscles": [
       {
         "group": "lats",
@@ -2333,7 +2333,7 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "id": "wger_1007",
     "name": "Head turns",
     "pattern": "mobility",
-    "type": "isometric",
+    "type": "dynamic",
     "muscles": [
       {
         "group": "shoulders",
@@ -2407,7 +2407,7 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "id": "wger_1863",
     "name": "Hip Crossover",
     "pattern": "mobility",
-    "type": "isometric",
+    "type": "dynamic",
     "muscles": [
       {
         "group": "quadriceps",
@@ -2595,7 +2595,7 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "id": "wger_312",
     "name": "Incline Plank With Alternate Floor Touch",
     "pattern": "core_anti_extension",
-    "type": "isometric",
+    "type": "dynamic",
     "muscles": [
       {
         "group": "abdominals",
@@ -3479,7 +3479,7 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "id": "wger_1766",
     "name": "Plank Reach",
     "pattern": "core_anti_extension",
-    "type": "isometric",
+    "type": "dynamic",
     "muscles": [
       {
         "group": "abdominals",
@@ -3505,7 +3505,7 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "id": "wger_1410",
     "name": "Plank with Alternating Leg Lift",
     "pattern": "core_anti_extension",
-    "type": "isometric",
+    "type": "dynamic",
     "muscles": [
       {
         "group": "glutes",
@@ -3527,7 +3527,7 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "id": "wger_1406",
     "name": "Plank-to-Elbow Extension",
     "pattern": "core_anti_extension",
-    "type": "isometric",
+    "type": "dynamic",
     "muscles": [
       {
         "group": "shoulders",
@@ -4415,7 +4415,7 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "id": "wger_1845",
     "name": "Seated Pancake Good Morning",
     "pattern": "mobility",
-    "type": "isometric",
+    "type": "dynamic",
     "muscles": [
       {
         "group": "glutes",
@@ -5443,7 +5443,7 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "id": "wger_1397",
     "name": "Standing Pancake Good Morning",
     "pattern": "mobility",
-    "type": "isometric",
+    "type": "dynamic",
     "muscles": [
       {
         "group": "hamstrings",
@@ -5678,7 +5678,7 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "id": "wger_2557",
     "name": "Supported Split Squat",
     "pattern": "squat",
-    "type": "isometric",
+    "type": "dynamic",
     "muscles": [
       {
         "group": "quadriceps",

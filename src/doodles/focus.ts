@@ -51,7 +51,6 @@ const SHOULDER_BLADES: Focus = {
 export const FOCUS_BY_ID: Readonly<Record<string, Focus>> = {
   // Wrists (handstand/skill prep and cool-down)
   wrist_load: BOTH_WRISTS,
-  hf_167: BOTH_WRISTS, // Wrist circles
   wger_2680: BOTH_WRISTS, // Wrist rocks
   fedb_kneeling_forearm_stretch: BOTH_WRISTS,
   wger_2686: { joints: ["wrist.near", "hand.near"], highlight: ["forearm.near", "hand.near"], zoom: 3, label: "wrist" }, // Wrist stretch
@@ -102,7 +101,6 @@ export const FOCUS_BY_ID: Readonly<Record<string, Focus>> = {
   // Hips
   fedb_kneeling_hip_flexor: { joints: [], highlight: ["thigh.far", "pelvis"] },
   wger_1202: { joints: [], highlight: ["thigh.far", "pelvis"] }, // Side-lying hip abduction
-  hf_158: { joints: [], highlight: ["pelvis", "thigh.near", "thigh.far"] }, // 90/90 hip switch
   hip_circles: { joints: [], highlight: ["pelvis", "lumbar"] },
   // Shoulders and shoulder blades
   scap_pushup: SHOULDER_BLADES,
@@ -120,14 +118,14 @@ export const FOCUS_BY_ID: Readonly<Record<string, Focus>> = {
     label: "shoulder blades down",
   },
   wger_578: {
-    joints: ["shoulder.near", "elbow.near", "hand.near"],
-    highlight: ["upperArm.near", "forearm.near"],
+    joints: ["shoulder.far", "elbow.far", "hand.far"],
+    highlight: ["upperArm.far", "forearm.far"],
     zoom: 2,
     label: "rotator cuff",
   }, // Side-lying external rotation
   ntc_prone_ytw: { joints: [], highlight: ["shoulder.near", "shoulder.far", "upperArm.near"] },
+  hf_31: { joints: [], highlight: ["upperArm.near", "forearm.near", "shoulder.near"] }, // Planche lean: shoulders past the wrists
+  ntc_hand_release_push_up: { joints: [], highlight: ["forearm.near", "hand.near", "forearm.far", "hand.far"] }, // Hands lift off
   // Spine
   hf_154: { joints: [], highlight: ["lumbar", "thoracic"] }, // Cat-cow
-  wger_1822: { joints: [], highlight: ["thoracic", "upperArm.near"] }, // Open book
-  ntc_thread_the_needle: { joints: [], highlight: ["thoracic", "shoulder.near"] },
 };

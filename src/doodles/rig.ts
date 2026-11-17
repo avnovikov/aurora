@@ -42,6 +42,11 @@ export interface Pose {
   knees?: Partial<Record<Side, JointHint>>;
   /** Foot direction in degrees (0 = +x, 90 = down). */
   toes?: Partial<Record<Side, number>>;
+  /**
+   * Hand direction in degrees (0 = +x, 90 = down) for a bent wrist. When set,
+   * `hands` pins the wrist rather than the fingertip.
+   */
+  wrists?: Partial<Record<Side, number>>;
 }
 
 /** v1 limb (kept for backward compatibility). */
@@ -365,6 +370,7 @@ function solveLimb(
 }
 
 function solveArm(pose: Pose, side: Side, shoulder: Point, pins: Pin[]): SolvedLimb {
+  const wrist = pose.wrists?.[side];
   return solveLimb(
     shoulder,
     [`elbows.${side}`, `hands.${side}`],
@@ -374,7 +380,7 @@ function solveArm(pose: Pose, side: Side, shoulder: Point, pins: Pin[]): SolvedL
     pose.hands?.[side],
     pose.elbows?.[side],
     1,
-    undefined,
+    wrist === undefined ? undefined : deg(wrist),
     pins,
   );
 }
@@ -479,12 +485,13 @@ function blendLimb(
   t: number,
   pinnedA: boolean,
   pinnedB: boolean,
-  isFoot: boolean,
+  /** Feet, and hands with a bent wrist: blend the joint position plus the end bone angle. */
+  angledEnd: boolean,
   hints: [Bend | undefined, Bend | undefined],
   defaultBend: Bend,
 ): { target: Point; hint: JointHint; footAngle?: number } {
-  const contact: Contact = isFoot ? "joint" : "end";
-  const footAngle = isFoot ? lerpAngle(angleOf(a.joint, a.end), angleOf(b.joint, b.end), t) : undefined;
+  const contact: Contact = angledEnd ? "joint" : "end";
+  const footAngle = angledEnd ? lerpAngle(angleOf(a.joint, a.end), angleOf(b.joint, b.end), t) : undefined;
   const fallback = preferredBend(a, b, t, hints, defaultBend);
   if (staysPlanted(a, b, contact, pinnedA, pinnedB)) {
     return { target: lerpPoint(a[contact], b[contact], t), hint: { bend: fallback }, footAngle };
@@ -509,6 +516,8 @@ function blendSpine(a: Solved, b: Solved, pelvis: Point, t: number): Point[] {
 
 interface BlendedSide {
   hand: Point;
+  /** Hand angle (degrees) when the wrist is bent. */
+  wrist?: number;
   elbow: JointHint;
   foot: Point;
   knee: JointHint;
@@ -524,10 +533,14 @@ interface BlendInput {
   t: number;
 }
 
+/** An arm with a bent wrist in either keyframe blends like a leg: wrist position plus hand angle. */
+const hasWrist = (pa: Pose, pb: Pose, side: Side): boolean =>
+  pa.wrists?.[side] !== undefined || pb.wrists?.[side] !== undefined;
+
 function blendArm({ a, b, pa, pb, frame, t }: BlendInput, side: Side) {
   const pinned: [boolean, boolean] = [Boolean(pa.hands?.[side]), Boolean(pb.hands?.[side])];
   const hints: [Bend | undefined, Bend | undefined] = [pa.elbows?.[side]?.bend, pb.elbows?.[side]?.bend];
-  return blendLimb(a.arms[side], b.arms[side], frame.arms[side].root, t, ...pinned, false, hints, 1);
+  return blendLimb(a.arms[side], b.arms[side], frame.arms[side].root, t, ...pinned, hasWrist(pa, pb, side), hints, 1);
 }
 
 function blendLeg({ a, b, pa, pb, frame, t }: BlendInput, side: Side) {
@@ -539,7 +552,8 @@ function blendLeg({ a, b, pa, pb, frame, t }: BlendInput, side: Side) {
 function blendSide(input: BlendInput, side: Side): BlendedSide {
   const arm = blendArm(input, side);
   const leg = blendLeg(input, side);
-  return { hand: arm.target, elbow: arm.hint, foot: leg.target, knee: leg.hint, toe: ((leg.footAngle ?? 0) * 180) / Math.PI };
+  const wrist = arm.footAngle === undefined ? undefined : (arm.footAngle * 180) / Math.PI;
+  return { hand: arm.target, wrist, elbow: arm.hint, foot: leg.target, knee: leg.hint, toe: ((leg.footAngle ?? 0) * 180) / Math.PI };
 }
 
 /** Blend two solved keyframes into pin targets for an in-between pose (re-solved afterwards). */
@@ -555,15 +569,18 @@ export function blendPose(a: Solved, b: Solved, pa: Pose, pb: Pose, t: number, v
   const elbows: Partial<Record<Side, JointHint>> = {};
   const knees: Partial<Record<Side, JointHint>> = {};
   const toes: Partial<Record<Side, number>> = {};
+  const wrists: Partial<Record<Side, number>> = {};
   for (const side of SIDES) {
     const blended = blendSide({ a, b, pa, pb, frame, t }, side);
     hands[side] = blended.hand;
+    if (blended.wrist !== undefined) wrists[side] = blended.wrist;
     elbows[side] = blended.elbow;
     feet[side] = blended.foot;
     knees[side] = blended.knee;
     toes[side] = blended.toe;
   }
-  return { pelvis, chest: spine[2], head: spine[4], spine: spineHint, hands, feet, elbows, knees, toes };
+  const pose: Pose = { pelvis, chest: spine[2], head: spine[4], spine: spineHint, hands, feet, elbows, knees, toes };
+  return Object.keys(wrists).length ? { ...pose, wrists } : pose;
 }
 
 // ---------------------------------------------------------------- timeline
