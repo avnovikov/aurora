@@ -19,9 +19,11 @@ export function applyConnectHeartRateResult(
   result: ConnectHeartRateResult,
   onPaint: () => void,
 ): void {
-  state.pulseStatus = result.message;
   if (result.ok) {
     state.pulse = pulseConnectedAt(state.pulse, Date.now());
+    state.pulseStatus = null;
+  } else {
+    state.pulseStatus = result.message;
   }
   onPaint();
 }
