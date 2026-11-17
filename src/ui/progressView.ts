@@ -1,176 +1,250 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
-import {
-  buildPlanProgress,
-  type PlanProgressCard,
-  type PathPreviewStep,
-} from "../progress/planProgress";
-import type { LastResolveSignal } from "../progress/chainMap";
 import { listResolvedTemplates } from "../plan/templates";
-import { loadSession } from "../session/storage";
-import { loadMemories } from "../session/history";
-import { personalBestProgressHtml } from "../library/personalBest";
+import {
+  buildCurrentReadiness,
+  type CurrentReadinessRow,
+} from "../progress/currentReadiness";
+import type { HistoryFilter } from "../progress/historyFeed";
+import {
+  buildLevelProfile,
+  type PatternProfileRow,
+} from "../progress/levelProfile";
+import { isPattern, patternLabel } from "../progress/patternLabels";
+import {
+  buildWeakLinkBoard,
+  type WeakLinkCard,
+} from "../progress/weakLinkBoard";
+import type { Pattern } from "../domain/types";
 import { escapeHtml } from "../library/present";
+import { loadMemories } from "../session/history";
 import type { AppTab } from "./shell";
-
-const NO_HR_HISTORY_NOTE = "Resting heart rate: no readings yet";
 
 export interface ProgressViewOptions {
   onJumpTab?: (tab: AppTab) => void;
+  onOpenHistory?: (filter: HistoryFilter) => void;
 }
 
 export function renderProgressView(
   root: HTMLElement,
   options: ProgressViewOptions = {},
 ): void {
-  const model = buildPlanProgress({
-    templates: listResolvedTemplates(),
-    graph: EXERCISE_GRAPH,
-    memories: loadMemories(),
-    lastResolveFor: lastResolveLookup(),
-  });
+  const memories = loadMemories();
+  const graph = EXERCISE_GRAPH;
+  const templates = listResolvedTemplates();
+  const profile = buildLevelProfile({ graph, memories });
+  const weak = buildWeakLinkBoard({ graph, memories });
+  const readiness = buildCurrentReadiness({ templates, graph, memories });
 
   root.innerHTML = `
     <main class="shell progress-shell">
       <p class="eyebrow">Progress</p>
-      <h1>Towards your targets</h1>
-      ${bodyHtml(model.cards)}
-      <p class="hint">${NO_HR_HISTORY_NOTE}</p>
+      <h1>Where you stand</h1>
+      ${profileSection(profile.rows)}
+      ${weakSection(weak.cards)}
+      ${readinessSection(readiness.rows)}
+      <p class="hint">Tap a row to open History for that thread.</p>
     </main>
   `;
 
+  wireTabJumps(root, options.onJumpTab);
+  wireHistoryFilters(root, options.onOpenHistory);
+}
+
+function wireTabJumps(
+  root: HTMLElement,
+  onJumpTab: ProgressViewOptions["onJumpTab"],
+): void {
   root.querySelectorAll<HTMLButtonElement>("[data-tab-jump]").forEach((button) => {
     button.addEventListener("click", () => {
       const tab = button.dataset.tabJump as AppTab | undefined;
       if (tab) {
-        options.onJumpTab?.(tab);
+        onJumpTab?.(tab);
       }
     });
   });
 }
 
-function bodyHtml(cards: readonly PlanProgressCard[]): string {
-  if (cards.length === 0) {
-    return emptyStateHtml();
-  }
-  return cards.map(cardHtml).join("");
+function wireHistoryFilters(
+  root: HTMLElement,
+  onOpenHistory: ProgressViewOptions["onOpenHistory"],
+): void {
+  root.querySelectorAll<HTMLElement>("[data-history-kind]").forEach((el) => {
+    el.addEventListener("click", () => {
+      if (!onOpenHistory) {
+        return;
+      }
+      onOpenHistory(historyFilterFromElement(el));
+    });
+  });
 }
 
-function emptyStateHtml(): string {
-  return `
-    <section class="progress-empty">
-      <p class="tagline">Progress tracks the skills you set as targets.</p>
-      <p class="hint">Open a skill in Library and choose Generate plan, or set a target in Plan.</p>
-      <div class="row wrap progress-empty-actions">
+function historyFilterFromElement(el: HTMLElement): HistoryFilter {
+  const kind = el.dataset.historyKind;
+  if (kind === "exercise") {
+    const exerciseId = el.dataset.historyExercise;
+    assertNonEmpty(exerciseId, "data-history-exercise");
+    return { kind: "exercise", exerciseId };
+  }
+  if (kind === "pattern") {
+    const pattern = requirePattern(el.dataset.historyPattern);
+    const exerciseIds = (el.dataset.historyIds ?? "")
+      .split(",")
+      .filter((id) => id.length > 0);
+    return { kind: "pattern", pattern, exerciseIds };
+  }
+  throw new Error(`Unknown data-history-kind: ${kind}`);
+}
+
+function requirePattern(value: string | undefined): Pattern {
+  assertNonEmpty(value, "data-history-pattern");
+  if (!isPattern(value)) {
+    throw new Error(`Unknown pattern on history drill-in: ${value}`);
+  }
+  return value;
+}
+
+function assertNonEmpty(
+  value: string | undefined,
+  label: string,
+): asserts value is string {
+  if (!value) {
+    throw new Error(`Missing ${label} on history drill-in control`);
+  }
+}
+
+function profileSection(rows: readonly PatternProfileRow[]): string {
+  if (rows.length === 0) {
+    return emptyProgressCard({
+      eyebrow: "Level profile",
+      title: "No trained patterns yet",
+      hint: "Log sets in a session. Patterns appear here with their own tier.",
+      actions: `
         <button type="button" class="cta" data-tab-jump="library">Open Library</button>
-        <button type="button" data-tab-jump="plan">Open Plan</button>
-      </div>
+        <button type="button" data-tab-jump="today">Open Today</button>
+      `,
+    });
+  }
+
+  const list = rows.map(profileRowHtml).join("");
+  return `
+    <section class="progress-card">
+      <p class="eyebrow">Level profile</p>
+      <h2 class="chain-title">By pattern</h2>
+      <p class="tagline">Each line is its own tier on novice → elite</p>
+      <div class="profile-list">${list}</div>
     </section>
   `;
 }
 
-function cardHtml(card: PlanProgressCard): string {
-  const plans = card.templateNames.map(escapeHtml).join(" · ");
-  const distance = distanceLine(card);
+function profileRowHtml(row: PatternProfileRow): string {
+  const label = `${patternLabel(row.pattern)} · ${row.tierLabel} ${row.withinPercent}%`;
+  const ids = escapeHtml(row.exerciseIds.join(","));
   return `
-    <section class="chain-card progress-card" data-target="${escapeHtml(card.targetId)}">
-      <p class="eyebrow">Target · ${plans}</p>
-      <h2 class="chain-title">${escapeHtml(card.targetName)}</h2>
-      ${distance}
-      ${pathPreviewHtml(card.pathPreview)}
-      ${exerciseBlockHtml(card)}
+    <button type="button" class="profile-row" data-history-kind="pattern" data-history-pattern="${escapeHtml(row.pattern)}" data-history-ids="${ids}">
+      <span class="profile-row-text">${escapeHtml(label)}</span>
+      ${continuumBarHtml(row.continuumPercent, true)}
+    </button>
+  `;
+}
+
+function weakSection(cards: readonly WeakLinkCard[]): string {
+  if (cards.length === 0) {
+    return emptyProgressCard({
+      eyebrow: "Weak-links",
+      title: "Nothing lagging yet",
+      hint: "When some moves sit below your level average, they show here.",
+    });
+  }
+
+  const list = cards.map(weakRowHtml).join("");
+  return `
+    <section class="progress-card">
+      <p class="eyebrow">Weak-links</p>
+      <h2 class="chain-title">Going worse than the rest</h2>
+      <div class="weak-list">${list}</div>
     </section>
   `;
 }
 
-/** The Now block and its status line, or a pointer when an earlier card already shows that step. */
-function exerciseBlockHtml(card: PlanProgressCard): string {
-  if (card.nowShownUnder !== undefined) {
-    const label = card.phase === "active" ? "Now" : "Start";
-    const line = exerciseLineHtml(label, `${card.currentName} · see ${card.nowShownUnder} above`);
-    return `<div class="exercise-block">${line}</div>`;
-  }
-  const body =
-    card.phase === "active" ? activeBlockHtml(card) : notStartedBlockHtml(card);
-  return `${body}${reasonHtml(card)}`;
-}
-
-/** "Next Pull-up" style line: a small label, then the name. */
-function exerciseLineHtml(label: string, text: string): string {
-  return `<p class="exercise-next"><span class="exercise-next-label">${label}</span> ${escapeHtml(text)}</p>`;
-}
-
-/** The status line; at the target a "sessions to move up" count would point past it, so none shows. */
-function reasonHtml(card: PlanProgressCard): string {
-  if (card.stepsToTarget === 0 && card.status.kind === "hold") {
-    return "";
-  }
-  return `<p class="chain-reason chain-${card.status.kind}">${escapeHtml(card.status.reason)}</p>`;
-}
-
-function distanceLine(card: PlanProgressCard): string {
-  if (card.stepsToTarget === null) {
-    return `<p class="tagline">No progression for this skill yet</p>`;
-  }
-  if (card.stepsToTarget === 0) {
-    return `<p class="tagline">Target reached</p>`;
-  }
-  const noun = card.stepsToTarget === 1 ? "step" : "steps";
-  return `<p class="tagline">${card.stepsToTarget} ${noun} to go</p>`;
-}
-
-function notStartedBlockHtml(card: PlanProgressCard): string {
-  const next = card.nextName ? exerciseLineHtml("Then", card.nextName) : "";
+function weakRowHtml(card: WeakLinkCard): string {
   return `
-    <div class="exercise-block">
-      <p class="exercise-current" aria-current="step">${escapeHtml(card.currentName)}</p>
-      <p class="hint">Suggested starting point</p>
-      ${pathPersonalBestHtml(card)}
-      ${next}
-    </div>
+    <button type="button" class="weak-row" data-history-kind="exercise" data-history-exercise="${escapeHtml(card.exerciseId)}">
+      <span class="weak-row-title">${escapeHtml(card.exerciseName)}</span>
+      <span class="hint">${escapeHtml(card.reason)}</span>
+    </button>
   `;
 }
 
-function activeBlockHtml(card: PlanProgressCard): string {
-  // At the target the harder move is beyond it, not the next step toward it.
-  const label = card.stepsToTarget === 0 ? "Beyond" : "Next";
-  const next = card.nextName
-    ? exerciseLineHtml(label, card.nextName)
-    : `<p class="exercise-next is-end">At the top of this path</p>`;
+function readinessSection(rows: readonly CurrentReadinessRow[]): string {
+  if (rows.length === 0) {
+    return emptyProgressCard({
+      eyebrow: "Current readiness",
+      title: "No current goals",
+      hint: "Set a target on Plan, or train until a next-level dose appears.",
+      actions: `
+        <button type="button" class="cta" data-tab-jump="plan">Open Plan</button>
+      `,
+    });
+  }
+
+  const list = rows.map(readyRowHtml).join("");
   return `
-    <div class="exercise-block">
-      <p class="exercise-current" aria-current="step">${escapeHtml(card.currentName)}</p>
-      ${pathPersonalBestHtml(card)}
-      ${next}
-    </div>
+    <section class="progress-card">
+      <p class="eyebrow">Current readiness</p>
+      <h2 class="chain-title">What to clear next</h2>
+      <div class="ready-list">${list}</div>
+    </section>
   `;
 }
 
-function pathPersonalBestHtml(card: PlanProgressCard): string {
-  return personalBestProgressHtml(
-    card.personalBestReps,
-    card.personalBestIsHold ? "s" : "reps",
-  );
+function readyRowHtml(row: CurrentReadinessRow): string {
+  return `
+    <button type="button" class="ready-row" data-history-kind="exercise" data-history-exercise="${escapeHtml(row.currentExerciseId)}">
+      <span class="ready-row-title">${escapeHtml(row.goalName)} <span class="chip">${row.kind}</span></span>
+      <span class="dose">${escapeHtml(doseLine(row))}</span>
+      ${continuumBarHtml(row.dosePercent, false)}
+      <span class="hint">${escapeHtml(row.criterion)}</span>
+    </button>
+  `;
 }
 
-function pathPreviewHtml(steps: readonly PathPreviewStep[]): string {
-  if (steps.length === 0) {
-    return "";
+function doseLine(row: CurrentReadinessRow): string {
+  if (row.bestReps === null || row.doseBar === null) {
+    return row.currentExerciseName;
   }
-  const items = steps
-    .map((step) => {
-      return `<li class="path-step path-${step.marker}">${escapeHtml(step.name)}</li>`;
-    })
-    .join("");
-  return `<ol class="path-preview">${items}</ol>`;
+  return `${row.currentExerciseName} · ${row.bestReps} / ${row.doseBar}`;
 }
 
-/** Reads rule ids for exercises in the last saved session plan. */
-function lastResolveLookup(): (
-  exerciseId: string,
-) => LastResolveSignal | undefined {
-  const workItems = loadSession()?.planned.work ?? [];
-  return (exerciseId) => {
-    const item = workItems.find((work) => work.exerciseId === exerciseId);
-    return item ? { ruleIds: item.ruleIds } : undefined;
-  };
+function continuumBarHtml(percent: number, showEnds: boolean): string {
+  const ends = showEnds
+    ? `<span class="continuum-ends"><span>N</span><span>E</span></span>`
+    : "";
+  return `
+    <span class="continuum" aria-hidden="true">
+      <span class="continuum-track">
+        <span class="continuum-fill" style="width:${percent}%"></span>
+      </span>
+      ${ends}
+    </span>
+  `;
 }
+
+function emptyProgressCard(input: {
+  eyebrow: string;
+  title: string;
+  hint: string;
+  actions?: string;
+}): string {
+  const actions = input.actions
+    ? `<div class="row wrap progress-empty-actions">${input.actions}</div>`
+    : "";
+  return `
+    <section class="progress-card">
+      <p class="eyebrow">${input.eyebrow}</p>
+      <h2 class="chain-title">${input.title}</h2>
+      <p class="hint">${input.hint}</p>
+      ${actions}
+    </section>
+  `;
+}
+

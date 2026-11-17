@@ -1,8 +1,12 @@
-import type { HistoryEntry, SessionEvaluation } from "../domain/program";
+import type {
+  HistoryEntry,
+  HistorySetRecord,
+  SessionEvaluation,
+} from "../domain/program";
 import type { ExerciseMemory } from "../domain/types";
 import type { PlannedSession } from "../rules/planSession";
 import { applySetLogToMemory } from "../session/history";
-import type { WorkoutLog } from "../session/setLog";
+import type { SetLogEntry, WorkoutLog } from "../session/setLog";
 
 export interface CommitSessionEvaluationInput {
   evaluation: SessionEvaluation;
@@ -35,7 +39,19 @@ export function commitSessionEvaluation({
       evaluation,
       setCount: log.entries.length,
       exerciseIds,
+      sets: log.entries.map(toHistorySetRecord),
     },
     memories: applySetLogToMemory(memories, log, { lightDay: planned.lightDay }),
+  };
+}
+
+function toHistorySetRecord(entry: SetLogEntry): HistorySetRecord {
+  return {
+    exerciseId: entry.exerciseId,
+    setIndex: entry.setIndex,
+    prescribedReps: entry.prescribedReps,
+    completedReps: entry.completedReps,
+    loggedAt: entry.loggedAt,
+    stopReason: entry.stopReason,
   };
 }

@@ -164,6 +164,16 @@ export type SessionEvaluation = "easy" | "on_target" | "difficult" | "wiped";
 /** Stored value before the difficult rename; normalize on read. */
 export type LegacySessionEvaluation = SessionEvaluation | "failed";
 
+/** Per-set row stored on a finished session (History tab / Progress drill-in). */
+export interface HistorySetRecord {
+  exerciseId: string;
+  setIndex: number;
+  prescribedReps: number;
+  completedReps: number;
+  loggedAt: string;
+  stopReason: string;
+}
+
 export interface HistoryEntry {
   id: string;
   completedAt: string;
@@ -172,4 +182,6 @@ export interface HistoryEntry {
   evaluation: SessionEvaluation;
   setCount: number;
   exerciseIds: string[];
+  /** Set log from the session; absent on legacy history rows. */
+  sets?: HistorySetRecord[];
 }
