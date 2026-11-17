@@ -1,15 +1,18 @@
 import { describe, expect, it } from "vitest";
 import {
+  REST_ADD_SECONDS,
   shouldAddRest,
   shouldOfferRestedGoOn,
 } from "../../src/ui/restPulse";
+import { REST_EXTEND } from "../../src/voice/lines";
+import { GET_READY_AT_SECONDS_LEFT } from "../../src/voice/restCue";
 
 describe("shouldOfferRestedGoOn", () => {
-  it("asks when the pulse is steady with more than 10 seconds left", () => {
+  it("asks when the pulse is steady just above Get ready", () => {
     expect(
       shouldOfferRestedGoOn({
         zone: "steady",
-        secondsLeft: 11,
+        secondsLeft: GET_READY_AT_SECONDS_LEFT + 1,
         alreadyAsked: false,
       }),
     ).toBe(true);
@@ -25,17 +28,14 @@ describe("shouldOfferRestedGoOn", () => {
     ).toBe(true);
   });
 
-  it("stays quiet in work, hard, and max", () => {
-    expect(
-      shouldOfferRestedGoOn({ zone: "work", secondsLeft: 40, alreadyAsked: false }),
-    ).toBe(false);
-    expect(
-      shouldOfferRestedGoOn({ zone: "hard", secondsLeft: 40, alreadyAsked: false }),
-    ).toBe(false);
-    expect(
-      shouldOfferRestedGoOn({ zone: "max", secondsLeft: 40, alreadyAsked: false }),
-    ).toBe(false);
-  });
+  it.each(["work", "hard", "max"] as const)(
+    "stays quiet in %s",
+    (zone) => {
+      expect(
+        shouldOfferRestedGoOn({ zone, secondsLeft: 40, alreadyAsked: false }),
+      ).toBe(false);
+    },
+  );
 
   it("asks only once", () => {
     expect(
@@ -47,11 +47,11 @@ describe("shouldOfferRestedGoOn", () => {
     ).toBe(false);
   });
 
-  it("stays quiet in the last 10 seconds", () => {
+  it("stays quiet in the Get ready window", () => {
     expect(
       shouldOfferRestedGoOn({
         zone: "steady",
-        secondsLeft: 10,
+        secondsLeft: GET_READY_AT_SECONDS_LEFT,
         alreadyAsked: false,
       }),
     ).toBe(false);
@@ -69,11 +69,12 @@ describe("shouldOfferRestedGoOn", () => {
 });
 
 describe("shouldAddRest", () => {
-  it("adds time while the pulse is above steady", () => {
-    expect(shouldAddRest("work")).toBe(true);
-    expect(shouldAddRest("hard")).toBe(true);
-    expect(shouldAddRest("max")).toBe(true);
-  });
+  it.each(["work", "hard", "max"] as const)(
+    "adds time while the pulse is in %s",
+    (zone) => {
+      expect(shouldAddRest(zone)).toBe(true);
+    },
+  );
 
   it("ends the rest when the pulse is steady or easy", () => {
     expect(shouldAddRest("steady")).toBe(false);
@@ -82,5 +83,13 @@ describe("shouldAddRest", () => {
 
   it("ends the rest when there is no reading", () => {
     expect(shouldAddRest(null)).toBe(false);
+  });
+});
+
+describe("REST_EXTEND copy", () => {
+  it("names the same seconds the timer adds", () => {
+    expect(REST_EXTEND.text).toBe(
+      `Still up, mate. Another ${REST_ADD_SECONDS}.`,
+    );
   });
 });

@@ -1,8 +1,7 @@
 import type { HeartRateZone } from "../pulse/hrZones";
-import { GET_READY_AT_SECONDS_LEFT } from "../voice/restCue";
+import { GET_READY_AT_SECONDS_LEFT, REST_ADD_SECONDS } from "../voice/restCue";
 
-/** Extra rest added while the pulse is still above steady. */
-export const REST_ADD_SECONDS = 30;
+export { REST_ADD_SECONDS };
 
 const RESTED_ZONES = new Set<HeartRateZone>(["easy", "steady"]);
 

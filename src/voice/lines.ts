@@ -87,6 +87,7 @@ export const REST_GO_ON: CoachLine = {
 export const REST_EXTEND: CoachLine = {
   id: "rest_extend",
   assetKey: "rest_extend",
+  // Keep in sync with REST_ADD_SECONDS in restCue.ts (enforced in restPulse.test.ts).
   text: "Still up, mate. Another 30.",
 };
 

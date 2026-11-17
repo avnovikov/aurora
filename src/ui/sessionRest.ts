@@ -48,16 +48,16 @@ function speakRestCue(
 function visibleRestCue(
   left: number,
   schedule: readonly RestCueEvent[],
-  heldCue: string | null,
+  heldCue: CoachLine | null,
 ): string {
-  return restCueText(left, schedule) ?? heldCue ?? "";
+  return restCueText(left, schedule) ?? heldCue?.text ?? "";
 }
 
 function paintRest(
   root: HTMLElement,
   left: number,
   schedule: readonly RestCueEvent[],
-  heldCue: string | null,
+  heldCue: CoachLine | null,
 ): void {
   setText(root, "[data-rest-left]", String(Math.max(left, 0)));
   setText(root, "[data-rest-cue]", visibleRestCue(left, schedule, heldCue));
@@ -76,6 +76,15 @@ export interface RestTimerOptions {
   readZone?: () => HeartRateZone | null;
 }
 
+interface RestTickState {
+  alreadyAsked: boolean;
+  heldCue: CoachLine | null;
+  schedule: RestCueEvent[];
+  spokenForRest: Set<number>;
+}
+
+type RestTickOutcome = "continue" | "extended" | "finished";
+
 export function startRestTimer(
   root: HTMLElement,
   state: ViewState,
@@ -83,16 +92,18 @@ export function startRestTimer(
   onDoneRest: () => void,
   options: RestTimerOptions = {},
 ): RestTimerHandle {
-  const spokenForRest = new Set<number>();
   const readZone = options.readZone ?? (() => null);
   const timedNext = options.timedNext === true;
-  let schedule = restSchedule(state.restLeft, withVoice, timedNext);
-  let alreadyAsked = false;
-  let heldCue: string | null = null;
+  const tickState: RestTickState = {
+    alreadyAsked: false,
+    heldCue: null,
+    schedule: restSchedule(state.restLeft, withVoice, timedNext),
+    spokenForRest: new Set<number>(),
+  };
   let finished = false;
 
   const paint = (): void => {
-    paintRest(root, state.restLeft, schedule, heldCue);
+    paintRest(root, state.restLeft, tickState.schedule, tickState.heldCue);
   };
 
   const speakLine = (line: CoachLine): void => {
@@ -113,41 +124,48 @@ export function startRestTimer(
   };
 
   const extendRest = (): void => {
+    // One go-on ask for the whole rest, including later extensions.
     state.restLeft = REST_ADD_SECONDS;
-    schedule = restSchedule(state.restLeft, withVoice, timedNext);
-    spokenForRest.clear();
-    heldCue = REST_EXTEND.text;
+    tickState.schedule = restSchedule(state.restLeft, withVoice, timedNext);
+    tickState.spokenForRest.clear();
+    tickState.heldCue = REST_EXTEND;
     paint();
     speakLine(REST_EXTEND);
+  };
+
+  const onTick = (): RestTickOutcome => {
+    state.restLeft -= 1;
+    const zone = readZone();
+    if (state.restLeft <= 0) {
+      if (shouldAddRest(zone)) {
+        extendRest();
+        return "extended";
+      }
+      finish();
+      return "finished";
+    }
+    if (
+      shouldOfferRestedGoOn({
+        zone,
+        secondsLeft: state.restLeft,
+        alreadyAsked: tickState.alreadyAsked,
+      })
+    ) {
+      tickState.alreadyAsked = true;
+      tickState.heldCue = REST_GO_ON;
+      speakLine(REST_GO_ON);
+    }
+    paint();
+    if (withVoice) {
+      speakRestCue(state.restLeft, tickState.schedule, tickState.spokenForRest);
+    }
+    return "continue";
   };
 
   paint();
 
   const timerId = window.setInterval(() => {
-    state.restLeft -= 1;
-    if (state.restLeft <= 0) {
-      if (shouldAddRest(readZone())) {
-        extendRest();
-        return;
-      }
-      finish();
-      return;
-    }
-    if (
-      shouldOfferRestedGoOn({
-        zone: readZone(),
-        secondsLeft: state.restLeft,
-        alreadyAsked,
-      })
-    ) {
-      alreadyAsked = true;
-      heldCue = REST_GO_ON.text;
-      speakLine(REST_GO_ON);
-    }
-    paint();
-    if (withVoice) {
-      speakRestCue(state.restLeft, schedule, spokenForRest);
-    }
+    onTick();
   }, 1000);
 
   return {
