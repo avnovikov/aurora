@@ -48,4 +48,15 @@ describe("declare (#112)", () => {
     expect(inferredCount).toBe(1);
     expect(memories.mid?.inferred?.tier).toBe("intermediate");
   });
+
+  it("logged reps write loggedTier and lastSessionAt (#112)", () => {
+    const now = new Date("2026-11-17T12:00:00Z");
+    const next = recordBestReps({}, "pullup", 12, SEED_GRAPH.pullup, now);
+    expect(next.pullup).toMatchObject({
+      bestReps: 12,
+      loggedTier: "intermediate",
+      skillTier: "intermediate",
+      lastSessionAt: now.toISOString(),
+    });
+  });
 });

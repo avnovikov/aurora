@@ -6,6 +6,7 @@ import {
   normalizeSessionEvaluation,
   sessionEvaluationLabel,
 } from "../../src/session/history";
+import { buildFamilyLadderIndex } from "../../src/progress/familyLadderIndex";
 import type { SetLogEntry, WorkoutLog } from "../../src/session/setLog";
 
 function memory(
@@ -80,7 +81,7 @@ describe("applySetLogToMemory", () => {
         }),
       ),
     );
-    expect(next.squat).toEqual(
+    expect(next.squat).toMatchObject(
       memory("squat", { sessionsAtStandard: 2, sessionsBelowFloor: 0 }),
     );
   });
@@ -145,7 +146,7 @@ describe("applySetLogToMemory", () => {
         }),
       ),
     );
-    expect(next.squat).toEqual(
+    expect(next.squat).toMatchObject(
       memory("squat", { sessionsAtStandard: 0, sessionsBelowFloor: 1 }),
     );
   });
@@ -165,7 +166,7 @@ describe("applySetLogToMemory", () => {
         }),
       ),
     );
-    expect(next.squat).toEqual(
+    expect(next.squat).toMatchObject(
       memory("squat", { sessionsAtStandard: 0, sessionsBelowFloor: 1 }),
     );
   });
@@ -186,7 +187,7 @@ describe("applySetLogToMemory", () => {
       ),
       { lightDay: true },
     );
-    expect(next.squat).toEqual(
+    expect(next.squat).toMatchObject(
       memory("squat", { sessionsAtStandard: 0, sessionsBelowFloor: 1 }),
     );
   });
@@ -209,5 +210,43 @@ describe("applySetLogToMemory", () => {
     );
     expect(next.squat?.sessionsAtStandard).toBe(1);
     expect(next.curl).toEqual(memories.curl);
+  });
+});
+
+describe("inferred tiers at session close (#112 rule 7, rule 2)", () => {
+  const NOW = new Date("2026-11-17T12:00:00Z");
+  const index = buildFamilyLadderIndex([
+    { id: "hf_108", name: "Dragon Flag" },
+    { id: "ab_wheel", name: "Ab Wheel Rollout" },
+    { id: "hollow_hold", name: "Hollow Hold" },
+  ]);
+  const inferred = (id: string) =>
+    memory(id, {
+      inferred: { tier: "intermediate" as const, from: ["ab_wheel", "hf_108"], at: NOW.toISOString() },
+    });
+  const set = (
+    exerciseId: string,
+    completedReps: number,
+    stopReason: "completed" | "muscular_failure",
+  ) => entry({ exerciseId, completedReps, prescribedReps: 10, stopReason });
+
+  it("a clean session confirms an inferred tier as logged", () => {
+    const out = applySetLogToMemory(
+      { hollow_hold: inferred("hollow_hold") },
+      log(set("hollow_hold", 10, "completed")),
+      { now: NOW, index },
+    );
+    expect(out.hollow_hold).toMatchObject({ loggedTier: "intermediate", lastSessionAt: NOW.toISOString() });
+    expect(out.hollow_hold?.inferred).toBeUndefined();
+  });
+
+  it("a failed set removes the inferred tier and caps harder rungs", () => {
+    const out = applySetLogToMemory(
+      { hollow_hold: inferred("hollow_hold") },
+      log(set("hollow_hold", 6, "muscular_failure")),
+      { now: NOW, index },
+    );
+    expect(out.hollow_hold?.inferred).toBeUndefined();
+    expect(out.ab_wheel?.failedCap).toMatchObject({ tier: "intermediate", from: "hollow_hold" });
   });
 });
