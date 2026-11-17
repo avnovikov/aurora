@@ -51,6 +51,21 @@ export interface SettingsPageModel {
   deloadActive: boolean;
   /** First-run: hide Backup / Deload and show Continue. */
   setup?: boolean;
+  levelsToConfirm?: { id: string; name: string }[];
+}
+
+function levelsToConfirmHtml(items: readonly { id: string; name: string }[] | undefined): string {
+  if (!items || items.length === 0) {
+    return "";
+  }
+  const names = items.map((item) => `<li>${escapeHtml(item.name)}</li>`).join("");
+  return `
+    <section class="card" data-levels-to-confirm>
+      <p class="eyebrow">Levels to confirm</p>
+      <p class="hint">These levels may have come from your plan level, not from you. They now count as plan defaults. Set your real level on each in the Library.</p>
+      <ul>${names}</ul>
+      <button type="button" class="link" data-levels-confirm-done>Done</button>
+    </section>`;
 }
 
 function tabBarHtml(active: SettingsTab): string {
@@ -188,6 +203,7 @@ export function settingsPageHtml(model: SettingsPageModel): string {
       <p class="eyebrow">${setup ? "Setup" : "Settings"}</p>
       <h1>Your setup</h1>
       ${tabBarHtml(model.tab)}
+      ${levelsToConfirmHtml(model.levelsToConfirm)}
       <p class="settings-status" role="status" data-settings-status></p>
       <section class="settings-panel" id="settings-panel" role="tabpanel" aria-labelledby="settings-tab-${model.tab}">
         ${panelHtml(model)}

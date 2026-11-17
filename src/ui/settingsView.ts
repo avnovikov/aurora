@@ -1,6 +1,8 @@
 import { applyPalette, isPaletteKey } from "../brand/palettes";
 import type { EquipmentId, UserProfile } from "../domain/program";
 import { setChipPressed } from "../library/chips";
+import { EXERCISE_GRAPH } from "../data/exerciseGraph";
+import { clearLevelsToConfirm, loadLevelsToConfirm } from "../session/ensureMemoryMigrated";
 import { loadDeloadActive, saveDeloadActive } from "../settings/deload";
 import {
   exportBackupJson,
@@ -215,6 +217,11 @@ export function renderSettingsView(root: HTMLElement, options: SettingsViewOptio
         profile,
         deloadActive: loadDeloadActive(),
         setup,
+        levelsToConfirm: loadLevelsToConfirm().map((id) => ({ id, name: EXERCISE_GRAPH[id]?.name ?? id })),
+      });
+      root.querySelector("[data-levels-confirm-done]")?.addEventListener("click", () => {
+        clearLevelsToConfirm();
+        root.querySelector("[data-levels-to-confirm]")?.remove();
       });
       wireTabs(controller);
       wireYou(controller);

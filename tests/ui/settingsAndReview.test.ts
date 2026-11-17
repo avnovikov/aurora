@@ -143,4 +143,13 @@ describe("settings tabs", () => {
     expect(tabKeyTarget("End", 0)).toBe("app");
     expect(tabKeyTarget("Enter", 1)).toBeNull();
   });
+
+  it("lists levels to confirm once after migration (#112)", () => {
+    const model = { tab: "you" as const, profile: loadProfile(), deloadActive: false };
+    const html = settingsPageHtml({ ...model, levelsToConfirm: [{ id: "hf_84", name: "Sliding Leg Curl" }] });
+    expect(html).toContain("data-levels-to-confirm");
+    expect(html).toContain("Sliding Leg Curl");
+    expect(html).toContain("data-levels-confirm-done");
+    expect(settingsPageHtml({ ...model, levelsToConfirm: [] })).not.toContain("data-levels-to-confirm");
+  });
 });
