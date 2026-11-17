@@ -1,88 +1,52 @@
 # Aurora · Rassvet
 
-Private morning training coach for Android (Capacitor APK + optional Chrome PWA).
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat)](LICENSE)
+[![CI](https://github.com/avnovikov/aurora/actions/workflows/ci.yml/badge.svg)](https://github.com/avnovikov/aurora/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/avnovikov/aurora?include_prereleases&style=flat)](https://github.com/avnovikov/aurora/releases)
 
-- **Aurora** — GitHub / product name (dawn in English and Portuguese)
-- **Rassvet** (Рассвет) — soul mark shown in the app
+**v0.1.0 — first release (from the poc line).**
 
-You write the week as slots. The app picks exercise and dose from sleep, pulse, load, missed reps, and stalls. British English UI and voice (`en-GB`, Scouse TTS when available).
+Private morning training coach for Android.
 
-## Test (local)
+You write the week as slots. The app picks exercise and dose from sleep, pulse, load, missed reps, and stalls. British English UI and voice (`en-GB`).
+
+**[Get the APK · v0.1.0](https://github.com/avnovikov/aurora/releases/latest)** — download from the latest GitHub Release and sideload on Android.
+
+---
+
+## Install
+
+Download the APK from the [latest GitHub Release](https://github.com/avnovikov/aurora/releases/latest) and sideload on Android.
+
+## Develop
 
 ```bash
-git checkout poc
 npm install
-npm test          # unit tests
-npm run smell     # complexity / smell gate
-npm run build     # production bundle → dist/
-npm run voice:prebuild   # optional: rebuild Scouse-copy WAVs (needs macOS `say`)
+npm test && npm run smell && npm run build
+npm run dev -- --host   # LAN URL → Android Chrome
 ```
 
-### Phone (Android Chrome)
+Capacitor Android (BLE pulse): `npm run cap:sync` then `npm run cap:open`. App id `com.aurora.rassvet`. Integration branch: **`poc`**. Optional Lightsail: `docs/deploy/lightsail.md`.
+## Privacy & data (local only)
 
-```bash
-npm run dev -- --host
-```
+Aurora keeps training history, readiness, sleep, pulse, and related health signals **on the device**. There is no cloud account and no server sync of health data in 0.1. On Android, sensitive values use **Keystore-backed AuroraSecure** storage instead of plaintext.
 
-1. Note the LAN URL Vite prints (e.g. `http://192.168.x.x:5173`).
-2. Open it in **Chrome** on the phone (same Wi‑Fi).
-3. Tap **Start session** once (unlocks audio).
-4. Optional: Chrome menu → **Install app** (manifest is present).
-5. Voice works; strap HR needs the **Android APK** (below), not LAN HTTP.
+## Terms
 
-### Android APK (heart-rate strap)
-
-```bash
-npm run cap:sync    # Vite build → android/
-npm run cap:open    # Android Studio (local JDK required)
-```
-
-App id: `com.aurora.rassvet`. Uses `@capacitor-community/bluetooth-le` (MIT). Sideload the debug APK; in a session tap **Connect pulse**. Spec: `docs/superpowers/specs/2026-11-15-capacitor-ble-hr-design.md`. Issues: [#7](https://github.com/avnovikov/aurora/issues/7), [#19](https://github.com/avnovikov/aurora/issues/19), [#20](https://github.com/avnovikov/aurora/issues/20).
-
-#### Wake lock smoke check
-
-The screen stays awake during a session (`src/session/wakeLock.ts`, Screen Wake Lock API).
-
-1. Start a session on the phone and leave it untouched past the screen timeout — the screen should not dim.
-2. Switch to another app/tab and back — the lock is released while hidden and re-acquired on return.
-3. Finish the session — the lock is released and normal timeout resumes.
-
-Unsupported browsers (or plain-HTTP origins that deny it) silently skip the lock.
-
-### Preview production build locally
-
-```bash
-npm run build && npm run preview -- --host
-```
-
-## Deploy (Lightsail — optional, not `ks-ui-app`)
-
-Not required for BLE. Optional HTTPS host for PWA / later sync: smallest Lightsail in **`eu-west-1`**.
-
-```bash
-npm run build
-# rsync -avz --delete dist/ ubuntu@<aurora-host>:/var/www/aurora/
-```
-
-Runbook: `docs/deploy/lightsail.md` and `scripts/deploy-lightsail.sh`.
-
-Integration branch: **`poc`**. Do not merge to `main` without explicit OK.
-
-## Smell / complexity
-
-HotspotTriage here is Python-oriented, so TypeScript uses **ESLint + eslint-plugin-sonarjs**:
-
-- `complexity` (cyclomatic) max **10**
-- `sonarjs/cyclomatic-complexity` threshold **10**
-- `sonarjs/cognitive-complexity` max **15**
-- SonarJS recommended smell rules
-
-Run `npm run smell` before larger commits.
-
-## Stack
-
-TypeScript, Vite, Vitest, ESLint/SonarJS, Capacitor Android. Rule engine is pure (no DOM / Bluetooth). Optional Lightsail host (separate from KS `ks-ui-app`).
+See [docs/TERMS.md](docs/TERMS.md) — Terms & Conditions for local-only processing and secure on-device storage of health-related data. **Not medical advice.**
 
 ## Licence
 
-Private. Exercise catalog imports follow each source’s licence (wger CC, MuscleWiki non-profit notice, etc.).
+[MIT](LICENSE) — Copyright (c) 2026 avnovikov (same as [HotspotTriage](https://github.com/avnovikov/HotspotTriage)).
+
+## Stack
+
+TypeScript, Vite, Vitest, Capacitor Android.
+
+## Catalogue
+
+Exercise catalogue imports follow each source’s licence (wger CC, MuscleWiki non-profit notice, etc.).
+
+---
+
+Aurora · Rassvet v0.1.0 — local only. en-GB.
