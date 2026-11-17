@@ -20,4 +20,19 @@ describe("describeLevelSource", () => {
     const old = new Date(NOW.getTime() - 50 * 86_400_000).toISOString();
     expect(describeLevelSource({ ...base, declaredTier: "advanced", declaredAt: old }, NOW, name).retest).toBe(true);
   });
+
+  it("does not flag a recent session for retest", () => {
+    expect(describeLevelSource({ ...base, loggedTier: "advanced", lastSessionAt: NOW.toISOString() }, NOW, name).retest).toBe(false);
+  });
+
+  it("says Your pick when declared and logged agree", () => {
+    const m = { ...base, declaredTier: "advanced" as const, loggedTier: "advanced" as const, declaredAt: NOW.toISOString() };
+    expect(describeLevelSource(m, NOW, name).label).toBe("Your pick");
+  });
+
+  it("falls back to Plan default when the inferred tier expired", () => {
+    const old = new Date(NOW.getTime() - 22 * 86_400_000).toISOString();
+    const m = { ...base, planTier: "intermediate" as const, inferred: { tier: "intermediate" as const, from: ["a"], at: old } };
+    expect(describeLevelSource(m, NOW, name).label).toBe("Plan default");
+  });
 });

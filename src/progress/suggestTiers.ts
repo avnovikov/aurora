@@ -76,3 +76,17 @@ export function suggestTiers(input: {
   }
   return out;
 }
+
+/** The suggestion shown for one move; a move with a tested level gets none. */
+export function suggestionFor(
+  exerciseId: string,
+  memories: Record<string, ExerciseMemory>,
+  patternOf: (exerciseId: string) => string | undefined,
+  index?: FamilyLadderIndex,
+): TierSuggestion | undefined {
+  const memory = memories[exerciseId];
+  if (memory && testedTier(memory)) {
+    return undefined;
+  }
+  return suggestTiers({ memories, patternOf, index }).get(exerciseId);
+}

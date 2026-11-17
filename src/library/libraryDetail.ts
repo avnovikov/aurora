@@ -11,6 +11,7 @@ import {
 } from "./skillPresent";
 import type { SkillTier } from "../domain/types";
 import type { TierSuggestion } from "../progress/suggestTiers";
+import { RETEST_AFTER_DAYS } from "../progress/levelEvidence";
 import type { LevelSourceView } from "./levelSource";
 import { toggleHtml } from "./chips";
 import { displayExerciseName } from "./displayName";
@@ -29,6 +30,8 @@ import { isTemplateTarget } from "./targets";
 import { scrollViewportToTop } from "./detailScroll";
 import { backOnly, wireSwipe } from "../ui/sessionSwipe";
 import "../styles/exercise.css";
+
+const RETEST_WEEKS = Math.floor(RETEST_AFTER_DAYS / 7);
 
 export interface DetailActions {
   onBack: () => void;
@@ -293,7 +296,7 @@ function levelEvidenceHtml(memory: DetailMemoryView): string {
   }
   if (source?.retest) {
     parts.push(
-      `<p class="hint" data-level-retest>No sessions on this for 6+ weeks — retest before trusting this level.</p>`,
+      `<p class="hint" data-level-retest>No sessions on this for ${RETEST_WEEKS}+ weeks — retest before trusting this level.</p>`,
     );
   }
   if (suggestion) {

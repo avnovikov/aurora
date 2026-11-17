@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
+import type { SkillTier } from "../../src/domain/types";
 import type { FamilyLadderIndex, FamilyLadderMember } from "../../src/progress/familyLadderIndex";
-import { suggestTiers } from "../../src/progress/suggestTiers";
+import { suggestionFor, suggestTiers } from "../../src/progress/suggestTiers";
 import { emptyMemory } from "../../src/session/history";
 
 function indexOf(families: Record<string, string[]>): FamilyLadderIndex {
@@ -27,5 +28,68 @@ describe("suggestTiers (#112 rule 6)", () => {
     const out = suggestTiers({ memories: { a2: declared("a2"), b2: declared("b2") }, index, patternOf });
     expect(out.get("c1")).toEqual({ tier: "intermediate", testedFamilies: 2, totalFamilies: 6 });
     expect(out.has("a1")).toBe(false);
+  });
+
+  const fam = (n: number) => Object.fromEntries(Array.from({ length: n }, (_, i) => [`f${i}`, [`m${i}a`, `m${i}b`]]));
+  const at = (tier: SkillTier, id: string) => ({
+    ...emptyMemory(id),
+    declaredTier: tier,
+  });
+
+  it("(a) the highest qualifying tier wins", () => {
+    const idx = indexOf(fam(6));
+    const out = suggestTiers({
+      memories: { m0b: at("elite", "m0b"), m1b: at("elite", "m1b"), m2b: at("intermediate", "m2b") },
+      index: idx,
+      patternOf,
+    });
+    expect(out.get("m3a")?.tier).toBe("advanced");
+    expect(out.get("m5b")?.tier).toBe("advanced");
+  });
+
+  it("(b) novice gives nothing", () => {
+    const idx = indexOf(fam(6));
+    const memories = { m0a: at("novice", "m0a"), m1a: at("novice", "m1a") };
+    expect(suggestTiers({ memories, index: idx, patternOf }).size).toBe(0);
+  });
+
+  it("(c) inferred and plan defaults are not evidence", () => {
+    const idx = indexOf(fam(2));
+    const memories = {
+      m0a: { ...emptyMemory("m0a"), inferred: { tier: "advanced" as const, from: ["x"], at: "2026-11-17T00:00:00Z" } },
+      m1a: { ...emptyMemory("m1a"), planTier: "advanced" as const },
+    };
+    expect(suggestTiers({ memories, index: idx, patternOf }).size).toBe(0);
+  });
+
+  it("(d) needs ceil(families / 3) tested families", () => {
+    const idx = indexOf(fam(7));
+    const two = { m0a: at("advanced", "m0a"), m1a: at("advanced", "m1a") };
+    expect(suggestTiers({ memories: two, index: idx, patternOf }).size).toBe(0);
+    const three = { ...two, m2a: at("advanced", "m2a") };
+    expect(suggestTiers({ memories: three, index: idx, patternOf }).get("m3a")?.tier).toBe("intermediate");
+  });
+
+  it("(e) patterns count separately", () => {
+    const idx = indexOf(fam(6));
+    const pat = (id: string) => (Number(id[1]) < 3 ? "squat" : "hinge");
+    const out = suggestTiers({
+      memories: { m0a: at("advanced", "m0a"), m1a: at("advanced", "m1a") },
+      index: idx,
+      patternOf: pat,
+    });
+    expect([...out.keys()].sort()).toEqual(["m2a", "m2b"]);
+  });
+
+  describe("suggestionFor", () => {
+    const idx = indexOf(fam(6));
+    const memories = { m0a: at("advanced", "m0a"), m1a: at("advanced", "m1a"), m2a: at("novice", "m2a") };
+    it("gives a tested move nothing", () => {
+      const m = { ...memories, m2a: at("beginner", "m2a") };
+      expect(suggestionFor("m2a", m, patternOf, idx)).toBeUndefined();
+    });
+    it("gives an untested move in an untested family its suggestion", () => {
+      expect(suggestionFor("m3a", memories, patternOf, idx)?.tier).toBe("intermediate");
+    });
   });
 });
