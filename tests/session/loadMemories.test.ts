@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { emptyMemory, loadMemories } from "../../src/session/history";
-import { MEMORY_KEY } from "../../src/storage/storageKeys";
+import { MEMORY_V2_KEY } from "../../src/storage/storageKeys";
 import { useMemoryStorage } from "../helpers/storage";
 
 const NOW = new Date("2026-11-17T12:00:00Z");
@@ -14,7 +14,7 @@ const inferred = (days: number) => ({
 
 describe("loadMemories refresh (#112)", () => {
   useMemoryStorage(() => ({
-    [MEMORY_KEY]: JSON.stringify({
+    [MEMORY_V2_KEY]: JSON.stringify({
       stale: { ...emptyMemory("stale"), skillTier: "elite" },
       expired: { ...emptyMemory("expired"), skillTier: "advanced", inferred: inferred(30) },
       live: { ...emptyMemory("live"), inferred: inferred(5) },

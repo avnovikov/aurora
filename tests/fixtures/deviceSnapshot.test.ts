@@ -1,19 +1,26 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { getPlanDay, listPlanDays } from "../../src/plan/planDays";
 import { loadPlanLevel } from "../../src/plan/planLevel";
 import { loadPlanQueue } from "../../src/plan/queue";
 import { resetTemplateOverridesForTests, resolveTemplate } from "../../src/plan/templates";
+import { ensureMemoryMigrated, loadLevelsToConfirm } from "../../src/session/ensureMemoryMigrated";
 import { loadHistory, loadMemories } from "../../src/session/history";
 import { loadProfile } from "../../src/settings/profile";
 import { deviceStorage, loadDeviceSnapshot } from "../helpers/deviceSnapshot";
 import { useMemoryStorage } from "../helpers/storage";
 
 const SNAPSHOT = "2026-11-17-pixel10";
+const NOW = new Date("2026-11-17T12:00:00Z");
 
 describe(`device snapshot ${SNAPSHOT}`, () => {
   useMemoryStorage(() => {
     resetTemplateOverridesForTests();
     return deviceStorage(SNAPSHOT);
+  });
+
+  // The snapshot holds memory under the v1 key; boot migrates it to v2 first.
+  beforeEach(() => {
+    ensureMemoryMigrated(NOW);
   });
 
   it("records where it came from", () => {
@@ -34,18 +41,29 @@ describe(`device snapshot ${SNAPSHOT}`, () => {
   });
 
   it("loads per-exercise memory with no session counters set", () => {
-    const memories = loadMemories();
+    const memories = loadMemories(NOW);
+    const v1Ids = Object.keys(
+      loadDeviceSnapshot(SNAPSHOT).localStorage["aurora.poc.memory.v1"] as object,
+    );
+    expect(v1Ids).toHaveLength(100);
+    for (const id of v1Ids) {
+      expect(memories[id]).toBeDefined();
+    }
+    // Still 100: the snapshot already holds a row for every id the migration or inference touches, so no inferred-only rows are added.
     expect(Object.keys(memories)).toHaveLength(100);
     const counted = Object.values(memories).filter(
       (m) => m.sessionsAtStandard > 0 || m.sessionsBelowFloor > 0,
     );
     expect(counted).toEqual([]);
-    // v1 cached tier has no evidence fields until migration (#112 Task 6) derives loggedTier from bestReps; Task 6 restores "elite" here.
-    expect(memories.calf_raise.skillTier).toBeUndefined();
+    // Migration derives loggedTier from bestReps 60.
+    expect(memories.calf_raise.skillTier).toBe("elite");
     expect(memories.calf_raise.bestReps).toBe(60);
-    // Skipped in the session: no best reps, tier from the athlete's own pick.
+    // Skipped in the session: no best reps. Its "intermediate" equals the plan level,
+    // so migration cannot tell a pick from a plan write: it becomes planTier and is listed to confirm.
     expect(memories.hf_84.bestReps).toBeUndefined();
-    expect(memories.hf_84.declaredTier).toBe("intermediate");
+    expect(memories.hf_84.declaredTier).toBeUndefined();
+    expect(memories.hf_84.planTier).toBe("intermediate");
+    expect(loadLevelsToConfirm()).toContain("hf_84");
   });
 
   it("loads the profile", () => {

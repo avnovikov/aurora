@@ -4,7 +4,7 @@ import { DEFAULT_ADDED_LOAD_KG } from "../session/setLog";
 import { createKeyValueStore } from "../storage/keyValueStore";
 import {
   HISTORY_KEY,
-  MEMORY_KEY,
+  MEMORY_V2_KEY,
   PLAN_QUEUE_KEY,
   PROFILE_KEY,
 } from "../storage/storageKeys";
@@ -15,7 +15,7 @@ import { isCoachMuted, setCoachMuted } from "../voice/coachVoice";
 const store = createKeyValueStore(PROFILE_KEY);
 const planQueueStore = createKeyValueStore(PLAN_QUEUE_KEY);
 const historyStore = createKeyValueStore(HISTORY_KEY);
-const memoryStore = createKeyValueStore(MEMORY_KEY);
+const memoryStore = createKeyValueStore(MEMORY_V2_KEY);
 
 /** Whole bpm Settings accepts for a resting pulse. */
 export const MIN_RESTING_HEART_RATE_BPM = 30;

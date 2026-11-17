@@ -62,7 +62,7 @@ interface ExerciseMemory {
     from: string[];                // supporting exercise ids
     at: string;                    // ISO, when first inferred at this tier
   };
-  failedCapTier?: SkillTier;       // rule 2 ceiling for inference
+  failedCaps?: FailedCap[];        // rule 2: one per failing exercise; each caps harder rungs
   planTier?: SkillTier;            // rule 10 default from plan level
   skillTier?: SkillTier;           // effective tier, cached (derived)
 }
@@ -74,7 +74,7 @@ interface ExerciseMemory {
 
 | Unit | Responsibility |
 |---|---|
-| `src/progress/inferTiers.ts` (new, pure) | Given memories, the family index and `now`, return every member's `inferred` (rules 1–5, 8, 9) and `failedCapTier` (rule 2). Replaces `cascadeFamilyTiers` |
+| `src/progress/inferTiers.ts` (new, pure) | Given memories, the family index and `now`, return every member's `inferred` (rules 1–5, 8, 9) and `failedCaps` (rule 2, one per failing exercise). Replaces `cascadeFamilyTiers` |
 | `src/progress/suggestTiers.ts` (new, pure) | Rule 6: per pattern, suggestions `{exerciseId, tier, fromFamilies}` for untested families. Read-only |
 | `src/session/history.ts` | `declareSkillTier` writes `declaredTier`/`declaredAt` only, then runs `inferTiers`. `recordBestReps` writes `loggedTier`/`lastSessionAt`. The new per-exercise outcome (#107) applies rule 7 |
 | `src/plan/levelDeclare.ts` | `declareLevelForDays` writes `planTier`, not `declaredTier`, and never triggers inference |
@@ -83,7 +83,7 @@ interface ExerciseMemory {
 
 ## Migration (memory v1 → v2, on load)
 
-- Keep `declaredTier` as athlete picks, with `declaredAt` = migration time. Moves in the generated plan days whose `declaredTier` equals `levelForMove(exercise, planLevel)` are **ambiguous**: they may be plan-level writes. Migrate them to `planTier` and list them once in Settings → "Levels to confirm" so the athlete can re-declare the real ones.
+- Keep `declaredTier` as athlete picks, with `declaredAt` = migration time. Any move whose `declaredTier` equals `levelForMove(exercise, planLevel)` (completed plan days are pruned, so the current days alone would miss them) is **ambiguous**: they may be plan-level writes. Migrate them to `planTier` and list them once in Settings → "Levels to confirm" so the athlete can re-declare the real ones.
 - Derive `loggedTier` from `bestReps` via standards (same as `inferTierFromBest`).
 - Drop the old cascaded `skillTier` values, then recompute through `inferTiers`.
 - Version the key (`aurora.poc.memory.v2`) or add a `schemaVersion` field. Keep v1 readable for one release.

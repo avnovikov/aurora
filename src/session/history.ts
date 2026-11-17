@@ -10,12 +10,12 @@ import { inferTiers } from "../progress/inferTiers";
 import { evidenceTier, liveInferredTier, refreshSkillTier } from "../progress/levelEvidence";
 import { inferTierFromBest, maxTier } from "../domain/skillTier";
 import { createKeyValueStore, type KeyValueStore } from "../storage/keyValueStore";
-import { HISTORY_KEY, MEMORY_KEY } from "../storage/storageKeys";
+import { HISTORY_KEY, MEMORY_V2_KEY } from "../storage/storageKeys";
 import { assertNonNegativeWholeSeconds } from "./setDuration";
 import type { SetLogEntry, WorkoutLog } from "./setLog";
 
 const historyStore = createKeyValueStore(HISTORY_KEY);
-const memoryStore = createKeyValueStore(MEMORY_KEY);
+const memoryStore = createKeyValueStore(MEMORY_V2_KEY);
 
 const EVALUATION_LABELS: Record<SessionEvaluation, string> = {
   easy: "Easy",

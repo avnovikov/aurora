@@ -4,7 +4,7 @@
 
 **Goal:** Replace the family tier cascade with evidence-based level inference (#112). Levels record their source. Untested moves are inferred only from two tested family members, one tier below the evidence. The plan level becomes a dose default, never evidence.
 
-**Architecture:** Each `ExerciseMemory` stores evidence fields: `declaredTier`, `loggedTier`, `inferred`, `failedCap`, `planTier`. `skillTier` becomes a cached value derived from those fields, refreshed on load, so every existing reader keeps working. One pure function, `inferTiers`, computes all inferred levels from the family ladder index. Declare, set logging, session close and migration call it.
+**Architecture:** Each `ExerciseMemory` stores evidence fields: `declaredTier`, `loggedTier`, `inferred`, `failedCaps` (one per failing exercise), `planTier`. `skillTier` becomes a cached value derived from those fields, refreshed on load, so every existing reader keeps working. One pure function, `inferTiers`, computes all inferred levels from the family ladder index. Declare, set logging, session close and migration call it.
 
 **Tech Stack:** TypeScript, Vitest (`npx vitest run`), `npx tsc --noEmit`, `npm run smell` (lint). No new dependencies.
 
@@ -149,7 +149,7 @@ export interface FailedCap {
   lastSessionAt?: string;
   /** Derived by `inferTiers`; never set by hand. */
   inferred?: InferredTier;
-  failedCap?: FailedCap;
+  failedCaps?: FailedCap[];
   /** Dose default from the plan level; never evidence. */
   planTier?: SkillTier;
 ```
