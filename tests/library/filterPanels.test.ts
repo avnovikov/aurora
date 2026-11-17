@@ -19,6 +19,14 @@ import {
 const panelIds = (html: string): string[] =>
   [...html.matchAll(/<details class="lib-filters" data-panel="(\w+)"/g)].map((m) => m[1]!);
 
+const FILTER_SHEET_CLOSE_BUTTON =
+  /<button type="button" class="lib-sheet-close" data-close-filters aria-label="Close filters">×<\/button>/;
+
+/** Inner HTML of each filter sheet, in panel order. */
+function filterSheetBodies(html: string): string[] {
+  return [...html.matchAll(/<div class="lib-sheet">([\s\S]*?)<\/div><\/details>/g)].map((m) => m[1]!);
+}
+
 describe("filter panels", () => {
   const html = listHtml([], new Set(), base, { jointHistory: KNEE_HISTORY });
 
@@ -58,14 +66,12 @@ describe("filter panels", () => {
   });
 
   it("puts a Filters header and close control in every sheet", () => {
-    const closeButton =
-      /<button type="button" class="lib-sheet-close" data-close-filters aria-label="Close filters">×<\/button>/;
-    const sheets = [...html.matchAll(/<div class="lib-sheet">([\s\S]*?)<\/div><\/details>/g)].map((m) => m[1]!);
+    const sheets = filterSheetBodies(html);
     expect(sheets).toHaveLength(3);
     for (const sheet of sheets) {
       expect(sheet).toMatch(/^<div class="lib-sheet-hdr">/);
       expect(sheet).toMatch(/<span class="t-label">Filters<\/span>/);
-      expect(sheet).toMatch(closeButton);
+      expect(sheet).toMatch(FILTER_SHEET_CLOSE_BUTTON);
     }
   });
 

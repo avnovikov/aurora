@@ -1,8 +1,7 @@
 /** @vitest-environment happy-dom */
 import { describe, expect, it, vi } from "vitest";
-import { filterPanelsHtml } from "../../src/library/filterPanels";
 import { mountLibraryList, type ListActions } from "../../src/library/libraryList";
-import { PANEL_STATE, SHOW_NONE } from "../helpers/libraryFilters";
+import type { FilterPanelId } from "../../src/library/filterPanels";
 
 function actions(over: Partial<ListActions> = {}): ListActions {
   return {
@@ -21,6 +20,17 @@ function actions(over: Partial<ListActions> = {}): ListActions {
   };
 }
 
+function filterPanel(root: ParentNode, panel: FilterPanelId): HTMLDetailsElement | null {
+  return root.querySelector<HTMLDetailsElement>(`details[data-panel="${panel}"]`);
+}
+
+/** Search text and chip selections the close button must not change. */
+function expectSquatBeginnerLowerFilters(root: ParentNode): void {
+  expect(root.querySelector<HTMLInputElement>("[data-search]")?.value).toBe("squat");
+  expect(root.querySelector('[data-level="beginner"]')?.getAttribute("aria-pressed")).toBe("true");
+  expect(root.querySelector('[data-area="lower"]')?.getAttribute("aria-pressed")).toBe("true");
+}
+
 describe("filter panel close", () => {
   it("closes the open sheet without clearing filters or search", () => {
     const root = document.createElement("div");
@@ -37,24 +47,14 @@ describe("filter panel close", () => {
       actions: actions({ onPanelToggle }),
     });
 
-    const details = root.querySelector<HTMLDetailsElement>('details[data-panel="body"]');
+    const details = filterPanel(root, "body");
     expect(details?.open).toBe(true);
-    expect(root.querySelector<HTMLInputElement>("[data-search]")?.value).toBe("squat");
-    expect(root.querySelector('[data-level="beginner"]')?.getAttribute("aria-pressed")).toBe("true");
-    expect(root.querySelector('[data-area="lower"]')?.getAttribute("aria-pressed")).toBe("true");
+    expectSquatBeginnerLowerFilters(root);
 
     details?.querySelector<HTMLButtonElement>("[data-close-filters]")?.click();
 
     expect(details?.open).toBe(false);
     expect(onPanelToggle).toHaveBeenCalledWith("body", false);
-    expect(root.querySelector<HTMLInputElement>("[data-search]")?.value).toBe("squat");
-    expect(root.querySelector('[data-level="beginner"]')?.getAttribute("aria-pressed")).toBe("true");
-    expect(root.querySelector('[data-area="lower"]')?.getAttribute("aria-pressed")).toBe("true");
-  });
-
-  it("renders the close control inside an opened body panel markup", () => {
-    const html = filterPanelsHtml({ ...PANEL_STATE, openPanels: ["body"] }, SHOW_NONE);
-    expect(html).toContain('data-panel="body" name="lib-filter" open');
-    expect(html).toContain('aria-label="Close filters"');
+    expectSquatBeginnerLowerFilters(root);
   });
 });
