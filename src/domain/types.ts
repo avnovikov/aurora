@@ -136,7 +136,7 @@ export interface ExerciseMemory {
   weakLinkSessionsRemaining: number;
   /** Cached effective tier (derived by refreshSkillTier); never write directly. */
   skillTier?: SkillTier;
-  /** Last manual pick from Library; wins ties with inference until best exceeds it. */
+  /** The athlete's own Library pick: tested evidence (#112). */
   declaredTier?: SkillTier;
   /** Best clean completed reps / hold seconds logged. */
   bestReps?: number;

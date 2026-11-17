@@ -1,5 +1,7 @@
 # Skill Level Inference Implementation Plan
 
+> **Approved deviations from this plan (as built):** `failedCaps` is an array, one per failing source; the ambiguity rule for declared tiers is broader than first written; `planTier` is raise-only, deferred to #115; a failure also self-caps the failing move (`{tier: stepDown(failedAt), from: itself}`) so inference cannot restore the failed tier.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Replace the family tier cascade with evidence-based level inference (#112). Levels record their source. Untested moves are inferred only from two tested family members, one tier below the evidence. The plan level becomes a dose default, never evidence.
@@ -342,7 +344,7 @@ describe("inferTiers", () => {
   it("a failure cap limits inference on harder rungs", () => {
     const capped = {
       ...emptyMemory("hollow_hold"),
-      failedCap: { tier: "beginner" as const, from: "plank", at: NOW.toISOString() },
+      failedCaps: [{ tier: "beginner" as const, from: "plank", at: NOW.toISOString() }],
     };
     const out = run({
       hf_108: declared("hf_108", "elite"),
@@ -444,8 +446,8 @@ function candidateFor(
 
 function bounded(candidate: Candidate, current: ExerciseMemory | undefined, confirming: boolean, now: Date): SkillTier {
   let tier = candidate.tier;
-  if (current?.failedCap) {
-    tier = minTier(tier, current.failedCap.tier);
+  for (const cap of current?.failedCaps ?? []) {
+    tier = minTier(tier, cap.tier);
   }
   const previous = current ? liveInferredTier(current, now) : undefined;
   if (previous && tierIndex(tier) > tierIndex(previous)) {
@@ -713,7 +715,7 @@ describe("inferred tiers at session close (#112 rule 7, rule 2)", () => {
   it("a failed set removes the inferred tier and caps harder rungs", () => {
     const out = applySetLogToMemory({ hollow_hold: inferred("hollow_hold") }, { entries: [set("hollow_hold", 6, "muscular_failure")] }, { now: NOW, index });
     expect(out.hollow_hold?.inferred).toBeUndefined();
-    expect(out.ab_wheel?.failedCap).toMatchObject({ tier: "intermediate", from: "hollow_hold" });
+    expect(out.ab_wheel?.failedCaps).toMatchObject([{ tier: "intermediate", from: "hollow_hold" }]);
   });
 });
 ```
@@ -733,7 +735,7 @@ it("logged reps write loggedTier and lastSessionAt (#112)", () => {
 - [ ] **Step 2: Run it and confirm it fails**
 
 Run: `npx vitest run tests/session/applySetLogToMemory.test.ts tests/session/skillMemory.test.ts`
-Expected: FAIL. `loggedTier` and `failedCap` are undefined.
+Expected: FAIL. `loggedTier` and `failedCaps` are undefined.
 
 - [ ] **Step 3: Implement** in `src/session/history.ts`
 
@@ -825,8 +827,14 @@ function applyLevelEvidence(
         confirmingFamilies.add(placement.familyId);
       }
       for (const [id, memory] of Object.entries(next)) {
-        if (memory.failedCap?.from === exerciseId) {
-          const { failedCap: _cleared, ...rest } = memory;
+        if (memory.failedCaps?.some((cap) => cap.from === exerciseId)) {
+          const rest = { ...memory };
+          const kept = memory.failedCaps.filter((cap) => cap.from !== exerciseId);
+          if (kept.length > 0) {
+            rest.failedCaps = kept;
+          } else {
+            delete rest.failedCaps;
+          }
           next[id] = rest;
         }
       }
@@ -838,8 +846,8 @@ function applyLevelEvidence(
           continue;
         }
         const target = next[member.id] ?? emptyMemory(member.id);
-        const tier = target.failedCap ? minTier(target.failedCap.tier, failedAt) : failedAt;
-        next[member.id] = { ...target, failedCap: { tier, from: exerciseId, at: nowIso } };
+        const others = (target.failedCaps ?? []).filter((cap) => cap.from !== exerciseId);
+        next[member.id] = { ...target, failedCaps: [...others, { tier: failedAt, from: exerciseId, at: nowIso }] };
       }
     } else {
       next[exerciseId] = { ...current, lastSessionAt: nowIso };
