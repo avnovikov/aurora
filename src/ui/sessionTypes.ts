@@ -26,12 +26,16 @@ export interface ViewState {
   log: WorkoutLog;
   workState: ActiveWorkState | null;
   restLeft: number;
+  /** Seconds left on the current warm-up / cool-down hold (0 when not holding). */
+  holdLeft: number;
+  /** Seconds left in a mid-hold "change side" pause. */
+  sideSwitchLeft: number;
   pulse: PulseWatchState;
   bpm: number | null;
   pulseStatus: string | null;
   /** Epoch ms when this session started (survives resume). */
   startedAtMs: number;
-  /** Planned total seconds used for the remaining countdown. */
+  /** Planned total seconds at session start (reference; Left uses live progress). */
   plannedTotalSeconds: number;
   /** What "Add weight" puts on (Settings → Gear), resolved once in initialState. */
   addWeightKg: number;

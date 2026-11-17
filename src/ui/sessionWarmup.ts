@@ -1,7 +1,14 @@
-import { SIDE_SWITCH_SECONDS, stationEffort, type WarmupStep } from "../rules/warmupPlan";
+import {
+  SIDE_SWITCH_SECONDS,
+  sideSwitchAt,
+  stationEffort,
+  type WarmupStep,
+} from "../rules/warmupPlan";
 import { speakExactLine } from "../voice/coachVoice";
 import { holdCueSchedule, type HoldCueEvent } from "../voice/holdCue";
 import type { ViewState } from "./sessionTypes";
+
+export { sideSwitchAt };
 
 export interface WarmupTimerHandle {
   clear: () => void;
@@ -17,9 +24,10 @@ export interface WarmupRunnerCallbacks {
   onSideSwitch?: () => void;
 }
 
-/** Hold second (counting down) at which a per-side station changes side. */
-export function sideSwitchAt(step: WarmupStep): number | null {
-  return step.perSide === true ? Math.floor(step.holdSeconds / 2) : null;
+/** Seed hold countdown on state before the first paint of a station. */
+export function seedStationHold(state: ViewState, step: WarmupStep | undefined): void {
+  state.holdLeft = step?.holdSeconds ?? 0;
+  state.sideSwitchLeft = 0;
 }
 
 function showSideSwitch(root: HTMLElement, secondsLeft: number | null): void {
@@ -58,9 +66,11 @@ export function startStationHold(
   const schedule =
     switchAt === null ? holdCueSchedule(step.holdSeconds, Math.random, stationEffort(step)) : [];
   const spoken = new Set<number>();
+  syncHoldProgress(state, left, switchLeft);
   paintHold(root, left, schedule);
 
   const finishHold = (): void => {
+    syncHoldProgress(state, 0, 0);
     const gap = step.gapSecondsAfter;
     if (gap > 0) {
       state.phase = "rest";
@@ -77,6 +87,7 @@ export function startStationHold(
 
   const tickSwitch = (): void => {
     switchLeft -= 1;
+    syncHoldProgress(state, left, switchLeft);
     showSideSwitch(root, switchLeft > 0 ? switchLeft : null);
   };
 
@@ -89,6 +100,7 @@ export function startStationHold(
       showSideSwitch(root, switchLeft);
       callbacks.onSideSwitch?.();
     }
+    syncHoldProgress(state, left, switchLeft);
     return left <= 0;
   };
 
@@ -113,9 +125,17 @@ export function startStationHold(
   }, 1000);
 
   return {
-    clear: () => window.clearInterval(timerId),
+    clear: () => {
+      window.clearInterval(timerId);
+      syncHoldProgress(state, 0, 0);
+    },
     finish,
   };
+}
+
+function syncHoldProgress(state: ViewState, holdLeft: number, sideSwitchLeft: number): void {
+  state.holdLeft = holdLeft;
+  state.sideSwitchLeft = sideSwitchLeft;
 }
 
 /** On-screen hold cue for a given second left; null when nothing is due. */

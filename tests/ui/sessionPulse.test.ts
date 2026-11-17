@@ -55,11 +55,14 @@ function bareState(): ViewState {
     log: createEmptyLog(),
     workState: null,
     restLeft: 0,
+    holdLeft: 0,
+    sideSwitchLeft: 0,
     pulse: { ...INITIAL_PULSE },
     bpm: null,
     pulseStatus: null,
     startedAtMs: Date.now(),
     plannedTotalSeconds: 1800,
+    addWeightKg: 0,
   };
 }
 
