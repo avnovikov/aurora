@@ -60,6 +60,25 @@ interface SwipeOptions {
   drift?: number;
   /** Where the finger lifts, as a share of the target width from its left edge. */
   releaseAt?: number;
+  /** Climb the whole drag at this rise over run (1 = 45 degrees up); overrides `drift`. */
+  slope?: number;
+}
+
+interface SwipePath {
+  x0: number;
+  x1: number;
+  y: number;
+  rise: number;
+}
+
+/** Start, release and vertical travel of a swipe across `box`. */
+function swipePath(box: { x: number; y: number; width: number; height: number }, options: SwipeOptions): SwipePath {
+  const { direction = "left", drift = 12 } = options;
+  const releaseAt = options.releaseAt ?? (direction === "left" ? 0.1 : 0.9);
+  const x0 = box.x + box.width * (direction === "left" ? 0.85 : 0.15);
+  const x1 = box.x + box.width * releaseAt;
+  const rise = options.slope === undefined ? drift : -options.slope * Math.abs(x1 - x0);
+  return { x0, x1, y: box.y + Math.min(box.height / 2, 240), rise };
 }
 
 /**
@@ -68,23 +87,19 @@ interface SwipeOptions {
  * exit or snap-back animation finish.
  */
 export async function swipe(page: Page, target: Locator, options: SwipeOptions = {}): Promise<void> {
-  const { direction = "left", steps = 12, drift = 12 } = options;
-  const releaseAt = options.releaseAt ?? (direction === "left" ? 0.1 : 0.9);
+  const { steps = 12 } = options;
   const box = await target.boundingBox();
   if (!box) {
     throw new Error("swipe target is not on screen");
   }
-  const y = box.y + Math.min(box.height / 2, 240);
-  const [from, to] = direction === "left" ? [0.85, releaseAt] : [0.15, releaseAt];
-  const x0 = box.x + box.width * from;
-  const x1 = box.x + box.width * to;
+  const { x0, x1, y, rise } = swipePath(box, options);
   const cdp = await page.context().newCDPSession(page);
   await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: x0, y }] });
   for (let i = 1; i <= steps; i += 1) {
     const t = i / steps;
     await cdp.send("Input.dispatchTouchEvent", {
       type: "touchMove",
-      touchPoints: [{ x: x0 + (x1 - x0) * t, y: y + drift * t }],
+      touchPoints: [{ x: x0 + (x1 - x0) * t, y: y + rise * t }],
     });
     await page.clock.runFor(FRAME_MS);
   }

@@ -72,13 +72,13 @@ function wireExcludeToggle(root: HTMLElement, actions: DetailActions, excluded: 
   });
 }
 
-/** Left-to-right swipe returns to the list; vertical scroll still wins when it dominates. */
+/** Left-to-right swipe returns to the list; any steeper drag is left to scroll. */
 function wireBackSwipe(root: HTMLElement, onBack: () => void): void {
   const stage = root.querySelector<HTMLElement>("[data-back-swipe]");
   if (!stage) {
     throw new Error("Library detail missing data-back-swipe stage");
   }
-  wireSwipe(stage, onBack, { allow: backOnly, preferVerticalScroll: true });
+  wireSwipe(stage, onBack, { allow: backOnly });
 }
 
 export function mountLibraryDetail(

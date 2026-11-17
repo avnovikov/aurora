@@ -47,9 +47,7 @@ test.describe("warm-up swipe", () => {
 
   test("a diagonal swipe (up and left at 45 degrees) snaps back", async ({ page }) => {
     const first = await currentMove(page);
-    const box = await stage(page, "station").boundingBox();
-    const run = 0.75 * (box?.width ?? 0);
-    await swipe(page, stage(page, "station"), { drift: -run });
+    await swipe(page, stage(page, "station"), { slope: 1 });
     await expect(moveName(page)).toHaveText(first);
   });
 
