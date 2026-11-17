@@ -91,10 +91,13 @@ describe("todayPulseHtml", () => {
 });
 
 describe("wireTodayPulse", () => {
-  it("auto-connects when native BLE is available and shows BPM", async () => {
+  it("does not auto-connect; Connect shows BPM when native BLE is available", async () => {
     setBleHeartRateClientForTests(mockClient());
     const { root, status, chip, connect } = fakePulseRoot();
     const dispose = wireTodayPulse(root);
+    expect(connect.hidden).toBe(false);
+    expect(status.textContent).toBe("");
+    connect.click();
     await vi.waitFor(() => {
       expect(status.textContent).toMatch(/connected/i);
     });
@@ -121,6 +124,7 @@ describe("wireTodayPulse", () => {
     );
     const { root, status, connect } = fakePulseRoot();
     wireTodayPulse(root);
+    connect.click();
     await vi.waitFor(() => {
       expect(status.textContent).toMatch(/cancelled/i);
     });
