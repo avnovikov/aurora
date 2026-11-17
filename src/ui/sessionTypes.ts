@@ -6,7 +6,8 @@ import type { PulseWatchState } from "../voice/pulseAlert";
 export interface SessionViewOptions {
   planned: PlannedSession;
   resume?: PersistedSession;
-  onDone: (log: WorkoutLog) => void;
+  /** Called with the live planned session (may have been lightened mid-warmup). */
+  onDone: (log: WorkoutLog, planned: PlannedSession, startedAtMs: number) => void;
   /** The athlete's own weight from Settings; "Add weight" starts there. */
   addWeightKg?: number;
 }

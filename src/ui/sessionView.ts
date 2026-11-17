@@ -52,6 +52,16 @@ import {
   type WorkAdjustInput,
   type WorkAdjustResult,
 } from "./sessionWorkAdjust";
+import type { BpmSample } from "../pulse/warmupWoundUp";
+import {
+  warmupLightenConfirmHtml,
+  wireWarmupLightenConfirm,
+} from "./warmupLightenConfirm";
+import {
+  pendingLightenAfterWarmup,
+  resolveWarmupLightenChoice,
+  type PendingWarmupLighten,
+} from "./sessionWarmupLighten";
 
 export type { SessionViewOptions } from "./sessionTypes";
 
@@ -96,6 +106,8 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   let pulseTimer: number | null = null;
   let clockTimer: number | null = null;
   let workAdjust: WorkAdjustChrome = { swapOpen: false };
+  const warmupBpmSamples: BpmSample[] = [];
+  let pendingLighten: PendingWarmupLighten | null = null;
   const wakeLock = startWakeLock();
   const slowSetCue = createSlowSetCueController({
     speakPaceNudge: () => {
@@ -234,7 +246,51 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     resetCurrentSetProgress();
   };
 
+  const beginWorkAfterWarmup = (): void => {
+    const getReady = enterWorkAfterWarmup(options.planned, state);
+    void speakCoachLine("warmup_done");
+    paint();
+    if (getReady > 0) {
+      startRest(() => {
+        state.phase = "work";
+        paint();
+      }, true);
+    }
+  };
+
+  const resolveLightenConfirm = (acceptedLight: boolean): void => {
+    if (!pendingLighten) {
+      beginWorkAfterWarmup();
+      return;
+    }
+    options.planned = resolveWarmupLightenChoice({
+      planned: options.planned,
+      pending: pendingLighten,
+      acceptedLight,
+      sessionStartedAtMs: state.startedAtMs,
+    });
+    pendingLighten = null;
+    beginWorkAfterWarmup();
+  };
+
+  const paintLightenConfirm = (): void => {
+    const pending = pendingLighten;
+    if (!pending) {
+      return;
+    }
+    root.innerHTML = warmupLightenConfirmHtml(pending.preferLight);
+    wireWarmupLightenConfirm(root, {
+      onLight: () => resolveLightenConfirm(true),
+      onKeep: () => resolveLightenConfirm(false),
+    });
+    persist();
+  };
+
   const paint = (): void => {
+    if (pendingLighten) {
+      paintLightenConfirm();
+      return;
+    }
     if (needsWorkState(options.planned, state)) {
       state.workState = syncWorkState(options.planned, state);
     }
@@ -287,22 +343,23 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     // Defer so the Log-set / swipe pointer event cannot click through
     // into the evaluation buttons that replace this view.
     window.setTimeout(() => {
-      options.onDone(state.log);
+      options.onDone(state.log, options.planned, state.startedAtMs);
     }, 0);
   };
 
   const advanceWarmup = (): void => {
     state.warmupIndex += 1;
     if (state.warmupIndex >= options.planned.warmup.length) {
-      const getReady = enterWorkAfterWarmup(options.planned, state);
-      void speakCoachLine("warmup_done");
-      paint();
-      if (getReady > 0) {
-        startRest(() => {
-          state.phase = "work";
-          paint();
-        }, true);
+      pendingLighten = pendingLightenAfterWarmup({
+        planned: options.planned,
+        samples: warmupBpmSamples,
+        endAtMs: Date.now(),
+      });
+      if (pendingLighten) {
+        paint();
+        return;
       }
+      beginWorkAfterWarmup();
       return;
     }
     seedAndRunStationHold("warmup");
@@ -462,6 +519,9 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     onPulseBpm: (bpm) => {
       state.bpm = bpm;
       state.pulse = pulseConnectedAt(state.pulse, Date.now());
+      if (state.phase === "warmup" && !pendingLighten) {
+        warmupBpmSamples.push({ bpm, atMs: Date.now() });
+      }
       // In place: a full repaint once a second would cut off a swipe mid-drag.
       paintPulseReading(root, state);
     },

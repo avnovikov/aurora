@@ -28,6 +28,10 @@ import { renderLibraryView } from "./libraryView";
 import { overrideControlsHtml, wireOverrideControls } from "./overrideControls";
 import { advancePlanAfterSession, renderPlanView } from "./planView";
 import { renderProgressView } from "./progressView";
+import {
+  clearPendingLightenGate,
+  reinforceFromSessionEvaluation,
+} from "../pulse/lightenLearning";
 import { commitSessionEvaluation } from "./sessionEvaluation";
 import { renderSessionView } from "./sessionView";
 import { renderOnboarding } from "./onboarding";
@@ -60,7 +64,8 @@ export function bootApp(root: HTMLElement): void {
       planned: resume.planned,
       resume,
       addWeightKg: profile.addWeightKg,
-      onDone: (log) => showEvaluation(root, log, resume.planned),
+      onDone: (log, planned, startedAtMs) =>
+        showEvaluation(root, log, planned, startedAtMs),
     });
     return;
   }
@@ -127,6 +132,7 @@ function showTodayHome(root: HTMLElement): void {
   renderCheckIn(root.querySelector("[data-checkin]")!, {
     onStart: (readiness) => {
       clearTodayPulse();
+      clearPendingLightenGate();
       void (async () => {
         await unlockCoachAudio();
         await speakCoachLine("session_start");
@@ -152,7 +158,8 @@ function showTodayHome(root: HTMLElement): void {
       renderSessionView(root, {
         planned,
         addWeightKg: profile.addWeightKg,
-        onDone: (log) => showEvaluation(root, log, planned),
+        onDone: (log, livePlanned, startedAtMs) =>
+          showEvaluation(root, log, livePlanned, startedAtMs),
       });
     },
   }, `Start ${dayTitle(next)}`);
@@ -162,6 +169,7 @@ function showEvaluation(
   root: HTMLElement,
   log: WorkoutLog,
   planned: PlannedSession,
+  startedAtMs: number,
 ): void {
   renderEvaluationView(root, log.entries.length, (evaluation: SessionEvaluation) => {
     const result = commitSessionEvaluation({
@@ -172,6 +180,7 @@ function showEvaluation(
     });
     appendHistory(result.history);
     saveMemories(result.memories);
+    reinforceFromSessionEvaluation(evaluation, startedAtMs);
     advancePlanAfterSession();
     showTab(root, "today");
   });
