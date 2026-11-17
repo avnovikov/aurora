@@ -58,20 +58,14 @@ describe("filter panels", () => {
   });
 
   it("puts a Filters header and close control in every sheet", () => {
+    const closeButton =
+      /<button type="button" class="lib-sheet-close" data-close-filters aria-label="Close filters">×<\/button>/;
     const sheets = [...html.matchAll(/<div class="lib-sheet">([\s\S]*?)<\/div><\/details>/g)].map((m) => m[1]!);
     expect(sheets).toHaveLength(3);
     for (const sheet of sheets) {
-      expect(sheet).toMatch(/<div class="lib-sheet-hdr">/);
+      expect(sheet).toMatch(/^<div class="lib-sheet-hdr">/);
       expect(sheet).toMatch(/<span class="t-label">Filters<\/span>/);
-      expect(sheet).toMatch(
-        /<button type="button" class="lib-sheet-close" data-close-filters aria-label="Close filters">×<\/button>/,
-      );
-      const bodyStart = Math.min(
-        ...["chip-row-label", "data-kind", "role=\"group\""]
-          .map((needle) => sheet.indexOf(needle))
-          .filter((index) => index >= 0),
-      );
-      expect(sheet.indexOf("lib-sheet-hdr")).toBeLessThan(bodyStart);
+      expect(sheet).toMatch(closeButton);
     }
   });
 
