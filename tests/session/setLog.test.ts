@@ -56,6 +56,14 @@ describe("appendSet", () => {
       appendSet(createEmptyLog(), validSet({ setIndex: 0 })),
     ).toThrow("setIndex must be >= 1");
   });
+
+  it("stores optional whole-second durationSeconds", () => {
+    const log = appendSet(createEmptyLog(), validSet({ durationSeconds: 42 }));
+    expect(log.entries[0]?.durationSeconds).toBe(42);
+    expect(() => appendSet(createEmptyLog(), validSet({ durationSeconds: -1 }))).toThrow(
+      /durationSeconds/,
+    );
+  });
 });
 
 describe("editNextReps", () => {
@@ -96,13 +104,14 @@ describe("editAddedLoad", () => {
 });
 
 describe("workStateAfterLoggedSet", () => {
-  it("sticks logged reps for the next set and clears load", () => {
+  it("sticks logged reps for the next set and clears load and set clock", () => {
     const next = workStateAfterLoggedSet(
       activeState({
         setIndex: 1,
         prescribedReps: 8,
         nextRepsOverride: 6,
         addedLoadKg: 12,
+        setStartedAtMs: 1_700_000_000_000,
       }),
       2,
       6,
@@ -112,6 +121,7 @@ describe("workStateAfterLoggedSet", () => {
     expect(next.prescribedReps).toBe(6);
     expect(next.nextRepsOverride).toBe(6);
     expect(next.addedLoadKg).toBe(0);
+    expect(next.setStartedAtMs).toBeUndefined();
     expect(prescribedForNextSet(next)).toBe(6);
   });
 

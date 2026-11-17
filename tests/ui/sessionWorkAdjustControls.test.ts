@@ -55,6 +55,8 @@ function handlers(over: Partial<SessionControlHandlers> = {}): SessionControlHan
     onWorkNever: vi.fn(),
     onWorkSwapPick: vi.fn(),
     onWorkUndo: vi.fn(),
+    onWorkSetEnding: vi.fn(),
+    onSlowSetArmed: vi.fn(),
     onFinishAll: vi.fn(),
     onStartCooldown: vi.fn(),
     onSkipCooldown: vi.fn(),

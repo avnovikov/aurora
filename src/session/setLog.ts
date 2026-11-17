@@ -1,4 +1,5 @@
 import type { StopReason } from "../domain/types";
+import { assertNonNegativeWholeSeconds } from "./setDuration";
 
 /** Prefill when the athlete turns on optional added load for a set. */
 export const DEFAULT_ADDED_LOAD_KG = 12;
@@ -13,6 +14,8 @@ export interface SetLogEntry {
   readonly addedLoadKg: number;
   readonly stopReason: StopReason;
   readonly loggedAt: string;
+  /** Elapsed work time for this set (rep sets); omitted on skip. */
+  readonly durationSeconds?: number;
 }
 
 export interface ActiveWorkState {
@@ -22,6 +25,8 @@ export interface ActiveWorkState {
   prescribedReps: number;
   addedLoadKg: number;
   nextRepsOverride?: number;
+  /** When this work screen opened (rep-set duration clock). */
+  setStartedAtMs?: number;
 }
 
 export interface WorkoutLog {
@@ -74,6 +79,7 @@ export function workStateAfterLoggedSet(
     prescribedReps: loggedReps,
     nextRepsOverride: loggedReps,
     addedLoadKg: 0,
+    setStartedAtMs: undefined,
   };
 }
 
@@ -107,4 +113,7 @@ function assertAppendable(
   assertPositiveInteger(entry.setIndex, "setIndex must be >= 1");
   assertPositiveInteger(entry.prescribedReps, "prescribedReps must be >= 1");
   assertNonNegativeFinite(entry.completedReps, "completedReps must be >= 0");
+  if (entry.durationSeconds !== undefined) {
+    assertNonNegativeWholeSeconds(entry.durationSeconds);
+  }
 }

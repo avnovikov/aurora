@@ -18,6 +18,7 @@ export type CoachLineId =
   | "warmup_done"
   | "change_side"
   | "set_logged"
+  | "set_pace_nudge"
   | "session_done";
 
 export interface CoachLine {
@@ -135,6 +136,21 @@ const SESSION: CoachLine[] = [
     id: "set_logged",
     assetKey: "set_logged_c",
     text: "Logged. Take the rest.",
+  },
+  {
+    id: "set_pace_nudge",
+    assetKey: "set_pace_nudge",
+    text: "Last set ran long — keep these crisp.",
+  },
+  {
+    id: "set_pace_nudge",
+    assetKey: "set_pace_nudge_b",
+    text: "Over two minutes last time — smoother tempo, mate.",
+  },
+  {
+    id: "set_pace_nudge",
+    assetKey: "set_pace_nudge_c",
+    text: "That last one dragged — nice clean reps this set.",
   },
   {
     id: "session_done",

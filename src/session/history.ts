@@ -4,6 +4,7 @@ import type { Exercise, ExerciseMemory, SkillTier } from "../domain/types";
 import type { HistoryEntry, SessionEvaluation } from "../domain/program";
 import { cascadeFamilyTiers } from "../progress/cascadeFamilyTiers";
 import { effectiveSkillTier } from "../rules/skillDose";
+import { assertNonNegativeWholeSeconds } from "./setDuration";
 
 const HISTORY_KEY = "aurora.poc.history.v1";
 const MEMORY_KEY = "aurora.poc.memory.v1";
@@ -120,6 +121,30 @@ export function recordBestReps(
     [exerciseId]: {
       ...withBest,
       skillTier,
+    },
+  };
+}
+
+/**
+ * Fold one logged rep-set duration into the exercise's rolling average.
+ */
+export function recordSetDuration(
+  memories: Record<string, ExerciseMemory>,
+  exerciseId: string,
+  durationSeconds: number,
+): Record<string, ExerciseMemory> {
+  assertNonNegativeWholeSeconds(durationSeconds);
+  const current = memories[exerciseId] ?? emptyMemory(exerciseId);
+  const sampleCount = current.setDurationSampleCount ?? 0;
+  const previousAvg = current.avgSetDurationSeconds ?? 0;
+  const nextCount = sampleCount + 1;
+  const nextAvg = Math.round((previousAvg * sampleCount + durationSeconds) / nextCount);
+  return {
+    ...memories,
+    [exerciseId]: {
+      ...current,
+      avgSetDurationSeconds: nextAvg,
+      setDurationSampleCount: nextCount,
     },
   };
 }

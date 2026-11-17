@@ -55,6 +55,8 @@ function handlers(): SessionControlHandlers {
     onWorkNever: vi.fn(),
     onWorkSwapPick: vi.fn(),
     onWorkUndo: vi.fn(),
+    onWorkSetEnding: vi.fn(),
+    onSlowSetArmed: vi.fn(),
     onFinishAll: vi.fn(),
     onStartCooldown: vi.fn(),
     onSkipCooldown: vi.fn(),
@@ -120,8 +122,22 @@ describe("completeSet sticky reps", () => {
     completeSet(planned, state, "skipped", h);
 
     expect(state.log.entries[0]?.completedReps).toBe(0);
+    expect(state.log.entries[0]?.durationSeconds).toBeUndefined();
     expect(h.onFinishExercise).toHaveBeenCalledWith(undefined);
     expect(state.workState?.prescribedReps).toBe(before);
+  });
+
+  it("logs durationSeconds from setStartedAtMs and arms a slow-set cue past two minutes", () => {
+    const planned = planLegs();
+    const state = workState(planned);
+    state.workState = { ...state.workState!, setStartedAtMs: Date.now() - 130_000 };
+    const h = handlers();
+
+    completeSet(planned, state, "completed", h);
+
+    expect(state.log.entries[0]?.durationSeconds).toBeGreaterThan(120);
+    expect(h.onWorkSetEnding).toHaveBeenCalledWith(planned.work[0]!.exerciseId);
+    expect(h.onSlowSetArmed).toHaveBeenCalledWith(planned.work[0]!.exerciseId);
   });
 
   it("after the last set, rests before the next exercise using that slot's rest", () => {

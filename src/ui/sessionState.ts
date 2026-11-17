@@ -151,14 +151,41 @@ export function syncWorkState(
   if (!item) {
     return null;
   }
+  const prior = state.workState;
+  const keepClock = isSameActiveSet(prior, item, state.setIndex);
   return {
     slotId: item.slotId,
     exerciseId: item.exerciseId,
     setIndex: state.setIndex,
     prescribedReps: item.dose.reps,
     addedLoadKg: item.dose.addedLoadKg,
-    nextRepsOverride: state.workState?.nextRepsOverride,
+    nextRepsOverride: prior?.nextRepsOverride,
+    setStartedAtMs: keepClock ? prior.setStartedAtMs : undefined,
   };
+}
+
+/** Start the set clock once per painted work set (rep sets only; caller gates). */
+export function ensureSetClockStarted(
+  work: ActiveWorkState,
+  nowMs: number = Date.now(),
+): ActiveWorkState {
+  if (work.setStartedAtMs !== undefined) {
+    return work;
+  }
+  return { ...work, setStartedAtMs: nowMs };
+}
+
+function isSameActiveSet(
+  prior: ActiveWorkState | null | undefined,
+  item: PlannedWorkItem,
+  setIndex: number,
+): prior is ActiveWorkState {
+  return (
+    prior != null &&
+    prior.slotId === item.slotId &&
+    prior.exerciseId === item.exerciseId &&
+    prior.setIndex === setIndex
+  );
 }
 
 function restoreWorkState(

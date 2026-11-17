@@ -123,6 +123,10 @@ export interface ExerciseMemory {
   declaredTier?: SkillTier;
   /** Best clean completed reps / hold seconds logged. */
   bestReps?: number;
+  /** Rolling mean duration of logged rep sets (seconds). */
+  avgSetDurationSeconds?: number;
+  /** How many set durations feed `avgSetDurationSeconds`. */
+  setDurationSampleCount?: number;
 }
 
 export interface Readiness {

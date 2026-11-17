@@ -29,15 +29,18 @@ import {
   initialState,
   needsWorkState,
   persistPhase,
+  ensureSetClockStarted,
   startCooldown,
   syncWorkState,
 } from "./sessionState";
+import { loadMemories } from "../session/history";
 import { pulseConnectedAt, pulseDisconnected } from "./pulseState";
 import { attachSessionPulse, paintPulseReading } from "./sessionPulse";
 import type { SessionViewOptions } from "./sessionTypes";
 import { startStationHold, type WarmupTimerHandle } from "./sessionWarmup";
 import { prefetchDoodles } from "../doodles/doodleMarkup";
 import { loadAthleteState } from "./athleteState";
+import { createSlowSetCueController } from "./slowSetCue";
 import {
   applyEasierWork,
   applyNeverAgainWork,
@@ -67,6 +70,23 @@ interface WorkAdjustChrome {
   undoWorkIndex?: number;
 }
 
+function exerciseForWorkItem(item: PlannedWorkItem | null) {
+  if (!item) {
+    return undefined;
+  }
+  return EXERCISE_GRAPH[item.exerciseId];
+}
+
+function isHoldWorkItem(item: PlannedWorkItem | null): boolean {
+  const exercise = exerciseForWorkItem(item);
+  return exercise !== undefined && resolveExerciseTiming(exercise).effort === "hold";
+}
+
+function isRepWorkItem(item: PlannedWorkItem | null): boolean {
+  const exercise = exerciseForWorkItem(item);
+  return exercise !== undefined && resolveExerciseTiming(exercise).effort !== "hold";
+}
+
 export function renderSessionView(root: HTMLElement, options: SessionViewOptions): void {
   prefetchSessionDoodles(options.planned);
   const state = initialState(options);
@@ -76,12 +96,19 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   let clockTimer: number | null = null;
   let workAdjust: WorkAdjustChrome = { swapOpen: false };
   const wakeLock = startWakeLock();
+  const slowSetCue = createSlowSetCueController({
+    speakPaceNudge: () => {
+      void speakCoachLine("set_pace_nudge");
+    },
+    memoryFor: (exerciseId) => loadMemories()[exerciseId],
+  });
 
   const clearWorkTimers = (): void => {
     restHandle?.clear();
     restHandle = null;
     warmupHandle?.clear();
     warmupHandle = null;
+    slowSetCue.clear();
   };
 
   const dispose = (): void => {
@@ -210,8 +237,19 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     if (needsWorkState(options.planned, state)) {
       state.workState = syncWorkState(options.planned, state);
     }
+    const workItem = currentWork(options.planned, state);
+    const repWork = isRepWorkItem(workItem);
+    if (state.phase === "work" && state.workState && repWork) {
+      state.workState = ensureSetClockStarted(state.workState);
+    }
     root.innerHTML = shellHtml(options.planned, state, workAdjustUi());
     wireControls();
+    slowSetCue.scheduleIfNeeded({
+      phase: state.phase,
+      setIndex: state.setIndex,
+      item: workItem,
+      isRepWork: repWork,
+    });
     persist();
   };
 
@@ -317,17 +355,6 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     }
   };
 
-  const timedWorkItem = (item: PlannedWorkItem | null): boolean => {
-    if (!item) {
-      return false;
-    }
-    const exercise = EXERCISE_GRAPH[item.exerciseId];
-    if (!exercise) {
-      return false;
-    }
-    return resolveExerciseTiming(exercise).effort === "hold";
-  };
-
   const finishExercise = (restBeforeNext?: number): void => {
     // Keep Never-again Undo across advance (plan/exclusion restore); drop live-item snapshot.
     if (workAdjust.undo) {
@@ -361,7 +388,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
           paint();
         },
         true,
-        timedWorkItem(currentWork(options.planned, state)),
+        isHoldWorkItem(currentWork(options.planned, state)),
       );
       return;
     }
@@ -372,7 +399,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   const handlers: SessionControlHandlers = {
     onPaint: paint,
     onStartRest: (withVoice, onDone) =>
-      startRest(onDone, withVoice, timedWorkItem(currentWork(options.planned, state))),
+      startRest(onDone, withVoice, isHoldWorkItem(currentWork(options.planned, state))),
     onFinishExercise: finishExercise,
     onSkipRest: skipRest,
     onFinishStation: () => warmupHandle?.finish(),
@@ -404,6 +431,12 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       restoreLiveItemAfterUndo();
       workAdjust = { swapOpen: false, status: `Restored ${restored.restoredName}` };
       paint();
+    },
+    onWorkSetEnding: (exerciseId) => {
+      slowSetCue.cancelFor(exerciseId);
+    },
+    onSlowSetArmed: (exerciseId) => {
+      slowSetCue.arm(exerciseId);
     },
     onFinishAll: finishAll,
     onStartCooldown: () => {
