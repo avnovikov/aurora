@@ -11,12 +11,14 @@ import {
   shoutPulseNotReadable,
 } from "../voice/pulseAlert";
 import { excludeExercise } from "../plan/exclusions";
+import { swapChoices, undoExclude, type ExcludeUndo } from "../plan/dayEdits";
 import { rewriteWarmupStepsAfterExclude } from "../rules/resolveWarmupStations";
-import { shellHtml } from "./sessionChalk";
+import { shellHtml, type WorkAdjustUi } from "./sessionChalk";
 import { wireSessionControls, type SessionControlHandlers } from "./sessionControls";
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import { resolveExerciseTiming } from "../domain/timing";
 import type { PlannedWorkItem } from "../rules/planSession";
+import { displayExerciseName } from "../library/displayName";
 import { startRestTimer, type RestTimerHandle } from "./sessionRest";
 import {
   advanceCooldown,
@@ -35,6 +37,16 @@ import { attachSessionPulse, paintPulseReading } from "./sessionPulse";
 import type { SessionViewOptions } from "./sessionTypes";
 import { startStationHold, type WarmupTimerHandle } from "./sessionWarmup";
 import { prefetchDoodles } from "../doodles/doodleMarkup";
+import { loadAthleteState } from "./athleteState";
+import {
+  applyEasierWork,
+  applyNeverAgainWork,
+  applySkipToday,
+  applySwapWork,
+  dayExerciseIds,
+  easierAvailable,
+  type WorkAdjustResult,
+} from "./sessionWorkAdjust";
 
 export type { SessionViewOptions } from "./sessionTypes";
 
@@ -46,6 +58,14 @@ function prefetchSessionDoodles(planned: SessionViewOptions["planned"]): void {
   ]);
 }
 
+interface WorkAdjustChrome {
+  swapOpen: boolean;
+  status?: string;
+  undo?: ExcludeUndo | null;
+  previousItem?: PlannedWorkItem;
+  undoWorkIndex?: number;
+}
+
 export function renderSessionView(root: HTMLElement, options: SessionViewOptions): void {
   prefetchSessionDoodles(options.planned);
   const state = initialState(options);
@@ -53,6 +73,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   let warmupHandle: WarmupTimerHandle | null = null;
   let pulseTimer: number | null = null;
   let clockTimer: number | null = null;
+  let workAdjust: WorkAdjustChrome = { swapOpen: false };
   const wakeLock = startWakeLock();
 
   const clearWorkTimers = (): void => {
@@ -91,11 +112,61 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     left.textContent = formatClock(clock.remainingSeconds);
   };
 
+  const clearWorkAdjustNotice = (): void => {
+    workAdjust = { swapOpen: false };
+  };
+
+  const workAdjustUi = (): WorkAdjustUi | null => {
+    if (state.phase !== "work") {
+      return null;
+    }
+    const item = currentWork(options.planned, state);
+    if (!item) {
+      return null;
+    }
+    const athlete = loadAthleteState();
+    const swapOptions = workAdjust.swapOpen
+      ? swapChoices(item.exerciseId, athlete, dayExerciseIds(options.planned, state.workIndex)).map((exercise) => ({
+          id: exercise.id,
+          name: displayExerciseName(exercise.name),
+        }))
+      : [];
+    return {
+      easierAvailable: easierAvailable(options.planned, state.workIndex, athlete),
+      swapOpen: workAdjust.swapOpen,
+      swapOptions,
+      status: workAdjust.status,
+      showUndo: Boolean(workAdjust.undo),
+    };
+  };
+
+  const resetCurrentSetProgress = (): void => {
+    state.setIndex = 1;
+    state.workState = syncWorkState(options.planned, state);
+  };
+
+  const adoptAdjustResult = (result: WorkAdjustResult): void => {
+    options.planned.work = result.planned.work;
+    workAdjust = {
+      swapOpen: false,
+      status: result.status,
+      undo: result.undo,
+      previousItem: result.previousItem,
+      undoWorkIndex: result.undo ? state.workIndex : undefined,
+    };
+    if (result.finishExercise) {
+      finishExercise();
+      return;
+    }
+    resetCurrentSetProgress();
+    paint();
+  };
+
   const paint = (): void => {
     if (needsWorkState(options.planned, state)) {
       state.workState = syncWorkState(options.planned, state);
     }
-    root.innerHTML = shellHtml(options.planned, state);
+    root.innerHTML = shellHtml(options.planned, state, workAdjustUi());
     wireControls();
     persist();
   };
@@ -214,6 +285,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   };
 
   const finishExercise = (restBeforeNext?: number): void => {
+    clearWorkAdjustNotice();
     state.workIndex += 1;
     state.setIndex = 1;
     state.workState = null;
@@ -259,6 +331,72 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       );
       // Keep the hold running; only persist the rewritten list.
       persist();
+    },
+    onWorkSwap: () => {
+      workAdjust = { swapOpen: !workAdjust.swapOpen };
+      paint();
+    },
+    onWorkEasier: () => {
+      try {
+        adoptAdjustResult(
+          applyEasierWork({
+            planned: options.planned,
+            workIndex: state.workIndex,
+            athlete: loadAthleteState(),
+          }),
+        );
+      } catch (error) {
+        workAdjust = {
+          swapOpen: false,
+          status: error instanceof Error ? error.message : "No easier step",
+        };
+        paint();
+      }
+    },
+    onWorkSkipToday: () => {
+      const result = applySkipToday();
+      workAdjust = { swapOpen: false, status: result.status };
+      finishExercise();
+    },
+    onWorkNever: () => {
+      adoptAdjustResult(
+        applyNeverAgainWork({
+          planned: options.planned,
+          workIndex: state.workIndex,
+          athlete: loadAthleteState(),
+        }),
+      );
+    },
+    onWorkSwapPick: (exerciseId) => {
+      adoptAdjustResult(
+        applySwapWork(
+          {
+            planned: options.planned,
+            workIndex: state.workIndex,
+            athlete: loadAthleteState(),
+          },
+          exerciseId,
+        ),
+      );
+    },
+    onWorkUndo: () => {
+      if (!workAdjust.undo) {
+        return;
+      }
+      const restored = undoExclude(workAdjust.undo);
+      if (
+        workAdjust.previousItem &&
+        workAdjust.undoWorkIndex === state.workIndex &&
+        state.phase === "work"
+      ) {
+        options.planned.work[state.workIndex] = workAdjust.previousItem;
+        resetCurrentSetProgress();
+      }
+      workAdjust = {
+        swapOpen: false,
+        status: `Restored ${restored.restoredName}`,
+      };
+      paint();
     },
     onFinishAll: finishAll,
     onStartCooldown: () => {
