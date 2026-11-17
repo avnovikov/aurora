@@ -247,15 +247,25 @@ function lateralStep(): Pose {
   };
 }
 
-/** Sat into the near leg; the far leg long and straight. */
+/** Near foot of the lateral lunge bottom; the hips sit out over it. */
+const LATERAL_NEAR: Point = [-170, 0];
+const LATERAL_DOWN_X = -110;
+
+/**
+ * Sat into the near leg; the far leg long and locked straight (far hip to ankle
+ * is the full leg length, so it cannot read as a sumo squat).
+ */
 function lateralDown(): Pose {
-  const pelvis: Point = [-84, -104];
+  const farHipX = LATERAL_DOWN_X + 8;
+  const dx = LATERAL_FAR[0] - farHipX;
+  const pelvis: Point = [LATERAL_DOWN_X, round(-Math.sqrt(173.8 ** 2 - dx * dx))];
   return {
     pelvis,
     chest: [pelvis[0], pelvis[1] - 80],
     ...chestHands(pelvis),
-    knees: { near: { bend: 1 }, far: { bend: -1 } },
-    feet: { near: [-150, 0], far: LATERAL_FAR },
+    // Far knee pinned on the hip-ankle line so the locked leg draws dead straight.
+    knees: { near: { bend: 1 }, far: { at: along([farHipX, pelvis[1]], angle([farHipX, pelvis[1]], LATERAL_FAR), 88) } },
+    feet: { near: LATERAL_NEAR, far: LATERAL_FAR },
     toes: { near: 180, far: 0 },
   };
 }
@@ -310,68 +320,7 @@ function lateralWalk(nearX: number, farX: number, lift?: Legs): Pose {
   };
 }
 
-// ---------------------------------------------------------------- curtsy lunge (front view)
-
-/** Knee between `hip` and `ankle` (thigh 88, shin 86), on the -x side of the line between them. */
-function outerKnee(hip: Point, ankle: Point): Point {
-  const d = Math.hypot(ankle[0] - hip[0], ankle[1] - hip[1]);
-  const a = (88 * 88 - 86 * 86 + d * d) / (2 * d);
-  const h = Math.sqrt(Math.max(0, 88 * 88 - a * a));
-  const ux = (ankle[0] - hip[0]) / d;
-  const uy = (ankle[1] - hip[1]) / d;
-  const mid: Point = [hip[0] + ux * a, hip[1] + uy * a];
-  const k1: Point = [round(mid[0] - uy * h), round(mid[1] + ux * h)];
-  const k2: Point = [round(mid[0] + uy * h), round(mid[1] - ux * h)];
-  return k1[0] < k2[0] ? k1 : k2;
-}
-
-function curtsyStand(): Pose {
-  const pelvis: Point = [-14, -172];
-  return {
-    pelvis,
-    chest: [pelvis[0], pelvis[1] - 80],
-    ...frontHandsOnHips(pelvis),
-    knees: { near: { bend: 1 }, far: { bend: -1 } },
-    feet: { near: [-36, 0], far: [8, 0] },
-    toes: { near: 180, far: 0 },
-  };
-}
-
-/**
- * The far foot crosses behind the near foot onto its ball; `depth` 1 is the
- * bottom, with the back knee dropped low behind the front shin.
- */
-function curtsy(depth: 0 | 1): Pose {
-  const pelvis: Point = depth ? [-2, -126] : [-8, -162];
-  const hip: Point = [pelvis[0] + 8, pelvis[1]];
-  const backKnee = along(hip, angle(hip, depth ? [-8, -38] : [-22, -76]), 88);
-  // Front knee bends out over the little-toe side of the front foot (front-view convention).
-  const front: Point = [-36, 0];
-  const frontKnee = outerKnee([pelvis[0] - 8, pelvis[1]], front);
-  return {
-    pelvis,
-    chest: [pelvis[0], pelvis[1] - 80],
-    ...frontHandsOnHips(pelvis),
-    knees: { near: { at: frontKnee }, far: { at: backKnee } },
-    feet: { near: front, far: along(backKnee, depth ? 172 : 150, 86) },
-    toes: { near: 180, far: depth ? 100 : 110 },
-  };
-}
-
 export const BATCH_P_SPECS: DoodleSpec[] = [
-  {
-    id: "hf_81",
-    slug: "curtsy-lunge",
-    title: "Curtsy Lunge",
-    view: "front",
-    transition: 0.7,
-    frames: [
-      { hold: 0.4, pose: curtsyStand() },
-      { hold: 0, pose: curtsy(0) },
-      { hold: 0.5, pose: curtsy(1) },
-      { hold: 0, pose: curtsy(0) },
-    ],
-  },
   {
     id: "hf_82",
     slug: "lateral-lunge",

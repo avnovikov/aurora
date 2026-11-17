@@ -39,7 +39,9 @@ const CLAM_BOTTOM_FOOT = along(CLAM_BOTTOM_KNEE, 30, 86);
 
 /** Side-lying, head on the straight lower arm, knees bent, feet together; `open` (0..1) lifts the top knee. */
 function clamshell(open: number): Pose {
-  const topAnkle: Point = [round(CLAM_BOTTOM_FOOT[0] - 22 * open), round(CLAM_BOTTOM_FOOT[1] - 12 - 4 * open)];
+  // Closed: knees nearly touching. Open: the top ankle rides back over the bottom ankle so the
+  // top knee rises about twice as far as before (the 2D rig can only lift it by shortening hip-to-ankle).
+  const topAnkle: Point = [round(CLAM_BOTTOM_FOOT[0] + 6 - 40 * open), round(CLAM_BOTTOM_FOOT[1] - 12 - 10 * open)];
   return {
     pelvis: CLAM_PELVIS,
     chest: [-80, CLAM_PELVIS[1]],
@@ -97,20 +99,23 @@ function straightKickback(): Pose {
 
 /** Chair back / wall post the near hand holds. */
 const SLR_POST: Prop = { kind: "box", x: -112, y: -176, w: 14, h: 176 };
-const SLR_PELVIS: Point = [0, -171];
+/** Pelvis a full straight leg above the floor so the standing (near) leg is drawn dead straight. */
+const SLR_PELVIS: Point = [0, -173.8];
 /** Far (swinging) hip in the front view. */
-const SLR_HIP: Point = [8, -171];
+const SLR_HIP: Point = [8, SLR_PELVIS[1]];
+/** Standing (near) hip in the front view; the foot and knee sit plumb below it. */
+const SLR_STAND_X = -8;
 
 /** `deg` = leg angle from straight down, positive out to the side, negative across the standing leg. */
 function sideLegRaise(deg: number): Pose {
   const foot = along(SLR_HIP, 90 - deg, 173.6);
   return {
     pelvis: SLR_PELVIS,
-    chest: [0, -251],
+    chest: [0, SLR_PELVIS[1] - 80],
     hands: { near: [-105, -178], far: [30, -184] },
     elbows: { near: { bend: -1 }, far: { bend: -1 } },
-    knees: { far: { at: along(SLR_HIP, 90 - deg, 88) } },
-    feet: { near: [-10, 0], far: foot },
+    knees: { near: { at: [SLR_STAND_X, SLR_PELVIS[1] + 88] }, far: { at: along(SLR_HIP, 90 - deg, 88) } },
+    feet: { near: [SLR_STAND_X, 0], far: foot },
     toes: { near: 180, far: round(-deg) },
   };
 }
@@ -188,9 +193,13 @@ function pelvicTilt(pelvisY: number): Pose {
 
 // ---------------------------------------------------------------- back extension off a flat bench
 
-/** Flat bench; the hips hang just past its right end, a partner (not drawn) holds the legs. */
-const HB_BENCH: Prop = { kind: "box", x: -140, y: -108, w: 140, h: 108 };
-const HB_PELVIS: Point = [10, -120];
+/**
+ * Waist-high flat bench (or sturdy table); the hips hang just past its right end,
+ * a partner (not drawn) holds the legs. High enough that the torso can hang
+ * near-vertical with the head clear of the floor.
+ */
+const HB_BENCH: Prop = { kind: "box", x: -140, y: -150, w: 140, h: 150 };
+const HB_PELVIS: Point = [40, -162];
 
 /**
  * Face down along the bench, torso `deg` below level (0 = straight body), arms
@@ -222,6 +231,8 @@ export const BATCH_O_SPECS: DoodleSpec[] = [
     title: "Banded Clamshell",
     view: "front",
     props: [SIDE_LYING_FLOOR],
+    // The band round the thighs just above the knees, stretching as the top knee opens.
+    band: 0.8,
     transition: 1,
     frames: [
       { hold: 0.4, pose: clamshell(0) },
@@ -291,7 +302,7 @@ export const BATCH_O_SPECS: DoodleSpec[] = [
     transition: 1.2,
     frames: [
       { hold: 0.4, pose: benchExtension(0) },
-      { hold: 0.4, pose: benchExtension(42) },
+      { hold: 0.4, pose: benchExtension(80) },
     ],
   },
 ];

@@ -13,12 +13,11 @@ import { LOCKED, PLANK_FOOT, lockedShoulderY, pushUp, pushUpTop, straightBody } 
  *   ntc_lateral_plank_walk         the plank travels sideways
  *   ntc_plank_hip_dips             the hips rotate about the long axis; from the side it reads as sagging
  *
- * Also left out: hf_13 Spiderman Push-Up. At the bottom of the push-up the
- * hip is only ~40 from the elbow while the thigh is 88 long, so a knee at
- * elbow height either crosses the support arm or lands under the chest
- * (reads as kneeling). The knee travels out to the side, which only a
- * foreshortened thigh could show. The plank version works because the
- * straight-arm elbow sits a thigh's length from the hip.
+ * Also left out: hf_13 Spiderman Push-Up and ntc_spiderman_plank. The knee
+ * travels out to the side, which only a foreshortened thigh could show; from
+ * the side the plank version reads as a slow mountain climber, and at the
+ * bottom of the push-up the knee either crosses the support arm or lands under
+ * the chest (reads as kneeling).
  */
 
 /** Point `length` from `from` at `degrees` (0 = +x, 90 = down, -90 = up). */
@@ -63,49 +62,6 @@ const FE_TOP = pushUpTop(FE_HAND_X, FE_FOOT);
 const FE_BOTTOM = -46;
 
 const feetElevated = (shoulderY: number): Pose => pushUp(shoulderY, FE_HAND_X, FE_FOOT);
-
-// ---------------------------------------------------------------- spiderman push-up / plank
-
-/**
- * One knee drawn up and forward towards the same-side elbow, held off the
- * floor at the elbow's height, the shin trailing back with the foot clear of
- * the floor. The knee stops just behind the elbow so the thigh never crosses
- * the arm.
- */
-function spiderLeg(base: Pose, side: Side, gap: number, lift: number): Pose {
-  const solved = solvePose(base);
-  const pelvis = base.pelvis as Point;
-  const elbow = solved.arms[side].mid;
-  const aim: Point = [elbow[0] - gap, elbow[1] + lift];
-  const kneeAt = along(pelvis, angle(pelvis, aim), 88);
-  // Shin back towards the hips, sloping down, ankle well above the floor.
-  const dy = Math.min(-16 - kneeAt[1], 36);
-  const ankle: Point = [round(kneeAt[0] - Math.sqrt(86 ** 2 - dy * dy)), round(kneeAt[1] + dy)];
-  return {
-    ...base,
-    knees: { [side]: { at: kneeAt } },
-    feet: { ...base.feet, [side]: ankle },
-    toes: { ...base.toes, [side]: 175 },
-  };
-}
-
-/**
- * On the way: the knee swings forward under the hip as high as the floor
- * allows (the thigh is a hair longer than the hip is high), foot trailing up.
- */
-function spiderLift(side: Side): Pose {
-  const base = pushUp("top", HAND_X);
-  const kneeAt = along(base.pelvis as Point, 42, 88);
-  return {
-    ...base,
-    knees: { [side]: { at: kneeAt } },
-    feet: { ...base.feet, [side]: along(kneeAt, 198, 86) },
-    toes: { ...base.toes, [side]: 185 },
-  };
-}
-
-/** High plank with the `side` knee held up by its elbow. */
-const spiderPlank = (side: Side): Pose => spiderLeg(pushUp("top", HAND_X), side, 14, 6);
 
 // ---------------------------------------------------------------- freestanding handstand push-up
 
@@ -234,22 +190,6 @@ export const BATCH_M_SPECS: DoodleSpec[] = [
     props: [FE_BENCH],
     transition: 0.1,
     frames: smoothRep(feetElevated, FE_TOP, FE_BOTTOM, 0.4, 0.3),
-  },
-  {
-    id: "ntc_spiderman_plank",
-    slug: "spiderman-plank",
-    title: "Spiderman plank",
-    transition: 0.45,
-    frames: [
-      { hold: 0.3, pose: pushUp("top", HAND_X) },
-      { hold: 0, pose: spiderLift("near") },
-      { hold: 0.5, pose: spiderPlank("near") },
-      { hold: 0, pose: spiderLift("near") },
-      { hold: 0.3, pose: pushUp("top", HAND_X) },
-      { hold: 0, pose: spiderLift("far") },
-      { hold: 0.5, pose: spiderPlank("far") },
-      { hold: 0, pose: spiderLift("far") },
-    ],
   },
   {
     id: "hf_22",

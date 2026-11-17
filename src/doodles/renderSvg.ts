@@ -50,6 +50,22 @@ const spinePath: Path = (p) => [p.pelvis, p.waist, p.chest, p.neck, headEdge(p)]
 const armPath = (side: Side): Path => (p) => [p.chest, p.arms[side].root, p.arms[side].mid, p.arms[side].joint, p.arms[side].end];
 const legPath = (side: Side): Path => (p) => [p.pelvis, p.legs[side].root, p.legs[side].mid, p.legs[side].joint, p.legs[side].end];
 
+const onThigh = (p: Solved, side: Side, share: number): Point => {
+  const { root, mid } = p.legs[side];
+  return [root[0] + (mid[0] - root[0]) * share, root[1] + (mid[1] - root[1]) * share];
+};
+
+/** A band looped round both thighs, `share` of the way from hip to knee. */
+const bandPath = (share: number): Path => (p) => [onThigh(p, "near", share), onThigh(p, "far", share)];
+
+/** Band stroke: thinner than the limbs, in the accent colour so it reads as gear, not a bone. */
+const BAND_WIDTH = 5;
+
+function bandSvg(spec: DoodleSpec, poses: Solved[], timing: string, map: Mapper): string {
+  if (spec.band === undefined) return "";
+  return `<g style="stroke:${FOCUS_COLOUR}" stroke-width="${BAND_WIDTH}">${animatedPolyline(bandPath(spec.band), poses, timing, 1, map)}</g>`;
+}
+
 /** Segments a prop is drawn with (also used by the validator for crossings). */
 export function propSegments(prop: Prop): [Point, Point][] {
   switch (prop.kind) {
@@ -258,6 +274,7 @@ function figureSvg(spec: DoodleSpec, poses: Solved[], timing: string, map: Mappe
       timing,
     )}</circle>`,
     animatedPolyline(legPath("near"), poses, timing, 1, map),
+    bandSvg(spec, poses, timing, map),
     animatedPolyline(armPath("near"), poses, timing, 1, map),
   ].join("");
 }

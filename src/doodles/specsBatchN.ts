@@ -199,12 +199,43 @@ function reversePlank(b: number): Pose {
     wrists: { near: 0, far: 0 },
     elbows: { near: { bend: 1 }, far: { bend: 1 } },
     feet: { near: ankle, far: ankle },
-    toes: { near: 30, far: 30 },
+    toes: { near: RP_TOES, far: RP_TOES },
   };
 }
 
 /** Slope that puts the heels at `ankleY` with the body straight from the shoulders. */
 const rpSlope = (ankleY: number): number => (Math.asin((ankleY - (RP_WRIST[1] - 117.9)) / (98 + LEG)) * 180) / Math.PI;
+
+/** Heel height (ankle) in both phases; the toes point up. */
+const RP_ANKLE_Y = -10;
+const RP_TOES = -60;
+/** Where the heels rest: under the straight-line plank, so they stay put as the hips lift. */
+const RP_ANKLE_X = along([RP_WRIST[0], RP_WRIST[1] - 117.9], rpSlope(RP_ANKLE_Y), 98 + LEG)[0];
+
+/**
+ * Step 1, seated: legs long on the floor, hands on the floor behind the hips
+ * with the fingers to the feet, arms straight, torso leaning back onto them.
+ */
+function reversePlankSeated(): Pose {
+  const pelvisY = -20;
+  const pelvis: Point = [round(RP_ANKLE_X - Math.sqrt(LEG ** 2 - (RP_ANKLE_Y - pelvisY) ** 2)), pelvisY];
+  // Shoulder: 98 up the spine from the pelvis and a straight arm (117.9) from the wrist.
+  const d = distance(pelvis, RP_WRIST);
+  const a = (98 ** 2 - 117.9 ** 2 + d ** 2) / (2 * d);
+  const h = Math.sqrt(98 ** 2 - a ** 2);
+  const u: Point = [(RP_WRIST[0] - pelvis[0]) / d, (RP_WRIST[1] - pelvis[1]) / d];
+  const shoulder: Point = [pelvis[0] + u[0] * a - u[1] * h, pelvis[1] + u[1] * a + u[0] * h];
+  const ankle: Point = [RP_ANKLE_X, RP_ANKLE_Y];
+  return {
+    pelvis,
+    chest: along(pelvis, angle(pelvis, shoulder), 80),
+    hands: { near: RP_WRIST, far: RP_WRIST },
+    wrists: { near: 0, far: 0 },
+    elbows: { near: { bend: 1 }, far: { bend: 1 } },
+    feet: { near: ankle, far: ankle },
+    toes: { near: RP_TOES, far: RP_TOES },
+  };
+}
 
 // ---------------------------------------------------------------- hanging pike (copied from toes to bar)
 
@@ -227,6 +258,8 @@ function hangPike(pelvis: Point, ankle: Point, toe?: number): Pose {
     chest,
     head: along(chest, Math.min(spine + 40, -40), 54),
     hands: { near: [hand[0] + 2, hand[1]], far: [hand[0] - 2, hand[1]] },
+    // Knees pinned on the hip-ankle line so the straight legs never kink.
+    knees: { near: { at: along(pelvis, legDeg, 88) }, far: { at: along(pelvis, legDeg - 1, 88) } },
     feet: { near: ankle, far: along(pelvis, legDeg - 1, Math.min(173.85, distance(pelvis, ankle))) },
     toes: { near: toe ?? legDeg, far: toe ?? legDeg },
   };
@@ -302,11 +335,11 @@ export const BATCH_N_SPECS: DoodleSpec[] = [
     id: "wger_500",
     slug: "reverse-plank",
     title: "Reverse Plank",
-    // A hold: the hips breathe a few units.
-    transition: 1.6,
+    // Seated set-up, then lift into the straight-line plank and hold.
+    transition: 1.1,
     frames: [
-      { hold: 1.2, pose: reversePlank(rpSlope(-10)) },
-      { hold: 1.2, pose: reversePlank(rpSlope(-10) - 1) },
+      { hold: 0.6, pose: reversePlankSeated() },
+      { hold: 1.6, pose: reversePlank(rpSlope(RP_ANKLE_Y)) },
     ],
   },
   {
@@ -319,7 +352,8 @@ export const BATCH_N_SPECS: DoodleSpec[] = [
       // Dead hang, straight legs forward to an L, then on up into a pike with the feet at the bar.
       { hold: 0.4, pose: hangPike([0, -196], along([0, -196], 89, 173.85)) },
       { hold: 0.05, pose: hangPike([-6, -198], along([-6, -198], 0, 173.85)) },
-      { hold: 0.5, pose: hangPike([-80, -258], [12, -402], -20) },
+      // Ankle a full straight leg from the pelvis, so the knees do not hyperextend at the top.
+      { hold: 0.5, pose: hangPike([-80, -258], along([-80, -258], angle([-80, -258], [12, -402]), 173.85), -20) },
       { hold: 0.05, pose: hangPike([-6, -198], along([-6, -198], 0, 173.85)) },
     ],
   },
