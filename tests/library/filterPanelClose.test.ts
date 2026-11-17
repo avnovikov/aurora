@@ -43,7 +43,7 @@ describe("filter panel close", () => {
     expect(root.querySelector('[data-level="beginner"]')?.getAttribute("aria-pressed")).toBe("true");
     expect(root.querySelector('[data-area="lower"]')?.getAttribute("aria-pressed")).toBe("true");
 
-    root.querySelector<HTMLButtonElement>("[data-close-filters]")?.click();
+    details?.querySelector<HTMLButtonElement>("[data-close-filters]")?.click();
 
     expect(details?.open).toBe(false);
     expect(onPanelToggle).toHaveBeenCalledWith("body", false);
