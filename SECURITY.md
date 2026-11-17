@@ -5,7 +5,7 @@
 
 ## Purpose and scope
 
-**Aurora (Rassvet)** is a local-first Android training coach. Health and training data stay on-device (Keystore-backed `AuroraSecure`). There is no cloud account for health sync in 0.1.
+**Aurora (Rassvet)** is local-first calisthenics training on Android. Health and training data stay on-device (Keystore-backed `AuroraSecure`). There is no cloud account for health sync in 0.1.
 
 ## Supported versions
 

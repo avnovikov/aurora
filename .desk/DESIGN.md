@@ -125,7 +125,7 @@ sources:
 
 # Aurora · Rassvet
 
-A private morning training coach. You write the week as slots; the app picks exercise and dose from sleep, pulse, load, missed reps and stalls.
+Private calisthenics training. You set who you are and what to train; the app keeps a plan queue and picks exercise and dose from sleep, pulse, load, missed reps and stalls.
 
 ## Voice
 
