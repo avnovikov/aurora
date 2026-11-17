@@ -38,6 +38,14 @@ export function stage(page: Page, kind?: "station" | "rest" | "work"): Locator {
   return page.locator(kind ? `[data-swipe-stage='${kind}']` : "[data-swipe-stage]");
 }
 
+/**
+ * Work stage has a toolbar of buttons at the top; swiping the stage box can
+ * land on those and never start the gesture. Prefer the doodle/hero frame.
+ */
+export function workSwipeSurface(page: Page): Locator {
+  return page.locator("[data-swipe-stage='work'] .session-frame");
+}
+
 /** The eyebrow above the hero: "Warmup", "Rest · next …", "Set 2 of 4". */
 export function phaseLine(page: Page): Locator {
   return page.locator(".session-phase");

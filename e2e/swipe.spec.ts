@@ -8,6 +8,7 @@ import {
   startSession,
   swipe,
   swipeUntil,
+  workSwipeSurface,
 } from "./session";
 
 test.beforeEach(async ({ page }) => {
@@ -63,7 +64,7 @@ test.describe("work swipe", () => {
   });
 
   test("swiping a set logs it and starts the rest; swiping the rest starts the next set", async ({ page }) => {
-    await swipe(page, stage(page, "work"));
+    await swipe(page, workSwipeSurface(page));
     await expect(stage(page, "rest")).toBeVisible();
     await expect(phaseLine(page)).toHaveText(/^Rest · next .* Set 2 of \d+/);
     await swipe(page, stage(page, "rest"));
@@ -72,12 +73,12 @@ test.describe("work swipe", () => {
 
   test("a slow, drifting thumb swipe still counts while the timers tick", async ({ page }) => {
     // 90 moves × one frame ≈ 1.4 s of clock: the session clock ticks mid-drag.
-    await swipe(page, stage(page, "work"), { steps: 90, drift: 40 });
+    await swipe(page, workSwipeSurface(page), { steps: 90, drift: 40 });
     await expect(stage(page, "rest")).toBeVisible();
   });
 
   test("a swipe that starts on the doodle works", async ({ page }) => {
-    await swipe(page, page.locator("[data-swipe-stage='work'] .session-frame"));
+    await swipe(page, workSwipeSurface(page));
     await expect(stage(page, "rest")).toBeVisible();
   });
 });

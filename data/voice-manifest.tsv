@@ -26,6 +26,9 @@ change_side_b	en_GB-northern_english_male-medium.onnx	Other side when you're rea
 set_logged	en_GB-northern_english_male-medium.onnx	Set in the bank. Nice one.
 set_logged_b	en_GB-northern_english_male-medium.onnx	Good set — shake it out.
 set_logged_c	en_GB-northern_english_male-medium.onnx	Logged. Take the rest.
+set_pace_nudge	en_GB-northern_english_male-medium.onnx	Last set ran long — keep these crisp.
+set_pace_nudge_b	en_GB-northern_english_male-medium.onnx	Over two minutes last time — smoother tempo, mate.
+set_pace_nudge_c	en_GB-northern_english_male-medium.onnx	That last one dragged — nice clean reps this set.
 session_done	en_GB-northern_english_male-medium.onnx	Session done. Sound work today.
 session_done_b	en_GB-northern_english_male-medium.onnx	That's you finished — recover well.
 session_done_c	en_GB-northern_english_male-medium.onnx	Nice session. Cup of tea?
@@ -33,6 +36,3 @@ rest_banter	en_GB-northern_english_male-medium.onnx	Still here? Good — shake i
 rest_banter_b	en_GB-northern_english_male-medium.onnx	Resting hard is a skill, that.
 rest_banter_c	en_GB-northern_english_male-medium.onnx	Breathe. The next set's not going anywhere.
 rest_banter_d	en_GB-northern_english_male-medium.onnx	Halfway through the sit-about. You're winning.
-set_pace_nudge	en_GB-northern_english_male-medium.onnx	Last set ran long — keep these crisp.
-set_pace_nudge_b	en_GB-northern_english_male-medium.onnx	Over two minutes last time — smoother tempo, mate.
-set_pace_nudge_c	en_GB-northern_english_male-medium.onnx	That last one dragged — nice clean reps this set.
