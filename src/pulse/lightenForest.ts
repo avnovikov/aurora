@@ -16,14 +16,17 @@ const DEFAULT_TREE_COUNT = 7;
 const DEFAULT_MAX_DEPTH = 3;
 const DEFAULT_TRAIN_SEED = 42;
 
+/** A three-level encoded feature value. */
+type Level3 = 0 | 1 | 2;
+
 /** Encoded features for the tiny forest. */
 export interface LightenFeatures {
   /** {@link SLEEP_GOOD} | {@link SLEEP_FAIR} | {@link SLEEP_POOR} */
-  readonly sleep: 0 | 1 | 2;
+  readonly sleep: Level3;
   /** Joint pain count, capped at {@link MAX_PAIN_JOINTS}. */
   readonly pain: number;
   /** {@link HR_NORMAL} | {@link HR_END_ZONE_HIGH} | {@link HR_BASELINE_HIGH} */
-  readonly hr: 0 | 1 | 2;
+  readonly hr: Level3;
 }
 
 export type LightenLabel = 0 | 1;
@@ -139,21 +142,7 @@ function buildTree(
   if (depth >= maxDepth || examples.length < 2 || pure(examples)) {
     return { leaf: majority };
   }
-  let best: { feature: keyof LightenFeatures; threshold: number; score: number } | null = null;
-  for (const feature of FEATURE_KEYS) {
-    const values = [...new Set(examples.map((ex) => ex[feature]))].sort((a, b) => a - b);
-    for (const threshold of values) {
-      const left = examples.filter((ex) => ex[feature] <= threshold);
-      const right = examples.filter((ex) => ex[feature] > threshold);
-      if (left.length === 0 || right.length === 0) {
-        continue;
-      }
-      const score = weightedGini(left) * left.length + weightedGini(right) * right.length;
-      if (!best || score < best.score) {
-        best = { feature, threshold, score };
-      }
-    }
-  }
+  const best = bestSplit(examples);
   if (!best) {
     return { leaf: majority };
   }
@@ -165,6 +154,41 @@ function buildTree(
     left: buildTree(left, maxDepth, depth + 1),
     right: buildTree(right, maxDepth, depth + 1),
   };
+}
+
+interface Split {
+  feature: keyof LightenFeatures;
+  threshold: number;
+  score: number;
+}
+
+/** Lowest weighted-Gini split over every feature and threshold; first found wins ties. */
+function bestSplit(examples: readonly LightenExample[]): Split | null {
+  let best: Split | null = null;
+  for (const feature of FEATURE_KEYS) {
+    const values = [...new Set(examples.map((ex) => ex[feature]))].sort((a, b) => a - b);
+    for (const threshold of values) {
+      const score = splitScore(examples, feature, threshold);
+      if (score !== null && (!best || score < best.score)) {
+        best = { feature, threshold, score };
+      }
+    }
+  }
+  return best;
+}
+
+/** Weighted Gini of a split, or null when one side would be empty. */
+function splitScore(
+  examples: readonly LightenExample[],
+  feature: keyof LightenFeatures,
+  threshold: number,
+): number | null {
+  const left = examples.filter((ex) => ex[feature] <= threshold);
+  const right = examples.filter((ex) => ex[feature] > threshold);
+  if (left.length === 0 || right.length === 0) {
+    return null;
+  }
+  return weightedGini(left) * left.length + weightedGini(right) * right.length;
 }
 
 function walkTree(node: TreeNode, features: LightenFeatures): LightenLabel {
