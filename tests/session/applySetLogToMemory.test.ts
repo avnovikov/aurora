@@ -6,7 +6,8 @@ import {
   normalizeSessionEvaluation,
   sessionEvaluationLabel,
 } from "../../src/session/history";
-import { buildFamilyLadderIndex, type FamilyLadderIndex } from "../../src/progress/familyLadderIndex";
+import { buildFamilyLadderIndex } from "../../src/progress/familyLadderIndex";
+import { indexOf } from "../helpers/ladderIndex";
 import type { SetLogEntry, WorkoutLog } from "../../src/session/setLog";
 
 function memory(
@@ -259,23 +260,7 @@ describe("inferred tiers at session close (#112 rule 7, rule 2)", () => {
 
 describe("failure caps per source (#112 rule 2)", () => {
   const NOW = new Date("2026-11-17T12:00:00Z");
-  const index: FamilyLadderIndex = {
-    byId: new Map([
-      ["low", { id: "low", name: "Low", familyId: "f", rank: 1 }],
-      ["mid", { id: "mid", name: "Mid", familyId: "f", rank: 2 }],
-      ["high", { id: "high", name: "High", familyId: "f", rank: 3 }],
-    ]),
-    byFamily: new Map([
-      [
-        "f",
-        [
-          { id: "low", name: "Low", familyId: "f", rank: 1 },
-          { id: "mid", name: "Mid", familyId: "f", rank: 2 },
-          { id: "high", name: "High", familyId: "f", rank: 3 },
-        ],
-      ],
-    ]),
-  };
+  const index = indexOf({ f: [["low", 1], ["mid", 2], ["high", 3]] });
   const fail = (id: string) =>
     entry({ exerciseId: id, completedReps: 5, prescribedReps: 10, stopReason: "muscular_failure" });
   const pass = (id: string) =>
@@ -332,12 +317,7 @@ describe("failure caps per source (#112 rule 2)", () => {
 
 describe("a failure removes the inferred tier (#112 rule 7)", () => {
   const NOW = new Date("2026-11-17T12:00:00Z");
-  const member = (id: string, rank: number) => ({ id, name: id, familyId: "f", rank });
-  const members = [member("low", 1), member("mid", 2), member("high", 3)];
-  const index: FamilyLadderIndex = {
-    byId: new Map(members.map((m) => [m.id, m])),
-    byFamily: new Map([["f", members]]),
-  };
+  const index = indexOf({ f: [["low", 1], ["mid", 2], ["high", 3]] });
   const advanced = (id: string) => memory(id, { declaredTier: "advanced", declaredAt: NOW.toISOString() });
   const ORIGINAL_AT = "2026-11-10T12:00:00.000Z";
   const start = {
