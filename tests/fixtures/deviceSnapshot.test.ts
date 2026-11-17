@@ -27,7 +27,7 @@ describe(`device snapshot ${SNAPSHOT}`, () => {
     expect(history).toHaveLength(1);
     expect(history[0]).toMatchObject({
       templateName: "Lower body · A",
-      evaluation: "failed",
+      evaluation: "difficult", // stored as legacy "failed"; #110 reads it as difficult
       setCount: 15,
       exerciseIds: ["hf_71", "hf_84", "hf_87", "calf_raise", "wger_1605"],
     });
