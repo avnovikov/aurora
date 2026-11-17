@@ -1,5 +1,5 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
-import type { Exercise, ExerciseMemory, SkillTier } from "../domain/types";
+import type { Exercise, ExerciseMemory, FailedCap, SkillTier } from "../domain/types";
 import type {
   HistoryEntry,
   LegacySessionEvaluation,
@@ -8,7 +8,7 @@ import type {
 import { libraryFamilyLadderIndex, type FamilyLadderIndex } from "../progress/familyLadderIndex";
 import { inferTiers } from "../progress/inferTiers";
 import { evidenceTier, liveInferredTier, refreshSkillTier } from "../progress/levelEvidence";
-import { inferTierFromBest, maxTier } from "../domain/skillTier";
+import { inferTierFromBest, maxTier, stepDown } from "../domain/skillTier";
 import { createKeyValueStore, type KeyValueStore } from "../storage/keyValueStore";
 import { HISTORY_KEY, MEMORY_V2_KEY } from "../storage/storageKeys";
 import { assertNonNegativeWholeSeconds } from "./setDuration";
@@ -127,10 +127,10 @@ export function applySetLogToMemory(
 
 type Memories = Record<string, ExerciseMemory>;
 
-function withoutInferred(memory: ExerciseMemory): ExerciseMemory {
+function withoutInferred(memory: ExerciseMemory, now: Date): ExerciseMemory {
   const copy = { ...memory };
   delete copy.inferred;
-  return copy;
+  return refreshSkillTier(copy, now);
 }
 
 /** Clean session: an inferred tier becomes logged; caps from this move lift. */
@@ -147,15 +147,18 @@ function confirmInferred(
   if (inferred) {
     loggedTier = loggedTier ? maxTier(loggedTier, inferred) : inferred;
   }
-  next[exerciseId] = { ...withoutInferred(current), loggedTier, lastSessionAt: now.toISOString() };
+  next[exerciseId] = refreshSkillTier(
+    { ...withoutInferred(current, now), loggedTier, lastSessionAt: now.toISOString() },
+    now,
+  );
   const placement = index.byId.get(exerciseId);
   if (placement) {
     confirmingFamilies.add(placement.familyId);
   }
-  clearCapsFrom(next, exerciseId);
+  clearCapsFrom(next, exerciseId, now);
 }
 
-function clearCapsFrom(next: Memories, exerciseId: string): void {
+function clearCapsFrom(next: Memories, exerciseId: string, now: Date): void {
   for (const [id, memory] of Object.entries(next)) {
     if (memory.failedCaps?.some((cap) => cap.from === exerciseId)) {
       const copy = { ...memory };
@@ -165,12 +168,17 @@ function clearCapsFrom(next: Memories, exerciseId: string): void {
       } else {
         delete copy.failedCaps;
       }
-      next[id] = copy;
+      next[id] = refreshSkillTier(copy, now);
     }
   }
 }
 
 /** Failed set: drop the inferred tier and cap harder rungs in the family. */
+function withCapFrom(target: ExerciseMemory, cap: FailedCap): ExerciseMemory {
+  const others = (target.failedCaps ?? []).filter((c) => c.from !== cap.from);
+  return { ...target, failedCaps: [...others, cap] };
+}
+
 function capHarderRungs(
   next: Memories,
   exerciseId: string,
@@ -180,18 +188,20 @@ function capHarderRungs(
   const current = next[exerciseId]!;
   const failedAt = evidenceTier(current, now) ?? "beginner";
   const nowIso = now.toISOString();
-  next[exerciseId] = { ...withoutInferred(current), lastSessionAt: nowIso };
+  next[exerciseId] = { ...withoutInferred(current, now), lastSessionAt: nowIso };
   const placement = index.byId.get(exerciseId);
   if (!placement) {
     return;
   }
+  // Self-cap: the same supporters must not re-infer the failed tier (rule 7).
+  const selfCap: FailedCap = { tier: stepDown(failedAt) ?? "novice", from: exerciseId, at: nowIso };
+  next[exerciseId] = withCapFrom(next[exerciseId]!, selfCap);
   for (const member of index.byFamily.get(placement.familyId) ?? []) {
     if (member.rank <= placement.rank) {
       continue;
     }
     const target = next[member.id] ?? emptyMemory(member.id);
-    const others = (target.failedCaps ?? []).filter((cap) => cap.from !== exerciseId);
-    next[member.id] = { ...target, failedCaps: [...others, { tier: failedAt, from: exerciseId, at: nowIso }] };
+    next[member.id] = withCapFrom(target, { tier: failedAt, from: exerciseId, at: nowIso });
   }
 }
 

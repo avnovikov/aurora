@@ -323,3 +323,36 @@ describe("failure caps per source (#112 rule 2)", () => {
     expect(out.high?.failedCaps?.map((c) => c.from)).toEqual(["low"]);
   });
 });
+
+describe("a failure removes the inferred tier (#112 rule 7)", () => {
+  const NOW = new Date("2026-11-17T12:00:00Z");
+  const member = (id: string, rank: number) => ({ id, name: id, familyId: "f", rank });
+  const members = [member("low", 1), member("mid", 2), member("high", 3)];
+  const index: FamilyLadderIndex = {
+    byId: new Map(members.map((m) => [m.id, m])),
+    byFamily: new Map([["f", members]]),
+  };
+  const advanced = (id: string) => memory(id, { declaredTier: "advanced", declaredAt: NOW.toISOString() });
+  const ORIGINAL_AT = "2026-11-10T12:00:00.000Z";
+  const start = {
+    low: memory("low", { inferred: { tier: "intermediate", from: ["high", "mid"], at: ORIGINAL_AT } }),
+    mid: advanced("mid"),
+    high: advanced("high"),
+  };
+  const fail = entry({ exerciseId: "low", completedReps: 5, prescribedReps: 10, stopReason: "muscular_failure" });
+  const pass = entry({ exerciseId: "low", completedReps: 10, prescribedReps: 10, stopReason: "completed" });
+
+  it("is not re-inferred at the failed tier from the same supporters", () => {
+    const out = applySetLogToMemory(start, log(fail), { now: NOW, index });
+    const tier = out.low?.inferred?.tier;
+    expect(tier === undefined || tier === "beginner" || tier === "novice").toBe(true);
+    expect(out.low?.inferred?.at).not.toBe(ORIGINAL_AT);
+    expect(out.low?.failedCaps).toMatchObject([{ tier: "beginner", from: "low" }]);
+  });
+
+  it("lifts the self-cap on the move's next at-standard session", () => {
+    const failed = applySetLogToMemory(start, log(fail), { now: NOW, index });
+    const passed = applySetLogToMemory(failed, log(pass), { now: NOW, index });
+    expect(passed.low && "failedCaps" in passed.low).toBe(false);
+  });
+});
