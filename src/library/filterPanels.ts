@@ -93,7 +93,12 @@ interface PanelParts {
 function panelHtml({ id, title, value, opened, body }: PanelParts): string {
   const open = opened ? " open" : "";
   const summary = `<summary><span class="t-label">${escapeHtml(title)}</span><span class="t-val">${escapeHtml(value)}</span></summary>`;
-  return `<details class="lib-filters" data-panel="${id}" name="lib-filter"${open}>${summary}<div class="lib-sheet">${body}</div></details>`;
+  const header =
+    `<div class="lib-sheet-hdr">` +
+    `<span class="t-label">Filters</span>` +
+    `<button type="button" class="lib-sheet-close" data-close-filters aria-label="Close filters">×</button>` +
+    `</div>`;
+  return `<details class="lib-filters" data-panel="${id}" name="lib-filter"${open}>${summary}<div class="lib-sheet">${header}${body}</div></details>`;
 }
 
 /** What the Show panel can offer beyond the fixed choices. */
