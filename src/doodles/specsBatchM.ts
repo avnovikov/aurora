@@ -13,8 +13,8 @@ import { LOCKED, PLANK_FOOT, lockedShoulderY, pushUp, pushUpTop, straightBody } 
  *   ntc_lateral_plank_walk         the plank travels sideways
  *   ntc_plank_hip_dips             the hips rotate about the long axis; from the side it reads as sagging
  *
- * hf_13 Spiderman Push-Up and ntc_spiderman_plank are drawn in batch R with
- * depth shading (knee outside the elbow).
+ * ntc_spiderman_plank is drawn in batch R with depth shading (knee outside the
+ * elbow); hf_13 Spiderman Push-Up stays out (tangle at push-up depth, see batch R).
  */
 
 /** Point `length` from `from` at `degrees` (0 = +x, 90 = down, -90 = up). */

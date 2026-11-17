@@ -210,7 +210,6 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "wger_382": "/doodles/doodle-l-hold.svg",
   "wger_1853": "/doodles/doodle-l-sit-foot-supported.svg",
   "wger_1808": "/doodles/doodle-parallel-bar-hold.svg",
-  "hf_13": "/doodles/doodle-spiderman-push-up.svg",
   "ntc_spiderman_plank": "/doodles/doodle-spiderman-plank.svg"
 };
 

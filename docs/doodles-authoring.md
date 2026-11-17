@@ -15,7 +15,7 @@ Doodles are animated SVG stick figures generated from TypeScript pose specs. Nev
 - `src/doodles/rig.ts` holds the types, bone lengths and solver. The registry `DOODLE_SPECS` is in `src/doodles/specs.ts`. Each batch is a `specsBatch<X>.ts`, which imports from `./rig` only, never `./specs`.
 - Floor at y = 0, up is negative, and the side-view figure faces +x. Pin only the joints that define the move.
 - **Depth.** In side view the far arm and far leg are drawn at half opacity behind the body, and the near limbs are drawn bright on top. Use this to show depth:
-  - A bright near knee crossing the near arm reads as passing *in front of* it (outside the arm), not through it. That is how Spiderman push-ups and planks are drawn: knee to the outside of the elbow.
+  - A bright near knee crossing the near arm reads as passing *in front of* it (outside the arm), not through it. That is how the Spiderman plank is drawn: knee to the outside of the elbow. (Not the Spiderman push-up: at push-up depth the elbow is on the torso line, so the thigh tangles with it.)
   - A pale far leg crossing behind the bright standing leg reads as passing *behind* it.
   - So crossings between limbs are fine when the near/far choice puts the right limb in front. The validator only rejects limbs through props and arms through the head.
   - Pick which side moves (near or far) so the limb that is in front in real life is the bright one.

@@ -1,9 +1,9 @@
 import { solvePose } from "./rig";
-import type { DoodleSpec, Keyframe, Point, Pose } from "./rig";
+import type { DoodleSpec, Point, Pose } from "./rig";
 import { lockedShoulderY, pushUp } from "./specsBatchC";
 
 /**
- * Batch R: Spiderman push-up and plank, drawn with depth shading. In side view
+ * Batch R: Spiderman plank, drawn with depth shading. In side view
  * the far limbs are pale behind the body and the near limbs bright on top, so
  * the bright near knee crossing the bright near arm reads as passing outside
  * the elbow, and the pale far knee does the same behind the body.
@@ -14,6 +14,8 @@ import { lockedShoulderY, pushUp } from "./specsBatchC";
  * (thigh below the hip, foot lifted) rather than through an invisible sideways arc.
  *
  * Left out, depth shading included:
+ *   hf_13 Spiderman Push-Up   at push-up depth the elbow sits on the torso line,
+ *     so the full-length thigh lands on the torso or under the chest: a tangle at phone size.
  *   hf_71 Dragon Squat, hf_81 Curtsy Lunge   The support knee bends towards the
  *     camera in front view. With full-length bones any lowering throws that knee
  *     40-60 units sideways (a lateral lunge) or the hips off the feet; in side view
@@ -67,30 +69,7 @@ function spiderman(shoulderY: number, knee: Side | null, thighDeg = 0, ankleY = 
   };
 }
 
-/** The push-up keeps the standard long plank, so the shoulders end just ahead of the hands. */
-const PU_FOOT: Point = [-190, -18];
-const PU_TOP = lockedShoulderY(PU_FOOT, [SP_HAND_X, 0]);
-const PU_BOTTOM = -58;
-
-/** One Spiderman push-up rep on `side`: the knee drives forward as the chest lowers, then returns. */
-function spidermanRep(side: Side): Keyframe[] {
-  const mid = round(PU_TOP + 24);
-  return [
-    { hold: 0.35, pose: spiderman(PU_TOP, null, 0, 0, PU_FOOT) },
-    { hold: 0, pose: spiderman(mid, side, 12, -22, PU_FOOT) },
-    { hold: 0.45, pose: spiderman(PU_BOTTOM, side, 8, -3, PU_FOOT) },
-    { hold: 0, pose: spiderman(mid, side, 12, -22, PU_FOOT) },
-  ];
-}
-
 export const BATCH_R_SPECS: DoodleSpec[] = [
-  {
-    id: "hf_13",
-    slug: "spiderman-push-up",
-    title: "Spiderman Push-Up",
-    transition: 0.5,
-    frames: [...spidermanRep("near"), ...spidermanRep("far")],
-  },
   {
     id: "ntc_spiderman_plank",
     slug: "spiderman-plank",
