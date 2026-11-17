@@ -145,8 +145,8 @@ describe("plan level", () => {
     const pushUp = EXERCISE_GRAPH[generateBlock({ kind: "upper", context: ctx({ level: "beginner" }), newId: () => "f" })[0]!.slots[0]!.exerciseId]!;
     const earned = { exerciseId: pushUp.id, sessionsAtStandard: 0, sessionsBelowFloor: 0, lastAddedLoadKg: 0, weakLinkSessionsRemaining: 0, skillTier: "advanced" as const };
     expect(memoryAtLevel(earned, pushUp, "beginner")).toEqual(earned);
-    expect(memoryAtLevel(undefined, hardMove(), "intermediate").declaredTier).toBe("intermediate");
-    expect(memoryAtLevel(undefined, pushUp, undefined).declaredTier).toBeUndefined();
+    expect(memoryAtLevel(undefined, hardMove(), "intermediate").planTier).toBe("intermediate");
+    expect(memoryAtLevel(undefined, pushUp, undefined).planTier).toBeUndefined();
     const days = generateBlock({ kind: "upper", context: ctx({ level: "beginner" }), newId: () => "g" });
     expect(declareLevelForDays({ [pushUp.id]: earned }, days, "beginner")[pushUp.id]).toEqual(earned);
   });
@@ -157,12 +157,12 @@ describe("plan level", () => {
     expect(levelForMove(easy, "elite")).toBe("beginner");
     expect(levelForMove(hard, "intermediate")).toBe("intermediate");
     // A beginner move starts at beginner already, so an elite plan leaves it there.
-    expect(memoryAtLevel(undefined, easy, "elite").declaredTier).toBeUndefined();
-    expect(memoryAtLevel(undefined, hard, "elite").declaredTier).toBe("elite");
+    expect(memoryAtLevel(undefined, easy, "elite").planTier).toBeUndefined();
+    expect(memoryAtLevel(undefined, hard, "elite").planTier).toBe("elite");
     const days = generateBlock({ kind: "lower", context: ctx({ level: "elite" }), newId: () => "e" });
     const declared = declareLevelForDays({}, days, "elite");
     // Each working move reaches the plan level capped at its own difficulty
-    // (the Library's family cascade may already have lifted it further).
+    // (a result-earned tier may already be higher).
     for (const slot of days.flatMap((day) => day.slots).filter((s) => !s.pinned)) {
       const move = EXERCISE_GRAPH[slot.exerciseId]!;
       const tier = effectiveSkillTier(declared[move.id] ?? emptyMemory(move.id), move);
