@@ -16,6 +16,9 @@ import {
   persistPhase,
 } from "../../src/ui/sessionState";
 import type { ViewState } from "../../src/ui/sessionTypes";
+import { useMemoryStorage } from "../helpers/storage";
+
+useMemoryStorage();
 
 const readiness: Readiness = { sleepQuality: "good", restingHrBpm: 58, painJoints: [] };
 

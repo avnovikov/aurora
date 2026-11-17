@@ -11,6 +11,12 @@
   --edge: #2a2a2e;
   /* Borders of interactive controls: at least 3:1 on page and panel (WCAG 1.4.11). */
   --control-edge: #636369;
+  /* Training pulse bands for Rassvet. applyPalette overwrites these per palette. */
+  --hr-easy: #8eb6ff;
+  --hr-steady: #7dcea0;
+  --hr-work: #e6c98a;
+  --hr-hard: #f0a04a;
+  --hr-max: #ff7a6e;
 
   /* Derived tones, so light and dark palettes both work. */
   --foreground-soft: color-mix(in srgb, var(--foreground) 82%, var(--background));

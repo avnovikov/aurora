@@ -9,10 +9,14 @@ import {
 } from "../../src/pulse/hrMonitor";
 import { createEmptyLog } from "../../src/session/setLog";
 import { INITIAL_PULSE } from "../../src/ui/pulseState";
+import { saveProfile, loadProfile } from "../../src/settings/profile";
+import { useMemoryStorage } from "../helpers/storage";
 import {
   applyConnectHeartRateResult,
   attachSessionPulse,
   isPulseLost,
+  paintPulseReading,
+  pulseChipHtml,
 } from "../../src/ui/sessionPulse";
 import type { ViewState } from "../../src/ui/sessionTypes";
 import { PULSE_LOST_UI_MS } from "../../src/voice/pulseAlert";
@@ -188,5 +192,74 @@ describe("attachSessionPulse", () => {
       expect(state.pulse.connected).toBe(true);
     });
     expect(client.requestDevice).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("pulse band colour", () => {
+  useMemoryStorage();
+
+  interface PulseChipStub {
+    textContent: string;
+    zone: string | null;
+    setAttribute(name: string, value: string): void;
+    removeAttribute(name: string): void;
+  }
+
+  function pulseChipStub(): PulseChipStub {
+    return {
+      textContent: "",
+      zone: null,
+      setAttribute(name, value) {
+        if (name === "data-hr-zone") {
+          this.zone = value;
+        }
+      },
+      removeAttribute(name) {
+        if (name === "data-hr-zone") {
+          this.zone = null;
+        }
+      },
+    };
+  }
+
+  function rootFor(chip: PulseChipStub): HTMLElement {
+    const classes = new Set<string>();
+    const bar = {
+      classList: { toggle: (name: string, on: boolean) => (on ? classes.add(name) : classes.delete(name)) },
+    };
+    return {
+      querySelector(selector: string) {
+        if (selector === ".pulse-chip") {
+          return chip;
+        }
+        return selector === ".session-bar" ? bar : null;
+      },
+    } as unknown as HTMLElement;
+  }
+
+  it("marks the live reading with its Karvonen band", () => {
+    saveProfile({ ...loadProfile(), restingHeartRateBpm: 60, maxHeartRateBpm: 180 });
+    const state = bareState();
+    state.bpm = 150;
+    state.pulse = { connected: true, lastValidAtMs: Date.now(), lastShoutAtMs: null };
+    expect(pulseChipHtml(state)).toContain('data-hr-zone="work"');
+    expect(pulseChipHtml(state)).toContain("Pulse 150");
+
+    const chip = pulseChipStub();
+    paintPulseReading(rootFor(chip), state);
+    expect(chip.textContent).toBe("Pulse 150");
+    expect(chip.zone).toBe("work");
+  });
+
+  it("drops the band colour when the strap has gone quiet", () => {
+    const state = bareState();
+    state.bpm = 150;
+    state.pulse = { connected: true, lastValidAtMs: Date.now() - PULSE_LOST_UI_MS, lastShoutAtMs: null };
+    expect(pulseChipHtml(state)).not.toContain("data-hr-zone");
+
+    const chip = pulseChipStub();
+    chip.zone = "work";
+    paintPulseReading(rootFor(chip), state);
+    expect(chip.zone).toBeNull();
   });
 });

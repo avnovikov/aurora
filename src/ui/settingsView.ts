@@ -6,10 +6,16 @@ import {
   exportBackupJson,
   isValidAddWeight,
   isValidBodyweight,
+  isValidMaxHeartRate,
+  isValidRestingHeartRate,
   loadProfile,
   MAX_ADD_WEIGHT_KG,
+  MAX_MAX_HEART_RATE_BPM,
+  MAX_RESTING_HEART_RATE_BPM,
   MIN_ADD_WEIGHT_KG,
   MIN_BODYWEIGHT_KG,
+  MIN_MAX_HEART_RATE_BPM,
+  MIN_RESTING_HEART_RATE_BPM,
   saveProfile,
 } from "../settings/profile";
 import { mountJointHistoryEditor } from "./jointHistoryEditor";
@@ -17,6 +23,16 @@ import { SETTINGS_TABS, isSettingsTab, settingsPageHtml, type SettingsTab } from
 
 const BODYWEIGHT_HINT = `Enter your bodyweight as ${MIN_BODYWEIGHT_KG} kg or more.`;
 const ADD_WEIGHT_HINT = `Enter a weight between ${MIN_ADD_WEIGHT_KG} and ${MAX_ADD_WEIGHT_KG} kg.`;
+
+function wholeNumberRangeHint(min: number, max: number): string {
+  return `Enter a whole number from ${min} to ${max}.`;
+}
+
+const RESTING_HEART_RATE_HINT = wholeNumberRangeHint(
+  MIN_RESTING_HEART_RATE_BPM,
+  MAX_RESTING_HEART_RATE_BPM,
+);
+const MAX_HEART_RATE_HINT = wholeNumberRangeHint(MIN_MAX_HEART_RATE_BPM, MAX_MAX_HEART_RATE_BPM);
 
 /** The tab last open, kept while the app runs. */
 let lastTab: SettingsTab = "you";
@@ -35,8 +51,8 @@ interface SettingsController {
 function wireNumber(
   { root, commit, say }: SettingsController,
   attr: string,
-  isValid: (kg: number) => boolean,
-  apply: (kg: number) => void,
+  isValid: (value: number) => boolean,
+  apply: (value: number) => void,
   invalidHint: string,
 ): void {
   const input = root.querySelector<HTMLInputElement>(`[data-${attr}]`);
@@ -46,8 +62,8 @@ function wireNumber(
   }
   const original = hint.textContent ?? "";
   input.addEventListener("change", () => {
-    const kg = Number(input.value);
-    if (!isValid(kg)) {
+    const value = Number(input.value);
+    if (!isValid(value)) {
       say("");
       hint.textContent = invalidHint;
       hint.classList.add("is-error");
@@ -57,7 +73,7 @@ function wireNumber(
     hint.textContent = original;
     hint.classList.remove("is-error");
     input.removeAttribute("aria-invalid");
-    apply(kg);
+    apply(value);
     commit();
   });
 }
@@ -101,6 +117,20 @@ function wireTabs({ root, paint }: SettingsController): void {
 function wireYou(controller: SettingsController): void {
   const { root, profile, commit } = controller;
   wireNumber(controller, "bw", isValidBodyweight, (kg) => (profile.bodyweightKg = kg), BODYWEIGHT_HINT);
+  wireNumber(
+    controller,
+    "resting-hr",
+    isValidRestingHeartRate,
+    (bpm) => (profile.restingHeartRateBpm = bpm),
+    RESTING_HEART_RATE_HINT,
+  );
+  wireNumber(
+    controller,
+    "max-hr",
+    isValidMaxHeartRate,
+    (bpm) => (profile.maxHeartRateBpm = bpm),
+    MAX_HEART_RATE_HINT,
+  );
   const editor = root.querySelector<HTMLElement>("[data-joint-editor]");
   if (editor) {
     mountJointHistoryEditor(editor, profile.jointHistory, (next) => {

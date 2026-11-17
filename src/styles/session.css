@@ -411,6 +411,30 @@
   font-variant-numeric: tabular-nums;
 }
 
+.session-bar .pulse-chip[data-hr-zone] {
+  font-weight: 600;
+}
+
+.session-bar .pulse-chip[data-hr-zone="easy"] {
+  color: var(--hr-easy);
+}
+
+.session-bar .pulse-chip[data-hr-zone="steady"] {
+  color: var(--hr-steady);
+}
+
+.session-bar .pulse-chip[data-hr-zone="work"] {
+  color: var(--hr-work);
+}
+
+.session-bar .pulse-chip[data-hr-zone="hard"] {
+  color: var(--hr-hard);
+}
+
+.session-bar .pulse-chip[data-hr-zone="max"] {
+  color: var(--hr-max);
+}
+
 .session-bar.pulse-lost .pulse-chip {
   border-left-color: var(--alert);
   color: var(--alert);

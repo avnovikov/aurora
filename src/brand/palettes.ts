@@ -1,7 +1,11 @@
 /**
  * The six dawn palettes. Values are copied from `.desk/DESIGN.md` (front matter,
  * `palettes:`) and are already contrast-checked; change them there first.
+ * Heart-rate band colours live here too: they are chosen per palette so the
+ * training pulse stays readable on that palette's surface.
  */
+
+import { HEART_RATE_ZONES, type HeartRateZone } from "../pulse/hrZones";
 
 export const COLOUR_ROLES = [
   "background",
@@ -27,6 +31,8 @@ export interface Palette {
   language: string;
   meaning: string;
   colors: Record<ColourRole, string>;
+  /** Band colours for the training pulse, each at least 4.5:1 on `surface`. */
+  heartRate: Record<HeartRateZone, string>;
 }
 
 export const DEFAULT_PALETTE: PaletteKey = "rassvet";
@@ -48,6 +54,13 @@ export const PALETTES: readonly Palette[] = [
       edge: "#2a2a2e",
       controlEdge: "#636369",
     },
+    heartRate: {
+      easy: "#8eb6ff",
+      steady: "#7dcea0",
+      work: "#e6c98a",
+      hard: "#f0a04a",
+      max: "#ff7a6e",
+    },
   },
   {
     key: "alvorada",
@@ -64,6 +77,13 @@ export const PALETTES: readonly Palette[] = [
       alert: "#b3261e",
       edge: "#dcd6ca",
       controlEdge: "#8a847a",
+    },
+    heartRate: {
+      easy: "#1a4f8b",
+      steady: "#146c3e",
+      work: "#8a5a12",
+      hard: "#b45309",
+      max: "#9f1d1d",
     },
   },
   {
@@ -82,6 +102,13 @@ export const PALETTES: readonly Palette[] = [
       edge: "#e05200",
       controlEdge: "#6a1e00",
     },
+    heartRate: {
+      easy: "#102a6b",
+      steady: "#0c3d22",
+      work: "#2a0a52",
+      hard: "#3a1200",
+      max: "#4a0028",
+    },
   },
   {
     key: "revontulet",
@@ -98,6 +125,13 @@ export const PALETTES: readonly Palette[] = [
       alert: "#a3001b",
       edge: "#7ad61f",
       controlEdge: "#3d6b0f",
+    },
+    heartRate: {
+      easy: "#0033aa",
+      steady: "#064a22",
+      work: "#5c3200",
+      hard: "#8b0018",
+      max: "#1a0a00",
     },
   },
   {
@@ -116,6 +150,13 @@ export const PALETTES: readonly Palette[] = [
       edge: "#7a4aa8",
       controlEdge: "#c7a8e6",
     },
+    heartRate: {
+      easy: "#9ec1ff",
+      steady: "#9ee6b8",
+      work: "#ffb15a",
+      hard: "#ffe27a",
+      max: "#ffb0dc",
+    },
   },
   {
     key: "eos",
@@ -132,6 +173,13 @@ export const PALETTES: readonly Palette[] = [
       alert: "#b33a00",
       edge: "#f2d2de",
       controlEdge: "#8a6f7a",
+    },
+    heartRate: {
+      easy: "#1a4f8b",
+      steady: "#146c3e",
+      work: "#8a4a00",
+      hard: "#a33b00",
+      max: "#9a0058",
     },
   },
 ];
@@ -151,17 +199,34 @@ export function roleVariable(role: ColourRole): string {
   return "--" + role.replace(/[A-Z]/g, (letter) => "-" + letter.toLowerCase());
 }
 
+/** CSS custom property for a heart-rate band: `easy` → `--hr-easy`. */
+export function heartRateVariable(zone: HeartRateZone): string {
+  return `--hr-${zone}`;
+}
+
+function applyColourRoles(html: HTMLElement, palette: Palette): void {
+  for (const role of COLOUR_ROLES) {
+    html.style.setProperty(roleVariable(role), palette.colors[role]);
+  }
+}
+
+function applyHeartRateColours(html: HTMLElement, palette: Palette): void {
+  for (const zone of HEART_RATE_ZONES) {
+    html.style.setProperty(heartRateVariable(zone), palette.heartRate[zone]);
+  }
+}
+
 /**
  * Recolours the app: `data-palette` on `<html>`, the role custom properties,
- * and the browser/status-bar theme colour. Returns the key actually applied.
+ * the heart-rate band colours, and the browser/status-bar theme colour.
+ * Returns the key actually applied.
  */
 export function applyPalette(key: unknown, doc: Document = document): PaletteKey {
   const palette = paletteFor(key);
   const html = doc.documentElement;
   html.setAttribute("data-palette", palette.key);
-  for (const role of COLOUR_ROLES) {
-    html.style.setProperty(roleVariable(role), palette.colors[role]);
-  }
+  applyColourRoles(html, palette);
+  applyHeartRateColours(html, palette);
   const meta = doc.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
   if (meta) {
     meta.content = palette.colors.background;
