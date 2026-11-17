@@ -2,6 +2,7 @@ export type AppTab =
   | "today"
   | "library"
   | "progress"
+  | "history"
   | "body"
   | "plan"
   | "settings";
@@ -10,6 +11,7 @@ const TABS: Array<{ id: AppTab; label: string }> = [
   { id: "today", label: "Today" },
   { id: "library", label: "Library" },
   { id: "progress", label: "Progress" },
+  { id: "history", label: "History" },
   { id: "body", label: "Body" },
   { id: "plan", label: "Plan" },
   { id: "settings", label: "Settings" },

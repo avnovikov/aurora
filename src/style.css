@@ -308,7 +308,7 @@ button:disabled {
   right: 0;
   bottom: 0;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(7, 1fr);
   gap: 0;
   background: var(--surface);
   border-top: 1px solid var(--edge);
@@ -320,10 +320,10 @@ button:disabled {
   border-radius: 0;
   background: transparent;
   color: var(--muted);
-  font-size: 12.8px;
+  font-size: 11px;
   min-height: 56px;
-  padding: 12px 4px;
-  line-height: 16px;
+  padding: 12px 2px;
+  line-height: 14px;
   border-top: 2px solid transparent;
 }
 
@@ -594,6 +594,110 @@ button:disabled {
 .progress-empty-actions .cta {
   width: auto;
   flex: 1 1 10rem;
+}
+
+.profile-list,
+.weak-list,
+.ready-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.profile-row,
+.weak-row,
+.ready-row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.35rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.65rem 0.7rem;
+  border: 1px solid var(--edge);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.profile-row-text,
+.weak-row-title,
+.ready-row-title {
+  font-weight: 600;
+}
+
+.continuum {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.continuum-track {
+  height: 6px;
+  background: var(--edge);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.continuum-fill {
+  display: block;
+  height: 100%;
+  background: var(--brass);
+}
+
+.continuum-ends {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+
+.chip {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 500;
+  padding: 0.1rem 0.35rem;
+  border: 1px solid var(--edge);
+  color: var(--muted);
+}
+
+.history-filter {
+  margin: 0.5rem 0 1rem;
+}
+
+.chip-clear {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--brass);
+  color: var(--brass);
+  background: transparent;
+  cursor: pointer;
+}
+
+.history-feed {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.history-row {
+  border-bottom: 1px solid var(--edge);
+  padding-bottom: 0.5rem;
+}
+
+.history-ex {
+  margin: 0;
+  font-weight: 600;
+}
+
+.history-meta {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
 }
 
 .path-preview {

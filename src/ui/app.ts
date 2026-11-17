@@ -28,6 +28,8 @@ import { renderLibraryView } from "./libraryView";
 import { overrideControlsHtml, wireOverrideControls } from "./overrideControls";
 import { advancePlanAfterSession, renderPlanView } from "./planView";
 import { renderProgressView } from "./progressView";
+import { renderHistoryView } from "./historyView";
+import type { HistoryFilter } from "../progress/historyFeed";
 import {
   clearPendingLightenGate,
   reinforceFromSessionEvaluation,
@@ -42,7 +44,7 @@ import { todayHomeHtml } from "./todayHome";
 import { wireTodayPulse } from "./todayPulse";
 
 const PANEL_RENDERERS: Partial<
-  Record<Exclude<AppTab, "today" | "progress">, (panel: HTMLElement) => void>
+  Record<Exclude<AppTab, "today" | "progress" | "history">, (panel: HTMLElement) => void>
 > = {
   library: renderLibraryView,
   body: renderBodyView,
@@ -51,6 +53,7 @@ const PANEL_RENDERERS: Partial<
 };
 
 let disposeTodayPulse: (() => void) | null = null;
+let historyFilter: HistoryFilter = { kind: "all" };
 
 function clearTodayPulse(): void {
   disposeTodayPulse?.();
@@ -77,20 +80,34 @@ export function bootApp(root: HTMLElement): void {
   showTab(root, "today");
 }
 
-function showTab(root: HTMLElement, tab: AppTab): void {
+function showTab(
+  root: HTMLElement,
+  tab: AppTab,
+  options: { preserveHistoryFilter?: boolean } = {},
+): void {
   resetTabScroll();
   if (tab === "today") {
     showTodayHome(root);
     return;
   }
   clearTodayPulse();
-  renderShell(root, tab, `<div data-panel></div>`, (next) => showTab(root, next));
-  const panel = root.querySelector<HTMLElement>("[data-panel]");
-  if (!panel) {
-    throw new Error("Expected [data-panel] after shell render");
+  if (tab === "history" && !options.preserveHistoryFilter) {
+    historyFilter = { kind: "all" };
   }
+  renderShell(root, tab, `<div data-panel></div>`, (next) => showTab(root, next));
+  const panel = requirePanel(root);
   if (tab === "progress") {
-    renderProgressView(panel, { onJumpTab: (next) => showTab(root, next) });
+    renderProgressView(panel, {
+      onJumpTab: (next) => showTab(root, next),
+      onOpenHistory: (filter) => openHistory(root, filter),
+    });
+    return;
+  }
+  if (tab === "history") {
+    renderHistoryView(panel, {
+      filter: historyFilter,
+      onClearFilter: () => openHistory(root, { kind: "all" }),
+    });
     return;
   }
   const renderPanel = PANEL_RENDERERS[tab];
@@ -98,6 +115,19 @@ function showTab(root: HTMLElement, tab: AppTab): void {
     throw new Error(`No panel renderer for tab: ${tab}`);
   }
   renderPanel(panel);
+}
+
+function openHistory(root: HTMLElement, filter: HistoryFilter): void {
+  historyFilter = filter;
+  showTab(root, "history", { preserveHistoryFilter: true });
+}
+
+function requirePanel(root: HTMLElement): HTMLElement {
+  const panel = root.querySelector<HTMLElement>("[data-panel]");
+  if (!panel) {
+    throw new Error("Expected [data-panel] after shell render");
+  }
+  return panel;
 }
 
 function showTodayHome(root: HTMLElement): void {
