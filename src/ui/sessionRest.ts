@@ -1,9 +1,12 @@
+import type { HeartRateZone } from "../pulse/hrZones";
 import { speakExactLine } from "../voice/coachVoice";
+import { REST_EXTEND, REST_GO_ON, type CoachLine } from "../voice/lines";
 import {
   cueSchedule,
   isOnScreenRestCue,
   type RestCueEvent,
 } from "../voice/restCue";
+import { REST_ADD_SECONDS, shouldAddRest, shouldOfferRestedGoOn } from "./restPulse";
 import type { ViewState } from "./sessionTypes";
 
 function cueAt(
@@ -42,13 +45,22 @@ function speakRestCue(
   });
 }
 
+function visibleRestCue(
+  left: number,
+  schedule: readonly RestCueEvent[],
+  heldCue: string | null,
+): string {
+  return restCueText(left, schedule) ?? heldCue ?? "";
+}
+
 function paintRest(
   root: HTMLElement,
   left: number,
   schedule: readonly RestCueEvent[],
+  heldCue: string | null,
 ): void {
   setText(root, "[data-rest-left]", String(Math.max(left, 0)));
-  setText(root, "[data-rest-cue]", restCueText(left, schedule) ?? "");
+  setText(root, "[data-rest-cue]", visibleRestCue(left, schedule, heldCue));
 }
 
 export interface RestTimerHandle {
@@ -60,6 +72,8 @@ export interface RestTimerHandle {
 export interface RestTimerOptions {
   /** Next work is a hold / timed station — no 5–1 countdown. */
   timedNext?: boolean;
+  /** Live band, or null when the strap has no usable reading. */
+  readZone?: () => HeartRateZone | null;
 }
 
 export function startRestTimer(
@@ -70,26 +84,69 @@ export function startRestTimer(
   options: RestTimerOptions = {},
 ): RestTimerHandle {
   const spokenForRest = new Set<number>();
-  const schedule = withVoice
-    ? cueSchedule(state.restLeft, { timedNext: options.timedNext === true })
-    : [];
+  const readZone = options.readZone ?? (() => null);
+  const timedNext = options.timedNext === true;
+  let schedule = restSchedule(state.restLeft, withVoice, timedNext);
+  let alreadyAsked = false;
+  let heldCue: string | null = null;
+  let finished = false;
 
-  paintRest(root, state.restLeft, schedule);
+  const paint = (): void => {
+    paintRest(root, state.restLeft, schedule, heldCue);
+  };
+
+  const speakLine = (line: CoachLine): void => {
+    if (!withVoice) {
+      return;
+    }
+    void speakExactLine(line);
+  };
 
   const finish = (): void => {
+    if (finished) {
+      return;
+    }
+    finished = true;
     window.clearInterval(timerId);
     state.restLeft = 0;
     onDoneRest();
   };
 
+  const extendRest = (): void => {
+    state.restLeft = REST_ADD_SECONDS;
+    schedule = restSchedule(state.restLeft, withVoice, timedNext);
+    spokenForRest.clear();
+    heldCue = REST_EXTEND.text;
+    paint();
+    speakLine(REST_EXTEND);
+  };
+
+  paint();
+
   const timerId = window.setInterval(() => {
     state.restLeft -= 1;
-    paintRest(root, state.restLeft, schedule);
+    if (state.restLeft <= 0) {
+      if (shouldAddRest(readZone())) {
+        extendRest();
+        return;
+      }
+      finish();
+      return;
+    }
+    if (
+      shouldOfferRestedGoOn({
+        zone: readZone(),
+        secondsLeft: state.restLeft,
+        alreadyAsked,
+      })
+    ) {
+      alreadyAsked = true;
+      heldCue = REST_GO_ON.text;
+      speakLine(REST_GO_ON);
+    }
+    paint();
     if (withVoice) {
       speakRestCue(state.restLeft, schedule, spokenForRest);
-    }
-    if (state.restLeft <= 0) {
-      finish();
     }
   }, 1000);
 
@@ -97,6 +154,17 @@ export function startRestTimer(
     clear: () => window.clearInterval(timerId),
     finish,
   };
+}
+
+function restSchedule(
+  remainingSeconds: number,
+  withVoice: boolean,
+  timedNext: boolean,
+): RestCueEvent[] {
+  if (!withVoice) {
+    return [];
+  }
+  return cueSchedule(remainingSeconds, { timedNext });
 }
 
 function setText(root: HTMLElement, selector: string, text: string): void {

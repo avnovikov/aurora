@@ -17,6 +17,7 @@ import {
   isPulseLost,
   paintPulseReading,
   pulseChipHtml,
+  sessionHeartRateZone,
 } from "../../src/ui/sessionPulse";
 import type { ViewState } from "../../src/ui/sessionTypes";
 import { PULSE_LOST_UI_MS } from "../../src/voice/pulseAlert";
@@ -69,6 +70,20 @@ function bareState(): ViewState {
     addWeightKg: 0,
   };
 }
+
+describe("sessionHeartRateZone", () => {
+  it("uses the profile bands, and returns nothing when idle or lost", () => {
+    const state = bareState();
+    const now = 10_000;
+    expect(sessionHeartRateZone(state, now)).toBeNull();
+
+    state.bpm = 100;
+    state.pulse = { connected: true, lastValidAtMs: now, lastShoutAtMs: null };
+    expect(sessionHeartRateZone(state, now)).toBe("easy");
+
+    expect(sessionHeartRateZone(state, now + PULSE_LOST_UI_MS)).toBeNull();
+  });
+});
 
 describe("isPulseLost", () => {
   function linkedWithLastValidAt(lastValidAtMs: number): ViewState {
