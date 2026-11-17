@@ -170,7 +170,7 @@ export function renderLibraryView(root: HTMLElement): void {
         suggestion: suggestionFor(exerciseId, memories, (id) => EXERCISE_GRAPH[id]?.pattern, undefined, now),
       },
       planStatus,
-      cascadeHint: inferenceHint,
+      inferenceHint: inferenceHint,
     });
   };
 
