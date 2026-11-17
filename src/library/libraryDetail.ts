@@ -10,6 +10,9 @@ import {
   effectiveLabel,
 } from "./skillPresent";
 import type { SkillTier } from "../domain/types";
+import type { TierSuggestion } from "../progress/suggestTiers";
+import { RETEST_AFTER_DAYS } from "../progress/levelEvidence";
+import type { LevelSourceView } from "./levelSource";
 import { toggleHtml } from "./chips";
 import { displayExerciseName } from "./displayName";
 import { exerciseMetaLine } from "./metaLine";
@@ -28,6 +31,8 @@ import { scrollViewportToTop } from "./detailScroll";
 import { backOnly, wireSwipe } from "../ui/sessionSwipe";
 import "../styles/exercise.css";
 
+const RETEST_WEEKS = Math.floor(RETEST_AFTER_DAYS / 7);
+
 export interface DetailActions {
   onBack: () => void;
   onOpenExercise: (exerciseId: string) => void;
@@ -42,6 +47,8 @@ export interface DetailMemoryView {
   skillTier?: SkillTier;
   declaredTier?: SkillTier;
   bestReps?: number;
+  source?: LevelSourceView;
+  suggestion?: TierSuggestion;
 }
 
 /** Everything the detail page shows besides the exercise itself; all optional. */
@@ -114,6 +121,11 @@ export function mountLibraryDetail(
       actions.onDeclareTier?.(exercise.id, tier);
     },
   );
+
+  root.querySelector<HTMLButtonElement>("[data-accept-suggestion]")?.addEventListener("click", (event) => {
+    const tier = (event.currentTarget as HTMLButtonElement).dataset.acceptSuggestion as SkillTier;
+    actions.onDeclareTier?.(exercise.id, tier);
+  });
 
   root.querySelector("[data-generate-plan]")?.addEventListener("click", () => {
     actions.onGeneratePlan?.();
@@ -276,6 +288,26 @@ function jointLoadHtml(exercise: SeedExercise, history: readonly JointHistoryEnt
   return `<p class="eyebrow">Joint load</p><ul class="cues lib-joint-load">${items}</ul>`;
 }
 
+function levelEvidenceHtml(memory: DetailMemoryView): string {
+  const { source, suggestion } = memory;
+  const parts: string[] = [];
+  if (source?.label) {
+    parts.push(`<p class="hint" data-level-source>Level from: ${escapeHtml(source.label)}</p>`);
+  }
+  if (source?.retest) {
+    parts.push(
+      `<p class="hint" data-level-retest>No sessions on this for ${RETEST_WEEKS}+ weeks — retest before trusting this level.</p>`,
+    );
+  }
+  if (suggestion) {
+    const tier = escapeHtml(suggestion.tier);
+    parts.push(
+      `<p class="hint" data-level-suggestion>Suggested: ${escapeHtml(SKILL_TIER_LABELS[suggestion.tier])} (${suggestion.testedFamilies} of ${suggestion.totalFamilies} related families tested) <button type="button" class="link" data-accept-suggestion="${tier}">Set</button></p>`,
+    );
+  }
+  return parts.join("\n      ");
+}
+
 function skillPickerHtml(
   exercise: SeedExercise,
   memory: DetailMemoryView,
@@ -303,6 +335,7 @@ function skillPickerHtml(
         ${options}
       </select>
       ${levelHint}
+      ${levelEvidenceHtml(memory)}
       ${cascade}
     </div>
   `;

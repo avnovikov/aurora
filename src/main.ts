@@ -9,6 +9,7 @@ import "@fontsource/ibm-plex-sans-condensed/latin-700.css";
 import "./style.css";
 import { applyPalette } from "./brand/palettes";
 import { loadProfile } from "./settings/profile";
+import { ensureMemoryMigrated } from "./session/ensureMemoryMigrated";
 import { migratePlaintextToSecureStorage } from "./storage/migrateSecureStorage";
 import { bootApp } from "./ui/app";
 
@@ -18,6 +19,8 @@ if (!root) {
 }
 // Move plaintext localStorage into Keystore-backed files before any reads.
 migratePlaintextToSecureStorage();
+// Memory v1 → v2 (#112) before anything reads memory.
+ensureMemoryMigrated();
 // Before the first render, so the saved palette shows from the first frame.
 applyPalette(loadProfile().palette);
 bootApp(root);

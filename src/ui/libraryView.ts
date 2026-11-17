@@ -1,7 +1,10 @@
 import { LIBRARY_CATALOGUE } from "../data/libraryCatalogue";
 import type { SeedExercise } from "../data/seed";
 import { displayExerciseName } from "../library/displayName";
+import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import { mountLibraryDetail } from "../library/libraryDetail";
+import { describeLevelSource } from "../library/levelSource";
+import { suggestionFor } from "../progress/suggestTiers";
 import {
   readScrollY,
   restoreScrollY,
@@ -54,7 +57,7 @@ export function renderLibraryView(root: HTMLElement): void {
   let listScrollY = 0;
   let pickingPlanForId: string | null = null;
   let planStatus: string | null = null;
-  let cascadeHint: string | null = null;
+  let inferenceHint: string | null = null;
   const { jointHistory, equipment } = loadProfile();
   const targetIds = collectTemplateTargetIds(listAllTemplates());
 
@@ -73,7 +76,7 @@ export function renderLibraryView(root: HTMLElement): void {
   const clearPlanStatusAndSelect = (exerciseId: string | null): void => {
     selectedId = exerciseId;
     planStatus = null;
-    cascadeHint = null;
+    inferenceHint = null;
     paint();
   };
 
@@ -117,7 +120,9 @@ export function renderLibraryView(root: HTMLElement): void {
       listScrollY = readScrollY();
     }
     detailExerciseId = exerciseId;
-    const memory = loadMemories()[exerciseId] ?? emptyMemory(exerciseId);
+    const now = new Date();
+    const memories = loadMemories(now);
+    const memory = memories[exerciseId] ?? emptyMemory(exerciseId);
     mountLibraryDetail(root, {
       exercise,
       targetIds,
@@ -129,7 +134,7 @@ export function renderLibraryView(root: HTMLElement): void {
         onDeclareTier: (id, tier) => {
           const result = declareSkillTier(loadMemories(), id, tier);
           saveMemories(result.memories);
-          cascadeHint = cascadeHintFor(result.cascadedCount);
+          inferenceHint = inferenceHintFor(result.inferredCount);
           paint();
         },
         onGeneratePlan: () => {
@@ -161,9 +166,11 @@ export function renderLibraryView(root: HTMLElement): void {
         skillTier: memory.skillTier,
         declaredTier: memory.declaredTier,
         bestReps: memory.bestReps,
+        source: describeLevelSource(memory, now, (id) => EXERCISE_GRAPH[id]?.name ?? id),
+        suggestion: suggestionFor(exerciseId, memories, (id) => EXERCISE_GRAPH[id]?.pattern, undefined, now),
       },
       planStatus,
-      cascadeHint,
+      cascadeHint: inferenceHint,
     });
   };
 
@@ -208,7 +215,7 @@ export function renderLibraryView(root: HTMLElement): void {
         onSelect: (id) => {
           selectedId = id;
           planStatus = null;
-          cascadeHint = null;
+          inferenceHint = null;
           paint();
         },
       },
@@ -219,10 +226,10 @@ export function renderLibraryView(root: HTMLElement): void {
   paint();
 }
 
-function cascadeHintFor(cascadedCount: number): string | null {
-  if (cascadedCount === 0) {
+function inferenceHintFor(inferredCount: number): string | null {
+  if (inferredCount === 0) {
     return null;
   }
-  const moves = cascadedCount === 1 ? "move" : "moves";
-  return `Updated ${cascadedCount} related ${moves} in this family.`;
+  const moves = inferredCount === 1 ? "move" : "moves";
+  return `${inferredCount} related ${moves} now inferred from your levels.`;
 }

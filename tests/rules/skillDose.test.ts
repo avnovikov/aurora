@@ -32,7 +32,7 @@ describe("skillDose", () => {
 
   it("promotes tier from a strong best set", () => {
     const tier = effectiveSkillTier(
-      memory({ bestReps: 20, skillTier: "beginner" }),
+      memory({ bestReps: 20, declaredTier: "beginner" }),
       SEED_GRAPH.pullup,
     );
     expect(tier).toBe("advanced");
@@ -42,7 +42,7 @@ describe("skillDose", () => {
     expect(
       shouldAdvanceProgression(
         SEED_GRAPH.pullup,
-        memory({ skillTier: "advanced" }),
+        memory({ declaredTier: "advanced" }),
       ),
     ).toBe(true);
   });
@@ -51,7 +51,7 @@ describe("skillDose", () => {
     expect(
       shouldAdvanceProgression(
         SEED_GRAPH.pullup,
-        memory({ skillTier: "novice" }),
+        memory({ declaredTier: "novice" }),
       ),
     ).toBe(false);
   });

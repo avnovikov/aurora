@@ -58,6 +58,16 @@ export function maxTier(a: SkillTier, b: SkillTier): SkillTier {
   return tierRank(a) >= tierRank(b) ? a : b;
 }
 
+export function minTier(a: SkillTier, b: SkillTier): SkillTier {
+  return tierRank(a) <= tierRank(b) ? a : b;
+}
+
+/** One tier lower, or null below novice. */
+export function stepDown(tier: SkillTier): SkillTier | null {
+  const index = tierRank(tier);
+  return index === 0 ? null : SKILL_TIERS[index - 1];
+}
+
 export function standardsFor(exercise: Exercise): ExerciseStandards | null {
   return exercise.standards ?? null;
 }

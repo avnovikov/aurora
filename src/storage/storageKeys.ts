@@ -5,6 +5,8 @@
 export const PROFILE_KEY = "aurora.poc.profile.v1";
 export const HISTORY_KEY = "aurora.poc.history.v1";
 export const MEMORY_KEY = "aurora.poc.memory.v1";
+export const MEMORY_V2_KEY = "aurora.poc.memory.v2";
+export const LEVELS_TO_CONFIRM_KEY = "aurora.poc.levelsToConfirm.v1";
 export const SESSION_KEY = "aurora.poc.session.v1";
 export const PLAN_QUEUE_KEY = "aurora.poc.planQueue.v1";
 export const EXCLUDED_EXERCISES_KEY = "aurora.poc.excludedExercises.v1";
@@ -20,6 +22,8 @@ export const STORAGE_KEYS = [
   PROFILE_KEY,
   HISTORY_KEY,
   MEMORY_KEY,
+  MEMORY_V2_KEY,
+  LEVELS_TO_CONFIRM_KEY,
   SESSION_KEY,
   PLAN_QUEUE_KEY,
   EXCLUDED_EXERCISES_KEY,

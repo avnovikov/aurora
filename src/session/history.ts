@@ -1,20 +1,21 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
-import { maxTier } from "../domain/skillTier";
-import type { Exercise, ExerciseMemory, SkillTier } from "../domain/types";
+import type { Exercise, ExerciseMemory, FailedCap, SkillTier } from "../domain/types";
 import type {
   HistoryEntry,
   LegacySessionEvaluation,
   SessionEvaluation,
 } from "../domain/program";
-import { cascadeFamilyTiers } from "../progress/cascadeFamilyTiers";
-import { effectiveSkillTier } from "../rules/skillDose";
+import { libraryFamilyLadderIndex, type FamilyLadderIndex } from "../progress/familyLadderIndex";
+import { inferTiers } from "../progress/inferTiers";
+import { evidenceTier, liveInferredTier, refreshSkillTier } from "../progress/levelEvidence";
+import { inferTierFromBest, maxTier, stepDown } from "../domain/skillTier";
 import { createKeyValueStore, type KeyValueStore } from "../storage/keyValueStore";
-import { HISTORY_KEY, MEMORY_KEY } from "../storage/storageKeys";
+import { HISTORY_KEY, MEMORY_V2_KEY } from "../storage/storageKeys";
 import { assertNonNegativeWholeSeconds } from "./setDuration";
 import type { SetLogEntry, WorkoutLog } from "./setLog";
 
 const historyStore = createKeyValueStore(HISTORY_KEY);
-const memoryStore = createKeyValueStore(MEMORY_KEY);
+const memoryStore = createKeyValueStore(MEMORY_V2_KEY);
 
 const EVALUATION_LABELS: Record<SessionEvaluation, string> = {
   easy: "Easy",
@@ -75,8 +76,11 @@ export function appendHistory(entry: Omit<HistoryEntry, "id">): HistoryEntry[] {
   return updated;
 }
 
-export function loadMemories(): Record<string, ExerciseMemory> {
-  return readJson(memoryStore, {} as Record<string, ExerciseMemory>);
+export function loadMemories(now: Date = new Date()): Record<string, ExerciseMemory> {
+  const raw = readJson(memoryStore, {} as Record<string, ExerciseMemory>);
+  return Object.fromEntries(
+    Object.entries(raw).map(([id, memory]) => [id, refreshSkillTier(memory, now)]),
+  );
 }
 
 export function saveMemories(memories: Record<string, ExerciseMemory>): void {
@@ -86,6 +90,8 @@ export function saveMemories(memories: Record<string, ExerciseMemory>): void {
 export interface ApplySetLogOptions {
   /** Light-day (and deload) misses do not count toward stall. */
   lightDay?: boolean;
+  now?: Date;
+  index?: FamilyLadderIndex;
 }
 
 type ExerciseSessionOutcome = "untouched" | "at_standard" | "below_floor" | "not_standard";
@@ -104,16 +110,122 @@ export function applySetLogToMemory(
     return memories;
   }
   const lightDay = options.lightDay === true;
+  const now = options.now ?? new Date();
   const next = { ...memories };
+  const outcomes = new Map<string, Exclude<ExerciseSessionOutcome, "untouched">>();
   for (const [exerciseId, entries] of byExercise) {
     const outcome = outcomeForExercise(entries);
     if (outcome === "untouched") {
       continue;
     }
+    outcomes.set(exerciseId, outcome);
     const current = next[exerciseId] ?? emptyMemory(exerciseId);
     next[exerciseId] = memoryAfterSessionOutcome(current, outcome, lightDay);
   }
-  return next;
+  return applyLevelEvidence(next, outcomes, lightDay, now, options.index ?? libraryFamilyLadderIndex());
+}
+
+type Memories = Record<string, ExerciseMemory>;
+
+function withoutInferred(memory: ExerciseMemory, now: Date): ExerciseMemory {
+  const copy = { ...memory };
+  delete copy.inferred;
+  return refreshSkillTier(copy, now);
+}
+
+/** Clean session: an inferred tier becomes logged; caps from this move lift. */
+function confirmInferred(
+  next: Memories,
+  exerciseId: string,
+  now: Date,
+  index: FamilyLadderIndex,
+  confirmingFamilies: Set<string>,
+): void {
+  const current = next[exerciseId]!;
+  const inferred = liveInferredTier(current, now);
+  let loggedTier = current.loggedTier;
+  if (inferred) {
+    loggedTier = loggedTier ? maxTier(loggedTier, inferred) : inferred;
+  }
+  next[exerciseId] = refreshSkillTier(
+    { ...withoutInferred(current, now), loggedTier, lastSessionAt: now.toISOString() },
+    now,
+  );
+  const placement = index.byId.get(exerciseId);
+  if (placement) {
+    confirmingFamilies.add(placement.familyId);
+  }
+  clearCapsFrom(next, exerciseId, now);
+}
+
+function clearCapsFrom(next: Memories, exerciseId: string, now: Date): void {
+  for (const [id, memory] of Object.entries(next)) {
+    if (memory.failedCaps?.some((cap) => cap.from === exerciseId)) {
+      const copy = { ...memory };
+      const kept = memory.failedCaps.filter((cap) => cap.from !== exerciseId);
+      if (kept.length > 0) {
+        copy.failedCaps = kept;
+      } else {
+        delete copy.failedCaps;
+      }
+      next[id] = refreshSkillTier(copy, now);
+    }
+  }
+}
+
+/** Replace any earlier cap from the same source with this one. */
+function withCapFrom(target: ExerciseMemory, cap: FailedCap): ExerciseMemory {
+  const others = (target.failedCaps ?? []).filter((c) => c.from !== cap.from);
+  return { ...target, failedCaps: [...others, cap] };
+}
+
+/** Failed set: drop the inferred tier and cap harder rungs in the family. */
+function capHarderRungs(
+  next: Memories,
+  exerciseId: string,
+  now: Date,
+  index: FamilyLadderIndex,
+): void {
+  const current = next[exerciseId]!;
+  const failedAt = evidenceTier(current, now) ?? "beginner";
+  const nowIso = now.toISOString();
+  next[exerciseId] = { ...withoutInferred(current, now), lastSessionAt: nowIso };
+  const placement = index.byId.get(exerciseId);
+  if (!placement) {
+    return;
+  }
+  // Self-cap: the same supporters must not re-infer the failed tier (rule 7).
+  const selfCap: FailedCap = { tier: stepDown(failedAt) ?? "novice", from: exerciseId, at: nowIso };
+  next[exerciseId] = withCapFrom(next[exerciseId]!, selfCap);
+  for (const member of index.byFamily.get(placement.familyId) ?? []) {
+    if (member.rank <= placement.rank) {
+      continue;
+    }
+    const target = next[member.id] ?? emptyMemory(member.id);
+    next[member.id] = withCapFrom(target, { tier: failedAt, from: exerciseId, at: nowIso });
+  }
+}
+
+/** #112 rule 7 (confirm / remove inferred), rule 2 (failure caps harder rungs), then re-infer. */
+function applyLevelEvidence(
+  memories: Memories,
+  outcomes: ReadonlyMap<string, Exclude<ExerciseSessionOutcome, "untouched">>,
+  lightDay: boolean,
+  now: Date,
+  index: FamilyLadderIndex,
+): Memories {
+  const next = { ...memories };
+  const confirmingFamilies = new Set<string>();
+  for (const [exerciseId, outcome] of outcomes) {
+    if (outcome === "at_standard") {
+      confirmInferred(next, exerciseId, now, index, confirmingFamilies);
+    } else if (outcome === "below_floor" && !lightDay) {
+      capHarderRungs(next, exerciseId, now, index);
+    } else {
+      next[exerciseId] = { ...next[exerciseId]!, lastSessionAt: now.toISOString() };
+    }
+  }
+  return inferTiers({ memories: next, now, index, confirmingFamilies }).memories;
 }
 
 function memoryAfterSessionOutcome(
@@ -190,63 +302,63 @@ function isBelowFloorSet(entry: SetLogEntry): boolean {
 
 export interface DeclareSkillTierResult {
   memories: Record<string, ExerciseMemory>;
-  /** Related family moves whose floor rose (not the exercise you picked). */
-  cascadedCount: number;
+  /** Related family moves that now carry an inferred tier. */
+  inferredCount: number;
 }
 
-/**
- * Manual tier pick from Library, then raise same-or-easier family floors.
- * Session logging can call `cascadeFamilyTiers` later with the same math.
- */
+/** Manual tier pick from Library (tested evidence), then re-run inference (#112). */
 export function declareSkillTier(
   memories: Record<string, ExerciseMemory>,
   exerciseId: string,
   tier: SkillTier,
+  now: Date = new Date(),
+  index?: FamilyLadderIndex,
 ): DeclareSkillTierResult {
   const current = memories[exerciseId] ?? emptyMemory(exerciseId);
-  const withSource: Record<string, ExerciseMemory> = {
+  const withPick = {
     ...memories,
-    [exerciseId]: {
-      ...current,
-      declaredTier: tier,
-      skillTier: maxTier(current.skillTier ?? tier, tier),
-    },
+    [exerciseId]: refreshSkillTier(
+      { ...current, declaredTier: tier, declaredAt: now.toISOString() },
+      now,
+    ),
   };
-  const { memories: cascadedMemories, raisedIds } = cascadeFamilyTiers({
-    memories: withSource,
-    sourceId: exerciseId,
-    declaredTier: tier,
-  });
+  const result = inferTiers({ memories: withPick, now, index });
   return {
-    memories: cascadedMemories,
-    cascadedCount: raisedIds.length,
+    memories: result.memories,
+    inferredCount: result.inferredIds.filter((id) => id !== exerciseId).length,
   };
 }
 
-/**
- * After a logged set, raise bestReps and promote skillTier when standards say so.
- */
+function testedTierAfter(
+  logged: SkillTier | undefined,
+  bestReps: number,
+  exercise: Exercise | undefined,
+): SkillTier | undefined {
+  const standards = exercise?.standards;
+  const fromBest = standards ? inferTierFromBest(bestReps, standards) : undefined;
+  if (fromBest && logged) {
+    return maxTier(logged, fromBest);
+  }
+  return fromBest ?? logged;
+}
+
+/** After a logged set: raise bestReps; standards turn it into a tested loggedTier. */
 export function recordBestReps(
   memories: Record<string, ExerciseMemory>,
   exerciseId: string,
   completedReps: number,
   exercise: Exercise | undefined = EXERCISE_GRAPH[exerciseId],
+  now: Date = new Date(),
 ): Record<string, ExerciseMemory> {
   if (completedReps <= 0) {
     return memories;
   }
   const current = memories[exerciseId] ?? emptyMemory(exerciseId);
   const bestReps = Math.max(current.bestReps ?? 0, completedReps);
-  const withBest = { ...current, bestReps };
-  const skillTier = exercise
-    ? effectiveSkillTier(withBest, exercise)
-    : (withBest.skillTier ?? withBest.declaredTier ?? "beginner");
+  const loggedTier = testedTierAfter(current.loggedTier, bestReps, exercise);
   return {
     ...memories,
-    [exerciseId]: {
-      ...withBest,
-      skillTier,
-    },
+    [exerciseId]: refreshSkillTier({ ...current, bestReps, loggedTier, lastSessionAt: now.toISOString() }, now),
   };
 }
 

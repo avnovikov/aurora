@@ -1,18 +1,18 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import type { SessionTemplate } from "../domain/program";
-import { maxTier, tierIndex } from "../domain/skillTier";
+import { tierIndex } from "../domain/skillTier";
 import type { SeedExercise } from "../data/seed";
 import type { ExerciseMemory, SkillTier } from "../domain/types";
 import { effectiveSkillTier } from "../rules/skillDose";
-import { declareSkillTier, emptyMemory } from "../session/history";
+import { refreshSkillTier } from "../progress/levelEvidence";
+import { emptyMemory } from "../session/history";
 
 /**
- * A plan level is a declared level: the same thing as picking "Your level"
- * on an exercise's Library page. It is a floor, never a ceiling: results
- * that already earned a higher tier are kept.
+ * A plan level is a dose default (#112): a floor for planned moves, never
+ * evidence. Results that already earned a higher tier are kept.
  */
-function isBelow(memory: ExerciseMemory, exercise: SeedExercise, level: SkillTier): boolean {
-  return tierIndex(effectiveSkillTier(memory, exercise)) < tierIndex(level);
+function isBelow(memory: ExerciseMemory, exercise: SeedExercise, level: SkillTier, now: Date = new Date()): boolean {
+  return tierIndex(effectiveSkillTier(memory, exercise, now)) < tierIndex(level);
 }
 
 /**
@@ -25,42 +25,45 @@ export function levelForMove(exercise: SeedExercise, level: SkillTier): SkillTie
   return own && tierIndex(own) < tierIndex(level) ? own : level;
 }
 
-/** The memory the planner would see for this move once the plan level is declared on it. */
+/** The memory the planner sees for this move with the plan level as a dose default. */
 export function memoryAtLevel(
   memory: ExerciseMemory | undefined,
   exercise: SeedExercise,
   planLevel: SkillTier | undefined,
+  now: Date = new Date(),
 ): ExerciseMemory {
   const current = memory ?? emptyMemory(exercise.id);
   if (!planLevel) {
     return current;
   }
   const level = levelForMove(exercise, planLevel);
-  if (!isBelow(current, exercise, level)) {
+  if (!isBelow(current, exercise, level, now)) {
     return current;
   }
-  return { ...current, declaredTier: level, skillTier: maxTier(current.skillTier ?? level, level) };
+  return refreshSkillTier({ ...current, planTier: level }, now);
 }
 
 /**
- * Declare the plan level on every working move of the generated days (care
- * moves are pinned and have no level), through the Library's own
- * `declareSkillTier`, so the planner doses them at that tier.
+ * Write the plan level as `planTier` on every working move of the generated
+ * days (#112 rule 10): a dose default, never evidence, never inferred from.
  */
 export function declareLevelForDays(
   memories: Record<string, ExerciseMemory>,
   days: readonly SessionTemplate[],
   planLevel: SkillTier,
+  now: Date = new Date(),
 ): Record<string, ExerciseMemory> {
-  let next = memories;
+  const next = { ...memories };
   for (const slot of days.flatMap((day) => day.slots)) {
     const exercise = EXERCISE_GRAPH[slot.exerciseId];
     if (!exercise || slot.pinned) {
       continue;
     }
-    const level = levelForMove(exercise, planLevel);
-    if (isBelow(next[exercise.id] ?? emptyMemory(exercise.id), exercise, level)) {
-      next = declareSkillTier(next, exercise.id, level).memories;
+    const before = next[exercise.id];
+    const updated = memoryAtLevel(before, exercise, planLevel, now);
+    // A move with no memory gets a record only when the plan level sets one.
+    if (updated !== before && (before !== undefined || updated.planTier !== undefined)) {
+      next[exercise.id] = updated;
     }
   }
   return next;

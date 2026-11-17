@@ -111,15 +111,32 @@ export interface WeakLink {
   sourceNote: string;
 }
 
+/** A level inferred from harder tested family members (#112). */
+export interface InferredTier {
+  tier: SkillTier;
+  /** Supporting exercise ids (tested, harder rungs). */
+  from: string[];
+  /** ISO time the tier was first inferred at this value. */
+  at: string;
+}
+
+/** Ceiling on inference after a failed set on an easier rung (#112 rule 2). */
+export interface FailedCap {
+  tier: SkillTier;
+  /** The exercise whose failed set set the cap. */
+  from: string;
+  at: string;
+}
+
 export interface ExerciseMemory {
   exerciseId: string;
   sessionsAtStandard: number;
   sessionsBelowFloor: number;
   lastAddedLoadKg: number;
   weakLinkSessionsRemaining: number;
-  /** Effective tier used for prescription (declared or inferred). */
+  /** Cached effective tier (derived by refreshSkillTier); never write directly. */
   skillTier?: SkillTier;
-  /** Last manual pick from Library; wins ties with inference until best exceeds it. */
+  /** The athlete's own Library pick: tested evidence (#112). */
   declaredTier?: SkillTier;
   /** Best clean completed reps / hold seconds logged. */
   bestReps?: number;
@@ -127,6 +144,18 @@ export interface ExerciseMemory {
   avgSetDurationSeconds?: number;
   /** How many set durations feed `avgSetDurationSeconds`. */
   setDurationSampleCount?: number;
+  /** ISO time of the athlete's last Library pick. */
+  declaredAt?: string;
+  /** Highest tier proven by logged reps against standards (tested). */
+  loggedTier?: SkillTier;
+  /** ISO time of the last logged set on this move. */
+  lastSessionAt?: string;
+  /** Derived by `inferTiers`; never set by hand. */
+  inferred?: InferredTier;
+  /** Ceilings on inference from failed sets on easier rungs, one per failing exercise (#112 rule 2). */
+  failedCaps?: FailedCap[];
+  /** Dose default from the plan level; never evidence. */
+  planTier?: SkillTier;
 }
 
 export interface Readiness {
