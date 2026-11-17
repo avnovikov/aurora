@@ -1,7 +1,12 @@
 import type { PlanQueue, SessionTemplate } from "../domain/program";
 import type { SkillTier } from "../domain/types";
 import { loadMemories, saveMemories } from "../session/history";
-import { generateBlock, type BlockInput } from "./generateBlock";
+import {
+  generateBlock,
+  generateContinuationDay,
+  type BlockInput,
+  type ContinuationInput,
+} from "./generateBlock";
 import { generateJointCareDay } from "./jointCareDay";
 import type { StepContext } from "./ladderSteps";
 import { declareLevelForDays } from "./levelDeclare";
@@ -36,6 +41,11 @@ function declarePlanLevel(days: readonly SessionTemplate[], level: SkillTier | u
   }
 }
 
+function persistGeneratedDays(days: readonly SessionTemplate[], level: SkillTier | undefined): void {
+  savePlanDays(days);
+  declarePlanLevel(days, level);
+}
+
 export interface AddBlockResult {
   days: SessionTemplate[];
   /** The queue with the block placed; the caller saves it. */
@@ -50,8 +60,7 @@ export interface AddBlockResult {
 export function addBlockToPlan(input: BlockInput & { queue: PlanQueue; index: number }): AddBlockResult {
   const days = generateBlock(input);
   const queue = placeBlock(input.queue, days.map((day) => day.id), input.index);
-  savePlanDays(days);
-  declarePlanLevel(days, input.context.level);
+  persistGeneratedDays(days, input.context.level);
   return { days, queue };
 }
 
@@ -62,6 +71,20 @@ export function addBlockToPlan(input: BlockInput & { queue: PlanQueue; index: nu
 export function addJointCareDay(input: { queue: PlanQueue; context: StepContext; index?: number; newId?: () => string }): AddBlockResult {
   const day = generateJointCareDay(input.context, input.newId);
   const queue = placeBlock(input.queue, [day.id], input.index ?? input.queue.items.length);
-  savePlanDays([day]);
+  persistGeneratedDays([day], undefined);
   return { days: [day], queue };
+}
+
+/**
+ * After a generated block day finishes: append the next working/easier/focus
+ * day at the end of the queue (same group/target). No-op when continuation
+ * cannot be built. Saves the new day before returning the extended queue.
+ */
+export function replenishBlockOnQueue(input: ContinuationInput & { queue: PlanQueue }): PlanQueue {
+  const continuation = generateContinuationDay(input);
+  if (!continuation) {
+    return input.queue;
+  }
+  persistGeneratedDays([continuation], input.context.level);
+  return { items: [...input.queue.items, continuation.id] };
 }

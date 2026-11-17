@@ -1,7 +1,13 @@
 import { requireExercise } from "../data/exerciseGraph";
 import { LIBRARY_CATALOGUE } from "../data/libraryCatalogue";
 import { SESSION_TEMPLATES, TEMPLATE_BY_ID, type SeedExercise } from "../data/seed";
-import type { BlockEmphasis, JointHistoryEntry, SessionTemplate, TemplateSlot } from "../domain/program";
+import type {
+  BlockEmphasis,
+  DayKind,
+  JointHistoryEntry,
+  SessionTemplate,
+  TemplateSlot,
+} from "../domain/program";
 import { tierIndex } from "../domain/skillTier";
 import { resolveExerciseTiming } from "../domain/timing";
 import { estimateSessionDuration } from "../rules/sessionDuration";
@@ -9,7 +15,14 @@ import { applySkillDose } from "../rules/skillDose";
 import { areaOf } from "../library/facets";
 import { prehabFor } from "../safety/prehab";
 import { JOINT_LABEL } from "../settings/jointHistory";
-import { blockDayName, DAY_KIND_LABELS, focusOfKind, storedSkillTitle, type AreaKind } from "./dayKinds";
+import {
+  AREA_KINDS,
+  blockDayName,
+  DAY_KIND_LABELS,
+  focusOfKind,
+  storedSkillTitle,
+  type AreaKind,
+} from "./dayKinds";
 import {
   easierStep,
   familyOf,
@@ -37,12 +50,53 @@ export interface BlockInput {
 }
 
 const LETTERS = ["A", "B", "C"] as const;
-const EMPHASIS_BY_LETTER: Record<(typeof LETTERS)[number], BlockEmphasis> = {
+export type BlockLetter = (typeof LETTERS)[number];
+const EMPHASIS_BY_LETTER: Record<BlockLetter, BlockEmphasis> = {
   A: "working",
   B: "easier",
   C: "focus",
 };
+const NEXT_BLOCK_LETTER: Record<BlockLetter, BlockLetter> = {
+  A: "B",
+  B: "C",
+  C: "A",
+};
 const MAX_SLOTS = 5;
+
+function isBlockKind(kind: DayKind | undefined): kind is BlockKind {
+  return kind === "skill" || AREA_KINDS.some((area) => area === kind);
+}
+
+function noUsableExercisesMessage(kind: BlockKind): string {
+  return `No usable exercises for ${DAY_KIND_LABELS[kind]} with your equipment, joints and exclusions`;
+}
+
+function isNoUsableExercisesError(error: unknown): boolean {
+  return error instanceof Error && error.message.startsWith("No usable exercises for ");
+}
+
+/** Next emphasis letter in the A → B → C → A cycle. */
+export function nextBlockLetter(letter: BlockLetter): BlockLetter {
+  return NEXT_BLOCK_LETTER[letter];
+}
+
+function generatedDayId(base: string, letter: BlockLetter): string {
+  return `${GENERATED_DAY_PREFIX}${base}${letter.toLowerCase()}`;
+}
+
+/** Goal stored on a finished day: skill always; area only when generated with a single target. */
+function targetOfFinished(finished: SessionTemplate, kind: BlockKind): string | undefined {
+  if (kind === "skill") {
+    return finished.targetExerciseIds[0];
+  }
+  return finished.targetExerciseIds.length === 1 ? finished.targetExerciseIds[0] : undefined;
+}
+
+interface DayPlacement {
+  letter: BlockLetter;
+  blockId: string;
+  dayId: string;
+}
 
 /** Which seed day lends its warm-up, cool-down, minutes and default goals. */
 const SEED_BY_AREA: Record<AreaKind, string> = {
@@ -252,21 +306,26 @@ function fitToBand(day: SessionTemplate): SessionTemplate {
   return fitted;
 }
 
-function buildDay(input: BlockInput, index: number, base: string, inBlock: Set<string>): SessionTemplate {
-  const letter = LETTERS[index]!;
+function buildDay(
+  input: BlockInput,
+  placement: DayPlacement,
+  blockExerciseIds: Set<string>,
+): SessionTemplate {
+  const { letter, blockId, dayId } = placement;
   const emphasis = EMPHASIS_BY_LETTER[letter];
   const isSkill = input.kind === "skill";
   const { ordered, area } = orderedSpecs(input, emphasis);
-  const dayId = `${GENERATED_DAY_PREFIX}${base}${letter.toLowerCase()}`;
 
-  const picks = pickMoves(ordered, emphasis, input.context, inBlock);
+  const picks = pickMoves(ordered, emphasis, input.context, blockExerciseIds);
   if (picks.length === 0) {
-    throw new Error(`No usable exercises for ${DAY_KIND_LABELS[input.kind]} with your equipment, joints and exclusions`);
+    throw new Error(noUsableExercisesMessage(input.kind));
   }
   const slots = toSlots(picks, dayId, isSkill ? "skill" : "area", input.context);
-  const used = new Set(picks.map(({ member }) => member.exercise.id));
-  const care = careSlot(area, input.context, dayId, used);
-  used.forEach((id) => inBlock.add(id));
+  const exerciseIdsInDay = new Set(picks.map(({ member }) => member.exercise.id));
+  const care = careSlot(area, input.context, dayId, exerciseIdsInDay);
+  for (const id of exerciseIdsInDay) {
+    blockExerciseIds.add(id);
+  }
 
   const seed = seedFor(area, isSkill ? input.target : undefined, input.context);
   const title = isSkill ? storedSkillTitle(input.target) : DAY_KIND_LABELS[input.kind];
@@ -275,7 +334,7 @@ function buildDay(input: BlockInput, index: number, base: string, inBlock: Set<s
     name: blockDayName(title, letter),
     focus: focusOfKind(input.kind),
     kind: input.kind,
-    block: { id: `blk_${base}`, letter, emphasis },
+    block: { id: blockId, letter, emphasis },
     targetExerciseIds: input.target ? [input.target] : [...seed.targetExerciseIds],
     // Per-level lists; the level is picked from the athlete's tier in the day's target family.
     warmupByLevel: seed.warmupByLevel,
@@ -304,6 +363,52 @@ export function generateBlock(input: BlockInput): SessionTemplate[] {
     requireExercise(input.target);
   }
   const base = (input.newId ?? newDayId)();
-  const inBlock = new Set<string>();
-  return Array.from({ length: count }, (_, index) => buildDay(input, index, base, inBlock));
+  const blockExerciseIds = new Set<string>();
+  return Array.from({ length: count }, (_, index) => {
+    const letter = LETTERS[index]!;
+    return buildDay(
+      input,
+      { letter, blockId: `blk_${base}`, dayId: generatedDayId(base, letter) },
+      blockExerciseIds,
+    );
+  });
+}
+
+export interface ContinuationInput {
+  finished: SessionTemplate;
+  context: StepContext;
+  newId?: () => string;
+}
+
+/**
+ * Next day in the same block group after `finished`: next working/easier/focus
+ * letter, same `block.id` and target, fresh unique day id, slots from current
+ * ladder context. Undefined when the finished day is not a generated block day
+ * or no usable moves can be placed.
+ */
+export function generateContinuationDay(input: ContinuationInput): SessionTemplate | undefined {
+  const { finished, context } = input;
+  if (!finished.block || !isBlockKind(finished.kind)) {
+    return undefined;
+  }
+  const kind = finished.kind;
+  const target = targetOfFinished(finished, kind);
+  if (kind === "skill" && !target) {
+    return undefined;
+  }
+  const letter = nextBlockLetter(finished.block.letter);
+  const base = (input.newId ?? newDayId)();
+  try {
+    return buildDay(
+      { kind, target, context },
+      { letter, blockId: finished.block.id, dayId: generatedDayId(base, letter) },
+      new Set(),
+    );
+  } catch (error) {
+    // Session close must still succeed when gear/joints leave no legal continuation.
+    if (isNoUsableExercisesError(error)) {
+      return undefined;
+    }
+    throw error;
+  }
 }
