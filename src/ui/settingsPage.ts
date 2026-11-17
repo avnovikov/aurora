@@ -5,8 +5,12 @@ import { escapeHtml } from "../library/present";
 import {
   ALL_EQUIPMENT,
   MAX_ADD_WEIGHT_KG,
+  MAX_MAX_HEART_RATE_BPM,
+  MAX_RESTING_HEART_RATE_BPM,
   MIN_ADD_WEIGHT_KG,
   MIN_BODYWEIGHT_KG,
+  MIN_MAX_HEART_RATE_BPM,
+  MIN_RESTING_HEART_RATE_BPM,
 } from "../settings/profile";
 
 export const SETTINGS_TABS = [
@@ -55,9 +59,32 @@ function numberFieldHtml(attr: string, label: string, value: number, hint: strin
     <p class="hint" id="${attr}-hint" aria-live="polite" data-${attr}-hint>${hint}</p>`;
 }
 
+function wholeBpmLimits(min: number, max: number): string {
+  return `min="${min}" max="${max}" step="1"`;
+}
+
+function heartRateFieldsHtml(profile: UserProfile): string {
+  return `
+    ${numberFieldHtml(
+      "resting-hr",
+      "Resting heart rate (bpm)",
+      profile.restingHeartRateBpm,
+      "Your pulse sitting still. The bottom of your training bands.",
+      wholeBpmLimits(MIN_RESTING_HEART_RATE_BPM, MAX_RESTING_HEART_RATE_BPM),
+    )}
+    ${numberFieldHtml(
+      "max-hr",
+      "Max heart rate (bpm)",
+      profile.maxHeartRateBpm,
+      "The highest pulse you reach. The top of your training bands.",
+      wholeBpmLimits(MIN_MAX_HEART_RATE_BPM, MAX_MAX_HEART_RATE_BPM),
+    )}`;
+}
+
 function youHtml(profile: UserProfile): string {
   return `
     ${numberFieldHtml("bw", "Bodyweight (kg)", profile.bodyweightKg, "Used for pull-up and dip load.", `min="${MIN_BODYWEIGHT_KG}" step="0.5"`)}
+    ${heartRateFieldsHtml(profile)}
     <p class="eyebrow">Past injuries</p>
     <p class="hint">Moves that load these joints are skipped or eased.</p>
     <div data-joint-editor></div>`;

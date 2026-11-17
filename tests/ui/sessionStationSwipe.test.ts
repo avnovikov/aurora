@@ -166,10 +166,31 @@ describe("finishing a station early", () => {
 });
 
 describe("a pulse reading", () => {
-  function pulseRoot(): { root: HTMLElement; chip: { textContent: string }; classes: Set<string> } {
-    const chip = { textContent: "" };
+  function pulseRoot(): {
+    root: HTMLElement;
+    chip: { textContent: string; zone: string | null };
+    classes: Set<string>;
+  } {
+    const chip = {
+      textContent: "",
+      zone: null as string | null,
+      setAttribute(name: string, value: string) {
+        if (name === "data-hr-zone") {
+          this.zone = value;
+        }
+      },
+      removeAttribute(name: string) {
+        if (name === "data-hr-zone") {
+          this.zone = null;
+        }
+      },
+    };
     const classes = new Set<string>(["pulse-lost"]);
-    const bar = { classList: { toggle: (name: string, on: boolean) => (on ? classes.add(name) : classes.delete(name)) } };
+    const bar = {
+      classList: {
+        toggle: (name: string, on: boolean) => (on ? classes.add(name) : classes.delete(name)),
+      },
+    };
     const root = {
       querySelector(selector: string) {
         if (selector === ".pulse-chip") {

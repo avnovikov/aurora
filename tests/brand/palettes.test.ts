@@ -6,10 +6,12 @@ import {
   PALETTES,
   PALETTE_KEYS,
   applyPalette,
+  heartRateVariable,
   isPaletteKey,
   paletteFor,
   roleVariable,
 } from "../../src/brand/palettes";
+import { HEART_RATE_ZONES } from "../../src/pulse/hrZones";
 
 const KEYS = ["rassvet", "alvorada", "ushas", "revontulet", "fajr", "eos"];
 const ROLES = [
@@ -189,6 +191,35 @@ function luminance(hex: string): number {
   const [r, g, b] = channels.map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.04045) / 1.055) ** 2.4));
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
+
+/** WCAG contrast ratio of two #rrggbb colours. */
+function contrast(a: string, b: string): number {
+  const lighter = Math.max(luminance(a), luminance(b));
+  const darker = Math.min(luminance(a), luminance(b));
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+describe("heart-rate zone colours", () => {
+  it("gives every palette a readable colour for each of the five bands", () => {
+    for (const palette of PALETTES) {
+      expect(Object.keys(palette.heartRate).sort()).toEqual([...HEART_RATE_ZONES].sort());
+      for (const zone of HEART_RATE_ZONES) {
+        const colour = palette.heartRate[zone];
+        expect(colour).toMatch(/^#[0-9a-f]{6}$/);
+        expect(contrast(colour, palette.colors.surface), `${palette.key} ${zone}`).toBeGreaterThanOrEqual(4.5);
+      }
+    }
+  });
+
+  it("publishes the colours as --hr-* variables when the palette is applied", () => {
+    const fake = fakeDocument();
+    applyPalette("ushas", fake.doc);
+    const ushas = paletteFor("ushas");
+    for (const zone of HEART_RATE_ZONES) {
+      expect(fake.vars[heartRateVariable(zone)]).toBe(ushas.heartRate[zone]);
+    }
+  });
+});
 
 describe("style.css color-scheme", () => {
   it("marks exactly the light-background palettes as color-scheme light", () => {

@@ -31,7 +31,7 @@ import { cooldownSteps, currentWork, isGetReadyRest } from "./sessionState";
 import type { ViewState } from "./sessionTypes";
 import { doseNoteHtml } from "./sessionDoseNote";
 import { weightControlsHtml } from "./sessionWeightControls";
-import { isPulseLost, pulseChipText } from "./sessionPulse";
+import { isPulseLost, pulseChipHtml } from "./sessionPulse";
 import "../styles/session.css";
 
 /** Mid-session Swap / Easier / Skip today / Never again controls on the work stage. */
@@ -100,7 +100,7 @@ function pulseBarHtml(state: ViewState, actions: string): string {
       <footer class="session-bar pulse-row${pulseClass}">
         ${actions}
         ${pulseStatusHtml(state.pulseStatus)}
-        <p class="pulse-chip">${pulseChipText(state)}</p>
+        ${pulseChipHtml(state)}
         <details class="pulse-more strap">
           <summary>Strap</summary>
           <div class="strap-actions">${pulseControlsHtml(state)}</div>

@@ -126,6 +126,10 @@ export interface UserProfile {
   palette: PaletteKey;
   /** The weight the athlete owns (dumbbell, kettlebell, vest): what "Add weight" puts on in a session. */
   addWeightKg: number;
+  /** Pulse sitting still. Bottom of the training bands. */
+  restingHeartRateBpm: number;
+  /** Highest pulse the athlete reaches. Top of the training bands. */
+  maxHeartRateBpm: number;
 }
 
 export type SessionEvaluation = "easy" | "on_target" | "failed" | "wiped";

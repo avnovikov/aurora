@@ -102,6 +102,20 @@ describe("settings tabs", () => {
     expect(gear).not.toContain("data-save");
   });
 
+  it("asks for resting and max heart rate beside bodyweight, including first-run setup", () => {
+    const you = html("you");
+    expect(you).toContain("Resting heart rate (bpm)");
+    expect(you).toContain("Max heart rate (bpm)");
+    expect(you).toContain("data-resting-hr");
+    expect(you).toContain("data-max-hr");
+    expect(you).toContain('aria-describedby="resting-hr-hint"');
+    expect(you).toContain('aria-describedby="max-hr-hint"');
+    expect(html("gear")).not.toContain("data-resting-hr");
+    const setup = settingsPageHtml({ tab: "you", profile: loadProfile(), deloadActive: false, setup: true });
+    expect(setup).toContain("data-resting-hr");
+    expect(setup).toContain("data-max-hr");
+  });
+
   it("calls the weight you add Added weight, so it is not confused with bodyweight, and links each hint to its field", () => {
     const gear = html("gear");
     expect(gear).toContain("Added weight");
