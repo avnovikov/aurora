@@ -1,7 +1,10 @@
 import { LIBRARY_CATALOGUE } from "../data/libraryCatalogue";
 import type { SeedExercise } from "../data/seed";
 import { displayExerciseName } from "../library/displayName";
+import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import { mountLibraryDetail } from "../library/libraryDetail";
+import { describeLevelSource } from "../library/levelSource";
+import { suggestTiers } from "../progress/suggestTiers";
 import {
   readScrollY,
   restoreScrollY,
@@ -117,7 +120,10 @@ export function renderLibraryView(root: HTMLElement): void {
       listScrollY = readScrollY();
     }
     detailExerciseId = exerciseId;
-    const memory = loadMemories()[exerciseId] ?? emptyMemory(exerciseId);
+    const now = new Date();
+    const memories = loadMemories(now);
+    const memory = memories[exerciseId] ?? emptyMemory(exerciseId);
+    const untested = !memory.declaredTier && !memory.loggedTier;
     mountLibraryDetail(root, {
       exercise,
       targetIds,
@@ -161,6 +167,10 @@ export function renderLibraryView(root: HTMLElement): void {
         skillTier: memory.skillTier,
         declaredTier: memory.declaredTier,
         bestReps: memory.bestReps,
+        source: describeLevelSource(memory, now, (id) => EXERCISE_GRAPH[id]?.name ?? id),
+        suggestion: untested
+          ? suggestTiers({ memories, patternOf: (id) => EXERCISE_GRAPH[id]?.pattern }).get(exerciseId)
+          : undefined,
       },
       planStatus,
       cascadeHint: inferenceHint,
