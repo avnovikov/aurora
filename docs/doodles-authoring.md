@@ -16,11 +16,13 @@ Doodles are animated SVG stick figures generated from TypeScript pose specs. Nev
 - Floor at y = 0, up is negative, and the side-view figure faces +x. Pin only the joints that define the move.
 - **Depth.** In side view the far arm and far leg are drawn at half opacity behind the body, and the near limbs are drawn bright on top. Use this to show depth:
   - A bright near knee crossing the near arm reads as passing *in front of* it (outside the arm), not through it. That is how Spiderman push-ups and planks are drawn: knee to the outside of the elbow.
-  - A pale far leg crossing behind the bright standing leg reads as passing *behind* it: Dragon Squat, curtsy lunge.
+  - A pale far leg crossing behind the bright standing leg reads as passing *behind* it.
   - So crossings between limbs are fine when the near/far choice puts the right limb in front. The validator only rejects limbs through props and arms through the head.
   - Pick which side moves (near or far) so the limb that is in front in real life is the bright one.
-- In front view both sides are drawn at full strength, unless the spec sets `depth: "far-behind"`; then the far side is drawn pale, for moves where one leg passes behind the other.
+- In front view both sides are drawn at full strength.
 - The rig keeps every bone at full length and cannot shorten a limb pointing at the viewer. Motion straight toward the camera (fire hydrant from the side, a lateral plank walk) still can't be shown. Leave those out rather than mislead.
+  - A knee that bends toward the camera is the common case: in front view any lowering throws that knee 40–60 units sideways (it reads as a lateral lunge), so Dragon Squat and curtsy lunge stay out even with depth shading. In side view their crossing is sideways and invisible.
+  - A side-view knee that travels out to the side (Spiderman) has to swing forward under the hip, with the foot lifted, on its way to the elbow. Keep that frame brief so it doesn't read as kneeling.
 - Props: bar, box, parallelBars, parallettes, plus an optional `band` between the thighs. A straight-arm support on low parallettes reads as sitting on a stool: draw it on dip bars.
 
 ## Prompt: drawing a batch
