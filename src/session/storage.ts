@@ -1,8 +1,10 @@
 import type { Readiness } from "../domain/types";
 import type { PlannedSession } from "../rules/planSession";
+import { createKeyValueStore } from "../storage/keyValueStore";
+import { SESSION_KEY } from "../storage/storageKeys";
 import type { WorkoutLog } from "./setLog";
 
-const KEY = "aurora.poc.session.v1";
+const store = createKeyValueStore(SESSION_KEY);
 
 export interface PersistedSession {
   readiness: Readiness;
@@ -22,11 +24,11 @@ export interface PersistedSession {
 
 export function saveSession(session: PersistedSession): void {
   assertSession(session);
-  localStorage.setItem(KEY, JSON.stringify(session));
+  store.write(JSON.stringify(session));
 }
 
 export function loadSession(): PersistedSession | null {
-  const raw = localStorage.getItem(KEY);
+  const raw = store.read();
   if (!raw) {
     return null;
   }
@@ -35,13 +37,13 @@ export function loadSession(): PersistedSession | null {
     assertSession(parsed);
     return parsed;
   } catch {
-    localStorage.removeItem(KEY);
+    store.clear();
     return null;
   }
 }
 
 export function clearSession(): void {
-  localStorage.removeItem(KEY);
+  store.clear();
 }
 
 function assertSession(session: PersistedSession): void {

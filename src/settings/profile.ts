@@ -1,11 +1,21 @@
 import type { EquipmentId, UserProfile } from "../domain/program";
 import { DEFAULT_PALETTE, isPaletteKey } from "../brand/palettes";
 import { DEFAULT_ADDED_LOAD_KG } from "../session/setLog";
+import { createKeyValueStore } from "../storage/keyValueStore";
+import {
+  HISTORY_KEY,
+  MEMORY_KEY,
+  PLAN_QUEUE_KEY,
+  PROFILE_KEY,
+} from "../storage/storageKeys";
 import { loadDeloadActive } from "./deload";
 import { isJointHistory } from "./jointHistory";
 import { isCoachMuted, setCoachMuted } from "../voice/coachVoice";
 
-const KEY = "aurora.poc.profile.v1";
+const store = createKeyValueStore(PROFILE_KEY);
+const planQueueStore = createKeyValueStore(PLAN_QUEUE_KEY);
+const historyStore = createKeyValueStore(HISTORY_KEY);
+const memoryStore = createKeyValueStore(MEMORY_KEY);
 
 const DEFAULT_PROFILE: UserProfile = {
   bodyweightKg: 78,
@@ -43,7 +53,7 @@ function freshDefault(): UserProfile {
 }
 
 export function loadProfile(): UserProfile {
-  const raw = localStorage.getItem(KEY);
+  const raw = store.read();
   if (!raw) {
     return freshDefault();
   }
@@ -64,7 +74,7 @@ export function loadProfile(): UserProfile {
 
 export function saveProfile(profile: UserProfile): void {
   assertProfile(profile);
-  localStorage.setItem(KEY, JSON.stringify(profile));
+  store.write(JSON.stringify(profile));
   setCoachMuted(profile.voiceMuted);
 }
 
@@ -73,9 +83,9 @@ export function exportBackupJson(): string {
     {
       exportedAt: new Date().toISOString(),
       profile: loadProfile(),
-      planQueue: localStorage.getItem("aurora.poc.planQueue.v1"),
-      history: localStorage.getItem("aurora.poc.history.v1"),
-      memory: localStorage.getItem("aurora.poc.memory.v1"),
+      planQueue: planQueueStore.read(),
+      history: historyStore.read(),
+      memory: memoryStore.read(),
       muted: isCoachMuted(),
       deloadActive: loadDeloadActive(),
     },

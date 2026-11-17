@@ -4,13 +4,15 @@ import type { Exercise, ExerciseMemory, SkillTier } from "../domain/types";
 import type { HistoryEntry, SessionEvaluation } from "../domain/program";
 import { cascadeFamilyTiers } from "../progress/cascadeFamilyTiers";
 import { effectiveSkillTier } from "../rules/skillDose";
+import { createKeyValueStore, type KeyValueStore } from "../storage/keyValueStore";
+import { HISTORY_KEY, MEMORY_KEY } from "../storage/storageKeys";
 import { assertNonNegativeWholeSeconds } from "./setDuration";
 
-const HISTORY_KEY = "aurora.poc.history.v1";
-const MEMORY_KEY = "aurora.poc.memory.v1";
+const historyStore = createKeyValueStore(HISTORY_KEY);
+const memoryStore = createKeyValueStore(MEMORY_KEY);
 
 export function loadHistory(): HistoryEntry[] {
-  return readJson(HISTORY_KEY, [] as HistoryEntry[]);
+  return readJson(historyStore, [] as HistoryEntry[]);
 }
 
 export function appendHistory(entry: Omit<HistoryEntry, "id">): HistoryEntry[] {
@@ -20,16 +22,16 @@ export function appendHistory(entry: Omit<HistoryEntry, "id">): HistoryEntry[] {
     id: `hist_${history.length + 1}_${Date.now()}`,
   };
   const updated = [next, ...history].slice(0, 200);
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+  historyStore.write(JSON.stringify(updated));
   return updated;
 }
 
 export function loadMemories(): Record<string, ExerciseMemory> {
-  return readJson(MEMORY_KEY, {} as Record<string, ExerciseMemory>);
+  return readJson(memoryStore, {} as Record<string, ExerciseMemory>);
 }
 
 export function saveMemories(memories: Record<string, ExerciseMemory>): void {
-  localStorage.setItem(MEMORY_KEY, JSON.stringify(memories));
+  memoryStore.write(JSON.stringify(memories));
 }
 
 /**
@@ -159,8 +161,8 @@ export function emptyMemory(exerciseId: string): ExerciseMemory {
   };
 }
 
-function readJson<T>(key: string, fallback: T): T {
-  const raw = localStorage.getItem(key);
+function readJson<T>(store: KeyValueStore, fallback: T): T {
+  const raw = store.read();
   if (!raw) {
     return fallback;
   }

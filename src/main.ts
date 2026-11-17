@@ -9,12 +9,15 @@ import "@fontsource/ibm-plex-sans-condensed/latin-700.css";
 import "./style.css";
 import { applyPalette } from "./brand/palettes";
 import { loadProfile } from "./settings/profile";
+import { migratePlaintextToSecureStorage } from "./storage/migrateSecureStorage";
 import { bootApp } from "./ui/app";
 
 const root = document.querySelector<HTMLDivElement>("#app");
 if (!root) {
   throw new Error("#app root missing");
 }
+// Move plaintext localStorage into Keystore-backed files before any reads.
+migratePlaintextToSecureStorage();
 // Before the first render, so the saved palette shows from the first frame.
 applyPalette(loadProfile().palette);
 bootApp(root);

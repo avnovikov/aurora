@@ -1,12 +1,14 @@
 import { DEFAULT_PLAN_QUEUE } from "../data/seed";
 import type { PlanQueue, SessionTemplate } from "../domain/program";
 import { loadProfile } from "../settings/profile";
+import { createKeyValueStore } from "../storage/keyValueStore";
+import { PLAN_QUEUE_KEY } from "../storage/storageKeys";
 import type { ScheduleOverride } from "./scheduleOverride";
 import { prunePlanDays } from "./planDays";
 import { loadScheduleOverride } from "./scheduleOverride";
 import { assertKnownTemplate, findTemplate, isKnownTemplate, resolveTemplate } from "./templates";
 
-const KEY = "aurora.poc.planQueue.v1";
+const store = createKeyValueStore(PLAN_QUEUE_KEY);
 
 /** Legacy installs that finished setup before empty queues existed never wrote a key. */
 function missingKeyFallback(): PlanQueue {
@@ -17,7 +19,7 @@ function missingKeyFallback(): PlanQueue {
 }
 
 export function loadPlanQueue(): PlanQueue {
-  const raw = localStorage.getItem(KEY);
+  const raw = store.read();
   if (!raw) {
     return missingKeyFallback();
   }
@@ -37,7 +39,7 @@ export function savePlanQueue(queue: PlanQueue): void {
   if (!Array.isArray(queue.items)) {
     throw new Error("Plan queue items must be an array");
   }
-  localStorage.setItem(KEY, JSON.stringify({ items: [...queue.items] }));
+  store.write(JSON.stringify({ items: [...queue.items] }));
   // Generated days that are neither queued nor today's override are done with.
   prunePlanDays([...queue.items, loadScheduleOverride()?.templateId]);
 }
