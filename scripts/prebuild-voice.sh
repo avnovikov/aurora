@@ -24,6 +24,10 @@ if [[ ! -f "$MODEL" ]]; then
 fi
 
 mkdir -p "$OUT"
+# Which model baked each line, rewritten whole on every run so one run = one
+# voice. tests/voice/voicePack.test.ts checks it against src/voice/lines.ts.
+MANIFEST="$ROOT/data/voice-manifest.tsv"
+printf 'assetKey\tmodel\ttext\n' > "$MANIFEST"
 
 bake_line() {
   local key="$1"
@@ -31,6 +35,7 @@ bake_line() {
   local wav="$OUT/$key.wav"
   echo "Baking $key: $text"
   printf '%s\n' "$text" | "$PIPER_BIN" -m "$MODEL" -f "$wav"
+  printf '%s\t%s\t%s\n' "$key" "$(basename "$MODEL")" "$text" >> "$MANIFEST"
 }
 
 # Keep in sync with ALL_COACH_LINES in src/voice/lines.ts
