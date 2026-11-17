@@ -19,7 +19,10 @@ const state = (over: Partial<AthleteState> = {}): AthleteState => ({
   memories: {},
   history: [],
   jointHistory: [],
-  equipment: ["body", "bar"],
+  // Since #111 the legs day's Nordic curl needs a foot anchor, and its usual
+  // substitute (Single-leg hamstring curl) needs sliders. These tests are about
+  // exclusions, not gear, so the athlete owns both.
+  equipment: ["body", "bar", "foot_anchor", "sliders"],
   excluded: [],
   deloadActive: false,
   ...over,

@@ -57,7 +57,7 @@ export function canBeGiven(
   return (
     isPlannable(exercise) &&
     !ctx.excluded.includes(exercise.id) &&
-    missingGear(exercise.requires, ctx.equipment).length === 0 &&
+    missingGear(exercise, ctx.equipment).length === 0 &&
     !assessExercise(exercise.name, ctx.jointHistory).avoid
   );
 }

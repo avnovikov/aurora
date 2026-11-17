@@ -1,4 +1,4 @@
-import type { EquipmentId, UserProfile } from "../domain/program";
+import { EQUIPMENT_IDS, isEquipmentId, type EquipmentId, type UserProfile } from "../domain/program";
 import { DEFAULT_PALETTE, isPaletteKey } from "../brand/palettes";
 import { DEFAULT_ADDED_LOAD_KG } from "../session/setLog";
 import { createKeyValueStore } from "../storage/keyValueStore";
@@ -106,6 +106,10 @@ export function loadProfile(): UserProfile {
     }
     // A missing or nonsense pair must not wipe the rest of the profile.
     restoreDefaultHeartRates(parsed);
+    // Gear ids this build does not know are dropped rather than losing the profile.
+    if (Array.isArray(parsed.equipment)) {
+      parsed.equipment = parsed.equipment.filter(isEquipmentId);
+    }
     assertProfile(parsed);
     setCoachMuted(parsed.voiceMuted);
     return parsed;
@@ -136,14 +140,7 @@ export function exportBackupJson(): string {
   );
 }
 
-export const ALL_EQUIPMENT: EquipmentId[] = [
-  "body",
-  "bar",
-  "rings",
-  "parallettes",
-  "dumbbell",
-  "band",
-];
+export const ALL_EQUIPMENT: readonly EquipmentId[] = EQUIPMENT_IDS;
 
 function assertProfile(profile: UserProfile): void {
   if (!isValidBodyweight(profile.bodyweightKg)) {
@@ -154,6 +151,10 @@ function assertProfile(profile: UserProfile): void {
   }
   if (!Array.isArray(profile.equipment)) {
     throw new Error("equipment must be an array");
+  }
+  const unknown = profile.equipment.filter((item) => !isEquipmentId(item));
+  if (unknown.length > 0) {
+    throw new Error(`equipment is unknown: ${unknown.join(", ")}`);
   }
   if (!isJointHistory(profile.jointHistory)) {
     throw new Error("jointHistory is invalid");

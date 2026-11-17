@@ -102,6 +102,17 @@ describe("settings tabs", () => {
     expect(gear).not.toContain("data-save");
   });
 
+  it("offers a chip for every gear item from #111, off by default", () => {
+    const gear = html("gear");
+    for (const id of [
+      "partner", "suspension", "towel", "sliders", "dip_bars", "foot_anchor",
+      "stick", "ab_wheel", "adjustable_bench", "vertical_pole", "leg_press",
+    ] as const) {
+      expect(gear, id).toContain(`data-eq="${id}" class="" aria-pressed="false">${EQUIPMENT_LABEL[id]}<`);
+    }
+    expect(gear).toContain("A bench, chair or wall is always assumed");
+  });
+
   it("asks for resting and max heart rate beside bodyweight, including first-run setup", () => {
     const you = html("you");
     expect(you).toContain("Resting heart rate (bpm)");

@@ -88,13 +88,41 @@ export interface PlanQueue {
   items: string[];
 }
 
-export type EquipmentId =
-  | "body"
-  | "bar"
-  | "rings"
-  | "parallettes"
-  | "dumbbell"
-  | "band";
+/** Every gear id, in Settings order. Bench (chair, box, step) and wall are always available. */
+export const EQUIPMENT_IDS = [
+  "body",
+  "bar",
+  "rings",
+  "parallettes",
+  "dumbbell",
+  "band",
+  "partner",
+  "suspension",
+  "towel",
+  "sliders",
+  "dip_bars",
+  "foot_anchor",
+  "stick",
+  "ab_wheel",
+  "adjustable_bench",
+  "vertical_pole",
+  "leg_press",
+] as const;
+
+export type EquipmentId = (typeof EQUIPMENT_IDS)[number];
+
+export function isEquipmentId(value: unknown): value is EquipmentId {
+  return typeof value === "string" && (EQUIPMENT_IDS as readonly string[]).includes(value);
+}
+
+/**
+ * Gear a move needs. `requires` must all be owned ([] = bodyweight), unless
+ * every item of one `orRequires` set is owned instead.
+ */
+export interface GearNeeds {
+  requires?: readonly EquipmentId[];
+  orRequires?: ReadonlyArray<readonly EquipmentId[]>;
+}
 
 export type JointId =
   | "shoulder"

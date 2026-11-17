@@ -21,6 +21,7 @@
     "import:wger": "tsx scripts/import-wger.ts",
     "descriptions:bundle": "tsx scripts/build-description-bundles.ts",
     "descriptions:compile": "tsx scripts/compile-descriptions.ts",
+    "equipment:compile": "tsx scripts/compile-equipment.ts",
     "doodles": "tsx scripts/generate-doodles.ts",
     "doodles:check": "node scripts/measure-doodle-fit.mjs"
   },
