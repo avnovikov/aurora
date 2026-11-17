@@ -1,9 +1,16 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { EXERCISE_GRAPH } from "../../src/data/exerciseGraph";
 import { SESSION_TEMPLATES, templateToStarter } from "../../src/data/seed";
 import type { Readiness } from "../../src/domain/types";
 import { resolveExerciseTiming } from "../../src/domain/timing";
 import { escapeHtml } from "../../src/library/present";
+import {
+  disconnectHeartRate,
+  PULSE_STRAP_ALREADY_CONNECTED,
+  PULSE_STRAP_DISCONNECTED,
+  setBleHeartRateClientForTests,
+  type BleHeartRateClient,
+} from "../../src/pulse/hrMonitor";
 import { planSession, type PlannedSession, type PlannedWorkItem } from "../../src/rules/planSession";
 import { formatClock } from "../../src/session/sessionClock";
 import { createEmptyLog } from "../../src/session/setLog";
@@ -13,6 +20,22 @@ import { INITIAL_PULSE } from "../../src/ui/pulseState";
 import { initialState } from "../../src/ui/sessionState";
 import type { ViewState } from "../../src/ui/sessionTypes";
 import { useMemoryStorage } from "../helpers/storage";
+
+afterEach(async () => {
+  await disconnectHeartRate();
+  setBleHeartRateClientForTests(null);
+});
+
+function mockNativeClient(): BleHeartRateClient {
+  return {
+    initialize: vi.fn(async () => undefined),
+    requestDevice: vi.fn(async () => ({ deviceId: "strap-1" })),
+    connect: vi.fn(async () => undefined),
+    startNotifications: vi.fn(async () => undefined),
+    stopNotifications: vi.fn(async () => undefined),
+    disconnect: vi.fn(async () => undefined),
+  };
+}
 
 useMemoryStorage();
 
@@ -64,6 +87,10 @@ function slice(html: string, open: string, close: string): string {
   expect(start).toBeGreaterThan(-1);
   const end = html.indexOf(close, start + open.length);
   return html.slice(start, end === -1 ? undefined : end);
+}
+
+function pulseBar(html: string): string {
+  return slice(html, '<footer class="session-bar', "</footer>");
 }
 
 describe("session header", () => {
@@ -214,7 +241,7 @@ describe("pulse bar", () => {
   it("pins Pulse and Strap in a bar after the content", () => {
     const planned = planLegs();
     const html = shellHtml(planned, warmupView(planned));
-    const bar = slice(html, '<footer class="session-bar', "</footer>");
+    const bar = pulseBar(html);
     expect(bar).toContain("Pulse: no reading");
     expect(bar).toMatch(/<summary>Strap<\/summary>/);
     expect(bar).toContain('class="strap-actions"');
@@ -230,9 +257,36 @@ describe("pulse bar", () => {
     expect(shellHtml(planned, state)).toContain("Pulse 62");
     state.bpm = null;
     state.pulse = { ...state.pulse, connected: true };
-    state.pulseStatus = "Pulse strap disconnected.";
-    const bar = slice(shellHtml(planned, state), '<footer class="session-bar', "</footer>");
+    state.pulseStatus = PULSE_STRAP_DISCONNECTED;
+    const bar = pulseBar(shellHtml(planned, state));
     expect(bar).toContain("pulse-lost");
     expect(bar).toContain("data-pulse-status");
+  });
+
+  it("hides connected status text when the strap is already linked", () => {
+    const planned = planLegs();
+    const state = warmupView(planned);
+    state.pulse = { ...state.pulse, connected: true };
+    state.bpm = 72;
+    state.pulseStatus = PULSE_STRAP_ALREADY_CONNECTED;
+    const bar = pulseBar(shellHtml(planned, state));
+    expect(bar).toContain("Pulse 72");
+    expect(bar).not.toContain("data-pulse-status");
+    expect(bar).not.toContain(PULSE_STRAP_ALREADY_CONNECTED);
+  });
+
+  it("disables Connect pulse when connected and enables it when not", () => {
+    setBleHeartRateClientForTests(mockNativeClient());
+    const planned = planLegs();
+    const state = warmupView(planned);
+    state.pulse = { ...state.pulse, connected: true };
+    expect(pulseBar(shellHtml(planned, state))).toContain(
+      "data-pulse-connect disabled",
+    );
+
+    state.pulse = { ...state.pulse, connected: false };
+    const openBar = pulseBar(shellHtml(planned, state));
+    expect(openBar).toContain("data-pulse-connect");
+    expect(openBar).not.toContain("data-pulse-connect disabled");
   });
 });

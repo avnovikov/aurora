@@ -3,7 +3,11 @@ import { doodleMarkup } from "../doodles/doodleMarkup";
 import { resolveExerciseTiming } from "../domain/timing";
 import { displayExerciseName } from "../library/displayName";
 import { escapeHtml } from "../library/present";
-import { isNativePulseAvailable } from "../pulse/hrMonitor";
+import {
+  isNativePulseAvailable,
+  PULSE_STRAP_ALREADY_CONNECTED,
+  PULSE_STRAP_CONNECTED,
+} from "../pulse/hrMonitor";
 import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
 import { formatClock, sessionClockSnapshot } from "../session/sessionClock";
 import { prescribedForNextSet } from "../session/setLog";
@@ -50,20 +54,38 @@ const WORK_ACTIONS_HTML = `
           <button type="button" class="btn-quiet" data-skip>Skip set</button>
         </div>`;
 
+/** Success copy the pulse chip already conveys — keep the status line quiet. */
+const QUIET_PULSE_SUCCESS = new Set([
+  PULSE_STRAP_CONNECTED,
+  PULSE_STRAP_ALREADY_CONNECTED,
+]);
+
+/** True only for problem / progress copy — not success when the chip already shows linked. */
+function shouldShowPulseStatus(status: string | null): status is string {
+  if (!status) {
+    return false;
+  }
+  return !QUIET_PULSE_SUCCESS.has(status);
+}
+
+function pulseStatusHtml(status: string | null): string {
+  if (!shouldShowPulseStatus(status)) {
+    return "";
+  }
+  return `<p class="session-bar-status" data-pulse-status>${escapeHtml(status)}</p>`;
+}
+
 /** Pinned to the bottom, in thumb reach: the set actions (during work), the pulse reading and the Strap controls. */
 function pulseBarHtml(state: ViewState, actions: string): string {
   const pulseClass = isPulseLost(state) ? " pulse-lost" : "";
-  const status = state.pulseStatus
-    ? `<p class="session-bar-status" data-pulse-status>${escapeHtml(state.pulseStatus)}</p>`
-    : "";
   return `
       <footer class="session-bar pulse-row${pulseClass}">
         ${actions}
-        ${status}
+        ${pulseStatusHtml(state.pulseStatus)}
         <p class="pulse-chip">${pulseChipText(state)}</p>
         <details class="pulse-more strap">
           <summary>Strap</summary>
-          <div class="strap-actions">${pulseControlsHtml()}</div>
+          <div class="strap-actions">${pulseControlsHtml(state)}</div>
         </details>
       </footer>`;
 }
@@ -82,10 +104,11 @@ function sessionClockHtml(state: ViewState, nowMs: number = Date.now()): string 
         </div>`;
 }
 
-function pulseControlsHtml(): string {
+function pulseControlsHtml(state: ViewState): string {
   if (isNativePulseAvailable()) {
+    const connectDisabled = state.pulse.connected ? " disabled" : "";
     return `
-      <button type="button" data-pulse-connect>Connect pulse</button>
+      <button type="button" data-pulse-connect${connectDisabled}>Connect pulse</button>
       <button type="button" data-pulse-disconnect>Disconnect</button>
     `;
   }

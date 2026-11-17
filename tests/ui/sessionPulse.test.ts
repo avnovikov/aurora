@@ -3,12 +3,16 @@ import {
   connectHeartRate,
   disconnectHeartRate,
   isHeartRateConnected,
+  PULSE_STRAP_ALREADY_CONNECTED,
   setBleHeartRateClientForTests,
   type BleHeartRateClient,
 } from "../../src/pulse/hrMonitor";
 import { createEmptyLog } from "../../src/session/setLog";
 import { INITIAL_PULSE } from "../../src/ui/pulseState";
-import { attachSessionPulse } from "../../src/ui/sessionPulse";
+import {
+  applyConnectHeartRateResult,
+  attachSessionPulse,
+} from "../../src/ui/sessionPulse";
 import type { ViewState } from "../../src/ui/sessionTypes";
 
 afterEach(async () => {
@@ -57,6 +61,32 @@ function bareState(): ViewState {
   };
 }
 
+describe("applyConnectHeartRateResult", () => {
+  it("clears status on success so the session bar stays quiet when linked", () => {
+    const state = bareState();
+    state.pulseStatus = "stale";
+    const onPaint = vi.fn();
+    applyConnectHeartRateResult(
+      state,
+      { ok: true, message: PULSE_STRAP_ALREADY_CONNECTED },
+      onPaint,
+    );
+    expect(state.pulse.connected).toBe(true);
+    expect(state.pulseStatus).toBeNull();
+    expect(onPaint).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps the failure message for Connect retries", () => {
+    const state = bareState();
+    const onPaint = vi.fn();
+    const failure = "Pulse strap cancelled.";
+    applyConnectHeartRateResult(state, { ok: false, message: failure }, onPaint);
+    expect(state.pulse.connected).toBe(false);
+    expect(state.pulseStatus).toBe(failure);
+    expect(onPaint).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe("attachSessionPulse", () => {
   it("does nothing when the strap is not already connected", async () => {
     const state = bareState();
@@ -86,7 +116,7 @@ describe("attachSessionPulse", () => {
     });
     await vi.waitFor(() => {
       expect(state.pulse.connected).toBe(true);
-      expect(state.pulseStatus).toMatch(/already connected/i);
+      expect(state.pulseStatus).toBeNull();
     });
     expect(client.requestDevice).toHaveBeenCalledTimes(1);
     emit(65);
