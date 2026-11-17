@@ -188,15 +188,21 @@ describe("Plan page", () => {
     expect(count(html, 'data-move="down" disabled')).toBe(1);
     expect(count(html, "data-later")).toBe(1);
     const single = planPageHtml(buildPlanModel({ items: ["tmpl_legs"] }, state(), ui()));
-    expect(single).toMatch(/class="plan-day-remove" data-remove aria-label="Remove: [^"]+, Today"/);
+    expect(single).toMatch(/class="plan-day-remove" data-remove aria-label="Remove: [^"]+, Today">Remove</);
     expect(single).not.toMatch(/data-remove disabled/);
     expect(single).not.toContain("data-later");
     expect(single).toContain("1 day ·");
   });
 
-  it("puts a Remove control on every day summary", () => {
+  it("puts Remove inside Change or move on every day, not a × on the summary", () => {
     const html = planPageHtml(model());
     expect(count(html, 'class="plan-day-remove" data-remove')).toBe(model().days.length);
+    expect(html).toContain(">Remove</button>");
+    expect(html).not.toContain(">×</");
+    expect(count(html, 'class="plan-day-edit"')).toBe(model().days.length);
+    expect(html).toMatch(
+      /plan-day-edit[\s\S]*?aria-label="Move this day"[\s\S]*?data-remove[\s\S]*?>Remove<\/button>/,
+    );
   });
 
   it("gives every row Swap and Easier as a pair, and ⋯ opening Not for me, all named by move and day", () => {
