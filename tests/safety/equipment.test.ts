@@ -67,8 +67,10 @@ describe("curated equipment (#111)", () => {
   });
 
   it("spot checks", () => {
-    expect(byId("nordic_curl").requires).toEqual(["foot_anchor"]);
-    expect(usable("nordic_curl", ["body"])).toBe(false);
+    // A foot anchor (bed, sofa) is always assumed, like a bench or wall.
+    expect(byId("nordic_curl").requires).toBeUndefined();
+    expect(usable("nordic_curl", ["body"])).toBe(true);
+    expect(byId("fedb_hyperextensions_with_no_hyperextension_bench").requires).toBeUndefined();
     expect(byId("hf_84").requires).toEqual(["sliders"]);
     expect(byId("hf_84").orRequires).toEqual([["towel"]]);
     expect(usable("hf_84", ["body", "towel"])).toBe(true);
@@ -119,17 +121,8 @@ describe("planner honours equipment", () => {
   it("plans bar moves for the default kit", () => {
     const session = planSession(readiness, undefined, undefined, { equipment: ["body", "bar"] });
     const swapped = session.work.filter((item) => item.ruleIds.includes("equipment"));
-    // Only the Nordic curl (now needs a foot anchor, #111) is swapped; no bar move is.
-    expect(swapped.map((item) => item.reason ?? "")).toEqual([
-      expect.stringMatching(/Needs foot_anchor .*swapped Nordic curl/),
-    ]);
-  });
-
-  it("keeps the Nordic curl when a foot anchor or partner is owned", () => {
-    for (const extra of ["foot_anchor", "partner"] as const) {
-      const session = planSession(readiness, undefined, undefined, { equipment: ["body", "bar", extra] });
-      expect(session.work.some((item) => item.ruleIds.includes("equipment")), extra).toBe(false);
-    }
+    // Nothing is swapped: the Nordic curl's foot anchor is always assumed.
+    expect(swapped).toEqual([]);
   });
 
   it("swaps out moves needing gear the user lacks", () => {

@@ -101,7 +101,6 @@ export const EQUIPMENT_IDS = [
   "towel",
   "sliders",
   "dip_bars",
-  "foot_anchor",
   "stick",
   "ab_wheel",
   "adjustable_bench",

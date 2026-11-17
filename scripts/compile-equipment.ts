@@ -23,6 +23,13 @@ const REMOVED_IDS = new Set(["wger_688"]);
 /** Strap and belt moves use one item: a towel. */
 const RENAMED: Readonly<Record<string, EquipmentId>> = { strap: "towel", belt: "towel" };
 
+/**
+ * Always available at home, like a bench or wall (owner decision): a foot
+ * anchor is a bed, sofa or door. Never a requirement; a move whose only
+ * need, or one of whose alternatives, is just this is bodyweight.
+ */
+const ALWAYS_AVAILABLE = new Set(["foot_anchor"]);
+
 /** Alternatives the app has no gear item for are dropped, not added. */
 const DROPPED_ALTERNATIVES = new Set([
   "blocks",
@@ -76,7 +83,7 @@ function gearList(text: string, row: string): EquipmentId[] {
     .split("+")
     .map((token) => token.trim())
     .map((token) => RENAMED[token] ?? token)
-    .filter((token) => token !== "body");
+    .filter((token) => token !== "body" && !ALWAYS_AVAILABLE.has(token));
   for (const item of items) {
     if (!isEquipmentId(item)) {
       throw new Error(`${row}: "${item}" is not a gear id (${EQUIPMENT_IDS.join(", ")})`);
@@ -143,7 +150,12 @@ async function main(): Promise<void> {
     if (!["high", "medium", "low"].includes(confidence)) {
       throw new Error(`${row.id}: confidence "${row.confidence}"`);
     }
-    const requires = gearList(row.proposed_requires, row.id);
+    // An alternative made only of always-available gear makes the move free.
+    const freeAlternative = row.alternatives
+      .split("|")
+      .map((option) => option.trim())
+      .some((option) => option && !DROPPED_ALTERNATIVES.has(option) && gearList(option, row.id).length === 0);
+    const requires = freeAlternative ? [] : gearList(row.proposed_requires, row.id);
     const orRequires = alternativesOf(row.alternatives, requires, row.id);
     const entry = {
       requires,
