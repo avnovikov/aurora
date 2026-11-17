@@ -13,8 +13,8 @@ export interface HoldCueEvent {
 
 /**
  * Pure schedule for a timed station: one halfway line when it is long enough.
- * A rep station never gets a line that says "hold". Text is picked once so
- * on-screen matches speech.
+ * A rep station never hears "hold it there", a hold never hears "keep the reps
+ * coming". Text is picked once so on-screen matches speech.
  */
 export function holdCueSchedule(
   holdSeconds: number,
@@ -27,7 +27,7 @@ export function holdCueSchedule(
   if (holdSeconds < MIN_HOLD_SECONDS_FOR_HALFWAY) {
     return [];
   }
-  const options = linesFor("halfway").filter((line) => effort === "hold" || line.holdOnly !== true);
+  const options = linesFor("halfway").filter((line) => line.only === undefined || line.only === effort);
   const halfway = options[Math.min(Math.floor(random() * options.length), options.length - 1)];
   return [
     {

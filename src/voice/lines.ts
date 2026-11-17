@@ -1,3 +1,4 @@
+import type { EffortKind } from "../domain/types";
 /**
  * Calm pro-coach copy with light Scouse colour (occasional “mate”).
  * Delivery: Piper northern English male via scripts/prebuild-voice.sh.
@@ -24,8 +25,8 @@ export interface CoachLine {
   /** Stable asset key under /voice/{assetKey}.wav */
   assetKey: string;
   text: string;
-  /** Says "hold": never spoken over a rep move. */
-  holdOnly?: true;
+  /** Only for one kind of timed station: "hold" lines never over reps, rep lines never over holds. */
+  only?: EffortKind;
 }
 
 const GET_READY: CoachLine[] = [
@@ -75,12 +76,13 @@ const PULSE: CoachLine[] = [
 
 const HALFWAY: CoachLine[] = [
   { id: "halfway", assetKey: "halfway", text: "Halfway there, mate." },
-  { id: "halfway", assetKey: "halfway_b", text: "That's half — hold it there.", holdOnly: true },
+  { id: "halfway", assetKey: "halfway_b", text: "That's half — hold it there.", only: "hold" },
   {
     id: "halfway",
     assetKey: "halfway_c",
     text: "Halfway, love. Nice and steady.",
   },
+  { id: "halfway", assetKey: "halfway_d", text: "Halfway — keep the reps coming.", only: "reps" },
 ];
 
 const SESSION: CoachLine[] = [
