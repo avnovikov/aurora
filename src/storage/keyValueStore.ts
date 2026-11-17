@@ -59,3 +59,16 @@ export function createKeyValueStore(key: string): KeyValueStore {
     },
   };
 }
+
+/** Parse a store's JSON; a missing or corrupt value gives `fallback`. */
+export function readJson<T>(store: KeyValueStore, fallback: T): T {
+  const raw = store.read();
+  if (!raw) {
+    return fallback;
+  }
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    return fallback;
+  }
+}

@@ -4,14 +4,13 @@ import { tierIndex } from "../domain/skillTier";
 import type { SeedExercise } from "../data/seed";
 import type { ExerciseMemory, SkillTier } from "../domain/types";
 import { effectiveSkillTier } from "../rules/skillDose";
-import { refreshSkillTier } from "../progress/levelEvidence";
-import { emptyMemory } from "../session/history";
+import { emptyMemory, refreshSkillTier } from "../progress/levelEvidence";
 
 /**
  * A plan level is a dose default (#112): a floor for planned moves, never
  * evidence. Results that already earned a higher tier are kept.
  */
-function isBelow(memory: ExerciseMemory, exercise: SeedExercise, level: SkillTier, now: Date = new Date()): boolean {
+function isBelow(memory: ExerciseMemory, exercise: SeedExercise, level: SkillTier, now: Date): boolean {
   return tierIndex(effectiveSkillTier(memory, exercise, now)) < tierIndex(level);
 }
 
@@ -62,7 +61,7 @@ export function declareLevelForDays(
     const before = next[exercise.id];
     const updated = memoryAtLevel(before, exercise, planLevel, now);
     // A move with no memory gets a record only when the plan level sets one.
-    if (updated !== before && (before !== undefined || updated.planTier !== undefined)) {
+    if (updated !== before && updated.planTier !== undefined) {
       next[exercise.id] = updated;
     }
   }

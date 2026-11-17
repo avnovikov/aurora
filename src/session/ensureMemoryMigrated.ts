@@ -2,7 +2,7 @@ import type { ExerciseMemory } from "../domain/types";
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import { levelForMove } from "../plan/levelDeclare";
 import { loadPlanLevel } from "../plan/planLevel";
-import { createKeyValueStore } from "../storage/keyValueStore";
+import { createKeyValueStore, readJson } from "../storage/keyValueStore";
 import { LEVELS_TO_CONFIRM_KEY, MEMORY_KEY, MEMORY_V2_KEY } from "../storage/storageKeys";
 import { migrateMemoriesV1 } from "./memoryMigration";
 
@@ -10,15 +10,11 @@ const v1Store = createKeyValueStore(MEMORY_KEY);
 const v2Store = createKeyValueStore(MEMORY_V2_KEY);
 const confirmStore = createKeyValueStore(LEVELS_TO_CONFIRM_KEY);
 
-/** Tolerant parse: only a plain object counts; anything else leaves v1 untouched and unmigrated. */
-function parseV1(raw: string): Record<string, ExerciseMemory> | null {
-  try {
-    const parsed: unknown = JSON.parse(raw);
-    const isPlainObject = typeof parsed === "object" && parsed !== null && !Array.isArray(parsed);
-    return isPlainObject ? (parsed as Record<string, ExerciseMemory>) : null;
-  } catch {
-    return null;
-  }
+/** Only a plain object counts; anything else leaves v1 untouched and unmigrated. */
+function parseV1(): Record<string, ExerciseMemory> | null {
+  const parsed: unknown = readJson<unknown>(v1Store, null);
+  const isPlainObject = typeof parsed === "object" && parsed !== null && !Array.isArray(parsed);
+  return isPlainObject ? (parsed as Record<string, ExerciseMemory>) : null;
 }
 
 /** Run once at boot, before anything loads memory: build memory v2 from the raw v1 store if v2 does not exist yet. */
@@ -39,7 +35,7 @@ function migrateIfNeeded(now: Date): void {
   if (!raw) {
     return;
   }
-  const v1 = parseV1(raw);
+  const v1 = parseV1();
   if (!v1) {
     console.warn("Aurora: memory v1 unreadable; migration skipped");
     return;
@@ -59,13 +55,8 @@ function migrateIfNeeded(now: Date): void {
 }
 
 export function loadLevelsToConfirm(): string[] {
-  try {
-    const raw = confirmStore.read();
-    const parsed: unknown = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === "string") : [];
-  } catch {
-    return [];
-  }
+  const parsed = readJson<unknown>(confirmStore, []);
+  return Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === "string") : [];
 }
 
 export function clearLevelsToConfirm(): void {

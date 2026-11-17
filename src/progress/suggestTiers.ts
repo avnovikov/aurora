@@ -86,10 +86,6 @@ export function suggestionFor(
   now: Date = new Date(),
 ): TierSuggestion | undefined {
   const memory = memories[exerciseId];
-  // Early exit: a tested move's own family is tested, so suggestTiers never suggests for it; skip the computation.
-  if (memory && testedTier(memory)) {
-    return undefined;
-  }
   const suggestion = suggestTiers({ memories, patternOf, index }).get(exerciseId);
   // A suggestion never lowers a level the move already has.
   const current = memory ? evidenceTier(memory, now) : undefined;

@@ -17,7 +17,8 @@ export function ageInDays(iso: string, now: Date): number {
   return Math.max(0, (now.getTime() - at) / DAY_MS);
 }
 
-function maxOf(tiers: ReadonlyArray<SkillTier | undefined>): SkillTier | undefined {
+/** Highest of the defined tiers, or undefined when none. */
+export function maxOf(tiers: ReadonlyArray<SkillTier | undefined>): SkillTier | undefined {
   let best: SkillTier | undefined;
   for (const tier of tiers) {
     if (tier !== undefined) {
@@ -25,6 +26,23 @@ function maxOf(tiers: ReadonlyArray<SkillTier | undefined>): SkillTier | undefin
     }
   }
   return best;
+}
+
+export function emptyMemory(exerciseId: string): ExerciseMemory {
+  return {
+    exerciseId,
+    sessionsAtStandard: 0,
+    sessionsBelowFloor: 0,
+    lastAddedLoadKg: 0,
+    weakLinkSessionsRemaining: 0,
+  };
+}
+
+/** Copy without the inferred tier. Does not refresh the cached tier: callers do that once. */
+export function dropInferred(memory: ExerciseMemory): ExerciseMemory {
+  const copy = { ...memory };
+  delete copy.inferred;
+  return copy;
 }
 
 /** The athlete's own evidence: Library pick or logged reps. */

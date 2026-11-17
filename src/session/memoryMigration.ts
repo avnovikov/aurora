@@ -24,32 +24,26 @@ function splitDeclared(next: ExerciseMemory, planLevel: SkillTier | undefined, n
   return false;
 }
 
+/** A copy without the derived level fields (cached tier and inference). */
+function stripDerived(old: ExerciseMemory): ExerciseMemory {
+  const copy: ExerciseMemory = { ...old };
+  delete copy.skillTier;
+  delete copy.inferred;
+  return copy;
+}
+
 function migrateOne(
   id: string,
   old: ExerciseMemory,
   ctx: MemoryMigrationContext,
 ): { memory: ExerciseMemory; ambiguous: boolean } {
-  const next: ExerciseMemory = { ...old };
-  delete next.skillTier;
-  delete next.inferred;
+  const next = stripDerived(old);
   const ambiguous = splitDeclared(next, ctx.planLevelFor(id), ctx.now.toISOString());
   const standards = ctx.standardsOf(id);
   if (standards && next.bestReps !== undefined) {
     next.loggedTier = inferTierFromBest(next.bestReps, standards);
   }
   return { memory: refreshSkillTier(next, ctx.now), ambiguous };
-}
-
-function migrateRow(
-  id: string,
-  old: ExerciseMemory,
-  ctx: MemoryMigrationContext,
-): { memory: ExerciseMemory; ambiguous: boolean } {
-  try {
-    return migrateOne(id, old, ctx);
-  } catch (error) {
-    return passThrough(id, old, error);
-  }
 }
 
 const COUNTER_KEYS = ["sessionsAtStandard", "sessionsBelowFloor", "lastAddedLoadKg", "weakLinkSessionsRemaining"] as const;
@@ -76,9 +70,7 @@ function sanitizeNumbers(copy: ExerciseMemory): void {
 /** A row the migration cannot read: copy it through without derived level fields, and say which. */
 function passThrough(id: string, old: ExerciseMemory, error: unknown): { memory: ExerciseMemory; ambiguous: boolean } {
   console.warn(`Aurora: memory row "${id}" could not be migrated; kept without derived levels`, error);
-  const copy: ExerciseMemory = { ...old };
-  delete copy.skillTier;
-  delete copy.inferred;
+  const copy = stripDerived(old);
   for (const key of ["declaredTier", "loggedTier", "planTier"] as const) {
     if (copy[key] !== undefined && !SKILL_TIERS.includes(copy[key])) {
       delete copy[key];
@@ -96,7 +88,13 @@ export function migrateMemoriesV1(
   const levelsToConfirm: string[] = [];
   const memories: Record<string, ExerciseMemory> = {};
   for (const [id, old] of Object.entries(v1)) {
-    const { memory, ambiguous } = migrateRow(id, old, ctx);
+    let row: { memory: ExerciseMemory; ambiguous: boolean };
+    try {
+      row = migrateOne(id, old, ctx);
+    } catch (error) {
+      row = passThrough(id, old, error);
+    }
+    const { memory, ambiguous } = row;
     memories[id] = memory;
     if (ambiguous) {
       levelsToConfirm.push(id);

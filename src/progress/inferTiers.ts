@@ -5,7 +5,7 @@ import {
   type FamilyLadderMember,
   libraryFamilyLadderIndex,
 } from "./familyLadderIndex";
-import { refreshSkillTier, testedTier } from "./levelEvidence";
+import { dropInferred, emptyMemory, refreshSkillTier, testedTier } from "./levelEvidence";
 
 /** Tested family members needed before an untested one is inferred (#112 rule 3). */
 export const MIN_SUPPORTERS = 2;
@@ -35,16 +35,6 @@ interface Supporter {
   id: string;
   distance: number;
   tier: SkillTier;
-}
-
-function blank(exerciseId: string): ExerciseMemory {
-  return { exerciseId, sessionsAtStandard: 0, sessionsBelowFloor: 0, lastAddedLoadKg: 0, weakLinkSessionsRemaining: 0 };
-}
-
-function withoutInferred(memory: ExerciseMemory, now: Date): ExerciseMemory {
-  const rest = { ...memory };
-  delete rest.inferred;
-  return refreshSkillTier(rest, now);
 }
 
 function supportersOf(
@@ -105,16 +95,16 @@ function updatedMember(
   const current = memories[member.id];
   if (current && testedTier(current)) {
     // Tested evidence wins: drop any inference and refresh the cached tier.
-    return withoutInferred(current, input.now);
+    return refreshSkillTier(dropInferred(current), input.now);
   }
   const candidate = candidateFor(member, family, memories);
   if (!candidate) {
-    return current?.inferred ? withoutInferred(current, input.now) : undefined;
+    return current?.inferred ? refreshSkillTier(dropInferred(current), input.now) : undefined;
   }
   const tier = bounded(candidate, current, confirming);
   const keepAt = current?.inferred?.tier === tier ? current.inferred.at : input.now.toISOString();
   return refreshSkillTier(
-    { ...(current ?? blank(member.id)), inferred: { tier, from: candidate.from, at: keepAt } },
+    { ...(current ?? emptyMemory(member.id)), inferred: { tier, from: candidate.from, at: keepAt } },
     input.now,
   );
 }

@@ -7,12 +7,21 @@ import type {
 } from "../domain/program";
 import { libraryFamilyLadderIndex, type FamilyLadderIndex } from "../progress/familyLadderIndex";
 import { inferTiers } from "../progress/inferTiers";
-import { evidenceTier, liveInferredTier, refreshSkillTier } from "../progress/levelEvidence";
-import { inferTierFromBest, maxTier, stepDown } from "../domain/skillTier";
-import { createKeyValueStore, type KeyValueStore } from "../storage/keyValueStore";
+import {
+  dropInferred,
+  emptyMemory,
+  evidenceTier,
+  liveInferredTier,
+  maxOf,
+  refreshSkillTier,
+} from "../progress/levelEvidence";
+import { inferTierFromBest, stepDown } from "../domain/skillTier";
+import { createKeyValueStore, readJson } from "../storage/keyValueStore";
 import { HISTORY_KEY, MEMORY_V2_KEY } from "../storage/storageKeys";
 import { assertNonNegativeWholeSeconds } from "./setDuration";
 import type { SetLogEntry, WorkoutLog } from "./setLog";
+
+export { emptyMemory } from "../progress/levelEvidence";
 
 const historyStore = createKeyValueStore(HISTORY_KEY);
 const memoryStore = createKeyValueStore(MEMORY_V2_KEY);
@@ -127,12 +136,6 @@ export function applySetLogToMemory(
 
 type Memories = Record<string, ExerciseMemory>;
 
-function withoutInferred(memory: ExerciseMemory, now: Date): ExerciseMemory {
-  const copy = { ...memory };
-  delete copy.inferred;
-  return refreshSkillTier(copy, now);
-}
-
 /** Clean session: an inferred tier becomes logged; caps from this move lift. */
 function confirmInferred(
   next: Memories,
@@ -143,22 +146,19 @@ function confirmInferred(
 ): void {
   const current = next[exerciseId]!;
   const inferred = liveInferredTier(current, now);
-  let loggedTier = current.loggedTier;
-  if (inferred) {
-    loggedTier = loggedTier ? maxTier(loggedTier, inferred) : inferred;
-  }
+  const loggedTier = maxOf([current.loggedTier, inferred]);
   next[exerciseId] = refreshSkillTier(
-    { ...withoutInferred(current, now), loggedTier, lastSessionAt: now.toISOString() },
+    { ...dropInferred(current), loggedTier, lastSessionAt: now.toISOString() },
     now,
   );
   const placement = index.byId.get(exerciseId);
   if (placement) {
     confirmingFamilies.add(placement.familyId);
   }
-  clearCapsFrom(next, exerciseId, now);
+  clearCapsFrom(next, exerciseId);
 }
 
-function clearCapsFrom(next: Memories, exerciseId: string, now: Date): void {
+function clearCapsFrom(next: Memories, exerciseId: string): void {
   for (const [id, memory] of Object.entries(next)) {
     if (memory.failedCaps?.some((cap) => cap.from === exerciseId)) {
       const copy = { ...memory };
@@ -168,7 +168,7 @@ function clearCapsFrom(next: Memories, exerciseId: string, now: Date): void {
       } else {
         delete copy.failedCaps;
       }
-      next[id] = refreshSkillTier(copy, now);
+      next[id] = copy;
     }
   }
 }
@@ -189,7 +189,7 @@ function capHarderRungs(
   const current = next[exerciseId]!;
   const failedAt = evidenceTier(current, now) ?? "beginner";
   const nowIso = now.toISOString();
-  next[exerciseId] = { ...withoutInferred(current, now), lastSessionAt: nowIso };
+  next[exerciseId] = refreshSkillTier({ ...dropInferred(current), lastSessionAt: nowIso }, now);
   const placement = index.byId.get(exerciseId);
   if (!placement) {
     return;
@@ -325,7 +325,7 @@ export function declareSkillTier(
   const result = inferTiers({ memories: withPick, now, index });
   return {
     memories: result.memories,
-    inferredCount: result.inferredIds.filter((id) => id !== exerciseId).length,
+    inferredCount: result.inferredIds.length,
   };
 }
 
@@ -336,10 +336,7 @@ function testedTierAfter(
 ): SkillTier | undefined {
   const standards = exercise?.standards;
   const fromBest = standards ? inferTierFromBest(bestReps, standards) : undefined;
-  if (fromBest && logged) {
-    return maxTier(logged, fromBest);
-  }
-  return fromBest ?? logged;
+  return maxOf([logged, fromBest]);
 }
 
 /** After a logged set: raise bestReps; standards turn it into a tested loggedTier. */
@@ -384,26 +381,4 @@ export function recordSetDuration(
       setDurationSampleCount: nextCount,
     },
   };
-}
-
-export function emptyMemory(exerciseId: string): ExerciseMemory {
-  return {
-    exerciseId,
-    sessionsAtStandard: 0,
-    sessionsBelowFloor: 0,
-    lastAddedLoadKg: 0,
-    weakLinkSessionsRemaining: 0,
-  };
-}
-
-function readJson<T>(store: KeyValueStore, fallback: T): T {
-  const raw = store.read();
-  if (!raw) {
-    return fallback;
-  }
-  try {
-    return JSON.parse(raw) as T;
-  } catch {
-    return fallback;
-  }
 }
