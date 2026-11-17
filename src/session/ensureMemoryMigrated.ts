@@ -1,3 +1,4 @@
+import type { ExerciseMemory } from "../domain/types";
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import { levelForMove } from "../plan/levelDeclare";
 import { loadPlanLevel } from "../plan/planLevel";
@@ -9,6 +10,17 @@ const v1Store = createKeyValueStore(MEMORY_KEY);
 const v2Store = createKeyValueStore(MEMORY_V2_KEY);
 const confirmStore = createKeyValueStore(LEVELS_TO_CONFIRM_KEY);
 
+/** Tolerant parse: only a plain object counts; anything else leaves v1 untouched and unmigrated. */
+function parseV1(raw: string): Record<string, ExerciseMemory> | null {
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    const isPlainObject = typeof parsed === "object" && parsed !== null && !Array.isArray(parsed);
+    return isPlainObject ? (parsed as Record<string, ExerciseMemory>) : null;
+  } catch {
+    return null;
+  }
+}
+
 /** Run once at boot, before anything loads memory: build memory v2 from the raw v1 store if v2 does not exist yet. */
 export function ensureMemoryMigrated(now: Date = new Date()): void {
   if (v2Store.read()) {
@@ -18,8 +30,13 @@ export function ensureMemoryMigrated(now: Date = new Date()): void {
   if (!raw) {
     return;
   }
+  const v1 = parseV1(raw);
+  if (!v1) {
+    console.warn("Aurora: memory v1 unreadable; migration skipped");
+    return;
+  }
   const planLevel = loadPlanLevel();
-  const { memories, levelsToConfirm } = migrateMemoriesV1(JSON.parse(raw), {
+  const { memories, levelsToConfirm } = migrateMemoriesV1(v1, {
     now,
     planLevelFor: (id) => {
       const exercise = EXERCISE_GRAPH[id];
