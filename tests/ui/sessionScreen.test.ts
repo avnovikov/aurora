@@ -146,6 +146,29 @@ describe("dose as hero", () => {
     expect(dose).toMatch(/class="session-dose-unit" aria-hidden="true">s</);
   });
 
+  /** The first warm-up station swapped for `exerciseId`, rendered. */
+  function stationDose(exerciseId: string): string {
+    const planned = planLegs();
+    planned.warmup[0] = { ...planned.warmup[0]!, exerciseId, stationId: exerciseId, perSide: false };
+    const html = shellHtml(planned, warmupView(planned));
+    return slice(html, '<p class="session-dose"', 'data-hold-cue');
+  }
+
+  it("says a moving station is reps for the time, not a hold (glute bridge, jumping jacks)", () => {
+    for (const id of ["glute_bridge", "ntc_jumping_jacks"]) {
+      const dose = stationDose(id);
+      expect(dose).toContain("reps for</span>");
+      expect(dose).toContain('data-station-effort="reps"');
+      expect(dose).not.toMatch(/\bhold\b/i);
+    }
+  });
+
+  it("says an isometric station is a hold", () => {
+    const dose = stationDose("hf_99");
+    expect(dose).toContain("hold</span>");
+    expect(dose).toContain('data-station-effort="hold"');
+  });
+
   it("places the doodle under the dose in its own frame, before the description", () => {
     const planned = planLegs();
     const html = shellHtml(planned, warmupView(planned));

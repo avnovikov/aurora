@@ -24,6 +24,8 @@ export interface CoachLine {
   /** Stable asset key under /voice/{assetKey}.wav */
   assetKey: string;
   text: string;
+  /** Says "hold": never spoken over a rep move. */
+  holdOnly?: true;
 }
 
 const GET_READY: CoachLine[] = [
@@ -73,7 +75,7 @@ const PULSE: CoachLine[] = [
 
 const HALFWAY: CoachLine[] = [
   { id: "halfway", assetKey: "halfway", text: "Halfway there, mate." },
-  { id: "halfway", assetKey: "halfway_b", text: "That's half — hold it there." },
+  { id: "halfway", assetKey: "halfway_b", text: "That's half — hold it there.", holdOnly: true },
   {
     id: "halfway",
     assetKey: "halfway_c",

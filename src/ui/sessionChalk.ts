@@ -1,6 +1,7 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import { doodleMarkup } from "../doodles/doodleMarkup";
 import { resolveExerciseTiming } from "../domain/timing";
+import type { EffortKind } from "../domain/types";
 import { displayExerciseName } from "../library/displayName";
 import { escapeHtml } from "../library/present";
 import {
@@ -14,6 +15,7 @@ import { prescribedForNextSet } from "../session/setLog";
 import { cooldownOfferLabel } from "../rules/sessionDuration";
 import {
   SIDE_SWITCH_SECONDS,
+  stationEffort,
   warmupStepExerciseId,
   warmupViewSeconds,
   type WarmupStep,
@@ -224,13 +226,21 @@ function warmupNotForMeHtml(exerciseId: string, move: string): string {
   return `<p class="work-actions-secondary"><button type="button" class="btn-quiet" data-warmup-not-for-me data-exercise-id="${escapeHtml(exerciseId)}" aria-label="Not for me: ${escapeHtml(move)}">Not for me</button></p>`;
 }
 
+/** What the clock on a timed station means: keep repping, or keep still. */
+const STATION_EFFORT: Record<EffortKind, { label: string; note: string }> = {
+  reps: { label: "reps for", note: "Keep repping at a steady pace until the time is up" },
+  hold: { label: "hold", note: "Keep still in the position until the time is up" },
+};
+
 /** One timed station (warm-up or cool-down) with its evidence citation in small text. */
 function stationHtml(eyebrow: string, step: WarmupStep): string {
+  const effort = stationEffort(step);
   const source = step.source
     ? `<p class="station-source">${escapeHtml(step.source)}</p>`
     : "";
   const dose = `
-      <p class="session-dose"><span class="session-dose-q">${escapeHtml(step.region)} <span aria-hidden="true">·</span></span> ${doseFigureHtml(`<span data-warmup-left>${step.holdSeconds}</span>`, SECONDS_UNIT_HTML)}</p>
+      <p class="session-dose"><span class="session-dose-q">${escapeHtml(step.region)} <span aria-hidden="true">·</span> ${STATION_EFFORT[effort].label}</span> ${doseFigureHtml(`<span data-warmup-left>${step.holdSeconds}</span>`, SECONDS_UNIT_HTML)}</p>
+      <p class="dose-note" data-station-effort="${effort}">${STATION_EFFORT[effort].note}</p>
       <p class="rest-cue" data-hold-cue aria-live="polite"></p>
       ${sideSwitchHtml(step)}`;
   const move = displayExerciseName(step.name);

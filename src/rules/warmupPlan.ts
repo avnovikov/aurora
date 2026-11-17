@@ -1,9 +1,11 @@
 import type { LoadRegion } from "../data/seed";
+import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import type { StationPhase, WarmupStation } from "../data/warmupStations";
 import {
   expandHoldPrescription,
   type HoldSide,
 } from "../domain/prescription";
+import type { EffortKind } from "../domain/types";
 
 /**
  * One station in the prebuilt warm-up or cool-down view (not a work exercise prescription).
@@ -29,6 +31,16 @@ export interface WarmupStep {
   perSide?: boolean;
   /** When the step is one side of an expanded per-side prescription. */
   side?: HoldSide;
+}
+
+/**
+ * How a timed station is worked: steady reps until the clock ends, or a still
+ * hold. Only an isometric Library move is a hold. A timed move such as jumping
+ * jacks is dosed in seconds but still repped. Unknown ids count as holds.
+ */
+export function stationEffort(step: Pick<WarmupStep, "exerciseId" | "stationId">): EffortKind {
+  const exercise = EXERCISE_GRAPH[warmupStepExerciseId(step)];
+  return exercise === undefined || exercise.type === "isometric" ? "hold" : "reps";
 }
 
 /** Library id for a materialised warm-up step (persisted steps may omit `exerciseId`). */
