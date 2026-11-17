@@ -18,6 +18,18 @@ You write the week as slots. The app picks exercise and dose from sleep, pulse, 
 
 Download the APK from the [latest GitHub Release](https://github.com/avnovikov/aurora/releases/latest) and sideload on Android.
 
+**Signing certificate (SHA-256)** — confirm a downloaded APK is really ours:
+
+```text
+ff5e2dd6fd5ba34b3baca196a7e442a6492a5a22d786dc040e9850ac8529f3a6
+```
+
+```bash
+apksigner verify --print-certs path/to/app-release.apk
+```
+
+Release builds are signed **on this machine** (keystore stays out of Git and out of CI). See `android/keystore.properties.example`.
+
 ## Develop
 
 ```bash

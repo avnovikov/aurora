@@ -1,0 +1,42 @@
+# Dependabot — weekly npm + Actions (+ Gradle for Capacitor Android)
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Lisbon
+    open-pull-requests-limit: 10
+    labels:
+      - security
+      - dependencies
+    commit-message:
+      prefix: "chore(deps)"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Lisbon
+    labels:
+      - security
+      - dependencies
+    commit-message:
+      prefix: "chore(actions)"
+
+  - package-ecosystem: gradle
+    directory: /android
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Lisbon
+    labels:
+      - security
+      - dependencies
+    commit-message:
+      prefix: "chore(gradle)"
