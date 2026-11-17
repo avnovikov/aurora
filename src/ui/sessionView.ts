@@ -45,6 +45,7 @@ import {
   applySwapWork,
   dayExerciseIds,
   easierAvailable,
+  type WorkAdjustInput,
   type WorkAdjustResult,
 } from "./sessionWorkAdjust";
 
@@ -116,6 +117,20 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     workAdjust = { swapOpen: false };
   };
 
+  const currentAdjustInput = (): WorkAdjustInput => ({
+    planned: options.planned,
+    workIndex: state.workIndex,
+    athlete: loadAthleteState(),
+  });
+
+  const swapPickLabels = (input: WorkAdjustInput, exerciseId: string) =>
+    swapChoices(exerciseId, input.athlete, dayExerciseIds(input.planned, input.workIndex)).map(
+      (exercise) => ({
+        id: exercise.id,
+        name: displayExerciseName(exercise.name),
+      }),
+    );
+
   const workAdjustUi = (): WorkAdjustUi | null => {
     if (state.phase !== "work") {
       return null;
@@ -124,17 +139,11 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     if (!item) {
       return null;
     }
-    const athlete = loadAthleteState();
-    const swapOptions = workAdjust.swapOpen
-      ? swapChoices(item.exerciseId, athlete, dayExerciseIds(options.planned, state.workIndex)).map((exercise) => ({
-          id: exercise.id,
-          name: displayExerciseName(exercise.name),
-        }))
-      : [];
+    const input = currentAdjustInput();
     return {
-      easierAvailable: easierAvailable(options.planned, state.workIndex, athlete),
+      easierAvailable: easierAvailable(input),
       swapOpen: workAdjust.swapOpen,
-      swapOptions,
+      swapOptions: workAdjust.swapOpen ? swapPickLabels(input, item.exerciseId) : [],
       status: workAdjust.status,
       showUndo: Boolean(workAdjust.undo),
     };
@@ -160,6 +169,30 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     }
     resetCurrentSetProgress();
     paint();
+  };
+
+  const runWorkAdjust = (edit: () => WorkAdjustResult): void => {
+    try {
+      adoptAdjustResult(edit());
+    } catch (error) {
+      workAdjust = {
+        swapOpen: false,
+        status: error instanceof Error ? error.message : "Could not adjust this move",
+      };
+      paint();
+    }
+  };
+
+  const restoreLiveItemAfterUndo = (): void => {
+    if (
+      !workAdjust.previousItem ||
+      workAdjust.undoWorkIndex !== state.workIndex ||
+      state.phase !== "work"
+    ) {
+      return;
+    }
+    options.planned.work[state.workIndex] = workAdjust.previousItem;
+    resetCurrentSetProgress();
   };
 
   const paint = (): void => {
@@ -336,66 +369,20 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       workAdjust = { swapOpen: !workAdjust.swapOpen };
       paint();
     },
-    onWorkEasier: () => {
-      try {
-        adoptAdjustResult(
-          applyEasierWork({
-            planned: options.planned,
-            workIndex: state.workIndex,
-            athlete: loadAthleteState(),
-          }),
-        );
-      } catch (error) {
-        workAdjust = {
-          swapOpen: false,
-          status: error instanceof Error ? error.message : "No easier step",
-        };
-        paint();
-      }
-    },
+    onWorkEasier: () => runWorkAdjust(() => applyEasierWork(currentAdjustInput())),
     onWorkSkipToday: () => {
-      const result = applySkipToday();
-      workAdjust = { swapOpen: false, status: result.status };
-      finishExercise();
+      adoptAdjustResult({ planned: options.planned, ...applySkipToday() });
     },
-    onWorkNever: () => {
-      adoptAdjustResult(
-        applyNeverAgainWork({
-          planned: options.planned,
-          workIndex: state.workIndex,
-          athlete: loadAthleteState(),
-        }),
-      );
-    },
-    onWorkSwapPick: (exerciseId) => {
-      adoptAdjustResult(
-        applySwapWork(
-          {
-            planned: options.planned,
-            workIndex: state.workIndex,
-            athlete: loadAthleteState(),
-          },
-          exerciseId,
-        ),
-      );
-    },
+    onWorkNever: () => runWorkAdjust(() => applyNeverAgainWork(currentAdjustInput())),
+    onWorkSwapPick: (exerciseId) =>
+      runWorkAdjust(() => applySwapWork(currentAdjustInput(), exerciseId)),
     onWorkUndo: () => {
       if (!workAdjust.undo) {
         return;
       }
       const restored = undoExclude(workAdjust.undo);
-      if (
-        workAdjust.previousItem &&
-        workAdjust.undoWorkIndex === state.workIndex &&
-        state.phase === "work"
-      ) {
-        options.planned.work[state.workIndex] = workAdjust.previousItem;
-        resetCurrentSetProgress();
-      }
-      workAdjust = {
-        swapOpen: false,
-        status: `Restored ${restored.restoredName}`,
-      };
+      restoreLiveItemAfterUndo();
+      workAdjust = { swapOpen: false, status: `Restored ${restored.restoredName}` };
       paint();
     },
     onFinishAll: finishAll,

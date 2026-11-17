@@ -1,5 +1,5 @@
 import { EXERCISE_GRAPH, requireExercise } from "../data/exerciseGraph";
-import type { Readiness } from "../domain/types";
+import { displayExerciseName } from "../library/displayName";
 import {
   easierChoice,
   easierInDay,
@@ -8,11 +8,25 @@ import {
   type ExcludeUndo,
 } from "../plan/dayEdits";
 import type { AthleteState } from "../plan/dayPreview";
-import { displayExerciseName } from "../library/displayName";
-import { emptyMemory } from "../session/history";
+import { resolveTemplate } from "../plan/templates";
 import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
 import { resolveSlot } from "../rules/resolveSlot";
-import { resolveTemplate } from "../plan/templates";
+import { emptyMemory } from "../session/history";
+
+export interface WorkAdjustInput {
+  planned: PlannedSession;
+  workIndex: number;
+  athlete: AthleteState;
+}
+
+export interface WorkAdjustResult {
+  planned: PlannedSession;
+  status: string;
+  finishExercise: boolean;
+  undo?: ExcludeUndo;
+  /** Live item before Never again, for session Undo when still on this slot. */
+  previousItem?: PlannedWorkItem;
+}
 
 /** Other work moves in this session (exclude the slot being adjusted). */
 export function dayExerciseIds(planned: PlannedSession, workIndex: number): string[] {
@@ -22,16 +36,12 @@ export function dayExerciseIds(planned: PlannedSession, workIndex: number): stri
   return planned.work.filter((_, index) => index !== workIndex).map((item) => item.exerciseId);
 }
 
-export function easierAvailable(
-  planned: PlannedSession,
-  workIndex: number,
-  athlete: AthleteState,
-): boolean {
-  const item = planned.work[workIndex];
+export function easierAvailable(input: WorkAdjustInput): boolean {
+  const item = input.planned.work[input.workIndex];
   if (!item) {
     return false;
   }
-  return easierChoice(item.exerciseId, athlete, dayExerciseIds(planned, workIndex)) !== undefined;
+  return easierChoice(item.exerciseId, input.athlete, dayExerciseIds(input.planned, input.workIndex)) !== undefined;
 }
 
 /**
@@ -41,19 +51,18 @@ export function easierAvailable(
 export function replaceWorkMove(
   item: PlannedWorkItem,
   exerciseId: string,
-  readiness: Readiness,
-  deloadActive: boolean,
+  session: Pick<PlannedSession, "readiness" | "deload">,
 ): PlannedWorkItem {
   const exercise = requireExercise(exerciseId);
   const resolved = resolveSlot({
     exercise,
     memory: emptyMemory(exerciseId),
-    readiness,
+    readiness: session.readiness,
     dose: { ...item.dose },
     pinned: true,
     weakLinks: [],
     graph: EXERCISE_GRAPH,
-    deloadActive,
+    deloadActive: session.deload,
   });
   const chosen = requireExercise(resolved.exerciseId);
   return {
@@ -73,21 +82,6 @@ export function replaceWorkMove(
   };
 }
 
-export interface WorkAdjustInput {
-  planned: PlannedSession;
-  workIndex: number;
-  athlete: AthleteState;
-}
-
-export interface WorkAdjustResult {
-  planned: PlannedSession;
-  status: string;
-  finishExercise: boolean;
-  undo?: ExcludeUndo;
-  /** Live item before Never again, for session Undo when still on this slot. */
-  previousItem?: PlannedWorkItem;
-}
-
 function currentItem(input: WorkAdjustInput): PlannedWorkItem {
   const item = input.planned.work[input.workIndex];
   if (!item) {
@@ -105,6 +99,30 @@ function withReplacedItem(
   return { ...planned, work };
 }
 
+/** Args shared by every Plan dayEdit for the current live work row. */
+function dayEditArgs(input: WorkAdjustInput, item: PlannedWorkItem) {
+  return {
+    templateId: input.planned.programId,
+    slotId: item.slotId,
+    exerciseId: item.exerciseId,
+    state: input.athlete,
+    dayExerciseIds: dayExerciseIds(input.planned, input.workIndex),
+  };
+}
+
+/** Rewrite the live work row after a Plan dayEdit changed the slot's exercise. */
+function replaceLiveItem(
+  input: WorkAdjustInput,
+  item: PlannedWorkItem,
+  exerciseId: string,
+): { planned: PlannedSession; next: PlannedWorkItem } {
+  const next = replaceWorkMove(item, exerciseId, input.planned);
+  return {
+    planned: withReplacedItem(input.planned, input.workIndex, next),
+    next,
+  };
+}
+
 function slotExerciseAfterEdit(templateId: string, slotId: string): string {
   const slot = resolveTemplate(templateId).slots.find((row) => row.id === slotId);
   if (!slot) {
@@ -113,32 +131,32 @@ function slotExerciseAfterEdit(templateId: string, slotId: string): string {
   return slot.exerciseId;
 }
 
-export function applyEasierWork(input: WorkAdjustInput): WorkAdjustResult {
-  const item = currentItem(input);
-  const ids = dayExerciseIds(input.planned, input.workIndex);
-  const names = easierInDay({
-    templateId: input.planned.programId,
-    slotId: item.slotId,
-    exerciseId: item.exerciseId,
-    state: input.athlete,
-    dayExerciseIds: ids,
-  });
+function resultAfterPlanEdit(
+  input: WorkAdjustInput,
+  item: PlannedWorkItem,
+  status: string,
+): WorkAdjustResult {
   const nextId = slotExerciseAfterEdit(input.planned.programId, item.slotId);
-  const next = replaceWorkMove(item, nextId, input.planned.readiness, input.planned.deload);
   return {
-    planned: withReplacedItem(input.planned, input.workIndex, next),
-    status: `Easier: ${names.fromName} → ${names.toName}`,
+    planned: replaceLiveItem(input, item, nextId).planned,
+    status,
     finishExercise: false,
   };
+}
+
+export function applyEasierWork(input: WorkAdjustInput): WorkAdjustResult {
+  const item = currentItem(input);
+  const names = easierInDay(dayEditArgs(input, item));
+  return resultAfterPlanEdit(input, item, `Easier: ${names.fromName} → ${names.toName}`);
 }
 
 export function applySwapWork(input: WorkAdjustInput, pickId: string): WorkAdjustResult {
   const item = currentItem(input);
   requireExercise(pickId);
   setDayExercise(input.planned.programId, item.slotId, pickId);
-  const next = replaceWorkMove(item, pickId, input.planned.readiness, input.planned.deload);
+  const { planned, next } = replaceLiveItem(input, item, pickId);
   return {
-    planned: withReplacedItem(input.planned, input.workIndex, next),
+    planned,
     status: `Swapped to ${displayExerciseName(next.exerciseName)}`,
     finishExercise: false,
   };
@@ -150,14 +168,7 @@ export function applySkipToday(): Pick<WorkAdjustResult, "status" | "finishExerc
 
 export function applyNeverAgainWork(input: WorkAdjustInput): WorkAdjustResult {
   const item = currentItem(input);
-  const previousItem = item;
-  const result = excludeFromDay({
-    templateId: input.planned.programId,
-    slotId: item.slotId,
-    exerciseId: item.exerciseId,
-    state: input.athlete,
-    dayExerciseIds: dayExerciseIds(input.planned, input.workIndex),
-  });
+  const result = excludeFromDay(dayEditArgs(input, item));
   const nextId = slotExerciseAfterEdit(input.planned.programId, item.slotId);
   if (!result.substituteName || nextId === item.exerciseId) {
     return {
@@ -165,15 +176,12 @@ export function applyNeverAgainWork(input: WorkAdjustInput): WorkAdjustResult {
       status: `Excluded: ${result.excludedName}. No substitute fits.`,
       finishExercise: true,
       undo: result.undo,
-      previousItem,
+      previousItem: item,
     };
   }
-  const next = replaceWorkMove(item, nextId, input.planned.readiness, input.planned.deload);
   return {
-    planned: withReplacedItem(input.planned, input.workIndex, next),
-    status: `Excluded: ${result.excludedName}. Now: ${result.substituteName}.`,
-    finishExercise: false,
+    ...resultAfterPlanEdit(input, item, `Excluded: ${result.excludedName}. Now: ${result.substituteName}.`),
     undo: result.undo,
-    previousItem,
+    previousItem: item,
   };
 }

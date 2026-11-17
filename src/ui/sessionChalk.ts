@@ -393,41 +393,68 @@ function workDoseHtml(reps: number, unit: string): string {
   return repsStepperHtml("session-dose work-reps-row", figure);
 }
 
+/** Quiet toolbar button: `Label: move` for the aria-label. */
+function workAdjustAction(dataAttr: string, label: string, move: string, extra = ""): string {
+  return `<button type="button" class="btn-quiet" ${dataAttr}${extra} aria-label="${escapeHtml(label)}: ${escapeHtml(move)}">${label}</button>`;
+}
+
+function easierAdjustHtml(available: boolean, move: string): string {
+  if (available) {
+    return workAdjustAction("data-work-easier", "Easier", move);
+  }
+  return `${workAdjustAction(
+    "data-work-easier",
+    "Easier",
+    move,
+    ` aria-disabled="true" aria-describedby="work-no-easier"`,
+  )}<span class="visually-hidden" id="work-no-easier">No easier step</span>`;
+}
+
+function swapPicksHtml(adjust: WorkAdjustUi): string {
+  if (!adjust.swapOpen) {
+    return "";
+  }
+  if (adjust.swapOptions.length === 0) {
+    return `<p class="lib-meta" data-work-swap-empty>No other move fits this slot with your gear, joints and exclusions.</p>`;
+  }
+  const picks = adjust.swapOptions
+    .map(
+      (option) =>
+        `<button type="button" class="btn-quiet" data-work-swap-pick="${escapeHtml(option.id)}">${escapeHtml(option.name)}</button>`,
+    )
+    .join("");
+  return `<div class="session-work-swap" role="group" aria-label="Swap for">${picks}</div>`;
+}
+
+function workAdjustStatusHtml(adjust: WorkAdjustUi): string {
+  if (!adjust.status) {
+    return "";
+  }
+  return `<p class="session-work-adjust-status" role="status" data-work-adjust-status>${escapeHtml(adjust.status)}</p>`;
+}
+
+function workAdjustUndoHtml(adjust: WorkAdjustUi): string {
+  if (!adjust.showUndo) {
+    return "";
+  }
+  return `<button type="button" class="btn-quiet" data-work-undo aria-label="Undo exclusion">Undo</button>`;
+}
+
 /** Toolbar above the hero: Swap · Easier · Skip today · Never again. */
 function workAdjustHtml(adjust: WorkAdjustUi | null, move: string): string {
   if (!adjust) {
     return "";
   }
-  const easier = adjust.easierAvailable
-    ? `<button type="button" class="btn-quiet" data-work-easier aria-label="Easier: ${escapeHtml(move)}">Easier</button>`
-    : `<button type="button" class="btn-quiet" data-work-easier aria-disabled="true" aria-label="Easier: ${escapeHtml(move)}" aria-describedby="work-no-easier">Easier</button><span class="visually-hidden" id="work-no-easier">No easier step</span>`;
-  const swapPressed = adjust.swapOpen ? "true" : "false";
-  const picks =
-    adjust.swapOpen &&
-    (adjust.swapOptions.length === 0
-      ? `<p class="lib-meta" data-work-swap-empty>No other move fits this slot with your gear, joints and exclusions.</p>`
-      : `<div class="session-work-swap" role="group" aria-label="Swap for">${adjust.swapOptions
-          .map(
-            (option) =>
-              `<button type="button" class="btn-quiet" data-work-swap-pick="${escapeHtml(option.id)}">${escapeHtml(option.name)}</button>`,
-          )
-          .join("")}</div>`);
-  const status = adjust.status
-    ? `<p class="session-work-adjust-status" role="status" data-work-adjust-status>${escapeHtml(adjust.status)}</p>`
-    : "";
-  const undo = adjust.showUndo
-    ? `<button type="button" class="btn-quiet" data-work-undo aria-label="Undo exclusion">Undo</button>`
-    : "";
   return `
     <div class="session-work-adjust">
       <div class="session-work-adjust-row">
-        <button type="button" class="btn-quiet" data-work-swap aria-pressed="${swapPressed}" aria-label="Swap: ${escapeHtml(move)}">Swap</button>
-        ${easier}
-        <button type="button" class="btn-quiet" data-work-skip-today aria-label="Skip today: ${escapeHtml(move)}">Skip today</button>
-        <button type="button" class="btn-quiet" data-work-never aria-label="Never again: ${escapeHtml(move)}">Never again</button>
+        ${workAdjustAction("data-work-swap", "Swap", move, ` aria-pressed="${adjust.swapOpen ? "true" : "false"}"`)}
+        ${easierAdjustHtml(adjust.easierAvailable, move)}
+        ${workAdjustAction("data-work-skip-today", "Skip today", move)}
+        ${workAdjustAction("data-work-never", "Never again", move)}
       </div>
-      ${picks || ""}
-      ${status}${undo}
+      ${swapPicksHtml(adjust)}
+      ${workAdjustStatusHtml(adjust)}${workAdjustUndoHtml(adjust)}
     </div>`;
 }
 

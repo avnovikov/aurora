@@ -50,7 +50,7 @@ describe("replaceWorkMove", () => {
   it("rewrites identity to the new exercise and keeps the slot id", () => {
     const planned = planLegs();
     const item = planned.work[0]!;
-    const next = replaceWorkMove(item, "bodyweight_squat", readiness, false);
+    const next = replaceWorkMove(item, "bodyweight_squat", planned);
     expect(next.slotId).toBe(item.slotId);
     expect(next.exerciseId).toBe("bodyweight_squat");
     expect(next.exerciseName.toLowerCase()).toContain("squat");
@@ -61,11 +61,14 @@ describe("replaceWorkMove", () => {
 describe("applyEasierWork", () => {
   it("writes the Plan slot and returns a rewritten live item", () => {
     const planned = planLegs();
-    const index = planned.work.findIndex((item) => easierChoice(item.exerciseId, athlete(), dayExerciseIds(planned, planned.work.indexOf(item))));
+    const state = athlete();
+    const index = planned.work.findIndex((item, workIndex) =>
+      easierChoice(item.exerciseId, state, dayExerciseIds(planned, workIndex)),
+    );
     expect(index).toBeGreaterThanOrEqual(0);
     const before = planned.work[index]!;
-    const pick = easierChoice(before.exerciseId, athlete(), dayExerciseIds(planned, index))!;
-    const result = applyEasierWork({ planned, workIndex: index, athlete: athlete() });
+    const pick = easierChoice(before.exerciseId, state, dayExerciseIds(planned, index))!;
+    const result = applyEasierWork({ planned, workIndex: index, athlete: state });
     expect(result.finishExercise).toBe(false);
     expect(result.status).toMatch(/^Easier:/);
     expect(result.planned.work[index]!.exerciseId).toBe(pick.id);

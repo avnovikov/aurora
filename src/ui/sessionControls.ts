@@ -105,11 +105,10 @@ function isAriaDisabled(el: HTMLElement): boolean {
 }
 
 function wireWorkAdjustControls(root: HTMLElement, handlers: SessionControlHandlers): void {
-  const clicks: Record<string, () => void> = {
+  const clicks: Record<string, (el: HTMLElement) => void> = {
     "[data-work-swap]": () => handlers.onWorkSwap(),
-    "[data-work-easier]": () => {
-      const button = root.querySelector<HTMLElement>("[data-work-easier]");
-      if (button && isAriaDisabled(button)) {
+    "[data-work-easier]": (el) => {
+      if (isAriaDisabled(el)) {
         return;
       }
       handlers.onWorkEasier();
@@ -119,7 +118,8 @@ function wireWorkAdjustControls(root: HTMLElement, handlers: SessionControlHandl
     "[data-work-undo]": () => handlers.onWorkUndo(),
   };
   for (const [selector, onClick] of Object.entries(clicks)) {
-    root.querySelector(selector)?.addEventListener("click", onClick);
+    const el = root.querySelector<HTMLElement>(selector);
+    el?.addEventListener("click", () => onClick(el));
   }
   root.querySelectorAll<HTMLElement>("[data-work-swap-pick]").forEach((button) => {
     button.addEventListener("click", () => {
