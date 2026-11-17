@@ -29,9 +29,12 @@ import {
   initialState,
   needsWorkState,
   persistPhase,
+  stampSetStartedAt,
   startCooldown,
   syncWorkState,
 } from "./sessionState";
+import { loadMemories } from "../session/history";
+import { slowSetCueDelaySeconds } from "../session/setDuration";
 import { pulseConnectedAt, pulseDisconnected } from "./pulseState";
 import { attachSessionPulse, paintPulseReading } from "./sessionPulse";
 import type { SessionViewOptions } from "./sessionTypes";
@@ -75,13 +78,73 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   let pulseTimer: number | null = null;
   let clockTimer: number | null = null;
   let workAdjust: WorkAdjustChrome = { swapOpen: false };
+  let pendingSlowSetCueExerciseId: string | null = null;
+  let slowSetCueTimer: number | null = null;
+  let slowSetCueScheduledFor: { exerciseId: string; setIndex: number } | null = null;
   const wakeLock = startWakeLock();
+
+  const clearSlowSetCueTimer = (): void => {
+    if (slowSetCueTimer !== null) {
+      window.clearTimeout(slowSetCueTimer);
+      slowSetCueTimer = null;
+    }
+  };
 
   const clearWorkTimers = (): void => {
     restHandle?.clear();
     restHandle = null;
     warmupHandle?.clear();
     warmupHandle = null;
+    clearSlowSetCueTimer();
+  };
+
+  const isRepWorkItem = (item: PlannedWorkItem | null): boolean => {
+    if (!item) {
+      return false;
+    }
+    const exercise = EXERCISE_GRAPH[item.exerciseId];
+    return exercise !== undefined && resolveExerciseTiming(exercise).effort !== "hold";
+  };
+
+  const cancelSlowSetCueFor = (exerciseId: string): void => {
+    if (pendingSlowSetCueExerciseId !== exerciseId) {
+      return;
+    }
+    clearSlowSetCueTimer();
+    pendingSlowSetCueExerciseId = null;
+    slowSetCueScheduledFor = null;
+  };
+
+  /** One mid-set pace nudge for the armed exercise; skipped if this set ends first. */
+  const scheduleSlowSetCueIfNeeded = (): void => {
+    if (state.phase !== "work" || !pendingSlowSetCueExerciseId) {
+      return;
+    }
+    const item = currentWork(options.planned, state);
+    if (!isRepWorkItem(item) || item!.exerciseId !== pendingSlowSetCueExerciseId) {
+      return;
+    }
+    const key = { exerciseId: item!.exerciseId, setIndex: state.setIndex };
+    if (
+      slowSetCueScheduledFor &&
+      slowSetCueScheduledFor.exerciseId === key.exerciseId &&
+      slowSetCueScheduledFor.setIndex === key.setIndex
+    ) {
+      return;
+    }
+    clearSlowSetCueTimer();
+    slowSetCueScheduledFor = key;
+    const delayMs = slowSetCueDelaySeconds(loadMemories()[key.exerciseId]) * 1000;
+    const armedId = key.exerciseId;
+    slowSetCueTimer = window.setTimeout(() => {
+      slowSetCueTimer = null;
+      if (pendingSlowSetCueExerciseId !== armedId) {
+        return;
+      }
+      pendingSlowSetCueExerciseId = null;
+      slowSetCueScheduledFor = null;
+      void speakCoachLine("set_pace_nudge");
+    }, delayMs);
   };
 
   const dispose = (): void => {
@@ -210,8 +273,14 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     if (needsWorkState(options.planned, state)) {
       state.workState = syncWorkState(options.planned, state);
     }
+    if (state.phase === "work" && state.workState && isRepWorkItem(currentWork(options.planned, state))) {
+      if (state.workState.setStartedAtMs === undefined) {
+        state.workState = stampSetStartedAt(state.workState);
+      }
+    }
     root.innerHTML = shellHtml(options.planned, state, workAdjustUi());
     wireControls();
+    scheduleSlowSetCueIfNeeded();
     persist();
   };
 
@@ -404,6 +473,13 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       restoreLiveItemAfterUndo();
       workAdjust = { swapOpen: false, status: `Restored ${restored.restoredName}` };
       paint();
+    },
+    onWorkSetEnding: (exerciseId) => {
+      cancelSlowSetCueFor(exerciseId);
+    },
+    onSlowSetArmed: (exerciseId) => {
+      pendingSlowSetCueExerciseId = exerciseId;
+      slowSetCueScheduledFor = null;
     },
     onFinishAll: finishAll,
     onStartCooldown: () => {

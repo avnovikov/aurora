@@ -151,14 +151,29 @@ export function syncWorkState(
   if (!item) {
     return null;
   }
+  const prior = state.workState;
+  const sameSet =
+    prior &&
+    prior.slotId === item.slotId &&
+    prior.exerciseId === item.exerciseId &&
+    prior.setIndex === state.setIndex;
   return {
     slotId: item.slotId,
     exerciseId: item.exerciseId,
     setIndex: state.setIndex,
     prescribedReps: item.dose.reps,
     addedLoadKg: item.dose.addedLoadKg,
-    nextRepsOverride: state.workState?.nextRepsOverride,
+    nextRepsOverride: prior?.nextRepsOverride,
+    setStartedAtMs: sameSet ? prior.setStartedAtMs : undefined,
   };
+}
+
+/** Stamp (or refresh) the rep-set duration clock when a work screen is shown. */
+export function stampSetStartedAt(
+  work: ActiveWorkState,
+  nowMs: number = Date.now(),
+): ActiveWorkState {
+  return { ...work, setStartedAtMs: nowMs };
 }
 
 function restoreWorkState(

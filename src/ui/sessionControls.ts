@@ -10,8 +10,10 @@ import {
 import {
   loadMemories,
   recordBestReps,
+  recordSetDuration,
   saveMemories,
 } from "../session/history";
+import { elapsedSetSeconds, shouldArmSlowSetCue } from "../session/setDuration";
 import {
   connectHeartRate,
   disconnectHeartRate,
@@ -57,6 +59,13 @@ export interface SessionControlHandlers {
   onWorkSwapPick: (exerciseId: string) => void;
   /** Undo the last Never again on this slot. */
   onWorkUndo: () => void;
+  /**
+   * About to leave this work set: cancel a pending mid-set pace cue for this
+   * exercise if the athlete finished before it fired.
+   */
+  onWorkSetEnding: (exerciseId: string) => void;
+  /** A rep set ran past two minutes — nudge mid-way through the next set. */
+  onSlowSetArmed: (exerciseId: string) => void;
   onFinishAll: () => void;
   onStartCooldown: () => void;
   onSkipCooldown: () => void;
@@ -248,6 +257,11 @@ export function completeSet(
   }
   const prescribed = prescribedForNextSet(work);
   const completed = stopReason === "skipped" ? 0 : prescribed;
+  handlers.onWorkSetEnding(item.exerciseId);
+  const durationSeconds =
+    stopReason !== "skipped" && work.setStartedAtMs !== undefined
+      ? elapsedSetSeconds(work.setStartedAtMs)
+      : undefined;
   state.log = appendSet(state.log, {
     slotId: item.slotId,
     exerciseId: item.exerciseId,
@@ -256,9 +270,20 @@ export function completeSet(
     completedReps: completed,
     addedLoadKg: work.addedLoadKg,
     stopReason,
+    ...(durationSeconds !== undefined ? { durationSeconds } : {}),
   });
+  let memories = loadMemories();
   if (completed > 0) {
-    saveMemories(recordBestReps(loadMemories(), item.exerciseId, completed));
+    memories = recordBestReps(memories, item.exerciseId, completed);
+  }
+  if (durationSeconds !== undefined) {
+    memories = recordSetDuration(memories, item.exerciseId, durationSeconds);
+    if (shouldArmSlowSetCue(durationSeconds)) {
+      handlers.onSlowSetArmed(item.exerciseId);
+    }
+  }
+  if (completed > 0 || durationSeconds !== undefined) {
+    saveMemories(memories);
   }
   if (stopReason === "completed") {
     void speakCoachLine("set_logged");

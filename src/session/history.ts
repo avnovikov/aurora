@@ -124,6 +124,32 @@ export function recordBestReps(
   };
 }
 
+/**
+ * Fold one logged rep-set duration into the exercise's rolling average.
+ */
+export function recordSetDuration(
+  memories: Record<string, ExerciseMemory>,
+  exerciseId: string,
+  durationSeconds: number,
+): Record<string, ExerciseMemory> {
+  if (!Number.isFinite(durationSeconds) || durationSeconds < 0 || !Number.isInteger(durationSeconds)) {
+    throw new Error(`durationSeconds must be a non-negative integer; got ${durationSeconds}`);
+  }
+  const current = memories[exerciseId] ?? emptyMemory(exerciseId);
+  const n = current.setDurationSampleCount ?? 0;
+  const avg = current.avgSetDurationSeconds ?? 0;
+  const nextCount = n + 1;
+  const nextAvg = Math.round((avg * n + durationSeconds) / nextCount);
+  return {
+    ...memories,
+    [exerciseId]: {
+      ...current,
+      avgSetDurationSeconds: nextAvg,
+      setDurationSampleCount: nextCount,
+    },
+  };
+}
+
 export function emptyMemory(exerciseId: string): ExerciseMemory {
   return {
     exerciseId,
