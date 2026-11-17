@@ -131,13 +131,24 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       }),
     );
 
+  const pendingUndoUi = (): WorkAdjustUi | null =>
+    workAdjust.undo
+      ? {
+          easierAvailable: false,
+          swapOpen: false,
+          swapOptions: [],
+          status: workAdjust.status,
+          showUndo: true,
+        }
+      : null;
+
   const workAdjustUi = (): WorkAdjustUi | null => {
     if (state.phase !== "work") {
-      return null;
+      return pendingUndoUi();
     }
     const item = currentWork(options.planned, state);
     if (!item) {
-      return null;
+      return pendingUndoUi();
     }
     const input = currentAdjustInput();
     return {
@@ -318,7 +329,16 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   };
 
   const finishExercise = (restBeforeNext?: number): void => {
-    clearWorkAdjustNotice();
+    // Keep Never-again Undo across advance (plan/exclusion restore); drop live-item snapshot.
+    if (workAdjust.undo) {
+      workAdjust = {
+        swapOpen: false,
+        status: workAdjust.status,
+        undo: workAdjust.undo,
+      };
+    } else {
+      clearWorkAdjustNotice();
+    }
     state.workIndex += 1;
     state.setIndex = 1;
     state.workState = null;
@@ -366,7 +386,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       persist();
     },
     onWorkSwap: () => {
-      workAdjust = { swapOpen: !workAdjust.swapOpen };
+      workAdjust = { ...workAdjust, swapOpen: !workAdjust.swapOpen };
       paint();
     },
     onWorkEasier: () => runWorkAdjust(() => applyEasierWork(currentAdjustInput())),

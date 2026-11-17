@@ -329,6 +329,16 @@
   line-height: 20px;
 }
 
+.session-work-adjust .btn-quiet[aria-disabled="true"] {
+  border-color: var(--edge);
+  color: var(--muted);
+  cursor: default;
+}
+
+.session-work-adjust-pending {
+  padding-top: 8px;
+}
+
 .session .session-end-cooldown {
   padding: 0 24px 32px;
 }

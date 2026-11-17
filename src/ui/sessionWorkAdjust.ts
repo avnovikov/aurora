@@ -11,6 +11,7 @@ import type { AthleteState } from "../plan/dayPreview";
 import { resolveTemplate } from "../plan/templates";
 import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
 import { resolveSlot } from "../rules/resolveSlot";
+import { applySkillDose } from "../rules/skillDose";
 import { emptyMemory } from "../session/history";
 
 export interface WorkAdjustInput {
@@ -45,24 +46,26 @@ export function easierAvailable(input: WorkAdjustInput): boolean {
 }
 
 /**
- * Rebuild a live work item for a different move. Keeps the slot identity and
- * starts from the previous dose, pinned so mid-session adjust does not ladder-advance.
+ * Rebuild a live work item for a different move. Keeps the slot identity; doses
+ * from library standards + athlete memory; pinned so adjust does not ladder-advance.
  */
 export function replaceWorkMove(
   item: PlannedWorkItem,
   exerciseId: string,
-  session: Pick<PlannedSession, "readiness" | "deload">,
+  input: WorkAdjustInput,
 ): PlannedWorkItem {
   const exercise = requireExercise(exerciseId);
+  const memory = input.athlete.memories[exerciseId] ?? emptyMemory(exerciseId);
+  const skilled = applySkillDose({ ...item.dose }, exercise, memory);
   const resolved = resolveSlot({
     exercise,
-    memory: emptyMemory(exerciseId),
-    readiness: session.readiness,
-    dose: { ...item.dose },
+    memory,
+    readiness: input.planned.readiness,
+    dose: skilled.dose,
     pinned: true,
     weakLinks: [],
     graph: EXERCISE_GRAPH,
-    deloadActive: session.deload,
+    deloadActive: input.planned.deload,
   });
   const chosen = requireExercise(resolved.exerciseId);
   return {
@@ -116,7 +119,7 @@ function replaceLiveItem(
   item: PlannedWorkItem,
   exerciseId: string,
 ): { planned: PlannedSession; next: PlannedWorkItem } {
-  const next = replaceWorkMove(item, exerciseId, input.planned);
+  const next = replaceWorkMove(item, exerciseId, input);
   return {
     planned: withReplacedItem(input.planned, input.workIndex, next),
     next,

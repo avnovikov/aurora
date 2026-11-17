@@ -113,4 +113,22 @@ describe("work adjust controls", () => {
     root.querySelector<HTMLElement>("[data-work-never]")!.click();
     expect(h.onWorkNever).toHaveBeenCalledOnce();
   });
+
+  it("Undo calls its handler", () => {
+    const planned = planLegs();
+    const h = handlers();
+    const root = mount(
+      planned,
+      {
+        easierAvailable: true,
+        swapOpen: false,
+        swapOptions: [],
+        status: "Excluded: Nordic curl. Now: Hip hinge.",
+        showUndo: true,
+      },
+      h,
+    );
+    root.querySelector<HTMLElement>("[data-work-undo]")!.click();
+    expect(h.onWorkUndo).toHaveBeenCalledOnce();
+  });
 });

@@ -77,4 +77,26 @@ describe("work adjust toolbar markup", () => {
     const html = shellHtml(planned, state, adjust);
     expect(html).not.toContain("data-work-swap");
   });
+
+  it("keeps Undo reachable off the work stage after Never again", () => {
+    const planned = planLegs();
+    const state = workState(planned);
+    state.phase = "done";
+    const html = shellHtml(planned, state, {
+      easierAvailable: false,
+      swapOpen: false,
+      swapOptions: [],
+      status: "Excluded: Nordic curl. No substitute fits.",
+      showUndo: true,
+    });
+    expect(html).toContain("data-work-undo");
+    expect(html).toContain("data-work-adjust-status");
+    expect(html).not.toContain("data-work-swap");
+  });
+
+  it("dims disabled Easier", () => {
+    const planned = planLegs();
+    const html = shellHtml(planned, workState(planned), { ...adjust, easierAvailable: false });
+    expect(html).toMatch(/data-work-easier[^>]*aria-disabled="true"/);
+  });
 });

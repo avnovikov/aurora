@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_PLAN_QUEUE, SESSION_TEMPLATES, templateToStarter } from "../../src/data/seed";
 import type { Readiness } from "../../src/domain/types";
+import { requireExercise } from "../../src/data/exerciseGraph";
 import { easierChoice, undoExclude } from "../../src/plan/dayEdits";
-import { loadExcluded } from "../../src/plan/exclusions";
+import { excludeExercise, loadExcluded } from "../../src/plan/exclusions";
 import type { AthleteState } from "../../src/plan/dayPreview";
-import { resolveTemplate } from "../../src/plan/templates";
+import { resolveTemplate, slotExerciseOverride } from "../../src/plan/templates";
 import { planSession, type PlannedSession } from "../../src/rules/planSession";
+import { substitutesFor } from "../../src/safety/suitableExercise";
 import {
   applyEasierWork,
   applyNeverAgainWork,
@@ -50,7 +52,11 @@ describe("replaceWorkMove", () => {
   it("rewrites identity to the new exercise and keeps the slot id", () => {
     const planned = planLegs();
     const item = planned.work[0]!;
-    const next = replaceWorkMove(item, "bodyweight_squat", planned);
+    const next = replaceWorkMove(item, "bodyweight_squat", {
+      planned,
+      workIndex: 0,
+      athlete: athlete(),
+    });
     expect(next.slotId).toBe(item.slotId);
     expect(next.exerciseId).toBe("bodyweight_squat");
     expect(next.exerciseName.toLowerCase()).toContain("squat");
@@ -108,12 +114,46 @@ describe("applyNeverAgainWork", () => {
     const result = applyNeverAgainWork({ planned, workIndex: index, athlete: athlete() });
     expect(loadExcluded()).toContain(item.exerciseId);
     expect(result.undo).toBeDefined();
+    expect(result.finishExercise).toBe(false);
+    expect(result.planned.work[index]!.exerciseId).not.toBe(item.exerciseId);
     expect(result.status).toMatch(/Excluded:/);
-    if (result.finishExercise) {
-      expect(result.planned.work[index]!.exerciseId).toBe(item.exerciseId);
-    } else {
-      expect(result.planned.work[index]!.exerciseId).not.toBe(item.exerciseId);
-    }
     undoExclude(result.undo!);
+    expect(loadExcluded()).not.toContain(item.exerciseId);
+  });
+
+  it("Undo restores exclusion and the Plan slot after a substitute", () => {
+    const planned = planLegs();
+    const item = planned.work.find((row) => row.exerciseId === "nordic_curl") ?? planned.work[0]!;
+    const index = planned.work.indexOf(item);
+    const beforeSlot = resolveTemplate(planned.programId).slots.find((slot) => slot.id === item.slotId)!.exerciseId;
+    const result = applyNeverAgainWork({ planned, workIndex: index, athlete: athlete() });
+    expect(result.undo).toBeDefined();
+    undoExclude(result.undo!);
+    expect(loadExcluded()).not.toContain(item.exerciseId);
+    const afterSlot = resolveTemplate(planned.programId).slots.find((slot) => slot.id === item.slotId)!.exerciseId;
+    expect(afterSlot).toBe(beforeSlot);
+    expect(slotExerciseOverride(planned.programId, item.slotId)).toBeUndefined();
+  });
+
+  it("finishes the exercise with Undo when no substitute fits", () => {
+    const planned = planLegs();
+    const item = planned.work[0]!;
+    const blockers = substitutesFor(requireExercise(item.exerciseId), [], ["body", "bar"], []).map(
+      (exercise) => exercise.id,
+    );
+    for (const id of blockers) {
+      excludeExercise(id);
+    }
+    const result = applyNeverAgainWork({
+      planned,
+      workIndex: 0,
+      athlete: athlete({ excluded: loadExcluded() }),
+    });
+    expect(result.finishExercise).toBe(true);
+    expect(result.undo).toBeDefined();
+    expect(result.status).toMatch(/No substitute fits/);
+    expect(loadExcluded()).toContain(item.exerciseId);
+    undoExclude(result.undo!);
+    expect(loadExcluded()).not.toContain(item.exerciseId);
   });
 });

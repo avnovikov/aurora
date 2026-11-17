@@ -46,15 +46,17 @@ export function shellHtml(
   adjust: WorkAdjustUi | null = null,
 ): string {
   const light = planned.lightDay || planned.deload ? "light-day" : "";
-  const { body, barActions } = surfaceHtml(planned, state, adjust);
+  const surface = surfaceHtml(planned, state, adjust);
+  const pendingUndo = pendingAdjustNoticeHtml(adjust, surface.workToolbar);
   return `
     <main class="shell session ${light}">
       <header class="session-top">
         ${sessionClockHtml(state)}
         ${chalkHtml(planned, state)}
       </header>
-      ${body}
-      ${pulseBarHtml(state, barActions)}
+      ${pendingUndo}
+      ${surface.body}
+      ${pulseBarHtml(state, surface.barActions)}
     </main>
   `;
 }
@@ -179,10 +181,12 @@ interface Surface {
   body: string;
   /** Set actions for the bottom bar; only a working set has them. */
   barActions: string;
+  /** True when the full work adjust toolbar is already inside `body`. */
+  workToolbar: boolean;
 }
 
 function offWork(body: string): Surface {
-  return { body, barActions: "" };
+  return { body, barActions: "", workToolbar: false };
 }
 
 function surfaceHtml(
@@ -206,7 +210,11 @@ function surfaceHtml(
   if (!item) {
     return offWork(`<section class="session-read"><p class="tagline">No work items.</p></section>`);
   }
-  return { body: workHtml(item, state, adjust), barActions: WORK_ACTIONS_HTML };
+  return {
+    body: workHtml(item, state, adjust),
+    barActions: WORK_ACTIONS_HTML,
+    workToolbar: true,
+  };
 }
 
 function warmupHtml(planned: PlannedSession, state: ViewState): string {
@@ -438,6 +446,14 @@ function workAdjustUndoHtml(adjust: WorkAdjustUi): string {
     return "";
   }
   return `<button type="button" class="btn-quiet" data-work-undo aria-label="Undo exclusion">Undo</button>`;
+}
+
+/** Status + Undo when Never again advanced off the work stage (next rest / done / cool-down). */
+function pendingAdjustNoticeHtml(adjust: WorkAdjustUi | null, workToolbar: boolean): string {
+  if (!adjust?.showUndo || workToolbar) {
+    return "";
+  }
+  return `<div class="session-work-adjust session-work-adjust-pending">${workAdjustStatusHtml(adjust)}${workAdjustUndoHtml(adjust)}</div>`;
 }
 
 /** Toolbar above the hero: Swap · Easier · Skip today · Never again. */
