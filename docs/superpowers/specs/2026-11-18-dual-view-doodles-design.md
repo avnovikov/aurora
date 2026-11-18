@@ -45,13 +45,20 @@ A second view costs card width and attention, so the reviewer asks for one only 
 
 ## Authoring
 
-Unchanged for side-only specs. For a dual-view spec (only after an ADD VIEW verdict):
+Unchanged for side-only specs. For a dual-view spec (only after an ADD VIEW verdict), positions stay 2D in the pose and the third axis goes in a keyframe-level `sideways` map, so the 2D `Pose` / `Point` types stay unchanged:
 
-- Author facing +x as today. Any pinned point (`pelvis`, `chest`, `head`, `hands`, `feet`, `elbows.at`, `knees.at`) may take a third number, its sideways offset: `hands: { near: [10, 0, -70], far: [10, 0, 70] }`.
-- A point given as `[x, y]` keeps the natural width of its chain: the shoulder's for an arm (±22), the hip's for a leg (±8), 0 for the spine.
-- `elbows` / `knees` take an optional `out` (degrees): how far the bend plane rolls outward from the forward plane (0 = today's behaviour, 90 = the joint points straight out to the side, e.g. flared elbows at the bottom of a push-up).
+```ts
+{
+  pose: { pelvis: [-130, -118], chest: [-60, -112], hands: { near: [0, 0], far: [0, 0] }, feet: { … } },
+  sideways: { hands: { near: -30, far: 90 }, elbows: { near: { out: 70 } } },
+  hold: 0.4,
+}
+```
 
-The 2D `Point` type stays for side-only specs; pins accept `Point | Point3`.
+- `sideways` values are absolute z for `pelvis` (moves the whole spine), `hands`, `feet`, and `elbows` / `knees` `{ at?, out? }` (`at` is the z of a pinned `elbows.at` / `knees.at`).
+- Anything not given keeps the natural width of its chain: the shoulder's for an arm (±22), the hip's for a leg (±8), the pelvis z for the spine.
+- `out` (degrees): how far the bend plane rolls outward from the forward plane (0 = today's behaviour, 90 = the joint points straight out to the side, e.g. flared elbows at the bottom of a push-up).
+- The spine is solved by the 2D rig, which leans it as if the hands were straight ahead; pin the chest when hands go wide.
 
 ## Solver (`src/doodles/rig.ts`)
 
