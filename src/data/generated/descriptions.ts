@@ -5991,12 +5991,12 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
     "steps": [
       "Place your hands shoulder width apart on a sturdy bar or ledge.",
       "Walk your feet back until your body and arms are straight.",
-      "Bend your elbows to lower your chest to the bar.",
+      "Bend your elbows to lower your chest to the bar or ledge.",
       "Press back up to straight arms."
     ],
     "cues": [
       "Body in one line",
-      "Chest to the bar",
+      "Chest to the bar or ledge",
       "Brace the core"
     ],
     "mistakes": [
@@ -6031,12 +6031,12 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
     "steps": [
       "Place your hands wider than shoulder width on a sturdy bar or ledge.",
       "Walk your feet back until your body and arms are straight.",
-      "Bend your elbows to lower your chest to the bar.",
+      "Bend your elbows to lower your chest to the bar or ledge.",
       "Press back up to straight arms."
     ],
     "cues": [
       "Body in one line",
-      "Chest to the bar",
+      "Chest to the bar or ledge",
       "Squeeze the chest to press"
     ],
     "mistakes": [
