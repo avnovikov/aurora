@@ -71,7 +71,7 @@ type Arms = "temple" | "chest" | "overhead";
  * upright); `tuck` tips the chin toward the chest. Knees bent, feet flat.
  * - temple: fingertips lightly beside the head, the elbow out past the face.
  * - chest: arms crossed on the chest, hands at the opposite shoulders.
- * - overhead: straight arms reaching past the head, just clear of it.
+ * - overhead: arms reaching past the head parallel to the torso, just clear of it.
  */
 function curl(theta: number, tuck: number, arms: Arms): Pose {
   const pelvis = CURL_PELVIS;
@@ -91,12 +91,16 @@ function curl(theta: number, tuck: number, arms: Arms): Pose {
     };
   }
   if (arms === "overhead") {
-    const reach = theta + 28;
+    // Arms continue the torso line by the ears. Side on they would cross the
+    // head, so the upper arm rises just enough to clear it and the forearms run
+    // parallel to the torso, just above the head line.
+    const elbow = along(shoulder, theta + 33, 60);
+    const elbowFar = along(shoulder, theta + 34, 60);
     return {
       ...base,
       ...legs,
-      hands: { near: along(shoulder, reach, REACH), far: along(shoulder, reach + 1, REACH) },
-      elbows: { near: { bend: 1 }, far: { bend: 1 } },
+      hands: { near: along(elbow, theta, 66), far: along(elbowFar, theta + 1, 66) },
+      elbows: { near: { at: elbow }, far: { at: elbowFar } },
     };
   }
   // Face side of the torso is theta + 90; the elbow points that way.

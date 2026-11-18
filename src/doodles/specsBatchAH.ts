@@ -223,18 +223,19 @@ function dragon(t: number): Pose {
 
 /** Skipping: the `side` knee driven to hip height, the opposite arm swung forward; `air` hops off the stance foot. */
 function skipKnee(side: Side, air: boolean): Pose {
-  const pelvis: Point = [0, air ? -196 : -178];
+  const pelvis: Point = [0, air ? -206 : -178];
   const k = along(pelvis, -4, THIGH);
   const shoulder = along(pelvis, -88, 98);
   const fwdElbow = along(shoulder, 40, 60);
   const backElbow = along(shoulder, 125, 60);
-  const stanceY = air ? -24 : -10;
+  // In the air the stance foot hangs toes down, its tip ~15 clear of the floor.
+  const stanceY = air ? -34 : -10;
   return {
     pelvis,
     chest: along(pelvis, -88, 80),
     knees: { [side]: { at: k } },
     feet: { [side]: along(k, 98, SHIN), [other(side)]: [2, stanceY] } as Pose["feet"],
-    toes: { [side]: 40, [other(side)]: air ? 60 : 28 } as Pose["toes"],
+    toes: { [side]: 40, [other(side)]: air ? 70 : 28 } as Pose["toes"],
     hands: { [other(side)]: along(fwdElbow, -50, 66), [side]: along(backElbow, 60, 66) } as Pose["hands"],
     elbows: { [other(side)]: { at: fwdElbow }, [side]: { at: backElbow } } as Pose["elbows"],
   };
@@ -278,17 +279,24 @@ function stride(x: number, lead: Side): Pose {
   };
 }
 
-/** Turn at the marker: hips sunk low, near hand touching the line beside the front foot. */
+/**
+ * Turn at the marker: a short low plant. Front (near) foot planted, the back
+ * knee bent and off the floor on the ball of the foot, torso pitched down,
+ * near hand reaching down and forward to touch the line just ahead of the front foot.
+ */
 function shuttleTurn(x: number): Pose {
-  const pelvis: Point = [x - 50, -96];
-  const spine = -18;
+  const pelvis: Point = [x - 50, -134];
+  const spine = 8;
   const s = shoulderAt(pelvis, spine);
   return {
     pelvis,
     chest: along(pelvis, spine, 80),
-    hands: { near: [x + 34, -2], far: along(s, 150, ARM) },
-    feet: { near: [x + 16, 0], far: [x - 170, -8] },
-    toes: { near: 0, far: 20 },
+    head: along(along(pelvis, spine, 80), spine - 8, 56),
+    hands: { near: [x + 48, -3], far: along(s, 140, ARM) },
+    elbows: { near: { bend: 1 }, far: { bend: 1 } },
+    feet: { near: [x + 16, 0], far: [x - 150, -9] },
+    knees: { near: { bend: -1 }, far: { bend: -1 } },
+    toes: { near: 0, far: 24 },
   };
 }
 

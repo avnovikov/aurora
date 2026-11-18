@@ -222,9 +222,14 @@ export function frame(drawing: ViewBox): ViewBox {
 
 /** Everything the figure and props touch over the loop (no inset). */
 function figureExtent(spec: DoodleSpec, poses: Solved[]): ViewBox {
+  const r = spec.wheel;
   return bounds([
     ...poses.flatMap((pose) => figurePoints(pose).map((p) => p.point)),
     ...(spec.props ?? []).flatMap(propPoints),
+    // The ab wheel round the near hand.
+    ...(r === undefined
+      ? []
+      : poses.flatMap(({ arms: { near: { end: [x, y] } } }): Point[] => [[x - r, y - r], [x + r, y + r]])),
   ], STROKE_REACH);
 }
 

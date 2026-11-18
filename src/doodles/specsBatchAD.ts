@@ -26,8 +26,6 @@ const REACH = 125.4;
 const LEG = 173.6;
 /** Pelvis to shoulder along a straight torso. */
 const SHOULDER_REACH = 98;
-/** Ankle to shoulder along a straight body. */
-const BODY_REACH = LEG + SHOULDER_REACH;
 /** Shoulder offset from the chest in front view. */
 const SHOULDER_SIDE = 22;
 const UPPER_ARM = 60;
@@ -228,66 +226,102 @@ function leanOn(bar: Point, ankleY: number, a: number, h: number, sweep: [number
   return { ankle: [round(bar[0] - p[0]), ankleY], deg };
 }
 
-/** A straight body from `ankle` with its shoulder at `shoulder`; arms to `hand`. */
-function leaning(ankle: Point, shoulder: Point, hand: Point, elbow: JointHint, toes: number, headTilt = 0): Pose {
-  const deg = angle(ankle, shoulder);
-  const pelvis = along(ankle, deg, LEG);
-  const chest = along(ankle, deg, LEG + 80);
+/**
+ * Leaning moves keep the body one rigid line pivoting at the ankles. The legs
+ * are straight from knee pins alone (no ankle pin), so in-betweens blend the
+ * thigh and shin angles and the legs stay straight; the in-between keyframes
+ * keep the pelvis on the arc round the ankles.
+ */
+const LEAN_LEG = 173.98;
+const LEAN_REACH = LEAN_LEG + SHOULDER_REACH;
+/** Body-angle steps per half rep. */
+const LEAN_STEPS = 2;
+
+/** Like `along` but unrounded, so pinned bones keep their exact lengths (no kink). */
+function exactly(from: Point, degrees: number, length: number): Point {
+  const r = (degrees * Math.PI) / 180;
+  return [from[0] + Math.cos(r) * length, from[1] + Math.sin(r) * length];
+}
+
+/** A straight body from `ankle` at `deg`; arms to `hand`. */
+function leaning(ankle: Point, deg: number, hand: Point, elbow: JointHint, toes: number, headTilt = 0): Pose {
+  const pelvis = exactly(ankle, deg, LEAN_LEG);
+  const chest = exactly(pelvis, deg, 80);
+  const knee = { at: exactly(pelvis, deg + 180, 88) };
   return {
     pelvis,
     chest,
-    head: along(chest, deg + headTilt, 56),
+    head: exactly(chest, deg + headTilt, 56),
     hands: { near: hand, far: hand },
     elbows: { near: elbow, far: elbow },
-    knees: { near: straightKnee(pelvis, ankle), far: straightKnee(pelvis, ankle) },
-    feet: { near: ankle, far: ankle },
+    knees: { near: knee, far: knee },
     toes: { near: toes, far: toes },
   };
+}
+
+/**
+ * A rep of a leaning move: `pose(f)` from the straight-arm end (f = 0) to the
+ * bent-arm end (f = 1), with in-between keyframes every 1/LEAN_STEPS.
+ */
+function leanRep(pose: (f: number) => Pose, holdStraight: number, holdBent: number): DoodleSpec["frames"] {
+  const steps = Array.from({ length: LEAN_STEPS - 1 }, (_, i) => (i + 1) / LEAN_STEPS);
+  return [
+    { hold: holdStraight, pose: pose(0) },
+    ...steps.map((f) => ({ hold: 0, pose: pose(f) })),
+    { hold: holdBent, pose: pose(1) },
+    ...[...steps].reverse().map((f) => ({ hold: 0, pose: pose(f) })),
+  ];
+}
+
+/** Body angle `f` of the way from straight arms on the bar (f = 0) to the bent end (`lean`, f = 1). */
+function leanDeg(lean: Lean, hand: Point, f: number): number {
+  // Arms locked at the straight end (a hair under the full 126).
+  const straight = angle(lean.ankle, meet(lean.ankle, LEAN_REACH, hand, 125.9, -1));
+  return straight + (lean.deg - straight) * f;
+}
+
+/** Arm for a body at `deg`: locked when the hand is an arm's length away, else the elbow `pick` chooses. */
+function leanArm(lean: Lean, deg: number, hand: Point, pick: (a: Point, b: Point) => Point): JointHint {
+  return arm(exactly(lean.ankle, deg, LEAN_REACH), hand, pick, 1);
 }
 
 // Body tricep press: face down on a chest-high bar; the elbows fold forward and the forehead goes to the bar.
 const TRI_BAR: Point = [0, -236];
 const TRI_ANKLE_Y = -19;
 /** Bottom: the bar just in front of and below the forehead. */
-const TRI_LEAN = leanOn(TRI_BAR, TRI_ANKLE_Y, BODY_REACH + 46, 26, [-80, -10]);
+const TRI_LEAN = leanOn(TRI_BAR, TRI_ANKLE_Y, LEAN_REACH + 46, 26, [-80, -10]);
 
-function tricepPress(bottom: boolean): Pose {
-  const { ankle } = TRI_LEAN;
+/** `f` 0 arms straight, 1 at the bottom. Elbows point forward and down, ahead of the head. */
+function tricepPress(f: number): Pose {
   const hand: Point = [TRI_BAR[0] - 2, TRI_BAR[1]];
-  const shoulder = bottom ? along(ankle, TRI_LEAN.deg, BODY_REACH) : meet(ankle, BODY_REACH, hand, REACH, -1);
-  // Elbows point forward and down, ahead of the head.
-  const elbow: JointHint = bottom ? { at: elbowBetween(shoulder, hand, lower) } : { bend: 1 };
-  return leaning(ankle, shoulder, hand, elbow, 62);
+  const deg = leanDeg(TRI_LEAN, hand, f);
+  return leaning(TRI_LEAN.ankle, deg, hand, leanArm(TRI_LEAN, deg, hand, lower), 62);
 }
 
 // Reverse-grip incline push-up: the chest comes down to the bar, elbows tucked back along the ribs.
 const REV_BAR: Point = [0, -196];
-const REV_LEAN = leanOn(REV_BAR, -19, BODY_REACH - 8, 24, [-80, -10]);
+const REV_LEAN = leanOn(REV_BAR, -19, LEAN_REACH - 8, 24, [-80, -10]);
 
-function reverseIncline(bottom: boolean): Pose {
-  const { ankle } = REV_LEAN;
+/** `f` 0 arms straight, 1 at the bottom. Tucked: the upper arm runs back along the ribs towards the hips. */
+function reverseIncline(f: number): Pose {
   const hand: Point = [REV_BAR[0] - 2, REV_BAR[1]];
-  const shoulder = bottom ? along(ankle, REV_LEAN.deg, BODY_REACH) : meet(ankle, BODY_REACH, hand, REACH, -1);
-  // Tucked: the upper arm runs back along the ribs towards the hips.
-  const elbow: JointHint = bottom
-    ? { at: elbowBetween(shoulder, hand, (a, b) => (dist(a, ankle) < dist(b, ankle) ? a : b)) }
-    : { bend: 1 };
-  return leaning(ankle, shoulder, hand, elbow, 62);
+  const deg = leanDeg(REV_LEAN, hand, f);
+  const ankle = REV_LEAN.ankle;
+  const tucked = (a: Point, b: Point): Point => (dist(a, ankle) < dist(b, ankle) ? a : b);
+  return leaning(ankle, deg, hand, leanArm(REV_LEAN, deg, hand, tucked), 62);
 }
 
 // Bodyweight biceps curl: face up, leaning back from a chest-high bar, heels on the floor ahead of it.
 const CURL_BAR: Point = [0, -300];
 const CURL_ANKLE_Y = -10;
 /** Top: the forehead comes up to the bar (bar just in front of the head). */
-const CURL_LEAN = leanOn(CURL_BAR, CURL_ANKLE_Y, BODY_REACH + 44, 30, [-170, -100]);
+const CURL_LEAN = leanOn(CURL_BAR, CURL_ANKLE_Y, LEAN_REACH + 44, 30, [-170, -100]);
 
-function bicepsCurl(top: boolean): Pose {
-  const { ankle } = CURL_LEAN;
+/** `f` 0 hanging back on straight arms, 1 at the top. Elbows stay high: the upper arm points forward at the bar. */
+function bicepsCurl(f: number): Pose {
   const hand: Point = [CURL_BAR[0] + 2, CURL_BAR[1]];
-  const shoulder = top ? along(ankle, CURL_LEAN.deg, BODY_REACH) : meet(ankle, BODY_REACH, hand, REACH, -1);
-  // Elbows stay high: the upper arm points forward at the bar, the forearm folds back to it.
-  const elbow: JointHint = top ? { at: elbowBetween(shoulder, hand, rightmost) } : { bend: 1 };
-  return leaning(ankle, shoulder, hand, elbow, -100);
+  const deg = leanDeg(CURL_LEAN, hand, f);
+  return leaning(CURL_LEAN.ankle, deg, hand, leanArm(CURL_LEAN, deg, hand, rightmost), -100);
 }
 
 // ---------------------------------------------------------------- sloped benches
@@ -416,11 +450,8 @@ export const BATCH_AD_SPECS: DoodleSpec[] = [
     slug: "bodyweight-biceps-curl",
     title: "Bodyweight Biceps Curl",
     props: [{ kind: "bar", y: CURL_BAR[1], x1: CURL_BAR[0] - 6, x2: CURL_BAR[0] + 6, grips: [CURL_BAR[0]] }],
-    transition: 1,
-    frames: [
-      { hold: 0.5, pose: bicepsCurl(false) },
-      { hold: 0.4, pose: bicepsCurl(true) },
-    ],
+    transition: 1 / LEAN_STEPS,
+    frames: leanRep(bicepsCurl, 0.5, 0.4),
   },
   {
     id: "wger_1921",
@@ -440,22 +471,16 @@ export const BATCH_AD_SPECS: DoodleSpec[] = [
     slug: "body-tricep-press",
     title: "Body Tricep Press",
     props: [{ kind: "bar", y: TRI_BAR[1], x1: TRI_BAR[0] - 6, x2: TRI_BAR[0] + 6, grips: [TRI_BAR[0]] }],
-    transition: 1,
-    frames: [
-      { hold: 0.4, pose: tricepPress(false) },
-      { hold: 0.4, pose: tricepPress(true) },
-    ],
+    transition: 1 / LEAN_STEPS,
+    frames: leanRep(tricepPress, 0.4, 0.4),
   },
   {
     id: "fedb_incline_push_up_reverse_grip",
     slug: "incline-push-up-reverse-grip",
     title: "Incline Push-Up Reverse Grip",
     props: [{ kind: "bar", y: REV_BAR[1], x1: REV_BAR[0] - 6, x2: REV_BAR[0] + 6, grips: [REV_BAR[0]] }],
-    transition: 1,
-    frames: [
-      { hold: 0.4, pose: reverseIncline(false) },
-      { hold: 0.4, pose: reverseIncline(true) },
-    ],
+    transition: 1 / LEAN_STEPS,
+    frames: leanRep(reverseIncline, 0.4, 0.4),
   },
   {
     id: "wger_1889",

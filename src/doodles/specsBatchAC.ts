@@ -9,8 +9,8 @@ import { plank } from "./specsBatchI";
  * negative, the figure faces +x (a plank has the head at +x, lying face up has
  * the head at -x).
  *
- * The ab wheel has no prop: the hands roll forward along the floor where the
- * wheel would be.
+ * The ab wheel is drawn by the spec's `wheel` radius round the near hand; the
+ * hands roll at the wheel's axle height so it sits on the floor.
  */
 
 /** Point `length` from `from` at `degrees` (0 = +x, 90 = down, -90 = up). */
@@ -160,21 +160,23 @@ function benchesDip(pelvisY: number, lock: boolean): Pose {
 
 const AB_KNEE: Point = [0, -6];
 const AB_ANKLE: Point = [-86, -6];
+/** Ab wheel radius (about 1.5 head radii); the hands hold its axle this high. */
+const AB_WHEEL = 34;
 
 /**
  * Kneeling rollout: thigh at `thighDeg` from the knee, torso at `torsoDeg` from
- * the hips, arms locked from the shoulders to the hands on the floor ahead.
+ * the hips, arms locked from the shoulders to the hands on the wheel's axle ahead.
  */
 function rollout(thighDeg: number, torsoDeg: number): Pose {
   const pelvis = along(AB_KNEE, thighDeg, THIGH);
   const chest = along(pelvis, torsoDeg, 80);
   const shoulder = along(pelvis, torsoDeg, 98);
   const reach = LOCKED - 0.3;
-  const hand: Point = [round(shoulder[0] + Math.sqrt(reach ** 2 - shoulder[1] ** 2)), 0];
+  const hand: Point = [round(shoulder[0] + Math.sqrt(reach ** 2 - (shoulder[1] + AB_WHEEL) ** 2)), -AB_WHEEL];
   return {
     pelvis,
     chest,
-    hands: { near: hand, far: [hand[0] - 2, 0] },
+    hands: { near: hand, far: [hand[0] - 2, -AB_WHEEL] },
     knees: { near: { at: AB_KNEE }, far: { at: AB_KNEE } },
     feet: { near: AB_ANKLE, far: AB_ANKLE },
     toes: { near: 180, far: 180 },
@@ -187,7 +189,7 @@ const ROLLOUT_FRAMES: Keyframe[] = [
   { hold: 0, pose: rollout(-62, -20) },
   { hold: 0, pose: rollout(-38, -24) },
   // Long and low, body straight from knees to hands.
-  { hold: 0.5, pose: rollout(-16, -16) },
+  { hold: 0.5, pose: rollout(-20, -20) },
   { hold: 0, pose: rollout(-38, -24) },
   { hold: 0, pose: rollout(-62, -20) },
 ];
@@ -381,7 +383,7 @@ export const BATCH_AC_SPECS: DoodleSpec[] = [
     props: [{ kind: "box", ...SEAT }, CHAIR_BACK],
     transition: 0.7,
     frames: [
-      { hold: 0.4, pose: chairDip([-22, -112], true) },
+      { hold: 0.4, pose: chairDip([0, -128], true) },
       { hold: 0.3, pose: chairDip([-14, -52], false) },
     ],
   },
@@ -402,6 +404,7 @@ export const BATCH_AC_SPECS: DoodleSpec[] = [
     id: "hf_113",
     slug: "ab-wheel-rollout",
     title: "Ab Wheel Rollout",
+    wheel: AB_WHEEL,
     transition: 0.4,
     frames: ROLLOUT_FRAMES,
   },
@@ -409,6 +412,7 @@ export const BATCH_AC_SPECS: DoodleSpec[] = [
     id: "wger_1573",
     slug: "ab-wheel",
     title: "Ab wheel",
+    wheel: AB_WHEEL,
     transition: 0.4,
     frames: ROLLOUT_FRAMES,
   },
