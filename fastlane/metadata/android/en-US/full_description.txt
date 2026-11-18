@@ -1,0 +1,13 @@
+<p><b>Aurora</b> is private, local-first calisthenics training for Android. <b>Rassvet</b> (dawn) is the soul mark shown in the app.</p>
+
+<p>Instead of a fixed weekday calendar, Aurora keeps a <b>plan queue</b> — an ordered list of upcoming training days. Today always runs the first day. Completing a session advances the queue.</p>
+
+<p>Dose (sets, reps, or holds) adjusts from sleep quality, optional joint pain, recent load, missed reps, stalls, and — on Android — an optional Bluetooth heart-rate strap.</p>
+
+<p><b>Library:</b> 617 exercises (strength progressions, holds, and mobility).</p>
+
+<p><b>Privacy:</b> training history, readiness, sleep, pulse, and joint notes stay on your device. No cloud account and no server sync of that data in 0.1. Sensitive values use Keystore-backed storage on Android.</p>
+
+<p><b>Licence:</b> MIT. British English UI and coach voice (en-GB).</p>
+
+<p>Not medical advice. Stop if you feel pain, dizziness, or distress.</p>

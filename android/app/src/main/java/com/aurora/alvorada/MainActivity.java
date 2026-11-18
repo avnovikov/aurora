@@ -1,9 +1,9 @@
-package com.aurora.rassvet;
+package com.aurora.alvorada;
 
 import android.os.Bundle;
 import android.webkit.WebView;
-import com.aurora.rassvet.secure.AuroraSecureBridge;
-import com.aurora.rassvet.secure.SecureValueStore;
+import com.aurora.alvorada.secure.AuroraSecureBridge;
+import com.aurora.alvorada.secure.SecureValueStore;
 import com.getcapacitor.BridgeActivity;
 
 public class MainActivity extends BridgeActivity {

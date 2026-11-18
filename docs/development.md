@@ -30,7 +30,7 @@ npm run cap:sync    # tsc + Vite build, then Capacitor sync into android/
 npm run cap:open    # open the project in Android Studio
 ```
 
-App id: `com.aurora.rassvet`. Minimum SDK: **23** (Android 6). Compile / target SDK: **35** (`android/variables.gradle`).
+App id: `com.aurora.alvorada`. Minimum SDK: **23** (Android 6). Compile / target SDK: **35** (`android/variables.gradle`).
 
 Heart-rate uses Capacitor with `@capacitor-community/bluetooth-le` in the Android app only.
 
@@ -70,7 +70,7 @@ Common storage keys: `aurora.poc.profile.v1`, `aurora.poc.planQueue.v1`, `aurora
 
 Release APKs are signed on a developer machine. The keystore stays out of Git and out of CI (`android/keystore.properties.example`). Confirm a downloaded APK’s certificate SHA-256 as described in the README Install details.
 
-Version shown in the README and Android `versionName` for this line: **0.1.0**.
+Version shown in the README and Android `versionName` for this line: **0.1.1**.
 
 ## Device snapshots
 

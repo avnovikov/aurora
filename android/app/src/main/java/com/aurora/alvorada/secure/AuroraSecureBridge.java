@@ -1,4 +1,4 @@
-package com.aurora.rassvet.secure;
+package com.aurora.alvorada.secure;
 
 import android.webkit.JavascriptInterface;
 
