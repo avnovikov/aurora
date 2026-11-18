@@ -2206,6 +2206,4248 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
       "Letting the hip drop on the free-leg side"
     ]
   },
+  "ntc_incline_archer_push_up": {
+    "id": "ntc_incline_archer_push_up",
+    "summary": "An archer push-up with the hands elevated so less of your bodyweight loads the working arm. Use it as the bridge from two-arm incline work to floor Archer Push-Ups and toward one-arm progressions.",
+    "steps": [
+      "Place both hands on a stable bench or step, wider than shoulder width, feet on the floor.",
+      "Brace a rigid plank from heels to head.",
+      "Lower by bending the working elbow and shifting your chest toward that hand while the assisting arm stays nearly straight.",
+      "Press back to the start without twisting the hips, then alternate sides.",
+      "Hands on a bench or step, wider than shoulders.",
+      "Bend one elbow and shift chest toward that hand.",
+      "Keep the other arm nearly straight as a light assist."
+    ],
+    "cues": [
+      "Hands on a bench or step, wider than shoulders",
+      "Bend one elbow and shift chest toward that hand",
+      "Keep the other arm nearly straight as a light assist",
+      "Hips square; equal reps each side"
+    ],
+    "mistakes": []
+  },
+  "ntc_archer_push_up_hold": {
+    "id": "ntc_archer_push_up_hold",
+    "summary": "An isometric pause in the loaded side of an Archer Push-Up. Builds the control needed between full archer reps and one-arm push-up work.",
+    "steps": [
+      "An isometric pause in the loaded side of an Archer Push-Up. Builds the control needed between full archer reps and one-arm push-up work.",
+      "Start in a wide floor push-up stance.",
+      "Shift into the archer bottom: working elbow bent, assisting arm nearly straight, chest toward the working hand.",
+      "Hold without collapsing the hips or twisting.",
+      "Come up, rest briefly, then hold the other side.",
+      "Lower into an archer bottom on one side.",
+      "Pause with the working elbow bent and assist arm straight."
+    ],
+    "cues": [
+      "Come up, rest briefly, then hold the other side",
+      "Lower into an archer bottom on one side",
+      "Pause with the working elbow bent and assist arm",
+      "Keep hips square; switch sides each set"
+    ],
+    "mistakes": []
+  },
+  "ntc_bent_knee_australian_pull_up": {
+    "id": "ntc_bent_knee_australian_pull_up",
+    "summary": "The easiest Australian pull-up (inverted / bodyweight row): higher bar and bent knees so less of your weight is on the arms. Graduate to a straight-leg Inverted Row when 3×10–12 is clean.",
+    "steps": [
+      "Set a bar around chest height. Sit underneath, bend the knees about 90°, and take an overhand grip.",
+      "Keep a straight line from knees to head and hang with arms straight.",
+      "Pull the chest to the bar, then lower under control to full arm extension.",
+      "Bar at about chest height; knees bent, feet flat.",
+      "Body about 45 degrees; pull chest to the bar.",
+      "Also called a bent-knee inverted row."
+    ],
+    "cues": [
+      "Pull the chest to the bar, then lower under control to",
+      "Bar at about chest height; knees bent, feet flat",
+      "Body about 45 degrees; pull chest to the bar",
+      "Also called a bent-knee inverted row"
+    ],
+    "mistakes": []
+  },
+  "ntc_australian_chin_up": {
+    "id": "ntc_australian_chin_up",
+    "summary": "A supinated-grip Australian pull-up (inverted row). Same horizontal-pull pattern as the overhand Inverted Row, with more biceps involvement. Also searched as Australian chin-up.",
+    "steps": [
+      "A supinated-grip Australian pull-up (inverted row). Same horizontal-pull pattern as the overhand Inverted Row, with more biceps involvement. Also searched as Australian chin-up.",
+      "Set a low bar (about hip-to-waist height). Hang underneath with an underhand grip, heels on the floor, body straight.",
+      "Pull the lower chest to the bar without shrugging.",
+      "Lower to straight arms under control.",
+      "Same as an Australian pull-up / inverted row, underhand (supinated) grip.",
+      "Pull lower chest to the bar; body rigid.",
+      "More biceps bias than the overhand Australian pull-up."
+    ],
+    "cues": [
+      "Lower to straight arms under control",
+      "Same as an Australian pull-up / inverted row,",
+      "Pull lower chest to the bar; body rigid",
+      "More biceps bias than the overhand Australian pull-up"
+    ],
+    "mistakes": []
+  },
+  "ntc_feet_elevated_australian_pull_up": {
+    "id": "ntc_feet_elevated_australian_pull_up",
+    "summary": "An Australian pull-up / inverted row with the feet raised so the body is nearly horizontal and more of your weight is on the arms. The usual step between a strict Inverted Row and archer / one-arm rows.",
+    "steps": [
+      "Set a low bar and place your heels on a stable box or bench at about bar height.",
+      "Hang with arms straight, body rigid and close to horizontal.",
+      "Pull the chest to the bar, then lower fully without dropping the hips.",
+      "Heels on a box or bench level with the bar.",
+      "Body near horizontal; pull chest to the bar.",
+      "Also called feet-elevated inverted row."
+    ],
+    "cues": [
+      "Pull the chest to the bar, then lower fully without",
+      "Heels on a box or bench level with the bar",
+      "Body near horizontal; pull chest to the bar",
+      "Also called feet-elevated inverted row"
+    ],
+    "mistakes": []
+  },
+  "ntc_australian_pull_up_hold": {
+    "id": "ntc_australian_pull_up_hold",
+    "summary": "An isometric pause at the top of an Australian pull-up (inverted row). Builds the chest-to-bar position before adding elevation, archer work, or harder rows.",
+    "steps": [
+      "An isometric pause at the top of an Australian pull-up (inverted row). Builds the chest-to-bar position before adding elevation, archer work, or harder rows.",
+      "From a straight-leg Australian pull-up / inverted-row setup, pull the chest to the bar.",
+      "Hold with rigid hips and depressed shoulders.",
+      "Lower under control when the hold ends.",
+      "Pull chest to the low bar and pause.",
+      "Body straight; squeeze the shoulder blades.",
+      "Also called an inverted-row hold."
+    ],
+    "cues": [
+      "Lower under control when the hold ends",
+      "Pull chest to the low bar and pause",
+      "Body straight; squeeze the shoulder blades",
+      "Also called an inverted-row hold"
+    ],
+    "mistakes": []
+  },
+  "ntc_archer_inverted_row": {
+    "id": "ntc_archer_inverted_row",
+    "summary": "A unilateral Australian pull-up (inverted row) where one arm does most of the work and the other stays nearly straight for light assist. Bridges feet-elevated rows toward one-arm inverted rows.",
+    "steps": [
+      "Set a bar around hip-to-waist height (or low rings/straps) and hang underneath with a wide grip, body straight, heels on the floor.",
+      "Pull by bending the working elbow and driving the lower chest toward that hand while the assisting arm stays nearly straight on the bar.",
+      "Touch the working-side chest to the bar without a chin reach or bounce, then lower under control to straight arms.",
+      "Alternate sides with equal reps.",
+      "Wide grip under a low bar (or rings / straps).",
+      "Pull chest toward one hand; other arm stays nearly straight.",
+      "Heels planted, body rigid; no hip twist."
+    ],
+    "cues": [
+      "Wide grip under a low bar (or rings / straps)",
+      "Pull chest toward one hand; other arm stays nearly",
+      "Heels planted, body rigid; no hip twist",
+      "Also called archer inverted row / archer row / archer"
+    ],
+    "mistakes": []
+  },
+  "ntc_archer_dip": {
+    "id": "ntc_archer_dip",
+    "summary": "A unilateral dip on parallettes or dip bars that loads one arm while the other stays more extended. A standard advanced dip progression before single-arm dip work.",
+    "steps": [
+      "A unilateral dip on parallettes or dip bars that loads one arm while the other stays more extended. A standard advanced dip progression before single-arm dip work.",
+      "Support yourself above parallettes or dip bars with locked elbows and shoulders pulled down.",
+      "Lower by shifting toward one arm: bend that elbow while the opposite arm stays more extended for support.",
+      "Descend until the working upper arm is about parallel to the floor (or as deep as your shoulders allow with control).",
+      "Press back to support and alternate sides.",
+      "Support on parallettes or dip bars, hands slightly wider.",
+      "Lower toward one side; working elbow bends, assist arm stays straighter."
+    ],
+    "cues": [
+      "Press back to support and alternate sides",
+      "Support on parallettes or dip bars, hands slightly",
+      "Lower toward one side; working elbow bends, assist arm",
+      "Shoulders depressed; equal work each side"
+    ],
+    "mistakes": []
+  },
+  "ntc_archer_straight_bar_dip": {
+    "id": "ntc_archer_straight_bar_dip",
+    "summary": "An archer dip on a single straight bar (the dip used in muscle-up lockout strength). Harder leverage than parallel-bar archer dips; keep depth matched on both sides.",
+    "steps": [
+      "An archer dip on a single straight bar (the dip used in muscle-up lockout strength). Harder leverage than parallel-bar archer dips; keep depth matched on both sides.",
+      "Take a wide overhand grip on a single straight bar and lock out in support with shoulders depressed.",
+      "Lean slightly forward and lower toward one arm, bending that elbow while the other stays more extended.",
+      "Touch chest or abs toward the bar under control without resting, then press back to support.",
+      "Alternate sides with the same depth and control.",
+      "Wide overhand support on one straight bar.",
+      "Lower toward one arm with a slight forward lean."
+    ],
+    "cues": [
+      "Wide overhand support on one straight bar",
+      "Lower toward one arm with a slight forward lean",
+      "Assist arm stays more extended; chest or abs approach",
+      "Alternate sides evenly"
+    ],
+    "mistakes": []
+  },
+  "fedb_alternate_hammer_curl": {
+    "id": "fedb_alternate_hammer_curl",
+    "summary": "Stand up with your torso upright and a dumbbell in each hand being held at arms length. The elbows should be close to the torso.",
+    "steps": [
+      "Stand up with your torso upright and a dumbbell in each hand being held at arms length. The elbows should be close to the torso.",
+      "The palms of the hands should be facing your torso.",
+      "Slowly begin to bring the dumbbells back to setup as your breathe in.",
+      "Repeat the movement with the left hand. This equals one repetition.",
+      "Continue alternating in this manner for the your reps."
+    ],
+    "cues": [
+      "While holding the upper arm stationary, curl the right",
+      "Slowly begin to bring the dumbbells back to setup as",
+      "Repeat the movement with the left hand",
+      "Continue alternating in this manner for the your reps"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_alternate_incline_dumbbell_curl": {
+    "id": "fedb_alternate_incline_dumbbell_curl",
+    "summary": "Sit down on an incline bench with a dumbbell in each hand being held at arms length.",
+    "steps": [
+      "Sit down on an incline bench with a dumbbell in each hand being held at arms length.",
+      "Slowly begin to bring the dumbbell back to setup as your breathe in.",
+      "Repeat the movement with the left hand. This equals one repetition.",
+      "Continue alternating in this manner for the your reps."
+    ],
+    "cues": [
+      "While holding the upper arm stationary, curl the right",
+      "Slowly begin to bring the dumbbell back to setup as",
+      "Repeat the movement with the left hand",
+      "Continue alternating in this manner for the your reps"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_alternating_deltoid_raise": {
+    "id": "fedb_alternating_deltoid_raise",
+    "summary": "In a standing position, hold a pair of dumbbells at your side.",
+    "steps": [
+      "In a standing position, hold a pair of dumbbells at your side.",
+      "Keeping your elbows slightly bent, raise the weights directly in front of you to shoulder height, avoiding any swinging or cheating.",
+      "Return the weights to your side.",
+      "On the next repetition, raise the weights laterally, raising them out to your side to about shoulder height.",
+      "Return the weights to the setup and continue alternating to the front and side."
+    ],
+    "cues": [
+      "Keeping your elbows slightly bent, raise the weights",
+      "Return the weights to your side",
+      "On the next repetition, raise the weights laterally,",
+      "Return the weights to the setup and continue"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_arnold_dumbbell_press": {
+    "id": "fedb_arnold_dumbbell_press",
+    "summary": "Now to perform the movement, raise the dumbbells as you rotate the palms of your hands until they are facing forward.",
+    "steps": [
+      "Now to perform the movement, raise the dumbbells as you rotate the palms of your hands until they are facing forward.",
+      "Continue lifting the dumbbells until your arms are extended above you in straight arm position. Breathe out as you perform this portion of the movement."
+    ],
+    "cues": [
+      "Sit on an exercise bench with back support and hold",
+      "Now to perform the movement, raise the dumbbells as",
+      "Continue lifting the dumbbells until your arms are",
+      "After a second pause at the top, begin to lower the"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_around_the_worlds": {
+    "id": "fedb_around_the_worlds",
+    "summary": "Reverse the movement to return the weight to the setup as you exhale.",
+    "steps": [
+      "Set up for Around The Worlds with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Lay down on a flat bench holding a dumbbell in each",
+      "Now move the dumbbells by creating a semi-circle as",
+      "Reverse the movement to return the weight to the setup"
+    ],
+    "mistakes": []
+  },
+  "fedb_bent_over_dumbbell_rear_delt_raise_with_head_on_bench": {
+    "id": "fedb_bent_over_dumbbell_rear_delt_raise_with_head_on_bench",
+    "summary": "Stand up straight while holding a dumbbell in each hand and with an incline bench in front of you.",
+    "steps": [
+      "Stand up straight while holding a dumbbell in each hand and with an incline bench in front of you.",
+      "After a one second contraction at the top, slowly lower the dumbbells back to the setup.",
+      "Repeat the your reps."
+    ],
+    "cues": [
+      "While keeping your back straight and maintaining the",
+      "Keeping your torso forward and stationary, and the",
+      "After a one second contraction at the top, slowly",
+      "Repeat the your reps"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_bent_over_two_dumbbell_row": {
+    "id": "fedb_bent_over_two_dumbbell_row",
+    "summary": "Slowly lower the weight again to the setup as you inhale.",
+    "steps": [
+      "Set up for Bent Over Two-Dumbbell Row with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "With a dumbbell in each hand (palms facing your",
+      "While keeping the torso stationary, lift the dumbbells",
+      "Slowly lower the weight again to the setup as you"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_bent_over_two_dumbbell_row_with_palms_in": {
+    "id": "fedb_bent_over_two_dumbbell_row_with_palms_in",
+    "summary": "While keeping the torso stationary, lift the dumbbells to your side as you breathe out, squeezing your shoulder blades together. On the top contracted position, squeeze the back muscles and hold for a second.",
+    "steps": [
+      "Set up for Bent Over Two-Dumbbell Row With Palms In with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "With a dumbbell in each hand (palms facing each",
+      "While keeping the torso stationary, lift the dumbbells",
+      "Slowly lower the weight again to the setup as you"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_bent_arm_dumbbell_pullover": {
+    "id": "fedb_bent_arm_dumbbell_pullover",
+    "summary": "Place a dumbbell standing up on a flat bench.",
+    "steps": [
+      "Place a dumbbell standing up on a flat bench.",
+      "While keeping your arms locked in the bent arm position, lower the weight slowly in an arc behind your head while breathing in until you feel a stretch on the chest.",
+      "At that point, bring the dumbbell back to the setup using the arc through which the weight was lowered and exhale as you perform this movement.",
+      "Hold the weight on the initial position for a second and repeat the motion for the prescribed number of repetitions."
+    ],
+    "cues": [
+      "Grasp the dumbbell with both hands and hold it",
+      "While keeping your arms locked in the bent arm",
+      "At that point, bring the dumbbell back to the setup",
+      "Hold the weight on the initial position for a second"
+    ],
+    "mistakes": []
+  },
+  "fedb_calf_raise_on_a_dumbbell": {
+    "id": "fedb_calf_raise_on_a_dumbbell",
+    "summary": "Now roll your foot slightly forward so that you can get a nice stretch of the calf.",
+    "steps": [
+      "Now roll your foot slightly forward so that you can get a nice stretch of the calf.",
+      "Now inhale as you roll the dumbbell slightly forward as you come down to get a better stretch."
+    ],
+    "cues": [
+      "Hang on to a sturdy object for balance and stand on a",
+      "Now roll your foot slightly forward so that you can",
+      "Lift the calf as you roll your foot over the top of",
+      "Now inhale as you roll the dumbbell slightly forward"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_close_grip_dumbbell_press": {
+    "id": "fedb_close_grip_dumbbell_press",
+    "summary": "Place a dumbbell standing up on a flat bench.",
+    "steps": [
+      "Place a dumbbell standing up on a flat bench.",
+      "Grasp the dumbbell with both hands and hold it straight over your chest at arm's length. Both palms should be pressing against the underside of the sides of the dumbbell.",
+      "Initiate the movement by lowering the dumbbell to your chest.",
+      "Return to the setup by extending the elbows."
+    ],
+    "cues": [
+      "Ensuring that the dumbbell stays securely placed at",
+      "Grasp the dumbbell with both hands and hold it",
+      "Initiate the movement by lowering the dumbbell to your",
+      "Return to the setup by extending the elbows"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_concentration_curls": {
+    "id": "fedb_concentration_curls",
+    "summary": "Sit down on a flat bench with one dumbbell in front of you between your legs. Your legs should be spread with your knees bent and feet on the floor.",
+    "steps": [
+      "Sit down on a flat bench with one dumbbell in front of you between your legs. Your legs should be spread with your knees bent and feet on the floor.",
+      "Slowly begin to bring the dumbbells back to setup as your breathe in. Caution: Avoid swinging motions at any time.",
+      "Then repeat the movement with the left arm."
+    ],
+    "cues": [
+      "Use your right arm to pick the dumbbell up",
+      "While holding the upper arm stationary, curl the",
+      "Slowly begin to bring the dumbbells back to setup as",
+      "Then repeat the movement with the left arm"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_cross_body_hammer_curl": {
+    "id": "fedb_cross_body_hammer_curl",
+    "summary": "Stand up straight with a dumbbell in each hand. Your hands should be down at your side with your palms facing in.",
+    "steps": [
+      "Stand up straight with a dumbbell in each hand. Your hands should be down at your side with your palms facing in.",
+      "Slowly lower the dumbbell along the same path as you inhale and then repeat the same movement for the left arm.",
+      "Continue alternating in this fashion until the your reps is performed for each arm."
+    ],
+    "cues": [
+      "Stand up straight with a dumbbell in each hand",
+      "While keeping your palms facing in and without",
+      "Slowly lower the dumbbell along the same path as you",
+      "Continue alternating in this fashion until the your"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_cuban_press": {
+    "id": "fedb_cuban_press",
+    "summary": "Take a dumbbell in each hand with a pronated grip in a standing position. Raise your upper arms so that they are parallel to the floor, allowing your lower arms to hang in the \"scarecrow\" position.",
+    "steps": [
+      "Now press the dumbbells by extending at the elbows, straightening your arms overhead.",
+      "Return to the setup as you breathe in by reversing the steps."
+    ],
+    "cues": [
+      "Take a dumbbell in each hand with a pronated grip in a",
+      "To initiate the movement, externally rotate the",
+      "Now press the dumbbells by extending at the elbows,",
+      "Return to the setup as you breathe in by reversing the"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_decline_dumbbell_bench_press": {
+    "id": "fedb_decline_dumbbell_bench_press",
+    "summary": "Secure your legs at the end of the decline bench and lie down with a dumbbell on each hand on top of your thighs. The palms of your hand will be facing each other.",
+    "steps": [
+      "Secure your legs at the end of the decline bench and lie down with a dumbbell on each hand on top of your thighs. The palms of your hand will be facing each other.",
+      "Once you are laying down, move the dumbbells in front of you at shoulder width.",
+      "Once at shoulder width, rotate your wrists forward so that the palms of your hands are facing away from you.",
+      "Repeat the movement for the prescribed amount of repetitions of your training program."
+    ],
+    "cues": [
+      "Once at shoulder width, rotate your wrists forward so",
+      "Bring down the weights slowly to your side as you",
+      "As you breathe out, push the dumbbells up using your",
+      "Repeat the movement for the prescribed amount of"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_decline_dumbbell_flyes": {
+    "id": "fedb_decline_dumbbell_flyes",
+    "summary": "Secure your legs at the end of the decline bench and lie down with a dumbbell on each hand on top of your thighs. The palms of your hand will be facing each other.",
+    "steps": [
+      "Secure your legs at the end of the decline bench and lie down with a dumbbell on each hand on top of your thighs. The palms of your hand will be facing each other.",
+      "Return your arms back to the setup as you squeeze your chest muscles and breathe out. Tip: Make sure to use the same arc of motion used to lower the weights.",
+      "Hold for a second at the contracted position and repeat the movement for the prescribed amount of repetitions."
+    ],
+    "cues": [
+      "Once you are laying down, move the dumbbells in front",
+      "With a slight bend on your elbows in order to prevent",
+      "Return your arms back to the setup as you squeeze your",
+      "Hold for a second at the contracted position and"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_decline_dumbbell_triceps_extension": {
+    "id": "fedb_decline_dumbbell_triceps_extension",
+    "summary": "Secure your legs at the end of the decline bench and lie down with a dumbbell on each hand on top of your thighs. The palms of your hand will be facing each other.",
+    "steps": [
+      "Secure your legs at the end of the decline bench and lie down with a dumbbell on each hand on top of your thighs. The palms of your hand will be facing each other.",
+      "Lift the dumbbells back to the setup by contracting the triceps and exhaling."
+    ],
+    "cues": [
+      "Secure your legs at the end of the decline bench and",
+      "Once you are laying down, move the dumbbells in front",
+      "As you breathe in and you keep the upper arms",
+      "Lift the dumbbells back to the setup by contracting"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_dumbbell_alternate_bicep_curl": {
+    "id": "fedb_dumbbell_alternate_bicep_curl",
+    "summary": "Stand (torso upright) with a dumbbell in each hand held at arms length. The elbows should be close to the torso and the palms of your hand should be facing your thighs.",
+    "steps": [
+      "Stand (torso upright) with a dumbbell in each hand held at arms length. The elbows should be close to the torso and the palms of your hand should be facing your thighs.",
+      "Slowly begin to bring the dumbbell back to the setup as your breathe in. Tip: Remember to twist the palms back to the setup (facing your thighs) as you come down.",
+      "Repeat the movement with the left hand. This equals one repetition.",
+      "Continue alternating in this manner for the your reps."
+    ],
+    "cues": [
+      "While holding the upper arm stationary, curl the right",
+      "Slowly begin to bring the dumbbell back to the setup",
+      "Repeat the movement with the left hand",
+      "Continue alternating in this manner for the your reps"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_dumbbell_bench_press": {
+    "id": "fedb_dumbbell_bench_press",
+    "summary": "Lie down on a flat bench with a dumbbell in each hand resting on top of your thighs. The palms of your hands will be facing each other.",
+    "steps": [
+      "Lie down on a flat bench with a dumbbell in each hand resting on top of your thighs. The palms of your hands will be facing each other.",
+      "Then, using your thighs to help raise the dumbbells up, lift the dumbbells one at a time so that you can hold them in front of you at shoulder width.",
+      "Repeat the movement for the prescribed amount of repetitions of your training program."
+    ],
+    "cues": [
+      "Then, using your thighs to help raise the dumbbells",
+      "Once at shoulder width, rotate your wrists forward so",
+      "Then, as you breathe out, use your chest to push the",
+      "Repeat the movement for the prescribed amount of"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_dumbbell_bench_press_with_neutral_grip": {
+    "id": "fedb_dumbbell_bench_press_with_neutral_grip",
+    "summary": "Take a dumbbell in each hand and lay back onto a flat bench. Your feet should be flat on the floor and your shoulder blades retracted.",
+    "steps": [
+      "Take a dumbbell in each hand and lay back onto a flat bench. Your feet should be flat on the floor and your shoulder blades retracted.",
+      "Maintaining a neutral grip, palms facing each other, begin with your arms extended directly above you, perpendicular to the floor.",
+      "Begin the movement by flexing the elbow, lowering the upper arms to the side. Descend until the dumbbells are to your torso.",
+      "Pause, then extend the elbow and return to the setup."
+    ],
+    "cues": [
+      "Take a dumbbell in each hand and lay back onto a flat",
+      "Maintaining a neutral grip, palms facing each other,",
+      "Begin the movement by flexing the elbow, lowering the",
+      "Pause, then extend the elbow and return to the setup"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_dumbbell_bicep_curl": {
+    "id": "fedb_dumbbell_bicep_curl",
+    "summary": "Stand up straight with a dumbbell in each hand at arm's length. Keep your elbows close to your torso and rotate the palms of your hands until they are facing forward.",
+    "steps": [
+      "Stand up straight with a dumbbell in each hand at arm's length. Keep your elbows close to your torso and rotate the palms of your hands until they are facing forward.",
+      "Then, inhale and slowly begin to lower the dumbbells back to the setup."
+    ],
+    "cues": [
+      "Stand up straight with a dumbbell in each hand at",
+      "Now, keeping the upper arms stationary, exhale and",
+      "Then, inhale and slowly begin to lower the dumbbells"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_dumbbell_clean": {
+    "id": "fedb_dumbbell_clean",
+    "summary": "Begin standing with a dumbbell in each hand with your feet shoulder width apart.",
+    "steps": [
+      "Begin standing with a dumbbell in each hand with your feet shoulder width apart.",
+      "Lower the weights to the floor by flexing at the hips and knees, pushing your hips back until the dumbbells reach the floor.",
+      "After full extension, rebend the hips and knees to receive the weight in a squat position. Allow the arms to bend, guiding the dumbbells to your shoulders.",
+      "Upon receiving the weight in the squat position, extend the hips and knees to finish in a standing position with the weights on your shoulders."
+    ],
+    "cues": [
+      "Lower the weights to the floor by flexing at the hips",
+      "To initiate the movement, violently jump upward by",
+      "After full extension, rebend the hips and knees to",
+      "Upon receiving the weight in the squat position,"
+    ],
+    "mistakes": [
+      "Letting the lower back round under load"
+    ]
+  },
+  "fedb_dumbbell_floor_press": {
+    "id": "fedb_dumbbell_floor_press",
+    "summary": "Lay on the floor holding dumbbells in your hands. Your knees can be bent. Begin with the weights fully extended above you.",
+    "steps": [
+      "Lay on the floor holding dumbbells in your hands. Your knees can be bent. Begin with the weights fully extended above you.",
+      "Pause at the bottom, and then bring the weight together at the top by extending through the elbows."
+    ],
+    "cues": [
+      "Lay on the floor holding dumbbells in your hands",
+      "Lower the weights until your upper arm comes in",
+      "Pause at the bottom, and then bring the weight"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_dumbbell_flyes": {
+    "id": "fedb_dumbbell_flyes",
+    "summary": "Lie down on a flat bench with a dumbbell on each hand resting on top of your thighs. The palms of your hand will be facing each other.",
+    "steps": [
+      "Lie down on a flat bench with a dumbbell on each hand resting on top of your thighs. The palms of your hand will be facing each other.",
+      "Return your arms back to the setup as you squeeze your chest muscles and breathe out. Tip: Make sure to use the same arc of motion used to lower the weights.",
+      "Hold for a second at the contracted position and repeat the movement for the prescribed amount of repetitions."
+    ],
+    "cues": [
+      "Then using your thighs to help raise the dumbbells,",
+      "With a slight bend on your elbows in order to prevent",
+      "Return your arms back to the setup as you squeeze your",
+      "Hold for a second at the contracted position and"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_dumbbell_incline_row": {
+    "id": "fedb_dumbbell_incline_row",
+    "summary": "Using a neutral grip, lean into an incline bench.",
+    "steps": [
+      "Using a neutral grip, lean into an incline bench.",
+      "Take a dumbbell in each hand with a neutral grip, beginning with the arms straight.",
+      "Retract the shoulder blades and flex the elbows to row the dumbbells to your side.",
+      "Pause at the top of the motion, and then return to the setup."
+    ],
+    "cues": [
+      "Using a neutral grip, lean into an incline bench",
+      "Take a dumbbell in each hand with a neutral grip,",
+      "Retract the shoulder blades and flex the elbows to row",
+      "Pause at the top of the motion, and then return to the"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_dumbbell_incline_shoulder_raise": {
+    "id": "fedb_dumbbell_incline_shoulder_raise",
+    "summary": "Sit on an Incline Bench while holding a dumbbell on each hand on top of your thighs.",
+    "steps": [
+      "Sit on an Incline Bench while holding a dumbbell on each hand on top of your thighs.",
+      "While keeping the arms straight and locked, lift the dumbbells by raising the shoulders from the bench as you breathe out.",
+      "Bring back the dumbbells to the setup as you breathe in."
+    ],
+    "cues": [
+      "Sit on an Incline Bench while holding a dumbbell on",
+      "Lift your legs up to kick the weights to your",
+      "While keeping the arms straight and locked, lift the",
+      "Bring back the dumbbells to the setup as you breathe in"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_dumbbell_lunges": {
+    "id": "fedb_dumbbell_lunges",
+    "summary": "Stand with your torso upright holding two dumbbells in your hands by your sides.",
+    "steps": [
+      "Stand with your torso upright holding two dumbbells in your hands by your sides.",
+      "Using mainly the heel of your foot, push up and go back to the setup as you exhale.",
+      "Repeat the movement for the your reps and then perform with the left leg."
+    ],
+    "cues": [
+      "Stand with your torso upright holding two dumbbells in",
+      "Step forward with your right leg around 2 feet or so",
+      "Using mainly the heel of your foot, push up and go",
+      "Repeat the movement for the your reps and then perform"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength",
+      "Letting the lower back round under load"
+    ]
+  },
+  "fedb_dumbbell_lying_one_arm_rear_lateral_raise": {
+    "id": "fedb_dumbbell_lying_one_arm_rear_lateral_raise",
+    "summary": "Position the palm of the hand that is holding the dumbbell in a neutral manner (palms facing your torso) as you keep the arm extended with the elbow slightly bent.",
+    "steps": [
+      "Position the palm of the hand that is holding the dumbbell in a neutral manner (palms facing your torso) as you keep the arm extended with the elbow slightly bent.",
+      "Slowly lower the dumbbell to the setup as you inhale."
+    ],
+    "cues": [
+      "While holding a dumbbell in one hand, lay with your",
+      "Position the palm of the hand that is holding the",
+      "Now raise the arm with the dumbbell to the side until",
+      "Slowly lower the dumbbell to the setup as you inhale"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_dumbbell_lying_pronation": {
+    "id": "fedb_dumbbell_lying_pronation",
+    "summary": "Lie on a flat bench face down with one arm holding a dumbbell and the other hand on top of the bench folded so that you can rest your head on it.",
+    "steps": [
+      "Lie on a flat bench face down with one arm holding a dumbbell and the other hand on top of the bench folded so that you can rest your head on it.",
+      "Bend the elbows of the arm holding the dumbbell so that it creates a 90-degree angle between the upper arm and the forearm.",
+      "As you breathe in, slowly go back to the setup."
+    ],
+    "cues": [
+      "Bend the elbows of the arm holding the dumbbell so",
+      "Now raise the upper arm so that the forearm is",
+      "As you breathe out, externally rotate your forearm so",
+      "As you breathe in, slowly go back to the setup"
+    ],
+    "mistakes": []
+  },
+  "fedb_dumbbell_lying_rear_lateral_raise": {
+    "id": "fedb_dumbbell_lying_rear_lateral_raise",
+    "summary": "While holding a dumbbell in each hand, lay with your chest down on a slightly inclined (around 15 degrees when measured from the floor) adjustable bench.",
+    "steps": [
+      "While holding a dumbbell in each hand, lay with your chest down on a slightly inclined (around 15 degrees when measured from the floor) adjustable bench.",
+      "Position the palms of the hands in a neutral manner (palms facing your torso) as you keep the arms extended with the elbows slightly bent.",
+      "Slowly lower the dumbbells to the setup as you inhale."
+    ],
+    "cues": [
+      "While holding a dumbbell in each hand, lay with your",
+      "Position the palms of the hands in a neutral manner",
+      "Now raise the arms to the side until your elbows are",
+      "Slowly lower the dumbbells to the setup as you inhale"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_dumbbell_lying_supination": {
+    "id": "fedb_dumbbell_lying_supination",
+    "summary": "Lie sideways on a flat bench with one arm holding a dumbbell and the other hand on top of the bench folded so that you can rest your head on it.",
+    "steps": [
+      "Lie sideways on a flat bench with one arm holding a dumbbell and the other hand on top of the bench folded so that you can rest your head on it.",
+      "Bend the elbows of the arm holding the dumbbell so that it creates a 90-degree angle between the upper arm and the forearm.",
+      "As you breathe in, slowly go back to the setup."
+    ],
+    "cues": [
+      "Bend the elbows of the arm holding the dumbbell so",
+      "Now raise the upper arm so that the forearm is",
+      "As you breathe out, externally rotate your forearm so",
+      "As you breathe in, slowly go back to the setup"
+    ],
+    "mistakes": []
+  },
+  "fedb_dumbbell_one_arm_shoulder_press": {
+    "id": "fedb_dumbbell_one_arm_shoulder_press",
+    "summary": "Grab a dumbbell and either sit on a military press bench or a utility bench that has a back support on it as you place the dumbbells upright on top of your thighs or stand up straight.",
+    "steps": [
+      "Clean the dumbbell up to bring it to shoulder height. The other hand can be kept fully extended to the side, by the waist or grabbing a fixed surface.",
+      "Rotate the wrist so that the palm of your hand is facing forward.",
+      "As you exhale, push the dumbbell up until your arm is fully extended.",
+      "After a second pause, slowly come down back to the setup as you inhale."
+    ],
+    "cues": [
+      "Clean the dumbbell up to bring it to shoulder height",
+      "Rotate the wrist so that the palm of your hand is",
+      "As you exhale, push the dumbbell up until your arm is",
+      "After a second pause, slowly come down back to the"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_dumbbell_one_arm_triceps_extension": {
+    "id": "fedb_dumbbell_one_arm_triceps_extension",
+    "summary": "Grab a dumbbell and either sit on a military press bench or a utility bench that has a back support on it as you place the dumbbells upright on top of your thighs or stand up straight.",
+    "steps": [
+      "Rotate the wrist so that the palm of your hand is facing forward and the pinkie is facing the ceiling.",
+      "Slowly lower the dumbbell behind your head as you hold the upper arm stationary. Inhale as you perform this movement and pause when your triceps are fully stretched."
+    ],
+    "cues": [
+      "Clean the dumbbell up to bring it to shoulder height",
+      "Rotate the wrist so that the palm of your hand is",
+      "Slowly lower the dumbbell behind your head as you hold",
+      "Return to the setup by flexing your triceps as you"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_dumbbell_one_arm_upright_row": {
+    "id": "fedb_dumbbell_one_arm_upright_row",
+    "summary": "Keep the other hand can be kept fully extended to the side, by the waist or grabbing a fixed surface.",
+    "steps": [
+      "Keep the other hand can be kept fully extended to the side, by the waist or grabbing a fixed surface.",
+      "Lower the dumbbell back down slowly to the setup. Inhale as you perform this portion of the movement."
+    ],
+    "cues": [
+      "Grab a dumbbell and stand up straight with your arm",
+      "Keep the other hand can be kept fully extended to the",
+      "Use your side shoulders to lift the dumbbell as you",
+      "Lower the dumbbell back down slowly to the setup"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_dumbbell_prone_incline_curl": {
+    "id": "fedb_dumbbell_prone_incline_curl",
+    "summary": "Grab a dumbbell on each hand and lie face down on an incline bench with your shoulders near top of the incline. Your knees can rest on the seat or your legs can be straddled to the sides (my preferred way).",
+    "steps": [
+      "Let your arms extend and hang naturally in front of you so that they are perpendicular to the floor.",
+      "Now keep your elbows in by your side and face the palms forward.",
+      "Lower the dumbbells until your arms are fully extended."
+    ],
+    "cues": [
+      "Let your arms extend and hang naturally in front of",
+      "Now keep your elbows in by your side and face the",
+      "Raise the dumbbells by contracting the biceps until",
+      "Lower the dumbbells until your arms are fully extended"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_dumbbell_raise": {
+    "id": "fedb_dumbbell_raise",
+    "summary": "Lower the dumbbells back down slowly to the setup. Inhale as you perform this portion of the movement.",
+    "steps": [
+      "Set up for Dumbbell Raise with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Grab a dumbbell in each arm and stand up straight with",
+      "Use your side shoulders to lift the dumbbells as you",
+      "Lower the dumbbells back down slowly to the setup"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_dumbbell_rear_lunge": {
+    "id": "fedb_dumbbell_rear_lunge",
+    "summary": "Stand with your torso upright holding two dumbbells in your hands by your sides.",
+    "steps": [
+      "Stand with your torso upright holding two dumbbells in your hands by your sides.",
+      "Push up and go back to the setup as you exhale. Tip: Use the ball of your feet to push in order to accentuate the quadriceps. To focus on the glutes, press with your heels.",
+      "Now repeat with the opposite leg."
+    ],
+    "cues": [
+      "Stand with your torso upright holding two dumbbells in",
+      "Step backward with your right leg around two feet or",
+      "Push up and go back to the setup as you exhale",
+      "Now repeat with the opposite leg"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength",
+      "Letting the lower back round under load"
+    ]
+  },
+  "fedb_dumbbell_scaption": {
+    "id": "fedb_dumbbell_scaption",
+    "summary": "This corrective exercise strengthens the muscles that stabilize your shoulder blade. Hold a light weight in each hand, hanging at your sides. Your thumbs should pointing up.",
+    "steps": [
+      "This corrective exercise strengthens the muscles that stabilize your shoulder blade. Hold a light weight in each hand, hanging at your sides. Your thumbs should pointing up.",
+      "Begin the movement raising your arms out in front of you, about 30 degrees off center. Your arms should be fully extended as you perform the movement.",
+      "Continue until your arms are parallel to the ground, and then return to the setup."
+    ],
+    "cues": [
+      "This corrective exercise strengthens the muscles that",
+      "Begin the movement raising your arms out in front of",
+      "Continue until your arms are parallel to the ground,"
+    ],
+    "mistakes": []
+  },
+  "fedb_dumbbell_seated_box_jump": {
+    "id": "fedb_dumbbell_seated_box_jump",
+    "summary": "Position a box a couple feet to the side of a bench. Hold a dumbbell to your chest with both hands and seat yourself on the bench facing the box.",
+    "steps": [
+      "Position a box a couple feet to the side of a bench. Hold a dumbbell to your chest with both hands and seat yourself on the bench facing the box.",
+      "Plant your feet firmly on the ground as you lean forward, extending through the hips and knees to jump up and forward.",
+      "Land on the box with both feet, absorbing the impact by allowing the hips and knees to bend.",
+      "Step down and return to the setup."
+    ],
+    "cues": [
+      "Position a box a couple feet to the side of a bench",
+      "Plant your feet firmly on the ground as you lean",
+      "Land on the box with both feet, absorbing the impact",
+      "Step down and return to the setup"
+    ],
+    "mistakes": []
+  },
+  "fedb_dumbbell_seated_one_leg_calf_raise": {
+    "id": "fedb_dumbbell_seated_one_leg_calf_raise",
+    "summary": "Place a block on the floor about 12 inches from a flat bench.",
+    "steps": [
+      "Place a block on the floor about 12 inches from a flat bench.",
+      "Sit on a flat bench and place a dumbbell on your upper left thigh about 3 inches above your knee.",
+      "Now place the ball of your left foot on the block.",
+      "Raise your toes up as high as possible as you exhale and you contract your calf muscle. Hold the contraction for a second.",
+      "Slowly return to the setup, stretching as far down as possible."
+    ],
+    "cues": [
+      "Sit on a flat bench and place a dumbbell on your upper",
+      "Now place the ball of your left foot on the block",
+      "Raise your toes up as high as possible as you exhale",
+      "Slowly return to the setup, stretching as far down as"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_dumbbell_shoulder_press": {
+    "id": "fedb_dumbbell_shoulder_press",
+    "summary": "While holding a dumbbell in each hand, sit on a military press bench or utility bench that has back support. Place the dumbbells upright on top of your thighs.",
+    "steps": [
+      "While holding a dumbbell in each hand, sit on a military press bench or utility bench that has back support. Place the dumbbells upright on top of your thighs.",
+      "Now raise the dumbbells to shoulder height one at a time using your thighs to help propel them up into position.",
+      "Make sure to rotate your wrists so that the palms of your hands are facing forward.",
+      "Now, exhale and push the dumbbells upward until they touch at the top.",
+      "Then, after a brief pause at the top contracted position, slowly lower the weights back down to the setup while inhaling."
+    ],
+    "cues": [
+      "Now raise the dumbbells to shoulder height one at a",
+      "Make sure to rotate your wrists so that the palms of",
+      "Now, exhale and push the dumbbells upward until they",
+      "Then, after a brief pause at the top contracted"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_dumbbell_shrug": {
+    "id": "fedb_dumbbell_shrug",
+    "summary": "Stand erect with a dumbbell on each hand (palms facing your torso), arms extended on the sides.",
+    "steps": [
+      "Stand erect with a dumbbell on each hand (palms facing your torso), arms extended on the sides.",
+      "Lower the dumbbells back to the original position."
+    ],
+    "cues": [
+      "Stand erect with a dumbbell on each hand (palms facing",
+      "Lift the dumbbells by elevating the shoulders as high",
+      "Lower the dumbbells back to the original position"
+    ],
+    "mistakes": []
+  },
+  "fedb_dumbbell_side_bend": {
+    "id": "fedb_dumbbell_side_bend",
+    "summary": "Stand up straight while holding a dumbbell on the left hand (palms facing the torso) as you have the right hand holding your waist. Your feet should be placed at shoulder width.",
+    "steps": [
+      "Stand up straight while holding a dumbbell on the left hand (palms facing the torso) as you have the right hand holding your waist. Your feet should be placed at shoulder width.",
+      "Now repeat the movement but bending to the left instead. Hold for a second and come back to the setup."
+    ],
+    "cues": [
+      "Stand up straight while holding a dumbbell on the left",
+      "While keeping your back straight and your head up,",
+      "Now repeat the movement but bending to the left instead"
+    ],
+    "mistakes": []
+  },
+  "fedb_dumbbell_squat": {
+    "id": "fedb_dumbbell_squat",
+    "summary": "Stand up straight while holding a dumbbell on each hand (palms facing the side of your legs).",
+    "steps": [
+      "Stand up straight while holding a dumbbell on each hand (palms facing the side of your legs).",
+      "Begin to raise your torso as you exhale by pushing the floor with the heel of your foot mainly as you straighten the legs again and go back to the setup."
+    ],
+    "cues": [
+      "Stand up straight while holding a dumbbell on each",
+      "Position your legs using a shoulder width medium",
+      "Begin to slowly lower your torso by bending the knees",
+      "Begin to raise your torso as you exhale by pushing the"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength",
+      "Letting the lower back round under load"
+    ]
+  },
+  "fedb_dumbbell_squat_to_a_bench": {
+    "id": "fedb_dumbbell_squat_to_a_bench",
+    "summary": "Stand up straight with a flat bench behind you while holding a dumbbell on each hand (palms facing the side of your legs).",
+    "steps": [
+      "Stand up straight with a flat bench behind you while holding a dumbbell on each hand (palms facing the side of your legs).",
+      "Begin to raise the bar as you exhale by pushing the floor with the heel of your foot mainly as you straighten the legs again and go back to the setup."
+    ],
+    "cues": [
+      "Stand up straight with a flat bench behind you while",
+      "Position your legs using a shoulder width medium",
+      "Begin to slowly lower your torso by bending the knees",
+      "Begin to raise the bar as you exhale by pushing the"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength",
+      "Letting the lower back round under load"
+    ]
+  },
+  "fedb_dumbbell_step_ups": {
+    "id": "fedb_dumbbell_step_ups",
+    "summary": "Stand up straight while holding a dumbbell on each hand (palms facing the side of your legs).",
+    "steps": [
+      "Stand up straight while holding a dumbbell on each hand (palms facing the side of your legs).",
+      "Repeat with the right leg for the your reps and then perform with the left leg."
+    ],
+    "cues": [
+      "Stand up straight while holding a dumbbell on each",
+      "Place the right foot on the elevated platform",
+      "Step down with the left leg by flexing the hip and",
+      "Repeat with the right leg for the your reps and then"
+    ],
+    "mistakes": [
+      "Letting the lower back round under load"
+    ]
+  },
+  "fedb_dumbbell_tricep_extension_pronated_grip": {
+    "id": "fedb_dumbbell_tricep_extension_pronated_grip",
+    "summary": "Lie down on a flat bench holding two dumbbells directly above your shoulders. Your arms should be fully extended and form a 90 degree angle from your torso and the floor.",
+    "steps": [
+      "Lie down on a flat bench holding two dumbbells directly above your shoulders. Your arms should be fully extended and form a 90 degree angle from your torso and the floor.",
+      "The palms of your hands should be facing forward, and your elbows should be tucked in.",
+      "Now, inhale and slowly lower the dumbbells until they are near your ears. Be sure to keep your upper arms stationary and your elbows tucked in.",
+      "Then, exhale and use your triceps to return the weight to the setup."
+    ],
+    "cues": [
+      "Lie down on a flat bench holding two dumbbells",
+      "The palms of your hands should be facing forward, and",
+      "Now, inhale and slowly lower the dumbbells until they",
+      "Then, exhale and use your triceps to return the weight"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_external_rotation": {
+    "id": "fedb_external_rotation",
+    "summary": "Lie sideways on a flat bench with one arm holding a dumbbell and the other hand on top of the bench folded so that you can rest your head on it.",
+    "steps": [
+      "Lie sideways on a flat bench with one arm holding a dumbbell and the other hand on top of the bench folded so that you can rest your head on it.",
+      "Bend the elbows of the arm holding the dumbbell so that it creates a 90-degree angle between the upper arm and the forearm. Tip: Keep the arm parallel to your torso.",
+      "As you breathe in, slowly go back to the setup."
+    ],
+    "cues": [
+      "Bend the elbows of the arm holding the dumbbell so",
+      "Now bend the elbow while keeping the upper arm",
+      "As you breathe out, externally rotate your forearm so",
+      "As you breathe in, slowly go back to the setup"
+    ],
+    "mistakes": []
+  },
+  "fedb_flexor_incline_dumbbell_curls": {
+    "id": "fedb_flexor_incline_dumbbell_curls",
+    "summary": "Sit on an incline bench that is angled at 45-degrees while holding a dumbbell on each hand.",
+    "steps": [
+      "Sit on an incline bench that is angled at 45-degrees while holding a dumbbell on each hand.",
+      "As you inhale, slowly go back to the setup."
+    ],
+    "cues": [
+      "Sit on an incline bench that is angled at 45-degrees",
+      "Let your arms hang down on your sides, with the elbows",
+      "Curl up the two dumbbells at the same time until your",
+      "As you inhale, slowly go back to the setup"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_front_dumbbell_raise": {
+    "id": "fedb_front_dumbbell_raise",
+    "summary": "Pick a couple of dumbbells and stand with a straight torso and the dumbbells on front of your thighs at arms length with the palms of the hand facing your thighs.",
+    "steps": [
+      "Pick a couple of dumbbells and stand with a straight torso and the dumbbells on front of your thighs at arms length with the palms of the hand facing your thighs.",
+      "Now lower the dumbbell back down slowly to the setup as you simultaneously lift the right dumbbell.",
+      "Continue alternating in this fashion until all of the your reps have been performed for each arm."
+    ],
+    "cues": [
+      "Pick a couple of dumbbells and stand with a straight",
+      "While maintaining the torso stationary (no swinging),",
+      "Now lower the dumbbell back down slowly to the setup",
+      "Continue alternating in this fashion until all of the"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_front_incline_dumbbell_raise": {
+    "id": "fedb_front_incline_dumbbell_raise",
+    "summary": "Sit down on an incline bench with the incline set anywhere between 30 to 60 degrees while holding a dumbbell on each hand. Tip: You can change the angle to hit the muscle a little differently each time.",
+    "steps": [
+      "Extend your arms straight in front of you and have your palms facing down with the dumbbells raised about 1 inch above your thighs.",
+      "Lower the arms back to the setup as you inhale."
+    ],
+    "cues": [
+      "Sit down on an incline bench with the incline set",
+      "Extend your arms straight in front of you and have",
+      "Slowly raise the dumbbells straight up until they are",
+      "Lower the arms back to the setup as you inhale"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_front_two_dumbbell_raise": {
+    "id": "fedb_front_two_dumbbell_raise",
+    "summary": "Pick a couple of dumbbells and stand with a straight torso and the dumbbells on front of your thighs at arms length with the palms of the hand facing your thighs.",
+    "steps": [
+      "Pick a couple of dumbbells and stand with a straight torso and the dumbbells on front of your thighs at arms length with the palms of the hand facing your thighs.",
+      "As you inhale, lower the dumbbells back down slowly to the setup."
+    ],
+    "cues": [
+      "Pick a couple of dumbbells and stand with a straight",
+      "While maintaining the torso stationary (no swinging),",
+      "As you inhale, lower the dumbbells back down slowly to"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_hammer_curls": {
+    "id": "fedb_hammer_curls",
+    "summary": "Stand up with your torso upright and a dumbbell on each hand being held at arms length. The elbows should be close to the torso.",
+    "steps": [
+      "Stand up with your torso upright and a dumbbell on each hand being held at arms length. The elbows should be close to the torso.",
+      "The palms of the hands should be facing your torso.",
+      "After the brief pause, inhale and slowly begin the lower the dumbbells back down to the setup."
+    ],
+    "cues": [
+      "Stand up with your torso upright and a dumbbell on",
+      "The palms of the hands should be facing your torso",
+      "Now, while holding your upper arm stationary, exhale",
+      "After the brief pause, inhale and slowly begin the"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_hammer_grip_incline_db_bench_press": {
+    "id": "fedb_hammer_grip_incline_db_bench_press",
+    "summary": "Lie back on an incline bench with a dumbbell on each hand on top of your thighs. The palms of your hand will be facing each other.",
+    "steps": [
+      "Lie back on an incline bench with a dumbbell on each hand on top of your thighs. The palms of your hand will be facing each other.",
+      "By using your thighs to help you get the dumbbells up, clean the dumbbells one arm at a time so that you can hold them at shoulder width.",
+      "Now bring down the weights slowly to your side as you breathe in. Keep full control of the dumbbells at all times.",
+      "Repeat the movement for the prescribed amount of repetitions.",
+      "When you are done, place the dumbbells back in your thighs and then on the floor. This is the safest manner to dispose of the dumbbells."
+    ],
+    "cues": [
+      "Now bring down the weights slowly to your side as you",
+      "As you breathe out, push the dumbbells up using your",
+      "Repeat the movement for the prescribed amount of",
+      "When you are done, place the dumbbells back in your"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_incline_dumbbell_bench_with_palms_facing_in": {
+    "id": "fedb_incline_dumbbell_bench_with_palms_facing_in",
+    "summary": "Lie back on an incline bench with a dumbbell on each hand on top of your thighs. The palms of your hand will be facing each other.",
+    "steps": [
+      "Lie back on an incline bench with a dumbbell on each hand on top of your thighs. The palms of your hand will be facing each other.",
+      "By using your thighs to help you get the dumbbells up, clean the dumbbells one arm at a time so that you can hold them at shoulder width.",
+      "Now bring down the weights slowly to your side as you breathe in. Keep full control of the dumbbells at all times.",
+      "Repeat the movement for the prescribed amount of repetitions.",
+      "When you are done, place the dumbbells back in your thighs and then on the floor. This is the safest manner to dispose of the dumbbells."
+    ],
+    "cues": [
+      "Now bring down the weights slowly to your side as you",
+      "As you breathe out, push the dumbbells up using your",
+      "Repeat the movement for the prescribed amount of",
+      "When you are done, place the dumbbells back in your"
+    ],
+    "mistakes": []
+  },
+  "fedb_incline_dumbbell_curl": {
+    "id": "fedb_incline_dumbbell_curl",
+    "summary": "Sit back on an incline bench with a dumbbell in each hand held at arms length. Keep your elbows close to your torso and rotate the palms of your hands until they are facing forward.",
+    "steps": [
+      "Set up for Incline Dumbbell Curl with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Sit back on an incline bench with a dumbbell in each",
+      "While holding the upper arm stationary, curl the",
+      "Slowly begin to bring the dumbbells back to setup as"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_incline_dumbbell_flyes": {
+    "id": "fedb_incline_dumbbell_flyes",
+    "summary": "Hold a dumbbell on each hand and lie on an incline bench that is set to an incline angle of no more than 30 degrees.",
+    "steps": [
+      "Hold a dumbbell on each hand and lie on an incline bench that is set to an incline angle of no more than 30 degrees.",
+      "Extend your arms above you with a slight bend at the elbows.",
+      "Now rotate the wrists so that the palms of your hands are facing you. Tip: The pinky fingers should be next to each other."
+    ],
+    "cues": [
+      "Extend your arms above you with a slight bend at the",
+      "Now rotate the wrists so that the palms of your hands",
+      "As you breathe in, start to slowly lower the arms to",
+      "As you exhale start to bring the dumbbells back up to"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_incline_dumbbell_flyes_with_a_twist": {
+    "id": "fedb_incline_dumbbell_flyes_with_a_twist",
+    "summary": "Hold a dumbbell in each hand and lie on an incline bench that is set to an incline angle of no more than 30 degrees.",
+    "steps": [
+      "Hold a dumbbell in each hand and lie on an incline bench that is set to an incline angle of no more than 30 degrees.",
+      "Extend your arms above you with a slight bend at the elbows.",
+      "Now rotate the wrists so that the palms of your hands are facing you. Tip: The pinky fingers should be next to each other."
+    ],
+    "cues": [
+      "Extend your arms above you with a slight bend at the",
+      "Now rotate the wrists so that the palms of your hands",
+      "As you breathe in, start to slowly lower the arms to",
+      "As you exhale start to bring the dumbbells back up to"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_incline_dumbbell_press": {
+    "id": "fedb_incline_dumbbell_press",
+    "summary": "Lie back on an incline bench with a dumbbell in each hand atop your thighs. The palms of your hands will be facing each other.",
+    "steps": [
+      "Lie back on an incline bench with a dumbbell in each hand atop your thighs. The palms of your hands will be facing each other.",
+      "Then, using your thighs to help push the dumbbells up, lift the dumbbells one at a time so that you can hold them at shoulder width.",
+      "Once you have the dumbbells raised to shoulder width, rotate your wrists forward so that the palms of your hands are facing away from you.",
+      "Be sure to keep full control of the dumbbells at all times. Then breathe out and push the dumbbells up with your chest.",
+      "Lock your arms at the top, hold for a second, and then start slowly lowering the weight. Tip Ideally, lowering the weights should take about twice as long as raising them.",
+      "Repeat the movement for the prescribed amount of repetitions.",
+      "When you are done, place the dumbbells back on your thighs and then on the floor. This is the safest manner to release the dumbbells."
+    ],
+    "cues": [
+      "Be sure to keep full control of the dumbbells at all",
+      "Lock your arms at the top, hold for a second, and then",
+      "Repeat the movement for the prescribed amount of",
+      "When you are done, place the dumbbells back on your"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_incline_hammer_curls": {
+    "id": "fedb_incline_hammer_curls",
+    "summary": "Seat yourself on an incline bench with a dumbbell in each hand. You should pressed firmly against he back with your feet together. Allow the dumbbells to hang straight down at your side, holding them with a neutral grip.",
+    "steps": [
+      "Initiate the movement by flexing at the elbow, attempting to keep the upper arm stationary.",
+      "Continue to the top of the movement and pause, then slowly return to the start position."
+    ],
+    "cues": [
+      "Seat yourself on an incline bench with a dumbbell in",
+      "Initiate the movement by flexing at the elbow,",
+      "Continue to the top of the movement and pause, then"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_incline_inner_biceps_curl": {
+    "id": "fedb_incline_inner_biceps_curl",
+    "summary": "Hold a dumbbell in each hand and lie back on an incline bench.",
+    "steps": [
+      "Hold a dumbbell in each hand and lie back on an incline bench.",
+      "The dumbbells should be at arm's length hanging at your sides and your palms should be facing out.",
+      "After a second contraction at the top of the movement, start to inhale and slowly lower the weights back to the setup using the same path used to bring them up."
+    ],
+    "cues": [
+      "Hold a dumbbell in each hand and lie back on an",
+      "The dumbbells should be at arm's length hanging at",
+      "Now as you exhale curl the weight outward and up while",
+      "After a second contraction at the top of the movement,"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_lying_dumbbell_tricep_extension": {
+    "id": "fedb_lying_dumbbell_tricep_extension",
+    "summary": "As you breathe in and you keep the upper arms stationary with the elbows in, slowly lower the weight until the dumbbells are near your ears.",
+    "steps": [
+      "As you breathe in and you keep the upper arms stationary with the elbows in, slowly lower the weight until the dumbbells are near your ears.",
+      "At that point, while keeping the elbows in and the upper arms stationary, use the triceps to bring the weight back up to the setup as you breathe out."
+    ],
+    "cues": [
+      "Lie on a flat bench while holding two dumbbells",
+      "As you breathe in and you keep the upper arms",
+      "At that point, while keeping the elbows in and the"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_lying_one_arm_lateral_raise": {
+    "id": "fedb_lying_one_arm_lateral_raise",
+    "summary": "While holding a dumbbell in one hand, lay with your chest down on a flat bench. The other hand can be used to hold to the leg of the bench for stability.",
+    "steps": [
+      "While holding a dumbbell in one hand, lay with your chest down on a flat bench. The other hand can be used to hold to the leg of the bench for stability.",
+      "Position the palm of the hand that is holding the dumbbell in a neutral manner (palms facing your torso) as you keep the arm extended with the elbow slightly bent.",
+      "Slowly lower the dumbbell to the setup as you inhale."
+    ],
+    "cues": [
+      "While holding a dumbbell in one hand, lay with your",
+      "Position the palm of the hand that is holding the",
+      "Now raise the arm with the dumbbell to the side until",
+      "Slowly lower the dumbbell to the setup as you inhale"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_lying_rear_delt_raise": {
+    "id": "fedb_lying_rear_delt_raise",
+    "summary": "While holding a dumbbell in each hand, lay with your chest down on a flat bench.",
+    "steps": [
+      "While holding a dumbbell in each hand, lay with your chest down on a flat bench.",
+      "Position the palms of the hands in a neutral manner (palms facing your torso) as you keep the arms extended with the elbows slightly bent.",
+      "Slowly lower the dumbbells to the setup as you inhale."
+    ],
+    "cues": [
+      "While holding a dumbbell in each hand, lay with your",
+      "Position the palms of the hands in a neutral manner",
+      "Now raise the arms to the side until your elbows are",
+      "Slowly lower the dumbbells to the setup as you inhale"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_lying_supine_dumbbell_curl": {
+    "id": "fedb_lying_supine_dumbbell_curl",
+    "summary": "Lie down on a flat bench face up while holding a dumbbell in each arm on top of your thighs.",
+    "steps": [
+      "Lie down on a flat bench face up while holding a dumbbell in each arm on top of your thighs.",
+      "Bring the dumbbells to the sides with the arms extended and the palms of the hands facing your thighs (neutral grip).",
+      "Return back to the setup very slowly."
+    ],
+    "cues": [
+      "Bring the dumbbells to the sides with the arms",
+      "While keeping the arms close to your torso and elbows",
+      "As you breathe out, slowly begin to curl the weights",
+      "Return back to the setup very slowly"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_middle_back_shrug": {
+    "id": "fedb_middle_back_shrug",
+    "summary": "Lie facedown on an incline bench while holding a dumbbell in each hand. Your arms should be fully extended hanging down and pointing towards the floor. The palms of your hands should be facing each other.",
+    "steps": [
+      "Set up for Middle Back Shrug with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Lie facedown on an incline bench while holding a",
+      "As you exhale, squeeze your shoulder blades together",
+      "As you inhale go back to the setup"
+    ],
+    "mistakes": []
+  },
+  "fedb_one_arm_dumbbell_bench_press": {
+    "id": "fedb_one_arm_dumbbell_bench_press",
+    "summary": "Lie down on a flat bench with a dumbbell in one hand on top of your thigh.",
+    "steps": [
+      "Lie down on a flat bench with a dumbbell in one hand on top of your thigh.",
+      "Once at shoulder width, rotate your wrist forward so that the palm of your hand is facing away from you.",
+      "Repeat the movement for the prescribed amount of repetitions of your training program.",
+      "Switch arms and repeat the movement."
+    ],
+    "cues": [
+      "Bring down the weights slowly to your side as you",
+      "As you breathe out, push the dumbbells up using your",
+      "Repeat the movement for the prescribed amount of",
+      "Switch arms and repeat the movement"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_one_arm_dumbbell_preacher_curl": {
+    "id": "fedb_one_arm_dumbbell_preacher_curl",
+    "summary": "Grab a dumbbell with the right arm and place the upper arm on top of the preacher bench or the incline bench. The dumbbell should be held at shoulder length.",
+    "steps": [
+      "Grab a dumbbell with the right arm and place the upper arm on top of the preacher bench or the incline bench. The dumbbell should be held at shoulder length.",
+      "As you breathe in, slowly lower the dumbbell until your upper arm is extended and the biceps is fully stretched.",
+      "Switch arms and repeat the movement."
+    ],
+    "cues": [
+      "Grab a dumbbell with the right arm and place the upper",
+      "As you breathe in, slowly lower the dumbbell until",
+      "As you exhale, use the biceps to curl the weight up",
+      "Switch arms and repeat the movement"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_one_arm_pronated_dumbbell_triceps_extension": {
+    "id": "fedb_one_arm_pronated_dumbbell_triceps_extension",
+    "summary": "Lie flat on a bench while holding a dumbbell at arms length. Your arm should be perpendicular to your body. The palm of your hand should be facing towards your feet as a pronated grip is required to perform the move.",
+    "steps": [
+      "Place your non lifting hand on your bicep for support.",
+      "Slowly begin to lower the dumbbell down as you breathe in.",
+      "Then, begin lifting the dumbbell upward as you contract the triceps. Remember to breathe out during the concentric (lifting part of the exercise).",
+      "Repeat until you have performed your set repetitions.",
+      "Switch arms and repeat the movement."
+    ],
+    "cues": [
+      "Slowly begin to lower the dumbbell down as you breathe",
+      "Then, begin lifting the dumbbell upward as you",
+      "Repeat until you have performed your set repetitions",
+      "Switch arms and repeat the movement"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_one_arm_supinated_dumbbell_triceps_extension": {
+    "id": "fedb_one_arm_supinated_dumbbell_triceps_extension",
+    "summary": "Lie flat on a bench while holding a dumbbell at arms length. Your arm should be perpendicular to your body. The palm of your hand should be facing towards your face as a supinated grip is required to perform the move.",
+    "steps": [
+      "Place your non lifting hand on your bicep for support.",
+      "Slowly begin to lower the dumbbell down as you breathe in.",
+      "Then, begin lifting the dumbbell upward as you contract the triceps. Remember to breathe out during the concentric (lifting part of the exercise).",
+      "Repeat until you have performed your set repetitions.",
+      "Switch arms and repeat the movement.",
+      "Switch arms again and repeat the movement."
+    ],
+    "cues": [
+      "Then, begin lifting the dumbbell upward as you",
+      "Repeat until you have performed your set repetitions",
+      "Switch arms and repeat the movement",
+      "Switch arms again and repeat the movement"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_one_arm_dumbbell_row": {
+    "id": "fedb_one_arm_dumbbell_row",
+    "summary": "Choose a flat bench and place a dumbbell on each side of it.",
+    "steps": [
+      "Choose a flat bench and place a dumbbell on each side of it.",
+      "Use the left hand to pick up the dumbbell on the floor and hold the weight while keeping your lower back straight. The palm of the hand should be facing your torso.",
+      "Lower the resistance straight down to the setup. Breathe in as you perform this step.",
+      "Repeat the movement for the specified amount of repetitions.",
+      "Switch sides and repeat again with the other arm."
+    ],
+    "cues": [
+      "Pull the resistance straight up to the side of your",
+      "Lower the resistance straight down to the setup",
+      "Repeat the movement for the specified amount of",
+      "Switch sides and repeat again with the other arm"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_one_arm_flat_bench_dumbbell_flye": {
+    "id": "fedb_one_arm_flat_bench_dumbbell_flye",
+    "summary": "Lie down on a flat bench with a dumbbell in one hand resting on top of your thigh. The palm of your hand with the dumbbell in it should be at a neutral grip.",
+    "steps": [
+      "Lie down on a flat bench with a dumbbell in one hand resting on top of your thigh. The palm of your hand with the dumbbell in it should be at a neutral grip.",
+      "Return your lifting arm back to the setup as you squeeze your chest muscles and breathe out. Tip: Make sure to use the same arc of motion used to lower the weights.",
+      "Hold for a second at the contracted position and repeat the movement for the prescribed amount of repetitions.",
+      "Switch arms and repeat the exercise."
+    ],
+    "cues": [
+      "Your arm with the weight should have a slight bend on",
+      "Return your lifting arm back to the setup as you",
+      "Hold for a second at the contracted position and",
+      "Switch arms and repeat the exercise"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_one_arm_incline_lateral_raise": {
+    "id": "fedb_one_arm_incline_lateral_raise",
+    "summary": "Lie down sideways on an incline bench press with a dumbbell in the hand. Make sure the shoulder is pressing against the incline bench and the arm is lying across your body with the palm around your navel.",
+    "steps": [
+      "Hold a dumbbell in your uppermost arm while keeping it extended in front of you parallel to the floor.",
+      "While inhaling lower the weight across your body back into the setup.",
+      "Repeat the movement for the prescribed amount of repetitions.",
+      "Switch arms and repeat the movement."
+    ],
+    "cues": [
+      "While keeping the dumbbell parallel to the floor at",
+      "While inhaling lower the weight across your body back",
+      "Repeat the movement for the prescribed amount of",
+      "Switch arms and repeat the movement"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_one_arm_side_laterals": {
+    "id": "fedb_one_arm_side_laterals",
+    "summary": "Stand with a straight torso and have the dumbbell by your side at arm's length with the palm of the hand facing you.",
+    "steps": [
+      "Stand with a straight torso and have the dumbbell by your side at arm's length with the palm of the hand facing you.",
+      "Lower the dumbbell back down slowly to the setup as you inhale.",
+      "Switch arms and repeat the exercise."
+    ],
+    "cues": [
+      "Stand with a straight torso and have the dumbbell by",
+      "While maintaining the torso stationary (no swinging),",
+      "Lower the dumbbell back down slowly to the setup as",
+      "Switch arms and repeat the exercise"
+    ],
+    "mistakes": []
+  },
+  "fedb_palms_down_dumbbell_wrist_curl_over_a_bench": {
+    "id": "fedb_palms_down_dumbbell_wrist_curl_over_a_bench",
+    "summary": "Start out by placing two dumbbells on one side of a flat bench.",
+    "steps": [
+      "Start out by placing two dumbbells on one side of a flat bench.",
+      "Kneel down on both of your knees so that your body is facing the flat bench.",
+      "Start out by curling your wrist upwards and exhaling.",
+      "Slowly lower your wrists back down to the setup while inhaling.",
+      "Your forearms should be stationary as your wrist is the only movement needed to perform the move."
+    ],
+    "cues": [
+      "Use your arms to grab both of the dumbbells with a",
+      "Start out by curling your wrist upwards and exhaling",
+      "Slowly lower your wrists back down to the setup while",
+      "Your forearms should be stationary as your wrist is"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_palms_up_dumbbell_wrist_curl_over_a_bench": {
+    "id": "fedb_palms_up_dumbbell_wrist_curl_over_a_bench",
+    "summary": "Start out by placing two dumbbells on one side of a flat bench.",
+    "steps": [
+      "Start out by placing two dumbbells on one side of a flat bench.",
+      "Kneel down on both of your knees so that your body is facing the flat bench.",
+      "Start out by curling your wrist upwards and exhaling.",
+      "Slowly lower your wrists back down to the setup while inhaling. Make sure to inhale during this part of the exercise.",
+      "Your forearms should be stationary as your wrist is the only movement needed to perform the move."
+    ],
+    "cues": [
+      "Use your arms to grab both of the dumbbells with a",
+      "Start out by curling your wrist upwards and exhaling",
+      "Slowly lower your wrists back down to the setup while",
+      "Your forearms should be stationary as your wrist is"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_plie_dumbbell_squat": {
+    "id": "fedb_plie_dumbbell_squat",
+    "summary": "Hold a dumbbell at the base with both hands and stand straight up. Move your legs so that they are wider than shoulder width apart from each other with your knees slightly bent.",
+    "steps": [
+      "Hold a dumbbell at the base with both hands and stand straight up. Move your legs so that they are wider than shoulder width apart from each other with your knees slightly bent.",
+      "Your toes should be facing out. Note: Your arms should be stationary while performing the exercise. This is the setup.",
+      "Slowly bend the knees and lower your legs until your thighs are parallel to the floor. Make sure to inhale as this is the eccentric part of the exercise.",
+      "Press mainly with the heel of the foot to bring the body back to the setup while exhaling."
+    ],
+    "cues": [
+      "Hold a dumbbell at the base with both hands and stand",
+      "Your toes should be facing out",
+      "Slowly bend the knees and lower your legs until your",
+      "Press mainly with the heel of the foot to bring the"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength",
+      "Letting the lower back round under load"
+    ]
+  },
+  "fedb_power_partials": {
+    "id": "fedb_power_partials",
+    "summary": "Stand up with your torso upright and a dumbbell on each hand being held at arms length. The elbows should be close to the torso.",
+    "steps": [
+      "Stand up with your torso upright and a dumbbell on each hand being held at arms length. The elbows should be close to the torso.",
+      "The palms of the hands should be facing your torso. Your feet should be about shoulder width apart.",
+      "Keeping your arms straight and the torso stationary, lift the weights out to your sides until they are about shoulder level height while exhaling."
+    ],
+    "cues": [
+      "Stand up with your torso upright and a dumbbell on",
+      "The palms of the hands should be facing your torso",
+      "Keeping your arms straight and the torso stationary,",
+      "Feel the contraction for a second and begin to lower"
+    ],
+    "mistakes": []
+  },
+  "fedb_preacher_hammer_dumbbell_curl": {
+    "id": "fedb_preacher_hammer_dumbbell_curl",
+    "summary": "Place the upper part of both arms on top of the preacher bench as you hold a dumbbell in each hand with the palms facing each other (neutral grip).",
+    "steps": [
+      "Place the upper part of both arms on top of the preacher bench as you hold a dumbbell in each hand with the palms facing each other (neutral grip).",
+      "As you breathe in, slowly lower the dumbbells until your upper arm is extended and the biceps is fully stretched.",
+      "As you exhale, use the biceps to curl the weight up until your biceps is fully contracted and the dumbbells are at shoulder height."
+    ],
+    "cues": [
+      "Place the upper part of both arms on top of the",
+      "As you breathe in, slowly lower the dumbbells until",
+      "As you exhale, use the biceps to curl the weight up"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_reverse_flyes": {
+    "id": "fedb_reverse_flyes",
+    "summary": "To begin, lie down on an incline bench with the chest and stomach pressing against the incline. Have the dumbbells in each hand with the palms facing each other (neutral grip).",
+    "steps": [
+      "To begin, lie down on an incline bench with the chest and stomach pressing against the incline. Have the dumbbells in each hand with the palms facing each other (neutral grip).",
+      "The arms should be elevated until they are parallel to the floor.",
+      "Feel the contraction and slowly lower the weights back down to the setup while inhaling."
+    ],
+    "cues": [
+      "Extend the arms in front of you so that they are",
+      "Maintaining the slight bend of the elbows, move the",
+      "The arms should be elevated until they are parallel to",
+      "Feel the contraction and slowly lower the weights back"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_reverse_flyes_with_external_rotation": {
+    "id": "fedb_reverse_flyes_with_external_rotation",
+    "summary": "To begin, lie down on an incline bench set at a 30-degree angle with the chest and stomach pressing against the incline.",
+    "steps": [
+      "To begin, lie down on an incline bench set at a 30-degree angle with the chest and stomach pressing against the incline.",
+      "Maintaining the slight bend of the elbows, move the weights out and away from each other in an arc motion while exhaling.",
+      "The arms should be elevated until they are level with the head.",
+      "Feel the contraction and slowly lower the weights back down to the setup while inhaling."
+    ],
+    "cues": [
+      "Maintaining the slight bend of the elbows, move the",
+      "As you lift the weight, your wrist should externally",
+      "The arms should be elevated until they are level with",
+      "Feel the contraction and slowly lower the weights back"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_seated_bent_over_one_arm_dumbbell_triceps_extension": {
+    "id": "fedb_seated_bent_over_one_arm_dumbbell_triceps_extension",
+    "summary": "Sit down at the end of a flat bench with a dumbbell in one arm using a neutral grip (palms of the hand facing you).",
+    "steps": [
+      "Sit down at the end of a flat bench with a dumbbell in one arm using a neutral grip (palms of the hand facing you).",
+      "After a second contraction at the top, slowly lower the dumbbell back to the setup as you inhale.",
+      "Repeat the movement for the prescribed amount of repetitions.",
+      "Switch arms and repeat the exercise."
+    ],
+    "cues": [
+      "Keeping the upper arm stationary, use the triceps to",
+      "After a second contraction at the top, slowly lower",
+      "Repeat the movement for the prescribed amount of",
+      "Switch arms and repeat the exercise"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_seated_bent_over_rear_delt_raise": {
+    "id": "fedb_seated_bent_over_rear_delt_raise",
+    "summary": "Place a couple of dumbbells looking forward in front of a flat bench.",
+    "steps": [
+      "Place a couple of dumbbells looking forward in front of a flat bench.",
+      "Sit on the end of the bench with your legs together and the dumbbells behind your calves.",
+      "Bend at the waist while keeping the back straight in order to pick up the dumbbells. The palms of your hands should be facing each other as you pick them.",
+      "After a one second contraction at the top, slowly lower the dumbbells back to the setup."
+    ],
+    "cues": [
+      "Sit on the end of the bench with your legs together",
+      "Bend at the waist while keeping the back straight in",
+      "Keeping your torso forward and stationary, and the",
+      "After a one second contraction at the top, slowly"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_seated_bent_over_two_arm_dumbbell_triceps_extension": {
+    "id": "fedb_seated_bent_over_two_arm_dumbbell_triceps_extension",
+    "summary": "Sit down at the end of a flat bench with a dumbbell in both arms using a neutral grip (palms of the hand facing you).",
+    "steps": [
+      "Sit down at the end of a flat bench with a dumbbell in both arms using a neutral grip (palms of the hand facing you).",
+      "After a second contraction at the top, slowly lower the dumbbells back to the setup as you inhale.",
+      "Repeat the movement for the prescribed amount of repetitions."
+    ],
+    "cues": [
+      "The upper arms with the dumbbells should be close to",
+      "Keeping the upper arms stationary, use the triceps to",
+      "After a second contraction at the top, slowly lower",
+      "Repeat the movement for the prescribed amount of"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_seated_dumbbell_curl": {
+    "id": "fedb_seated_dumbbell_curl",
+    "summary": "Sit on a flat bench with a dumbbell on each hand being held at arms length. The elbows should be close to the torso.",
+    "steps": [
+      "Sit on a flat bench with a dumbbell on each hand being held at arms length. The elbows should be close to the torso.",
+      "Rotate the palms of the hands so that they are facing your torso.",
+      "Slowly begin to bring the dumbbells back to the setup as your breathe in and as you rotate the wrists back to a neutral grip."
+    ],
+    "cues": [
+      "Sit on a flat bench with a dumbbell on each hand being",
+      "Rotate the palms of the hands so that they are facing",
+      "While holding the upper arm stationary, curl the",
+      "Slowly begin to bring the dumbbells back to the setup"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_seated_dumbbell_inner_biceps_curl": {
+    "id": "fedb_seated_dumbbell_inner_biceps_curl",
+    "summary": "Sit on the end of a flat bench with a dumbbell in each hand being held at arms length. The elbows should be close to the torso.",
+    "steps": [
+      "Sit on the end of a flat bench with a dumbbell in each hand being held at arms length. The elbows should be close to the torso.",
+      "Rotate the palms of the hands so that they are facing inward in a neutral position.",
+      "While holding the upper arms stationary, curl the dumbbells out and up, turning the palms out as you lift and keeping your forearms in line with your outer deltoids. Tips:.",
+      "Slowly begin to bring the dumbbells back to the setup as your breathe in. Remember to rotate your arms as you lower the dumbbells so that you can switch back to a neutral grip."
+    ],
+    "cues": [
+      "Rotate the palms of the hands so that they are facing",
+      "While holding the upper arms stationary, curl the",
+      "Only the forearms should move",
+      "Slowly begin to bring the dumbbells back to the setup"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_seated_dumbbell_palms_down_wrist_curl": {
+    "id": "fedb_seated_dumbbell_palms_down_wrist_curl",
+    "summary": "Start out by placing two dumbbells on the floor in front of a flat bench.",
+    "steps": [
+      "Start out by placing two dumbbells on the floor in front of a flat bench.",
+      "Sit down on the edge of the flat bench with your legs at about shoulder width apart. Make sure to keep your feet on the floor.",
+      "Start out by curling your wrist upwards and exhaling.",
+      "When finished, simply lower the dumbbells to the floor."
+    ],
+    "cues": [
+      "Use your arms to grab both of the dumbbells and bring",
+      "Start out by curling your wrist upwards and exhaling",
+      "Slowly lower your wrists back down to the setup while",
+      "When finished, simply lower the dumbbells to the floor"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_seated_dumbbell_palms_up_wrist_curl": {
+    "id": "fedb_seated_dumbbell_palms_up_wrist_curl",
+    "summary": "Start out by placing two dumbbells on the floor in front of a flat bench.",
+    "steps": [
+      "Start out by placing two dumbbells on the floor in front of a flat bench.",
+      "Sit down on the edge of the flat bench with your legs at about shoulder width apart. Make sure to keep your feet on the floor.",
+      "Start out by curling your wrist upwards and exhaling.",
+      "When finished, simply lower the dumbbells to the floor."
+    ],
+    "cues": [
+      "Use your arms to grab both of the dumbbells and bring",
+      "Start out by curling your wrist upwards and exhaling",
+      "Slowly lower your wrists back down to the setup while",
+      "When finished, simply lower the dumbbells to the floor"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_seated_dumbbell_press": {
+    "id": "fedb_seated_dumbbell_press",
+    "summary": "Grab a couple of dumbbells and sit on a military press bench or a utility bench that has a back support on it as you place the dumbbells upright on top of your thighs.",
+    "steps": [
+      "Grab a couple of dumbbells and sit on a military press bench or a utility bench that has a back support on it as you place the dumbbells upright on top of your thighs.",
+      "Clean the dumbbells up one at a time by using your thighs to bring the dumbbells up to shoulder height at each side.",
+      "Rotate the wrists so that the palms of your hands are facing forward.",
+      "As you exhale, push the dumbbells up until they touch at the top.",
+      "After a second pause, slowly come down back to the setup as you inhale."
+    ],
+    "cues": [
+      "Clean the dumbbells up one at a time by using your",
+      "Rotate the wrists so that the palms of your hands are",
+      "As you exhale, push the dumbbells up until they touch",
+      "After a second pause, slowly come down back to the"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_seated_one_arm_dumbbell_palms_down_wrist_curl": {
+    "id": "fedb_seated_one_arm_dumbbell_palms_down_wrist_curl",
+    "summary": "Sit on a flat bench with a dumbbell in your right hand.",
+    "steps": [
+      "Sit on a flat bench with a dumbbell in your right hand.",
+      "Place your feet flat on the floor, at a distance that is slightly wider than shoulder width apart.",
+      "Lean forward and place your right forearm on top of your upper right thigh with your palm down. Tip: Make sure that the back of the wrist lies on top of your knees.",
+      "Lower the dumbbell as far as possible as you keep a tight grip on the dumbbell. Inhale as you perform this movement.",
+      "Perform for the your reps, switch arms and repeat the movement."
+    ],
+    "cues": [
+      "Lean forward and place your right forearm on top of",
+      "Lower the dumbbell as far as possible as you keep a",
+      "Now curl the dumbbell as high as possible as you",
+      "Perform for the your reps, switch arms and repeat the"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_seated_one_arm_dumbbell_palms_up_wrist_curl": {
+    "id": "fedb_seated_one_arm_dumbbell_palms_up_wrist_curl",
+    "summary": "Sit on a flat bench with a dumbbell in your right hand.",
+    "steps": [
+      "Sit on a flat bench with a dumbbell in your right hand.",
+      "Place your feet flat on the floor, at a distance that is slightly wider than shoulder width apart.",
+      "Lean forward and place your right forearm on top of your upper right thigh with your palm up. Tip: Make sure that the front of the wrist lies on top of your knees.",
+      "Lower the dumbbell as far as possible as you keep a tight grip on the dumbbell. Inhale as you perform this movement.",
+      "Perform for the your reps, switch arms and repeat the movement."
+    ],
+    "cues": [
+      "Lean forward and place your right forearm on top of",
+      "Lower the dumbbell as far as possible as you keep a",
+      "Now curl the dumbbell as high as possible as you",
+      "Perform for the your reps, switch arms and repeat the"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_seated_side_lateral_raise": {
+    "id": "fedb_seated_side_lateral_raise",
+    "summary": "Pick a couple of dumbbells and sit at the end of a flat bench with your feet firmly on the floor. Hold the dumbbells with your palms facing in and your arms straight down at your sides at arms' length.",
+    "steps": [
+      "Set up for Seated Side Lateral Raise with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Pick a couple of dumbbells and sit at the end of a",
+      "While maintaining the torso stationary (no swinging),",
+      "Lower the dumbbells back down slowly to the setup as"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_seated_triceps_press": {
+    "id": "fedb_seated_triceps_press",
+    "summary": "Go back to the setup by using the triceps to raise the dumbbell. Breathe out as you perform this step.",
+    "steps": [
+      "Set up for Seated Triceps Press with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Sit down on a bench with back support and grasp a",
+      "Keeping your upper arms close to your head (elbows in)",
+      "Go back to the setup by using the triceps to raise the"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_see_saw_press_alternating_side_press": {
+    "id": "fedb_see_saw_press_alternating_side_press",
+    "summary": "Grab a dumbbell with each hand and stand up erect.",
+    "steps": [
+      "Grab a dumbbell with each hand and stand up erect.",
+      "Once you reach the top position breathe in. Then, with the weight fully extended overhead and you bent over to your right hand side, begin the movement to the left side."
+    ],
+    "cues": [
+      "Grab a dumbbell with each hand and stand up erect",
+      "Clean (lift) the dumbbells to the chest/shoulder level",
+      "Now start extending your left arm overhead as you",
+      "Once you reach the top position breathe in"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_side_lateral_raise": {
+    "id": "fedb_side_lateral_raise",
+    "summary": "Pick a couple of dumbbells and stand with a straight torso and the dumbbells by your side at arms length with the palms of the hand facing you.",
+    "steps": [
+      "Pick a couple of dumbbells and stand with a straight torso and the dumbbells by your side at arms length with the palms of the hand facing you.",
+      "Lower the dumbbells back down slowly to the setup as you inhale."
+    ],
+    "cues": [
+      "Pick a couple of dumbbells and stand with a straight",
+      "While maintaining the torso in a stationary position",
+      "Lower the dumbbells back down slowly to the setup as"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_side_laterals_to_front_raise": {
+    "id": "fedb_side_laterals_to_front_raise",
+    "summary": "In a standing position, hold a pair of dumbbells at your side.",
+    "steps": [
+      "In a standing position, hold a pair of dumbbells at your side.",
+      "Keeping your elbows slightly bent, raise the weights directly in front of you to shoulder height, avoiding any swinging or cheating.",
+      "At the top of the exercise move the weights out in front of you, keeping your arms extended.",
+      "Lower the weights with a controlled motion.",
+      "On the next repetition, raise the weights in front of you to shoulder height before moving the weights laterally to your sides.",
+      "Lower the weights to the setup."
+    ],
+    "cues": [
+      "At the top of the exercise move the weights out in",
+      "Lower the weights with a controlled motion",
+      "On the next repetition, raise the weights in front of",
+      "Lower the weights to the setup"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_single_dumbbell_raise": {
+    "id": "fedb_single_dumbbell_raise",
+    "summary": "With a wide stance, hold a dumbell with both hands, grasping the head of the dumbbell instead of the handle. Your arms should be extended and hanging at the waist.",
+    "steps": [
+      "With a wide stance, hold a dumbell with both hands, grasping the head of the dumbbell instead of the handle. Your arms should be extended and hanging at the waist.",
+      "Raise the weight until it is above shoulder level, keeping your arms extended. Your torso and hips should remain stationary throughout the movement."
+    ],
+    "cues": [
+      "With a wide stance, hold a dumbell with both hands,",
+      "Raise the weight until it is above shoulder level,"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_spell_caster": {
+    "id": "fedb_spell_caster",
+    "summary": "Hold a dumbbell in each hand with a pronated grip. Your feet should be wide with your hips and knees extended.",
+    "steps": [
+      "Hold a dumbbell in each hand with a pronated grip. Your feet should be wide with your hips and knees extended.",
+      "Begin the movement by pulling both of the dumbbells to one side next to your hip, rotating your torso.",
+      "Keeping your arms straight and the dumbbells parallel to the ground, rotate your torso to swing the weights to your opposite side.",
+      "Continue alternating, rotating from one side to the other until the set is complete."
+    ],
+    "cues": [
+      "Hold a dumbbell in each hand with a pronated grip",
+      "Begin the movement by pulling both of the dumbbells to",
+      "Keeping your arms straight and the dumbbells parallel",
+      "Continue alternating, rotating from one side to the"
+    ],
+    "mistakes": []
+  },
+  "fedb_split_squat_with_dumbbells": {
+    "id": "fedb_split_squat_with_dumbbells",
+    "summary": "Position yourself into a staggered stance with the rear foot elevated and front foot forward.",
+    "steps": [
+      "Position yourself into a staggered stance with the rear foot elevated and front foot forward.",
+      "Hold a dumbbell in each hand, letting them hang at the sides.",
+      "At the bottom of the movement, drive through the heel to extend the knee and hip to return to the setup."
+    ],
+    "cues": [
+      "Position yourself into a staggered stance with the",
+      "Hold a dumbbell in each hand, letting them hang at the",
+      "Begin by descending, flexing your knee and hip to",
+      "At the bottom of the movement, drive through the heel"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength",
+      "Letting the lower back round under load"
+    ]
+  },
+  "fedb_standing_alternating_dumbbell_press": {
+    "id": "fedb_standing_alternating_dumbbell_press",
+    "summary": "Stand with a dumbbell in each hand. Raise the dumbbells to your shoulders with your palms facing forward and your elbows pointed out.",
+    "steps": [
+      "Stand with a dumbbell in each hand. Raise the dumbbells to your shoulders with your palms facing forward and your elbows pointed out.",
+      "Extend one arm to press the dumbbell straight up, keeping your off hand in place. Do not lean or jerk the weight during the movement.",
+      "After a brief pause, return the weight to the setup."
+    ],
+    "cues": [
+      "Stand with a dumbbell in each hand",
+      "Extend one arm to press the dumbbell straight up,",
+      "After a brief pause, return the weight to the setup"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_standing_bent_over_one_arm_dumbbell_triceps_extension": {
+    "id": "fedb_standing_bent_over_one_arm_dumbbell_triceps_extension",
+    "summary": "Keeping the upper arms stationary, use the triceps to lift the weights as you exhale until the forearms are parallel to the floor and the whole arm is extended. Like many other arm exercises, only the forearm moves.",
+    "steps": [
+      "After a second contraction at the top, slowly lower the dumbbell back to the setup as you inhale.",
+      "Repeat the movement for the prescribed amount of repetitions.",
+      "Switch arms and repeat the exercise."
+    ],
+    "cues": [
+      "Keeping the upper arms stationary, use the triceps to",
+      "After a second contraction at the top, slowly lower",
+      "Repeat the movement for the prescribed amount of",
+      "Switch arms and repeat the exercise"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_standing_bent_over_two_arm_dumbbell_triceps_extension": {
+    "id": "fedb_standing_bent_over_two_arm_dumbbell_triceps_extension",
+    "summary": "Keeping the upper arms stationary, use the triceps to lift the weights as you exhale until the forearms are parallel to the floor and the whole arms are extended. Like many other arm exercises, only the forearm moves.",
+    "steps": [
+      "After a second contraction at the top, slowly lower the dumbbells back to their setup as you inhale.",
+      "Repeat the movement for the prescribed amount of repetitions."
+    ],
+    "cues": [
+      "With a dumbbell in each hand and the palms facing your",
+      "Keeping the upper arms stationary, use the triceps to",
+      "After a second contraction at the top, slowly lower",
+      "Repeat the movement for the prescribed amount of"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_standing_concentration_curl": {
+    "id": "fedb_standing_concentration_curl",
+    "summary": "Taking a dumbbell in your working hand, lean forward. Allow your working arm to hang perpendicular to the ground with the elbow pointing out.",
+    "steps": [
+      "Taking a dumbbell in your working hand, lean forward. Allow your working arm to hang perpendicular to the ground with the elbow pointing out.",
+      "Flex the elbow to curl the weight, keeping the upper arm stationary. At the top of the repetition, flex the biceps and pause.",
+      "Lower the dumbbell back to the setup.",
+      "Repeat the movement for the prescribed amount of repetitions."
+    ],
+    "cues": [
+      "Taking a dumbbell in your working hand, lean forward",
+      "Flex the elbow to curl the weight, keeping the upper",
+      "Lower the dumbbell back to the setup",
+      "Repeat the movement for the prescribed amount of"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_standing_dumbbell_calf_raise": {
+    "id": "fedb_standing_dumbbell_calf_raise",
+    "summary": "As you inhale, go back to the setup by slowly lowering the heels.",
+    "steps": [
+      "Set up for Standing Dumbbell Calf Raise with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Stand with your torso upright holding two dumbbells in",
+      "With the toes pointing either straight (to hit all",
+      "As you inhale, go back to the setup by slowly lowering"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_standing_dumbbell_press": {
+    "id": "fedb_standing_dumbbell_press",
+    "summary": "Standing with your feet shoulder width apart, take a dumbbell in each hand. Raise the dumbbells to head height, the elbows out and about 90 degrees.",
+    "steps": [
+      "Standing with your feet shoulder width apart, take a dumbbell in each hand. Raise the dumbbells to head height, the elbows out and about 90 degrees.",
+      "Maintaining strict technique with no leg drive or leaning back, extend through the elbow to raise the weights together directly above your head.",
+      "Pause, and slowly return the weight to the setup."
+    ],
+    "cues": [
+      "Standing with your feet shoulder width apart, take a",
+      "Maintaining strict technique with no leg drive or",
+      "Pause, and slowly return the weight to the setup"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_standing_dumbbell_reverse_curl": {
+    "id": "fedb_standing_dumbbell_reverse_curl",
+    "summary": "To begin, stand straight with a dumbbell in each hand using a pronated grip (palms facing down). Your arms should be fully extended while your feet are shoulder width apart from each other. This is the setup.",
+    "steps": [
+      "Set up for Standing Dumbbell Reverse Curl with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "To begin, stand straight with a dumbbell in each hand",
+      "While holding the upper arms stationary, curl the",
+      "Slowly begin to bring the dumbbells back to setup as"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_standing_dumbbell_straight_arm_front_delt_raise_above_head": {
+    "id": "fedb_standing_dumbbell_straight_arm_front_delt_raise_above_head",
+    "summary": "Hold the dumbbells in front of your thighs, palms facing your thighs.",
+    "steps": [
+      "Hold the dumbbells in front of your thighs, palms facing your thighs.",
+      "Keep your arms straight with a slight bend at the elbows but keep them locked.",
+      "Raise the dumbbells in a semicircular motion to arm's length overhead as you exhale.",
+      "Slowly return to the setup using the same path as you inhale."
+    ],
+    "cues": [
+      "Hold the dumbbells in front of your thighs, palms",
+      "Keep your arms straight with a slight bend at the",
+      "Raise the dumbbells in a semicircular motion to arm's",
+      "Slowly return to the setup using the same path as you"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_standing_dumbbell_triceps_extension": {
+    "id": "fedb_standing_dumbbell_triceps_extension",
+    "summary": "The resistance should be resting in the palms of your hands with your thumbs around it. The palm of the hands should be facing up towards the ceiling.",
+    "steps": [
+      "The resistance should be resting in the palms of your hands with your thumbs around it. The palm of the hands should be facing up towards the ceiling.",
+      "Go back to the setup by using the triceps to raise the dumbbell. Breathe out as you perform this step."
+    ],
+    "cues": [
+      "To begin, stand up with a dumbbell held by both hands",
+      "The resistance should be resting in the palms of your",
+      "Keeping your upper arms close to your head with elbows",
+      "Go back to the setup by using the triceps to raise the"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_standing_dumbbell_upright_row": {
+    "id": "fedb_standing_dumbbell_upright_row",
+    "summary": "Lower the dumbbells back down slowly to the setup. Inhale as you perform this portion of the movement.",
+    "steps": [
+      "Set up for Standing Dumbbell Upright Row with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Grasp a dumbbell in each hand with a pronated (palms",
+      "Use your side shoulders to lift the dumbbells as you",
+      "Lower the dumbbells back down slowly to the setup"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_standing_inner_biceps_curl": {
+    "id": "fedb_standing_inner_biceps_curl",
+    "summary": "Stand up with a dumbbell in each hand being held at arms length. The elbows should be close to the torso. Your legs should be at about shoulder's width apart from each other.",
+    "steps": [
+      "Stand up with a dumbbell in each hand being held at arms length. The elbows should be close to the torso. Your legs should be at about shoulder's width apart from each other.",
+      "Rotate the palms of the hands so that they are facing inward in a neutral position.",
+      "Hold the contracted position for a second as you squeeze the biceps.",
+      "Slowly begin to bring the dumbbells back to the setup as your breathe in. Remember to rotate the wrists as you lower the weight in order to switch back to a neutral grip."
+    ],
+    "cues": [
+      "While holding the upper arms stationary, curl the",
+      "Only the forearms should move",
+      "Hold the contracted position for a second as you",
+      "Slowly begin to bring the dumbbells back to the setup"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_standing_one_arm_dumbbell_curl_over_incline_bench": {
+    "id": "fedb_standing_one_arm_dumbbell_curl_over_incline_bench",
+    "summary": "Stand on the back side of an incline bench as if you were going to be a spotter for someone. Have a dumbbell in one hand and rest it across the incline bench with a supinated (palms up) grip.",
+    "steps": [
+      "Slowly begin to bring the dumbbells back to setup as your breathe in.",
+      "Switch arms while performing the move."
+    ],
+    "cues": [
+      "Position your non lifting hand at the corner or side",
+      "While holding the upper arm stationary, curl the",
+      "Slowly begin to bring the dumbbells back to setup as",
+      "Switch arms while performing the move"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_standing_one_arm_dumbbell_triceps_extension": {
+    "id": "fedb_standing_one_arm_dumbbell_triceps_extension",
+    "summary": "Go back to the setup by using the triceps to raise the dumbbell. Breathe out as you perform this step.",
+    "steps": [
+      "Go back to the setup by using the triceps to raise the dumbbell. Breathe out as you perform this step.",
+      "Switch arms and repeat the exercise."
+    ],
+    "cues": [
+      "To begin, stand up with a dumbbell held in one hand",
+      "Keeping your upper arm close to your head (elbows in)",
+      "Go back to the setup by using the triceps to raise the",
+      "Switch arms and repeat the exercise"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_standing_palm_in_one_arm_dumbbell_press": {
+    "id": "fedb_standing_palm_in_one_arm_dumbbell_press",
+    "summary": "Start by having a dumbbell in one hand with your arm fully extended to the side using a neutral grip. Use your other arm to hold on to an incline bench to keep your balance.",
+    "steps": [
+      "Start by having a dumbbell in one hand with your arm fully extended to the side using a neutral grip. Use your other arm to hold on to an incline bench to keep your balance.",
+      "Slowly lift the dumbbell up until your arm is fully extended. This the setup.",
+      "While inhaling lower the weight down until your arm is at a 90 degree angle again.",
+      "Switch arms and repeat the exercise."
+    ],
+    "cues": [
+      "Slowly lift the dumbbell up until your arm is fully",
+      "While inhaling lower the weight down until your arm is",
+      "Feel the contraction for a second and then lift the",
+      "Switch arms and repeat the exercise"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_standing_palms_in_dumbbell_press": {
+    "id": "fedb_standing_palms_in_dumbbell_press",
+    "summary": "Continue to maintain a neutral grip throughout the entire exercise. Slowly lift the dumbbells up until your arms are fully extended.",
+    "steps": [
+      "Continue to maintain a neutral grip throughout the entire exercise. Slowly lift the dumbbells up until your arms are fully extended.",
+      "While inhaling lower the weights down until your arm is at a 90 degree angle again."
+    ],
+    "cues": [
+      "Start by having a dumbbell in each hand with your arm",
+      "Continue to maintain a neutral grip throughout the",
+      "While inhaling lower the weights down until your arm"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_stiff_legged_dumbbell_deadlift": {
+    "id": "fedb_stiff_legged_dumbbell_deadlift",
+    "summary": "Grasp a couple of dumbbells holding them by your side at arm's length.",
+    "steps": [
+      "Grasp a couple of dumbbells holding them by your side at arm's length.",
+      "Stand with your torso straight and your legs spaced using a shoulder width or narrower stance. The knees should be slightly bent.",
+      "Start bringing your torso up straight again by extending your hips and waist until you are back at the setup. Inhale as you perform this movement."
+    ],
+    "cues": [
+      "Grasp a couple of dumbbells holding them by your side",
+      "Stand with your torso straight and your legs spaced",
+      "Keeping the knees stationary, lower the dumbbells to",
+      "Start bringing your torso up straight again by"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength",
+      "Letting the lower back round under load"
+    ]
+  },
+  "fedb_straight_arm_dumbbell_pullover": {
+    "id": "fedb_straight_arm_dumbbell_pullover",
+    "summary": "Place a dumbbell standing up on a flat bench.",
+    "steps": [
+      "Place a dumbbell standing up on a flat bench.",
+      "While keeping your arms straight, lower the weight slowly in an arc behind your head while breathing in until you feel a stretch on the chest.",
+      "At that point, bring the dumbbell back to the setup using the arc through which the weight was lowered and exhale as you perform this movement.",
+      "Hold the weight on the initial position for a second and repeat the motion for the prescribed number of repetitions."
+    ],
+    "cues": [
+      "Grasp the dumbbell with both hands and hold it",
+      "While keeping your arms straight, lower the weight",
+      "At that point, bring the dumbbell back to the setup",
+      "Hold the weight on the initial position for a second"
+    ],
+    "mistakes": []
+  },
+  "fedb_tate_press": {
+    "id": "fedb_tate_press",
+    "summary": "Lie down on a flat bench with a dumbbell in each hand on top of your thighs. The palms of your hand will be facing each other.",
+    "steps": [
+      "Lie down on a flat bench with a dumbbell in each hand on top of your thighs. The palms of your hand will be facing each other.",
+      "Repeat the movement for the prescribed amount of repetitions of your training program."
+    ],
+    "cues": [
+      "By using your thighs to help you get the dumbbells up,",
+      "Keeping the upper arms stationary, slowly move the",
+      "As you breathe out, move the dumbbells up using your",
+      "Repeat the movement for the prescribed amount of"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_tricep_dumbbell_kickback": {
+    "id": "fedb_tricep_dumbbell_kickback",
+    "summary": "Now, while keeping your upper arms stationary, exhale and use your triceps to lift the weights until the arm is fully extended. Focus on moving the forearm.",
+    "steps": [
+      "Now, while keeping your upper arms stationary, exhale and use your triceps to lift the weights until the arm is fully extended. Focus on moving the forearm.",
+      "After a brief pause at the top contraction, inhale and slowly lower the dumbbells back down to the setup.",
+      "Repeat the movement for the prescribed amount of repetitions."
+    ],
+    "cues": [
+      "Start with a dumbbell in each hand and your palms",
+      "Now, while keeping your upper arms stationary, exhale",
+      "After a brief pause at the top contraction, inhale and",
+      "Repeat the movement for the prescribed amount of"
+    ],
+    "mistakes": []
+  },
+  "fedb_two_arm_dumbbell_preacher_curl": {
+    "id": "fedb_two_arm_dumbbell_preacher_curl",
+    "summary": "Grab a dumbbell with each arm and place the upper arms on top of the preacher bench or the incline bench. The dumbbell should be held at shoulder length.",
+    "steps": [
+      "Grab a dumbbell with each arm and place the upper arms on top of the preacher bench or the incline bench. The dumbbell should be held at shoulder length.",
+      "As you breathe in, slowly lower the dumbbells until your upper arm is extended and the biceps is fully stretched.",
+      "As you exhale, use the biceps to curl the weights up until your biceps is fully contracted and the dumbbells are at shoulder height."
+    ],
+    "cues": [
+      "Grab a dumbbell with each arm and place the upper arms",
+      "As you breathe in, slowly lower the dumbbells until",
+      "As you exhale, use the biceps to curl the weights up"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_vertical_swing": {
+    "id": "fedb_vertical_swing",
+    "summary": "Allow the dumbbell to hang at arms length between your legs, holding it with both hands. Keep your back straight and your head up.",
+    "steps": [
+      "Allow the dumbbell to hang at arms length between your legs, holding it with both hands. Keep your back straight and your head up.",
+      "Swing the dumbbell between your legs, flexing at the hips and bending the knees slightly.",
+      "Powerfully reverse the motion by extending at the hips, knees, and ankles to propel yourself upward, swinging the dumbell over your head.",
+      "As you land, absorb the impact through your legs and draw the dumbbell to your torso before the next repetition."
+    ],
+    "cues": [
+      "Allow the dumbbell to hang at arms length between your",
+      "Swing the dumbbell between your legs, flexing at the",
+      "Powerfully reverse the motion by extending at the",
+      "As you land, absorb the impact through your legs and"
+    ],
+    "mistakes": []
+  },
+  "fedb_zottman_curl": {
+    "id": "fedb_zottman_curl",
+    "summary": "Stand up with your torso upright and a dumbbell in each hand being held at arms length. The elbows should be close to the torso.",
+    "steps": [
+      "Stand up with your torso upright and a dumbbell in each hand being held at arms length. The elbows should be close to the torso.",
+      "Make sure the palms of the hands are facing each other.",
+      "Hold the contracted position for a second as you squeeze the biceps.",
+      "Now during the contracted position, rotate your wrist until you now have a pronated (palms facing down) grip with the thumb at a higher position than the pinky.",
+      "Slowly begin to bring the dumbbells back down using the pronated grip.",
+      "As the dumbbells close your thighs, start rotating the wrist so that you go back to a neutral (palms facing your body) grip."
+    ],
+    "cues": [
+      "Hold the contracted position for a second as you",
+      "Now during the contracted position, rotate your wrist",
+      "Slowly begin to bring the dumbbells back down using",
+      "As the dumbbells close your thighs, start rotating the"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "fedb_zottman_preacher_curl": {
+    "id": "fedb_zottman_preacher_curl",
+    "summary": "As you breathe in, slowly lower the dumbbells keeping the palms down until your upper arm is extended and your biceps are fully stretched.",
+    "steps": [
+      "As you breathe in, slowly lower the dumbbells keeping the palms down until your upper arm is extended and your biceps are fully stretched.",
+      "Now rotate your wrists once you are at the bottom of the movement so that the palms of the hands are facing up.",
+      "Squeeze the biceps hard for a second at the contracted position and rotate your wrists so that the palms are facing down again."
+    ],
+    "cues": [
+      "As you breathe in, slowly lower the dumbbells keeping",
+      "Now rotate your wrists once you are at the bottom of",
+      "As you exhale, use your biceps to curl the weights up",
+      "Squeeze the biceps hard for a second at the contracted"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1115": {
+    "id": "wger_1115",
+    "summary": "As a warmup, use light dumbbells, one in each hand. Lunge in alternating directions, forward, sideways, backwards and 45 degree angles.",
+    "steps": [
+      "Set up for 3D lunge warmup with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "As a warmup, use light dumbbells, one in each hand"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength",
+      "Letting the lower back round under load"
+    ]
+  },
+  "wger_1754": {
+    "id": "wger_1754",
+    "summary": "Dumbbell raise at an angle halfway between a front raise and a lateral raise.",
+    "steps": [
+      "Set up for 45° lateral raises with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Dumbbell raise at an angle halfway between a front"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1012": {
+    "id": "wger_1012",
+    "summary": "Bend one arm at the elbow, bringing the dumbbell up to your shoulder. Your upper arm should remain motionless during this movement.",
+    "steps": [
+      "Bend one arm at the elbow, bringing the dumbbell up to your shoulder. Your upper arm should remain motionless during this movement.",
+      "Bring the dumbbell back down until your arm is in its original relaxed position.",
+      "Repeat, switching arms."
+    ],
+    "cues": [
+      "Bend one arm at the elbow, bringing the dumbbell up to",
+      "Bring the dumbbell back down until your arm is in its",
+      "Repeat, switching arms"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1192": {
+    "id": "wger_1192",
+    "summary": "Hold two dumbbells, the arms are streched, the hands are on your.",
+    "steps": [
+      "Hold two dumbbells, the arms are streched, the hands are on your.",
+      "Side, the palms face inwards. Bend one arm at a time and bring the weight with a.",
+      "Fast movement up. At the same time, rotate your arms by 90 degrees at.",
+      "The very beginning of the movement. At the highest point, rotate a.",
+      "Little the weights further outwards. Without a pause, bring the arm back down, slowly, and do the same with the other arm.",
+      "Don't allow your body to swing during the exercise, all work is done.",
+      "By the biceps, which are the only mucles that should move (pay attention."
+    ],
+    "cues": [
+      "Little the weights further outwards",
+      "Don't allow your body to swing during the exercise,",
+      "By the biceps, which are the only mucles that should",
+      "To the elbows)"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1567": {
+    "id": "wger_1567",
+    "summary": "Stand with your knees slightly bent and your back straight. Hold a dumbbell in each hand, using a neutral grip at your sides.",
+    "steps": [
+      "Set up for Alternating dumbbell hammer curl with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Stand with your knees slightly bent and your back"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1501": {
+    "id": "wger_1501",
+    "summary": "Slightly bent down and knees to mimic a gorilla position and pull/row up the DBs to the chest. DB stay straight (thumbs pointing up).",
+    "steps": [
+      "Set up for Alternative DB Gorilla rows with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Slightly bent down and knees to mimic a gorilla"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_20": {
+    "id": "wger_20",
+    "summary": "Sit on a bench with your back supported. Hold a pair of dumbbells in front of your shoulders, palms facing you and elbows in front of your body.",
+    "steps": [
+      "Sit on a bench with your back supported. Hold a pair of dumbbells in front of your shoulders, palms facing you and elbows in front of your body.",
+      "Press the dumbbells overhead while rotating your hands, so that your palms face forward at the top. Stop just before your elbows lock out.",
+      "Reverse the movement under control: lower the dumbbells and turn your palms back towards you until you are in the setup again.",
+      "As shown here: https://www.youtube.com/watch?v=vj2w851ZHRM."
+    ],
+    "cues": [
+      "Sit on a bench with your back supported",
+      "Press the dumbbells overhead while rotating your",
+      "Reverse the movement under control: lower the",
+      "As shown here: https://www"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_31": {
+    "id": "wger_31",
+    "summary": "Hold a dumbbell in each hand and raise your straight arms out to the sides to shoulder height. Hold this position for as long as you can.",
+    "steps": [
+      "Set up for Axe Hold with a dumbbell with a braced torso and stable base.",
+      "Hold the position with steady breathing, keeping tension without losing posture."
+    ],
+    "cues": [
+      "Hold a dumbbell in each hand and raise your straight"
+    ],
+    "mistakes": []
+  },
+  "wger_1687": {
+    "id": "wger_1687",
+    "summary": "Place a dumbbell at around hip level and assume a bear crawl position. Push the knees off the floor and hold.",
+    "steps": [
+      "Place a dumbbell at around hip level and assume a bear crawl position. Push the knees off the floor and hold.",
+      "With the opposite hand reach for the dumbbell and pull it to the other side. Place your hand back on the floor and repeat with your other hand."
+    ],
+    "cues": [
+      "Place a dumbbell at around hip level and assume a bear",
+      "With the opposite hand reach for the dumbbell and pull"
+    ],
+    "mistakes": []
+  },
+  "wger_79": {
+    "id": "wger_79",
+    "summary": "Bend over slightly while holding two dumbbells. Pull the dumbbells up to your chest, keeping your elbows as high as you can.",
+    "steps": [
+      "Set up for Bent High Pulls with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Bend over slightly while holding two dumbbells"
+    ],
+    "mistakes": []
+  },
+  "wger_81": {
+    "id": "wger_81",
+    "summary": "Bent Over Dumbbell Rows (Single Arm) is a horizontal pull exercise with a dumbbell, done with steady control through the full range.",
+    "steps": [
+      "Set up for Bent Over Dumbbell Rows (Single Arm) with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "With dumbbells in hand, bend at the hip until hands"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_2669": {
+    "id": "wger_2669",
+    "summary": "Hold a dumbbell in each hand with a neutral or overhand grip.",
+    "steps": [
+      "Hold a dumbbell in each hand with a neutral or overhand grip.",
+      "Hinge at the hips, pushing your glutes back, until your torso is roughly 45–75 degrees to the floor. Keep a slight bend in your knees.",
+      "Let the dumbbells hang directly below your shoulders with arms fully extended.",
+      "Keep your back flat, chest up, and core braced — avoid rounding your spine.",
+      "Pull the dumbbells up toward your ribcage/hips, driving your elbows back and squeezing your shoulder blades together at the top.",
+      "Pause briefly at the top of the movement.",
+      "Lower the dumbbells back down under control to the setup."
+    ],
+    "cues": [
+      "Keep the spine neutral throughout — no rounding",
+      "Lead with the elbows, not the hands",
+      "Avoid using momentum or jerking the weight up",
+      "Control the eccentric (lowering) phase rather than"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_2762": {
+    "id": "wger_2762",
+    "summary": "Bent Over Row is a horizontal pull exercise with a dumbbell, done with steady control through the full range.",
+    "steps": [
+      "Set up for Bent Over Row with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Standing with the torso bent forward from the hips at"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_82": {
+    "id": "wger_82",
+    "summary": "Sit on bench while holding weights. Bend forward as far as possible, with arms slightly bent at the elbow. Perform a lateral raise while maintaining the bend in your elbow.",
+    "steps": [
+      "Set up for Bent-over Lateral Raises with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Sit on bench while holding weights"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_92": {
+    "id": "wger_92",
+    "summary": "Don't allow your body to swing during the exercise, all work is done by the biceps, which are the only mucles that should move (pay attention to the elbows).",
+    "steps": [
+      "Set up for Biceps Curls With Dumbbell with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Hold two dumbbells, the arms are streched, the hands",
+      "Don't allow your body to swing during the exercise,"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1483": {
+    "id": "wger_1483",
+    "summary": "For the Supinated Cross Body Curl, supinate the forearm with palms facing toward the ceiling and forearms coming across the body. Lift the inner-facing weight of the dumbbell towards your shoulder.",
+    "steps": [
+      "Set up for Bizeps Curls Trifecta with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "For the Supinated Cross Body Curl, supinate the",
+      "For the Pronated Cross Body Curl, pronate the forearm",
+      "For the No Money Curl, you’ll curl the dumbbell as you"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1706": {
+    "id": "wger_1706",
+    "summary": "Bulgarian Squat with Dumbbells is a squat exercise with a dumbbell, done with steady control through the full range.",
+    "steps": [
+      "Set up for Bulgarian Squat with Dumbbells with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "The Bulgarian split squat consists of performing a"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength",
+      "Letting the lower back round under load"
+    ]
+  },
+  "wger_1825": {
+    "id": "wger_1825",
+    "summary": "Position: Set an incline bench to 30-45 degrees. Lie face-down with your chest supported, keeping your head neutral or looking slightly down to avoid neck strain.",
+    "steps": [
+      "Position: Set an incline bench to 30-45 degrees. Lie face-down with your chest supported, keeping your head neutral or looking slightly down to avoid neck strain.",
+      "Grip: Hold light dumbbells with a neutral or thumbs-up grip (thumb pointing to the ceiling).",
+      "Movement: With straight or slightly bent elbows, raise the dumbbells up and out in a \"Y\" shape. Focus on moving the shoulders and shoulder blades rather than just lifting the arms.",
+      "Top Position: Squeeze the shoulder blades together and reach high, ensuring the arms are angled to form a \"Y\".",
+      "Control: Lower the dumbbells slowly to the setup."
+    ],
+    "cues": [
+      "Grip: Hold light dumbbells with a neutral or thumbs-up",
+      "Movement: With straight or slightly bent elbows, raise",
+      "Top Position: Squeeze the shoulder blades together and",
+      "Control: Lower the dumbbells slowly to the setup"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_161": {
+    "id": "wger_161",
+    "summary": "Cross-Bench Dumbbell Pullovers is a horizontal push exercise with a dumbbell, done with steady control through the full range.",
+    "steps": [
+      "Set up for Cross-Bench Dumbbell Pullovers with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Brace the torso"
+    ],
+    "mistakes": []
+  },
+  "wger_1666": {
+    "id": "wger_1666",
+    "summary": "Place elbow so that it is about level with the shoulder. Curl the wieght to your shoulder. Focus on the stretch in the eccentric part of the curl.",
+    "steps": [
+      "Set up for Curl - With Shoulder Elevated with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Place elbow so that it is about level with the shoulder"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1502": {
+    "id": "wger_1502",
+    "summary": "Hammer curl with a neutral grip, curling the dumbbell across your body towards the opposite shoulder. Works the brachialis in particular.",
+    "steps": [
+      "Set up for DB Cross Body Hammer Curls with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Hammer curl with a neutral grip, curling the dumbbell"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1497": {
+    "id": "wger_1497",
+    "summary": "Underhand grip DB, perform a normal bench press movement, keeping the elbows close to the chest.",
+    "steps": [
+      "Set up for DB Underhand bench press with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Underhand grip DB, perform a normal bench press"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1496": {
+    "id": "wger_1496",
+    "summary": "Dumbbell in hand in a curl fashion, lean body into the arm to help the dumbbell up above the chest, next to the head, to activate chest and delt combo.",
+    "steps": [
+      "Set up for DB Upper Chest Variation with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Dumbbell in hand in a curl fashion, lean body into the"
+    ],
+    "mistakes": []
+  },
+  "wger_1881": {
+    "id": "wger_1881",
+    "summary": "Grab two dumbbells with an overhand grip and lay your forearms across your knees. Let your wrists flex fully, then extend your wrists.",
+    "steps": [
+      "Grab two dumbbells with an overhand grip and lay your forearms across your knees. Let your wrists flex fully, then extend your wrists.",
+      "Grab two dumbbells with an overhand grip and lay your forearms across your knees.",
+      "Let your wrists flex fully, then extend your wrists."
+    ],
+    "cues": [
+      "Grab two dumbbells with an overhand grip and lay your",
+      "Let your wrists flex fully, then extend your wrists"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1556": {
+    "id": "wger_1556",
+    "summary": "Start with a dumbbell in each hand and perform a burpee, letting your chest touch the ground while holding the dumbbells.",
+    "steps": [
+      "Start with a dumbbell in each hand and perform a burpee, letting your chest touch the ground while holding the dumbbells.",
+      "Explosively jump your feet forward and swing the dumbbells between your legs.",
+      "Drive the dumbbells overhead in one continuous motion, locking out your arms.",
+      "Lower the dumbbells with control to return to the setup and repeat."
+    ],
+    "cues": [
+      "Start with a dumbbell in each hand and perform a",
+      "Explosively jump your feet forward and swing the",
+      "Drive the dumbbells overhead in one continuous motion,",
+      "Lower the dumbbells with control to return to the"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1512": {
+    "id": "wger_1512",
+    "summary": "Drop curls in a modified position at a slow pace effectively engage the brachialis for arm width.",
+    "steps": [
+      "Set up for Drop Curl with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Drop curls in a modified position at a slow pace",
+      "setup is with both arms in a slight angle towards each"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1639": {
+    "id": "wger_1639",
+    "summary": "Dumbbell Bent Over Face Pull is a horizontal pull exercise with a dumbbell, done with steady control through the full range.",
+    "steps": [
+      "Set up for Dumbbell Bent Over Face Pull with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "the move involves using dumbbells to perform a bent"
+    ],
+    "mistakes": []
+  },
+  "wger_1226": {
+    "id": "wger_1226",
+    "summary": "Bend your elbows and lift the dumbbells to your shoulders. Push the dumbbells over your head while rotating your arms to make your palms face forward. Reverse it to lower down. Repeat the exercise.",
+    "steps": [
+      "Bend your elbows and lift the dumbbells to your shoulders.",
+      "Push the dumbbells over your head while rotating your arms to make your palms face forward. Reverse it to lower down. Repeat the exercise."
+    ],
+    "cues": [
+      "Bend your elbows and lift the dumbbells to your",
+      "Push the dumbbells over your head while rotating your"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1504": {
+    "id": "wger_1504",
+    "summary": "From a front hold of the DBs in a OHP, press above the head, bring back towards the rear of the shoulders, down, and press back forward.",
+    "steps": [
+      "Set up for Dumbbell Bradford press with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "From a front hold of the DBs in a OHP, press above the"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_2661": {
+    "id": "wger_2661",
+    "summary": "Stand upright with a dumbbell in each hand, arms hanging at your sides and feet hip-width apart. For a larger range of motion, stand with the balls of your feet on a step or a weight plate.",
+    "steps": [
+      "Set up for Dumbbell Calf Raise with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Stand upright with a dumbbell in each hand, arms",
+      "Rise up onto your toes as high as you can and pause"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1482": {
+    "id": "wger_1482",
+    "summary": "setup is standing with feet shoulder width apart.",
+    "steps": [
+      "setup is standing with feet shoulder width apart.",
+      "Hands should take an underhand or supinated grip on the dumbbells holding them with hands shoulder width apart.",
+      "Keeping elbows tucked into your sides throughout the entire movement, use momentum to curl the dumbbells, squeezing your biceps at the top of the movement."
+    ],
+    "cues": [
+      "setup is standing with feet shoulder width apart",
+      "Hands should take an underhand or supinated grip on",
+      "Keeping elbows tucked into your sides throughout the",
+      "Slowly lower to return to the setup"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1228": {
+    "id": "wger_1228",
+    "summary": "Lie down with your back on a flat bench. Hold a dumbbell in each hand. Raise your arms towards the ceiling with your palms facing each other and dumbbells pressed together.",
+    "steps": [
+      "Lie down with your back on a flat bench. Hold a dumbbell in each hand. Raise your arms towards the ceiling with your palms facing each other and dumbbells pressed together.",
+      "Slowly lower the dumbbells to your chest, then slowly push them back. Repeat the exercise."
+    ],
+    "cues": [
+      "Lie down with your back on a flat bench",
+      "Slowly lower the dumbbells to your chest, then slowly"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1415": {
+    "id": "wger_1415",
+    "summary": "Dumbbell Crunches is a core compression exercise with a dumbbell, done with steady control through the full range.",
+    "steps": [
+      "Set up for Dumbbell Crunches with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Dumbbell crunches are a weighted variation of"
+    ],
+    "mistakes": []
+  },
+  "wger_1931": {
+    "id": "wger_1931",
+    "summary": "The Dumbbell Curl is a classic isolation exercise for the arms. Unlike the Hammer Curl, it involves rotating your wrists (supination) as you lift the weights, which allows for a full contraction of the biceps.",
+    "steps": [
+      "Set up for Dumbbell Curl with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "The Dumbbell Curl is a classic isolation exercise for"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_2682": {
+    "id": "wger_2682",
+    "summary": "Dumbbell squats with elevated heel position. Stand on either squat wedges or weight plates to raise heels higher than toes, while holding the dumbbells on your sides.",
+    "steps": [
+      "Set up for Dumbbell cyclist squat with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Dumbbell squats with elevated heel position"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength",
+      "Letting the lower back round under load"
+    ]
+  },
+  "wger_1370": {
+    "id": "wger_1370",
+    "summary": "Controlled execution Don't use momentum Slow execution.",
+    "steps": [
+      "Controlled execution Don't use momentum Slow execution.",
+      "Controlled execution.",
+      "Don't use momentum.",
+      "Slow execution."
+    ],
+    "cues": [
+      "Controlled execution Don't use momentum Slow execution",
+      "Controlled execution",
+      "Don't use momentum",
+      "Slow execution"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength",
+      "Letting the lower back round under load"
+    ]
+  },
+  "wger_1616": {
+    "id": "wger_1616",
+    "summary": "setup: Get on all fours on a mat, with your hands aligned under your shoulders and your knees aligned under your hips.",
+    "steps": [
+      "setup: Get on all fours on a mat, with your hands aligned under your shoulders and your knees aligned under your hips.",
+      "Placing the dumbbell: Take a dumbbell and place it behind the knee of the leg you are going to lift. Make sure it is held securely to prevent it from falling during the exercise.",
+      "Inhale and, as you exhale, lift the leg with the dumbbell upward, keeping the knee bent at a 90-degree angle.",
+      "Raise the leg until it is parallel to the floor, feeling the contraction in the glutes.",
+      "Hold the position for one second at the top and then slowly lower the leg back to the setup.",
+      "Repetitions: Perform 10 to 15 repetitions per leg, making sure to maintain good form throughout the exercise.",
+      "Sets: Complete 2 to 3 sets, depending on your fitness level."
+    ],
+    "cues": [
+      "Raise the leg until it is parallel to the floor,",
+      "Hold the position for one second at the top and then",
+      "Repetitions: Perform 10 to 15 repetitions per leg,",
+      "Sets: Complete 2 to 3 sets, depending on your fitness"
+    ],
+    "mistakes": [
+      "Letting the lower back round under load"
+    ]
+  },
+  "wger_1224": {
+    "id": "wger_1224",
+    "summary": "Hold a dumbbell in each hand with your palms facing forward. Pull your elbows back and lift the dumbbells to your chest height. Slowly lower the dumbbell and repeat the exercise.",
+    "steps": [
+      "Set up for Dumbbell drag curls with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Hold a dumbbell in each hand with your palms facing"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1116": {
+    "id": "wger_1116",
+    "summary": "Grab half your body weight in each hand and walk.",
+    "steps": [
+      "Set up for Dumbbell farmer's carry with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Grab half your body weight in each hand and walk"
+    ],
+    "mistakes": [
+      "Letting the lower back round under load"
+    ]
+  },
+  "wger_1503": {
+    "id": "wger_1503",
+    "summary": "Similar to hip thrust, but with feet put up together, lifting the butt off the ground in a frog like position.",
+    "steps": [
+      "Set up for Dumbbell Frog Press with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Similar to hip thrust, but with feet put up together,"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength",
+      "Letting the lower back round under load"
+    ]
+  },
+  "wger_1640": {
+    "id": "wger_1640",
+    "summary": "the move involves holding a dumbbell in each hand at shoulder height and performing a squat. It targets the lower body muscles, including the quads, hamstrings, and glutes, while also engaging the core and upper body.",
+    "steps": [
+      "Set up for Dumbbell Front Squat with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "the move involves holding a dumbbell in each hand at"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength",
+      "Letting the lower back round under load"
+    ]
+  },
+  "wger_203": {
+    "id": "wger_203",
+    "summary": "Grasp dumbbell with both hands at the sides of the upper plates. Hold dumbbell in front of chest, close to torso. Place feet about shoulderwide apart, keep knees slightly bent.",
+    "steps": [
+      "Grasp dumbbell with both hands at the sides of the upper plates. Hold dumbbell in front of chest, close to torso. Place feet about shoulderwide apart, keep knees slightly bent.",
+      "Squat down until thighs are parallel to floor. Keep back straight, bend and move hips backward to keep knees above feet. Return, keep knees slightly flexed. Repeat.",
+      "Keep bodyweight on heels and look ahead or slightly above to keep back straight."
+    ],
+    "cues": [
+      "Grasp dumbbell with both hands at the sides of the",
+      "Squat down until thighs are parallel to floor",
+      "Keep bodyweight on heels and look ahead or slightly"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength",
+      "Letting the lower back round under load"
+    ]
+  },
+  "wger_1087": {
+    "id": "wger_1087",
+    "summary": "Dumbbell Hang Power Cleans is a vertical pull exercise with a dumbbell, done with steady control through the full range.",
+    "steps": [
+      "Set up for Dumbbell Hang Power Cleans with a dumbbell with a braced torso and stable base.",
+      "Hold the position with steady breathing, keeping tension without losing posture."
+    ],
+    "cues": [
+      "On your feet, stand tall with your dumbbells, holding"
+    ],
+    "mistakes": []
+  },
+  "wger_1353": {
+    "id": "wger_1353",
+    "summary": "Engage the muscles Position your feet wide Controlled movement Slow movement Bring the weights toward your lower chest/stomach.",
+    "steps": [
+      "Engage the muscles Position your feet wide Controlled movement Slow movement Bring the weights toward your lower chest/stomach.",
+      "Engage the muscles.",
+      "Position your feet wide.",
+      "Controlled movement.",
+      "Slow movement.",
+      "Bring the weights toward your lower chest/stomach."
+    ],
+    "cues": [
+      "Position your feet wide",
+      "Controlled movement",
+      "Slow movement",
+      "Bring the weights toward your lower chest/stomach"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1642": {
+    "id": "wger_1642",
+    "summary": "the move involves sitting on the ground with a dumbbell resting on the hips, then thrusting the hips upward while squeezing the glutes. It is a great exercise for strengthening the glutes and improving hip mobility.",
+    "steps": [
+      "Set up for Dumbbell Hip Thrust with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "the move involves sitting on the ground with a"
+    ],
+    "mistakes": [
+      "Letting the lower back round under load"
+    ]
+  },
+  "wger_2724": {
+    "id": "wger_2724",
+    "summary": "Perform Dumbbell Lateral Raise with controlled form, keeping tension on the target muscles, pausing briefly at the peak contraction, then returning slowly under control without using momentum.",
+    "steps": [
+      "Set up for Dumbbell Lateral Raise with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Perform Dumbbell Lateral Raise with controlled form,"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_206": {
+    "id": "wger_206",
+    "summary": "setup: Stand with feet hip-width apart and hands either on your hips or holding dumbbells at your sides.",
+    "steps": [
+      "setup: Stand with feet hip-width apart and hands either on your hips or holding dumbbells at your sides.",
+      "The Stride: Take a wide step forward with your right leg.",
+      "The Descent: Lower your hips until both knees are bent at approximately 90-degree angles .",
+      "The Transition: Drive through your front heel to stand up, bringing your back foot forward to step directly into the next lunge."
+    ],
+    "cues": [
+      "setup: Stand with feet hip-width apart and hands",
+      "The Stride: Take a wide step forward with your right",
+      "The Descent: Lower your hips until both knees are bent",
+      "The Transition: Drive through your front heel to stand"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength",
+      "Letting the lower back round under load"
+    ]
+  },
+  "wger_801": {
+    "id": "wger_801",
+    "summary": "Normal Push-ups on Dumbbells, this brings a further range of movement.",
+    "steps": [
+      "Set up for Dumbbell Push-Up with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Normal Push-ups on Dumbbells, this brings a further"
+    ],
+    "mistakes": []
+  },
+  "wger_1227": {
+    "id": "wger_1227",
+    "summary": "Dumbbell rear delt row is a horizontal pull exercise with a dumbbell, done with steady control through the full range.",
+    "steps": [
+      "Set up for Dumbbell rear delt row with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Hold a dumbbell in each hand"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1652": {
+    "id": "wger_1652",
+    "summary": "the move involves holding a dumbbell in each hand and bending forward at the hips while keeping the back straight, then returning to a standing position. It primarily targets the hamstrings and glutes.",
+    "steps": [
+      "Set up for Dumbbell Romanian Deadlift with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "the move involves holding a dumbbell in each hand and"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength",
+      "Letting the lower back round under load"
+    ]
+  },
+  "wger_1429": {
+    "id": "wger_1429",
+    "summary": "External Rotation : Hold a dumbbell in one hand, keeping your elbow bent at 90 degrees and close to your body. Rotate your forearm outward, away from your body, keeping your elbow stationary. Slowly return to the setup.",
+    "steps": [
+      "Set up for Dumbbell Shoulder Rotations with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "External Rotation : Hold a dumbbell in one hand,",
+      "Internal Rotation : Hold a dumbbell in one hand,"
+    ],
+    "mistakes": []
+  },
+  "wger_1234": {
+    "id": "wger_1234",
+    "summary": "The single-leg hip thrust is performed by placing your upper back on a weight bench, raising one leg, and extending the hip of the other leg to achieve an isolated contraction of the glute.",
+    "steps": [
+      "Set up for Dumbbell Single-leg Hip Thrust with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "The single-leg hip thrust is performed by placing your",
+      "By working each side separately, you can fully isolate"
+    ],
+    "mistakes": [
+      "Letting the lower back round under load"
+    ]
+  },
+  "wger_1947": {
+    "id": "wger_1947",
+    "summary": "Key Steps to Execute Correctly:.",
+    "steps": [
+      "Key Steps to Execute Correctly:.",
+      "Setup: Place the dumbbell between your feet, with your shoulders above your hips, chest up, and back flat.",
+      "The Pull: Explosively extend your hips, knees, and ankles (triple extension) to drive the dumbbell upward, keeping your elbow high and the dumbbell close to your body.",
+      "The Catch: Quickly flex your hips and knees to drop under the dumbbell and receive it overhead with your arm locked in position, landing in a half-squat stance."
+    ],
+    "cues": [
+      "Setup: Place the dumbbell between your feet, with your",
+      "The Pull: Explosively extend your hips, knees, and",
+      "The Catch: Quickly flex your hips and knees to drop",
+      "Common Mistakes: Using your arms too much to lift the"
+    ],
+    "mistakes": [
+      "Letting the lower back round under load"
+    ]
+  },
+  "wger_1366": {
+    "id": "wger_1366",
+    "summary": "Controlled execution No momentum Execute slowly.",
+    "steps": [
+      "Controlled execution No momentum Execute slowly.",
+      "Controlled execution.",
+      "Execute slowly."
+    ],
+    "cues": [
+      "Controlled execution No momentum Execute slowly",
+      "Controlled execution",
+      "Execute slowly"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength",
+      "Letting the lower back round under load"
+    ]
+  },
+  "wger_1088": {
+    "id": "wger_1088",
+    "summary": "Dumbbell sumo deadlift is a hinge exercise with a dumbbell, done with steady control through the full range.",
+    "steps": [
+      "Set up for Dumbbell sumo deadlift with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Lower your dumbbell to the ground between your legs"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength",
+      "Letting the lower back round under load"
+    ]
+  },
+  "wger_1684": {
+    "id": "wger_1684",
+    "summary": "Start with the dumbbells resting on your shoulders and squat down. Push into standing and raise the dumbbells into an overhead position. Bring the dumbbells back to your shoulders and repeat.",
+    "steps": [
+      "Start with the dumbbells resting on your shoulders and squat down. Push.",
+      "Into standing and raise the dumbbells into an overhead position. Bring.",
+      "The dumbbells back to your shoulders and repeat."
+    ],
+    "cues": [
+      "Start with the dumbbells resting on your shoulders and",
+      "Into standing and raise the dumbbells into an overhead",
+      "The dumbbells back to your shoulders and repeat"
+    ],
+    "mistakes": [
+      "Letting the lower back round under load"
+    ]
+  },
+  "wger_211": {
+    "id": "wger_211",
+    "summary": "Position one dumbbell over head with both hands under inner plate (heart shaped grip).",
+    "steps": [
+      "Set up for Dumbbell Triceps Extension with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Position one dumbbell over head with both hands under",
+      "With elbows over head, lower forearm behind upper arm"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_2739": {
+    "id": "wger_2739",
+    "summary": "Dumbbell Ulnar Deviation is a horizontal push exercise with a dumbbell, done with steady control through the full range.",
+    "steps": [
+      "Set up for Dumbbell Ulnar Deviation with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Stand with your arm straight down by your side"
+    ],
+    "mistakes": []
+  },
+  "wger_1463": {
+    "id": "wger_1463",
+    "summary": "Start by holding a pair of dumbbells with your feet shoulder-wide apart and your knees slightly bent.",
+    "steps": [
+      "Start by holding a pair of dumbbells with your feet shoulder-wide apart and your knees slightly bent.",
+      "Hinge at your hips to lower your torse forward until it's almost parallel to the floor, keeping your back flat and maintaining a slight bend in your knees.",
+      "Slowly lower to the setup and repeat. Keep your back flat all the time."
+    ],
+    "cues": [
+      "Start by holding a pair of dumbbells with your feet",
+      "Hinge at your hips to lower your torse forward until",
+      "Exhale as you row the dumbbells to your sides up to",
+      "Slowly lower to the setup and repeat"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1225": {
+    "id": "wger_1225",
+    "summary": "Hold a dumbbell in each hand with your hands slightly wider than shoulder-width apart and palms facing forward. Bend your elbows and lift the dumbbells to your shoulders. Slowly return and repeat.",
+    "steps": [
+      "Hold a dumbbell in each hand with your hands slightly wider than shoulder-width apart and palms facing forward.",
+      "Bend your elbows and lift the dumbbells to your shoulders. Slowly return and repeat."
+    ],
+    "cues": [
+      "Hold a dumbbell in each hand with your hands slightly",
+      "Bend your elbows and lift the dumbbells to your"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_2725": {
+    "id": "wger_2725",
+    "summary": "Dumbbell Wrist Rising is a horizontal push exercise with a dumbbell, done with steady control through the full range.",
+    "steps": [
+      "Set up for Dumbbell Wrist Rising with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Stand tall with your arm hanging straight down by your"
+    ],
+    "mistakes": []
+  },
+  "wger_1824": {
+    "id": "wger_1824",
+    "summary": "Set Up : Lie flat with a dumbbell in each hand. Extend your arms straight up over your chest as if you were at the top of a dumbbell bench press.",
+    "steps": [
+      "Set Up : Lie flat with a dumbbell in each hand. Extend your arms straight up over your chest as if you were at the top of a dumbbell bench press.",
+      "setup : Position the dumbbells so they are touching or very close together with a pronated grip (palms facing your feet and thumbs facing each other).",
+      "Lowering : Without moving your upper arms or shoulders, bend your elbows and flare them outward to the sides. Lower the inner ends of the dumbbells toward the center of your chest.",
+      "Touch and Pause : Gently touch the dumbbells to your chest. Do not rest the weight on your body; maintain constant tension in your triceps."
+    ],
+    "cues": [
+      "setup : Position the dumbbells so they are touching or",
+      "Lowering : Without moving your upper arms or",
+      "Touch and Pause : Gently touch the dumbbells to your",
+      "Press : Forcefully extend your elbows to return the"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1498": {
+    "id": "wger_1498",
+    "summary": "Elbows Tucked DB Bench Press, chest press movement focusing on the triceps. DB stays parallel with body.",
+    "steps": [
+      "Set up for Elbows Tucked DB Bench Press with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Elbows Tucked DB Bench Press, chest press movement"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_2744": {
+    "id": "wger_2744",
+    "summary": "Fat Grip Dumbbell Hold is a horizontal push exercise with a dumbbell, done with steady control through the full range.",
+    "steps": [
+      "Set up for Fat Grip Dumbbell Hold with a dumbbell with a braced torso and stable base.",
+      "Hold the position with steady breathing, keeping tension without losing posture."
+    ],
+    "cues": [
+      "Fit thick grip sleeves over two dumbbell handles, or"
+    ],
+    "mistakes": []
+  },
+  "wger_238": {
+    "id": "wger_238",
+    "summary": "Fly With Dumbbells is a horizontal push exercise with a dumbbell, done with steady control through the full range.",
+    "steps": [
+      "Set up for Fly With Dumbbells with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Take two dumbbells and lay on a bench, make sure the"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_239": {
+    "id": "wger_239",
+    "summary": "The exercise is the same as with a regular bench:.",
+    "steps": [
+      "Set up for Fly With Dumbbells, Decline Bench with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "The exercise is the same as with a regular bench: Take",
+      "The exercise is the same as with a regular bench:",
+      "Take two dumbbells and lay on a bench, make sure the"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1333": {
+    "id": "wger_1333",
+    "summary": "Engage the muscles Don't use momentum Controlled movement Slow movement.",
+    "steps": [
+      "Engage the muscles Don't use momentum Controlled movement Slow movement.",
+      "Engage the muscles.",
+      "Don't use momentum.",
+      "Controlled movement.",
+      "Slow movement."
+    ],
+    "cues": [
+      "Engage the muscles",
+      "Don't use momentum",
+      "Controlled movement",
+      "Slow movement"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1686": {
+    "id": "wger_1686",
+    "summary": "Glute Bridge Single-Arm Press is a hinge exercise with a dumbbell, done with steady control through the full range.",
+    "steps": [
+      "Set up for Glute Bridge Single-Arm Press with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "With one dumbbell in hand, perform a glute bridge"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength",
+      "Letting the lower back round under load"
+    ]
+  },
+  "wger_1303": {
+    "id": "wger_1303",
+    "summary": "Execution: When you’re starting the exercise, focus on pulling your elbows back until you feel maximum tightness in the lats.",
+    "steps": [
+      "Execution: When you’re starting the exercise, focus on pulling your elbows back until you feel maximum tightness in the lats.",
+      "If you want to get some trap activation with the exercise, relax your shoulder blades when the weights are hanging down and then retract them as you start the rep."
+    ],
+    "cues": [
+      "Setup: Place your chest on the end of a bench, using a",
+      "Execution: When you’re starting the exercise, focus on",
+      "If you want to get some trap activation with the"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_537": {
+    "id": "wger_537",
+    "summary": "setup: Lean back, resting your back against the bench, while using your knees one after the other to push the dumbbells upward to shoulder height.",
+    "steps": [
+      "Set up for Incline Bench Press - Dumbbell with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "setup: Lean back, resting your back against the bench,",
+      "Anatomical Stabilization: Plant your feet firmly on",
+      "Eccentric Phase (Lowering): Lower the dumbbells slowly",
+      "Concentric Phase (Lift): Push the dumbbells vertically"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_828": {
+    "id": "wger_828",
+    "summary": "Incline Bench Reverse Fly is a horizontal pull exercise with a dumbbell, done with steady control through the full range.",
+    "steps": [
+      "Set up for Incline Bench Reverse Fly with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "The incline dumbbell reverse fly is an upper-body"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1283": {
+    "id": "wger_1283",
+    "summary": "Set up an adjustable bench at a 45-degree angle.",
+    "steps": [
+      "Set up an adjustable bench at a 45-degree angle.",
+      "Lay on your stomach with your head hanging just above the edge of the bench.",
+      "Grab a dumbbell in each hand and set up with a good posture – core and lats engaged and shoulders neutral.",
+      "Row the dumbbells toward the top of the stomach and squeeze the back at the top of the rep.",
+      "Finally, lower the dumbbells back to the setup and repeat until all reps are completed."
+    ],
+    "cues": [
+      "Lay on your stomach with your head hanging just above",
+      "Grab a dumbbell in each hand and set up with a good",
+      "Row the dumbbells toward the top of the stomach and",
+      "Finally, lower the dumbbells back to the setup and"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1879": {
+    "id": "wger_1879",
+    "summary": "Set an incline bench to a 45-degree angle and sit facing the bench, chest against the pad, with a dumbbell in each hand, palms facing each other.",
+    "steps": [
+      "Set an incline bench to a 45-degree angle and sit facing the bench, chest against the pad, with a dumbbell in each hand, palms facing each other.",
+      "Position your feet firmly on the ground for stability and let your arms hang down naturally with a slight bend in your elbows.",
+      "Engage your core and keep your back straight throughout the movement.",
+      "Raise your arms forward and out to form a Y shape, keeping the movement controlled and your elbows slightly bent.",
+      "Lift until your arms are roughly parallel to the floor and in line with your ears.",
+      "Pause briefly at the top of the movement to engage your shoulder muscles fully, then slowly lower your arms back down to the setup.",
+      "Ensure the movement is slow and controlled during both the ascent and descent to maximize engagement of the deltoids and supporting muscles."
+    ],
+    "cues": [
+      "Raise your arms forward and out to form a Y shape,",
+      "Lift until your arms are roughly parallel to the floor",
+      "Pause briefly at the top of the movement to engage",
+      "Ensure the movement is slow and controlled during both"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_308": {
+    "id": "wger_308",
+    "summary": "Use inclined bench. Hold dumbbells straight out to your sides, elbows slightly bent. Bring arms together above you, keeping angle of elbows fixed.",
+    "steps": [
+      "Set up for Incline Dumbbell Fly with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Use inclined bench"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1441": {
+    "id": "wger_1441",
+    "summary": "Sit on a bench with 45° incline Ellbows 45° out Move dumbbells down until upper arms are parallel to shoulders Move dumbbells up, meeting overhead.",
+    "steps": [
+      "Sit on a bench with 45° incline Ellbows 45° out Move dumbbells down until upper arms are parallel to shoulders Move dumbbells up, meeting overhead.",
+      "Sit on a bench with 45° incline.",
+      "Ellbows 45° out.",
+      "Move dumbbells down until upper arms are parallel to shoulders.",
+      "Move dumbbells up, meeting overhead."
+    ],
+    "cues": [
+      "Sit on a bench with 45° incline",
+      "Ellbows 45° out",
+      "Move dumbbells down until upper arms are parallel to",
+      "Move dumbbells up, meeting overhead"
+    ],
+    "mistakes": []
+  },
+  "wger_1693": {
+    "id": "wger_1693",
+    "summary": "Lower the dumbbells a few inches above your chest — about the midpoint of a normal incline press.",
+    "steps": [
+      "Hold Position:.",
+      "Lower the dumbbells a few inches above your chest — about the midpoint of a normal incline press.",
+      "This is where your upper chest is under maximum tension.",
+      "Hold the position for 20–45 seconds while keeping the chest tight.",
+      "Breathe slowly but stay tense — do not relax your chest or shoulders .",
+      "After the hold, carefully bring the dumbbells down and rest."
+    ],
+    "cues": [
+      "This is where your upper chest is under maximum tension",
+      "Hold the position for 20–45 seconds while keeping the",
+      "Breathe slowly but stay tense — do not relax your",
+      "After the hold, carefully bring the dumbbells down and"
+    ],
+    "mistakes": []
+  },
+  "wger_2728": {
+    "id": "wger_2728",
+    "summary": "Isometric Dumbbell Pronation Hold is a horizontal push exercise with a dumbbell, done with steady control through the full range.",
+    "steps": [
+      "Set up for Isometric Dumbbell Pronation Hold with a dumbbell with a braced torso and stable base.",
+      "Hold the position with steady breathing, keeping tension without losing posture."
+    ],
+    "cues": [
+      "Rest your forearm on a bench with the palm facing in"
+    ],
+    "mistakes": []
+  },
+  "wger_2729": {
+    "id": "wger_2729",
+    "summary": "Isometric Wrist Curl Hold is a horizontal pull exercise with a dumbbell, done with steady control through the full range.",
+    "steps": [
+      "Set up for Isometric Wrist Curl Hold with a dumbbell with a braced torso and stable base.",
+      "Hold the position with steady breathing, keeping tension without losing posture."
+    ],
+    "cues": [
+      "Sit on a bench with your forearm resting on your"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_2726": {
+    "id": "wger_2726",
+    "summary": "Isometric Wrist Rising Hold is a horizontal push exercise with a dumbbell, done with steady control through the full range.",
+    "steps": [
+      "Set up for Isometric Wrist Rising Hold with a dumbbell with a braced torso and stable base.",
+      "Hold the position with steady breathing, keeping tension without losing posture."
+    ],
+    "cues": [
+      "Set up exactly as for dumbbell wrist rising: arm"
+    ],
+    "mistakes": []
+  },
+  "wger_1511": {
+    "id": "wger_1511",
+    "summary": "the move is somewhat similar to a cable curl and a cable crossover. But instead of a chest/biceps exercise, the move targets the brachialis muscle, responsible for that broad arm when viewed from a front view.",
+    "steps": [
+      "Set up for Kong Curl with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "the move is somewhat similar to a cable curl and a",
+      "During the exercise, maintain a pronated forearm"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1442": {
+    "id": "wger_1442",
+    "summary": "Sit on a bench with 45° incline.",
+    "steps": [
+      "Sit on a bench with 45° incline.",
+      "Hold dumbbells overhead.",
+      "Move dumbbells down as if doing overhead press.",
+      "Rotate dumbbells palms facing up and extend your arms in front of your body.",
+      "Move hands together until dumbbells meet, keep arms extended.",
+      "Reverse the motion until dumbbells are overhead again.",
+      "This is one repetition."
+    ],
+    "cues": [
+      "Rotate dumbbells palms facing up and extend your arms",
+      "Move hands together until dumbbells meet, keep arms",
+      "Reverse the motion until dumbbells are overhead again",
+      "This is one repetition"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1434": {
+    "id": "wger_1434",
+    "summary": "Bend upper body forward Move dumbbells near your body with slightly bent arms towards your back.",
+    "steps": [
+      "Bend upper body forward Move dumbbells near your body with slightly bent arms towards your back.",
+      "Bend upper body forward.",
+      "Move dumbbells near your body with slightly bent arms towards your back."
+    ],
+    "cues": [
+      "Bend upper body forward Move dumbbells near your body",
+      "Bend upper body forward",
+      "Move dumbbells near your body with slightly bent arms"
+    ],
+    "mistakes": []
+  },
+  "wger_2538": {
+    "id": "wger_2538",
+    "summary": "An isometric lateral raise is a shoulder exercise where you hold your arms out to the sides at waist height for a set amount of time instead of moving up and down.",
+    "steps": [
+      "Set up for Lateral Raise Isometric with a dumbbell with a braced torso and stable base.",
+      "Hold the position with steady breathing, keeping tension without losing posture."
+    ],
+    "cues": [
+      "An isometric lateral raise is a shoulder exercise"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_348": {
+    "id": "wger_348",
+    "summary": "Lateral Raises is a vertical push exercise with a dumbbell, done with steady control through the full range.",
+    "steps": [
+      "Set up for Lateral Raises with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "the move works the deltoid muscle of the shoulder"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_351": {
+    "id": "wger_351",
+    "summary": "(1) Perform a lateral raise, pausing at the top of the lift (2).",
+    "steps": [
+      "(1) Perform a lateral raise, pausing at the top of the lift (2).",
+      "Now lower the weight to your quadriceps, or, in other words, lower the dumbbells as though you are completing a Front Raise repetition. (4).",
+      "(1) l front view (2) -l- FV (3) l- side view (4) l SV/FV (5) l- SV (6) -l- FV (7) l FV/SV."
+    ],
+    "cues": [
+      "Instead of lowering the weight, bring it to the front",
+      "Now lower the weight to your quadriceps, or, in other",
+      "Reverse the motion: Perform a front raise (5), at the",
+      "(1) l front view (2) -l- FV (3) l- side view (4) l"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1967": {
+    "id": "wger_1967",
+    "summary": "Slow controlled seated forward exercise with dumbbells.",
+    "steps": [
+      "Set up for Lento avanti seduto with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Slow controlled seated forward exercise with dumbbells"
+    ],
+    "mistakes": []
+  },
+  "wger_1530": {
+    "id": "wger_1530",
+    "summary": "Dumbbell in each hand and lie backwards on a bench, similar to a classic chest press.",
+    "steps": [
+      "Dumbbell in each hand and lie backwards on a bench, similar to a classic chest press.",
+      "Let your arms hang down at your sides, with the dumbbells possibly touching the.",
+      "Floor. Now start to lift the dumbbells upwards until your forearms are.",
+      "Perpendicular to the ceiling. Slowly lower the dumbbells until they almost.",
+      "Touch the floor again. Keep your ellbows in place to minimize cheating."
+    ],
+    "cues": [
+      "Let your arms hang down at your sides, with the",
+      "Floor",
+      "Perpendicular to the ceiling",
+      "Touch the floor again"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_923": {
+    "id": "wger_923",
+    "summary": "Laying on the stomach on a bench with slight angle.",
+    "steps": [
+      "Set up for Lying Dumbbell Row SS Seated Shrug with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Laying on the stomach on a bench with slight angle"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_406": {
+    "id": "wger_406",
+    "summary": "This is an excercise for problems with the rotator cuff. Primary Infraspinatus, secondary Teres Minor. Lying on side. Keep elbow on waist and in 90 dgr angle. Rotate towards stomach. Add weight as fit.",
+    "steps": [
+      "This is an excercise for problems with the rotator cuff. Primary Infraspinatus, secondary Teres Minor.",
+      "Lying on side. Keep elbow on waist and in 90 dgr angle. Rotate towards stomach. Add weight as fit."
+    ],
+    "cues": [
+      "This is an excercise for problems with the rotator cuff",
+      "Lying on side"
+    ],
+    "mistakes": []
+  },
+  "wger_1490": {
+    "id": "wger_1490",
+    "summary": "Lying Triceps Kickback is a hinge exercise with a dumbbell, done with steady control through the full range.",
+    "steps": [
+      "Set up for Lying Triceps Kickback with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Set the bench to an 60deg angle"
+    ],
+    "mistakes": [
+      "Letting the lower back round under load"
+    ]
+  },
+  "wger_1461": {
+    "id": "wger_1461",
+    "summary": "Set up for a normal Dumbbell chest press but lift your leg ups straight or put them on another bench to remove the leg drive.",
+    "steps": [
+      "Set up for No Leg Drive Dumbbell Chest Press with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Set up for a normal Dumbbell chest press but lift your"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1701": {
+    "id": "wger_1701",
+    "summary": "Rowing phase (concentric): Pull the dumbbell toward your lower chest or waist , leading with your elbow . Keep your torso stable — avoid twisting or rotating your shoulders. Pause at the top and squeeze your lats .",
+    "steps": [
+      "Rowing phase (concentric):.",
+      "Pull the dumbbell toward your lower chest or waist , leading with your elbow .",
+      "Keep your torso stable — avoid twisting or rotating your shoulders.",
+      "Pause at the top and squeeze your lats ."
+    ],
+    "cues": [
+      "Rowing phase (concentric):",
+      "Pull the dumbbell toward your lower chest or waist ,",
+      "Keep your torso stable — avoid twisting or rotating",
+      "Pause at the top and squeeze your lats"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1703": {
+    "id": "wger_1703",
+    "summary": "Among the exercises that work the arm muscles, kickback and its variations are very effective. You can easily apply these exercises with dumbbells, cables or resistance bands.",
+    "steps": [
+      "Set up for Patadas traseras with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "The dumbbell kickback is a popular strength training",
+      "Among the exercises that work the arm muscles,"
+    ],
+    "mistakes": []
+  },
+  "wger_1658": {
+    "id": "wger_1658",
+    "summary": "Single arm curl that can be done using a dumbbell and a preacher bench, or a preacher curl machine. Turn body away from the weight.",
+    "steps": [
+      "Set up for Preacher Curl - Externally Rotated with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Single arm curl that can be done using a dumbbell and"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1657": {
+    "id": "wger_1657",
+    "summary": "Single arm curl that can be done using a dumbbell and a preacher bench, or a preacher curl machine. Turn body towards the weight.",
+    "steps": [
+      "Set up for Preacher Curl - Internally Rotated with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Single arm curl that can be done using a dumbbell and"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1273": {
+    "id": "wger_1273",
+    "summary": "Doubling as a back and chest exercise, the Dumbbell Pullover can train both your pecs and lats.",
+    "steps": [
+      "Set up for Pullover with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Doubling as a back and chest exercise, the Dumbbell"
+    ],
+    "mistakes": []
+  },
+  "wger_487": {
+    "id": "wger_487",
+    "summary": "Seated on a bench with the dumbbells on the floor bend over at 45 Degrees and then slowly raise each dumbbell to shoulder height and hold for a couple seconds before lowering to the setup.",
+    "steps": [
+      "Set up for Rear Delt Raises with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Seated on a bench with the dumbbells on the floor bend"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_490": {
+    "id": "wger_490",
+    "summary": "Get into pushup position gripping some dumbbells. Perform one pushup, then drive your left elbo up, bringing the dumbell up to your body. Return the dumbell to setup.",
+    "steps": [
+      "Get into pushup position gripping some dumbbells. Perform one pushup, then drive your left elbo up, bringing the dumbell up to your body. Return the dumbell to setup.",
+      "Perform another pushup and then row with the other arm to complete one rep."
+    ],
+    "cues": [
+      "Get into pushup position gripping some dumbbells",
+      "Perform another pushup and then row with the other arm"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_2755": {
+    "id": "wger_2755",
+    "summary": "Sit with your back supported, keep the upper arms fixed at your sides, curl the dumbbells up, pause briefly at the top, lower slowly under control without swinging the back.",
+    "steps": [
+      "Set up for Seated Dumbbell Biceps Curl with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Sit with your back supported, keep the upper arms"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1620": {
+    "id": "wger_1620",
+    "summary": "Seated Dumbbell Calf Raise is a conditioning exercise with a dumbbell, done with steady control through the full range.",
+    "steps": [
+      "Set up for Seated Dumbbell Calf Raise with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "The seated dumbbell calf raise is a targeted exercise"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_918": {
+    "id": "wger_918",
+    "summary": "Seated slightly leaned forward at beginning of exercise.",
+    "steps": [
+      "Set up for Seated Dumbbell Side Lateral with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Seated slightly leaned forward at beginning of exercise"
+    ],
+    "mistakes": []
+  },
+  "wger_1098": {
+    "id": "wger_1098",
+    "summary": "Seated, bent 45 deg forward. Arms fully stretched out, raise arms up to shoulder height and back down.",
+    "steps": [
+      "Set up for Seated rear delt rise with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Seated, bent 45 deg forward"
+    ],
+    "mistakes": []
+  },
+  "wger_1448": {
+    "id": "wger_1448",
+    "summary": "Sit on bench with 60° incline Hold dumbbells beside body near the ground, palms facing outwards, arms fully extended Move dumbbells up using only biceps and without momentum.",
+    "steps": [
+      "Sit on bench with 60° incline Hold dumbbells beside body near the ground, palms facing outwards, arms fully extended Move dumbbells up using only biceps and without momentum.",
+      "Sit on bench with 60° incline.",
+      "Hold dumbbells beside body near the ground, palms facing outwards, arms fully extended.",
+      "Move dumbbells up using only biceps and without momentum."
+    ],
+    "cues": [
+      "Sit on bench with 60° incline Hold dumbbells beside",
+      "Sit on bench with 60° incline",
+      "Hold dumbbells beside body near the ground, palms",
+      "Move dumbbells up using only biceps and without"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1714": {
+    "id": "wger_1714",
+    "summary": "Lean forward to rest your hand on a chair or other object, holding a dumbbell in the other hand Gently swing the dumbbell in a circular motion.",
+    "steps": [
+      "Lean forward to rest your hand on a chair or other object, holding a dumbbell in the other hand Gently swing the dumbbell in a circular motion.",
+      "Lean forward to rest your hand on a chair or other object, holding a dumbbell in the other hand.",
+      "Gently swing the dumbbell in a circular motion."
+    ],
+    "cues": [
+      "Lean forward to rest your hand on a chair or other",
+      "Gently swing the dumbbell in a circular motion"
+    ],
+    "mistakes": []
+  },
+  "wger_1715": {
+    "id": "wger_1715",
+    "summary": "Lie on your side holding a dumbbell in your upper hand Tuck your elbow into your side and rest the hand in front of you Rotate the shoulder so the hand raises up Lower the hand down.",
+    "steps": [
+      "Lie on your side holding a dumbbell in your upper hand.",
+      "Tuck your elbow into your side and rest the hand in front of you.",
+      "Rotate the shoulder so the hand raises up.",
+      "Lower the hand down."
+    ],
+    "cues": [
+      "Lie on your side holding a dumbbell in your upper hand",
+      "Tuck your elbow into your side and rest the hand in",
+      "Rotate the shoulder so the hand raises up",
+      "Lower the hand down"
+    ],
+    "mistakes": []
+  },
+  "wger_567": {
+    "id": "wger_567",
+    "summary": "Shoulder Press, Dumbbells is a vertical push exercise with a dumbbell, done with steady control through the full range.",
+    "steps": [
+      "Set up for Shoulder Press, Dumbbells with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Sit on a bench, the back rest should be almost vertical"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1338": {
+    "id": "wger_1338",
+    "summary": "Engage the muscles Don't use momentum Controlled movement Slow movement Always keep the arms bent Don't overextend.",
+    "steps": [
+      "Engage the muscles Don't use momentum Controlled movement Slow movement Always keep the arms bent Don't overextend.",
+      "Engage the muscles.",
+      "Don't use momentum.",
+      "Controlled movement.",
+      "Slow movement.",
+      "Always keep the arms bent.",
+      "Don't overextend."
+    ],
+    "cues": [
+      "Controlled movement",
+      "Slow movement",
+      "Always keep the arms bent",
+      "Don't overextend"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1443": {
+    "id": "wger_1443",
+    "summary": "Stand while holding dumbbells beside body.",
+    "steps": [
+      "Stand while holding dumbbells beside body.",
+      "Keep arms almost fully extended.",
+      "Without momentum raise dumbbells to the side of your body until shoulder height, palms facing down.",
+      "Lower dumbbells beside body, palms facing inwards.",
+      "Immediately raise dumbbells in front of your body until shoulder height, palms facing down.",
+      "This is one repetition."
+    ],
+    "cues": [
+      "Without momentum raise dumbbells to the side of your",
+      "Lower dumbbells beside body, palms facing inwards",
+      "Immediately raise dumbbells in front of your body",
+      "This is one repetition"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_572": {
+    "id": "wger_572",
+    "summary": "When training with a higher weight, make sure that you still do the whole movement!",
+    "steps": [
+      "Set up for Shrugs, Dumbbells with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Stand with straight body, the hands are hanging freely",
+      "When training with a higher weight, make sure that you"
+    ],
+    "mistakes": []
+  },
+  "wger_1188": {
+    "id": "wger_1188",
+    "summary": "With a weight in one hand, extend that arm down and bend the other arm, resting your hand on your head. Now move the hand holding the weight by rotating your torso up and down.",
+    "steps": [
+      "Set up for Side bend with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "With a weight in one hand, extend that arm down and"
+    ],
+    "mistakes": []
+  },
+  "wger_577": {
+    "id": "wger_577",
+    "summary": "Side Dumbbell Trunk Flexion is a core compression exercise with a dumbbell, done with steady control through the full range.",
+    "steps": [
+      "Set up for Side Dumbbell Trunk Flexion with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "AKA dumbbell side bends"
+    ],
+    "mistakes": []
+  },
+  "wger_1968": {
+    "id": "wger_1968",
+    "summary": "Press the dumbbell vertically overhead in a controlled motion until your arm is fully extended, without locking the elbow. Slowly lower the dumbbell back to the setup at shoulder height.",
+    "steps": [
+      "Set up for Single-arm dumbbell shoulder press with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Press the dumbbell vertically overhead in a controlled"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_584": {
+    "id": "wger_584",
+    "summary": "Sit on the preacher curl bench and perform a bicep curl with a dumbbell in one hand. Your other hand can be at rest, or beneath your curling arm's elbow.",
+    "steps": [
+      "Set up for Single-arm Preacher Curl with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Sit on the preacher curl bench and perform a bicep"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1736": {
+    "id": "wger_1736",
+    "summary": "setup: Stand upright with a slight bend in your knees, holding a dumbbell in one or both hands. Shift your weight onto your supporting leg (e.g., your right leg) and lift your non-supporting foot slightly off the floor.",
+    "steps": [
+      "Set up for Single-Leg Deadlift with Dumbbell with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "setup: Stand upright with a slight bend in your knees,",
+      "The Hinge: Keeping your back flat and core engaged,",
+      "Range of Motion: Continue lowering your torso until it",
+      "Return to Start: Pause at the bottom, then contract"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength",
+      "Letting the lower back round under load"
+    ]
+  },
+  "wger_245": {
+    "id": "wger_245",
+    "summary": "Pay attention to your elbows and arms: only the triceps are doing the work, the rest of the arms should not move.",
+    "steps": [
+      "Set up for Skullcrusher Dumbbells with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Hold the dumbbells and lay down on a flat bench in",
+      "Pay attention to your elbows and arms: only the"
+    ],
+    "mistakes": []
+  },
+  "wger_621": {
+    "id": "wger_621",
+    "summary": "Stand holding dumbbells at shoulder width apart. Face forearm upward and keep upper arm still while raising each dumbbell up to your shoulder.",
+    "steps": [
+      "Set up for Standing Bicep Curl with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Stand holding dumbbells at shoulder width apart"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1776": {
+    "id": "wger_1776",
+    "summary": "Walk forward and backward with holding dumbbell on one side without leaning to counter the weight.",
+    "steps": [
+      "Set up for Suitcase Carry with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Walk forward and backward with holding dumbbell on one"
+    ],
+    "mistakes": []
+  },
+  "wger_1886": {
+    "id": "wger_1886",
+    "summary": "setup: Lie on your back (supine) on a mat, with your legs extended and relaxed. Arms can be placed alongside your body or out to the sides for stability.",
+    "steps": [
+      "setup: Lie on your back (supine) on a mat, with your legs extended and relaxed. Arms can be placed alongside your body or out to the sides for stability.",
+      "Range of Motion: Move the leg as far as comfortable without lifting your pelvis or rotating your torso, feeling a stretch in the inner thigh and hip.",
+      "Return: Slowly bring the leg back to the setup with controlled movement.",
+      "Goal: Improves lateral hip mobility (abduction) and strengthens the pelvic stabilizer muscles."
+    ],
+    "cues": [
+      "The Movement: Slightly lift one leg off the floor",
+      "Range of Motion: Move the leg as far as comfortable",
+      "Return: Slowly bring the leg back to the setup with",
+      "Goal: Improves lateral hip mobility (abduction) and"
+    ],
+    "mistakes": [
+      "Letting the lower back round under load"
+    ]
+  },
+  "wger_1336": {
+    "id": "wger_1336",
+    "summary": "Keep the elbows fixed Engage the muscles Don't use momentum Controlled movement Slow movement Don't overextend.",
+    "steps": [
+      "Keep the elbows fixed Engage the muscles Don't use momentum Controlled movement Slow movement Don't overextend.",
+      "Keep the elbows fixed.",
+      "Engage the muscles.",
+      "Don't use momentum.",
+      "Controlled movement.",
+      "Slow movement.",
+      "Don't overextend."
+    ],
+    "cues": [
+      "Don't use momentum",
+      "Controlled movement",
+      "Slow movement",
+      "Don't overextend"
+    ],
+    "mistakes": []
+  },
+  "wger_675": {
+    "id": "wger_675",
+    "summary": "Starting on back, move to the standing position with dumbbell in one hand. Switch hands between reps.",
+    "steps": [
+      "Set up for Turkish Get-Up with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Starting on back, move to the standing position with"
+    ],
+    "mistakes": []
+  },
+  "wger_694": {
+    "id": "wger_694",
+    "summary": "Hold a dumbbell in each hand in front of your body. Keep your palms towards your body. Lift you hands straight up until your hands are under your chin, then lower them. Repeat the exercise.",
+    "steps": [
+      "Set up for Upright Row w/ Dumbbells with a dumbbell with a braced torso and stable base.",
+      "Move through a full range with control, then return without losing posture."
+    ],
+    "cues": [
+      "Hold a dumbbell in each hand in front of your body"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1205": {
+    "id": "wger_1205",
+    "summary": "Sitting on a bench, grab the dumbbell with your palms facing up and your hands shoulder-width apart. Rest your forearms on your thighs and allow your wrists to hang over your knees.",
+    "steps": [
+      "Perform the movement by curling your palms and wrists towards your face.",
+      "(optional/variable) Pause at the top.",
+      "Slowly return to the setup."
+    ],
+    "cues": [
+      "Sitting on a bench, grab the dumbbell with your palms",
+      "Perform the movement by curling your palms and wrists",
+      "(optional/variable) Pause at the top",
+      "Slowly return to the setup"
+    ],
+    "mistakes": [
+      "Using momentum instead of controlled strength"
+    ]
+  },
+  "wger_1885": {
+    "id": "wger_1885",
+    "summary": "Purpose: Improves shoulder stability, posture, and scapular (shoulder blade) control. Often used in physical therapy and warm-ups.",
+    "steps": [
+      "Purpose: Improves shoulder stability, posture, and scapular (shoulder blade) control. Often used in physical therapy and warm-ups.",
+      "Y (Arms up): Extend both arms straight forward and upward at a 135-degree angle from your body, forming a \"Y\". Squeeze your shoulder blades together at the top.",
+      "T (Arms out): Open your arms straight out to the sides, perpendicular to your body, forming a \"T\". Focus on pinching your shoulder blades.",
+      "W (Arms bent): Pull your elbows back, bending them to 90 degrees, and squeeze your shoulder blades to form a \"W\". Keep your wrists firm.",
+      "L (Arms rotated): Start with elbows bent at 90 degrees and close to your body. Rotate your forearms outward (external rotation) like a goalpost, forming an \"L\" or a gate.",
+      "Key Focus: Movements should be slow and controlled. Always lead with the thumbs and think about moving the shoulder blades, not just the arms."
+    ],
+    "cues": [
+      "T (Arms out): Open your arms straight out to the",
+      "W (Arms bent): Pull your elbows back, bending them to",
+      "L (Arms rotated): Start with elbows bent at 90 degrees",
+      "Key Focus: Movements should be slow and controlled"
+    ],
+    "mistakes": []
+  },
   "hf_78": {
     "id": "hf_78",
     "summary": "A seated hold with your back against a wall that builds endurance in the quadriceps and glutes.",
