@@ -5,7 +5,7 @@ import { plank } from "./specsBatchI";
 
 /**
  * Batch AC (#174): incline push-ups, dips on chairs and benches, the ab wheel
- * rollout and plank crawls. One view each (side). Floor at y = 0, up is
+ * rollout and plank crawls. One view each (side), except the leg wheel (side + front). Floor at y = 0, up is
  * negative, the figure faces +x (a plank has the head at +x, lying face up has
  * the head at -x).
  *
@@ -212,25 +212,42 @@ function lyingFaceUp(pelvis: Point): Pose {
   };
 }
 
-/** Legs straight up and together, tilted `deg` from the hips (-90 is vertical). */
-function legsUp(deg: number): Pose {
+/** Feet sideways (z) at rest: together, a little inside the hips (±8). */
+const WHEEL_FOOT_Z = 4;
+/** Half-width of the circle, in degrees of leg tilt (forward/back in the side view, sideways in the front view). */
+const WHEEL_TILT = 11;
+
+/**
+ * Legs straight up and together, tilted `deg` from the hips in the side view
+ * (-90 is vertical) and `sway` degrees sideways (towards the far side).
+ */
+function legsUp(deg: number, sway: number): Keyframe {
   const base = lyingFaceUp([-12, -20]);
   const pelvis = base.pelvis as Point;
+  const r = (sway * Math.PI) / 180;
+  const shift = 173.98 * Math.sin(r);
+  const foot = (side: Side): { at: Point; z: number } => {
+    const hipZ = side === "near" ? -8 : 8;
+    const z = (side === "near" ? -WHEEL_FOOT_Z : WHEEL_FOOT_Z) + shift;
+    return { at: along(pelvis, deg, Math.sqrt(173.98 ** 2 - (z - hipZ) ** 2)), z: round(z) };
+  };
+  const [near, far] = [foot("near"), foot("far")];
   return {
-    ...base,
-    feet: { near: along(pelvis, deg, 173.98), far: along(pelvis, deg - 1, 173.98) },
-    toes: { near: deg, far: deg },
+    hold: 0,
+    pose: { ...base, feet: { near: near.at, far: far.at }, toes: { near: deg, far: deg } },
+    sideways: { feet: { near: near.z, far: far.z } },
   };
 }
 
 /**
- * One small circle seen from the side: the feet sweep towards the head and back.
- * The eased swing between the two ends is the side-on shadow of a steady circle.
+ * One small circle: the feet sweep towards the head and back in the side view
+ * while they sway side to side in the front view, a quarter turn out of step,
+ * so the two together trace the circle. The pelvis stays down.
  */
-const LEG_WHEEL_FRAMES: Keyframe[] = [
-  { hold: 0, pose: legsUp(-73) },
-  { hold: 0, pose: legsUp(-95) },
-];
+const LEG_WHEEL_FRAMES: Keyframe[] = Array.from({ length: 8 }, (_, i) => {
+  const theta = (i * Math.PI) / 4;
+  return legsUp(round(-84 + WHEEL_TILT * Math.cos(theta)), round(WHEEL_TILT * Math.sin(theta)));
+});
 
 // ---------------------------------------------------------------- climbers and crawls
 
@@ -416,7 +433,8 @@ export const BATCH_AC_SPECS: DoodleSpec[] = [
     id: "wger_1909",
     slug: "leg-wheel",
     title: "Leg Wheel",
-    transition: 0.9,
+    views: ["side", "front"],
+    transition: 0.28,
     frames: LEG_WHEEL_FRAMES,
   },
   {

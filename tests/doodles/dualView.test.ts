@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { project } from "../../src/doodles/project";
-import { dualLayout } from "../../src/doodles/renderDual";
+import { dualLayout, frontProps } from "../../src/doodles/renderDual";
 import { figurePoints, renderDoodleSvg } from "../../src/doodles/renderSvg";
-import { BONES, solvePose, type DoodleSpec, type Pose, type Side } from "../../src/doodles/rig";
+import { BONES, solvePose, type DoodleSpec, type Pose, type Prop, type Side } from "../../src/doodles/rig";
 import { dist3, sampleTimeline3, solveKeyframe3, type Figure3 } from "../../src/doodles/rig3d";
 import { dualViewGuards, validateSpec } from "../../src/doodles/validate";
 
@@ -129,5 +129,23 @@ describe("dual-view rendering and validation", () => {
     for (const pose of layout.front) {
       expect(figurePoints(pose).every((p) => inside([p.point[0] + layout.frontShift, p.point[1]]))).toBe(true);
     }
+  });
+});
+
+describe("front-view props", () => {
+  it("draws a sloped board of short bar strokes as its end-on outline, not a solid block", () => {
+    const board: Prop[] = Array.from({ length: 10 }, (_, i) => ({ kind: "bar", y: -50 - i * 4, x1: i * 4, x2: i * 4 + 4 }));
+    const front = frontProps([...board, { kind: "bar", y: -150, x1: 60, x2: 60 }], 100);
+    expect(front).toEqual([
+      { kind: "bar", y: -150, x1: 10, x2: 190 },
+      { kind: "box", x: 64, y: -86, w: 72, h: 36 },
+    ]);
+  });
+
+  it("draws a thin bench post as two legs at the board's edges", () => {
+    expect(frontProps([{ kind: "box", x: 0, y: -60, w: 1, h: 60 }])).toEqual([
+      { kind: "box", x: -36, y: -60, w: 0, h: 60 },
+      { kind: "box", x: 36, y: -60, w: 0, h: 60 },
+    ]);
   });
 });

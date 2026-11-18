@@ -1,4 +1,4 @@
-import type { DoodleSpec, Point, Pose, Prop, Side } from "./rig";
+import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side } from "./rig";
 
 /**
  * Batch AI: conditioning and standing mobility (marching high knees, fast
@@ -301,26 +301,56 @@ function pancakeHinge(spineDeg: number, handY: number): Pose {
   };
 }
 
-// ---------------------------------------------------------------- seated pancake (side)
+// ---------------------------------------------------------------- seated pancake (side + front)
 
 const SEAT: Point = [0, -22];
-/** Straight legs along the floor (knees locked). */
-const SEAT_FEET: Record<Side, Point> = { near: along(SEAT, 4, LEG), far: along(SEAT, 4, LEG) };
-const SEAT_KNEE: Point = along(SEAT, 4, THIGH);
+/** Legs slope gently down from the hip to the heels (degrees below horizontal). */
+const PANCAKE_SLOPE = 4;
+/** Each leg opens this far from straight ahead, so the legs make a wide V. */
+const PANCAKE_SPLAY = 36;
+/** Straight leg, hip to ankle. */
+const PANCAKE_LEG = 173.9;
 
-/** Seated, legs straight with toes up; torso at `lean` (degrees forward of upright), hands on the floor at `handX`. */
-function seatedPancake(lean: number, handX: number): Pose {
+/** A point `length` down the straddled leg: side-view position and sideways (z) offset from the body line. */
+function pancakeLeg(length: number): { at: Point; z: number } {
+  const flat = length * Math.cos((PANCAKE_SLOPE * Math.PI) / 180);
+  const splay = (PANCAKE_SPLAY * Math.PI) / 180;
+  return {
+    at: [round(SEAT[0] + flat * Math.cos(splay)), round(SEAT[1] + length * Math.sin((PANCAKE_SLOPE * Math.PI) / 180))],
+    z: round(HIP_Z + flat * Math.sin(splay)),
+  };
+}
+const HIP_Z = 8;
+const PANCAKE_KNEE = pancakeLeg(THIGH);
+const PANCAKE_FOOT = pancakeLeg(PANCAKE_LEG);
+/** Height of the leg line (the floor the legs rest on) at `x`, so the hands sit level with the legs. */
+const legLineY = (x: number): number =>
+  round(SEAT[1] + ((PANCAKE_FOOT.at[1] - SEAT[1]) * Math.min(x, PANCAKE_FOOT.at[0])) / PANCAKE_FOOT.at[0]);
+/** Hands on the floor between the legs, a little wider than the shoulders. */
+const PANCAKE_HAND_Z = 30;
+
+/** Seated, legs straight in a wide V with toes up; torso at `lean` (degrees forward of upright), hands on the floor at `handX`. */
+function seatedPancake(lean: number, handX: number): Keyframe {
   const spineDeg = -90 + lean;
   const shoulder = along(SEAT, spineDeg, 98);
+  const handY = legLineY(handX);
   return {
-    pelvis: SEAT,
-    chest: along(SEAT, spineDeg, 80),
-    head: along(shoulder, spineDeg + lean * 0.15, 38),
-    hands: { near: [handX, -2], far: [handX - 4, -2] },
-    elbows: { near: { bend: 1 }, far: { bend: 1 } },
-    knees: { near: { at: SEAT_KNEE }, far: { at: SEAT_KNEE } },
-    feet: SEAT_FEET,
-    toes: { near: -80, far: -80 },
+    hold: 0,
+    pose: {
+      pelvis: SEAT,
+      chest: along(SEAT, spineDeg, 80),
+      head: along(shoulder, spineDeg + lean * 0.15, 38),
+      hands: { near: [handX, handY], far: [handX - 4, handY] },
+      elbows: { near: { bend: 1 }, far: { bend: 1 } },
+      knees: { near: { at: PANCAKE_KNEE.at }, far: { at: PANCAKE_KNEE.at } },
+      feet: { near: PANCAKE_FOOT.at, far: PANCAKE_FOOT.at },
+      toes: { near: -80, far: -80 },
+    },
+    sideways: {
+      hands: { near: -PANCAKE_HAND_Z, far: PANCAKE_HAND_Z },
+      knees: { near: { at: -PANCAKE_KNEE.z }, far: { at: PANCAKE_KNEE.z } },
+      feet: { near: -PANCAKE_FOOT.z, far: PANCAKE_FOOT.z },
+    },
   };
 }
 
@@ -434,11 +464,12 @@ export const BATCH_AI_SPECS: DoodleSpec[] = [
     id: "hf_162",
     slug: "pancake-stretch",
     title: "Pancake Stretch",
+    views: ["side", "front"],
     transition: 1.1,
     frames: [
-      { hold: 0.6, pose: seatedPancake(4, 36) },
-      { hold: 0.2, pose: seatedPancake(30, 100) },
-      { hold: 1.6, pose: seatedPancake(58, 160) },
+      { ...seatedPancake(4, 36), hold: 0.6 },
+      { ...seatedPancake(30, 96), hold: 0.2 },
+      { ...seatedPancake(58, 140), hold: 1.6 },
     ],
   },
 ];
