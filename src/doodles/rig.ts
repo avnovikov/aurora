@@ -81,6 +81,30 @@ export interface Keyframe {
    * are foreshortened on purpose and skip the bone-length and joint-range checks).
    */
   mirror?: number;
+  /** Dual-view specs only: sideways (z) positions for this keyframe; see `Sideways`. */
+  sideways?: Sideways;
+}
+
+/** Sideways position of a knee or elbow pin, and how far its bend plane rolls outward. */
+export interface SidewaysHint {
+  /** z of a pinned knee / elbow (`knees.at` / `elbows.at`); defaults to the hip / shoulder z. */
+  at?: number;
+  /** Degrees the bend plane rolls outward from the forward plane (90: the joint points out to the side). */
+  out?: number;
+}
+
+/**
+ * Dual-view specs: absolute sideways positions (z). Near side is negative, far
+ * side positive; the front panel draws near on the viewer's left. Anything not
+ * given keeps its chain's natural width (shoulders ±22, hips ±8, spine at the pelvis z).
+ */
+export interface Sideways {
+  /** Shifts the whole spine sideways. */
+  pelvis?: number;
+  hands?: Partial<Record<Side, number>>;
+  feet?: Partial<Record<Side, number>>;
+  elbows?: Partial<Record<Side, SidewaysHint>>;
+  knees?: Partial<Record<Side, SidewaysHint>>;
 }
 
 export type Prop =
@@ -106,6 +130,11 @@ export interface DoodleSpec {
    * thighs at this share of the way from hip to knee (e.g. 0.8 = just above the knees).
    */
   band?: number;
+  /**
+   * Draw the move twice, side view and front view next to each other, from one
+   * 3D-solved figure (keyframe `sideways`). Only when a reviewer asks for it (ADD VIEW).
+   */
+  views?: readonly ["side", "front"];
 }
 
 export const BONES = {
@@ -126,9 +155,9 @@ export const TORSO = BONES.pelvisWaist + BONES.waistChest + BONES.chestNeck;
 export const SEGMENTS = { ...BONES, headRadius: 24 } as const;
 
 /** Shoulder offset from the chest: along the chest segment, and sideways (front view only). */
-const SHOULDER_ALONG = 18;
-const SHOULDER_SIDE = 22;
-const HIP_SIDE = 8;
+export const SHOULDER_ALONG = 18;
+export const SHOULDER_SIDE = 22;
+export const HIP_SIDE = 8;
 
 // ---------------------------------------------------------------- vectors
 

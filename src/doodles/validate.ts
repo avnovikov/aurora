@@ -1,5 +1,8 @@
 import { BONES, SEGMENTS, dist, reflectSolved, sampleTimeline, type DoodleSpec, type Point, type Prop, type Side, type Solved } from "./rig";
+import { dualLayout } from "./renderDual";
 import { figurePoints, propSegments, specViewBox } from "./renderSvg";
+import { project } from "./project";
+import { dist3, sampleTimeline3, type Figure3, type Point3 } from "./rig3d";
 
 /** Validator for doodle specs (rig v2 spec, "Validator" section). JSON-serialisable output. */
 
@@ -235,6 +238,13 @@ function headInProp(spec: DoodleSpec, pose: Solved): string[] {
 }
 
 export function validateSpec(spec: DoodleSpec): SpecReport {
+  const guards = dualViewGuards(spec);
+  if (guards.length > 0) return failed(spec, guards);
+  return spec.views ? validateDual(spec) : validateFlat(spec);
+}
+
+/** Single-view specs (the 2D rig). */
+function validateFlat(spec: DoodleSpec): SpecReport {
   const timeline = sampleTimeline(spec);
   const box = specViewBox(spec, timeline.poses);
   const errors: string[] = [];
@@ -322,6 +332,183 @@ export function validateSpec(spec: DoodleSpec): SpecReport {
     maxBoneLengthErrorAllSamples,
     torsoRange,
     transitionSamplesBelowFloor,
+    transitionAnatomy,
+    keyframes,
+  };
+}
+
+// ---------------------------------------------------------------- dual view
+
+/** Props a dual-view doodle can draw from the front. */
+const DUAL_PROPS = new Set<Prop["kind"]>(["bar", "box"]);
+
+/** Spec-level rules for `views` / `sideways` (dual-view spec, "Scope" and "Solver"). */
+export function dualViewGuards(spec: DoodleSpec): string[] {
+  const errors: string[] = [];
+  const sideways = spec.frames.some((frame) => frame.sideways);
+  if (!spec.views) {
+    if (sideways) errors.push("keyframe sideways needs views: [\"side\", \"front\"]");
+    return errors;
+  }
+  if (spec.view === "front") errors.push("views can't be combined with view: \"front\"");
+  if (spec.frames.some((frame) => frame.mirror !== undefined)) errors.push("views can't be combined with mirror (turning round)");
+  for (const prop of spec.props ?? []) {
+    if (!DUAL_PROPS.has(prop.kind)) errors.push(`prop ${prop.kind} can't be drawn in two views (bar and box only)`);
+  }
+  return errors;
+}
+
+function failed(spec: DoodleSpec, errors: string[]): SpecReport {
+  return {
+    slug: spec.slug,
+    ok: false,
+    errors,
+    maxBoneLengthError: 0,
+    maxBoneLengthErrorAllSamples: 0,
+    torsoRange: [0, 0],
+    transitionSamplesBelowFloor: 0,
+    transitionAnatomy: [],
+    keyframes: [],
+  };
+}
+
+const sub3 = (a: Point3, b: Point3): Point3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+
+/** Angle (degrees) between two 3D directions. */
+function angle3(u: Point3, v: Point3): number {
+  const dot = u[0] * v[0] + u[1] * v[1] + u[2] * v[2];
+  const n = Math.hypot(...u) * Math.hypot(...v);
+  return n < 1e-9 ? 0 : (Math.acos(Math.max(-1, Math.min(1, dot / n))) * 180) / Math.PI;
+}
+
+function distanceToSegment3(p: Point3, a: Point3, b: Point3): number {
+  const ab = sub3(b, a);
+  const lengthSq = ab[0] ** 2 + ab[1] ** 2 + ab[2] ** 2;
+  const ap = sub3(p, a);
+  const t = lengthSq === 0 ? 0 : Math.max(0, Math.min(1, (ap[0] * ab[0] + ap[1] * ab[1] + ap[2] * ab[2]) / lengthSq));
+  return dist3(p, [a[0] + ab[0] * t, a[1] + ab[1] * t, a[2] + ab[2] * t]);
+}
+
+function bones3(f: Figure3): { name: string; a: Point3; b: Point3; length: number }[] {
+  const list: { name: string; a: Point3; b: Point3; length: number }[] = [
+    { name: "pelvis-waist", a: f.pelvis, b: f.waist, length: BONES.pelvisWaist },
+    { name: "waist-chest", a: f.waist, b: f.chest, length: BONES.waistChest },
+    { name: "chest-neck", a: f.chest, b: f.neck, length: BONES.chestNeck },
+    { name: "neck-head", a: f.neck, b: f.head, length: BONES.neckHead },
+  ];
+  for (const side of ["near", "far"] as Side[]) {
+    const arm = f.arms[side];
+    const leg = f.legs[side];
+    list.push(
+      { name: `upperArm.${side}`, a: arm.root, b: arm.mid, length: BONES.upperArm },
+      { name: `forearm.${side}`, a: arm.mid, b: arm.joint, length: BONES.forearm },
+      { name: `hand.${side}`, a: arm.joint, b: arm.end, length: BONES.hand },
+      { name: `thigh.${side}`, a: leg.root, b: leg.mid, length: BONES.thigh },
+      { name: `shin.${side}`, a: leg.mid, b: leg.joint, length: BONES.shin },
+      { name: `foot.${side}`, a: leg.joint, b: leg.end, length: BONES.foot },
+    );
+  }
+  return list;
+}
+
+const boneLengthError3 = (f: Figure3): number => Math.max(...bones3(f).map((b) => Math.abs(dist3(b.a, b.b) - b.length)));
+
+/** Joint ranges judged in 3D: knee / elbow flexion, arms through the head; spine on the side view. */
+function anatomy3(f: Figure3): string[] {
+  const issues = spineIssues(project(f, "side"));
+  for (const side of ["near", "far"] as Side[]) {
+    const leg = f.legs[side];
+    const arm = f.arms[side];
+    const knee = angle3(sub3(leg.mid, leg.root), sub3(leg.joint, leg.mid));
+    const elbow = angle3(sub3(arm.mid, arm.root), sub3(arm.joint, arm.mid));
+    if (knee > LIMITS.flexion) issues.push(`knee.${side} bends ${Math.round(knee)}° (> ${LIMITS.flexion}°)`);
+    if (elbow > LIMITS.flexion) issues.push(`elbow.${side} bends ${Math.round(elbow)}° (> ${LIMITS.flexion}°)`);
+    const segments: [string, Point3, Point3][] = [
+      [`upperArm.${side}`, arm.root, arm.mid],
+      [`forearm.${side}`, arm.mid, arm.joint],
+      [`hand.${side}`, arm.joint, arm.end],
+    ];
+    for (const [name, a, b] of segments) {
+      if (distanceToSegment3(f.head, a, b) < HEAD_CLEARANCE) issues.push(`${name} passes through the head`);
+    }
+  }
+  return issues;
+}
+
+/** Side projection with the keyframe's pins, so pinned contacts may touch the floor. */
+function sideWithPins(f: Figure3): Solved {
+  return { ...project(f, "side"), pins: f.pins.map((pin) => ({ joint: pin.joint, target: [pin.target[0], pin.target[1]], actual: [pin.actual[0], pin.actual[1]] })) };
+}
+
+/** Dual-view specs: bone lengths and joint ranges in 3D, floor and props on the side view, both panels in frame. */
+function validateDual(spec: DoodleSpec): SpecReport {
+  const timeline = sampleTimeline3(spec);
+  const layout = dualLayout(spec, timeline);
+  const box = layout.view;
+  const errors: string[] = [];
+  const inBox = ([x, y]: Point): boolean => x >= box.x && x <= box.x + box.w && y >= box.y && y <= box.y + box.h;
+  const keyframes = timeline.keyframeIndex.map((sampleIndex, index): KeyframeReport => {
+    const figure = timeline.poses[sampleIndex];
+    const side = sideWithPins(figure);
+    const front = layout.front[sampleIndex];
+    const outsideViewBox = [
+      ...figurePoints(side).filter(({ point }) => !inBox(point)).map(({ name, point }) => ({ joint: `side ${name}`, point: roundPoint(point) })),
+      ...figurePoints(front)
+        .filter(({ point }) => !inBox([point[0] + layout.frontShift, point[1]]))
+        .map(({ name, point }) => ({ joint: `front ${name}`, point: roundPoint(point) })),
+    ];
+    return {
+      index,
+      boneLengthError: round(boneLengthError3(figure), 4),
+      torsoLength: round(dist3(figure.pelvis, figure.neck), 2),
+      anatomy: [...anatomy3(figure), ...headInProp(spec, side)],
+      unreachable: figure.pins
+        .filter((pin) => dist3(pin.target, pin.actual) > PIN_TOLERANCE)
+        .map((pin) => ({
+          joint: pin.joint,
+          target: roundPoint([pin.target[0], pin.target[1]]),
+          actual: roundPoint([pin.actual[0], pin.actual[1]]),
+          miss: round(dist3(pin.target, pin.actual), 1),
+        })),
+      belowFloor: belowFloor(side),
+      outsideViewBox,
+      propCrossings: propCrossings(spec, side),
+    };
+  });
+  const allError = round(Math.max(...timeline.poses.map(boneLengthError3)), 4);
+  const nonFinite = timeline.poses.filter((f) => bones3(f).some((b) => ![...b.a, ...b.b].every(Number.isFinite))).length;
+  if (nonFinite > 0) errors.push(`${nonFinite} sampled poses have non-finite joints`);
+  if (allError > BONE_TOLERANCE) errors.push(`bone length error ${allError} > ${BONE_TOLERANCE}`);
+  for (const k of keyframes) {
+    for (const u of k.unreachable) errors.push(`frame ${k.index}: ${u.joint} unreachable by ${u.miss}`);
+    for (const b of k.belowFloor) errors.push(`frame ${k.index}: ${b.joint} below floor (y=${b.y})`);
+    for (const o of k.outsideViewBox) errors.push(`frame ${k.index}: ${o.joint} outside viewBox`);
+    for (const c of k.propCrossings) errors.push(`frame ${k.index}: ${c.segment} crosses prop ${c.prop}`);
+    for (const a of k.anatomy) errors.push(`frame ${k.index}: ${a}`);
+  }
+  const transitionAnatomy = [
+    ...new Set(
+      timeline.poses.flatMap((f, i) =>
+        timeline.keyframeIndex.includes(i)
+          ? []
+          : [...anatomy3(f), ...propCrossings(spec, project(f, "side")).map((c) => `${c.segment} crosses prop ${c.prop}`)].map(
+              (issue) => `between keyframes (t=${round(timeline.keyTimes[i] * timeline.duration, 1)}s): ${issue}`,
+            ),
+      ),
+    ),
+  ];
+  errors.push(...transitionAnatomy);
+  const torsos = keyframes.map((k) => k.torsoLength);
+  return {
+    slug: spec.slug,
+    ok: errors.length === 0,
+    errors,
+    maxBoneLengthError: Math.max(...keyframes.map((k) => k.boneLengthError)),
+    maxBoneLengthErrorAllSamples: allError,
+    torsoRange: [Math.min(...torsos), Math.max(...torsos)],
+    transitionSamplesBelowFloor: timeline.poses.filter(
+      (f, i) => !timeline.keyframeIndex.includes(i) && belowFloor(project(f, "side")).length > 0,
+    ).length,
     transitionAnatomy,
     keyframes,
   };

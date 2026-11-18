@@ -1,16 +1,17 @@
 import { FOCUS_BY_ID, type Focus, type Segment } from "./focus";
+import { dualLayout, renderDualSvg } from "./renderDual";
 import { sampleTimeline, SEGMENTS, type DoodleSpec, type Point, type Prop, type Side, type Solved } from "./rig";
 
 /**
  * Colours are CSS custom properties so an inlined doodle follows the active
  * palette; the fallbacks are the standalone look (light ink on black).
  */
-const INK = "var(--doodle-ink, #f4f1ea)";
+export const INK = "var(--doodle-ink, #f4f1ea)";
 /** Fills that hide lines behind them (head, grips, inset): whatever the doodle sits on. */
 const PAPER = "var(--doodle-paper, #000)";
 const BACKDROP = "var(--doodle-backdrop, #000)";
 const STROKE_WIDTH = 7;
-const FAR_OPACITY = 0.5;
+export const FAR_OPACITY = 0.5;
 /** App accent (brass); coral is reserved for pulse and pain. */
 const FOCUS_COLOUR = "var(--doodle-focus, #c4a574)";
 const HIGHLIGHT_WIDTH = 20;
@@ -20,16 +21,16 @@ const INSET_SHARE = 0.62;
 
 type Path = (pose: Solved) => Point[];
 
-const fmt = (value: number): string => (Math.round(value * 10) / 10).toString();
+export const fmt = (value: number): string => (Math.round(value * 10) / 10).toString();
 const pointsAttr = (points: Point[]): string => points.map((p) => `${fmt(p[0])},${fmt(p[1])}`).join(" ");
 
-function animate(attribute: string, values: string[], timing: string): string {
+export function animate(attribute: string, values: string[], timing: string): string {
   return `<animate attributeName="${attribute}" values="${values.join(";")}" ${timing}/>`;
 }
 
 /** A polyline through joints, its `points` animated over the sampled poses. */
 /** Maps rig coordinates into the drawing (identity for the main figure, zoom for the inset). */
-type Mapper = (point: Point) => Point;
+export type Mapper = (point: Point) => Point;
 const identity: Mapper = (point) => point;
 
 function animatedPolyline(path: Path, poses: Solved[], timing: string, opacity = 1, map: Mapper = identity): string {
@@ -99,7 +100,7 @@ export function propSegments(prop: Prop): [Point, Point][] {
 const GRIP_RX = 8;
 const GRIP_RY = 11;
 
-function propSvg(prop: Prop): string {
+export function propSvg(prop: Prop): string {
   if (prop.kind === "box") {
     return `<rect x="${prop.x}" y="${prop.y}" width="${prop.w}" height="${prop.h}" fill="none"/>`;
   }
@@ -114,9 +115,9 @@ function propSvg(prop: Prop): string {
 }
 
 /** Even margin between the drawing (strokes included) and the viewBox edge. */
-const PADDING = 24;
+export const PADDING = 24;
 /** Widest half-stroke drawn (the focus highlight), so caps and joins stay inside. */
-const STROKE_REACH = HIGHLIGHT_WIDTH / 2;
+export const STROKE_REACH = HIGHLIGHT_WIDTH / 2;
 /** Tall drawings are widened (centred) to at least square, so they are not slivers. */
 const MIN_ASPECT = 1;
 /** The inset is sized against the figure framed at this aspect. */
@@ -131,7 +132,7 @@ const LABEL_GAP = 1.2;
 const LABEL_DESCENT = 0.3;
 
 /** Every point a prop is drawn through, grips' top and bottom included. */
-function propPoints(prop: Prop): Point[] {
+export function propPoints(prop: Prop): Point[] {
   const grips =
     prop.kind === "bar"
       ? (prop.grips ?? []).flatMap((x): Point[] => [
@@ -180,7 +181,7 @@ export interface ViewBox {
 }
 
 /** The box around `points`, grown by `grow` on every side. */
-function bounds(points: Point[], grow = 0): ViewBox {
+export function bounds(points: Point[], grow = 0): ViewBox {
   let [minX, minY, maxX, maxY] = [Infinity, Infinity, -Infinity, -Infinity];
   for (const [x, y] of points) {
     minX = Math.min(minX, x);
@@ -191,14 +192,14 @@ function bounds(points: Point[], grow = 0): ViewBox {
   return { x: minX - grow, y: minY - grow, w: maxX - minX + 2 * grow, h: maxY - minY + 2 * grow };
 }
 
-function union(a: ViewBox, b: ViewBox): ViewBox {
+export function union(a: ViewBox, b: ViewBox): ViewBox {
   const x = Math.min(a.x, b.x);
   const y = Math.min(a.y, b.y);
   return { x, y, w: Math.max(a.x + a.w, b.x + b.w) - x, h: Math.max(a.y + a.h, b.y + b.h) - y };
 }
 
 /** The drawing centred with an even PADDING, widened to MIN_ASPECT when tall. */
-function frame(drawing: ViewBox): ViewBox {
+export function frame(drawing: ViewBox): ViewBox {
   const h = drawing.h + 2 * PADDING;
   const w = Math.max(drawing.w + 2 * PADDING, h * MIN_ASPECT);
   return { x: drawing.x + drawing.w / 2 - w / 2, y: drawing.y - PADDING, w, h };
@@ -226,7 +227,9 @@ function layoutFor(spec: DoodleSpec, poses: Solved[]): Layout {
   return { view: frame(drawing), focus, inset };
 }
 
-export function specViewBox(spec: DoodleSpec, poses: Solved[] = sampleTimeline(spec).poses): ViewBox {
+export function specViewBox(spec: DoodleSpec, poses?: Solved[]): ViewBox {
+  if (spec.views) return dualLayout(spec).view;
+  poses ??= sampleTimeline(spec).poses;
   return layoutFor(spec, poses).view;
 }
 
@@ -250,14 +253,14 @@ function segmentPath(segment: Segment): Path {
   return paths[part];
 }
 
-function highlightSvg(focus: Focus | undefined, poses: Solved[], timing: string, map: Mapper): string {
+export function highlightSvg(focus: Focus | undefined, poses: Solved[], timing: string, map: Mapper): string {
   if (!focus || focus.highlight.length === 0) return "";
   const lines = focus.highlight.map((segment) => animatedPolyline(segmentPath(segment), poses, timing, 1, map)).join("");
   return `<g style="stroke:${FOCUS_COLOUR}" stroke-width="${HIGHLIGHT_WIDTH}" opacity="${HIGHLIGHT_OPACITY}">${lines}</g>`;
 }
 
 /** The figure (far side first), drawn through `map`; `headScale` keeps the head in proportion. */
-function figureSvg(spec: DoodleSpec, poses: Solved[], timing: string, map: Mapper, headScale: number): string {
+export function figureSvg(spec: DoodleSpec, poses: Solved[], timing: string, map: Mapper, headScale: number): string {
   const farOpacity = spec.view === "front" ? 1 : FAR_OPACITY;
   const head = poses.map((pose) => map(pose.head));
   return [
@@ -345,6 +348,7 @@ ${label}`;
 
 /** Animated SVG (SMIL), loops forever; plays standalone, in an <img>, or inlined (doodleMarkup). */
 export function renderDoodleSvg(spec: DoodleSpec): string {
+  if (spec.views) return renderDualSvg(spec);
   const timeline = sampleTimeline(spec);
   const { poses } = timeline;
   const timing = `dur="${fmt(timeline.duration)}s" repeatCount="indefinite" calcMode="linear" keyTimes="${timeline.keyTimes
