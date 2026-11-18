@@ -26,9 +26,9 @@ const ROLES = [
   "controlEdge",
 ];
 
-/** Reads `palettes:` from .desk/DESIGN.md front matter (two-space YAML, string values only). */
+/** Reads `palettes:` from docs/design/DESIGN.md front matter (two-space YAML, string values only). */
 function designPalettes(): Record<string, Record<string, unknown>> {
-  const text = readFileSync(new URL("../../.desk/DESIGN.md", import.meta.url), "utf8");
+  const text = readFileSync(new URL("../../docs/design/DESIGN.md", import.meta.url), "utf8");
   const front = text.split(/^---$/m)[1];
   const lines = front.split("\n");
   const start = lines.indexOf("palettes:");
@@ -107,7 +107,7 @@ describe("palettes", () => {
     }
   });
 
-  it("copies the values from .desk/DESIGN.md exactly", () => {
+  it("copies the values from docs/design/DESIGN.md exactly", () => {
     const design = designPalettes();
     expect(Object.keys(design)).toEqual(KEYS);
     for (const palette of PALETTES) {
