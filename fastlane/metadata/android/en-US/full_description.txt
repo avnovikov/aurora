@@ -1,13 +1,15 @@
-<p><b>Aurora</b> is private, local-first calisthenics training for Android. <b>Rassvet</b> (dawn) is the soul mark shown in the app.</p>
+<p><b>Aurora</b> is private, local-first calisthenics training for Android. <b>Rassvet</b> (Рассвет, “dawn”) is the soul mark shown in the app. British English UI and coach voice (en-GB).</p>
 
-<p>Instead of a fixed weekday calendar, Aurora keeps a <b>plan queue</b> — an ordered list of upcoming training days. Today always runs the first day. Completing a session advances the queue.</p>
+<p>For people who train at home and want each session adapted to recovery, gear, and recent performance. Typical apps give a weekday calendar and a static template. Aurora keeps a <b>plan queue</b> — an ordered list of upcoming training days — instead. <b>Today</b> always runs the first day; finishing a session advances the queue.</p>
 
-<p>Dose (sets, reps, or holds) adjusts from sleep quality, optional joint pain, recent load, missed reps, stalls, and — on Android — an optional Bluetooth heart-rate strap.</p>
+<p>The <b>dose</b> (sets, reps, or holds) adjusts from sleep, optional joint pain, recent load, missed reps, stalls, and — on Android — an optional Bluetooth heart-rate strap. Past injuries are stored so moves that load those joints are eased or skipped. When progress stalls, the plan changes rather than repeating the same work.</p>
 
-<p><b>Library:</b> 617 exercises (strength progressions, holds, and mobility).</p>
+<p><b>Library:</b> 617 exercises (strength progressions, holds, and mobility). Free (MIT) — no subscription.</p>
+
+<p><b>Session:</b> warm-up → work → cool-down → short rating. Swipe left to finish a set or station; during Rest / Get ready, swipe left to continue.</p>
+
+<p><b>Tabs:</b> Today, Library, Progress, History, Body, Plan, Settings.</p>
 
 <p><b>Privacy:</b> training history, readiness, sleep, pulse, and joint notes stay on your device. No cloud account and no server sync of that data in 0.1. Sensitive values use Keystore-backed storage on Android.</p>
-
-<p><b>Licence:</b> MIT. British English UI and coach voice (en-GB).</p>
 
 <p>Not medical advice. Stop if you feel pain, dizziness, or distress.</p>
