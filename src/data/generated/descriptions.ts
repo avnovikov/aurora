@@ -5991,12 +5991,12 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
     "steps": [
       "Place your hands shoulder width apart on a sturdy bar or ledge.",
       "Walk your feet back until your body and arms are straight.",
-      "Bend your elbows to lower your chest to the bar or ledge.",
+      "Bend your elbows to lower your chest to the bar.",
       "Press back up to straight arms."
     ],
     "cues": [
       "Body in one line",
-      "Chest to the bar or ledge",
+      "Chest to the bar",
       "Brace the core"
     ],
     "mistakes": [
@@ -6031,12 +6031,12 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
     "steps": [
       "Place your hands wider than shoulder width on a sturdy bar or ledge.",
       "Walk your feet back until your body and arms are straight.",
-      "Bend your elbows to lower your chest to the bar or ledge.",
+      "Bend your elbows to lower your chest to the bar.",
       "Press back up to straight arms."
     ],
     "cues": [
       "Body in one line",
-      "Chest to the bar or ledge",
+      "Chest to the bar",
       "Squeeze the chest to press"
     ],
     "mistakes": [
@@ -9154,7 +9154,7 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
     "summary": "A deep, body-weight-loaded stretch hanging from a bar that lengthens the lats, typically used after pulling work.",
     "steps": [
       "Grip a pull-up bar with hands about shoulder-width apart.",
-      "Keep your feet on a box (or the floor under a lower bar), bend your knees and sit your hips back until your arms are long overhead.",
+      "Keep your feet on the floor or a box if needed and bend your knees to lower your weight.",
       "Relax your shoulders and let your body weight stretch your lats and armpits.",
       "Hold the position, breathing steadily, then stand up to release."
     ],
