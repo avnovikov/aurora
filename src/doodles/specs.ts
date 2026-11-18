@@ -20,6 +20,7 @@ import { BATCH_U_SPECS } from "./specsBatchU";
 import { BATCH_V_SPECS } from "./specsBatchV";
 import { BATCH_W_SPECS } from "./specsBatchW";
 import { BATCH_X_SPECS } from "./specsBatchX";
+import { BATCH_Y_SPECS } from "./specsBatchY";
 import { STRETCH_SPECS } from "./specsStretch";
 import { proneFromAbove, WARMUP_DRILL_SPECS } from "./specsWarmup";
 import { solvePose } from "./rig";
@@ -739,7 +740,7 @@ const SESSION_MOVE_SPECS: DoodleSpec[] = [
 ];
 
 /** Session moves, then warm-up drills, then cool-down stretches. */
-export const DOODLE_SPECS: DoodleSpec[] = [...SESSION_MOVE_SPECS, ...WARMUP_DRILL_SPECS, ...STRETCH_SPECS, ...BATCH_A_SPECS, ...BATCH_B_SPECS, ...BATCH_C_SPECS, ...BATCH_D_SPECS, ...BATCH_E_SPECS, ...BATCH_F_SPECS, ...BATCH_G_SPECS, ...BATCH_H_SPECS, ...BATCH_I_SPECS, ...BATCH_J_SPECS, ...BATCH_M_SPECS, ...BATCH_N_SPECS, ...BATCH_O_SPECS, ...BATCH_P_SPECS, ...BATCH_Q_SPECS, ...BATCH_R_SPECS, ...BATCH_S_SPECS, ...BATCH_T_SPECS, ...BATCH_U_SPECS, ...BATCH_V_SPECS, ...BATCH_W_SPECS, ...BATCH_X_SPECS];
+export const DOODLE_SPECS: DoodleSpec[] = [...SESSION_MOVE_SPECS, ...WARMUP_DRILL_SPECS, ...STRETCH_SPECS, ...BATCH_A_SPECS, ...BATCH_B_SPECS, ...BATCH_C_SPECS, ...BATCH_D_SPECS, ...BATCH_E_SPECS, ...BATCH_F_SPECS, ...BATCH_G_SPECS, ...BATCH_H_SPECS, ...BATCH_I_SPECS, ...BATCH_J_SPECS, ...BATCH_M_SPECS, ...BATCH_N_SPECS, ...BATCH_O_SPECS, ...BATCH_P_SPECS, ...BATCH_Q_SPECS, ...BATCH_R_SPECS, ...BATCH_S_SPECS, ...BATCH_T_SPECS, ...BATCH_U_SPECS, ...BATCH_V_SPECS, ...BATCH_W_SPECS, ...BATCH_X_SPECS, ...BATCH_Y_SPECS];
 
 /** Lying on the back, straight legs pivoting at the hips; `deg` is the leg angle (-88 up, -6 near the floor). */
 function lyingLegs(deg: number): Pose {
