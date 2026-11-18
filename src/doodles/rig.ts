@@ -93,6 +93,11 @@ export interface DoodleSpec {
   transition?: number;
   /** Replace an existing hand-drawn doodle (e.g. one that shows the wrong move). */
   replaces?: boolean;
+  /**
+   * A resistance band looped round both thighs: drawn joining the near and far
+   * thighs at this share of the way from hip to knee (e.g. 0.8 = just above the knees).
+   */
+  band?: number;
 }
 
 export const BONES = {

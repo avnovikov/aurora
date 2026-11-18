@@ -199,7 +199,9 @@ const CLAM_BOTTOM_FOOT = along(CLAM_BOTTOM_KNEE, 30, 86);
  * the top ankle a little along the bottom foot (it stays resting on it, never lifting).
  */
 function clamshell(open: number): Pose {
-  const topAnkle: Point = [round(CLAM_BOTTOM_FOOT[0] - 22 * open), round(CLAM_BOTTOM_FOOT[1] - 12 - 4 * open)];
+  // Closed: knees nearly touching. Open: the top ankle rides back over the bottom ankle so the
+  // top knee rises about twice as far as before (the 2D rig can only lift it by shortening hip-to-ankle).
+  const topAnkle: Point = [round(CLAM_BOTTOM_FOOT[0] + 6 - 40 * open), round(CLAM_BOTTOM_FOOT[1] - 12 - 10 * open)];
   return {
     pelvis: CLAM_PELVIS,
     chest: [-80, CLAM_PELVIS[1]],

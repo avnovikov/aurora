@@ -23,7 +23,9 @@
     "descriptions:compile": "tsx scripts/compile-descriptions.ts",
     "equipment:compile": "tsx scripts/compile-equipment.ts",
     "doodles": "tsx scripts/generate-doodles.ts",
-    "doodles:check": "node scripts/measure-doodle-fit.mjs"
+    "doodles:check": "node scripts/measure-doodle-fit.mjs",
+    "doodles:cards": "tsx scripts/doodle-cards.ts",
+    "doodles:missing": "tsx scripts/rank-missing-doodles.ts"
   },
   "devDependencies": {
     "@capacitor/android": "^8.6.2",
