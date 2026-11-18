@@ -332,7 +332,7 @@ function deficit(shoulderY: number): Pose {
 // ---------------------------------------------------------------- fingertip push-up
 
 /** Palms off the floor: the wrists ride high, the hands arch down onto the fingertips. */
-const FINGER_ANGLE = 55;
+const FINGER_ANGLE = 50;
 const FINGER_WRIST: Point = along([62, 0], FINGER_ANGLE + 180, 8);
 
 function finger(shoulderY: number): Pose {

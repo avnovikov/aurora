@@ -277,7 +277,6 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "hf_150": "/doodles/doodle-star-jump.svg",
   "fedb_skating": "/doodles/doodle-skating.svg",
   "hf_98": "/doodles/doodle-skater-bound.svg",
-  "fedb_alternate_leg_diagonal_bound": "/doodles/doodle-alternate-leg-diagonal-bound.svg",
   "fedb_single_leg_lateral_hop": "/doodles/doodle-single-leg-lateral-hop.svg",
   "hf_106": "/doodles/doodle-v-sit-hold.svg",
   "hf_120": "/doodles/doodle-v-up.svg",

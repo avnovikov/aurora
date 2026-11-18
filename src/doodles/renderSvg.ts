@@ -222,7 +222,7 @@ function layoutFor(spec: DoodleSpec, poses: Solved[]): Layout {
   const figure = figureExtent(spec, poses);
   const focus = FOCUS_BY_ID[spec.id];
   const inset = insetFor(focus, poses, figure);
-  const drawing = inset ? union(figure, insetExtent(inset, focus?.label)) : figure;
+  const drawing = inset ? union(figure, insetExtent(inset, focus)) : figure;
   return { view: frame(drawing), focus, inset };
 }
 
@@ -298,7 +298,7 @@ function insetFor(focus: Focus | undefined, poses: Solved[], figure: ViewBox): I
   if (points.length === 0) return undefined;
   const area = bounds(points);
   const centre: Point = [area.x + area.w / 2, area.y + area.h / 2];
-  const extent = Math.max(area.w, area.h) / 2 + 30;
+  const extent = Math.max(area.w, area.h) / 2 + (focus.margin ?? 30);
   const r = (Math.max(figure.h, figure.w / INSET_BASIS_ASPECT) * INSET_SHARE) / 2;
   // Zoom in as asked, but never so far that the focus area leaves the circle.
   const zoom = Math.min(focus.zoom, (r * 0.85) / extent);
@@ -308,13 +308,16 @@ function insetFor(focus: Focus | undefined, poses: Solved[], figure: ViewBox): I
   return { cx, cy, r, zoom, map };
 }
 
-const labelSize = (r: number): number => r * LABEL_SHARE;
-const labelBaseline = (inset: Inset): number => inset.cy + inset.r + labelSize(inset.r) * LABEL_GAP;
+const labelSize = (r: number, focus?: Focus): number => r * LABEL_SHARE * (focus?.labelScale ?? 1);
+const labelBaseline = (inset: Inset, focus?: Focus): number =>
+  inset.cy + inset.r + labelSize(inset.r, focus) * LABEL_GAP;
 
 /** The inset ring plus, below it, its label (descenders included). */
-function insetExtent(inset: Inset, label: string | undefined): ViewBox {
+function insetExtent(inset: Inset, focus: Focus | undefined): ViewBox {
   const reach = inset.r + RING_WIDTH / 2;
-  const bottom = label ? labelBaseline(inset) + labelSize(inset.r) * LABEL_DESCENT : inset.cy + reach;
+  const bottom = focus?.label
+    ? labelBaseline(inset, focus) + labelSize(inset.r, focus) * LABEL_DESCENT
+    : inset.cy + reach;
   return { x: inset.cx - reach, y: inset.cy - reach, w: 2 * reach, h: bottom - (inset.cy - reach) };
 }
 
@@ -322,14 +325,18 @@ function insetSvg(spec: DoodleSpec, focus: Focus, inset: Inset, poses: Solved[],
   const { cx, cy, r, zoom, map } = inset;
   // Unique per doodle: several SVGs inlined on one page must not share a clip.
   const clipId = `focus-${spec.slug}`;
-  const fontSize = labelSize(r);
+  const fontSize = labelSize(r, focus);
+  const floorY = map([0, 0])[1];
+  const floor = focus.floor
+    ? `<line x1="${fmt(cx - r)}" y1="${fmt(floorY)}" x2="${fmt(cx + r)}" y2="${fmt(floorY)}" opacity="${FAR_OPACITY}" stroke-width="${RING_WIDTH}"/>\n`
+    : "";
   const label = focus.label
-    ? `<text x="${fmt(cx)}" y="${fmt(labelBaseline(inset))}" style="fill:${FOCUS_COLOUR}" stroke="none" font-family="system-ui, sans-serif" font-size="${fmt(fontSize)}" text-anchor="middle">${focus.label}</text>`
+    ? `<text x="${fmt(cx)}" y="${fmt(labelBaseline(inset, focus))}" style="fill:${FOCUS_COLOUR}" stroke="none" font-family="system-ui, sans-serif" font-size="${fmt(fontSize)}" text-anchor="middle">${focus.label}</text>`
     : "";
   return `<clipPath id="${clipId}"><circle cx="${fmt(cx)}" cy="${fmt(cy)}" r="${fmt(r)}"/></clipPath>
 <g clip-path="url(#${clipId})">
 <circle cx="${fmt(cx)}" cy="${fmt(cy)}" r="${fmt(r)}" style="fill:${PAPER}" stroke="none"/>
-${highlightSvg(focus, poses, timing, map)}
+${floor}${highlightSvg(focus, poses, timing, map)}
 ${figureSvg(spec, poses, timing, map, zoom)}
 </g>
 <circle cx="${fmt(cx)}" cy="${fmt(cy)}" r="${fmt(r)}" style="stroke:${FOCUS_COLOUR}" stroke-width="${RING_WIDTH}"/>

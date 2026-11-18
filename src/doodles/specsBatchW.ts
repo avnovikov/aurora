@@ -96,7 +96,7 @@ const hang = (): Pose => tuckedAround(90, CAT_SHOULDER, 89);
 
 // ---------------------------------------------------------------- front lever row
 
-/** Front lever with the arms bent: shoulders `back` past the bar and `up` towards it, elbows driven behind the back. */
+/** Front lever with the arms bent: shoulders `back` past the bar and `up` below it (the body hangs under the bar), elbows driven behind the back. */
 function frontLeverRow(back: number, up: number): Pose {
   const shoulder: Point = [2 - back, BAR_Y + up];
   const lever = straightAround(0, shoulder);
@@ -229,12 +229,20 @@ function frontSupport(): Pose {
 
 // ---------------------------------------------------------------- kip-up
 
+/** Roll-back: hips over the shoulders as far as the spine's bend limit allows, knees by the face. */
+const ROLL_PELVIS: Point = [-80, -120];
+const ROLL_CHEST: Point = [-98, -45];
+const ROLL_THIGH = 158;
+/** The push: shoulders lifting with the hands still planted, head tucked so the arms clear it. */
+const PUSH_CHEST: Point = [-86, -86];
+const PUSH_HEAD: Point = [-126, -48];
+
 /**
  * Hands by the ears, palms down: in side view the wrists sit just past the
  * head with the fingers on the floor, the elbows up above the face, so the
  * arms frame the head rather than crossing it.
  */
-const KIP_WRISTS = { near: [-181, -13] as Point, far: [-179, -13] as Point };
+const KIP_WRISTS = { near: [-183, -13] as Point, far: [-183, -14] as Point };
 
 /** Hands planted by the head, elbows pointing up: elbows solved from the pose's shoulder. */
 function kipHands(pose: Pose): Pose {
@@ -285,19 +293,31 @@ function kipArmsUp(): Pose {
   };
 }
 
-/** Rolled back onto the shoulders, back rounded, knees pulled to the face. */
-function kipRoll(): Pose {
-  const pelvis: Point = [-24, -72];
-  const chest: Point = [-92, -30];
-  const kneeNear = along(pelvis, -160, 88);
-  const kneeFar = along(pelvis, -158, 88);
+/** On the way into the roll: knees pulled up over the hips, shins level, hands still by the ears. */
+function kipTuck(): Pose {
+  const pelvis: Point = [-10, -14];
+  const knee = along(pelvis, -95, 88);
+  return kipHands({
+    pelvis,
+    chest: [-90, -16],
+    head: [-144, -25],
+    knees: { near: { at: knee }, far: { at: [knee[0] - 2, knee[1]] } },
+    feet: { near: along(knee, -5, 86), far: along([knee[0] - 2, knee[1]], -5, 86) },
+    toes: { near: -5, far: -5 },
+  });
+}
+
+/** Rolled back onto the shoulders, back rounded, hips over the shoulders and knees pulled to the face. */
+function kipRoll(pelvis: Point = ROLL_PELVIS, chest: Point = ROLL_CHEST, thigh = ROLL_THIGH): Pose {
+  const kneeNear = along(pelvis, thigh, 88);
+  const kneeFar = along(pelvis, thigh + 2, 88);
   return kipHands({
     pelvis,
     chest,
     head: [-146, -27],
     knees: { near: { at: kneeNear }, far: { at: kneeFar } },
-    feet: { near: along(kneeNear, -20, 86), far: along(kneeFar, -18, 86) },
-    toes: { near: -20, far: -18 },
+    feet: { near: along(kneeNear, thigh + 90, 86), far: along(kneeFar, thigh + 92, 86) },
+    toes: { near: thigh + 90, far: thigh + 92 },
   });
 }
 
@@ -317,21 +337,19 @@ function kipKick(): Pose {
   });
 }
 
-/** Hands leaving the floor: arms straight up from the shoulders, legs whipping down. */
+/** The push: hands still planted by the ears and the head down while the shoulders lift, legs whipping down. */
 function kipPush(): Pose {
   const pelvis: Point = [-34, -146];
-  const shoulder = along(pelvis, 150, 97);
   const near = along(pelvis, -32, LEG);
   const far = along(pelvis, -31, LEG);
-  return {
+  return kipHands({
     pelvis,
-    chest: along(pelvis, 150, 79),
-    head: along(along(pelvis, 150, 99), 172, 36),
-    hands: { near: along(shoulder, -95, 122), far: along(shoulder, -93, 122) },
+    chest: PUSH_CHEST,
+    head: PUSH_HEAD,
     knees: straightKnees(pelvis, near, far),
     feet: { near, far },
     toes: { near: -32, far: -31 },
-  };
+  });
 }
 
 /** Pushed off the hands: hips snapped up and arched, arms thrown forward, feet coming down under the body. */
@@ -444,7 +462,7 @@ export const BATCH_W_SPECS: DoodleSpec[] = [
     transition: 0.9,
     frames: [
       { hold: 0.6, pose: straightAround(0, FRONT_SHOULDER) },
-      { hold: 0.5, pose: frontLeverRow(54, 16) },
+      { hold: 0.5, pose: frontLeverRow(54, 34) },
     ],
   },
   {
@@ -515,6 +533,8 @@ export const BATCH_W_SPECS: DoodleSpec[] = [
     transition: 0.4,
     frames: [
       { hold: 0.5, pose: kipLie() },
+      { hold: 0, pose: kipTuck() },
+      { hold: 0, pose: kipRoll([-45, -90], [-95, -31], -165) },
       { hold: 0.1, pose: kipRoll() },
       { hold: 0.02, pose: kipKick() },
       { hold: 0.02, pose: kipPush() },

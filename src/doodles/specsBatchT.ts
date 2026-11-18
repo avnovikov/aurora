@@ -216,10 +216,13 @@ function tricepsBottom(): Pose {
 
 // ---------------------------------------------------------------- Tyson push-up
 
-/** Rocked back: hips pushed back toward the heels as far as the long arms allow, knees hovering just off the floor. */
-function tysonRock(): Pose {
-  const pelvis: Point = [-136, -94];
-  // Knee out in front of the hips, low: the lower meeting point of thigh and shin.
+/**
+ * Rocked back: a low crouch on the toes, feet where the plank's were. Hips pushed
+ * back as far as the long arms allow, knees bent ahead of the hips and hovering
+ * well off the floor.
+ */
+function tysonRock(pelvis: Point = [-128, -114]): Pose {
+  // The upper of the two thigh/shin meeting points is behind the feet; take the lower, in front of the hips.
   const knee = low(pelvis, 88, PLANK_FOOT, 85.9);
   const base: Pose = {
     pelvis,
@@ -472,6 +475,8 @@ export const BATCH_T_SPECS: DoodleSpec[] = [
       { hold: 0.3, pose: pushUp("top", HAND_X) },
       { hold: 0, pose: pushUp(round((pushUpTop(HAND_X) + PUSH_BOTTOM) / 2), HAND_X) },
       { hold: 0.15, pose: pushUp(PUSH_BOTTOM, HAND_X) },
+      // On the way back the hips rise first, so the knees stay off the floor.
+      { hold: 0, pose: tysonRock([-40, -105]) },
       { hold: 0.3, pose: tysonRock() },
     ],
   },

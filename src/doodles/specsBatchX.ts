@@ -11,9 +11,14 @@ import type { DoodleSpec, Point, Pose, Prop, Side } from "./rig";
  *
  * Bench jump is drawn as the lateral version (side-on to the bench, over and
  * straight back): the forward version turns round between jumps, which a
- * figure that always faces +x cannot do. The diagonal bound shows its
- * side-to-side travel in front view; the forward part and the knee drive point
- * at the camera and do not show.
+ * figure that always faces +x cannot do.
+ *
+ * Left out:
+ *   fedb_alternate_leg_diagonal_bound   the bound travels forward and sideways
+ *     with a knee drive. Front view keeps only the sideways part (the forward
+ *     travel and the knee drive point at the camera), so it read as a plain
+ *     sideways bound duplicating Skater Bound (hf_98); side view loses the
+ *     sideways part, which is the point of the drill.
  */
 
 const round = (value: number): number => Math.round(value * 10) / 10;
@@ -424,15 +429,15 @@ function sideLoad(x: number, dir: 1 | -1): Pose {
 }
 
 /** Mid-flight sideways: knees drawn up, arms swinging up toward the landing side. */
-function sideFlight(x: number, dir: 1 | -1): Pose {
-  const pelvis: Point = [x, -270];
+function sideFlight(x: number, dir: 1 | -1, pelvisY = -270): Pose {
+  const pelvis: Point = [x, pelvisY];
   const top = along(pelvis, -90 + dir * 6, 80);
   return {
     pelvis,
     chest: top,
     ...frontReach(pelvis, top, -140 + dir * 6, -40 + dir * 6),
     knees: { near: { bend: 1 }, far: { bend: -1 } },
-    feet: { near: [x - 30 + dir * 12, -126], far: [x + 30 + dir * 12, -126] },
+    feet: { near: [x - 30 + dir * 12, pelvisY + 144], far: [x + 30 + dir * 12, pelvisY + 144] },
     toes: { near: 150, far: 30 },
   };
 }
@@ -447,7 +452,8 @@ function sideLand(x: number): Pose {
 /**
  * Single-leg landing on `stance` with the foot at `x`: the hip sits over the
  * foot's inside, the free leg sweeps behind and across the standing leg
- * (`cross`), or hangs with its foot lifted beside the standing ankle.
+ * (`cross`), or is lifted with the thigh hanging nearly straight down and the
+ * shin folded in behind the standing leg (`lift`).
  */
 function oneLeg(
   stance: Side,
@@ -459,17 +465,27 @@ function oneLeg(
 ): Pose {
   const dir = stance === "near" ? -1 : 1; // the stance foot is on this side of the pelvis
   const pelvis: Point = [x - dir * 34, pelvisY];
-  const freeFoot: Point =
-    free === "cross" ? [x + dir * 22, footY - 36] : [pelvis[0] - dir * 30, footY - 40];
+  const freeHip: Point = [pelvis[0] - dir * 8, pelvisY];
+  const freeKnee = along(freeHip, 90 + dir * LIFT_THIGH, 88);
+  const freeFoot: Point = free === "cross" ? [x + dir * 22, footY - 36] : along(freeKnee, 90 - dir * LIFT_SHIN, 86);
+  const freeBend = stance === "near" ? -1 : 1;
   return {
     pelvis,
     chest: [pelvis[0], pelvisY - 80],
     ...arms,
-    knees: { [stance]: { bend: stance === "near" ? 1 : -1 }, [other(stance)]: { bend: stance === "near" ? -1 : 1 } },
+    knees: {
+      [stance]: { bend: stance === "near" ? 1 : -1 },
+      [other(stance)]: free === "lift" ? { at: freeKnee } : { bend: freeBend },
+    },
     feet: { [stance]: [x, footY], [other(stance)]: freeFoot } as Pose["feet"],
     toes: { [stance]: stance === "near" ? 180 : 0, [other(stance)]: 90 } as Pose["toes"],
   };
 }
+
+/** A lifted free thigh leans out this many degrees from vertical. */
+const LIFT_THIGH = 15;
+/** ...and the shin folds in this many degrees from vertical, the foot hooked behind the standing calf. */
+const LIFT_SHIN = 68;
 
 /** Arms swung across the body toward the `stance` side (skater). */
 function skaterArms(pelvis: Point, stance: Side): Pick<Pose, "hands" | "elbows"> {
@@ -490,6 +506,14 @@ function boundAir(x: number, pelvisY: number): Pose {
     toes: { near: 120, far: 60 },
   };
 }
+
+/** Bench jump: feet this far either side of the bench centre, pelvis this high mid-flight. */
+const BENCH_STANCE = 190;
+const BENCH_FLIGHT = -320;
+
+/** Single-leg lateral hop: landings either side of the marker, pelvis height at the top of the hop. */
+const HOP_LAND = 72;
+const HOP_AIR = -240;
 
 /** Line (or low cone) hopped over. */
 const MARKER: Prop = { kind: "box", x: -6, y: -14, w: 12, h: 14 };
@@ -625,15 +649,16 @@ export const BATCH_X_SPECS: DoodleSpec[] = [
     slug: "bench-jump",
     title: "Bench Jump",
     view: "front",
-    props: [{ kind: "box", x: -30, y: -62, w: 60, h: 62 }, floor(-280, 280)],
+    props: [{ kind: "box", x: -30, y: -62, w: 60, h: 62 }, floor(-300, 300)],
     transition: 0.32,
     frames: [
-      { hold: 0.15, pose: sideLoad(-170, 1) },
-      { hold: 0.06, pose: sideFlight(0, 1) },
-      { hold: 0.15, pose: sideLand(170) },
-      { hold: 0.05, pose: sideLoad(170, -1) },
-      { hold: 0.06, pose: sideFlight(0, -1) },
-      { hold: 0.15, pose: sideLand(-170) },
+      // Take off and land well clear of the bench, and fly high, so both feet clear its top.
+      { hold: 0.15, pose: sideLoad(-BENCH_STANCE, 1) },
+      { hold: 0.06, pose: sideFlight(0, 1, BENCH_FLIGHT) },
+      { hold: 0.15, pose: sideLand(BENCH_STANCE) },
+      { hold: 0.05, pose: sideLoad(BENCH_STANCE, -1) },
+      { hold: 0.06, pose: sideFlight(0, -1, BENCH_FLIGHT) },
+      { hold: 0.15, pose: sideLand(-BENCH_STANCE) },
     ],
   },
   {
@@ -695,20 +720,6 @@ export const BATCH_X_SPECS: DoodleSpec[] = [
     ],
   },
   {
-    id: "fedb_alternate_leg_diagonal_bound",
-    slug: "alternate-leg-diagonal-bound",
-    title: "Alternate Leg Diagonal Bound",
-    view: "front",
-    props: [floor(-200, 200)],
-    transition: 0.3,
-    frames: [
-      { hold: 0.15, pose: oneLeg("near", -110, -150, "lift", frontArms([-76, -150], 26, 20)) },
-      { hold: 0, pose: boundAir(0, -204) },
-      { hold: 0.15, pose: oneLeg("far", 110, -150, "lift", frontArms([76, -150], 26, 20)) },
-      { hold: 0, pose: boundAir(0, -204) },
-    ],
-  },
-  {
     id: "fedb_single_leg_lateral_hop",
     slug: "single-leg-lateral-hop",
     title: "Single-Leg Lateral Hop",
@@ -716,10 +727,10 @@ export const BATCH_X_SPECS: DoodleSpec[] = [
     props: [MARKER, floor(-130, 130)],
     transition: 0.24,
     frames: [
-      { hold: 0.08, pose: oneLeg("near", -44, -160, "lift", frontArms([-10, -160], 26, 20)) },
-      { hold: 0, pose: oneLeg("near", 0, -200, "lift", frontArms([34, -200], 30, 20), -30) },
-      { hold: 0.08, pose: oneLeg("near", 44, -160, "lift", frontArms([78, -160], 26, 20)) },
-      { hold: 0, pose: oneLeg("near", 0, -200, "lift", frontArms([34, -200], 30, 20), -30) },
+      { hold: 0.08, pose: oneLeg("near", -HOP_LAND, -160, "lift", frontArms([34 - HOP_LAND, -160], 26, 20)) },
+      { hold: 0, pose: oneLeg("near", 0, HOP_AIR, "lift", frontArms([34, HOP_AIR], 30, 20), HOP_AIR + 160) },
+      { hold: 0.08, pose: oneLeg("near", HOP_LAND, -160, "lift", frontArms([34 + HOP_LAND, -160], 26, 20)) },
+      { hold: 0, pose: oneLeg("near", 0, HOP_AIR, "lift", frontArms([34, HOP_AIR], 30, 20), HOP_AIR + 160) },
     ],
   },
 ];

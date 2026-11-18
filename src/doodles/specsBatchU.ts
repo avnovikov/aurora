@@ -183,21 +183,24 @@ function bridgeFull(push: 0 | 1): Pose {
 
 /**
  * Neck bridge on the top of the head, back arched; `high` lifts the hips further. The hands are
- * planted on the floor just past the head with the elbows bent, ready to take weight.
+ * planted beside the head, palms just past its crown and fingers toward the shoulders, elbows
+ * bent and lifted out past the head, ready to take weight. (In side view a wrist right at the
+ * ear would draw the forearm through the head circle; just past its edge is the closest that
+ * stays clear of it.)
  */
 function neckBridge(high: boolean): Pose {
+  const head: Point = high ? [-121, -26] : [-128, -26];
   const base: Pose = {
     pelvis: high ? [-18, -104] : [-22, -94],
     chest: high ? [-90, -72] : [-94, -64],
     spine: { bend: 1 },
-    head: high ? [-121, -26] : [-128, -26],
+    head,
     feet: BRIDGE_FEET,
     toes: BRIDGE_TOES,
   };
   const shoulder = solvePose(base).arms.near.root;
-  // Upper arm reaching past the head, elbow 58 off the floor; forearm down to the floor.
-  const elbow: Point = [round(shoulder[0] - Math.sqrt(60 ** 2 - (shoulder[1] + 58) ** 2)), -58];
-  const wrist: Point = [round(elbow[0] - Math.sqrt(58 ** 2 - 50 ** 2)), -8];
+  const wrist: Point = [head[0] - 22, -8];
+  const elbow = meetUp(shoulder, 60, wrist, 58);
   return {
     ...base,
     hands: { near: wrist, far: wrist },
@@ -257,7 +260,7 @@ const AZTEC_HAND_X = 62;
 
 /** Airborne pike: hips high, torso and legs hanging below them, hands touching the ankles. */
 function aztecPike(): Pose {
-  const pelvis: Point = [-10, -246];
+  const pelvis: Point = [-10, -320];
   const ankle = along(pelvis, 110, LEG);
   const shoulder = along(pelvis, 58, 98);
   return {
@@ -272,10 +275,10 @@ function aztecPike(): Pose {
 
 /** Body launched off the floor, still straight and level-ish, hands just off the floor. */
 function aztecLaunch(): Pose {
-  const foot: Point = [PLANK_FOOT[0], PLANK_FOOT[1] - 40];
-  const { shoulder } = straightBody(foot, -170);
+  const foot: Point = [PLANK_FOOT[0], PLANK_FOOT[1] - 70];
+  const { shoulder } = straightBody(foot, -200);
   const hand = along(shoulder, 88, REACH);
-  return { ...pushUp(-170, AZTEC_HAND_X, foot), hands: { near: hand, far: [hand[0] - 2, hand[1]] }, toes: { near: 30, far: 30 } };
+  return { ...pushUp(-200, AZTEC_HAND_X, foot), hands: { near: hand, far: [hand[0] - 2, hand[1]] }, toes: { near: 30, far: 30 } };
 }
 
 // ---------------------------------------------------------------- specs

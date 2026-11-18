@@ -27,6 +27,12 @@ export interface Focus {
   zoom?: number;
   /** Short label under the inset, e.g. "wrists". */
   label?: string;
+  /** Rig units kept round the focus joints in the inset (default 30); smaller lets a tiny part zoom further. */
+  margin?: number;
+  /** Draw the floor line (y = 0) in the inset, for contact with the ground. */
+  floor?: boolean;
+  /** Multiplies the inset label size (default 1). */
+  labelScale?: number;
 }
 
 const BOTH_WRISTS: Focus = {
@@ -133,7 +139,16 @@ export const FOCUS_BY_ID: Readonly<Record<string, Focus>> = {
   ntc_prone_ytw: { joints: [], highlight: ["shoulder.near", "shoulder.far", "upperArm.near"] },
   hf_31: { joints: [], highlight: ["upperArm.near", "forearm.near", "shoulder.near"] }, // Planche lean: shoulders past the wrists
   ntc_hand_release_push_up: { joints: [], highlight: ["forearm.near", "hand.near", "forearm.far", "hand.far"] }, // Hands lift off
-  wger_1217: { joints: ["wrist.near", "hand.near"], highlight: ["hand.near", "hand.far"], zoom: 5, label: "fingertips" }, // Finger push-up
+  // Finger push-up: the tented hand, palm off the floor, on the fingertips.
+  wger_1217: {
+    joints: ["wrist.near", "hand.near"],
+    highlight: ["hand.near"],
+    zoom: 7,
+    margin: 4,
+    floor: true,
+    label: "fingertips",
+    labelScale: 1.8,
+  },
   // Spine
   hf_154: { joints: [], highlight: ["lumbar", "thoracic"] }, // Cat-cow
 };
