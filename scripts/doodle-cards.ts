@@ -19,7 +19,8 @@ import { GENERATED_DOODLES } from "../src/data/generated/doodleMap.ts";
 import { LIBRARY_CATALOGUE } from "../src/data/libraryCatalogue.ts";
 import { DOODLE_SPECS } from "../src/doodles/specs.ts";
 
-const FRAMES = 8;
+/** Frames per card; DOODLE_CARD_FRAMES=24 shows fast moments such as a turn. */
+const FRAMES = Number(process.env.DOODLE_CARD_FRAMES) || 8;
 const publicDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../public");
 
 interface CardItem {

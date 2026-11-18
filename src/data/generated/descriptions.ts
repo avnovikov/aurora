@@ -5084,12 +5084,12 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
   },
   "fedb_bench_jump": {
     "id": "fedb_bench_jump",
-    "summary": "A two-footed sideways jump over a bench from a quick countermovement that builds explosive leg power.",
+    "summary": "A two-footed jump over a bench or box from a quick countermovement that builds explosive leg power.",
     "steps": [
-      "Stand side-on beside a low bench with feet hip-width apart.",
+      "Stand with feet shoulder width apart, a bench or box a short distance in front of you.",
       "Dip into a short squat and swing your arms back.",
       "Swing your arms up and jump explosively over the bench.",
-      "Land softly on both feet with knees bent, then jump straight back over."
+      "Land softly with knees bent, turn around, and jump back over."
     ],
     "cues": [
       "Swing the arms",

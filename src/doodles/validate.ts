@@ -1,4 +1,4 @@
-import { BONES, SEGMENTS, dist, sampleTimeline, type DoodleSpec, type Point, type Prop, type Side, type Solved } from "./rig";
+import { BONES, SEGMENTS, dist, reflectSolved, sampleTimeline, type DoodleSpec, type Point, type Prop, type Side, type Solved } from "./rig";
 import { figurePoints, propSegments, specViewBox } from "./renderSvg";
 
 /** Validator for doodle specs (rig v2 spec, "Validator" section). JSON-serialisable output. */
@@ -249,7 +249,7 @@ export function validateSpec(spec: DoodleSpec): SpecReport {
       index,
       boneLengthError: round(boneLengthError(pose), 4),
       torsoLength: round(torsoLength(pose), 2),
-      anatomy: [...anatomy(pose, spec.view), ...headInProp(spec, pose)],
+      anatomy: [...anatomy(reflectSolved(pose, timeline.mirrors[sampleIndex]), spec.view), ...headInProp(spec, pose)],
       unreachable: pose.pins
         .filter((pin) => dist(pin.target, pin.actual) > PIN_TOLERANCE)
         .map((pin) => ({
@@ -267,17 +267,25 @@ export function validateSpec(spec: DoodleSpec): SpecReport {
   const torsos = keyframes.map((k) => k.torsoLength);
   const torsoRange: [number, number] = [Math.min(...torsos), Math.max(...torsos)];
   const maxBoneLengthError = Math.max(...keyframes.map((k) => k.boneLengthError));
-  const maxBoneLengthErrorAllSamples = round(Math.max(...timeline.poses.map(boneLengthError)), 4);
-  const between = (check: (pose: Solved) => string[]): string[] => [
+  // Mid-turn samples are foreshortened on purpose (the figure is front-on halfway).
+  const maxBoneLengthErrorAllSamples = round(
+    Math.max(...timeline.poses.filter((_, i) => !timeline.turning[i]).map(boneLengthError)),
+    4,
+  );
+  const between = (check: (pose: Solved, i: number) => string[]): string[] => [
     ...new Set(
       timeline.poses.flatMap((pose, i) =>
         timeline.keyframeIndex.includes(i)
           ? []
-          : check(pose).map((issue) => `between keyframes (t=${round(timeline.keyTimes[i] * timeline.duration, 1)}s): ${issue}`),
+          : check(pose, i).map((issue) => `between keyframes (t=${round(timeline.keyTimes[i] * timeline.duration, 1)}s): ${issue}`),
       ),
     ),
   ];
-  const transitionAnatomy = between((pose) => anatomy(pose, spec.view));
+  // Joint ranges are judged as authored (a mirrored knee would otherwise read as bending backwards);
+  // mid-turn samples are skipped.
+  const transitionAnatomy = between((pose, i) =>
+    timeline.turning[i] ? [] : anatomy(reflectSolved(pose, timeline.mirrors[i]), spec.view),
+  );
   // A limb sweeping through a prop between keyframes is as visible as one at a keyframe.
   const transitionPropCrossings = between((pose) => [
     ...propCrossings(spec, pose).map((c) => `${c.segment} crosses prop ${c.prop}`),

@@ -1,4 +1,4 @@
-import type { DoodleSpec, Point, Pose, Prop, Side } from "./rig";
+import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side } from "./rig";
 
 /**
  * Batch X: jumps, bounds and hops. Floor at y = 0, up is negative, the side-view
@@ -508,8 +508,30 @@ function boundAir(x: number, pelvisY: number): Pose {
 }
 
 /** Bench jump: feet this far either side of the bench centre, pelvis this high mid-flight. */
-const BENCH_STANCE = 190;
-const BENCH_FLIGHT = -320;
+/** Low bench seen end-on across the jump path, midway between take-off (x 0) and landing. */
+const BENCH_LAND = 270;
+const BENCH_MID = BENCH_LAND / 2;
+const BENCH_W = 44;
+const BENCH_H = 48;
+const BENCH: Prop = { kind: "box", x: BENCH_MID - BENCH_W / 2, y: -BENCH_H, w: BENCH_W, h: BENCH_H };
+
+/**
+ * One jump over the bench, take-off at x 0 to landing at BENCH_LAND, ending
+ * standing. With `mirror` the same jump is drawn reflected (the way back), and
+ * the change of facing between the two passes is the turn round.
+ */
+function benchJumpOver(mirror?: number): Keyframe[] {
+  return [
+    // Arms forward while standing, so the turn reads: they swing from pointing one way to the other.
+    { hold: 0.25, pose: stand(0, "forward") },
+    { hold: 0.05, pose: bent(0, 50, -56, "back") },
+    { hold: 0, pose: takeOff(0, "up") },
+    { hold: 0.04, pose: broadPeak(BENCH_MID, "forward") },
+    { hold: 0, pose: reachLand(BENCH_LAND) },
+    { hold: 0.3, pose: bent(BENCH_LAND, 56, -56, "forward") },
+    { hold: 0.2, pose: stand(BENCH_LAND, "forward") },
+  ].map((frame) => (mirror === undefined ? frame : { ...frame, mirror }));
+}
 
 /** Single-leg lateral hop: landings either side of the marker, pelvis height at the top of the hop. */
 const HOP_LAND = 72;
@@ -645,21 +667,14 @@ export const BATCH_X_SPECS: DoodleSpec[] = [
     ],
   },
   {
+    // Side view: jump over the bench, turn round, jump back over, turn round.
+    // The way back is the same jump drawn mirrored about the bench (`mirror`).
     id: "fedb_bench_jump",
     slug: "bench-jump",
     title: "Bench Jump",
-    view: "front",
-    props: [{ kind: "box", x: -30, y: -62, w: 60, h: 62 }, floor(-300, 300)],
-    transition: 0.32,
-    frames: [
-      // Take off and land well clear of the bench, and fly high, so both feet clear its top.
-      { hold: 0.15, pose: sideLoad(-BENCH_STANCE, 1) },
-      { hold: 0.06, pose: sideFlight(0, 1, BENCH_FLIGHT) },
-      { hold: 0.15, pose: sideLand(BENCH_STANCE) },
-      { hold: 0.05, pose: sideLoad(BENCH_STANCE, -1) },
-      { hold: 0.06, pose: sideFlight(0, -1, BENCH_FLIGHT) },
-      { hold: 0.15, pose: sideLand(-BENCH_STANCE) },
-    ],
+    props: [BENCH, floor(-90, BENCH_LAND + 90)],
+    transition: 0.3,
+    frames: [...benchJumpOver(), ...benchJumpOver(BENCH_MID)],
   },
   {
     id: "fedb_side_standing_long_jump",

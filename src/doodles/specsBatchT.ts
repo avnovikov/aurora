@@ -408,7 +408,7 @@ export const BATCH_T_SPECS: DoodleSpec[] = [
   {
     id: "wger_1286",
     slug: "plank-jump-in",
-    title: "Dynamic Planche",
+    title: "Plank Jump-In",
     transition: 0.25,
     frames: [
       { hold: 0.35, pose: pushUp("top", HAND_X) },

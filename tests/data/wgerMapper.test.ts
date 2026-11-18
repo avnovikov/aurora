@@ -67,6 +67,15 @@ describe("wger mapping", () => {
     expect(cleanWgerName("Crunches (Custom)")).toBe("Crunches");
   });
 
+  it("renames wger rows whose name contradicts their text", () => {
+    const jumpIn = mapWgerExerciseRecord(
+      record({ id: 1286, name: "Dynamic Planche", category: "Abs", muscles: [6] }),
+    );
+    expect(jumpIn.name).toBe("Plank Jump-In");
+    expect(jumpIn.type).toBe("dynamic");
+    expect(jumpIn.regions).not.toContain("skill");
+  });
+
   it("parses paragraph descriptions and entities", () => {
     expect(wgerDescriptionLines("<p>Keep&nbsp;tall.</p><p>Breathe &amp; go.</p>")).toEqual([
       "Keep tall.",

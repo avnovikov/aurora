@@ -46,9 +46,9 @@ const ECCENTRIC_WORDS = ["negative", "eccentric"];
 /**
  * Names that say the move travels through reps, which beats a hold keyword:
  * "Supported Split Squat" is not a support hold, "Front lever pull-up" is not
- * a lever hold, "Plank with Alternating Leg Lift" is not a plank hold.
+ * a lever hold, "Plank with Alternating Leg Lift" and "Plank Jump-In" are not plank holds.
  */
-const MOVING_WORDS = [" split squat", " dynamic ", " pull up", " reach", " leg lift", " floor touch", " extension"];
+const MOVING_WORDS = [" split squat", " dynamic ", " jump", " pull up", " reach", " leg lift", " floor touch", " extension"];
 /** Names that say "this is a hold" outright, whatever else they mention. */
 const EXPLICIT_HOLD_WORDS = [" hold ", "isometric", "isometry"];
 /** Mobility drills named for a movement, not a held position. */
@@ -69,6 +69,20 @@ function wgerExerciseId(id: number): string {
 
 /** Drop wger's duplicate markers ("HD", "(Custom)", left/right) for display. */
 const NAME_SUFFIXES = [" (custom)", " hd", ", left leg", ", right leg", " left leg", " right leg", " left", " right"];
+
+/**
+ * wger names that don't match their own text, fixed by id.
+ * 1286 "Dynamic Planche" describes plank jump-ins (feet jump in toward the hands
+ * and back), not a planche push-up.
+ */
+const WGER_NAME_FIXES: Record<number, string> = {
+  1286: "Plank Jump-In",
+};
+
+/** Display name for a wger record: an id fix if we have one, else the cleaned name. */
+export function wgerDisplayName(record: Pick<WgerExerciseRecord, "id" | "name">): string {
+  return WGER_NAME_FIXES[record.id] ?? cleanWgerName(record.name);
+}
 
 export function cleanWgerName(name: string): string {
   let cleaned = name.trim();
@@ -92,7 +106,7 @@ export function wgerDescriptionLines(html: string): string[] {
 }
 
 export function mapWgerExerciseRecord(record: WgerExerciseRecord): SeedExercise {
-  const name = cleanWgerName(record.name);
+  const name = wgerDisplayName(record);
   const muscles = mapMuscles(record);
   const { pattern, regions } = classify(record, name);
   const cues = wgerDescriptionLines(record.description);
