@@ -73,6 +73,14 @@ export interface Keyframe {
   pose: Pose | LegacyPose;
   /** Seconds to hold this pose. */
   hold: number;
+  /**
+   * Side view only: draw this keyframe reflected about x = `mirror`, so the
+   * figure faces -x. Author the pose facing +x as usual. Between a mirrored and
+   * an unmirrored keyframe the figure turns round: every joint slides straight
+   * across, so the figure narrows to front-on halfway (those in-between samples
+   * are foreshortened on purpose and skip the bone-length and joint-range checks).
+   */
+  mirror?: number;
 }
 
 export type Prop =
@@ -617,6 +625,38 @@ export interface Timeline {
   poses: Solved[];
   /** Index into `poses` of each keyframe. */
   keyframeIndex: number[];
+  /** True for samples in the middle of a turn (foreshortened on purpose). */
+  turning: boolean[];
+  /** Mirror axis each sample is drawn about (undefined: as authored); reflect back to check joint ranges. */
+  mirrors: (number | undefined)[];
+}
+
+function mapSolved(s: Solved, f: (p: Point) => Point): Solved {
+  const limb = (l: SolvedLimb): SolvedLimb => ({ root: f(l.root), mid: f(l.mid), joint: f(l.joint), end: f(l.end) });
+  return {
+    pelvis: f(s.pelvis),
+    waist: f(s.waist),
+    chest: f(s.chest),
+    neck: f(s.neck),
+    head: f(s.head),
+    arms: { near: limb(s.arms.near), far: limb(s.arms.far) },
+    legs: { near: limb(s.legs.near), far: limb(s.legs.far) },
+    pins: s.pins.map((pin) => ({ ...pin, target: f(pin.target), actual: f(pin.actual) })),
+  };
+}
+
+/** The figure reflected about the vertical line x = `axis` (it then faces -x). */
+export function reflectSolved(s: Solved, axis: number | undefined): Solved {
+  return axis === undefined ? s : mapSolved(s, ([x, y]) => [2 * axis - x, y]);
+}
+
+/** Joint-by-joint straight-line blend: the in-between of a turn. */
+function lerpSolved(a: Solved, b: Solved, t: number): Solved {
+  const points: Point[] = [];
+  mapSolved(b, (p) => (points.push(p), p));
+  let i = 0;
+  const blended = mapSolved(a, (p) => lerpPoint(p, points[i++], t));
+  return { ...blended, pins: [] };
 }
 
 /** Sample the looping keyframe sequence (holds + eased transitions). */
@@ -625,23 +665,41 @@ export function sampleTimeline(spec: DoodleSpec, stepsPerTransition = 14): Timel
   const keys = solveKeyframes(spec);
   const times: number[] = [];
   const poses: Solved[] = [];
+  const turning: boolean[] = [];
+  const mirrors: (number | undefined)[] = [];
   const keyframeIndex: number[] = [];
+  const shown = (index: number): Solved => reflectSolved(keys[index].solved, spec.frames[index].mirror);
   let clock = 0;
   spec.frames.forEach((frame, index) => {
+    const next = (index + 1) % keys.length;
     const a = keys[index];
-    const b = keys[(index + 1) % keys.length];
+    const b = keys[next];
+    const turn = frame.mirror !== spec.frames[next].mirror;
     keyframeIndex.push(poses.length);
     times.push(clock);
-    poses.push(a.solved);
+    poses.push(shown(index));
+    turning.push(false);
+    mirrors.push(frame.mirror);
     clock += frame.hold;
     for (let step = 0; step < stepsPerTransition; step += 1) {
       times.push(clock + (transition * step) / stepsPerTransition);
       const t = ease(step / stepsPerTransition);
-      poses.push(solvePose(blendPose(a.solved, b.solved, a.pose, b.pose, t, spec.view), { view: spec.view }));
+      poses.push(
+        turn
+          ? lerpSolved(shown(index), shown(next), t)
+          : reflectSolved(
+              solvePose(blendPose(a.solved, b.solved, a.pose, b.pose, t, spec.view), { view: spec.view }),
+              frame.mirror,
+            ),
+      );
+      turning.push(turn && step > 0);
+      mirrors.push(turn && step > 0 ? undefined : frame.mirror);
     }
     clock += transition;
   });
   times.push(clock);
-  poses.push(keys[0].solved);
-  return { duration: clock, keyTimes: times.map((value) => value / clock), poses, keyframeIndex };
+  poses.push(shown(0));
+  turning.push(false);
+  mirrors.push(spec.frames[0].mirror);
+  return { duration: clock, keyTimes: times.map((value) => value / clock), poses, keyframeIndex, turning, mirrors };
 }

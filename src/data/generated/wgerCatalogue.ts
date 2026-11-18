@@ -1645,37 +1645,6 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1827 (CC-BY-SA-4.0, beagle)"
   },
   {
-    "id": "wger_1286",
-    "name": "Dynamic Planche",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "abdominals",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push",
-      "skill"
-    ],
-    "cues": [
-      "Start in a plank position, with your hands directly under your shoulders and your feet hip-width apart.",
-      "Engage your core to keep your body in a straight line from head to toe.",
-      "From this position, bend your knees slightly and jump with both feet inward, bringing them as close to your core as possible",
-      "As soon as your feet touch the ground, push off forcefully to jump again and return to the starting plank position.",
-      "Continue repeating this jumping motion, maintaining control and core stability throughout the exercise.",
-      "Make sure to keep your breathing steady while jumping, breathing deeply and controlling your breathing.",
-      "Keep your gaze fixed on the ground to maintain proper spinal alignment.",
-      "Repeat the jumps for the desired length of time or the number of repetitions recommended for your workout program.",
-      "To finish the exercise, rest by releasing the plank position, then stretch if necessary to loosen your muscles."
-    ],
-    "description": "Start in a plank position, with your hands directly under your shoulders and your feet hip-width apart. Engage your core to keep your body in a straight line from head to toe. From this position, bend your knees slightly and jump with both feet inward, bringing them as close to your core as possible As soon as your feet touch the ground, push off forcefully to jump again and return to the starting plank position. Continue repeating this jumping motion, maintaining control and core stability throughout the exercise. Make sure to keep your breathing steady while jumping, breathing deeply and controlling your breathing. Keep your gaze fixed on the ground to maintain proper spinal alignment. Repeat the jumps for the desired length of time or the number of repetitions recommended for your workout program. To finish the exercise, rest by releasing the plank position, then stretch if necessary to loosen your muscles.",
-    "attribution": "wger.de exercise 1286 (CC-BY-SA-4.0, painDpice)"
-  },
-  {
     "id": "wger_1288",
     "name": "Dynamic side plank",
     "pattern": "core_anti_extension",
@@ -3459,6 +3428,36 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "A static bodyweight support with both hands and feet on the floor and hips raised in a pike position. Place your hands and feet securely on the floor, then raise your hips. Keep your elbows straight and actively push the floor away through your shoulders. Maintain a controlled, stationary position without bending your elbows, lowering your head for push-up repetitions, or raising your feet onto a surface. Hold for up to 30 seconds. Stop earlier for loss of alignment, loss of active shoulder support, or pain. Record actual seconds, hand and foot spacing, and alignment. This is the floor variation, not a pike push-up or an elevated-feet pike hold.",
     "attribution": "wger.de exercise 2691 (CC-BY-SA-4.0, nalhilal)"
+  },
+  {
+    "id": "wger_1286",
+    "name": "Plank Jump-In",
+    "pattern": "core_anti_extension",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "abdominals",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "core"
+    ],
+    "cues": [
+      "Start in a plank position, with your hands directly under your shoulders and your feet hip-width apart.",
+      "Engage your core to keep your body in a straight line from head to toe.",
+      "From this position, bend your knees slightly and jump with both feet inward, bringing them as close to your core as possible",
+      "As soon as your feet touch the ground, push off forcefully to jump again and return to the starting plank position.",
+      "Continue repeating this jumping motion, maintaining control and core stability throughout the exercise.",
+      "Make sure to keep your breathing steady while jumping, breathing deeply and controlling your breathing.",
+      "Keep your gaze fixed on the ground to maintain proper spinal alignment.",
+      "Repeat the jumps for the desired length of time or the number of repetitions recommended for your workout program.",
+      "To finish the exercise, rest by releasing the plank position, then stretch if necessary to loosen your muscles."
+    ],
+    "description": "Start in a plank position, with your hands directly under your shoulders and your feet hip-width apart. Engage your core to keep your body in a straight line from head to toe. From this position, bend your knees slightly and jump with both feet inward, bringing them as close to your core as possible As soon as your feet touch the ground, push off forcefully to jump again and return to the starting plank position. Continue repeating this jumping motion, maintaining control and core stability throughout the exercise. Make sure to keep your breathing steady while jumping, breathing deeply and controlling your breathing. Keep your gaze fixed on the ground to maintain proper spinal alignment. Repeat the jumps for the desired length of time or the number of repetitions recommended for your workout program. To finish the exercise, rest by releasing the plank position, then stretch if necessary to loosen your muscles.",
+    "attribution": "wger.de exercise 1286 (CC-BY-SA-4.0, painDpice)"
   },
   {
     "id": "wger_1766",

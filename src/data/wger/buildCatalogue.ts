@@ -1,7 +1,7 @@
 import { buildSourceCatalogue, type SourceBuildResult } from "../buildSourceCatalogue";
 import { serialiseCatalogueModule } from "../serialiseCatalogue";
 import type { SeedExercise } from "../seed";
-import { cleanWgerName, mapWgerExerciseRecord } from "./mapWgerExercise";
+import { mapWgerExerciseRecord, wgerDisplayName } from "./mapWgerExercise";
 import { WGER_SAME_AS_EXISTING, isWgerCandidate } from "./selection";
 import type { WgerExerciseRecord } from "./types";
 
@@ -17,7 +17,7 @@ export function buildWgerCatalogue(
     isCandidate: isWgerCandidate,
     map: mapWgerExerciseRecord,
     aliases: WGER_SAME_AS_EXISTING,
-    displayName: (record) => cleanWgerName(record.name),
+    displayName: (record) => wgerDisplayName(record),
   });
 }
 

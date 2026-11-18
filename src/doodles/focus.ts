@@ -27,6 +27,12 @@ export interface Focus {
   zoom?: number;
   /** Short label under the inset, e.g. "wrists". */
   label?: string;
+  /** Rig units kept round the focus joints in the inset (default 30); smaller lets a tiny part zoom further. */
+  margin?: number;
+  /** Draw the floor line (y = 0) in the inset, for contact with the ground. */
+  floor?: boolean;
+  /** Multiplies the inset label size (default 1). */
+  labelScale?: number;
 }
 
 const BOTH_WRISTS: Focus = {
@@ -73,6 +79,12 @@ export const FOCUS_BY_ID: Readonly<Record<string, Focus>> = {
     zoom: 2,
     label: "calf",
   }, // Standing calf stretch
+  hf_166: {
+    joints: ["knee.near", "ankle.near", "toe.near"],
+    highlight: ["shin.near", "foot.near"],
+    zoom: 2,
+    label: "ankle",
+  }, // Wall ankle dorsiflexion
   wger_2667: {
     joints: ["knee.near", "ankle.near", "toe.near"],
     highlight: ["shin.near", "foot.near"],
@@ -100,6 +112,7 @@ export const FOCUS_BY_ID: Readonly<Record<string, Focus>> = {
   },
   // Hips
   fedb_kneeling_hip_flexor: { joints: [], highlight: ["thigh.far", "pelvis"] },
+  hf_161: { joints: [], highlight: ["thigh.near", "pelvis"] }, // Couch stretch
   wger_1202: { joints: [], highlight: ["thigh.far", "pelvis"] }, // Side-lying hip abduction
   hip_circles: { joints: [], highlight: ["pelvis", "lumbar"] },
   // Shoulders and shoulder blades
@@ -126,6 +139,16 @@ export const FOCUS_BY_ID: Readonly<Record<string, Focus>> = {
   ntc_prone_ytw: { joints: [], highlight: ["shoulder.near", "shoulder.far", "upperArm.near"] },
   hf_31: { joints: [], highlight: ["upperArm.near", "forearm.near", "shoulder.near"] }, // Planche lean: shoulders past the wrists
   ntc_hand_release_push_up: { joints: [], highlight: ["forearm.near", "hand.near", "forearm.far", "hand.far"] }, // Hands lift off
+  // Finger push-up: the tented hand, palm off the floor, on the fingertips.
+  wger_1217: {
+    joints: ["wrist.near", "hand.near"],
+    highlight: ["hand.near"],
+    zoom: 7,
+    margin: 4,
+    floor: true,
+    label: "fingertips",
+    labelScale: 1.8,
+  },
   // Spine
   hf_154: { joints: [], highlight: ["lumbar", "thoracic"] }, // Cat-cow
 };

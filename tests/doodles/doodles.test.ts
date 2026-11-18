@@ -94,3 +94,28 @@ describe("doodle focus (highlight and zoom inset)", () => {
     }
   });
 });
+
+describe("mirrored keyframes (turning round)", () => {
+  const spec = DOODLE_SPECS.find((s) => s.id === "fedb_bench_jump")!;
+  const timeline = sampleTimeline(spec);
+
+  it("draws a mirrored keyframe reflected about its axis, facing -x", () => {
+    const first = timeline.poses[timeline.keyframeIndex[0]];
+    const mirroredIndex = spec.frames.findIndex((frame) => frame.mirror !== undefined);
+    const axis = spec.frames[mirroredIndex].mirror!;
+    const mirrored = timeline.poses[timeline.keyframeIndex[mirroredIndex]];
+    // Same authored pose (stand at x 0), shown at 2·axis − x with the hands on the other side.
+    expect(mirrored.pelvis[0]).toBeCloseTo(2 * axis - first.pelvis[0], 5);
+    expect(Math.sign(first.arms.near.joint[0] - first.pelvis[0])).toBe(1);
+    expect(Math.sign(mirrored.arms.near.joint[0] - mirrored.pelvis[0])).toBe(-1);
+  });
+
+  it("turns round between facings and back again, with only those samples foreshortened", () => {
+    const turnSamples = timeline.turning.filter(Boolean).length;
+    expect(turnSamples).toBeGreaterThan(0);
+    // Two turns per loop: after the jump over, and after the jump back.
+    const turnStarts = timeline.turning.filter((t, i) => t && !timeline.turning[i - 1]).length;
+    expect(turnStarts).toBe(2);
+    expect(validateSpec(spec).ok).toBe(true);
+  });
+});

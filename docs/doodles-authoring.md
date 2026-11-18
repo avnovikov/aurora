@@ -8,7 +8,7 @@ Doodles are animated SVG stick figures generated from TypeScript pose specs. Nev
 |---|---|
 | `npm run doodles:missing [-- body,bar,…]` | Ranks the moves the planner schedules that have no doodle (seed, area, skill and joint care days, every level, three times through). Start here when choosing what to draw. |
 | `npm run doodles` | Validates every spec and writes `public/doodles/doodle-<slug>.svg` and `src/data/generated/doodleMap.ts`. It does not delete the SVG of a removed spec: `git rm` it. |
-| `npm run doodles:cards -- <outDir> <id>…` | One PNG per move: the Library text and 8 frames of the animation. Read every card and look at every frame. |
+| `npm run doodles:cards -- <outDir> <id>…` | One PNG per move: the Library text and 8 frames of the animation. Read every card and look at every frame. Cards draw the SVGs in `public/doodles`, so run `npm run doodles` first. `DOODLE_CARD_FRAMES=24` shows fast moments such as a turn. |
 
 ## Conventions
 
@@ -20,6 +20,7 @@ Doodles are animated SVG stick figures generated from TypeScript pose specs. Nev
   - So crossings between limbs are fine when the near/far choice puts the right limb in front. The validator only rejects limbs through props and arms through the head.
   - Pick which side moves (near or far) so the limb that is in front in real life is the bright one.
 - In front view both sides are drawn at full strength.
+- **Turning round.** A side-view keyframe with `mirror: <x>` is drawn reflected about that line, so the figure faces −x. Author it facing +x as usual. Between a mirrored and an unmirrored keyframe the figure turns: it narrows to front-on and opens out facing the other way. Joint ranges are checked as authored; the mid-turn samples skip the bone-length and joint-range checks. Bench Jump uses it for "turn around and jump back": the jump back is the same keyframes mirrored about the bench. Keep the arms forward around a turn, or the turn won't show (a figure standing with arms down looks the same both ways).
 - The rig keeps every bone at full length and cannot shorten a limb pointing at the viewer. Motion straight toward the camera (fire hydrant from the side, a lateral plank walk) still can't be shown. Leave those out rather than mislead.
   - A knee that bends toward the camera is the common case: in front view any lowering throws that knee 40–60 units sideways (it reads as a lateral lunge), so Dragon Squat and curtsy lunge stay out even with depth shading. In side view their crossing is sideways and invisible.
   - A side-view knee that travels out to the side (Spiderman) has to swing forward under the hip, with the foot lifted, on its way to the elbow. Keep that frame brief so it doesn't read as kneeling.
