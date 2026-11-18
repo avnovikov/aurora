@@ -9154,7 +9154,7 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
     "summary": "A deep, body-weight-loaded stretch hanging from a bar that lengthens the lats, typically used after pulling work.",
     "steps": [
       "Grip a pull-up bar with hands about shoulder-width apart.",
-      "Keep your feet on the floor or a box if needed and bend your knees to lower your weight.",
+      "Keep your feet on a box (or the floor under a lower bar), bend your knees and sit your hips back until your arms are long overhead.",
       "Relax your shoulders and let your body weight stretch your lats and armpits.",
       "Hold the position, breathing steadily, then stand up to release."
     ],
