@@ -260,26 +260,43 @@ export function highlightSvg(focus: Focus | undefined, poses: Solved[], timing: 
 }
 
 /** The figure (far side first), drawn through `map`; `headScale` keeps the head in proportion. */
-export function figureSvg(spec: DoodleSpec, poses: Solved[], timing: string, map: Mapper, headScale: number): string {
+/** Drawable parts of the figure, in the side view's back-to-front order. */
+export const FIGURE_PARTS = ["legFar", "armFar", "spine", "head", "legNear", "band", "armNear"] as const;
+export type FigurePart = (typeof FIGURE_PARTS)[number];
+
+/**
+ * The figure (far side first), drawn through `map`; `headScale` keeps the head in proportion.
+ * `order` overrides the back-to-front order (the front panel sorts by depth).
+ */
+export function figureSvg(
+  spec: DoodleSpec,
+  poses: Solved[],
+  timing: string,
+  map: Mapper,
+  headScale: number,
+  order: readonly FigurePart[] = FIGURE_PARTS,
+): string {
   const farOpacity = spec.view === "front" ? 1 : FAR_OPACITY;
   const head = poses.map((pose) => map(pose.head));
-  return [
-    animatedPolyline(legPath("far"), poses, timing, farOpacity, map),
-    animatedPolyline(armPath("far"), poses, timing, farOpacity, map),
-    animatedPolyline(spinePath, poses, timing, 1, map),
-    `<circle cx="${fmt(head[0][0])}" cy="${fmt(head[0][1])}" r="${fmt(SEGMENTS.headRadius * headScale)}" style="fill:${PAPER}">${animate(
-      "cx",
-      head.map((p) => fmt(p[0])),
-      timing,
-    )}${animate(
-      "cy",
-      head.map((p) => fmt(p[1])),
-      timing,
-    )}</circle>`,
-    animatedPolyline(legPath("near"), poses, timing, 1, map),
-    bandSvg(spec, poses, timing, map),
-    animatedPolyline(armPath("near"), poses, timing, 1, map),
-  ].join("");
+  const parts: Record<FigurePart, () => string> = {
+    legFar: () => animatedPolyline(legPath("far"), poses, timing, farOpacity, map),
+    armFar: () => animatedPolyline(armPath("far"), poses, timing, farOpacity, map),
+    spine: () => animatedPolyline(spinePath, poses, timing, 1, map),
+    head: () =>
+      `<circle cx="${fmt(head[0][0])}" cy="${fmt(head[0][1])}" r="${fmt(SEGMENTS.headRadius * headScale)}" style="fill:${PAPER}">${animate(
+        "cx",
+        head.map((p) => fmt(p[0])),
+        timing,
+      )}${animate(
+        "cy",
+        head.map((p) => fmt(p[1])),
+        timing,
+      )}</circle>`,
+    legNear: () => animatedPolyline(legPath("near"), poses, timing, 1, map),
+    band: () => bandSvg(spec, poses, timing, map),
+    armNear: () => animatedPolyline(armPath("near"), poses, timing, 1, map),
+  };
+  return order.map((part) => parts[part]()).join("");
 }
 
 interface Inset {

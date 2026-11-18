@@ -7,6 +7,7 @@ import { project } from "./project";
 import {
   bounds,
   figurePoints,
+  FIGURE_PARTS,
   figureSvg,
   fmt,
   frame,
@@ -17,11 +18,12 @@ import {
   propSvg,
   STROKE_REACH,
   union,
+  type FigurePart,
   type Mapper,
   type ViewBox,
 } from "./renderSvg";
 import type { DoodleSpec, Prop, Solved } from "./rig";
-import { sampleTimeline3, type Timeline3 } from "./rig3d";
+import { sampleTimeline3, type Figure3, type Point3, type Timeline3 } from "./rig3d";
 
 /** Half-width of a bar and a box seen from the front. */
 const FRONT_BAR_HALF = 90;
@@ -36,6 +38,38 @@ export function frontProp(prop: Prop, shift = 0): Prop | undefined {
   if (prop.kind === "bar") return { kind: "bar", y: prop.y, x1: shift - FRONT_BAR_HALF, x2: shift + FRONT_BAR_HALF };
   if (prop.kind === "box") return { kind: "box", x: shift - FRONT_BOX_HALF, y: prop.y, w: 2 * FRONT_BOX_HALF, h: prop.h };
   return undefined;
+}
+
+/** Mean forward position (x) of a part over the loop: larger x is nearer the front panel's viewer. */
+function depthOf(part: FigurePart, poses: Figure3[]): number {
+  const points = (f: Figure3): Point3[] => {
+    switch (part) {
+      case "legFar":
+      case "legNear": {
+        const l = f.legs[part === "legFar" ? "far" : "near"];
+        return [l.root, l.mid, l.joint, l.end];
+      }
+      case "armFar":
+      case "armNear": {
+        const a = f.arms[part === "armFar" ? "far" : "near"];
+        return [a.root, a.mid, a.joint, a.end];
+      }
+      case "head":
+        return [f.head];
+      default:
+        return [f.pelvis, f.waist, f.chest, f.neck];
+    }
+  };
+  const all = poses.flatMap(points);
+  return all.reduce((sum, p) => sum + p[0], 0) / Math.max(1, all.length);
+}
+
+/** Front panel draw order: furthest from the viewer first (the band stays with the near leg). */
+export function frontOrder(poses: Figure3[]): FigurePart[] {
+  const parts: FigurePart[] = FIGURE_PARTS.filter((part) => part !== "band");
+  const sorted = [...parts].sort((a, b) => depthOf(a, poses) - depthOf(b, poses));
+  sorted.splice(sorted.indexOf("legNear") + 1, 0, "band");
+  return sorted;
 }
 
 export interface DualLayout {
@@ -98,7 +132,7 @@ export function renderDualSvg(spec: DoodleSpec): string {
       .filter((p): p is Prop => !!p)
       .map(propSvg)
       .join(""),
-    figureSvg(frontSpec, layout.front, timing, shift, 1),
+    figureSvg(frontSpec, layout.front, timing, shift, 1, frontOrder(timeline.poses)),
     label("side", layout.labels.side, layout.labels.y),
     label("front", layout.labels.front, layout.labels.y),
   ]
