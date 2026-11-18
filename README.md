@@ -24,7 +24,7 @@ Three gaps in the apps I used are why I wrote Aurora.
 
 Install the APK by allowing installation from your browser or file manager when Android asks.
 
-![Today — check-in](docs/help/screenshots/04-today.png)
+<img src="docs/help/screenshots/04-today.png" width="280" alt="Today — check-in">
 
 *The Today screen: Aurora shows the next queued session, asks how you slept and whether anything hurts, and lets you connect a heart-rate strap before you start.*
 
@@ -86,15 +86,15 @@ The Android app’s main tab bar, in order:
 | Plan | Queue of upcoming days; Swap / Easier; remake area or skill; reorder; add days; plan level |
 | Settings | You / Gear / Training / App |
 
-![Plan — Coming up](docs/help/screenshots/03-plan.png)
+<img src="docs/help/screenshots/03-plan.png" width="280" alt="Plan — Coming up">
 
 *The Plan screen: upcoming days in queue order. Today is the first card.*
 
-![Session — station](docs/help/screenshots/05-session.png)
+<img src="docs/help/screenshots/05-session.png" width="280" alt="Session — station">
 
 *A Session: one station at a time — cues, dose, and a left swipe to finish the set or station.*
 
-![Progress — Where you stand](docs/help/screenshots/06-progress.png)
+<img src="docs/help/screenshots/06-progress.png" width="280" alt="Progress — Where you stand">
 
 *Progress: level by movement pattern, then current readiness on active goals.*
 
