@@ -176,7 +176,7 @@ Exercise catalogue imports follow each source’s licence: wger (CC), MuscleWiki
 
 ## Licence
 
-[MIT](LICENSE) — Copyright (c) 2026 avnovikov (same text as [HotspotTriage](https://github.com/avnovikov/HotspotTriage)).
+[MIT](LICENSE) — Copyright (c) 2026 avnovikov.
 
 ---
 
