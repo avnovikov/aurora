@@ -37,7 +37,9 @@ jobs:
         run: npm ci
 
       - name: npm audit (high+)
-        run: npm audit --audit-level=high
+        # Ignores withdrawn picomatch GHSA-fc5q-39xc-vjpf (no patched release;
+        # npm audit fix --force would wrongly downgrade vitest/vite).
+        run: node scripts/npm-audit-high.mjs
 
       # Keep SAST / Trivy / secrets running even when audit fails so one red step
       # does not skip the rest of the security suite.
