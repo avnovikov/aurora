@@ -94,6 +94,20 @@ describe("resolveSlot", () => {
     expect(result.ruleIds).toContain("advance");
   });
 
+  it("advances immediately when skill tier is already advanced", () => {
+    const result = resolveSlot(
+      baseInput({
+        memory: memory({
+          exerciseId: "squat",
+          declaredTier: "advanced",
+          sessionsAtStandard: 0,
+        }),
+      }),
+    );
+    expect(result.exerciseId).toBe("pistol");
+    expect(result.ruleIds).toContain("advance");
+  });
+
   it("pain beats a good pulse and swaps pattern mate without that joint", () => {
     const result = resolveSlot(
       baseInput({
@@ -150,5 +164,55 @@ describe("resolveSlot", () => {
     );
     expect(result.exerciseId).toBe("sit_squat");
     expect(result.ruleIds).toContain("stall_regress");
+  });
+
+  describe("deload week", () => {
+    const readyToAdvance = memory({
+      exerciseId: "squat",
+      sessionsAtStandard: 3,
+      bestReps: 30,
+    });
+
+    it("applies the light-day dose and mentions deload in the reason", () => {
+      const result = resolveSlot(baseInput({ deloadActive: true }));
+      expect(result.ruleIds).toEqual(["deload", "hold"]);
+      expect(result.dose).toEqual({
+        sets: 2,
+        reps: 8,
+        targetRir: 3,
+        addedLoadKg: 0,
+      });
+      expect(result.reason).toMatch(/deload/i);
+    });
+
+    it("skips advance even when the standard is met", () => {
+      const normal = resolveSlot(baseInput({ memory: readyToAdvance }));
+      const deload = resolveSlot(
+        baseInput({ memory: readyToAdvance, deloadActive: true }),
+      );
+      expect(normal.ruleIds).toContain("advance");
+      expect(deload.exerciseId).toBe("squat");
+      expect(deload.ruleIds).not.toContain("advance");
+    });
+
+    it("cuts the dose once when readiness is also light", () => {
+      const result = resolveSlot(
+        baseInput({
+          deloadActive: true,
+          readiness: { painJoints: [], sleepQuality: "poor" },
+        }),
+      );
+      expect(result.ruleIds).toEqual(["light_day", "deload", "hold"]);
+      expect(result.dose.sets).toBe(2);
+      expect(result.dose.targetRir).toBe(3);
+    });
+
+    it("explains a pinned exercise under deload", () => {
+      const result = resolveSlot(
+        baseInput({ deloadActive: true, pinned: true }),
+      );
+      expect(result.reason).toBe("Pinned exercise; deload dose only");
+      expect(result.dose.sets).toBe(2);
+    });
   });
 });

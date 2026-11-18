@@ -9,12 +9,43 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:ui": "playwright test",
+    "lint": "eslint src tests e2e",
+    "smell": "eslint src tests e2e --max-warnings 0",
+    "import:hf": "tsx scripts/import-hf-calisthenics.ts",
+    "voice:prebuild": "bash scripts/prebuild-voice.sh",
+    "cap:sync": "npm run build && npx cap sync android",
+    "cap:open": "npx cap open android",
+    "import:fedb": "tsx scripts/import-free-exercise-db.ts",
+    "import:wger": "tsx scripts/import-wger.ts",
+    "descriptions:bundle": "tsx scripts/build-description-bundles.ts",
+    "descriptions:compile": "tsx scripts/compile-descriptions.ts",
+    "equipment:compile": "tsx scripts/compile-equipment.ts",
+    "doodles": "tsx scripts/generate-doodles.ts",
+    "doodles:check": "node scripts/measure-doodle-fit.mjs",
+    "doodles:cards": "tsx scripts/doodle-cards.ts",
+    "doodles:missing": "tsx scripts/rank-missing-doodles.ts"
   },
   "devDependencies": {
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/cli": "^8.6.2",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.56.1",
     "@types/node": "^26.6.6",
-    "typescript": "~7.0.2",
+    "eslint": "^10.15.0",
+    "eslint-plugin-sonarjs": "^4.2.2",
+    "happy-dom": "^21.0.4",
+    "tsx": "^4.20.5",
+    "typescript": "~5.9.0",
+    "typescript-eslint": "^8.72.2",
     "vite": "^8.3.6",
     "vitest": "^4.1.12"
+  },
+  "dependencies": {
+    "@capacitor-community/bluetooth-le": "^8.3.0",
+    "@capacitor/core": "^8.6.2",
+    "@fontsource/ibm-plex-sans": "^5.3.0",
+    "@fontsource/ibm-plex-sans-condensed": "^5.3.0"
   }
 }

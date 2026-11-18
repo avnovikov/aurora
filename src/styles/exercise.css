@@ -1,0 +1,401 @@
+/* Exercise detail (Library → one move). Port of mock 20261115-2205.
+   Everything is scoped to .lib-detail; the doodle (.doodle) keeps its own rules. */
+
+.lib-detail {
+  --ex-gutter: 24px;
+  --ex-display-size: 2.4375rem;
+  padding-left: var(--ex-gutter);
+  padding-right: var(--ex-gutter);
+  font-family: var(--font-body, "IBM Plex Sans", Roboto, sans-serif);
+  font-size: 1rem;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  color: var(--foreground);
+  touch-action: pan-y;
+  will-change: transform, opacity;
+}
+
+.lib-detail.is-swiping {
+  user-select: none;
+  cursor: grabbing;
+}
+
+.lib-detail.is-swipe-exit {
+  pointer-events: none;
+}
+
+.lib-detail p,
+.lib-detail ul,
+.lib-detail ol {
+  margin: 0;
+}
+
+.lib-detail .eyebrow {
+  display: block;
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.lib-detail .hint {
+  max-width: 36em;
+  font-size: 1rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.lib-detail button {
+  min-height: 48px;
+  border-radius: 4px;
+}
+
+.lib-detail button:focus-visible,
+.lib-detail select:focus-visible {
+  outline: 2px solid var(--foreground);
+  outline-offset: 2px;
+}
+
+/* Header: back, eyebrow, name, meta, personal best. */
+.lib-detail .lib-back {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  margin: 0 0 16px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--foreground);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.lib-detail .lib-badge {
+  margin: 0 0 8px;
+}
+
+.lib-detail h1 {
+  margin: 4px 0 0;
+  font-family: var(--font-display, "IBM Plex Sans Condensed", "Roboto Condensed", sans-serif);
+  font-weight: 600;
+  font-size: var(--ex-display-size);
+  line-height: 1.05;
+  color: var(--foreground);
+}
+
+.lib-detail .ex-meta {
+  margin-top: 8px;
+}
+
+.lib-detail .ex-meta .lib-meta {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--foreground);
+}
+
+.lib-detail .ex-meta .lib-meta + .lib-meta {
+  margin-top: 4px;
+  color: var(--muted);
+}
+
+.lib-detail .personal-best {
+  margin-top: 16px;
+}
+
+.lib-detail .personal-best .eyebrow {
+  margin-bottom: 4px;
+}
+
+.lib-detail .personal-best-value {
+  font-family: var(--font-display, "IBM Plex Sans Condensed", "Roboto Condensed", sans-serif);
+  font-weight: 600;
+  font-size: var(--ex-display-size);
+  line-height: 1.1;
+  color: var(--foreground);
+}
+
+.lib-detail .personal-best-unit {
+  margin-left: 8px;
+  font-family: var(--font-body, "IBM Plex Sans", Roboto, sans-serif);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Media: the doodle (unchanged) or photos, in their own full-width row. */
+.lib-detail .ex-media {
+  margin-top: 24px;
+}
+
+.lib-detail .ex-media .lib-media {
+  margin: 0;
+}
+
+.lib-detail .lib-summary {
+  margin: 24px 0 0;
+  max-width: 36em;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Safety and joint blocks keep their look; only the spacing follows the page. */
+.lib-detail .lib-cautions,
+.lib-detail .lib-joint-load,
+.lib-detail .joint-caution {
+  margin: 0;
+}
+
+/* Sections. */
+.lib-detail .ex-section {
+  margin-top: 40px;
+}
+
+.lib-detail .ex-section > .eyebrow {
+  margin-bottom: 12px;
+}
+
+/* How to: large muted numerals. */
+.lib-detail .lib-steps {
+  counter-reset: ex-step;
+  list-style: none;
+  padding: 0;
+  line-height: 1.5;
+}
+
+.lib-detail .lib-steps li {
+  counter-increment: ex-step;
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  margin: 0;
+  padding: 8px 0;
+}
+
+.lib-detail .lib-steps li::before {
+  content: counter(ex-step);
+  font-family: var(--font-display, "IBM Plex Sans Condensed", "Roboto Condensed", sans-serif);
+  font-weight: 600;
+  font-size: var(--ex-display-size);
+  line-height: 1;
+  color: var(--muted);
+}
+
+/* Cues and common mistakes: ruled lists. */
+.lib-detail .ex-pair {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+  margin-top: 40px;
+}
+
+.lib-detail .ex-pair .ex-section {
+  margin-top: 0;
+}
+
+.lib-detail .ex-pair .cues,
+.lib-detail .ex-pair .lib-mistakes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--foreground);
+  line-height: 1.5;
+}
+
+.lib-detail .ex-pair li {
+  margin: 0;
+  padding: 8px 0;
+  border-top: 1px solid var(--edge);
+}
+
+.lib-detail .ex-pair li:last-child {
+  border-bottom: 1px solid var(--edge);
+}
+
+/* Standards: full-bleed scale, five equal columns. */
+.lib-detail .ex-standards {
+  margin-left: calc(-1 * var(--ex-gutter));
+  margin-right: calc(-1 * var(--ex-gutter));
+}
+
+.lib-detail .ex-standards > .eyebrow {
+  padding: 0 var(--ex-gutter);
+}
+
+.lib-detail .skill-standards {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--edge);
+  border-bottom: 1px solid var(--edge);
+}
+
+.lib-detail .skill-standards li {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  padding: 12px 0;
+  border-top: 4px solid transparent;
+  text-align: center;
+}
+
+.lib-detail .skill-standards li + li {
+  border-left: 1px solid var(--edge);
+}
+
+.lib-detail .skill-standards span {
+  padding: 0 2px;
+  font-family: var(--font-display, "IBM Plex Sans Condensed", "Roboto Condensed", sans-serif);
+  font-weight: 400;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--muted);
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.lib-detail .skill-standards strong {
+  font-family: var(--font-display, "IBM Plex Sans Condensed", "Roboto Condensed", sans-serif);
+  font-weight: 600;
+  font-size: var(--ex-display-size);
+  line-height: 1.1;
+}
+
+.lib-detail .skill-standards small {
+  font-size: 0.5em;
+  font-weight: 600;
+}
+
+.lib-detail .skill-standards li.mine {
+  border-top-color: var(--foreground);
+  background: var(--surface);
+}
+
+.lib-detail .skill-standards li.mine span {
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+.lib-detail .skill-standards li.mine span.you {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+/* Your level. */
+.lib-detail .ex-level {
+  margin-top: 16px;
+}
+
+.lib-detail .ex-level .eyebrow {
+  margin-bottom: 8px;
+}
+
+.lib-detail select[data-skill-tier] {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 12px;
+  border: 1px solid var(--control-edge);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--foreground);
+  font: inherit;
+}
+
+.lib-detail .ex-level .hint {
+  margin-top: 8px;
+}
+
+/* Action tray: plan, progression, your sessions. */
+.lib-detail .ex-tray {
+  margin-top: 40px;
+}
+
+.lib-detail .ex-tray .ex-section:first-child {
+  margin-top: 0;
+}
+
+.lib-detail .ex-tray .hint,
+.lib-detail .ex-tray .tagline {
+  margin-top: 12px;
+}
+
+.lib-detail .lib-plan-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.lib-detail .lib-chain {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.lib-detail .lib-plan-actions button,
+.lib-detail .lib-chain button,
+.lib-detail .ex-exclude button {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--control-edge);
+  background: transparent;
+  color: var(--foreground);
+  font-size: 1rem;
+  line-height: 1.3;
+  text-align: left;
+}
+
+.lib-detail .lib-chain button {
+  min-height: 56px;
+}
+
+.lib-detail .lib-plan-actions .cta {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+
+/* Not for me: a tick box, filled when on. */
+.lib-detail .ex-exclude button[data-kind="toggle"] {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lib-detail .ex-exclude button[data-kind="toggle"]::before {
+  content: "";
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border: 2px solid var(--control-edge);
+  border-radius: 4px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.lib-detail .ex-exclude button[data-kind="toggle"][aria-pressed="true"] {
+  border-color: var(--foreground);
+  background: transparent;
+  font-weight: 600;
+}
+
+.lib-detail .ex-exclude button[data-kind="toggle"][aria-pressed="true"]::before {
+  border-color: var(--foreground);
+  background: var(--foreground);
+}
+
+.lib-detail .lib-sources {
+  margin: 32px 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--muted);
+}

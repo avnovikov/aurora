@@ -1,0 +1,545 @@
+/* Session (in-workout) screen: clock and station bar, the dose as the hero
+   read at arm's length, the doodle in its own row, then the reading, and a
+   pulse bar pinned in thumb reach. Mock: .desk/out/20261115-2200-session-doodle-frame-review. */
+
+.shell.session {
+  --session-display: var(--font-display, "IBM Plex Sans Condensed", "Roboto Condensed", sans-serif);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body, "IBM Plex Sans", Roboto, sans-serif);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* ---------- Header: clock, station bar, the "now" line ---------- */
+
+.session-top {
+  padding: 24px 24px 0;
+}
+
+.session-clock {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.session-clock-part {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+}
+
+.session-clock-label {
+  color: var(--muted);
+  font-size: 12.8px;
+  line-height: 16px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.session-clock-num {
+  color: var(--foreground);
+  font-family: var(--session-display);
+  font-size: 25px;
+  font-weight: 600;
+  line-height: 32px;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.session-rail {
+  display: flex;
+  gap: 4px;
+  margin: 8px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.session-rail li {
+  position: relative;
+  flex: 1 1 0;
+  height: 8px;
+  background: var(--control-edge);
+}
+
+.session-rail li.done {
+  background: var(--muted);
+}
+
+.session-rail li.active {
+  flex: 3 1 0;
+  background: var(--foreground);
+}
+
+.session .chalk-now {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12.8px;
+  line-height: 20px;
+}
+
+/* ---------- Hero: phase, move, dose, doodle ---------- */
+
+.session-hero {
+  padding: 32px 24px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.session .session-phase {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12.8px;
+  line-height: 20px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.session .session-move {
+  margin: 4px 0 0;
+  color: var(--foreground);
+  font-family: var(--session-display);
+  font-size: 39px;
+  font-weight: 600;
+  line-height: 44px;
+}
+
+.session-dose {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 24px 0 0;
+  white-space: nowrap;
+}
+
+.session-dose-q {
+  color: var(--muted);
+  font-size: 20px;
+  line-height: 24px;
+}
+
+.session-dose-fig {
+  color: var(--accent);
+  font-family: var(--session-display);
+  font-size: 95px;
+  font-weight: 600;
+  line-height: 96px;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.session-dose-unit {
+  margin-left: 4px;
+  color: var(--muted);
+  font-size: 31px;
+  line-height: 36px;
+  letter-spacing: 0;
+}
+
+/* Work set: − / number / + on one line, the steppers at thumb size. */
+.session-dose.work-reps-row {
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 24px 0 0;
+}
+
+.work-reps-row .session-dose-unit {
+  margin-left: 8px;
+}
+
+.session .rest-step {
+  min-width: 48px;
+  min-height: 48px;
+  border-radius: 4px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.session-hero .work-load-row {
+  justify-content: flex-start;
+  gap: 8px;
+  margin: 8px 0 0;
+}
+
+.session-hero .load-edit {
+  color: var(--foreground);
+  font-size: 20px;
+  line-height: 24px;
+}
+
+.session-hero .side-switch {
+  margin: 16px 0 0;
+  border-radius: 4px;
+}
+
+.session .rest-cue {
+  min-height: 24px;
+  margin: 8px 0 0;
+  color: var(--foreground);
+  font-size: 20px;
+  line-height: 24px;
+}
+
+.session-hero .tagline {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+/* The doodle keeps its own markup and styles; this row only places it. */
+.session-frame {
+  margin: 16px 0 0;
+  padding: 0;
+  color: var(--foreground);
+  flex: 1 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* ---------- Reading: description, cues, citation, actions ---------- */
+
+.session-read {
+  max-width: 65ch;
+  padding: 32px 24px;
+}
+
+.session .session-read > p {
+  margin: 0;
+}
+
+.session .session-summary {
+  color: var(--foreground);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.session .session-attention {
+  margin: 32px 0 0;
+  padding: 16px 0 0;
+  border-left: 0;
+  border-top: 1px solid var(--edge);
+  background: none;
+}
+
+.session .session-attention .eyebrow {
+  margin: 0;
+  font-size: 12.8px;
+  line-height: 20px;
+  letter-spacing: 0.07em;
+}
+
+.session .session-attention .cues {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  color: var(--foreground);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.session .session-attention .cues li {
+  margin: 0 0 4px;
+}
+
+.session .station-source {
+  margin: 24px 0 0;
+  color: var(--muted);
+  font-size: 12.8px;
+  line-height: 20px;
+}
+
+.session .session-howto,
+.session .session-why {
+  margin: 24px 0 0;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.session .session-howto summary,
+.session .session-why summary {
+  min-height: 44px;
+  padding: 10px 0;
+}
+
+.session .session-why .reason {
+  font-size: 12.8px;
+  line-height: 20px;
+}
+
+.session .work-actions {
+  margin: 32px 0 0;
+}
+
+.session .work-actions .cta,
+.session .cooldown-offer .cta,
+.session-read > .cta {
+  min-height: 48px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.session .btn-quiet {
+  min-height: 44px;
+  font-size: 16px;
+}
+
+.session .work-actions-secondary {
+  display: flex;
+  gap: 24px;
+  margin-top: 8px;
+}
+
+.session-work-adjust {
+  padding: 0 24px 8px;
+}
+
+.session-work-adjust-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.session-work-adjust .btn-quiet {
+  min-height: 44px;
+  padding: 8px 12px;
+}
+
+.session-work-swap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.session-work-adjust-status {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.session-work-adjust .btn-quiet[aria-disabled="true"] {
+  border-color: var(--edge);
+  color: var(--muted);
+  cursor: default;
+}
+
+.session-work-adjust-pending {
+  padding-top: 8px;
+}
+
+.session .session-end-cooldown {
+  padding: 0 24px 32px;
+}
+
+.session .hint {
+  margin: 16px 0 0;
+  font-size: 12.8px;
+  line-height: 16px;
+}
+
+.session-read .tagline {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.session-read .rest-reps-row {
+  gap: 16px;
+  margin: 8px 0 0;
+}
+
+.session-read .reps-edit {
+  color: var(--accent);
+  font-family: var(--session-display);
+  font-size: 39px;
+  font-weight: 600;
+  line-height: 44px;
+}
+
+.session .cooldown-offer h2 {
+  margin: 4px 0 8px;
+  color: var(--foreground);
+  font-family: var(--session-display);
+  font-size: 31px;
+  font-weight: 600;
+  line-height: 36px;
+}
+
+/* ---------- Pulse bar, pinned to the bottom ---------- */
+
+.session-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding: 16px 24px;
+  border-top: 1px solid var(--edge);
+  background: var(--surface);
+}
+
+.session-bar-status {
+  flex: 1 1 100%;
+  margin: 0;
+  padding-left: 0;
+  color: var(--muted);
+  font-size: 12.8px;
+  line-height: 20px;
+}
+
+.session-bar .pulse-chip {
+  margin: 0 auto 0 -8px;
+  padding-left: 4px;
+  border-left: 4px solid transparent;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 24px;
+  font-variant-numeric: tabular-nums;
+}
+
+.session-bar .pulse-chip[data-hr-zone] {
+  font-weight: 600;
+}
+
+.session-bar .pulse-chip[data-hr-zone="easy"] {
+  color: var(--hr-easy);
+}
+
+.session-bar .pulse-chip[data-hr-zone="steady"] {
+  color: var(--hr-steady);
+}
+
+.session-bar .pulse-chip[data-hr-zone="work"] {
+  color: var(--hr-work);
+}
+
+.session-bar .pulse-chip[data-hr-zone="hard"] {
+  color: var(--hr-hard);
+}
+
+.session-bar .pulse-chip[data-hr-zone="max"] {
+  color: var(--hr-max);
+}
+
+.session-bar.pulse-lost .pulse-chip {
+  border-left-color: var(--alert);
+  color: var(--alert);
+  font-weight: 600;
+}
+
+.session-bar .strap summary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 88px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--control-edge);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--foreground);
+  font-size: 16px;
+  font-weight: 600;
+  list-style: none;
+  cursor: pointer;
+}
+
+.session-bar .strap summary::-webkit-details-marker {
+  display: none;
+}
+
+.session-bar .strap[open] summary {
+  border-color: var(--foreground);
+}
+
+.session-bar .strap-actions {
+  position: absolute;
+  right: 24px;
+  bottom: 100%;
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 8px;
+  border: 1px solid var(--edge);
+  border-radius: 4px;
+  background: var(--surface);
+}
+
+.session-bar .strap-actions button {
+  min-height: 48px;
+  padding: 0 16px;
+  border: 1px solid var(--control-edge);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--foreground);
+  font: inherit;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.session button:focus-visible,
+.session summary:focus-visible {
+  outline: 2px solid var(--foreground);
+  outline-offset: 2px;
+}
+
+/* Light day / deload: the dose and the current station step back from the accent. */
+.session.light-day h2,
+.session.light-day .session-dose-fig {
+  color: var(--muted);
+}
+
+.session.light-day .session-rail li.active {
+  background: var(--muted);
+}
+
+/* Keep focused controls clear of the sticky pulse bar (WCAG 2.4.11). */
+html:has(.shell.session) {
+  scroll-padding-bottom: 200px;
+}
+
+/* Working set: Log set lives in the sticky bottom bar, above the pulse. */
+.session-bar .work-actions {
+  flex: 1 1 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 4px;
+}
+.session-bar .work-actions .cta {
+  flex: 1 1 auto;
+  margin: 0;
+  background: var(--foreground);
+  color: var(--background);
+  border-color: var(--foreground);
+  min-height: 52px;
+}
+.session-bar .work-actions .btn-quiet {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 12px;
+}
+
+/* Working set: Couldn't finish sits close to Log set; the doodle is compact. */
+.session-bar .work-actions .cta + .btn-quiet {
+  margin-left: -12px;
+}
+/* Centring comes from the doodle's own viewBox (fitted in renderSvg.ts). */
+.session .doodle {
+  max-height: 7rem;
+}

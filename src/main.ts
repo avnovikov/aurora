@@ -1,11 +1,26 @@
+// Bundled fonts (latin, only the weights in use), so the APK works offline.
+import "@fontsource/ibm-plex-sans/latin-400.css";
+import "@fontsource/ibm-plex-sans/latin-500.css";
+import "@fontsource/ibm-plex-sans/latin-600.css";
+import "@fontsource/ibm-plex-sans/latin-700.css";
+import "@fontsource/ibm-plex-sans-condensed/latin-500.css";
+import "@fontsource/ibm-plex-sans-condensed/latin-600.css";
+import "@fontsource/ibm-plex-sans-condensed/latin-700.css";
 import "./style.css";
-import { PRODUCT_TAGLINE, aboutBlurb, productTitleLine } from "./brand/identity";
+import { applyPalette } from "./brand/palettes";
+import { loadProfile } from "./settings/profile";
+import { ensureMemoryMigrated } from "./session/ensureMemoryMigrated";
+import { migratePlaintextToSecureStorage } from "./storage/migrateSecureStorage";
+import { bootApp } from "./ui/app";
 
-document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
-  <main class="shell">
-    <p class="eyebrow">Morning session</p>
-    <h1>${productTitleLine()}</h1>
-    <p class="tagline">${PRODUCT_TAGLINE}</p>
-    <p class="about">${aboutBlurb()}</p>
-  </main>
-`;
+const root = document.querySelector<HTMLDivElement>("#app");
+if (!root) {
+  throw new Error("#app root missing");
+}
+// Move plaintext localStorage into Keystore-backed files before any reads.
+migratePlaintextToSecureStorage();
+// Memory v1 → v2 (#112) before anything reads memory.
+ensureMemoryMigrated();
+// Before the first render, so the saved palette shows from the first frame.
+applyPalette(loadProfile().palette);
+bootApp(root);

@@ -11,6 +11,26 @@ node_modules
 dist
 dist-ssr
 *.local
+.hotspottriage/
+.worktrees/
+# Desk Studio local workspace (jobs, mocks, renders). Brand tokens live in docs/design/.
+.desk/
+
+# Playwright browser tests
+test-results/
+playwright-report/
+
+# Capacitor / Android local
+android/.gradle/
+android/app/build/
+android/build/
+android/captures/
+android/local.properties
+android/keystore.properties
+*.jks
+*.keystore
+*.apk
+*.aab
 
 # Editor directories and files
 .vscode/*
