@@ -6,37 +6,79 @@
 
 **v0.1.0 — first release (from the `poc` line).**
 
-**Aurora** is the product name. **Rassvet** (Рассвет, “dawn”) is the soul mark shown in the app. Private calisthenics training on Android. British English UI and voice (`en-GB`).
+**Aurora** is private, local-first calisthenics training for Android. **Rassvet** (Рассвет, “dawn”) is the soul mark shown in the app. The UI and spoken voice are British English (`en-GB`).
 
-Training apps usually give you a weekday calendar and a static template. That is not how a session actually works: sleep, joints, and pulse change the dose before you start. Aurora keeps a **plan queue** instead — an ordered list of upcoming days — and picks the dose from sleep, optional pain, recent load, missed reps, stalls, and (on Android) a BLE heart-rate strap.
+Aurora is for people who train calisthenics at home and want each session adapted to recovery, available equipment, and recent performance. Training apps usually give you a weekday calendar and a static template. Sleep, joints, and pulse change what you should do before you start. Aurora keeps a **plan queue** instead — an ordered list of upcoming training days — and adjusts the **dose** from sleep, optional pain, recent load, missed reps, stalls, and (on Android) a Bluetooth heart-rate strap.
 
-**[Get the APK · v0.1.0](https://github.com/avnovikov/aurora/releases/latest)** — download from the latest GitHub Release and sideload on Android.
+## Why I wrote it
+
+Three gaps in the apps I used are why I wrote Aurora.
+
+1. Those apps did not remember my joint problems: past injuries, and joints I need to skip or ease. Aurora stores them and eases or skips the moves that load those joints.
+2. Those apps did not change the plan when I plateaued — when progress had stalled and the same work kept coming back. Aurora changes the plan when progress stalls.
+3. A typical app of this kind costs about £60 a year. I give Aurora away free as in beer (no charge) and free as in speech (the source is under the MIT licence).
+
+## Download
+
+**[Download Aurora v0.1.0 for Android](https://github.com/avnovikov/aurora/releases/latest)**
+
+Install the APK by allowing installation from your browser or file manager when Android asks.
 
 ![Today — check-in](docs/help/screenshots/04-today.png)
 
-*Today: next queue day, pulse, sleep check-in, Start. Real phone-sized capture from the app (Rassvet palette).*
+*The Today screen: Aurora shows the next queued session, asks how you slept and whether anything hurts, and lets you connect a heart-rate strap before you start.*
+
+New to Aurora? Follow the [First-morning tutorial](docs/tutorial/take-your-first-morning-with-aurora.md) for a guided walkthrough from setup through your first session (Settings → Library → Plan → Today → Session → Progress → History → Body).
 
 ---
 
-## About
+## Requirements
 
-You set who you are (bodyweight, resting and max heart rate, past injuries) and what gear you own. The planner builds **area days** — Upper body, Lower body, Core, Full body, Mobility, Joint care, or a Skill target — into the queue. **Today** always runs the first card. Completing a session advances the queue.
+- An Android phone or tablet (minimum Android 6 / API 23)
+- The Aurora APK from [GitHub Releases](https://github.com/avnovikov/aurora/releases/latest)
+- Optional: a Bluetooth heart-rate strap (connection works in the Android app only)
 
-The **dose** is the prescribed sets and reps or hold for each station. Poor sleep or marked pain lightens the morning. A **Session** is not a tab: it replaces the shell for warmup → work patterns → cool-down → a short rating, then returns you to the tabs. Forward swipe (left) finishes a set or station; rest and get-ready use the same gesture.
-
-Data stays on the device in 0.1. There is no cloud account and no server sync of health signals. On Android, sensitive values use **AuroraSecure** (Keystore-backed). Browser preview may fall back to plaintext `localStorage` for local testing only.
-
-The README consists of six parts after this section: the shell, install, docs, privacy, develop, and licence / catalogue.
+App id: `com.aurora.rassvet`.
 
 ---
 
-## The shell
+## How Aurora works
 
-The Capacitor Android shell and the web preview share one tab bar (`src/ui/shell.ts`), in this order:
+### Plan as a queue
+
+A **plan queue** is an ordered list of upcoming training days, not a Monday–Sunday calendar. **Today** always runs the first day in the queue. Completing a session advances the queue.
+
+An **area day** is a planned training day focused on one body area or goal: Upper body, Lower body, Core, Full body, Mobility, Joint care, or a specific skill (for example a handstand or muscle-up path).
+
+### Set up once
+
+Enter bodyweight, resting and maximum heart rate, past injuries, and the gear you own. First-run screens collect that before the main tab bar appears.
+
+### Adapt the dose
+
+A **station** is one exercise or movement block in a session. It may prescribe one or more sets, repetitions, or a hold time.
+
+The **dose** is the prescribed work for each station: sets, repetitions, or hold time. Poor sleep or marked pain lightens that work when you start. Recent load, missed reps, stalls, and pulse can also lighten it.
+
+### Train in one flow
+
+When you start, a **Session** temporarily replaces the main tab bar with a guided flow: warm-up stations → work → cool-down → a short rating. When you finish, you return to the tabs.
+
+Swipe left to complete the current set or station. During **Rest** and **Get ready** (the short period before the next set), swipe left to end the wait and continue.
+
+### Progress signals
+
+On **Progress**, **current readiness** shows how close you are to the dose standard on your active goals (explicit plan targets and implied next steps). Separate from that, the morning check-in (sleep and optional pain) feeds how light today’s dose is.
+
+---
+
+## The main tabs
+
+The Android app’s main tab bar, in order:
 
 | Tab | What it shows |
 |-----|----------------|
-| Today | Next plan-queue day; ≈ minutes; pulse Connect; sleep check-in (required before Start); optional pain |
+| Today | Next day in the plan queue; ≈ minutes; pulse Connect; sleep check-in (required before Start); optional pain |
 | Library | Exercise catalogue; search; filters Show / Area & muscle / Level; detail with cues, standards, personal bests |
 | Progress | Level profile by movement pattern (novice→elite, within-tier %); weak-links; current readiness |
 | History | Logged sets (exercise · set · reps or hold · when); older rows may be session summaries only |
@@ -44,53 +86,75 @@ The Capacitor Android shell and the web preview share one tab bar (`src/ui/shell
 | Plan | Queue of upcoming days; Swap / Easier; remake area or skill; reorder; add days; plan level |
 | Settings | You / Gear / Training / App |
 
-First-run surfaces (before the tab bar) collect bodyweight, HR bands, injuries, then “what to train first”. Screenshots for every surface live under `docs/help/screenshots/`.
-
-Full walkthrough with steps: [docs/tutorial/take-your-first-morning-with-aurora.md](docs/tutorial/take-your-first-morning-with-aurora.md).  
-Austere lookup: [docs/reference/aurora-shell-tabs.md](docs/reference/aurora-shell-tabs.md).
-
 ![Plan — Coming up](docs/help/screenshots/03-plan.png)
 
-*Plan: the queue, not a weekday calendar. Today is the first card.*
+*The Plan screen: upcoming days in queue order. Today is the first card.*
+
+![Session — station](docs/help/screenshots/05-session.png)
+
+*A Session: one station at a time — cues, dose, and a left swipe to finish the set or station.*
+
+![Progress — Where you stand](docs/help/screenshots/06-progress.png)
+
+*Progress: level by movement pattern, then current readiness on active goals.*
+
+Screenshots for every surface live under `docs/help/screenshots/`.
 
 ---
 
-## Install
+## Tutorial
 
-1. Download the APK from the [latest GitHub Release](https://github.com/avnovikov/aurora/releases/latest).
-2. Sideload on Android (allow install from that source if the system asks).
-3. Optional — confirm the signing certificate SHA-256 matches:
+The [First-morning tutorial](docs/tutorial/take-your-first-morning-with-aurora.md) is the detailed walkthrough with screenshots. Use it once you have the APK installed; this README stays at orientation level.
 
-```text
-ff5e2dd6fd5ba34b3baca196a7e442a6492a5a22d786dc040e9850ac8529f3a6
-```
-
-```bash
-apksigner verify --print-certs path/to/app-release.apk
-```
-
-Release builds are signed on this machine. The keystore stays out of Git and out of CI. See `android/keystore.properties.example`.
-
-App id: `com.aurora.rassvet`. A heart-rate strap needs the Android APK (Capacitor + `@capacitor-community/bluetooth-le`); the LAN Vite preview cannot drive BLE.
+For a compact tab and Session lookup: [Shell-tab reference](docs/reference/aurora-shell-tabs.md).
 
 ---
 
 ## Docs
 
-| Doc | What it holds |
-|-----|----------------|
-| [Tutorial — first morning](docs/tutorial/take-your-first-morning-with-aurora.md) | Guided path Settings → Library → Plan → Today → Session → Progress → History → Body, with screenshots |
-| [Reference — shell tabs](docs/reference/aurora-shell-tabs.md) | Tab bar, Session, first-run surfaces, plan-queue terms, storage keys |
-| [Terms](docs/TERMS.md) | Local-only processing, AuroraSecure, disclaimer (not medical advice) |
-| [Lightsail deploy](docs/deploy/lightsail.md) | Optional HTTPS host for a later PWA; not required for BLE |
+| Document | Contents |
+|----------|----------|
+| [First-morning tutorial](docs/tutorial/take-your-first-morning-with-aurora.md) | Guided walkthrough with screenshots |
+| [Shell-tab reference](docs/reference/aurora-shell-tabs.md) | Tabs, Session, first-run screens, plan-queue terms, storage keys |
+| [Terms and privacy](docs/TERMS.md) | Local-only processing, AuroraSecure, disclaimer |
+| [Development guide](docs/development.md) | Local preview, Android build, tests, branches, snapshots |
+| [Lightsail deployment](docs/deploy/lightsail.md) | Optional HTTPS hosting for a later PWA experiment |
 
 ---
 
-## Privacy & data (local only)
+## Install details
 
-Training history, readiness, sleep, pulse, pain or joint notes, and related health signals stay **on the device**. Uninstalling the app or clearing storage deletes that data; the app does not back it up for you.
+1. Download the APK from the [latest GitHub Release](https://github.com/avnovikov/aurora/releases/latest).
+2. Open the file on the phone and allow installation from that source when Android asks.
+3. Optional but recommended if you have Android SDK build tools: verify the signing certificate.
 
-On Android, sensitive `aurora.poc.*` values go through AuroraSecure. In a browser or unit test without the native bridge, storage may be ordinary `localStorage`.
+### Optional but recommended: verify the APK
+
+```bash
+apksigner verify --print-certs path/to/app-release.apk
+```
+
+Compare the `SHA-256 digest` in the output with:
+
+```text
+ff5e2dd6fd5ba34b3baca196a7e442a6492a5a22d786dc040e9850ac8529f3a6
+```
+
+If the values do not match, do not install the APK.
+
+Release APKs are signed locally. The signing keystore is not stored in Git or used by CI. See `android/keystore.properties.example`.
+
+Heart-rate-strap connection requires the Android app.
+
+---
+
+## Privacy and data (local only)
+
+Training history, sleep answers, pulse readings, pain or joint notes, profile settings, the plan queue, and session logs remain on your device. There is no cloud account and no server sync of that data in 0.1.
+
+Uninstalling Aurora or clearing its app storage permanently deletes your local data. Aurora does not provide cloud backup or account recovery.
+
+On Android, sensitive `aurora.poc.*` values go through **AuroraSecure** (Keystore-backed). A local browser preview used only for development may fall back to plaintext `localStorage`.
 
 Full terms: [docs/TERMS.md](docs/TERMS.md). **Not medical advice.** Stop if you feel pain, dizziness, or distress.
 
@@ -98,28 +162,9 @@ Full terms: [docs/TERMS.md](docs/TERMS.md). **Not medical advice.** Stop if you 
 
 ## Develop
 
-```bash
-npm install
-npm test && npm run smell && npm run build
-npm run dev -- --host   # LAN URL → Android Chrome (UI only; pulse needs the APK)
-```
+Aurora is a TypeScript, Vite, Vitest, and Capacitor Android project. The planning, dose, and progression logic is pure TypeScript with no browser DOM or Bluetooth dependencies, so it is easier to test and reuse.
 
-Capacitor Android:
-
-```bash
-npm run cap:sync    # Vite build → android/
-npm run cap:open    # Android Studio
-```
-
-Smell gate: `npm run smell` (ESLint + SonarJS complexity). Integration branch: **`poc`**. Do not merge to `main` without an explicit release cut.
-
-Optional device snapshot for tests: `node scripts/pull-device-snapshot.mjs` (USB debugging, debuggable build). Live secure dumps used for Help screenshots live under `.device-snapshots/` (not shipped in the APK).
-
----
-
-## Stack
-
-TypeScript, Vite, Vitest, ESLint with eslint-plugin-sonarjs, Capacitor Android. The rule engine (plan, dose, progression) is pure TypeScript with no DOM or Bluetooth. Voice packs are prebuilt WAVs. Optional Lightsail host is separate from any KS `ks-ui-app` deploy.
+For local development, Android development, testing, quality checks, branch policy, and device snapshots, see the [Development guide](docs/development.md).
 
 ---
 
@@ -135,8 +180,6 @@ Exercise catalogue imports follow each source’s licence: wger (CC), MuscleWiki
 
 ---
 
-## Limits (0.1)
+## Known limitations in v0.1.0
 
-Three limits are honest and still open. History rows from before set-level persistence may show as session summaries only. Pulse Connect is a no-op on plain web HTTP. There is no cloud sync and no account recovery if you lose the phone.
-
-Aurora · Rassvet v0.1.0 — local only. en-GB.
+Older history entries created before set-level logging may appear only as session summaries rather than individual sets. Heart-rate-strap connection is available only in the Android app. There is no cloud sync and no account recovery if you lose the phone.
