@@ -3953,9 +3953,9 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
     "id": "hf_164",
     "summary": "A side split stretch with both legs out wide that opens the inner thighs and hamstrings.",
     "steps": [
-      "Stand or kneel with hands on the floor in front of you.",
+      "Stand with your feet wide and your hands on your hips.",
       "Slide your feet apart to the sides with toes pointing forward or up.",
-      "Lower your hips toward the floor, using your hands for support.",
+      "Lower your hips toward the floor, placing your hands on the floor for support.",
       "Stay within a pain-free range.",
       "Hold 20–30 seconds, then walk your feet back in."
     ],

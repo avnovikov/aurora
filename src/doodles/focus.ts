@@ -73,6 +73,12 @@ export const FOCUS_BY_ID: Readonly<Record<string, Focus>> = {
     zoom: 2,
     label: "calf",
   }, // Standing calf stretch
+  hf_166: {
+    joints: ["knee.near", "ankle.near", "toe.near"],
+    highlight: ["shin.near", "foot.near"],
+    zoom: 2,
+    label: "ankle",
+  }, // Wall ankle dorsiflexion
   wger_2667: {
     joints: ["knee.near", "ankle.near", "toe.near"],
     highlight: ["shin.near", "foot.near"],
@@ -100,6 +106,7 @@ export const FOCUS_BY_ID: Readonly<Record<string, Focus>> = {
   },
   // Hips
   fedb_kneeling_hip_flexor: { joints: [], highlight: ["thigh.far", "pelvis"] },
+  hf_161: { joints: [], highlight: ["thigh.near", "pelvis"] }, // Couch stretch
   wger_1202: { joints: [], highlight: ["thigh.far", "pelvis"] }, // Side-lying hip abduction
   hip_circles: { joints: [], highlight: ["pelvis", "lumbar"] },
   // Shoulders and shoulder blades
