@@ -39,19 +39,25 @@ jobs:
       - name: npm audit (high+)
         run: npm audit --audit-level=high
 
+      # Keep SAST / Trivy / secrets running even when audit fails so one red step
+      # does not skip the rest of the security suite.
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        if: success() || failure()
+        uses: github/codeql-action/init@v4
         with:
           languages: javascript-typescript,java
           queries: security-and-quality
 
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
+        if: success() || failure()
+        uses: github/codeql-action/autobuild@v4
 
       - name: Run CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        if: success() || failure()
+        uses: github/codeql-action/analyze@v4
 
       - name: Run Trivy vulnerability scanner
+        if: success() || failure()
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: fs
@@ -62,13 +68,14 @@ jobs:
           exit-code: "1"
 
       - name: Upload Trivy SARIF results
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        uses: github/codeql-action/upload-sarif@v4
+        if: always() && hashFiles('trivy-results.sarif') != ''
         with:
           sarif_file: trivy-results.sarif
           category: trivy
 
       - name: Run Gitleaks secret scan
+        if: success() || failure()
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
