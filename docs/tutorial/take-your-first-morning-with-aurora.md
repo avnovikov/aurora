@@ -65,12 +65,12 @@ Three rules follow. Moves are labelled by area and level. Detail holds cues and 
 
 1. Tap Plan.
 
-    Coming up lists the queue. The first card is Today. Each card shows the day name (for example Upper body · A), an ≈ minute estimate, warmup and cool-down notes, and the working exercises with Swap, Easier, and more options.
+    Coming up lists the queue. The first card is Today. Each card shows the day name (for example Upper body · A), an ≈ minute estimate, warmup and cool-down notes, and the working exercises with Swap, Easier, and more options. Some later cards may be skill paths with a **Target** (for example handstand or muscle-up) — that Target is the end skill; the day still trains the step you can do now.
 
     ![Plan — Coming up](../help/screenshots/03-plan.png)
 
 2. Confirm the first card is labelled Today and that its area is Upper body.
-3. Scroll far enough to see Then 2 or Then 3 if present. Leave Swap, Easier, remake, and reorder alone.
+3. Scroll far enough to see Then 2 or Then 3 if present. Leave Swap, Easier, remake, and reorder alone. If a skill Target appears on a later card, note the name; you will see distance toward Targets on Progress after you log.
 4. Note the level controls lower on the page (From my results / named levels). Leave From my results selected.
 
 The queue is what Today will run. You do not need to edit it to train.
@@ -108,14 +108,14 @@ You have now completed one logged morning.
 
 1. Tap Progress.
 
-    Where you stand has three boards. The **level profile** is pattern-by-pattern standing on novice → elite, with a within-tier percentage. **Weak-links** are moves that sit below your average. **Current readiness** is what to clear next on a path.
+    Where you stand has three boards. The **level profile** is pattern-by-pattern standing on novice → elite, with a within-tier percentage. **Weak-links** are moves that sit below your average. **Current readiness** is distance toward a **Target** — a skill goal on Plan such as freestanding handstand or muscle-up — and what to clear next on that path. You train today’s step; Progress shows how close the Target still is.
 
     ![Progress — Where you stand](../help/screenshots/06-progress.png)
 
-2. Scroll through all three boards once. After a logged session the profile should show at least some pattern lines. Empty boards mean not enough sets yet.
+2. Scroll through all three boards once. After a logged session the profile should show at least some pattern lines. Empty boards mean not enough sets yet. If a readiness row names a Target, read it as “how close am I?” — not as a second plan editor.
 3. If a readiness row is present, tap it. History opens filtered for that thread. Return with the tab bar, then continue.
 
-Do not change Plan targets from Progress on this pass.
+Do not change Plan Targets from Progress on this pass. Setting or remaking a skill Target happens on Plan after you know the loop.
 
 ## Open History
 
