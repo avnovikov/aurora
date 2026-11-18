@@ -24,14 +24,28 @@ z is the figure's sideways axis: negative towards the near side (the side-view c
 ## Scope
 
 - Opt-in per move: `views: ["side", "front"]`. A plain push-up stays one side view; the archer push-up gets both.
+- The judge decides, not the drawer (see Process). Every move is drawn in one view first; a second view is added only when the independent reviewer asks for it.
 - Existing ~300 specs are unchanged and render byte-identical.
-- First delivery: rig, renderer, validator, cards, and the archer push-up (`hf_6`) as the proof move.
-- Follow-up batch (not this PR): the other two-plane moves: archer pull-up, wide / Maltese / side-to-side push-ups, commando pull-up, fire hydrant (+ circles), clamshell / reverse clamshell, frog pumps, seated hip abduction, curtsy and crossover reverse lunge, plank jacks, lateral plank walk, plank hip dips.
+- First delivery: rig, renderer, validator, cards, the review-process change, and the archer push-up (`hf_6`) as the proof move, run through the full process (one view → judge → second view if asked).
+- Follow-up batch (not this PR): the moves left out of #138 / #141 go through the same process. Expected to need a second view: archer pull-up, wide / Maltese / side-to-side push-ups, commando pull-up, fire hydrant (+ circles), clamshell / reverse clamshell, frog pumps, seated hip abduction, curtsy and crossover reverse lunge, plank jacks, lateral plank walk, plank hip dips.
 - Out: twisting moves (windshield wiper, side plank with rotation, front kickthrough, heel touchers). A sideways offset doesn't show rotation of the torso; leave them out rather than mislead.
+
+## Process: one view first, the judge asks for a second
+
+1. **Draw one view.** The drawer always draws the move in a single view (side, or front when the motion is lateral), as today. The drawer no longer leaves a move out just because it travels in two planes. It draws the best single view and notes in the report which plane it can't show.
+2. **Judge.** The independent sceptical reviewer renders the cards and gives each move one of four verdicts:
+   - **KEEP**: one view shows the move honestly.
+   - **FIX**: one view is enough, but something is wrong (frame, joint, what it should be).
+   - **ADD VIEW**: the move is right as far as it goes, but a second plane matters and one view misleads or hides it. The verdict names the missing view (front or side) and what it must show, e.g. "front: straight arm slides out to the side, chest over the working hand".
+   - **DROP**: no pair of views shows it honestly (twists, rotations).
+3. **Add the second view.** For ADD VIEW, a fix agent adds `views: ["side", "front"]` and the sideways offsets to the existing spec. It doesn't redraw the move from scratch. The side panel must still pass on its own.
+4. **Judge again.** The reviewer re-checks only the moves that got a second view: both panels agree and the added view shows what the verdict asked for. Then KEEP, FIX or DROP.
+
+A second view costs card width and attention, so the reviewer asks for one only when the single view would mislead, not to make a correct doodle richer. The authoring guide's drawer and reviewer prompts are updated to this process.
 
 ## Authoring
 
-Unchanged for side-only specs. For a dual-view spec:
+Unchanged for side-only specs. For a dual-view spec (only after an ADD VIEW verdict):
 
 - Author facing +x as today. Any pinned point (`pelvis`, `chest`, `head`, `hands`, `feet`, `elbows.at`, `knees.at`) may take a third number, its sideways offset: `hands: { near: [10, 0, -70], far: [10, 0, 70] }`.
 - A point given as `[x, y]` keeps the natural width of its chain: the shoulder's for an arm (±22), the hip's for a leg (±8), 0 for the spine.
@@ -69,7 +83,7 @@ Implementation note: keep the 2D path as the code path for side-only specs if th
 
 - `npm run doodles`: unchanged command; writes the dual-view SVG for opted-in specs.
 - `npm run doodles:cards`: works unchanged (cards render the SVG); check that 8 frames stay readable at card width with two panels.
-- Authoring guide: add a "Two views" section (when to opt in, sideways offsets, `out`, what stays out), and update the drawer/reviewer prompts: the reviewer checks both panels agree and the front view is honest.
+- Authoring guide: add a "Two views" section (sideways offsets, `out`, what stays out) and the one-view-first process. Drawer prompt: always draw one view, note the plane it can't show, don't leave a move out for that reason. Reviewer prompt: four verdicts (KEEP / FIX / ADD VIEW / DROP), ADD VIEW only when one view misleads. New prompt: adding a second view to an existing spec. Re-review prompt: both panels agree and the added view shows what was asked.
 
 ## Tests (Vitest, `tests/doodles/`)
 
@@ -82,5 +96,5 @@ Implementation note: keep the 2D path as the code path for side-only specs if th
 ## Done when
 
 - Acceptance criteria on #174 pass.
-- Archer push-up card reviewed frame by frame, plus an independent sceptical review (KEEP / FIX / DROP).
+- Archer push-up taken through the process: drawn in one view, judged by an independent reviewer (expected ADD VIEW), second view added, judged again to KEEP.
 - `npm run doodles`, `npx tsc --noEmit`, `npm run -s lint`, `npx vitest run` pass.
