@@ -120,7 +120,8 @@ For a compact tab and Session lookup: [Shell-tab reference](docs/reference/auror
 |----------|----------|
 | [First-morning tutorial](docs/tutorial/take-your-first-morning-with-aurora.md) | Guided walkthrough with screenshots |
 | [Shell-tab reference](docs/reference/aurora-shell-tabs.md) | Tabs, Session, first-run screens, plan-queue terms, storage keys |
-| [Terms and privacy](docs/TERMS.md) | Local-only processing, AuroraSecure, disclaimer |
+| [Terms](docs/TERMS.md) | Use conditions, licence, medical disclaimer |
+| [Privacy](docs/PRIVACY.md) | Local-only data; GDPR and CCPA/CPRA checklist |
 | [Development guide](docs/development.md) | Local preview, Android build, tests, branches, snapshots |
 | [Lightsail deployment](docs/deploy/lightsail.md) | Optional HTTPS hosting for a later PWA experiment |
 
@@ -162,7 +163,7 @@ Uninstalling Aurora or clearing its app storage permanently deletes your local d
 
 On Android, sensitive `aurora.poc.*` values go through **AuroraSecure** (Keystore-backed). A local browser preview used only for development may fall back to plaintext `localStorage`.
 
-Full terms: [docs/TERMS.md](docs/TERMS.md). **Not medical advice.** Stop if you feel pain, dizziness, or distress.
+Full policy: [docs/PRIVACY.md](docs/PRIVACY.md). Terms of use: [docs/TERMS.md](docs/TERMS.md). **Not medical advice.** Stop if you feel pain, dizziness, or distress.
 
 ---
 

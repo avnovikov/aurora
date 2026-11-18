@@ -99,5 +99,6 @@ Requires USB debugging and a debuggable build. Snapshots used for Help / tutoria
 | [README](../README.md) | Product orientation, download, privacy |
 | [First-morning tutorial](tutorial/take-your-first-morning-with-aurora.md) | End-user walkthrough |
 | [Shell-tab reference](reference/aurora-shell-tabs.md) | Tabs, Session, storage keys |
-| [Terms](TERMS.md) | Local-only processing and disclaimer |
+| [Terms](TERMS.md) | Use conditions and disclaimer |
+| [Privacy](PRIVACY.md) | Local-only data; GDPR and CCPA/CPRA checklist |
 | [Lightsail deploy](deploy/lightsail.md) | Optional HTTPS host |
