@@ -1,28 +1,21 @@
-import { solvePose } from "./rig";
-import type { DoodleSpec, Point, Pose } from "./rig";
-import { proneFromAbove, SIDE_LYING_FLOOR } from "./specsWarmup";
+import { HIP_SIDE, SHOULDER_SIDE, solvePose } from "./rig";
+import type { DoodleSpec, Keyframe, Point, Pose } from "./rig";
+import { FROG_SIDEWAYS } from "./specsBatchAF";
+import { SIDE_LYING_FLOOR } from "./specsWarmup";
 
 /**
  * Batch AG: all fours, face down and hip moves. Floor at y = 0, up is negative,
  * the side-view figure faces +x (lying face up has the head at -x, lying face
  * down the head at +x). Side-lying moves use the front view (near = bottom side,
- * far = top side); the skydiver is seen from above like the prone Y-T-W.
+ * far = top side). The skydiver, frog pumps and hip circles are drawn in two
+ * views (side + front, keyframe `sideways`).
  * Import only from ./rig and other batch files — never from ./specs (that would be circular).
  *
  * Left out:
- * - Fire hydrant (ntc_fire_hydrant) and Fire Hydrant Circles (wger_1956): the
- *   bent knee lifts out to the side, straight at the camera in side view; from
- *   the front the all-fours torso points at the camera and from above the
- *   thighs and arms do, and the rig cannot foreshorten any of them.
  * - Scorpion Kick (wger_1207): the hips rotate to swing the foot across the
  *   body; the rig has no torso rotation.
- * - Butterfly Superman (wger_1908): fingers laced behind the head with the elbows
- *   out wide. From the side the fixed-length arms can only reach the back of the
- *   head with the elbow folded backwards or through the head; from above the
- *   lift of the chest and elbows points at the camera, so nothing moves.
- * - Seated Hip Abduction (wger_1672): the knees push apart sideways, invisible
- *   from the side; from the front the seated thighs point at the camera and
- *   cannot be foreshortened, so the knees would hang a full thigh below the seat.
+ * (Fire hydrant, Fire Hydrant Circles, Butterfly Superman and Seated Hip
+ * Abduction need two views and are drawn in specsBatchAK.)
  */
 
 /** Point `length` from `from` at `degrees` (0 = +x, 90 = down, -90 = up). */
@@ -74,12 +67,12 @@ function reverseClam(lift: number): Pose {
 
 // ---------------------------------------------------------------- all fours (side view)
 
-const AF_PELVIS: Point = [-50, -92];
+export const AF_PELVIS: Point = [-50, -92];
 const AF_HANDS = { near: [48, 0] as Point, far: [44, 0] as Point };
 const AF_FEET = { near: [-136, -4] as Point, far: [-132, -4] as Point };
 
 /** Hands under the shoulders, knees under the hips, tops of the feet flat. */
-function allFours(): Pose {
+export function allFours(): Pose {
   return { pelvis: AF_PELVIS, hands: AF_HANDS, feet: AF_FEET, toes: { near: 180, far: 180 } };
 }
 
@@ -109,19 +102,61 @@ function rearLegRaise(): Pose {
   };
 }
 
+/** A direction in 3D: forward (+x), down (+y), out to the working leg's side (+). */
+export type Dir3 = readonly [forward: number, down: number, out: number];
+
+/** A direction in the side view's plane at `degrees` (0 = forward, 90 = down). */
+export const inPlane = (degrees: number): Dir3 => [Math.cos((degrees * Math.PI) / 180), Math.sin((degrees * Math.PI) / 180), 0];
+
+const unit3 = (v: Dir3): Dir3 => {
+  const n = Math.hypot(v[0], v[1], v[2]);
+  return [v[0] / n, v[1] / n, v[2] / n];
+};
+
 /**
- * Knee circle on all fours: the near knee off the floor at `thigh` degrees from the hip
- * (90 = straight down, < 90 forward under the chest, > 90 back), the shin at `shin` degrees.
+ * All fours with the `side` knee off the floor: the thigh along `thigh` from the
+ * hip, the shin along `shin` from the knee, both in 3D (out = away from the
+ * body on that side), so the knee can swing out to the side (fire hydrant).
  */
-function kneeCircle(thigh: number, shin: number): Pose {
-  const knee = along(AF_PELVIS, thigh, 88);
+export function liftedKnee(side: Side, thigh: Dir3, shin: Dir3): Keyframe {
+  const other: Side = side === "near" ? "far" : "near";
+  const sign = side === "near" ? -1 : 1;
+  const hipZ = sign * HIP_SIDE;
+  const [t, s] = [unit3(thigh), unit3(shin)];
+  const knee: Point = [round(AF_PELVIS[0] + t[0] * 88), round(AF_PELVIS[1] + t[1] * 88)];
+  const kneeZ = hipZ + sign * t[2] * 88;
+  const foot: Point = [round(knee[0] + s[0] * 86), round(knee[1] + s[1] * 86)];
+  const footZ = kneeZ + sign * s[2] * 86;
+  const shinDeg = angle(knee, foot);
   return {
-    ...allFours(),
-    knees: { near: { at: knee } },
-    feet: { near: along(knee, shin, 86), far: AF_FEET.far },
-    toes: { near: round(shin + 90), far: 180 },
+    hold: 0,
+    pose: {
+      ...allFours(),
+      knees: { [side]: { at: knee } },
+      feet: { [side]: foot, [other]: AF_FEET[other] },
+      toes: { [side]: round(shinDeg + 90), [other]: 180 },
+    },
+    sideways: { knees: { [side]: { at: round(kneeZ) } }, feet: { [side]: round(footZ) } },
   };
 }
+
+/** All fours, both knees down (for a dual-view spec). */
+export const allFoursKey = (): Keyframe => ({ hold: 0, pose: allFours(), sideways: {} });
+
+/** Fire-hydrant height: the thigh straight out to the side, a little below level; the shin points back. */
+export const HYDRANT_THIGH: Dir3 = [0, Math.sin((12 * Math.PI) / 180), Math.cos((12 * Math.PI) / 180)];
+export const HYDRANT_SHIN: Dir3 = [-1, 0.12, 0];
+
+/**
+ * Knee circle on all fours, near knee: forward under the chest, out to the side
+ * at fire-hydrant height, back and up behind the hip, then back in under the hip.
+ */
+export const KNEE_CIRCLE: Keyframe[] = [
+  { ...liftedKnee("near", inPlane(55), inPlane(185)), hold: 0.1 },
+  { ...liftedKnee("near", HYDRANT_THIGH, HYDRANT_SHIN), hold: 0.1 },
+  { ...liftedKnee("near", inPlane(178), inPlane(270)), hold: 0.1 },
+  { ...liftedKnee("near", inPlane(140), inPlane(235)), hold: 0 },
+];
 
 // ---------------------------------------------------------------- lying face up (side view, head left)
 
@@ -144,28 +179,73 @@ function lyingFaceUp(pelvis: Point): Pose {
   };
 }
 
-/** Frog pump: heels pulled in close to the seat, soles together; `pelvisY` lifts the hips. */
-function frogPump(pelvisY: number): Pose {
+/** Frog pump: heels pulled in close to the seat, soles together, knees wide; `pelvisY` lifts the hips. */
+function frogPump(pelvisY: number): Keyframe {
   return {
-    ...lyingFaceUp([-12, pelvisY]),
-    feet: { near: [62, -6], far: [58, -6] },
-    toes: { near: 0, far: 0 },
+    hold: 0,
+    pose: {
+      ...lyingFaceUp([-12, pelvisY]),
+      knees: { near: { bend: -1 }, far: { bend: -1 } },
+      feet: { near: [62, -6], far: [58, -6] },
+      toes: { near: 0, far: 0 },
+    },
+    sideways: FROG_SIDEWAYS,
   };
 }
 
-// ---------------------------------------------------------------- skydiver (seen from above, head at +x)
+// ---------------------------------------------------------------- skydiver (side + front, face down, head at +x)
 
-/** Arms out in a T; legs `spread` degrees either side of the body line. */
-function skydiver(spread: number): Pose {
-  const base = proneFromAbove(90);
-  const hipNear: Point = [-40, -158];
-  const hipFar: Point = [-40, -142];
+const SKY_PELVIS: Point = [-20, -14];
+/** Shoulder to fingertip, a hair short of the full reach so the arm draws straight. */
+const SKY_REACH = 125.9;
+/** Hip to ankle, straight. */
+const SKY_LEG = 173.9;
+/** The T-arms angle this far forward of straight out to the side, so the side view sees them. */
+const SKY_ARM_FORWARD = 18;
+
+/**
+ * Face down, arms out in a T. `lift` 0 lies flat (hands and feet on the floor),
+ * 1 holds chest, arms and legs off the floor; `spread` opens each leg that many
+ * degrees out to the side.
+ */
+function skydiver(lift: number, spread: number): Keyframe {
+  const pelvis = SKY_PELVIS;
+  const spine = -8 - 8 * lift;
+  const chest = along(pelvis, spine, 80);
+  const shoulder = along(pelvis, spine, 98);
+  // Neck long, gaze at the floor (lying flat, the forehead rests just off it).
+  const head = along(along(chest, spine, 20), spine + 8 + 22 * lift, 36);
+  // Hands on the floor, or lifted to a little above shoulder height.
+  const handY = lift === 0 ? -3 : round(shoulder[1] - 6);
+  const drop = handY - shoulder[1];
+  const flat = Math.sqrt(SKY_REACH ** 2 - drop ** 2);
+  const forward = (SKY_ARM_FORWARD * Math.PI) / 180;
+  const hand: Point = [round(shoulder[0] + flat * Math.sin(forward)), handY];
+  const handZ = round(SHOULDER_SIDE + flat * Math.cos(forward));
+  // Straight legs, raised `leg` degrees in the side view and opened `spread` degrees sideways.
+  const leg = 184 + 10 * lift;
+  const open = (spread * Math.PI) / 180;
+  const at = (length: number): { at: Point; z: number } => ({
+    at: along(pelvis, leg, length * Math.cos(open)),
+    z: round(HIP_SIDE + length * Math.sin(open)),
+  });
+  const [knee, foot] = [at(88), at(SKY_LEG)];
   return {
-    ...base,
-    // Straight legs: knees pinned on the hip-to-ankle line.
-    knees: { near: { at: along(hipNear, 180 + spread, 88) }, far: { at: along(hipFar, 180 - spread, 88) } },
-    feet: { near: along(hipNear, 180 + spread, 173.97), far: along(hipFar, 180 - spread, 173.97) },
-    toes: { near: 180 + spread, far: 180 - spread },
+    hold: 0,
+    pose: {
+      pelvis,
+      chest,
+      head,
+      hands: { near: hand, far: hand },
+      knees: { near: { at: knee.at }, far: { at: knee.at } },
+      feet: { near: foot.at, far: foot.at },
+      toes: { near: leg, far: leg },
+    },
+    sideways: {
+      hands: { near: -handZ, far: handZ },
+      knees: { near: { at: -knee.z }, far: { at: knee.z } },
+      feet: { near: -foot.z, far: foot.z },
+    },
   };
 }
 
@@ -225,10 +305,11 @@ export const BATCH_AG_SPECS: DoodleSpec[] = [
     id: "ntc_frog_pumps",
     slug: "frog-pumps",
     title: "Frog pumps",
+    views: ["side", "front"],
     transition: 0.4,
     frames: [
-      { hold: 0.15, pose: frogPump(-24) },
-      { hold: 0.25, pose: frogPump(-66) },
+      { ...frogPump(-24), hold: 0.15 },
+      { ...frogPump(-66), hold: 0.25 },
     ],
   },
   {
@@ -247,12 +328,17 @@ export const BATCH_AG_SPECS: DoodleSpec[] = [
     id: "wger_1210",
     slug: "skydiver-arms-t",
     title: "Skydiver with arms in T-position",
-    view: "front",
-    transition: 0.7,
+    views: ["side", "front"],
+    transition: 0.6,
     frames: [
-      // Seen from above: chest, arms and legs held off the floor (invisible here), legs open and close.
-      { hold: 0.3, pose: skydiver(2) },
-      { hold: 0.3, pose: skydiver(14) },
+      // Lying flat, legs apart and arms in a T; lift chest, arms and legs off the floor...
+      { ...skydiver(0, 22), hold: 0.3 },
+      { ...skydiver(1, 22), hold: 0.2 },
+      // ...bring the legs together and apart while holding the lift, then lower.
+      { ...skydiver(1, 2), hold: 0.1 },
+      { ...skydiver(1, 22), hold: 0.1 },
+      { ...skydiver(1, 2), hold: 0.1 },
+      { ...skydiver(1, 22), hold: 0.2 },
     ],
   },
   {
@@ -281,14 +367,10 @@ export const BATCH_AG_SPECS: DoodleSpec[] = [
     id: "fedb_hip_circles_prone",
     slug: "hip-circles-prone",
     title: "Hip Circles (prone)",
+    views: ["side", "front"],
     transition: 0.6,
-    frames: [
-      // Side view: the knee sweeps forward under the chest, then back and up behind
-      // (the out-to-the-side half of the circle points at the camera).
-      { hold: 0.1, pose: kneeCircle(55, 185) },
-      { hold: 0, pose: kneeCircle(115, 215) },
-      { hold: 0.1, pose: kneeCircle(178, 270) },
-      { hold: 0, pose: kneeCircle(140, 235) },
-    ],
+    // Side view: the knee sweeps forward under the chest and back and up behind;
+    // front view: it swings out to the side at hip height in between.
+    frames: KNEE_CIRCLE,
   },
 ];

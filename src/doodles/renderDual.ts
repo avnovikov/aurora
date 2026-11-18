@@ -40,6 +40,51 @@ export function frontProp(prop: Prop, shift = 0): Prop | undefined {
   return undefined;
 }
 
+/** Front bars this close in height belong to one sloped board drawn as short strokes. */
+const BOARD_GAP = 8;
+/** Half-width of a bench board (and its legs) seen end-on. */
+const BOARD_HALF = 36;
+/** Boxes this thin are a bench's posts. */
+const POST_WIDTH = 2;
+
+/**
+ * All props as seen from the front. A sloped board drawn as a run of short bar
+ * strokes would stack into a solid block end-on; it is drawn as its outline
+ * (the board's end, from its lowest to its highest point) so the figure on it
+ * stays visible, and a thin post as the bench's two legs at the board's edges.
+ */
+export function frontProps(props: readonly Prop[], shift = 0): Prop[] {
+  const bars = props.filter((prop): prop is Extract<Prop, { kind: "bar" }> => prop.kind === "bar");
+  const others = props.flatMap((prop): Prop[] => {
+    if (prop.kind === "bar") return [];
+    if (prop.kind === "box" && prop.w <= POST_WIDTH) {
+      return [shift - BOARD_HALF, shift + BOARD_HALF].map((x): Prop => ({ kind: "box", x, y: prop.y, w: 0, h: prop.h }));
+    }
+    const front = frontProp(prop, shift);
+    return front ? [front] : [];
+  });
+  return [...boardRuns(bars).flatMap((run) => frontBars(run, shift)), ...others];
+}
+
+/** Bars grouped into runs of strokes that sit close together in height. */
+function boardRuns(bars: readonly Extract<Prop, { kind: "bar" }>[]): Extract<Prop, { kind: "bar" }>[][] {
+  const runs: Extract<Prop, { kind: "bar" }>[][] = [];
+  for (const bar of [...bars].sort((a, b) => a.y - b.y)) {
+    const run = runs[runs.length - 1];
+    if (run && bar.y - run[run.length - 1].y <= BOARD_GAP) run.push(bar);
+    else runs.push([bar]);
+  }
+  return runs;
+}
+
+/** One run seen from the front: a lone bar stays a bar, a sloped board becomes its outline. */
+function frontBars(run: readonly Extract<Prop, { kind: "bar" }>[], shift: number): Prop[] {
+  if (run.length < 3) return run.map((bar) => frontProp(bar, shift)).filter((p): p is Prop => !!p);
+  const top = run[0].y;
+  const bottom = run[run.length - 1].y;
+  return [{ kind: "box", x: shift - BOARD_HALF, y: top, w: 2 * BOARD_HALF, h: bottom - top }];
+}
+
 /** Mean forward position (x) of a part over the loop: larger x is nearer the front panel's viewer. */
 function depthOf(part: FigurePart, poses: Figure3[]): number {
   const points = (f: Figure3): Point3[] => {
@@ -88,8 +133,7 @@ export function dualLayout(spec: DoodleSpec, timeline: Timeline3 = sampleTimelin
   const front = timeline.poses.map((pose) => project(pose, "front"));
   const props = spec.props ?? [];
   const sideBox = bounds([...allPoints(side), ...props.flatMap(propPoints)], STROKE_REACH);
-  const frontProps = props.map((prop) => frontProp(prop)).filter((p): p is Prop => !!p);
-  const frontBox = bounds([...allPoints(front), ...frontProps.flatMap(propPoints)], STROKE_REACH);
+  const frontBox = bounds([...allPoints(front), ...frontProps(props).flatMap(propPoints)], STROKE_REACH);
   const frontShift = sideBox.x + sideBox.w + 2 * PADDING - frontBox.x;
   const shifted: ViewBox = { ...frontBox, x: frontBox.x + frontShift };
   const figures = union(sideBox, shifted);
@@ -127,11 +171,7 @@ export function renderDualSvg(spec: DoodleSpec): string {
     props.map(propSvg).join(""),
     figureSvg(spec, layout.side, timing, identity, 1),
     highlightSvg(focus, layout.front, timing, shift),
-    props
-      .map((prop) => frontProp(prop, frontShift))
-      .filter((p): p is Prop => !!p)
-      .map(propSvg)
-      .join(""),
+    frontProps(props, frontShift).map(propSvg).join(""),
     figureSvg(frontSpec, layout.front, timing, shift, 1, frontOrder(timeline.poses)),
     label("side", layout.labels.side, layout.labels.y),
     label("front", layout.labels.front, layout.labels.y),

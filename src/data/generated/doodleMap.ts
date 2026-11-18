@@ -380,7 +380,12 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "hf_13": "/doodles/doodle-spiderman-push-up.svg",
   "wger_994": "/doodles/doodle-forward-arm-circles.svg",
   "wger_995": "/doodles/doodle-backward-arm-circles.svg",
-  "wger_1834": "/doodles/doodle-trap-3-raise.svg"
+  "wger_1834": "/doodles/doodle-trap-3-raise.svg",
+  "ntc_fire_hydrant": "/doodles/doodle-fire-hydrant.svg",
+  "wger_1956": "/doodles/doodle-fire-hydrant-circles.svg",
+  "wger_1672": "/doodles/doodle-seated-hip-abduction.svg",
+  "wger_1908": "/doodles/doodle-butterfly-superman.svg",
+  "wger_171": "/doodles/doodle-incline-crunches.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */

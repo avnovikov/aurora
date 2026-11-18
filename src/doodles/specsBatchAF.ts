@@ -1,5 +1,5 @@
-import { solvePose } from "./rig";
-import type { DoodleSpec, Point, Pose, Prop } from "./rig";
+import { SHOULDER_SIDE, solvePose } from "./rig";
+import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
 import { SIDE_LYING_FLOOR } from "./specsWarmup";
 
 /**
@@ -243,31 +243,41 @@ function legLift(lift: number): Pose {
   };
 }
 
-// ---------------------------------------------------------------- frog sit-up
+// ---------------------------------------------------------------- frog sit-up (side + front)
 
-/** Soles together, feet drawn in close: thigh at `deg`, foot flat on the floor just ahead of the hips. */
-function frogLeg(deg: number): { knee: Point; foot: Point } {
-  const knee = along(SUPINE_PELVIS, deg, THIGH);
-  const dy = -2 - knee[1];
-  return { knee, foot: [round(knee[0] - Math.sqrt(SHIN ** 2 - dy * dy)), -2] };
-}
-const FROG_NEAR = frogLeg(-50);
-const FROG_FAR = frogLeg(-48.5);
+/** Soles pressed together: each foot this far from the body line (z). */
+export const FROG_SOLE_Z = 4;
+/** Degrees the knees roll out from the forward plane: they drop wide, low over the floor. */
+export const FROG_KNEE_OUT = 72;
+/** Frog legs in two views: soles together on the body line, knees dropped wide (the diamond). */
+export const FROG_SIDEWAYS: Sideways = {
+  feet: { near: -FROG_SOLE_Z, far: FROG_SOLE_Z },
+  knees: { near: { out: FROG_KNEE_OUT }, far: { out: FROG_KNEE_OUT } },
+};
+/** Feet drawn in, flat on their outer edges a short way ahead of the hips. */
+const FROG_FEET: Record<Side, Point> = { near: [66, -4], far: [64, -4] };
+/** Crossed arms: each hand reaches across to the other side of the chest. */
+const CROSS_Z = 12;
 
 /** Sit-up with arms crossed on the chest; the torso pivots from lying (183) up towards the feet. */
-function frogSitUp(theta: number, tuck: number): Pose {
+function frogSitUp(theta: number, tuck: number): Keyframe {
   const torso = curledTorso(theta, tuck);
   const shoulder = along(SUPINE_PELVIS, theta, 98);
   const elbow = along(shoulder, theta + 150, 60);
-  const hand = along(elbow, theta - 8, 66);
   const elbowFar = along(shoulder, theta + 148, 60);
+  // The forearm crosses SHOULDER_SIDE + CROSS_Z sideways, so it is shorter in the side view.
+  const forearm = Math.sqrt(66 ** 2 - (SHOULDER_SIDE + CROSS_Z) ** 2);
   return {
-    ...torso,
-    hands: { near: hand, far: along(elbowFar, theta - 10, 66) },
-    elbows: { near: { at: elbow }, far: { at: elbowFar } },
-    knees: { near: { at: FROG_NEAR.knee }, far: { at: FROG_FAR.knee } },
-    feet: { near: FROG_NEAR.foot, far: FROG_FAR.foot },
-    toes: { near: 10, far: 10 },
+    hold: 0,
+    pose: {
+      ...torso,
+      hands: { near: along(elbow, theta - 8, forearm), far: along(elbowFar, theta - 10, forearm) },
+      elbows: { near: { at: elbow }, far: { at: elbowFar } },
+      knees: { near: { bend: -1 }, far: { bend: -1 } },
+      feet: FROG_FEET,
+      toes: { near: 10, far: 10 },
+    },
+    sideways: { ...FROG_SIDEWAYS, hands: { near: CROSS_Z, far: -CROSS_Z } },
   };
 }
 
@@ -405,12 +415,13 @@ export const BATCH_AF_SPECS: DoodleSpec[] = [
     id: "fedb_frog_sit_ups",
     slug: "frog-sit-ups",
     title: "Frog Sit-Ups",
+    views: ["side", "front"],
     transition: 0.8,
     frames: [
-      { hold: 0.4, pose: frogSitUp(183, 2) },
-      { hold: 0.05, pose: frogSitUp(215, 10) },
-      { hold: 0.5, pose: frogSitUp(-100, 8) },
-      { hold: 0.05, pose: frogSitUp(215, 10) },
+      { ...frogSitUp(183, 2), hold: 0.4 },
+      { ...frogSitUp(215, 10), hold: 0.05 },
+      { ...frogSitUp(-100, 8), hold: 0.5 },
+      { ...frogSitUp(215, 10), hold: 0.05 },
     ],
   },
 ];

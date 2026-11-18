@@ -330,7 +330,7 @@ function bicepsCurl(f: number): Pose {
  * A sloped bench top from `a` to `b`, drawn as short overlapping bar strokes so
  * it reads as one straight sloping board, with a post under each end.
  */
-function slopedBench(a: Point, b: Point): Prop[] {
+export function slopedBench(a: Point, b: Point): Prop[] {
   const n = Math.ceil(Math.abs(b[0] - a[0]) / 4);
   const top: Prop[] = [];
   for (let i = 0; i < n; i += 1) {

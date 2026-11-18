@@ -35,7 +35,7 @@ Every move is drawn in **one view first**. A second view is added only when the 
 - `out` (degrees) rolls a knee's or elbow's bend outward from the forward plane: 0 is today's bend, 90 points the joint straight out to the side (flared elbows, a fire-hydrant knee).
 - Each bone keeps its true length in 3D, so a limb that goes sideways is drawn **shorter in the side view**. That's correct, not a bug.
 - **Pin the chest** when hands go wide. Without it the 2D spine leans as if the hands were straight ahead and the arm can't reach (`hands.far unreachable`).
-- Props in two views: `bar` and `box` only. No `mirror` (turning round) and no `view: "front"` together with `views`.
+- Props in two views: `bar` and `box` only. A sloped bench drawn as short bar strokes (`slopedBench` in `specsBatchAD.ts`) shows end-on as the board's outline, and its thin posts as two legs. No `mirror` (turning round) and no `view: "front"` together with `views`.
 - Still out: twists and rotations of the torso (windshield wiper, side plank with rotation, kickthrough). A sideways offset doesn't show rotation.
 
 ## Prompt: drawing a batch
