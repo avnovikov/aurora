@@ -4,7 +4,7 @@
 [![CI](https://github.com/avnovikov/aurora/actions/workflows/ci.yml/badge.svg)](https://github.com/avnovikov/aurora/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/avnovikov/aurora?include_prereleases&style=flat)](https://github.com/avnovikov/aurora/releases)
 
-**v0.1.1 — from the `poc` line.** App id `com.aurora.alvorada` (registered in Android Developer Console).
+**v0.1.1 — from the `mvp` line.** App id `com.aurora.alvorada` (registered in Android Developer Console).
 
 **Aurora** is private, local-first calisthenics training for Android. **Rassvet** (Рассвет, “dawn”) is the soul mark shown in the app. The UI and spoken voice are British English (`en-GB`).
 
@@ -25,6 +25,8 @@ Three gaps in the apps I used are why I wrote Aurora.
 **[Download Aurora v0.1.1 for Android](https://github.com/avnovikov/aurora/releases/latest)**
 
 Install the APK by allowing installation from your browser or file manager when Android asks.
+
+**Updates with [Obtainium](https://github.com/ImranR98/Obtainium):** add the repo URL `https://github.com/avnovikov/aurora`, or open the one-tap link [Add Aurora in Obtainium](obtainium://add/https://github.com/avnovikov/aurora) on a phone that already has Obtainium installed.
 
 <img src="docs/help/screenshots/04-today.png" width="280" alt="Today — check-in">
 
@@ -129,6 +131,8 @@ For a compact tab and Session lookup: [Shell-tab reference](docs/reference/auror
 1. Download the APK from the [latest GitHub Release](https://github.com/avnovikov/aurora/releases/latest).
 2. Open the file on the phone and allow installation from that source when Android asks.
 3. Optional but recommended if you have Android SDK build tools: verify the signing certificate.
+
+To get updates without checking Releases by hand, install [Obtainium](https://github.com/ImranR98/Obtainium), then Add App with `https://github.com/avnovikov/aurora` (or use [Add Aurora in Obtainium](obtainium://add/https://github.com/avnovikov/aurora)). Leave prereleases off unless you want betas.
 
 ### Optional but recommended: verify the APK
 

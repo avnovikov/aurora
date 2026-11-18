@@ -42,7 +42,7 @@ npm run smell     # ESLint + SonarJS complexity (`--max-warnings 0`)
 npm run build     # TypeScript check + Vite production build
 ```
 
-CI also runs `npm run test:ui` (Playwright, phone-sized Chromium with touch) on pull requests and pushes to `main`, `poc`, and `feature/**`.
+CI also runs `npm run test:ui` (Playwright, phone-sized Chromium with touch) on pull requests and pushes to `main`, `mvp`, and `feature/**`.
 
 Run `test`, `smell`, and `build` before opening a PR. A failing smell check fails CI the same way a failing test does: the job exits non-zero and the PR should not merge until it is fixed.
 
@@ -64,7 +64,7 @@ Common storage keys: `aurora.poc.profile.v1`, `aurora.poc.planQueue.v1`, `aurora
 
 ## Branches and releases
 
-- **`poc`** is the integration branch for day-to-day merges.
+- **`mvp`** is the integration branch for day-to-day merges (supersedes `poc`).
 - Merge to **`main`** only as part of an explicit release (version bump, release notes, signed APK on GitHub Releases).
 - Do not treat a casual merge to `main` as a release.
 
