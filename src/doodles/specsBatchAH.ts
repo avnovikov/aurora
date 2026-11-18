@@ -5,9 +5,9 @@ import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side } from "./rig";
  * negative, the side-view figure faces +x. Import only from ./rig.
  *
  * Squats, lunges, the reverse Nordic, butt kicks, skips and the shuttle run are
- * drawn in side view; sideways steps, slides, hops and bounds in front view
- * (near side at -x). Each move is drawn in one view; the plane it cannot show
- * is noted on the spec.
+ * drawn in side view, the step jack in front view (near side at -x). The curtsy
+ * lunge, dragon squat, lateral push off, side slides and diagonal bound are drawn
+ * in two views (side + front) after review asked for the plane one view hid.
  *
  * Left out:
  *   fedb_crossover_reverse_lunge   the defining torso rotation over the front
@@ -355,120 +355,300 @@ function stepJackOut(side: Side): Pose {
 
 const stepJackIn = (): Pose => frontFeet([0, -172], -10, 10, frontArms([0, -172], 6, 0));
 
-/** Low athletic stance for side slides, hands up in front. */
-const slide = (nearX: number, farX: number): Pose =>
-  frontFeet([(nearX + farX) / 2, -138], nearX, farX, frontArms([(nearX + farX) / 2, -138], 24, -36));
+// ---------------------------------------------------------------- two views (side + front)
+//
+// Dual-view specs: the side view is authored facing +x as usual and `sideways`
+// gives absolute z (near side negative, on the front panel's left). Bones keep
+// their true length in 3D, so a leg set out sideways needs a lower pelvis.
 
-/** Squat at the end of the slides: wide feet, hips down, hands together at the chest. */
-function slideSquat(x: number): Pose {
-  const pelvis: Point = [x, -112];
-  return frontFeet(pelvis, x - 56, x + 56, frontArms(pelvis, 24, -36));
+/** Sign of a side's z: near is negative. */
+const zSign = (side: Side): number => (side === "near" ? -1 : 1);
+
+/** Pelvis y so the `side` leg spans `reach` in 3D from its hip (pelvis x / z) to a floor foot. */
+function pelvisOver(pelvisX: number, pelvisZ: number, side: Side, foot: Point, footZ: number, reach: number): number {
+  const dx = foot[0] - pelvisX;
+  const dz = footZ - (pelvisZ + zSign(side) * 8);
+  return round(foot[1] - Math.sqrt(reach * reach - dx * dx - dz * dz));
 }
 
-/** Three slides from wide stance at `from` (centre) in direction `dir`, ending wide 150 further on. */
-function slides(from: number, dir: 1 | -1): Pose[] {
-  const poses: Pose[] = [];
-  // Wide stance is 100 across, narrow 50: the trailing foot closes in, then the lead foot steps out.
-  for (let i = 0; i < 3; i += 1) {
-    const c = from + dir * 50 * i;
-    const lead = c + dir * 50;
-    const trailIn = c;
-    poses.push(dir > 0 ? slide(trailIn, lead) : slide(lead, trailIn));
-    poses.push(dir > 0 ? slide(c, c + 100) : slide(c - 100, c));
-  }
-  return poses;
-}
-
-/**
- * Landing on one leg (`stance`) with that foot at `x` and the knee bent; the free
- * leg is lifted off the floor, knee bent out to its side and the foot tucked up beside the standing shin.
- */
-function oneLeg(stance: Side, x: number, pelvisY: number, arms: Pick<Pose, "hands" | "elbows">, footY = 0): Pose {
-  const dir = stance === "near" ? -1 : 1;
-  const pelvis: Point = [x - dir * 30, pelvisY];
-  const freeHip: Point = [pelvis[0] - dir * 8, pelvisY];
-  const freeKnee = along(freeHip, 90 + dir * 38, THIGH);
+/** Curtsy lunge in two views: the far foot lands behind and across, past the near (front) foot. */
+function curtsyKey(pose: Pose, hold: number, farZ: number, pelvisZ: number): Keyframe {
   return {
-    pelvis,
-    chest: [pelvis[0], pelvisY - 80],
-    ...arms,
-    knees: {
-      [stance]: { bend: stance === "near" ? 1 : -1 },
-      [other(stance)]: { at: freeKnee },
-    },
-    feet: { [stance]: [x, footY], [other(stance)]: along(freeKnee, 90 - dir * 55, SHIN) } as Pose["feet"],
-    toes: { [stance]: stance === "near" ? 180 : 0, [other(stance)]: 90 } as Pose["toes"],
+    hold,
+    pose,
+    sideways: { pelvis: pelvisZ, feet: { near: -10, far: farZ } },
   };
 }
 
-/** Between bounds: both feet off the floor, body passing over the middle, legs reaching apart. */
-function boundAir(x: number, pelvisY: number, reach: number): Pose {
-  const pelvis: Point = [x, pelvisY];
+/** Dragon squat in two views: the free (far) foot sweeps behind and across to beyond the standing foot. */
+function dragonKey(t: number, hold: number): Keyframe {
+  const pose = dragon(t);
+  // Leg kept within reach in 3D: the free foot is out to the side as well as behind.
+  const free: Point = t === 0 ? [-30, -40] : [round(-30 - 130 * t), round(-40 + 26 * t)];
   return {
-    pelvis,
-    chest: [x, pelvisY - 80],
-    ...frontArms(pelvis, 34, 12),
-    knees: { near: { bend: 1 }, far: { bend: -1 } },
-    feet: { near: [x - reach, pelvisY + 150], far: [x + reach, pelvisY + 150] },
-    toes: { near: 120, far: 60 },
+    hold,
+    pose: { ...pose, feet: { near: [8, 0], far: free } },
+    sideways: {
+      pelvis: -4 * t,
+      feet: { near: -10, far: round(12 - 102 * t) },
+      hands: { near: -16, far: 16 },
+    },
+  };
+}
+
+/** Elbows bent, hands a little forward of and out from the hips (balance on landings). */
+function balanceArms(pelvis: Point, pelvisZ: number): { arms: Pick<Pose, "hands" | "elbows">; hands: Record<Side, number> } {
+  return {
+    arms: {
+      hands: { near: [pelvis[0] + 30, pelvis[1] - 6], far: [pelvis[0] + 26, pelvis[1] - 6] },
+      elbows: { near: { bend: 1 }, far: { bend: 1 } },
+    },
+    hands: { near: pelvisZ - 50, far: pelvisZ + 50 },
+  };
+}
+
+/** Lateral push off: landed on `stance`, its knee bent forward over the toes; the free leg hangs, heel lifted behind. */
+function pushOffLand(stance: Side, footZ: number): Keyframe {
+  const sign = zSign(stance);
+  const pelvisZ = sign * (footZ - 26);
+  const foot: Point = [0, 0];
+  const x = -14;
+  const pelvis: Point = [x, pelvisOver(x, pelvisZ, stance, foot, sign * footZ, 160)];
+  const { arms, hands } = balanceArms(pelvis, pelvisZ);
+  return {
+    hold: 0.35,
+    pose: {
+      pelvis,
+      chest: along(pelvis, -84, 80),
+      ...arms,
+      // Free leg hangs just behind the standing leg, knee soft, heel lifted.
+      knees: { [other(stance)]: { bend: -1 } } as Pose["knees"],
+      feet: { [stance]: foot, [other(stance)]: [x - 26, -34] } as Pose["feet"],
+      toes: { [stance]: 0, [other(stance)]: 64 } as Pose["toes"],
+    },
+    sideways: { pelvis: pelvisZ, feet: { [stance]: sign * footZ } as Record<Side, number>, hands },
+  };
+}
+
+/** In the air between hops: legs long under the hips, toes pointed. */
+function hopAir(pelvisY: number, footZ: number): Keyframe {
+  const pelvis: Point = [0, pelvisY];
+  const { arms, hands } = balanceArms(pelvis, 0);
+  return {
+    hold: 0,
+    pose: {
+      pelvis,
+      chest: along(pelvis, -86, 80),
+      ...arms,
+      feet: { near: [4, pelvisY + 164], far: [0, pelvisY + 164] },
+      toes: { near: 70, far: 70 },
+    },
+    sideways: { feet: { near: -footZ, far: footZ }, hands },
+  };
+}
+
+/** Side slides: low athletic stance, knees forward over the toes, hands up in front. */
+const SLIDE_PELVIS: Point = [-18, -138];
+function slideKey(nearZ: number, farZ: number, lift?: Side): Keyframe {
+  const centre = round((nearZ + farZ) / 2);
+  const pelvis: Point = [SLIDE_PELVIS[0], SLIDE_PELVIS[1] - (lift ? 4 : 0)];
+  const s = shoulderAt(pelvis, -74);
+  return {
+    hold: lift ? 0 : 0.02,
+    pose: {
+      pelvis,
+      chest: along(pelvis, -74, 80),
+      hands: { near: [s[0] + 44, s[1] + 62], far: [s[0] + 40, s[1] + 62] },
+      elbows: { near: { bend: 1 }, far: { bend: 1 } },
+      feet: { near: [0, lift === "near" ? -24 : 0], far: [0, lift === "far" ? -24 : 0] },
+      toes: { near: 0, far: 0 },
+    },
+    sideways: { pelvis: centre, feet: { near: nearZ, far: farZ }, hands: { near: centre - 20, far: centre + 20 } },
+  };
+}
+
+/** The squat at the end of the slides: wide feet, hips back and down, knees forward, hands at the chest. */
+function slideSquatKey(centre: number): Keyframe {
+  const pelvis: Point = [-40, -108];
+  const s = shoulderAt(pelvis, -62);
+  return {
+    hold: 0.35,
+    pose: {
+      pelvis,
+      chest: along(pelvis, -62, 80),
+      hands: { near: [s[0] + 40, s[1] + 36], far: [s[0] + 36, s[1] + 36] },
+      elbows: { near: { bend: 1 }, far: { bend: 1 } },
+      feet: { near: [0, 0], far: [0, 0] },
+      toes: { near: 0, far: 0 },
+    },
+    sideways: { pelvis: centre, feet: { near: centre - SLIDE_WIDE, far: centre + SLIDE_WIDE }, hands: { near: centre - 8, far: centre + 8 } },
+  };
+}
+
+/** Half-widths of the slide stance: wide (feet well outside the shoulders) and closed (still wider than the shoulders). */
+const SLIDE_WIDE = 50;
+const SLIDE_NARROW = 30;
+
+/**
+ * Three shuffles from a wide stance centred at `from`, travelling `dir` (+1 to the
+ * far side): the trailing foot steps in, then the lead foot steps out. Each step
+ * lifts the foot; the feet never cross.
+ */
+function shuffles(from: number, dir: 1 | -1): Keyframe[] {
+  const keys: Keyframe[] = [];
+  const lead: Side = dir > 0 ? "far" : "near";
+  const trail = other(lead);
+  const feet = (c: number, half: number): [number, number] => [c - half, c + half];
+  let c = from;
+  for (let i = 0; i < 3; i += 1) {
+    const [n0, f0] = feet(c, SLIDE_WIDE);
+    const narrow = c + dir * (SLIDE_WIDE - SLIDE_NARROW);
+    const [n1, f1] = feet(narrow, SLIDE_NARROW);
+    // Trailing foot steps in (lifted halfway).
+    keys.push(trail === "near" ? slideKey((n0 + n1) / 2, f0, "near") : slideKey(n0, (f0 + f1) / 2, "far"));
+    keys.push(slideKey(n1, f1));
+    // Lead foot steps out (lifted halfway).
+    const next = narrow + dir * (SLIDE_WIDE - SLIDE_NARROW);
+    const [n2, f2] = feet(next, SLIDE_WIDE);
+    keys.push(lead === "far" ? slideKey(n1, (f1 + f2) / 2, "far") : slideKey((n1 + n2) / 2, f1, "near"));
+    keys.push(slideKey(n2, f2));
+    c = next;
+  }
+  return keys;
+}
+
+/** Diagonal bound: landed on `stance` out to its side, knee bent; the other leg trails behind. */
+function boundLand(stance: Side): Keyframe {
+  const sign = zSign(stance);
+  const pelvisZ = sign * 74;
+  const foot: Point = [24, 0];
+  const pelvis: Point = [0, pelvisOver(0, pelvisZ, stance, foot, sign * 100, 154)];
+  const knee = along(pelvis, 112, THIGH);
+  const s = shoulderAt(pelvis, -80);
+  const fwdElbow = along(s, 60, 60);
+  const backElbow = along(s, 135, 60);
+  const free = other(stance);
+  return {
+    hold: 0.2,
+    pose: {
+      pelvis,
+      chest: along(pelvis, -80, 80),
+      knees: { [free]: { at: knee } } as Pose["knees"],
+      feet: { [stance]: foot, [free]: along(knee, 160, SHIN) } as Pose["feet"],
+      toes: { [stance]: 0, [free]: 80 } as Pose["toes"],
+      // Arms opposite the legs: the trailing leg's arm forward.
+      hands: { [free]: along(fwdElbow, -20, 66), [stance]: along(backElbow, 70, 66) } as Pose["hands"],
+      elbows: { [free]: { at: fwdElbow }, [stance]: { at: backElbow } } as Pose["elbows"],
+    },
+    sideways: { pelvis: pelvisZ, feet: { [stance]: sign * 100 } as Record<Side, number> },
+  };
+}
+
+/**
+ * Push-off from `stance`: the hips have travelled forward over that foot, which is
+ * now behind them with the leg nearly straight, and the other knee drives forward
+ * and up to hip height.
+ */
+function boundPush(stance: Side): Keyframe {
+  const sign = zSign(stance);
+  const pelvisZ = sign * 58;
+  const foot: Point = [-38, -6];
+  const pelvis: Point = [0, pelvisOver(0, pelvisZ, stance, foot, sign * 100, 172)];
+  const free = other(stance);
+  const knee = along(pelvis, -4, THIGH);
+  const s = shoulderAt(pelvis, -76);
+  const fwdElbow = along(s, 50, 60);
+  const backElbow = along(s, 140, 60);
+  return {
+    hold: 0,
+    pose: {
+      pelvis,
+      chest: along(pelvis, -76, 80),
+      knees: { [free]: { at: knee } } as Pose["knees"],
+      feet: { [stance]: foot, [free]: along(knee, 96, SHIN) } as Pose["feet"],
+      toes: { [stance]: 14, [free]: 30 } as Pose["toes"],
+      // The stance-side arm drives forward with the opposite knee.
+      hands: { [stance]: along(fwdElbow, -30, 66), [free]: along(backElbow, 70, 66) } as Pose["hands"],
+      elbows: { [stance]: { at: fwdElbow }, [free]: { at: backElbow } } as Pose["elbows"],
+    },
+    sideways: { pelvis: pelvisZ, feet: { [stance]: sign * 100 } as Record<Side, number> },
+  };
+}
+
+/** Flight from `from` towards the other side: the push-off leg trails, the knee still high, reaching to land. */
+function boundAir(from: Side): Keyframe {
+  const sign = zSign(from);
+  const pelvis: Point = [0, -212];
+  const to = other(from);
+  const trailKnee = along(pelvis, 120, THIGH);
+  const leadKnee = along(pelvis, 30, THIGH);
+  const s = shoulderAt(pelvis, -78);
+  const fwdElbow = along(s, 55, 60);
+  const backElbow = along(s, 135, 60);
+  return {
+    hold: 0,
+    pose: {
+      pelvis,
+      chest: along(pelvis, -78, 80),
+      feet: { [from]: along(trailKnee, 150, SHIN), [to]: along(leadKnee, 104, SHIN) } as Pose["feet"],
+      toes: { [from]: 70, [to]: 20 } as Pose["toes"],
+      hands: { [from]: along(fwdElbow, -25, 66), [to]: along(backElbow, 70, 66) } as Pose["hands"],
+      elbows: { [from]: { at: fwdElbow }, [to]: { at: backElbow } } as Pose["elbows"],
+    },
+    sideways: { pelvis: 0, feet: { [from]: sign * 30, [to]: -sign * 40 } as Record<Side, number> },
   };
 }
 
 export const BATCH_AH_SPECS: DoodleSpec[] = [
   {
-    // Side view: the step back and across is sideways (front plane) and can't show;
-    // the far leg is drawn pale, behind the standing leg.
+    // Two views: side keeps the reverse-lunge profile (far leg pale, behind);
+    // front shows the far foot landing behind and across, past the front foot.
     id: "hf_81",
     slug: "curtsy-lunge",
     title: "Curtsy Lunge",
+    views: ["side", "front"],
     transition: 0.7,
     frames: [
-      { hold: 0.4, pose: curtsy(0) },
-      { hold: 0, pose: curtsyStep() },
-      { hold: 0.5, pose: curtsy(1) },
-      { hold: 0, pose: curtsyStep() },
+      curtsyKey(curtsy(0), 0.4, 10, 0),
+      curtsyKey(curtsyStep(), 0, -24, -4),
+      curtsyKey(curtsy(1), 0.5, -64, -8),
+      curtsyKey(curtsyStep(), 0, -24, -4),
     ],
   },
   {
-    // Side view: the free leg's sweep across behind the standing leg is sideways and can't show.
+    // Two views: the side shows the depth and the free leg reaching back; the
+    // front shows it sweeping behind and across beyond the standing foot, hips square.
     id: "hf_71",
     slug: "dragon-squat",
     title: "Dragon Squat",
-    transition: 1.1,
-    frames: [
-      { hold: 0.4, pose: dragon(0) },
-      { hold: 0.5, pose: dragon(1) },
-    ],
+    views: ["side", "front"],
+    transition: 0.6,
+    frames: [dragonKey(0, 0.4), dragonKey(0.5, 0), dragonKey(1, 0.5), dragonKey(0.5, 0)],
   },
   {
+    // Two views: the side shows the landing knee bending forward over the toes
+    // and the free heel lifted behind; the front shows the sideways hop.
     id: "wger_1325",
     slug: "lateral-push-off",
     title: "Lateral Push Off",
-    view: "front",
-    props: [floor(-170, 170)],
+    views: ["side", "front"],
+    props: [floor(-110, 110)],
     transition: 0.3,
-    frames: [
-      { hold: 0.35, pose: oneLeg("near", -90, -156, frontArms([-60, -156], 28, 18)) },
-      { hold: 0, pose: boundAir(0, -196, 30) },
-      { hold: 0.35, pose: oneLeg("far", 90, -156, frontArms([60, -156], 28, 18)) },
-      { hold: 0, pose: boundAir(0, -196, 30) },
-    ],
+    frames: [pushOffLand("near", 80), hopAir(-196, 24), pushOffLand("far", 80), hopAir(-196, 24)],
   },
   {
-    // Front view: the pivot (a half turn) can't show from the front.
+    // Two views: the side shows the low stance and the squat (knees forward over
+    // the toes); the front shows the shuffle steps. The 180° pivot is left out.
     id: "wger_1195",
     slug: "side-slides-squats",
     title: "Side Slides + Squats",
-    view: "front",
-    props: [floor(-200, 200)],
-    transition: 0.2,
+    views: ["side", "front"],
+    transition: 0.16,
     frames: [
-      ...slides(-75, 1).map((pose) => ({ hold: 0.02, pose })),
-      { hold: 0.35, pose: slideSquat(75) },
-      { hold: 0.05, pose: slide(25, 125) },
-      ...slides(75, -1).map((pose) => ({ hold: 0.02, pose })),
-      { hold: 0.35, pose: slideSquat(-75) },
-      { hold: 0.05, pose: slide(-125, -25) },
+      slideSquatKey(-60),
+      ...shuffles(-60, 1),
+      slideSquatKey(60),
+      ...shuffles(60, -1),
     ],
   },
   {
@@ -522,19 +702,14 @@ export const BATCH_AH_SPECS: DoodleSpec[] = [
     ],
   },
   {
-    // Front view: the forward travel and the knee drive point at the camera and can't show.
+    // Two views, drawn in place (the camera travels with the athlete): the side
+    // shows the forward drive and the knee to hip height; the front the diagonal.
     id: "fedb_alternate_leg_diagonal_bound",
     slug: "alternate-leg-diagonal-bound",
     title: "Alternate Leg Diagonal Bound",
-    view: "front",
-    props: [floor(-220, 220)],
-    transition: 0.34,
-    frames: [
-      { hold: 0.3, pose: oneLeg("near", -140, -148, frontArms([-110, -148], 34, 20)) },
-      { hold: 0, pose: boundAir(0, -224, 44) },
-      { hold: 0.3, pose: oneLeg("far", 140, -148, frontArms([110, -148], 34, 20)) },
-      { hold: 0, pose: boundAir(0, -224, 44) },
-    ],
+    views: ["side", "front"],
+    transition: 0.3,
+    frames: [boundLand("near"), boundPush("near"), boundAir("near"), boundLand("far"), boundPush("far"), boundAir("far")],
   },
   {
     // Side view: run to the line, turn low, run back (the way back mirrored). One shuttle of the set.

@@ -1,4 +1,4 @@
-import type { DoodleSpec, Point, Pose, Prop, Side } from "./rig";
+import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
 
 /**
  * Batch AI: conditioning and standing mobility (marching high knees, fast
@@ -120,33 +120,76 @@ function skipHop(side: Side): Pose {
   };
 }
 
-// ---------------------------------------------------------------- carioca quick step (front)
+// ---------------------------------------------------------------- carioca quick step (two views)
 
 const CARIOCA_Y = -160;
+/** Half the gap between the feet in the stance ("a few inches apart"). */
+const CARIOCA_HALF = 18;
 
-/** Athletic stance seen from the front with the feet at `nearX` / `farX`; `lift` raises that foot mid-step. */
-function carioca(nearX: number, farX: number, lift?: Side): Pose {
-  const x = round((nearX + farX) / 2);
-  const pelvis: Point = [x, CARIOCA_Y + (lift ? -6 : 0)];
-  const hips: Record<Side, Point> = { near: [x - 8, pelvis[1]], far: [x + 8, pelvis[1]] };
-  const feet: Record<Side, Point> = { near: [nearX, lift === "near" ? -24 : 0], far: [farX, lift === "far" ? -24 : 0] };
-  // Arms loose and slightly bent, hands by the hips.
-  const shoulderY = pelvis[1] - 98;
-  const elbowNear = along([x - 22, shoulderY], 106, 60);
-  const elbowFar = along([x + 22, shoulderY], 74, 60);
-  return {
+/**
+ * One carioca key in two views. `pelvisZ` is the sideways position of the hips;
+ * `feet` gives each foot's side-view point and z. `pull` drives that knee forward
+ * and up towards hip height (the opposite arm swings forward).
+ */
+function cariocaKey(
+  hold: number,
+  pelvisZ: number,
+  feet: Record<Side, [x: number, y: number, z: number]>,
+  pull?: Side,
+): Keyframe {
+  const pelvis: Point = [-6, CARIOCA_Y - (pull ? 6 : 0)];
+  const shoulder = along(pelvis, -86, 98);
+  const pose: Pose = {
     pelvis,
-    chest: [x, pelvis[1] - 80],
-    hands: { near: along(elbowNear, 78, 66), far: along(elbowFar, 102, 66) },
-    elbows: { near: { at: elbowNear }, far: { at: elbowFar } },
-    // Knees fold towards the outside of each leg (front view: soft, slightly bent).
-    knees: {
-      near: { at: joint(hips.near, THIGH, feet.near, SHIN, true) },
-      far: { at: joint(hips.far, THIGH, feet.far, SHIN, false) },
-    },
-    feet,
-    toes: { near: 180, far: 0 },
+    chest: along(pelvis, -86, 80),
+    feet: { near: [feet.near[0], feet.near[1]], far: [feet.far[0], feet.far[1]] },
+    toes: { near: 0, far: 0 },
   };
+  const sideways: Sideways = { pelvis: pelvisZ, feet: { near: feet.near[2], far: feet.far[2] } };
+  if (pull) {
+    // The pulled knee keeps its foot's z (across the body), so the thigh is a little shorter in the side view.
+    const kneeZ = feet[pull][2];
+    const hipZ = pelvisZ + (pull === "near" ? -8 : 8);
+    const knee = along(pelvis, 6, Math.sqrt(THIGH * THIGH - (kneeZ - hipZ) ** 2));
+    sideways.knees = { [pull]: { at: kneeZ } };
+    const fwdElbow = along(shoulder, 50, 60);
+    const backElbow = along(shoulder, 125, 60);
+    pose.knees = { [pull]: { at: knee } };
+    pose.feet = { ...pose.feet, [pull]: along(knee, 100, SHIN) };
+    pose.toes = { ...pose.toes, [pull]: 30 };
+    pose.hands = { [other(pull)]: along(fwdElbow, -30, 66), [pull]: along(backElbow, 70, 66) };
+    pose.elbows = { [other(pull)]: { at: fwdElbow }, [pull]: { at: backElbow } };
+  } else {
+    // Arms loose and slightly bent, hands by the hips.
+    pose.hands = { near: [shoulder[0] + 16, shoulder[1] + 112], far: [shoulder[0] + 12, shoulder[1] + 112] };
+    pose.elbows = { near: { bend: 1 }, far: { bend: 1 } };
+  }
+  return { hold, pose, sideways };
+}
+
+/**
+ * One carioca cycle from a stance centred at `c`, travelling `dir` (-1 towards the
+ * near side, the front panel's left). The trailing foot steps behind the support
+ * leg, that knee is pulled forward and up, the foot comes down across the front,
+ * and the lead foot steps out to a fresh stance 60 further on.
+ */
+function cariocaCycle(c: number, dir: 1 | -1): Keyframe[] {
+  const lead: Side = dir < 0 ? "near" : "far";
+  const cross = other(lead);
+  const at = (leadFoot: [number, number, number], crossFoot: [number, number, number]) =>
+    ({ [lead]: leadFoot, [cross]: crossFoot }) as Record<Side, [number, number, number]>;
+  const leadZ = c + dir * CARIOCA_HALF;
+  return [
+    cariocaKey(0.04, c, at([0, 0, leadZ], [0, 0, c - dir * CARIOCA_HALF])),
+    // Trailing foot lifts and steps behind the support leg...
+    cariocaKey(0, c + dir * 8, at([0, 0, leadZ], [-18, -22, c + dir * 8])),
+    cariocaKey(0.02, c + dir * 20, at([0, 0, leadZ], [-30, 0, c + dir * 40])),
+    // ...then that knee is pulled forward and up.
+    cariocaKey(0.06, c + dir * 22, at([0, 0, leadZ], [0, 0, c + dir * 30]), cross),
+    // It comes down across the front, and the lead foot steps out.
+    cariocaKey(0.02, c + dir * 30, at([0, 0, leadZ], [4, 0, c + dir * 44])),
+    cariocaKey(0, c + dir * 45, at([0, -22, c + dir * 62], [4, 0, c + dir * 44])),
+  ];
 }
 
 // ---------------------------------------------------------------- claps over the head (front)
@@ -265,39 +308,56 @@ function horse(pelvisY: number): Pose {
   };
 }
 
-// ---------------------------------------------------------------- standing pancake (side)
+// ---------------------------------------------------------------- standing pancake (two views)
 
-/** Tall, hands on the front of the thighs. */
-function pancakeStand(): Pose {
+/** Feet much wider than the shoulders (±22), toes forward; legs long, knees soft. */
+const PANCAKE_FEET_Z = 84;
+
+/** Pelvis height for long legs from hips at `x` to feet at x 0, set out ±PANCAKE_FEET_Z. */
+const pancakeY = (x: number): number => -round(Math.sqrt(LEG * LEG - x * x - (PANCAKE_FEET_Z - 8) ** 2));
+
+const pancakeSideways = (handZ: number): Sideways => ({
+  feet: { near: -PANCAKE_FEET_Z, far: PANCAKE_FEET_Z },
+  hands: { near: -handZ, far: handZ },
+});
+
+/** Tall in the wide stance, hands on the tops of the thighs. */
+function pancakeStand(): Keyframe {
+  const pelvis: Point = [0, pancakeY(0)];
   return {
-    pelvis: [0, -LEG],
-    chest: [0, -LEG - 80],
-    hands: { near: [12, -156], far: [8, -156] },
-    elbows: { near: { bend: 1 }, far: { bend: 1 } },
-    knees: { near: { at: [0, -LEG + THIGH] }, far: { at: [0, -LEG + THIGH] } },
-    feet: { near: [0, 0], far: [0, 0] },
-    toes: { near: 0, far: 0 },
+    hold: 0.5,
+    pose: {
+      pelvis,
+      chest: [0, pelvis[1] - 80],
+      hands: { near: [12, pelvis[1] + 16], far: [8, pelvis[1] + 16] },
+      elbows: { near: { bend: 1 }, far: { bend: 1 } },
+      feet: { near: [0, 0], far: [0, 0] },
+      toes: { near: 0, far: 0 },
+    },
+    sideways: pancakeSideways(28),
   };
 }
 
-/** Hips pushed back, flat back at `spineDeg` (0 = level, + head lower), arms hanging to `handY`. */
-function pancakeHinge(spineDeg: number, handY: number): Pose {
-  // Legs locked, leaning back from the feet as the hips push back.
-  const pelvis: Point = [-34, -round(Math.sqrt(LEG * LEG - 34 * 34))];
+/** Hips pushed back, flat back at `spineDeg` (0 = level, + head lower), hands lowering to `handY` between the feet. */
+function pancakeHinge(spineDeg: number, handY: number, hold: number): Keyframe {
+  const pelvis: Point = [-34, pancakeY(34)];
   const chest = along(pelvis, spineDeg, 80);
   const shoulder = along(pelvis, spineDeg, 98);
   const drop = handY - shoulder[1];
-  const reach = Math.min(drop, ARM);
-  const hand: Point = [round(shoulder[0] + Math.sqrt(Math.max(0, ARM * ARM - reach * reach)) * 0.4), handY];
+  const reach = Math.min(drop, ARM - 1);
+  const hand: Point = [round(shoulder[0] + Math.sqrt(Math.max(0, (ARM - 1) ** 2 - reach * reach)) * 0.4), handY];
   return {
-    pelvis,
-    chest,
-    head: along(shoulder, spineDeg + 8, 38),
-    hands: { near: hand, far: [hand[0] - 4, handY] },
-    elbows: { near: { bend: 1 }, far: { bend: 1 } },
-    knees: { near: { at: along(pelvis, angle(pelvis, [0, 0]), THIGH) }, far: { at: along(pelvis, angle(pelvis, [0, 0]), THIGH) } },
-    feet: { near: [0, 0], far: [0, 0] },
-    toes: { near: 0, far: 0 },
+    hold,
+    pose: {
+      pelvis,
+      chest,
+      head: along(shoulder, spineDeg + 8, 38),
+      hands: { near: hand, far: hand },
+      elbows: { near: { bend: 1 }, far: { bend: 1 } },
+      feet: { near: [0, 0], far: [0, 0] },
+      toes: { near: 0, far: 0 },
+    },
+    sideways: pancakeSideways(16),
   };
 }
 
@@ -350,27 +410,14 @@ export const BATCH_AI_SPECS: DoodleSpec[] = [
     ],
   },
   {
+    // Two views: the side shows the trailing foot stepping behind the support leg
+    // and that knee pulled forward and up; the front the sideways travel and the crossing.
     id: "fedb_carioca_quick_step",
     slug: "carioca-quick-step",
     title: "Carioca Quick Step",
-    view: "front",
-    transition: 0.2,
-    frames: [
-      // Travelling to the viewer's left: the far foot steps behind, the near foot steps out.
-      { hold: 0.04, pose: carioca(10, 62) },
-      { hold: 0, pose: carioca(10, 0, "far") },
-      { hold: 0.04, pose: carioca(10, -34) },
-      { hold: 0.04, pose: carioca(-66, -34) },
-      { hold: 0, pose: carioca(-66, -76, "far") },
-      { hold: 0.04, pose: carioca(-66, -110) },
-      { hold: 0.04, pose: carioca(-150, -110) },
-      // And back to the right: the near foot crosses, the far foot steps out.
-      { hold: 0, pose: carioca(-104, -110, "near") },
-      { hold: 0.04, pose: carioca(-72, -110) },
-      { hold: 0.04, pose: carioca(-72, -16) },
-      { hold: 0, pose: carioca(-22, -16, "near") },
-      { hold: 0.04, pose: carioca(10, -16) },
-    ],
+    views: ["side", "front"],
+    transition: 0.17,
+    frames: [...cariocaCycle(0, -1), ...cariocaCycle(-60, -1), ...cariocaCycle(-120, 1), ...cariocaCycle(-60, 1)],
   },
   {
     id: "wger_1223",
@@ -420,15 +467,14 @@ export const BATCH_AI_SPECS: DoodleSpec[] = [
     ],
   },
   {
+    // Two views: the side shows the hips pushing back and the flat-back hinge;
+    // the front the very wide stance, toes forward, hands lowering between the feet.
     id: "wger_1396",
     slug: "standing-pancake",
     title: "Standing Pancake",
+    views: ["side", "front"],
     transition: 1.1,
-    frames: [
-      { hold: 0.5, pose: pancakeStand() },
-      { hold: 0.3, pose: pancakeHinge(4, -60) },
-      { hold: 1.6, pose: pancakeHinge(26, -4) },
-    ],
+    frames: [pancakeStand(), pancakeHinge(4, -60, 0.3), pancakeHinge(26, -4, 1.6)],
   },
   {
     id: "hf_162",
