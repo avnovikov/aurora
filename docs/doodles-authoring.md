@@ -42,7 +42,7 @@ Every move is drawn in **one view first**. A second view is added only when the 
 
 > You are adding animated stick-figure doodles for exercises in the Aurora calisthenics app. Work only in the worktree `<path>` (branch `<branch>`). Do not touch other worktrees, never use git stash, do not push.
 >
-> Read `docs/doodles-authoring.md`, `src/doodles/rig.ts`, the top of `src/doodles/specs.ts` and the existing batch files closest to your moves. The move's text is in `src/data/generated/descriptions.ts`, and its gear is in `src/data/generated/equipment.ts`. The name and common coaching are the authority, so fix wrong text in `data/curated/descriptions/*.json` and run `npm run -s descriptions:compile`.
+> Read `docs/doodles-authoring.md`, `src/doodles/rig.ts`, the top of `src/doodles/specs.ts` and the existing batch files closest to your moves. The move's text is in `src/data/generated/descriptions.ts`, and its gear is in `src/data/generated/equipment.ts`. Draw what the text says. Don't edit the text, not even to suit the rig: if it looks wrong or can't be drawn as written, leave it and say so in your report.
 >
 > Create `src/doodles/specsBatch<X>.ts` exporting `BATCH_<X>_SPECS`, and register it in `DOODLE_SPECS`. Write one spec per id, with `id` set to the exercise id, `slug` in kebab case and `title` set to the name: `<ids>`.
 >
