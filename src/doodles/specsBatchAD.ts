@@ -344,39 +344,6 @@ function declineLegRaise(legDeg: number): Pose {
   };
 }
 
-// Incline crunch: feet hooked under a roller at the high (right) end, head towards the low end.
-const INCLINE_LOW: Point = [-250, -50];
-const INCLINE_HIGH: Point = [90, -150];
-const INCLINE_DEG = angle(INCLINE_HIGH, INCLINE_LOW);
-const INCLINE_PELVIS = along(onLine(INCLINE_LOW, INCLINE_HIGH, -80), INCLINE_DEG + 90, LIE);
-const CRUNCH_ANKLE = along(onLine(INCLINE_LOW, INCLINE_HIGH, 52), INCLINE_DEG + 90, 10);
-const ROLLER: Point = along(CRUNCH_ANKLE, INCLINE_DEG + 90, 20);
-
-/** `lift`: 0 lying back on the bench, 1 curled up with the chest towards the knees. */
-function inclineCrunch(lift: number): Pose {
-  const pelvis = INCLINE_PELVIS;
-  // Torso swings up from the bench line towards the thighs; the upper back rounds as it comes up.
-  const torso = INCLINE_DEG + lift * 124;
-  const chest = along(pelvis, torso, 80);
-  // Chin a little tucked off the bench, more so curled up.
-  const head = along(chest, torso + 18 + lift * 10, 56);
-  const shoulder = along(pelvis, torso, 98);
-  // Arms crossed over the chest: the hand rests on the front of the opposite shoulder,
-  // the elbow folds down in front of the ribs, towards the hips.
-  const hand = along(along(pelvis, torso, 104), torso + 90, 34);
-  const elbow = elbowBetween(shoulder, hand, (a, b) => (dist(a, pelvis) < dist(b, pelvis) ? a : b));
-  return {
-    pelvis,
-    chest,
-    head,
-    hands: { near: hand, far: hand },
-    elbows: { near: { at: elbow }, far: { at: elbow } },
-    knees: { near: { bend: -1 }, far: { bend: -1 } },
-    feet: { near: CRUNCH_ANKLE, far: CRUNCH_ANKLE },
-    toes: { near: INCLINE_DEG - 180 - 70, far: INCLINE_DEG - 180 - 70 },
-  };
-}
-
 export const BATCH_AD_SPECS: DoodleSpec[] = [
   {
     id: "hf_48",
@@ -499,19 +466,6 @@ export const BATCH_AD_SPECS: DoodleSpec[] = [
     frames: [
       { hold: 0.4, pose: declineLegRaise(DECLINE_DEG - 8) },
       { hold: 0.4, pose: declineLegRaise(-88) },
-    ],
-  },
-  {
-    id: "wger_171",
-    slug: "incline-crunches",
-    title: "Incline Crunches",
-    props: [...slopedBench(INCLINE_LOW, INCLINE_HIGH), { kind: "bar", y: ROLLER[1], x1: ROLLER[0], x2: ROLLER[0], grips: [ROLLER[0]] }],
-    transition: 1,
-    frames: [
-      { hold: 0.4, pose: inclineCrunch(0) },
-      { hold: 0, pose: inclineCrunch(0.5) },
-      { hold: 0.4, pose: inclineCrunch(1) },
-      { hold: 0, pose: inclineCrunch(0.5) },
     ],
   },
 

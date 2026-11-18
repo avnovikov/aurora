@@ -9618,18 +9618,18 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
     "id": "wger_171",
     "summary": "A crunch on an inclined bench with the feet anchored, working the abdominals through a larger range than a flat crunch.",
     "steps": [
-      "Lie back on an incline bench with your feet secured under the pads and your arms crossed over your chest.",
+      "Lie back on an incline bench with your feet secured under the pads and hands lightly behind your head.",
       "Curl your upper body up by rolling your spine off the bench.",
       "Continue until your chest approaches your knees.",
       "Roll back down slowly, one segment at a time."
     ],
     "cues": [
       "Roll up, don't jerk",
-      "Chin slightly tucked",
+      "Elbows wide",
       "Lower slowly"
     ],
     "mistakes": [
-      "Tucking the chin hard into the chest",
+      "Pulling on the head with the hands",
       "Using momentum to swing up",
       "Dropping back onto the bench"
     ]
