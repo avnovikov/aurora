@@ -345,7 +345,19 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "wger_1210": "/doodles/doodle-skydiver-arms-t.svg",
   "wger_1387": "/doodles/doodle-hamstring-kicks.svg",
   "fedb_rear_leg_raises": "/doodles/doodle-rear-leg-raises.svg",
-  "fedb_hip_circles_prone": "/doodles/doodle-hip-circles-prone.svg"
+  "fedb_hip_circles_prone": "/doodles/doodle-hip-circles-prone.svg",
+  "hf_81": "/doodles/doodle-curtsy-lunge.svg",
+  "hf_71": "/doodles/doodle-dragon-squat.svg",
+  "wger_1325": "/doodles/doodle-lateral-push-off.svg",
+  "wger_1195": "/doodles/doodle-side-slides-squats.svg",
+  "fedb_sit_squats": "/doodles/doodle-sit-squats.svg",
+  "wger_1963": "/doodles/doodle-slow-squat.svg",
+  "wger_909": "/doodles/doodle-reverse-nordic-curl.svg",
+  "wger_1962": "/doodles/doodle-step-jack.svg",
+  "fedb_alternate_leg_diagonal_bound": "/doodles/doodle-alternate-leg-diagonal-bound.svg",
+  "wger_1579": "/doodles/doodle-bronco.svg",
+  "fedb_double_leg_butt_kick": "/doodles/doodle-double-leg-butt-kick.svg",
+  "wger_1318": "/doodles/doodle-high-knee-skips.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
