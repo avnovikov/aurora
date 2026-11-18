@@ -9154,7 +9154,7 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
     "summary": "A deep, body-weight-loaded stretch hanging from a bar that lengthens the lats, typically used after pulling work.",
     "steps": [
       "Grip a pull-up bar with hands about shoulder-width apart.",
-      "Keep your feet on the floor or a box if needed and bend your knees to lower your weight.",
+      "Keep your feet on a box (or the floor under a lower bar), bend your knees and sit your hips back until your arms are long overhead.",
       "Relax your shoulders and let your body weight stretch your lats and armpits.",
       "Hold the position, breathing steadily, then stand up to release."
     ],
@@ -9618,18 +9618,18 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
     "id": "wger_171",
     "summary": "A crunch on an inclined bench with the feet anchored, working the abdominals through a larger range than a flat crunch.",
     "steps": [
-      "Lie back on an incline bench with your feet secured under the pads and hands lightly behind your head.",
+      "Lie back on an incline bench with your feet secured under the pads and your arms crossed over your chest.",
       "Curl your upper body up by rolling your spine off the bench.",
       "Continue until your chest approaches your knees.",
       "Roll back down slowly, one segment at a time."
     ],
     "cues": [
       "Roll up, don't jerk",
-      "Elbows wide",
+      "Chin slightly tucked",
       "Lower slowly"
     ],
     "mistakes": [
-      "Pulling on the head with the hands",
+      "Tucking the chin hard into the chest",
       "Using momentum to swing up",
       "Dropping back onto the bench"
     ]
