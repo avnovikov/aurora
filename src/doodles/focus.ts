@@ -126,6 +126,7 @@ export const FOCUS_BY_ID: Readonly<Record<string, Focus>> = {
   ntc_prone_ytw: { joints: [], highlight: ["shoulder.near", "shoulder.far", "upperArm.near"] },
   hf_31: { joints: [], highlight: ["upperArm.near", "forearm.near", "shoulder.near"] }, // Planche lean: shoulders past the wrists
   ntc_hand_release_push_up: { joints: [], highlight: ["forearm.near", "hand.near", "forearm.far", "hand.far"] }, // Hands lift off
+  wger_1217: { joints: ["wrist.near", "hand.near"], highlight: ["hand.near", "hand.far"], zoom: 5, label: "fingertips" }, // Finger push-up
   // Spine
   hf_154: { joints: [], highlight: ["lumbar", "thoracic"] }, // Cat-cow
 };
