@@ -727,6 +727,33 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   "ntc_staggered_push_up": [
     "NTC-style bodyweight move (cues written in-house)"
   ],
+  "ntc_incline_archer_push_up": [
+    "NTC-style bodyweight move (cues written in-house)"
+  ],
+  "ntc_archer_push_up_hold": [
+    "NTC-style bodyweight move (cues written in-house)"
+  ],
+  "ntc_bent_knee_australian_pull_up": [
+    "NTC-style bodyweight move (cues written in-house)"
+  ],
+  "ntc_australian_chin_up": [
+    "NTC-style bodyweight move (cues written in-house)"
+  ],
+  "ntc_feet_elevated_australian_pull_up": [
+    "NTC-style bodyweight move (cues written in-house)"
+  ],
+  "ntc_australian_pull_up_hold": [
+    "NTC-style bodyweight move (cues written in-house)"
+  ],
+  "ntc_archer_inverted_row": [
+    "NTC-style bodyweight move (cues written in-house)"
+  ],
+  "ntc_archer_dip": [
+    "NTC-style bodyweight move (cues written in-house)"
+  ],
+  "ntc_archer_straight_bar_dip": [
+    "NTC-style bodyweight move (cues written in-house)"
+  ],
   "ntc_push_up_shoulder_tap": [
     "NTC-style bodyweight move (cues written in-house)"
   ],
@@ -808,6 +835,9 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   "fedb_adductor_groin": [
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
+  "fedb_advanced_kettlebell_windmill": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
   "fedb_air_bike": [
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
@@ -821,6 +851,21 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   "fedb_alternate_leg_diagonal_bound": [
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
+  "fedb_alternating_floor_press": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_alternating_hang_clean": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_alternating_kettlebell_press": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_alternating_kettlebell_row": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_alternating_renegade_row": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
   "fedb_ankle_circles": [
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
@@ -831,6 +876,9 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
   "fedb_bench_jump": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_bent_press": [
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
   "fedb_bent_knee_hip_raise": [
@@ -850,6 +898,9 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
   "fedb_bottoms_up": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_bottoms_up_clean_from_the_hang_position": [
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
   "fedb_butt_ups": [
@@ -906,6 +957,21 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   "fedb_dancers_stretch": [
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
+  "fedb_double_kettlebell_alternating_hang_clean": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_double_kettlebell_jerk": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_double_kettlebell_push_press": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_double_kettlebell_snatch": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_double_kettlebell_windmill": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
   "fedb_double_leg_butt_kick": [
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
@@ -922,6 +988,9 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
   "fedb_elbows_back": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_extended_range_one_arm_kettlebell_floor_press": [
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
   "fedb_fast_skipping": [
@@ -942,10 +1011,16 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   "fedb_front_leg_raises": [
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
+  "fedb_front_squats_with_two_kettlebells": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
   "fedb_gironda_sternum_chins": [
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
   "fedb_glute_kickback": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_goblet_squat": [
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
   "fedb_gorilla_chin_crunch": [
@@ -1019,6 +1094,61 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   "fedb_janda_sit_up": [
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
+  "fedb_kettlebell_arnold_press": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_kettlebell_dead_clean": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_kettlebell_figure_8": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_kettlebell_halo": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_kettlebell_halo_with_overhead_extension": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_kettlebell_hang_clean": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_kettlebell_one_legged_deadlift": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_kettlebell_overhead_triceps_extension": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_kettlebell_pass_between_the_legs": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_kettlebell_pirate_ships": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_kettlebell_pistol_squat": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_kettlebell_seated_press": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_kettlebell_seesaw_press": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_kettlebell_sumo_high_pull": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only",
+    "wger.de exercise 1970 (CC-BY-SA-4.0, wgerpott)"
+  ],
+  "fedb_kettlebell_thruster": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_kettlebell_turkish_get_up_lunge_style": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_kettlebell_turkish_get_up_squat_style": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_kettlebell_windmill": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
   "fedb_kipping_muscle_up": [
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
@@ -1046,6 +1176,9 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   "fedb_leg_pull_in": [
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
+  "fedb_leg_over_floor_press": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
   "fedb_leg_up_hamstring_stretch": [
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
@@ -1053,6 +1186,9 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
   "fedb_lower_back_curl": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_lunge_pass_through": [
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
   "fedb_lying_bent_leg_groin": [
@@ -1100,6 +1236,51 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   "fedb_one_knee_to_chest": [
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
+  "fedb_one_arm_kettlebell_clean": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_one_arm_kettlebell_clean_and_jerk": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_one_arm_kettlebell_floor_press": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_one_arm_kettlebell_jerk": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_one_arm_kettlebell_military_press_to_the_side": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_one_arm_kettlebell_para_press": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_one_arm_kettlebell_push_press": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_one_arm_kettlebell_row": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_one_arm_kettlebell_snatch": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_one_arm_kettlebell_split_jerk": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_one_arm_kettlebell_split_snatch": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_one_arm_kettlebell_swings": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_one_arm_open_palm_kettlebell_clean": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_one_arm_overhead_kettlebell_squats": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_open_palm_kettlebell_clean": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
   "fedb_overhead_stretch": [
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
@@ -1110,6 +1291,9 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
   "fedb_peroneals_stretch": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_plyo_kettlebell_pushups": [
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
   "fedb_plyo_push_up": [
@@ -1316,6 +1500,18 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   "fedb_tuck_crunch": [
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
+  "fedb_two_arm_kettlebell_clean": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_two_arm_kettlebell_jerk": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_two_arm_kettlebell_military_press": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
+  "fedb_two_arm_kettlebell_row": [
+    "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  ],
   "fedb_upper_back_stretch": [
     "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   ],
@@ -1336,6 +1532,9 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   ],
   "wger_1966": [
     "wger.de exercise 1966 (CC-BY-SA-4.0, amwang4)"
+  ],
+  "wger_9": [
+    "wger.de exercise 9 (CC-BY-SA-4.0, deusinvictus)"
   ],
   "wger_1573": [
     "wger.de exercise 1573 (CC-BY-SA-4.0, lhegedus)"
@@ -1478,6 +1677,9 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   "wger_174": [
     "wger.de exercise 174 (CC-BY-SA-4.0, krisbbb)"
   ],
+  "wger_974": [
+    "wger.de exercise 974 (CC-BY-SA-4.0)"
+  ],
   "wger_1889": [
     "wger.de exercise 1889 (CC-BY-SA-4.0, nishant0712)"
   ],
@@ -1496,11 +1698,17 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   "wger_1713": [
     "wger.de exercise 1713 (CC-BY-SA-4.0, Croak6728)"
   ],
+  "wger_1360": [
+    "wger.de exercise 1360 (CC-BY-SA-4.0, m4k3r)"
+  ],
+  "wger_1361": [
+    "wger.de exercise 1361 (CC-BY-SA-4.0, m4k3r)"
+  ],
   "wger_1827": [
     "wger.de exercise 1827 (CC-BY-SA-4.0, beagle)"
   ],
-  "wger_1286": [
-    "wger.de exercise 1286 (CC-BY-SA-4.0, painDpice)"
+  "wger_1099": [
+    "wger.de exercise 1099 (CC-BY-SA-4.0, philip)"
   ],
   "wger_1288": [
     "wger.de exercise 1288 (CC-BY-SA-4.0, painDpice)"
@@ -1575,6 +1783,9 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   "wger_1318": [
     "wger.de exercise 1318 (CC-BY-SA-4.0, hektkaso)"
   ],
+  "wger_2447": [
+    "wger.de exercise 2447 (CC-BY-SA-4.0, TobiasFalk)"
+  ],
   "wger_1863": [
     "wger.de exercise 1863 (CC-BY-SA-4.0, Davidgj32)"
   ],
@@ -1607,6 +1818,19 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   ],
   "wger_2748": [
     "wger.de exercise 2748 (CC-BY-SA-4.0, lightking)"
+  ],
+  "wger_1003": [
+    "wger.de exercise 1003 (CC-BY-SA-4.0)"
+  ],
+  "wger_1612": [
+    "wger.de exercise 1612 (CC-BY-SA-4.0, Tierrasverdes)"
+  ],
+  "wger_331": [
+    "wger.de exercise 331 (CC-BY-SA-3.0, J120290,cerin)",
+    "wger.de exercise 960 (CC-BY-SA-4.0, clafal)"
+  ],
+  "wger_2727": [
+    "wger.de exercise 2727 (CC-BY-SA-4.0, lightking)"
   ],
   "wger_1452": [
     "wger.de exercise 1452 (CC-BY-SA-4.0, hpmbala@gmail.com)"
@@ -1665,6 +1889,9 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   "wger_1738": [
     "wger.de exercise 1738 (CC-BY-SA-4.0, 54str)"
   ],
+  "wger_975": [
+    "wger.de exercise 975 (CC-BY-SA-4.0, clafal)"
+  ],
   "wger_1822": [
     "wger.de exercise 1822 (CC-BY-SA-4.0, teus_ergaster)"
   ],
@@ -1676,6 +1903,9 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   ],
   "wger_2691": [
     "wger.de exercise 2691 (CC-BY-SA-4.0, nalhilal)"
+  ],
+  "wger_1286": [
+    "wger.de exercise 1286 (CC-BY-SA-4.0, painDpice)"
   ],
   "wger_1766": [
     "wger.de exercise 1766 (CC-BY-SA-4.0)"
@@ -1820,14 +2050,23 @@ export const DESCRIPTION_SOURCES: Record<string, string[]> = {
   "wger_578": [
     "wger.de exercise 578 (CC-BY-SA-4.0, apeschel)"
   ],
+  "wger_1022": [
+    "wger.de exercise 1022 (CC-BY-SA-4.0)"
+  ],
   "wger_1393": [
     "wger.de exercise 1393 (CC-BY-SA-4.0, captive0592)"
   ],
   "wger_2667": [
     "wger.de exercise 2667 (CC-BY-SA-4.0, trs1800)"
   ],
+  "wger_2668": [
+    "wger.de exercise 2668 (CC-BY-SA-4.0, trs1800)"
+  ],
   "wger_1294": [
     "wger.de exercise 1294 (CC-BY-SA-4.0, clafal)"
+  ],
+  "wger_1734": [
+    "wger.de exercise 1734 (CC-BY-SA-4.0, Tierrasverdes)"
   ],
   "wger_1735": [
     "wger.de exercise 1735 (CC-BY-SA-4.0, Tierrasverdes)"

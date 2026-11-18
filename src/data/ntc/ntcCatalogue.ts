@@ -22,6 +22,11 @@ interface NtcMove {
   timed?: boolean;
   easierId?: string;
   harderId?: string;
+  description?: string;
+  steps?: string[];
+  mistakes?: string[];
+  sources?: string[];
+  difficulty?: SeedExercise["difficulty"];
 }
 
 const p = (group: MuscleEntry["group"]): MuscleEntry => ({ group, role: "primary" });
@@ -29,13 +34,14 @@ const s = (group: MuscleEntry["group"]): MuscleEntry => ({ group, role: "seconda
 const st = (group: MuscleEntry["group"]): MuscleEntry => ({ group, role: "stabilizer" });
 
 function ntc(move: NtcMove): SeedExercise {
-  const { timed, role, ...rest } = move;
+  const { timed, role, description, ...rest } = move;
   return {
     ...rest,
     role: role ?? "work",
     ...(timed ? { effort: "hold" as const } : {}),
-    description: move.cues.join(". ") + ".",
+    description: description ?? move.cues.join(". ") + ".",
     attribution: NTC_ATTRIBUTION,
+    sources: move.sources ?? [NTC_ATTRIBUTION],
   };
 }
 
@@ -388,8 +394,314 @@ const UPPER: SeedExercise[] = [
     joints: ["shoulder", "elbow", "wrist"],
     regions: ["push"],
     easierId: "hf_2",
-    harderId: "hf_6",
+    harderId: "ntc_incline_archer_push_up",
     cues: ["One hand forward, one back", "Keep hips square", "Switch sides each set"],
+  }),
+  ntc({
+    id: "ntc_incline_archer_push_up",
+    name: "Incline Archer Push-Up",
+    pattern: "horizontal_push",
+    type: "dynamic",
+    muscles: [p("chest"), p("triceps"), s("shoulders"), st("abdominals")],
+    joints: ["shoulder", "elbow", "wrist"],
+    regions: ["push"],
+    difficulty: "intermediate",
+    easierId: "fedb_incline_push_up",
+    harderId: "hf_6",
+    cues: [
+      "Hands on a bench or step, wider than shoulders",
+      "Bend one elbow and shift chest toward that hand",
+      "Keep the other arm nearly straight as a light assist",
+      "Hips square; equal reps each side",
+    ],
+    steps: [
+      "Place both hands on a stable bench or step, wider than shoulder width, feet on the floor.",
+      "Brace a rigid plank from heels to head.",
+      "Lower by bending the working elbow and shifting your chest toward that hand while the assisting arm stays nearly straight.",
+      "Press back to the start without twisting the hips, then alternate sides.",
+    ],
+    mistakes: [
+      "Letting the assisting elbow bend like a normal push-up",
+      "Hips rotating toward the working arm",
+      "Hands too narrow so the shift never becomes unilateral",
+    ],
+    description:
+      "An archer push-up with the hands elevated so less of your bodyweight loads the working arm. Use it as the bridge from two-arm incline work to floor Archer Push-Ups and toward one-arm progressions.",
+    sources: [
+      NTC_ATTRIBUTION,
+      "Public calisthenics progression charts (incline → archer → one-arm push-up); cues written in-house",
+    ],
+  }),
+  ntc({
+    id: "ntc_archer_push_up_hold",
+    name: "Archer Push-Up Hold",
+    pattern: "horizontal_push",
+    type: "isometric",
+    muscles: [p("chest"), p("triceps"), s("shoulders"), st("abdominals")],
+    joints: ["shoulder", "elbow", "wrist"],
+    regions: ["push"],
+    difficulty: "advanced",
+    timed: true,
+    easierId: "hf_6",
+    harderId: "hf_8",
+    cues: [
+      "Lower into an archer bottom on one side",
+      "Pause with the working elbow bent and assist arm straight",
+      "Keep hips square; switch sides each set",
+    ],
+    steps: [
+      "Start in a wide floor push-up stance.",
+      "Shift into the archer bottom: working elbow bent, assisting arm nearly straight, chest toward the working hand.",
+      "Hold without collapsing the hips or twisting.",
+      "Come up, rest briefly, then hold the other side.",
+    ],
+    mistakes: [
+      "Resting the chest on the floor instead of holding tension",
+      "Assisting arm collapsing into a deep bend",
+      "Short, incomplete shift so both arms share the load evenly",
+    ],
+    description:
+      "An isometric pause in the loaded side of an Archer Push-Up. Builds the control needed between full archer reps and one-arm push-up work.",
+    sources: [
+      NTC_ATTRIBUTION,
+      "Common archer isometric progression step; cues written in-house",
+    ],
+  }),
+  ntc({
+    id: "ntc_bent_knee_australian_pull_up",
+    name: "Bent-Knee Australian Pull-Up",
+    pattern: "vertical_pull",
+    type: "dynamic",
+    muscles: [p("lats"), p("middle back"), s("biceps"), st("abdominals")],
+    joints: ["shoulder", "elbow"],
+    regions: ["pull"],
+    difficulty: "beginner",
+    easierId: "fedb_bodyweight_mid_row",
+    harderId: "hf_39",
+    cues: [
+      "Bar at about chest height; knees bent, feet flat",
+      "Body about 45 degrees; pull chest to the bar",
+      "Also called a bent-knee inverted row",
+    ],
+    steps: [
+      "Set a bar around chest height. Sit underneath, bend the knees about 90°, and take an overhand grip.",
+      "Keep a straight line from knees to head and hang with arms straight.",
+      "Pull the chest to the bar, then lower under control to full arm extension.",
+    ],
+    mistakes: [
+      "Letting the hips sag or pike",
+      "Only pulling the chin instead of the chest",
+      "Using a bounce off the floor with the hips",
+    ],
+    description:
+      "The easiest Australian pull-up (inverted / bodyweight row): higher bar and bent knees so less of your weight is on the arms. Graduate to a straight-leg Inverted Row when 3×10–12 is clean.",
+    sources: [
+      NTC_ATTRIBUTION,
+      "Australian pull-up / inverted-row beginner progressions in public coaching literature; cues written in-house",
+    ],
+  }),
+  ntc({
+    id: "ntc_australian_chin_up",
+    name: "Australian Chin-Up",
+    pattern: "vertical_pull",
+    type: "dynamic",
+    muscles: [p("lats"), p("biceps"), s("middle back"), st("abdominals")],
+    joints: ["shoulder", "elbow"],
+    regions: ["pull"],
+    difficulty: "intermediate",
+    easierId: "ntc_bent_knee_australian_pull_up",
+    harderId: "ntc_feet_elevated_australian_pull_up",
+    cues: [
+      "Same as an Australian pull-up / inverted row, underhand (supinated) grip",
+      "Pull lower chest to the bar; body rigid",
+      "More biceps bias than the overhand Australian pull-up",
+    ],
+    steps: [
+      "Set a low bar (about hip-to-waist height). Hang underneath with an underhand grip, heels on the floor, body straight.",
+      "Pull the lower chest to the bar without shrugging.",
+      "Lower to straight arms under control.",
+    ],
+    mistakes: [
+      "Flaring the elbows and losing the underhand path",
+      "Hips sagging or piking",
+      "Short range that never touches the chest",
+    ],
+    description:
+      "A supinated-grip Australian pull-up (inverted row). Same horizontal-pull pattern as the overhand Inverted Row, with more biceps involvement. Also searched as Australian chin-up.",
+    sources: [
+      NTC_ATTRIBUTION,
+      "Australian chin-up / supinated inverted-row naming in public coaching literature; cues written in-house",
+    ],
+  }),
+  ntc({
+    id: "ntc_feet_elevated_australian_pull_up",
+    name: "Feet-Elevated Australian Pull-Up",
+    pattern: "vertical_pull",
+    type: "dynamic",
+    muscles: [p("lats"), p("middle back"), s("biceps"), st("abdominals")],
+    joints: ["shoulder", "elbow"],
+    regions: ["pull"],
+    difficulty: "advanced",
+    easierId: "hf_39",
+    harderId: "ntc_archer_inverted_row",
+    cues: [
+      "Heels on a box or bench level with the bar",
+      "Body near horizontal; pull chest to the bar",
+      "Also called feet-elevated inverted row",
+    ],
+    steps: [
+      "Set a low bar and place your heels on a stable box or bench at about bar height.",
+      "Hang with arms straight, body rigid and close to horizontal.",
+      "Pull the chest to the bar, then lower fully without dropping the hips.",
+    ],
+    mistakes: [
+      "Setting the feet much lower than the bar so the angle barely changes",
+      "Piking at the hips to cheat the pull",
+      "Stopping short of chest contact",
+    ],
+    description:
+      "An Australian pull-up / inverted row with the feet raised so the body is nearly horizontal and more of your weight is on the arms. The usual step between a strict Inverted Row and archer / one-arm rows.",
+    sources: [
+      NTC_ATTRIBUTION,
+      "Feet-elevated inverted-row / Australian pull-up progressions in public coaching literature; cues written in-house",
+    ],
+  }),
+  ntc({
+    id: "ntc_australian_pull_up_hold",
+    name: "Australian Pull-Up Hold",
+    pattern: "vertical_pull",
+    type: "isometric",
+    muscles: [p("lats"), p("middle back"), s("biceps"), st("abdominals")],
+    joints: ["shoulder", "elbow"],
+    regions: ["pull"],
+    difficulty: "intermediate",
+    timed: true,
+    easierId: "hf_39",
+    harderId: "ntc_feet_elevated_australian_pull_up",
+    cues: [
+      "Pull chest to the low bar and pause",
+      "Body straight; squeeze the shoulder blades",
+      "Also called an inverted-row hold",
+    ],
+    steps: [
+      "From a straight-leg Australian pull-up / inverted-row setup, pull the chest to the bar.",
+      "Hold with rigid hips and depressed shoulders.",
+      "Lower under control when the hold ends.",
+    ],
+    mistakes: [
+      "Holding with the chin on the bar instead of the chest",
+      "Hips sagging during the pause",
+      "Shrugging the shoulders into the ears",
+    ],
+    description:
+      "An isometric pause at the top of an Australian pull-up (inverted row). Builds the chest-to-bar position before adding elevation, archer work, or harder rows.",
+    sources: [
+      NTC_ATTRIBUTION,
+      "Pause / hold inverted-row progressions in public coaching literature; cues written in-house",
+    ],
+  }),
+  ntc({
+    id: "ntc_archer_inverted_row",
+    name: "Archer Australian Pull-Up",
+    pattern: "vertical_pull",
+    type: "dynamic",
+    muscles: [p("lats"), p("middle back"), s("biceps"), st("abdominals")],
+    joints: ["shoulder", "elbow"],
+    regions: ["pull"],
+    difficulty: "advanced",
+    easierId: "ntc_feet_elevated_australian_pull_up",
+    harderId: "hf_42",
+    cues: [
+      "Wide grip under a low bar (or rings / straps)",
+      "Pull chest toward one hand; other arm stays nearly straight",
+      "Heels planted, body rigid; no hip twist",
+      "Also called archer inverted row / archer row / archer Australian pull-up",
+    ],
+    steps: [
+      "Set a bar around hip-to-waist height (or low rings/straps) and hang underneath with a wide grip, body straight, heels on the floor.",
+      "Pull by bending the working elbow and driving the lower chest toward that hand while the assisting arm stays nearly straight on the bar.",
+      "Touch the working-side chest to the bar without a chin reach or bounce, then lower under control to straight arms.",
+      "Alternate sides with equal reps.",
+    ],
+    mistakes: [
+      "Bending the assisting elbow so it becomes a two-arm row",
+      "Twisting the hips or shoulders toward the working arm",
+      "Stopping short of chest contact or shrugging the shoulders up",
+    ],
+    description:
+      "A unilateral Australian pull-up (inverted row) where one arm does most of the work and the other stays nearly straight for light assist. Bridges feet-elevated rows toward one-arm inverted rows.",
+    sources: [
+      NTC_ATTRIBUTION,
+      "Archer Australian / archer-row progressions in public calisthenics coaching literature; cues written in-house",
+    ],
+  }),
+  ntc({
+    id: "ntc_archer_dip",
+    name: "Archer Dip",
+    pattern: "horizontal_push",
+    type: "dynamic",
+    muscles: [p("chest"), p("triceps"), s("shoulders"), st("abdominals")],
+    joints: ["shoulder", "elbow", "wrist"],
+    regions: ["push"],
+    difficulty: "advanced",
+    easierId: "hf_25",
+    harderId: "ntc_archer_straight_bar_dip",
+    cues: [
+      "Support on parallettes or dip bars, hands slightly wider",
+      "Lower toward one side; working elbow bends, assist arm stays straighter",
+      "Shoulders depressed; equal work each side",
+    ],
+    steps: [
+      "Support yourself above parallettes or dip bars with locked elbows and shoulders pulled down.",
+      "Lower by shifting toward one arm: bend that elbow while the opposite arm stays more extended for support.",
+      "Descend until the working upper arm is about parallel to the floor (or as deep as your shoulders allow with control).",
+      "Press back to support and alternate sides.",
+    ],
+    mistakes: [
+      "Shrugging the shoulders toward the ears",
+      "Both elbows bending the same amount (ordinary dip)",
+      "Dropping too deep without control or bouncing out of the bottom",
+    ],
+    description:
+      "A unilateral dip on parallettes or dip bars that loads one arm while the other stays more extended. A standard advanced dip progression before single-arm dip work.",
+    sources: [
+      NTC_ATTRIBUTION,
+      "Public calisthenics dip progression lists (archer dips); cues written in-house",
+    ],
+  }),
+  ntc({
+    id: "ntc_archer_straight_bar_dip",
+    name: "Archer Straight-Bar Dip",
+    pattern: "horizontal_push",
+    type: "dynamic",
+    muscles: [p("chest"), p("triceps"), s("shoulders"), st("abdominals")],
+    joints: ["shoulder", "elbow", "wrist"],
+    regions: ["push"],
+    difficulty: "elite",
+    easierId: "hf_27",
+    cues: [
+      "Wide overhand support on one straight bar",
+      "Lower toward one arm with a slight forward lean",
+      "Assist arm stays more extended; chest or abs approach the bar",
+      "Alternate sides evenly",
+    ],
+    steps: [
+      "Take a wide overhand grip on a single straight bar and lock out in support with shoulders depressed.",
+      "Lean slightly forward and lower toward one arm, bending that elbow while the other stays more extended.",
+      "Touch chest or abs toward the bar under control without resting, then press back to support.",
+      "Alternate sides with the same depth and control.",
+    ],
+    mistakes: [
+      "Shrugging during the shift",
+      "Skipping the forward lean so the bar path fights you",
+      "Uneven depth between sides",
+    ],
+    description:
+      "An archer dip on a single straight bar (the dip used in muscle-up lockout strength). Harder leverage than parallel-bar archer dips; keep depth matched on both sides.",
+    sources: [
+      NTC_ATTRIBUTION,
+      "Straight-bar archer dip progressions in public calisthenics coaching; cues written in-house",
+    ],
   }),
   ntc({
     id: "ntc_push_up_shoulder_tap",

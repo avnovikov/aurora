@@ -10,6 +10,8 @@
 
 You pick a **Target** — a skill goal such as freestanding handstand or muscle-up. Aurora keeps programming the **current step** on that path (not the end skill every session) and **Progress** shows how close you are. Area days (upper body, legs, core, …) sit in the same **plan queue** and still adapt when sleep, joints, or stalls say so.
 
+The Library has **700+ exercises** (strength progressions, holds, mobility, and kettlebell work). Major calisthenics apps advertise roughly **350+** (Madbarz), **700+** (Calisteniapp), and **1,000+** (Thenx) — Aurora sits on the upper side of that range on catalogue size, without a subscription.
+
 Aurora is for people who train calisthenics at home and want each session aimed at a real skill, then adjusted for recovery, equipment, and recent performance. Training apps usually give you a weekday calendar and a static template. Sleep, joints, and pulse change what you should do before you start. Aurora keeps a plan queue instead of a fixed Monday–Sunday grid, and adjusts the **dose** from sleep, optional pain, recent load, missed reps, stalls, and (on Android) a Bluetooth heart-rate strap.
 
 ## Why I wrote it
@@ -180,7 +182,7 @@ For local development, Android development, testing, quality checks, branch poli
 
 ## Catalogue
 
-The Library has **617 exercises** (strength progressions, holds, and mobility) you can browse and filter. Major calisthenics apps advertise roughly **350+** (Madbarz), **700+** (Calisteniapp), and **1,000+** (Thenx) — Aurora sits in the middle on raw catalogue size, without a subscription. Catalogue size is not the product story; Targets, dose, and local-first planning are.
+The Library has **700+ exercises** (strength progressions, holds, mobility, and kettlebell work) you can browse and filter. Major calisthenics apps advertise roughly **350+** (Madbarz), **700+** (Calisteniapp), and **1,000+** (Thenx) — Aurora sits on the upper side of that range on catalogue size, without a subscription. Catalogue size is not the product story; Targets, dose, and local-first planning are.
 
 Exercise catalogue imports follow each source’s licence: wger (CC), MuscleWiki (non-profit notice), free-exercise-db, Hugging Face calisthenics imports, and in-house NTC-style cues. Using the catalogue does not transfer those upstream rights beyond what those licences allow.
 

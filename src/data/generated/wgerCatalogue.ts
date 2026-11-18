@@ -53,6 +53,43 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1966 (CC-BY-SA-4.0, amwang4)"
   },
   {
+    "id": "wger_9",
+    "name": "2 Handed Kettlebell Swing",
+    "pattern": "mobility",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      },
+      {
+        "group": "abdominals",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "warmup",
+    "regions": [
+      "general"
+    ],
+    "cues": [
+      "Stand with your feet slightly wider than shoulder-width, the kettlebell on the floor about 20-30 cm in front of your toes.",
+      "Hinge at the hips with a slight bend in the knees and a flat back, and grip the handle with both hands.",
+      "Hike the kettlebell back between your legs, then drive your hips forward explosively so that it swings forward and up to chest or shoulder height (Russian style, not overhead). Your arms stay straight and relaxed, the power comes from the hips.",
+      "Let the kettlebell swing back down, hinge again as it passes between your legs and go straight into the next rep."
+    ],
+    "description": "Stand with your feet slightly wider than shoulder-width, the kettlebell on the floor about 20-30 cm in front of your toes. Hinge at the hips with a slight bend in the knees and a flat back, and grip the handle with both hands. Hike the kettlebell back between your legs, then drive your hips forward explosively so that it swings forward and up to chest or shoulder height (Russian style, not overhead). Your arms stay straight and relaxed, the power comes from the hips. Let the kettlebell swing back down, hinge again as it passes between your legs and go straight into the next rep.",
+    "attribution": "wger.de exercise 9 (CC-BY-SA-4.0, deusinvictus)"
+  },
+  {
     "id": "wger_1573",
     "name": "Ab wheel",
     "pattern": "core_anti_extension",
@@ -1454,6 +1491,28 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 174 (CC-BY-SA-4.0, krisbbb)"
   },
   {
+    "id": "wger_974",
+    "name": "Curl with kettlebell two hands",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Stand upright and grip the kettlebell with both hands. Perform the elbow flexion motion, starting from a fully extended position until your hand reaches shoulder height. Spread your legs a little for stability and, to perform the exercise correctly, try not to push with your back or body in general. Change the weight of the kettlebell to adjust the difficulty."
+    ],
+    "description": "Stand upright and grip the kettlebell with both hands. Perform the elbow flexion motion, starting from a fully extended position until your hand reaches shoulder height. Spread your legs a little for stability and, to perform the exercise correctly, try not to push with your back or body in general. Change the weight of the kettlebell to adjust the difficulty.",
+    "attribution": "wger.de exercise 974 (CC-BY-SA-4.0)"
+  },
+  {
     "id": "wger_1889",
     "name": "Decline Bench Leg Raise",
     "pattern": "core_compression",
@@ -1621,6 +1680,98 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1713 (CC-BY-SA-4.0, Croak6728)"
   },
   {
+    "id": "wger_1360",
+    "name": "Double Kettlebell Clean and Press",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "biceps",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      },
+      {
+        "group": "traps",
+        "role": "primary"
+      },
+      {
+        "group": "triceps",
+        "role": "primary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "lats",
+        "role": "secondary"
+      },
+      {
+        "group": "abdominals",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Full-body muscles building exercise. This exercise provides a huge range of benefits in terms of strength & size and is extremely functional."
+    ],
+    "description": "Full-body muscles building exercise. This exercise provides a huge range of benefits in terms of strength & size and is extremely functional.",
+    "attribution": "wger.de exercise 1360 (CC-BY-SA-4.0, m4k3r)"
+  },
+  {
+    "id": "wger_1361",
+    "name": "Double Kettlebell Front Squat",
+    "pattern": "squat",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      },
+      {
+        "group": "abdominals",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "The kettlebell front squat is a compound, multi-joint exercise that works several muscle groups."
+    ],
+    "description": "The kettlebell front squat is a compound, multi-joint exercise that works several muscle groups.",
+    "attribution": "wger.de exercise 1361 (CC-BY-SA-4.0, m4k3r)"
+  },
+  {
     "id": "wger_1827",
     "name": "Double-Leg Abdominal Press",
     "pattern": "core_compression",
@@ -1643,6 +1794,28 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "Lie on your back with knees and hips bent at 90 degrees (tabletop). Place your hands on your thighs just above your knees. Push your hands against your knees as hard as possible while using your abs to pull your knees toward your hands. Hold for 10 seconds of maximum effort. Your abs should be shaking.",
     "attribution": "wger.de exercise 1827 (CC-BY-SA-4.0, beagle)"
+  },
+  {
+    "id": "wger_1099",
+    "name": "Dynamic side hold",
+    "pattern": "core_compression",
+    "type": "isometric",
+    "muscles": [
+      {
+        "group": "abdominals",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "core"
+    ],
+    "cues": [
+      "Sling a rubber band on a kettlebell and lift the kettlebell by the rubber band. Let it hang by your side and stand on one leg, switch leg while continuing hold. Repeat with other hand"
+    ],
+    "description": "Sling a rubber band on a kettlebell and lift the kettlebell by the rubber band. Let it hang by your side and stand on one leg, switch leg while continuing hold. Repeat with other hand",
+    "attribution": "wger.de exercise 1099 (CC-BY-SA-4.0, philip)"
   },
   {
     "id": "wger_1288",
@@ -2358,6 +2531,37 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1318 (CC-BY-SA-4.0, hektkaso)"
   },
   {
+    "id": "wger_2447",
+    "name": "Hip Airplane",
+    "pattern": "squat",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Stand on one leg and lean your upper body slightly forward while keeping your back straight. Extend the free leg behind you so that your torso and leg form roughly one line. Slowly open your hip to the side by rotating your pelvis and upper body in a controlled way. Then close the hip again and return to the starting position.",
+      "The movement should mainly come from the hip. Keep your standing foot stable and avoid letting your knee collapse inward."
+    ],
+    "description": "Stand on one leg and lean your upper body slightly forward while keeping your back straight. Extend the free leg behind you so that your torso and leg form roughly one line. Slowly open your hip to the side by rotating your pelvis and upper body in a controlled way. Then close the hip again and return to the starting position. The movement should mainly come from the hip. Keep your standing foot stable and avoid letting your knee collapse inward.",
+    "attribution": "wger.de exercise 2447 (CC-BY-SA-4.0, TobiasFalk)"
+  },
+  {
     "id": "wger_1863",
     "name": "Hip Crossover",
     "pattern": "mobility",
@@ -2700,6 +2904,157 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "Stand under a pull-up bar on the floor or a low box so you can reach the bar with bent arms. Jump and pull at the same time until your chin passes the bar, then lower yourself as slowly as you can. This is a beginner step toward full pull-ups.",
     "attribution": "wger.de exercise 2748 (CC-BY-SA-4.0, lightking)"
+  },
+  {
+    "id": "wger_1003",
+    "name": "Kettlebell deadlifts",
+    "pattern": "hinge",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Hinge at the hips and slightly bend at the knees to put your hands on the kettlebell handles. Your back should be straight as you perform the movement.",
+      "Grab the kettlebell handles, with your hands pushing in opposite directions as if to pull the handle apart.",
+      "While contacting your abs and glutes, stand straight up.",
+      "Hinge at the hips again to bring the kettlebell back down, similarly to step 1.",
+      "Repeat from step 3. Tips:",
+      "Be sure you're performing the movements correctly, as doing otherwise can lead to injury. For example, do not squat instead of hinging at the hips, do not round your back while reaching for the kettlebell, and do not lean back while standing up."
+    ],
+    "description": "Hinge at the hips and slightly bend at the knees to put your hands on the kettlebell handles. Your back should be straight as you perform the movement. Grab the kettlebell handles, with your hands pushing in opposite directions as if to pull the handle apart. While contacting your abs and glutes, stand straight up. Hinge at the hips again to bring the kettlebell back down, similarly to step 1. Repeat from step 3. Tips: Be sure you're performing the movements correctly, as doing otherwise can lead to injury. For example, do not squat instead of hinging at the hips, do not round your back while reaching for the kettlebell, and do not lean back while standing up.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1003/772d6e47-3865-4944-9255-7435d0b06782.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/1003/a2b47fa8-79b4-4a21-920b-48765f562bc4.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1003 (CC-BY-SA-4.0)"
+  },
+  {
+    "id": "wger_1612",
+    "name": "Kettlebell sumo deadlift",
+    "pattern": "hinge",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Place your feet wider than shoulder-width apart, pointing your toes outward.",
+      "Keep your back straight, shoulders back, and chest up.",
+      "The knees must follow the same direction as the toes and not move forward.",
+      "When going up, it is advisable to contract your glutes to maximize the effectiveness of the exercise.."
+    ],
+    "description": "Place your feet wider than shoulder-width apart, pointing your toes outward. Keep your back straight, shoulders back, and chest up. The knees must follow the same direction as the toes and not move forward. When going up, it is advisable to contract your glutes to maximize the effectiveness of the exercise..",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1612/3dc33f57-2786-4305-8b91-e011d7055923.jpg",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/1612/e719b872-d122-4e2d-be17-bd2babfe457a.jpg",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1612 (CC-BY-SA-4.0, Tierrasverdes)"
+  },
+  {
+    "id": "wger_331",
+    "name": "Kettlebell Swings",
+    "pattern": "mobility",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "warmup",
+    "regions": [
+      "general",
+      "legs"
+    ],
+    "cues": [
+      "Hold the kettlebell securely in both hands. Keep your back flat throughout the move, avoiding any rounding of the spine.Keeping your knees \"soft\", hinge your hips backwards, letting the kettlebell swing between your knees.",
+      "You want to bend from the hips as far as you can without letting your back round forwards . Then, snap your hips forwards quickly and standing up straight, locking your body in an upright posture.",
+      "The speed you do this will cause your arms and the kettlebell to swing up in front of you. Don't try to lift the kettlebell with your arms. The snapping forwards of your hips will cause the kettlebell to swing forwards through momentum. Depending on the weight of the kettlebell and the speed of your hip movement, your arms will swing up to about shoulder height. At the top of this swing, let your hips hinge backwards again as the kettlebell swings back down to between your legs and the start of the next repetition."
+    ],
+    "description": "Hold the kettlebell securely in both hands. Keep your back flat throughout the move, avoiding any rounding of the spine.Keeping your knees \"soft\", hinge your hips backwards, letting the kettlebell swing between your knees. You want to bend from the hips as far as you can without letting your back round forwards . Then, snap your hips forwards quickly and standing up straight, locking your body in an upright posture. The speed you do this will cause your arms and the kettlebell to swing up in front of you. Don't try to lift the kettlebell with your arms. The snapping forwards of your hips will cause the kettlebell to swing forwards through momentum. Depending on the weight of the kettlebell and the speed of your hip movement, your arms will swing up to about shoulder height. At the top of this swing, let your hips hinge backwards again as the kettlebell swings back down to between your legs and the start of the next repetition.",
+    "attribution": "wger.de exercise 331 (CC-BY-SA-3.0, J120290,cerin)"
+  },
+  {
+    "id": "wger_2727",
+    "name": "Kettlebell Wrist Turnover",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "triceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Rest your forearm on a bench or your knee and hold a light kettlebell by the handle with the bell hanging down. Keeping the elbow and forearm still, slowly rotate your wrist so the palm turns down, then rotate back so the palm turns up. Do the set number of turns in each direction. This trains pronation and supination for grip and arm wrestling."
+    ],
+    "description": "Rest your forearm on a bench or your knee and hold a light kettlebell by the handle with the bell hanging down. Keeping the elbow and forearm still, slowly rotate your wrist so the palm turns down, then rotate back so the palm turns up. Do the set number of turns in each direction. This trains pronation and supination for grip and arm wrestling.",
+    "attribution": "wger.de exercise 2727 (CC-BY-SA-4.0, lightking)"
   },
   {
     "id": "wger_1452",
@@ -3291,6 +3646,36 @@ export const WGER_CATALOGUE: SeedExercise[] = [
       }
     ],
     "attribution": "wger.de exercise 1738 (CC-BY-SA-4.0, 54str)"
+  },
+  {
+    "id": "wger_975",
+    "name": "One-handed kettlebell curls",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Standing with the kettlebell in one hand and bent at the elbow, start from a fully extended position until your hand reaches shoulder height. To perform the movement correctly, try not to push with your back or body."
+    ],
+    "description": "Standing with the kettlebell in one hand and bent at the elbow, start from a fully extended position until your hand reaches shoulder height. To perform the movement correctly, try not to push with your back or body.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/975/41d9267a-99bc-4e94-b1c4-0e39fe7a968f.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 975 (CC-BY-SA-4.0, clafal)"
   },
   {
     "id": "wger_1822",
@@ -4832,6 +5217,58 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 578 (CC-BY-SA-4.0, apeschel)"
   },
   {
+    "id": "wger_1022",
+    "name": "Single Arm Plank to Row",
+    "pattern": "horizontal_pull",
+    "type": "isometric",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "biceps",
+        "role": "primary"
+      },
+      {
+        "group": "lats",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "primary"
+      },
+      {
+        "group": "chest",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Start position as row, extend to plank and back. Finish with row and repeat"
+    ],
+    "description": "Start position as row, extend to plank and back. Finish with row and repeat",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1022/f74644fa-f43e-46bd-8603-6e3a2ee8ee2d.jpg",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/1022/eef8fb9d-ae72-4e23-81da-4d62f2734332.jpg",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1022 (CC-BY-SA-4.0)"
+  },
+  {
     "id": "wger_1393",
     "name": "Single Leg Hamstring Stretch",
     "pattern": "mobility",
@@ -4887,6 +5324,37 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 2667 (CC-BY-SA-4.0, trs1800)"
   },
   {
+    "id": "wger_2668",
+    "name": "Single-Leg Balance with Kettlebell Circles",
+    "pattern": "mobility",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      },
+      {
+        "group": "abdominals",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "warmup",
+    "regions": [
+      "general",
+      "legs"
+    ],
+    "cues": [
+      "A balance drill that adds a moving load. Stand on one leg with the knee slightly bent, holding a kettlebell in one hand. Pass the kettlebell around your body in a circle, handing it from one hand to the other in front and behind you, while keeping your balance on the standing leg. Keep the hips level and the torso upright; the shifting weight of the bell constantly changes your centre of mass, which is what trains the hip and ankle stabilisers. Complete the prescribed number of circles, reverse direction, then switch legs. Use a light bell to start."
+    ],
+    "description": "A balance drill that adds a moving load. Stand on one leg with the knee slightly bent, holding a kettlebell in one hand. Pass the kettlebell around your body in a circle, handing it from one hand to the other in front and behind you, while keeping your balance on the standing leg. Keep the hips level and the torso upright; the shifting weight of the bell constantly changes your centre of mass, which is what trains the hip and ankle stabilisers. Complete the prescribed number of circles, reverse direction, then switch legs. Use a light bell to start.",
+    "attribution": "wger.de exercise 2668 (CC-BY-SA-4.0, trs1800)"
+  },
+  {
     "id": "wger_1294",
     "name": "Single-leg hamstring curl",
     "pattern": "hinge",
@@ -4911,6 +5379,48 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "Specifically, the muscles involved are: biceps femoris, semimembranosus and semitendinosus.",
     "attribution": "wger.de exercise 1294 (CC-BY-SA-4.0, clafal)"
+  },
+  {
+    "id": "wger_1734",
+    "name": "Single-Leg Lunge with Kettlebell:",
+    "pattern": "squat",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "calves",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "How to do a single-leg kettlebell lunge",
+      "Preparation: Stand with your feet together. Hold the kettlebell with both hands by the handle, keeping it close to your chest, or hold it with one hand (on the same side as the working leg).",
+      "Step and Lower: Take a large step forward (or backward, which is safer for your knees) with one leg, lowering your hips until both knees form a 90-degree angle.",
+      "Focus: Shift your weight onto your front (or bent) leg, keeping your back straight and your torso upright.",
+      "Return: Push off with your front leg to return to the starting position."
+    ],
+    "description": "How to do a single-leg kettlebell lunge Preparation: Stand with your feet together. Hold the kettlebell with both hands by the handle, keeping it close to your chest, or hold it with one hand (on the same side as the working leg). Step and Lower: Take a large step forward (or backward, which is safer for your knees) with one leg, lowering your hips until both knees form a 90-degree angle. Focus: Shift your weight onto your front (or bent) leg, keeping your back straight and your torso upright. Return: Push off with your front leg to return to the starting position.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1734/782e2fbb-1267-476d-a817-14f3b83e0564.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / Tierrasverdes",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1734 (CC-BY-SA-4.0, Tierrasverdes)"
   },
   {
     "id": "wger_1735",

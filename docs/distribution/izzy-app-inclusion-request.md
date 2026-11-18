@@ -31,7 +31,7 @@ Why it exists (gaps in apps I used):
 2. Change the plan when progress stalls, instead of repeating the same work.
 3. Free as in beer and free as in speech (MIT) — no ~£60/year subscription.
 
-Library: **617 exercises** (strength progressions, holds, and mobility).
+Library: **700+ exercises** (strength progressions, holds, mobility, and kettlebell work).
 
 How it works:
 - Set up once: bodyweight, resting/max heart rate, past injuries, gear you own.
