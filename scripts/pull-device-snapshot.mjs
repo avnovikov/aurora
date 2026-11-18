@@ -7,7 +7,7 @@ import { writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const PKG = 'com.aurora.rassvet';
+const PKG = 'com.aurora.alvorada';
 const PORT = 9333;
 const adb = (...a) => execFileSync('adb', a, { encoding: 'utf8' }).trim();
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

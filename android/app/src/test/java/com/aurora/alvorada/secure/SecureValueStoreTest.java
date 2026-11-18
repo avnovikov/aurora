@@ -1,4 +1,4 @@
-package com.aurora.rassvet.secure;
+package com.aurora.alvorada.secure;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

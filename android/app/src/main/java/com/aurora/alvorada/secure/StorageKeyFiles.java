@@ -1,4 +1,4 @@
-package com.aurora.rassvet.secure;
+package com.aurora.alvorada.secure;
 
 import java.io.File;
 import java.io.IOException;

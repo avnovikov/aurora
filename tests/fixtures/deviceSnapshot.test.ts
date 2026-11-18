@@ -35,7 +35,7 @@ describe(`device snapshot ${SNAPSHOT}`, () => {
   it("records where it came from", () => {
     const snapshot = loadDeviceSnapshot(SNAPSHOT);
     expect(snapshot.device).toBe("Pixel 10");
-    expect(snapshot.app.package).toBe("com.aurora.rassvet");
+    expect(snapshot.app.package).toBe("com.aurora.alvorada");
   });
 
   it("holds the one real session: Lower body · A, rated difficult", () => {

@@ -14,7 +14,7 @@
 - Product Aurora / soul Rassvet.
 - Merge into `poc` only after `npm test` + `npm run smell`; do not merge to `main` without explicit OK.
 - No Lightsail provision in this plan.
-- App id: `com.aurora.rassvet`.
+- App id: `com.aurora.alvorada`.
 
 **GitHub issues:** parent [#7](https://github.com/avnovikov/aurora/issues/7); children for Cap shell, HR parse/monitor, session UI.
 

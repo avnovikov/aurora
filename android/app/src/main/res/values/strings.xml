@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">Aurora</string>
     <string name="title_activity_main">Aurora</string>
-    <string name="package_name">com.aurora.rassvet</string>
-    <string name="custom_url_scheme">com.aurora.rassvet</string>
+    <string name="package_name">com.aurora.alvorada</string>
+    <string name="custom_url_scheme">com.aurora.alvorada</string>
 </resources>

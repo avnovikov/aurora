@@ -1,7 +1,7 @@
 # Capacitor + Aurora WebView bridge — required when minifyEnabled is true.
 -keep class com.getcapacitor.** { *; }
 -keep class org.apache.cordova.** { *; }
--keep class com.aurora.rassvet.** { *; }
+-keep class com.aurora.alvorada.** { *; }
 -keepclassmembers class * {
     @android.webkit.JavascriptInterface <methods>;
 }

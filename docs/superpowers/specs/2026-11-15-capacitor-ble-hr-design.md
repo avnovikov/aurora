@@ -31,7 +31,7 @@ Vite UI
 
 ## 4. Deliverables
 
-1. Capacitor Android project; app id `com.aurora.rassvet`.
+1. Capacitor Android project; app id `com.aurora.alvorada`.
 2. Plugin + Android 12 BLE permissions (`BLUETOOTH_SCAN` with `neverForLocation` where applicable).
 3. Pure HR parse + silence integration tests (no device).
 4. Session UI: **Connect pulse** / **Disconnect**; live BPM; existing shout path on ≥5 s silence while connected.
