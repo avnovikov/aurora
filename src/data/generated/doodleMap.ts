@@ -210,7 +210,22 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "wger_382": "/doodles/doodle-l-hold.svg",
   "wger_1853": "/doodles/doodle-l-sit-foot-supported.svg",
   "wger_1808": "/doodles/doodle-parallel-bar-hold.svg",
-  "ntc_spiderman_plank": "/doodles/doodle-spiderman-plank.svg"
+  "ntc_spiderman_plank": "/doodles/doodle-spiderman-plank.svg",
+  "hf_141": "/doodles/doodle-depth-jump.svg",
+  "fedb_rocket_jump": "/doodles/doodle-rocket-jump.svg",
+  "fedb_knee_tuck_jump": "/doodles/doodle-knee-tuck-jump.svg",
+  "wger_1576": "/doodles/doodle-snap-down.svg",
+  "hf_96": "/doodles/doodle-lunge-jump.svg",
+  "fedb_standing_long_jump": "/doodles/doodle-standing-long-jump.svg",
+  "hf_97": "/doodles/doodle-frog-jump.svg",
+  "hf_95": "/doodles/doodle-box-jump.svg",
+  "fedb_bench_jump": "/doodles/doodle-bench-jump.svg",
+  "fedb_side_standing_long_jump": "/doodles/doodle-side-standing-long-jump.svg",
+  "hf_150": "/doodles/doodle-star-jump.svg",
+  "fedb_skating": "/doodles/doodle-skating.svg",
+  "hf_98": "/doodles/doodle-skater-bound.svg",
+  "fedb_alternate_leg_diagonal_bound": "/doodles/doodle-alternate-leg-diagonal-bound.svg",
+  "fedb_single_leg_lateral_hop": "/doodles/doodle-single-leg-lateral-hop.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
