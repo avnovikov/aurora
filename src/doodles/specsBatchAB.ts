@@ -1,6 +1,7 @@
 import { solvePose } from "./rig";
-import type { DoodleSpec, Keyframe, Point, Pose, Side } from "./rig";
-import { LOCKED, PLANK_FOOT, lockedShoulderY, pushUp, pushUpTop, rep, straightBody } from "./specsBatchC";
+import type { DoodleSpec, Keyframe, Point, Pose, Side, Sideways } from "./rig";
+import { lockedY3, reach3, spreadFeet } from "./specsBatchAA";
+import { LOCKED, PLANK_FOOT, lockedShoulderY, pushUp, rep, straightBody } from "./specsBatchC";
 
 /**
  * Batch AB (#174): floor push-ups and planks, each drawn in one view first
@@ -11,11 +12,12 @@ import { LOCKED, PLANK_FOOT, lockedShoulderY, pushUp, pushUpTop, rep, straightBo
  * across the body, so the side view shows the press and leaves the width to a
  * second view if the judge asks for one.
  *
+ * The judge asked for a second view on most of them (ADD VIEW): those specs
+ * now carry `views` and keyframe `sideways` positions (hand width, the shift,
+ * the feet jumping apart). hf_13 Spiderman Push-Up is drawn in two views in
+ * batch AJ.
+ *
  * Left out:
- *   hf_13 Spiderman Push-Up   the knee travels out to the side to the elbow. In side
- *     view the full-length thigh cannot foreshorten, so the knee overshoots the elbow
- *     (which sits only ~40 from the hip at push-up depth) and lands on the chest, or
- *     rises 80 above the back: a tangle or a knee tuck, not this move.
  *   ntc_plank_hip_dips   the hips rotate about the long axis (a torso rotation).
  */
 
@@ -32,39 +34,151 @@ const other = (side: Side): Side => (side === "near" ? "far" : "near");
 // ---------------------------------------------------------------- wide / close push-ups
 
 const HAND_X = 62;
-const PUSH_TOP = pushUpTop(HAND_X);
 /** Chest nearly touching the floor. */
 const PUSH_BOTTOM = -46;
 const push = (y: number): Pose => pushUp(y, HAND_X);
 
 /** Close hands sit under the chest, a little behind the shoulders (as the close-grip push-up). */
 const CLOSE_X = 48;
-const CLOSE_TOP = pushUpTop(CLOSE_X);
+const SIDES: Side[] = ["near", "far"];
+const zOut = (side: Side): number => (side === "near" ? -1 : 1);
 
-/** At the close-grip top height, with each hand at its own x; `lift` raises that hand to move it. */
-function handsAt(near: number, far: number, lift?: Side): Pose {
-  const base = pushUp(CLOSE_TOP, HAND_X);
-  const hands: Partial<Record<Side, Point>> = { near: [near, 0], far: [far - 2, 0] };
-  if (lift) {
-    const x = (hands[lift] as Point)[0];
-    hands[lift] = [x, -20];
-  }
-  return { ...base, hands };
+/** Second view (#174): wide hands about twice shoulder width (shoulders at ±22), elbows flared. */
+const WIDE_Z = 44;
+const FLARE = 65;
+/** Close hands just inside the shoulders, elbows tucked back along the body. */
+const CLOSE_Z = 14;
+/** Tucked elbows still sit a little off the ribs, so they peek out past the head from the front. */
+const TUCK = 22;
+
+/** Hands at ±`z`, elbows rolled `out` degrees. */
+const handsWide = (z: number, out: number): Sideways => ({
+  hands: { near: -z, far: z },
+  elbows: { near: { out }, far: { out } },
+});
+
+/** The same sideways positions on every keyframe. */
+const withSideways = (frames: Keyframe[], sideways: Sideways): Keyframe[] => frames.map((f) => ({ ...f, sideways }));
+
+const WIDE = handsWide(WIDE_Z, FLARE);
+const WIDE_TOP = lockedY3(push, WIDE);
+const CLOSE = handsWide(CLOSE_Z, TUCK);
+const CLOSE_TOP = lockedY3((y) => pushUp(y, CLOSE_X), CLOSE);
+
+/**
+ * Hands at their own x and z, the shoulders as high as the planted hands allow
+ * (locked arms); `lift` raises that hand to move it.
+ */
+function handsAt(near: [number, number], far: [number, number], out: number, lift?: Side): Keyframe {
+  const sideways: Sideways = { hands: { near: -near[1], far: far[1] }, elbows: { near: { out }, far: { out } } };
+  const at = (y: number): Pose => {
+    const hands: Partial<Record<Side, Point>> = { near: [near[0], 0], far: [far[0] - 2, 0] };
+    if (lift) hands[lift] = [(hands[lift] as Point)[0], -20];
+    return { ...pushUp(y, HAND_X), hands };
+  };
+  const y = lockedY3(at, sideways, SIDES.filter((side) => side !== lift));
+  return { hold: 0, pose: at(y), sideways };
 }
 
-/** Wide rep, hands walk in, close rep, hands walk out. */
+/** Wide rep (elbows flared), hands walk in, close rep (elbows tucked), hands walk out. */
 function closeAndWide(): Keyframe[] {
-  const mid = (CLOSE_X + HAND_X) / 2;
+  const mid: [number, number] = [(CLOSE_X + HAND_X) / 2, (CLOSE_Z + WIDE_Z) / 2];
+  const wide: [number, number] = [HAND_X, WIDE_Z];
+  const close: [number, number] = [CLOSE_X, CLOSE_Z];
   return [
-    ...rep(push, PUSH_TOP, PUSH_BOTTOM, 0.3, 0.2),
-    { hold: 0, pose: handsAt(mid, HAND_X, "near") },
-    { hold: 0, pose: handsAt(CLOSE_X, HAND_X) },
-    { hold: 0, pose: handsAt(CLOSE_X, mid, "far") },
-    ...rep((y) => pushUp(y, CLOSE_X), CLOSE_TOP, -50, 0.3, 0.2),
-    { hold: 0, pose: handsAt(mid, CLOSE_X, "near") },
-    { hold: 0, pose: handsAt(HAND_X, CLOSE_X) },
-    { hold: 0, pose: handsAt(HAND_X, mid, "far") },
+    ...withSideways(rep(push, WIDE_TOP, PUSH_BOTTOM, 0.3, 0.2), WIDE),
+    handsAt(mid, wide, FLARE / 2, "near"),
+    handsAt(close, wide, FLARE / 2),
+    handsAt(close, mid, FLARE / 2, "far"),
+    ...withSideways(rep((y) => pushUp(y, CLOSE_X), CLOSE_TOP, -50, 0.3, 0.2), CLOSE),
+    handsAt(mid, close, FLARE / 2, "near"),
+    handsAt(wide, close, FLARE / 2),
+    handsAt(wide, mid, FLARE / 2, "far"),
   ];
+}
+
+/** Feet stay planted (hip width) while the chest shifts over one hand. */
+const FEET_Z = 10;
+/** Natural hip z (rig HIP_SIDE). */
+const HIP_Z = 8;
+
+/**
+ * Chest shifted `shift` sideways over wide hands (±`handZ`), the working
+ * elbow (the side it shifts to) rolled out. `y` is the shoulder height.
+ */
+function shifted(y: number, shift: number, handZ: number): Keyframe {
+  const working: Side = shift < 0 ? "near" : "far";
+  const sideways: Sideways = {
+    pelvis: shift,
+    hands: { near: -handZ, far: handZ },
+    feet: { near: -FEET_Z, far: FEET_Z },
+    ...(shift ? { elbows: { [working]: { out: 35 } } } : {}),
+  };
+  return { hold: 0, pose: spreadFeet(push(y), sideways), sideways };
+}
+
+/** Shoulder height where the arm away from the shift (or both, centred) is locked. */
+function lockedShift(shift: number, handZ: number): number {
+  let straight: Side[] = SIDES;
+  if (shift < 0) straight = ["far"];
+  if (shift > 0) straight = ["near"];
+  const s = shifted(0, shift, handZ).sideways as Sideways;
+  return lockedY3((y) => spreadFeet(push(y), s), s, straight);
+}
+
+const held = (frame: Keyframe, hold: number): Keyframe => ({ ...frame, hold });
+
+// ---------------------------------------------------------------- side to side, typewriter, wipers
+
+/** Side to side: wide hands; lower over one hand (that elbow bends, the other arm nearly straight). */
+const S2S_Z = 56;
+const S2S_SHIFT = 46;
+/** A few units below the straight-arm height, so the far arm is nearly (not quite) locked. */
+const NEARLY = 10;
+
+function sideToSide(): Keyframe[] {
+  const top = lockedShift(0, S2S_Z);
+  const low = (shift: number): Keyframe => shifted(lockedShift(shift, S2S_Z) + NEARLY, shift, S2S_Z);
+  const mid = (shift: number): Keyframe => shifted(round((top + lockedShift(shift, S2S_Z) + NEARLY) / 2), shift / 2, S2S_Z);
+  return [
+    held(shifted(top, 0, S2S_Z), 0.35),
+    mid(-S2S_SHIFT),
+    held(low(-S2S_SHIFT), 0.35),
+    mid(-S2S_SHIFT),
+    held(shifted(top, 0, S2S_Z), 0.35),
+    mid(S2S_SHIFT),
+    held(low(S2S_SHIFT), 0.35),
+    mid(S2S_SHIFT),
+  ];
+}
+
+/** Typewriter: very wide hands; low over one hand, slide across low, press up from the other. */
+const TW_Z = 80;
+const TW_SHIFT = 50;
+
+function typewriter(): Keyframe[] {
+  const top = lockedShift(0, TW_Z);
+  const bottom = lockedShift(-TW_SHIFT, TW_Z);
+  const mid = round((top + bottom) / 2);
+  return [
+    held(shifted(top, 0, TW_Z), 0.4),
+    shifted(mid, -TW_SHIFT / 2, TW_Z),
+    held(shifted(bottom, -TW_SHIFT, TW_Z), 0.3),
+    // Stay low while the chest slides across from one hand to the other.
+    held(shifted(bottom, 0, TW_Z), 0),
+    held(shifted(bottom, TW_SHIFT, TW_Z), 0.3),
+    shifted(mid, TW_SHIFT / 2, TW_Z),
+  ];
+}
+
+/** Isometric wipers: hold low over one hand, press up through the centre, hold over the other. */
+const WIPER_Z = 54;
+const WIPER_SHIFT = 50;
+
+function wipers(): Keyframe[] {
+  const low = (shift: number): Keyframe => held(shifted(lockedShift(shift, WIPER_Z) + NEARLY, shift, WIPER_Z), 1.4);
+  const centre = held(shifted(lockedShift(0, WIPER_Z) + 22, 0, WIPER_Z), 0.1);
+  return [low(-WIPER_SHIFT), centre, low(WIPER_SHIFT), centre];
 }
 
 // ---------------------------------------------------------------- maltese push-up
@@ -72,13 +186,15 @@ function closeAndWide(): Keyframe[] {
 /** Hands back by the hips, the shoulders leaning far ahead of them; on the toes. */
 const MALTESE_HAND_X = -4;
 const MALTESE_FOOT: Point = [-190, -19];
-/** A touch below the locked height so the far hand (2 further back) reaches too. */
-const MALTESE_TOP = lockedShoulderY(MALTESE_FOOT, [MALTESE_HAND_X, 0]) + 2;
 
 function maltese(shoulderY: number): Pose {
   const base = pushUp(shoulderY, MALTESE_HAND_X, MALTESE_FOOT);
   return { ...base, toes: { near: 80, far: 80 } };
 }
+
+/** Second view: hands far outside the shoulders, arms angled out, elbows flaring as the chest lowers. */
+const MALTESE_SW = handsWide(58, 70);
+const MALTESE_TOP3 = lockedY3(maltese, MALTESE_SW, SIDES, -150, -20);
 
 // ---------------------------------------------------------------- clock push-up
 
@@ -89,6 +205,40 @@ function hop(shoulderY: number): Pose {
   return { ...push(shoulderY), hands: { near: hand, far: [hand[0] - 2, hand[1]] } };
 }
 
+/** Second view: hands shoulder width; each rep the hands and shoulders hop a step sideways, feet planted. */
+const CLOCK_HAND_Z = 24;
+const CLOCK_STEP = 56;
+
+function clockSideways(shift: number): Sideways {
+  return {
+    pelvis: shift,
+    hands: { near: shift - CLOCK_HAND_Z, far: shift + CLOCK_HAND_Z },
+    feet: { near: -FEET_Z, far: FEET_Z },
+    elbows: { near: { out: 30 }, far: { out: 30 } },
+  };
+}
+
+const clockAt = (hold: number, pose: Pose, shift: number): Keyframe => ({
+  hold,
+  pose: spreadFeet(pose, clockSideways(shift)),
+  sideways: clockSideways(shift),
+});
+
+/** One rep at `from`, landing a step across at `to`. */
+function clockRep(from: number, to: number): Keyframe[] {
+  return [
+    // Land on soft elbows and flow straight into the next lowering.
+    clockAt(0, push(-100), from),
+    clockAt(0, push(-74), from),
+    clockAt(0.15, push(-50), from),
+    // Explode until the hands leave the floor; they land a step round the circle.
+    clockAt(0, push(-82), from),
+    clockAt(0, push(-114), from),
+    clockAt(0.2, hop(-158), (from + to) / 2),
+    clockAt(0, hop(-128), to),
+  ];
+}
+
 // ---------------------------------------------------------------- plank jacks, lateral plank walk
 
 /** High plank with the feet at `foot`; the arms stay locked on the hands. */
@@ -96,32 +246,64 @@ function plank(foot: Point = PLANK_FOOT): Pose {
   return pushUp(lockedShoulderY(foot, [HAND_X, 0]), HAND_X, foot);
 }
 
-/** Ankle of a straight leg swung `lift` degrees up about the hip from its plank position. */
-function liftedAnkle(base: Pose, side: Side, lift: number): Point {
-  const hip = solvePose(base).legs[side].root;
-  const deg = (Math.atan2(PLANK_FOOT[1] - hip[1], PLANK_FOOT[0] - hip[0]) * 180) / Math.PI;
-  return along(hip, deg + lift, 173.6);
+/** Second view: feet jump from together to well beyond hip width (hips at ±8). */
+const JACK_IN = 4;
+const JACK_OUT = 62;
+const feetAt = (z: number): Sideways => ({ feet: { near: -z, far: z } });
+
+/** Planted plank with the feet at ±`z`. */
+const jackPlank = (z: number): Pose => spreadFeet(plank(), feetAt(z));
+
+/** Both feet off the floor mid-jump at ±`z`: straight legs swing up a little, hands planted. */
+function plankJackAir(z: number): Pose {
+  const base = plank();
+  const pelvis = base.pelvis as Point;
+  const deg = (Math.atan2(PLANK_FOOT[1] - pelvis[1], PLANK_FOOT[0] - pelvis[0]) * 180) / Math.PI + 9;
+  const ankle = reach3(pelvis, deg, 173.6, z - HIP_Z);
+  return { ...base, feet: { near: ankle, far: ankle }, toes: { near: 70, far: 70 } };
 }
 
-/** Both feet off the floor mid-jump: straight legs swing up a little, hands planted. */
-function plankJackAir(): Pose {
-  const base = plank();
-  return {
-    ...base,
-    feet: { near: liftedAnkle(base, "near", 9), far: liftedAnkle(base, "far", 9) },
-    toes: { near: 70, far: 70 },
-  };
+/**
+ * Lateral plank walk, second view: hand and foot z on each side (`hands`,
+ * `feet`), the spine at `pelvis`; `lift` steps that hand and foot together.
+ */
+interface Walk {
+  pelvis: number;
+  hands: [number, number];
+  feet: [number, number];
+  lift?: Side;
 }
 
-/** One hand and the same-side foot lift together to step out. */
-function plankStep(side: Side): Pose {
-  const base = plank();
-  return {
-    ...base,
-    hands: { [side]: [HAND_X - 4, -24], [other(side)]: [HAND_X, 0] },
-    feet: { [side]: liftedAnkle(base, side, 8), [other(side)]: PLANK_FOOT },
-    toes: { [side]: 70, [other(side)]: 62 },
+function walkFrame({ pelvis, hands, feet, lift }: Walk): Keyframe {
+  const sideways: Sideways = { pelvis, hands: { near: hands[0], far: hands[1] }, feet: { near: feet[0], far: feet[1] } };
+  const at = (y: number): Pose => {
+    const base = spreadFeet(pushUp(y, HAND_X), sideways);
+    if (!lift) return base;
+    const hip = base.pelvis as Point;
+    const deg = (Math.atan2(PLANK_FOOT[1] - hip[1], PLANK_FOOT[0] - hip[0]) * 180) / Math.PI + 8;
+    const footZ = feet[lift === "near" ? 0 : 1];
+    return {
+      ...base,
+      hands: { ...base.hands, [lift]: [HAND_X - 2, -12] },
+      feet: { ...base.feet, [lift]: reach3(hip, deg, 173.6, footZ - (pelvis + zOut(lift) * HIP_Z)) },
+      toes: { [lift]: 70, [other(lift)]: 62 },
+    };
   };
+  const y = lockedY3(at, sideways, SIDES.filter((side) => side !== lift));
+  return { hold: lift ? 0.05 : 0.3, pose: at(y), sideways };
+}
+
+/** Steps of `WALK_STEP`: near pair out, far pair follows, then back the other way. */
+const WALK_STEP = 56;
+
+function lateralWalk(): Keyframe[] {
+  const s = WALK_STEP;
+  const narrow = (p: number): Walk => ({ pelvis: p, hands: [p - 22, p + 22], feet: [p - 8, p + 8] });
+  // Wide stance: near pair a step out, far pair still home.
+  const wide: Walk = { pelvis: -s / 2, hands: [-22 - s, 22], feet: [-8 - s, 8] };
+  const nearMoving: Walk = { pelvis: -s / 4, hands: [-22 - s / 2, 22], feet: [-8 - s / 2, 8], lift: "near" };
+  const farMoving: Walk = { pelvis: (-3 * s) / 4, hands: [-22 - s, 22 - s / 2], feet: [-8 - s, 8 - s / 2], lift: "far" };
+  return [narrow(0), nearMoving, wide, farMoving, narrow(-s), farMoving, wide, nearMoving].map(walkFrame);
 }
 
 // ---------------------------------------------------------------- straddle planche
@@ -180,15 +362,22 @@ function planchePelvis(): Point {
   return along(shoulder, 180, SPINE);
 }
 
+/** Second view: knees opening out on the way, legs in a wide V (feet well past the shoulders) in the hold. */
+const EXT_KNEE_Z = 32;
+const EXT_FOOT_Z = 46;
+const STRADDLE_Z = 78;
+const EXTENDING: Sideways = { knees: { near: { at: -EXT_KNEE_Z }, far: { at: EXT_KNEE_Z } }, feet: { near: -EXT_FOOT_Z, far: EXT_FOOT_Z } };
+const STRADDLE: Sideways = { feet: { near: -STRADDLE_Z, far: STRADDLE_Z } };
+
 /** Legs opening out behind: thighs angled down and back, knees still bent. */
 function extending(): Pose {
   const pelvis = planchePelvis();
-  const knee = along(pelvis, 150, 88);
+  const knee = reach3(pelvis, 150, 88, EXT_KNEE_Z - HIP_Z);
   const base: Pose = {
     pelvis,
     hands: PL_HANDS,
     knees: { near: { at: knee }, far: { at: knee } },
-    feet: { near: along(knee, 195, 86), far: along(knee, 195, 86) },
+    feet: { near: reach3(knee, 195, 86, EXT_FOOT_Z - EXT_KNEE_Z), far: reach3(knee, 195, 86, EXT_FOOT_Z - EXT_KNEE_Z) },
     toes: { near: 195, far: 195 },
   };
   const chest = lockChest(base, 80, PL_HAND, -20, 20);
@@ -198,7 +387,7 @@ function extending(): Pose {
 /** Straddle planche hold: straight body level with the shoulders, legs long behind. */
 function straddlePlanche(): Pose {
   const pelvis = planchePelvis();
-  const foot = along(pelvis, 180, LEG);
+  const foot = reach3(pelvis, 180, LEG, STRADDLE_Z - HIP_Z);
   const base: Pose = {
     pelvis,
     hands: PL_HANDS,
@@ -212,14 +401,15 @@ function straddlePlanche(): Pose {
 
 // ---------------------------------------------------------------- specs
 
-const wideRep = (): Keyframe[] => rep(push, PUSH_TOP, PUSH_BOTTOM, 0.4, 0.3);
-const PUSH_MID = round((PUSH_TOP + PUSH_BOTTOM) / 2);
+const wideRep = (): Keyframe[] => withSideways(rep(push, WIDE_TOP, PUSH_BOTTOM, 0.4, 0.3), WIDE);
+const TWO_VIEWS = ["side", "front"] as const;
 
 export const BATCH_AB_SPECS: DoodleSpec[] = [
   {
     id: "hf_3",
     slug: "wide-push-up",
     title: "Wide Push-Up",
+    views: TWO_VIEWS,
     transition: 0.5,
     frames: wideRep(),
   },
@@ -227,6 +417,7 @@ export const BATCH_AB_SPECS: DoodleSpec[] = [
     id: "fedb_push_up_wide",
     slug: "push-up-wide",
     title: "Push-Up Wide",
+    views: TWO_VIEWS,
     transition: 0.5,
     frames: wideRep(),
   },
@@ -234,6 +425,7 @@ export const BATCH_AB_SPECS: DoodleSpec[] = [
     id: "fedb_pushups_close_and_wide_hand_positions",
     slug: "pushups-close-and-wide-hand-positions",
     title: "Pushups (Close and Wide Hand Positions)",
+    views: TWO_VIEWS,
     transition: 0.4,
     frames: closeAndWide(),
   },
@@ -241,93 +433,74 @@ export const BATCH_AB_SPECS: DoodleSpec[] = [
     id: "hf_16",
     slug: "maltese-push-up",
     title: "Maltese Push-Up",
+    views: TWO_VIEWS,
     transition: 0.6,
-    frames: rep(maltese, MALTESE_TOP, -40, 0.4, 0.3),
+    frames: withSideways(rep(maltese, MALTESE_TOP3, -40, 0.4, 0.3), MALTESE_SW),
   },
   {
     id: "fedb_clock_push_up",
     slug: "clock-push-up",
     title: "Clock Push-Up",
+    views: TWO_VIEWS,
     transition: 0.35,
-    frames: [
-      // Land on soft elbows and flow straight into the next lowering.
-      { hold: 0, pose: push(-100) },
-      { hold: 0, pose: push(-74) },
-      { hold: 0.15, pose: push(-50) },
-      // Explode until the hands leave the floor (they land a step round the circle).
-      { hold: 0, pose: push(-82) },
-      { hold: 0, pose: push(-114) },
-      { hold: 0.1, pose: hop(-150) },
-      { hold: 0, pose: hop(-128) },
-    ],
+    frames: [...clockRep(-CLOCK_STEP / 2, CLOCK_STEP / 2), ...clockRep(CLOCK_STEP / 2, -CLOCK_STEP / 2)],
   },
   {
     id: "wger_583",
     slug: "side-to-side-push-up",
     title: "Side to Side Push Ups",
+    views: TWO_VIEWS,
     transition: 0.55,
-    frames: rep(push, PUSH_TOP, PUSH_BOTTOM, 0.4, 0.4),
+    frames: sideToSide(),
   },
   {
     id: "hf_7",
     slug: "typewriter-push-up",
     title: "Typewriter Push-Up",
-    transition: 0.5,
-    frames: [
-      { hold: 0.4, pose: push(PUSH_TOP) },
-      { hold: 0, pose: push(PUSH_MID) },
-      // Stay low while the chest slides across from one hand to the other.
-      { hold: 1.2, pose: push(-52) },
-      { hold: 0, pose: push(PUSH_MID) },
-    ],
+    views: TWO_VIEWS,
+    transition: 0.6,
+    frames: typewriter(),
   },
   {
     id: "ntc_plank_jacks",
     slug: "plank-jacks",
     title: "Plank jacks",
+    views: TWO_VIEWS,
     transition: 0.2,
     frames: [
-      { hold: 0.15, pose: plank() },
-      { hold: 0, pose: plankJackAir() },
-      { hold: 0.15, pose: plank() },
-      { hold: 0, pose: plankJackAir() },
+      { hold: 0.15, pose: jackPlank(JACK_IN), sideways: feetAt(JACK_IN) },
+      { hold: 0, pose: plankJackAir((JACK_IN + JACK_OUT) / 2), sideways: feetAt((JACK_IN + JACK_OUT) / 2) },
+      { hold: 0.15, pose: jackPlank(JACK_OUT), sideways: feetAt(JACK_OUT) },
+      { hold: 0, pose: plankJackAir((JACK_IN + JACK_OUT) / 2), sideways: feetAt((JACK_IN + JACK_OUT) / 2) },
     ],
   },
   {
     id: "ntc_lateral_plank_walk",
     slug: "lateral-plank-walk",
     title: "Lateral plank walk",
+    views: TWO_VIEWS,
     transition: 0.35,
-    frames: [
-      { hold: 0.3, pose: plank() },
-      { hold: 0.05, pose: plankStep("near") },
-      { hold: 0.3, pose: plank() },
-      { hold: 0.05, pose: plankStep("far") },
-    ],
+    frames: lateralWalk(),
   },
   {
     id: "hf_33",
     slug: "straddle-planche",
     title: "Straddle Planche",
+    views: TWO_VIEWS,
     transition: 0.7,
     frames: [
       { hold: 0.6, pose: tuckPlanche() },
-      { hold: 0, pose: extending() },
-      { hold: 1.8, pose: straddlePlanche() },
-      { hold: 0, pose: extending() },
+      { hold: 0, pose: extending(), sideways: EXTENDING },
+      { hold: 1.8, pose: straddlePlanche(), sideways: STRADDLE },
+      { hold: 0, pose: extending(), sideways: EXTENDING },
     ],
   },
   {
     id: "fedb_isometric_wipers",
     slug: "isometric-wipers",
     title: "Isometric Wipers",
+    views: TWO_VIEWS,
     transition: 0.6,
-    frames: [
-      // Held low over one hand, pressed up through the centre, held low over the other.
-      { hold: 1.4, pose: push(-62) },
-      { hold: 0.1, pose: push(-94) },
-      { hold: 1.4, pose: push(-62) },
-      { hold: 0.1, pose: push(-94) },
-    ],
+    frames: wipers(),
   },
 ];

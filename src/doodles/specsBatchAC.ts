@@ -1,5 +1,6 @@
 import { dist, solvePose } from "./rig";
-import type { DoodleSpec, Keyframe, Point, Pose, Prop } from "./rig";
+import type { DoodleSpec, Keyframe, Point, Pose, Prop, Sideways } from "./rig";
+import { lockedY3, reach3 } from "./specsBatchAA";
 import { LOCKED, lockedShoulderY, pushUp, rep, straightBody } from "./specsBatchC";
 import { plank } from "./specsBatchI";
 
@@ -95,6 +96,12 @@ function incline(shoulderY: number): Pose {
 }
 
 const inclineRep = (): Keyframe[] => rep(incline, INCLINE_TOP, INCLINE_BOTTOM, 0.4, 0.3);
+
+/** Second view (#174): hands on the box well outside the shoulders (±22), elbows flaring as the chest lowers. */
+const INCLINE_WIDE: Sideways = { hands: { near: -52, far: 52 }, elbows: { near: { out: 65 }, far: { out: 65 } } };
+const INCLINE_WIDE_TOP = lockedY3(incline, INCLINE_WIDE, ["near", "far"], -260, -100);
+const inclineWideRep = (): Keyframe[] =>
+  rep(incline, INCLINE_WIDE_TOP, INCLINE_BOTTOM, 0.4, 0.3).map((frame) => ({ ...frame, sideways: INCLINE_WIDE }));
 
 /**
  * Incline scapular push-up: pelvis, feet and hands fixed, arms locked. Pushed
@@ -234,17 +241,32 @@ const LEG_WHEEL_FRAMES: Keyframe[] = [
 
 // ---------------------------------------------------------------- climbers and crawls
 
-/** Cross-body climber: a knee drives in low under the chest (across towards the other elbow). */
+/** Cross-body climber: a knee drives in low under the chest, across to finish under the other shoulder. */
+const zOut = (side: Side): number => (side === "near" ? -1 : 1);
+/** Second view: the knee crosses the midline to under the opposite shoulder (±22); the foot follows partway. */
+const CROSS_KNEE_Z = 24;
+const CROSS_ANKLE_Z = 2;
+const HIP_Z = 8;
+
 function crossClimber(side: Side): Pose {
   const base = plank();
   const pelvis = base.pelvis as Point;
-  const k = along(pelvis, 40, THIGH);
-  const ankle = along(k, 170, SHIN);
+  // Across the body: the knee ends on the other side of the midline.
+  const k = reach3(pelvis, 40, THIGH, CROSS_KNEE_Z + HIP_Z);
+  const ankle = reach3(k, 170, SHIN, CROSS_KNEE_Z - CROSS_ANKLE_Z);
   return {
     ...base,
     knees: { [side]: { at: k } },
     feet: { [side]: ankle, [other(side)]: base.feet?.near as Point },
     toes: { [side]: 30, [other(side)]: 62 },
+  };
+}
+
+function crossSideways(side: Side): Sideways {
+  const across = -zOut(side);
+  return {
+    knees: { [side]: { at: across * CROSS_KNEE_Z } },
+    feet: { [side]: across * CROSS_ANKLE_Z },
   };
 }
 
@@ -317,11 +339,11 @@ const GROIN_HANDS = { near: GROIN_HAND, far: [GROIN_HAND[0] - 2, 0] as Point };
 function groinSquat(): Pose {
   const pelvis: Point = [-40, -50];
   const ankle: Point = [32, 0];
-  const k = knee(pelvis, ankle, true);
+  // Knees bend forward (and roll out in the second view, see GROIN_SQUAT).
   const base: Pose = {
     pelvis,
     hands: GROIN_HANDS,
-    knees: { near: { at: k }, far: { at: knee(pelvis, [ankle[0] - 3, 0], true) } },
+    knees: { near: { bend: -1 }, far: { bend: -1 } },
     feet: { near: ankle, far: [ankle[0] - 3, 0] },
     toes: { near: 0, far: 0 },
   };
@@ -334,15 +356,28 @@ function groinSquat(): Pose {
 function groinAir(): Pose {
   const pelvis: Point = [-58, -104];
   const ankle: Point = [-70, -30];
-  const k = knee(pelvis, ankle, true);
   return {
     pelvis,
     hands: GROIN_HANDS,
-    knees: { near: { at: k }, far: { at: k } },
+    knees: { near: { bend: -1 }, far: { bend: -1 } },
     feet: { near: ankle, far: ankle },
     toes: { near: 40, far: 40 },
   };
 }
+
+/**
+ * Second view: hands on the floor inside the shoulders, the feet land wide,
+ * outside the hands, knees pushed out over the toes.
+ */
+const GROIN_HAND_Z = 16;
+const groinSideways = (footZ: number, out: number): Sideways => ({
+  hands: { near: -GROIN_HAND_Z, far: GROIN_HAND_Z },
+  feet: { near: -footZ, far: footZ },
+  knees: { near: { out }, far: { out } },
+});
+const GROIN_PLANK = groinSideways(HIP_Z, 0);
+const GROIN_AIR = groinSideways(34, 45);
+const GROIN_SQUAT = groinSideways(58, 60);
 
 // ---------------------------------------------------------------- specs
 
@@ -359,9 +394,10 @@ export const BATCH_AC_SPECS: DoodleSpec[] = [
     id: "fedb_incline_push_up_wide",
     slug: "incline-push-up-wide",
     title: "Incline Push-Up Wide",
+    views: ["side", "front"],
     props: [INCLINE_PROP],
     transition: 0.5,
-    frames: inclineRep(),
+    frames: inclineWideRep(),
   },
   {
     id: "wger_1716",
@@ -423,10 +459,11 @@ export const BATCH_AC_SPECS: DoodleSpec[] = [
     id: "ntc_cross_body_climber",
     slug: "cross-body-mountain-climber",
     title: "Cross-body mountain climber",
+    views: ["side", "front"],
     transition: 0.26,
     frames: [
-      { hold: 0.12, pose: crossClimber("near") },
-      { hold: 0.12, pose: crossClimber("far") },
+      { hold: 0.12, pose: crossClimber("near"), sideways: crossSideways("near") },
+      { hold: 0.12, pose: crossClimber("far"), sideways: crossSideways("far") },
     ],
   },
   {
@@ -461,12 +498,13 @@ export const BATCH_AC_SPECS: DoodleSpec[] = [
     id: "fedb_groiners",
     slug: "groiners",
     title: "Groiners",
+    views: ["side", "front"],
     transition: 0.24,
     frames: [
-      { hold: 0.3, pose: { ...plank(), chest: undefined } },
-      { hold: 0, pose: groinAir() },
-      { hold: 0.5, pose: groinSquat() },
-      { hold: 0, pose: groinAir() },
+      { hold: 0.3, pose: { ...plank(), chest: undefined }, sideways: GROIN_PLANK },
+      { hold: 0, pose: groinAir(), sideways: GROIN_AIR },
+      { hold: 0.5, pose: groinSquat(), sideways: GROIN_SQUAT },
+      { hold: 0, pose: groinAir(), sideways: GROIN_AIR },
     ],
   },
 ];
