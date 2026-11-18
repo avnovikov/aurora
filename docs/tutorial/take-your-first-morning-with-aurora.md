@@ -16,7 +16,7 @@ Most training apps use a weekday calendar. Aurora does not. It keeps a **plan qu
 
 The **dose** is the prescribed sets and reps or hold for each station. Sleep quality, optional pain, recent load, and pulse on the Android app can lighten that dose when you start.
 
-Training history, readiness, sleep, pulse, and related health signals stay on the device in version 0.1. On Android they sit in **AuroraSecure**, Keystore-backed storage rather than plaintext. Terms: [../TERMS.md](../TERMS.md). Tab names and fields: [../reference/aurora-shell-tabs.md](../reference/aurora-shell-tabs.md).
+Training history, readiness, sleep, pulse, and related health signals stay on the device in version 0.1. On Android they sit in **AuroraSecure**, Keystore-backed storage rather than plaintext. Privacy: [../PRIVACY.md](../PRIVACY.md). Tab names and fields: [../reference/aurora-shell-tabs.md](../reference/aurora-shell-tabs.md).
 
 The tutorial consists of eight parts: setup, Library, Plan, Today, Session, Progress, History, and Body.
 
@@ -150,5 +150,6 @@ In this tutorial you filled You and Gear, seeded Upper body, browsed Library, re
 | Doc | What it holds |
 |-----|----------------|
 | [Shell tabs reference](../reference/aurora-shell-tabs.md) | Tab, session, and storage lookup |
-| [Terms](../TERMS.md) | Local-only data and AuroraSecure |
+| [Privacy](../PRIVACY.md) | Local-only data; GDPR and CCPA/CPRA |
+| [Terms](../TERMS.md) | Use conditions and disclaimer |
 | [Root README](../../README.md) | Install, signing fingerprint, develop commands |
