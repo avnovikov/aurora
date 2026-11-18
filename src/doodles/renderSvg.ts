@@ -62,6 +62,21 @@ const bandPath = (share: number): Path => (p) => [onThigh(p, "near", share), onT
 /** Band stroke: thinner than the limbs, in the accent colour so it reads as gear, not a bone. */
 const BAND_WIDTH = 5;
 
+/** An ab wheel centred on the near hand (drawn over the near arm, like a held object). */
+function wheelSvg(spec: DoodleSpec, poses: Solved[], timing: string, map: Mapper, scale: number): string {
+  if (spec.wheel === undefined) return "";
+  const centres = poses.map((pose) => map(pose.arms.near.end));
+  return `<circle cx="${fmt(centres[0][0])}" cy="${fmt(centres[0][1])}" r="${fmt(spec.wheel * scale)}" style="fill:${PAPER}">${animate(
+    "cx",
+    centres.map((p) => fmt(p[0])),
+    timing,
+  )}${animate(
+    "cy",
+    centres.map((p) => fmt(p[1])),
+    timing,
+  )}</circle>`;
+}
+
 function bandSvg(spec: DoodleSpec, poses: Solved[], timing: string, map: Mapper): string {
   if (spec.band === undefined) return "";
   return `<g style="stroke:${FOCUS_COLOUR}" stroke-width="${BAND_WIDTH}">${animatedPolyline(bandPath(spec.band), poses, timing, 1, map)}</g>`;
@@ -261,7 +276,7 @@ export function highlightSvg(focus: Focus | undefined, poses: Solved[], timing: 
 
 /** The figure (far side first), drawn through `map`; `headScale` keeps the head in proportion. */
 /** Drawable parts of the figure, in the side view's back-to-front order. */
-export const FIGURE_PARTS = ["legFar", "armFar", "spine", "head", "legNear", "band", "armNear"] as const;
+export const FIGURE_PARTS = ["legFar", "armFar", "spine", "head", "legNear", "band", "armNear", "wheel"] as const;
 export type FigurePart = (typeof FIGURE_PARTS)[number];
 
 /**
@@ -295,6 +310,7 @@ export function figureSvg(
     legNear: () => animatedPolyline(legPath("near"), poses, timing, 1, map),
     band: () => bandSvg(spec, poses, timing, map),
     armNear: () => animatedPolyline(armPath("near"), poses, timing, 1, map),
+    wheel: () => wheelSvg(spec, poses, timing, map, headScale),
   };
   return order.map((part) => parts[part]()).join("");
 }

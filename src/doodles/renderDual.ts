@@ -66,10 +66,10 @@ function depthOf(part: FigurePart, poses: Figure3[]): number {
 
 /** Front panel draw order: furthest from the viewer first (the band stays with the near leg). */
 export function frontOrder(poses: Figure3[]): FigurePart[] {
-  const parts: FigurePart[] = FIGURE_PARTS.filter((part) => part !== "band");
+  const parts: FigurePart[] = FIGURE_PARTS.filter((part) => part !== "band" && part !== "wheel");
   const sorted = [...parts].sort((a, b) => depthOf(a, poses) - depthOf(b, poses));
   sorted.splice(sorted.indexOf("legNear") + 1, 0, "band");
-  return sorted;
+  return [...sorted, "wheel"];
 }
 
 export interface DualLayout {

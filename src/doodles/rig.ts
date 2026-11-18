@@ -131,6 +131,11 @@ export interface DoodleSpec {
    */
   band?: number;
   /**
+   * An ab wheel of this radius held in the hands: a circle centred on the near
+   * hand that rolls with it. Pin the hands at y = -radius so it sits on the floor.
+   */
+  wheel?: number;
+  /**
    * Draw the move twice, side view and front view next to each other, from one
    * 3D-solved figure (keyframe `sideways`). Only when a reviewer asks for it (ADD VIEW).
    */
