@@ -296,7 +296,8 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "hf_159": "/doodles/doodle-pigeon-pose.svg",
   "hf_77": "/doodles/doodle-hindu-squat.svg",
   "hf_164": "/doodles/doodle-middle-split.svg",
-  "hf_160": "/doodles/doodle-frog-stretch.svg"
+  "hf_160": "/doodles/doodle-frog-stretch.svg",
+  "hf_6": "/doodles/doodle-archer-push-up.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
