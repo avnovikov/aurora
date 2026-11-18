@@ -3,11 +3,11 @@ import { describe, expect, it } from "vitest";
 import { buildFedbCatalogue, parseFedbJson } from "../../src/data/fedb/buildCatalogue";
 import { fedbExerciseId, mapFedbExerciseRecord } from "../../src/data/fedb/mapFedbExercise";
 import {
-  DUMBBELL_EQUIPMENT,
   FEDB_ALLOW_OTHER,
   FEDB_DENY,
   FEDB_RECLASSIFY,
   FEDB_SAME_AS_EXISTING,
+  KETTLEBELL_EQUIPMENT,
 } from "../../src/data/fedb/selection";
 import { FEDB_ATTRIBUTION, type FedbExerciseRecord } from "../../src/data/fedb/types";
 import { FEDB_CATALOGUE } from "../../src/data/generated/fedbCatalogue";
@@ -92,7 +92,7 @@ describe("mapFedbExerciseRecord", () => {
 });
 
 describe("buildFedbCatalogue", () => {
-  it("skips non-dumbbell equipment moves, denied moves and names already in the library", () => {
+  it("skips non-kettlebell equipment moves, denied moves and names already in the library", () => {
     const records = [
       record({ id: "A", name: "Clock Push-Up" }),
       record({ id: "B", name: "Barbell Curl", equipment: "barbell" }),
@@ -100,13 +100,13 @@ describe("buildFedbCatalogue", () => {
       record({ id: "D", name: "Pushups" }),
       record({ id: "E", name: "Bodyweight Squats" }),
       record({ id: "F", name: "Suspended Row", equipment: "other", primaryMuscles: ["middle back"] }),
-      record({ id: "G", name: "Dumbbell Bench Press", equipment: DUMBBELL_EQUIPMENT, primaryMuscles: ["chest"] }),
+      record({ id: "G", name: "Kettlebell Swing", equipment: KETTLEBELL_EQUIPMENT, primaryMuscles: ["hamstrings"] }),
     ];
     const existing = [SEED_EXERCISES.find((item) => item.id === "bodyweight_squat")!];
     const { catalogue, skippedDuplicates } = buildFedbCatalogue(records, existing);
     expect(catalogue.map((item) => item.name)).toEqual([
       "Clock Push-Up",
-      "Dumbbell Bench Press",
+      "Kettlebell Swing",
       "Suspended Row",
     ]);
     expect(skippedDuplicates).toEqual(["Pushups", "Bodyweight Squats"]);

@@ -88,6 +88,44 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
+    "id": "fedb_advanced_kettlebell_windmill",
+    "name": "Advanced Kettlebell Windmill",
+    "pattern": "core_compression",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "abdominals",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "core"
+    ],
+    "cues": [
+      "Clean and press a kettlebell overhead with one arm.",
+      "Keeping the kettlebell locked out at all times, push your butt out in the direction of the locked out kettlebell. Keep the non-working arm behind your back and turn your feet out at a forty-five degree angle from the arm with the kettlebell.",
+      "Lower yourself as far as possible.",
+      "Pause for a second and reverse the motion back to the starting position."
+    ],
+    "description": "Clean and press a kettlebell overhead with one arm. Keeping the kettlebell locked out at all times, push your butt out in the direction of the locked out kettlebell. Keep the non-working arm behind your back and turn your feet out at a forty-five degree angle from the arm with the kettlebell. Lower yourself as far as possible. Pause for a second and reverse the motion back to the starting position.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
     "id": "fedb_air_bike",
     "name": "Air Bike",
     "pattern": "core_compression",
@@ -142,38 +180,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_alternate_hammer_curl",
-    "name": "Alternate Hammer Curl",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "biceps",
-        "role": "primary"
-      },
-      {
-        "group": "forearms",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Stand up with your torso upright and a dumbbell in each hand being held at arms length. The elbows should be close to the torso.",
-      "The palms of the hands should be facing your torso. This will be your starting position.",
-      "While holding the upper arm stationary, curl the right weight forward while contracting the biceps as you breathe out. Continue the movement until your biceps is fully contracted and the dumbbells are at shoulder level. Hold the contracted position for a second as you squeeze the biceps. Tip: Only the forearms should move.",
-      "Slowly begin to bring the dumbbells back to starting position as your breathe in.",
-      "Repeat the movement with the left hand. This equals one repetition.",
-      "Continue alternating in this manner for the recommended amount of repetitions."
-    ],
-    "description": "Stand up with your torso upright and a dumbbell in each hand being held at arms length. The elbows should be close to the torso. The palms of the hands should be facing your torso. This will be your starting position. While holding the upper arm stationary, curl the right weight forward while contracting the biceps as you breathe out. Continue the movement until your biceps is fully contracted and the dumbbells are at shoulder level. Hold the contracted position for a second as you squeeze the biceps. Tip: Only the forearms should move. Slowly begin to bring the dumbbells back to starting position as your breathe in. Repeat the movement with the left hand. This equals one repetition. Continue alternating in this manner for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
     "id": "fedb_alternate_heel_touchers",
     "name": "Alternate Heel Touchers",
     "pattern": "core_compression",
@@ -197,37 +203,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
       "Continue alternating sides in this manner until all prescribed repetitions are done."
     ],
     "description": "Lie on the floor with the knees bent and the feet on the floor around 18-24 inches apart. Your arms should be extended by your side. This will be your starting position. Crunch over your torso forward and up about 3-4 inches to the right side and touch your right heel as you hold the contraction for a second. Exhale while performing this movement. Now go back slowly to the starting position as you inhale. Now crunch over your torso forward and up around 3-4 inches to the left side and touch your left heel as you hold the contraction for a second. Exhale while performing this movement and then go back to the starting position as you inhale. Now that both heels have been touched, that is considered 1 repetition. Continue alternating sides in this manner until all prescribed repetitions are done.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_alternate_incline_dumbbell_curl",
-    "name": "Alternate Incline Dumbbell Curl",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "biceps",
-        "role": "primary"
-      },
-      {
-        "group": "forearms",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Sit down on an incline bench with a dumbbell in each hand being held at arms length. Tip: Keep the elbows close to the torso.This will be your starting position.",
-      "While holding the upper arm stationary, curl the right weight forward while contracting the biceps as you breathe out. As you do so, rotate the hand so that the palm is facing up. Continue the movement until your biceps is fully contracted and the dumbbells are at shoulder level. Hold the contracted position for a second as you squeeze the biceps. Tip: Only the forearms should move.",
-      "Slowly begin to bring the dumbbell back to starting position as your breathe in.",
-      "Repeat the movement with the left hand. This equals one repetition.",
-      "Continue alternating in this manner for the recommended amount of repetitions."
-    ],
-    "description": "Sit down on an incline bench with a dumbbell in each hand being held at arms length. Tip: Keep the elbows close to the torso.This will be your starting position. While holding the upper arm stationary, curl the right weight forward while contracting the biceps as you breathe out. As you do so, rotate the hand so that the palm is facing up. Continue the movement until your biceps is fully contracted and the dumbbells are at shoulder level. Hold the contracted position for a second as you squeeze the biceps. Tip: Only the forearms should move. Slowly begin to bring the dumbbell back to starting position as your breathe in. Repeat the movement with the left hand. This equals one repetition. Continue alternating in this manner for the recommended amount of repetitions.",
     "difficulty": "beginner",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
@@ -279,14 +254,26 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_alternating_deltoid_raise",
-    "name": "Alternating Deltoid Raise",
-    "pattern": "vertical_push",
+    "id": "fedb_alternating_floor_press",
+    "name": "Alternating Floor Press",
+    "pattern": "horizontal_push",
     "type": "dynamic",
     "muscles": [
       {
-        "group": "shoulders",
+        "group": "chest",
         "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "secondary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
       }
     ],
     "joints": [],
@@ -295,14 +282,169 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
       "push"
     ],
     "cues": [
-      "In a standing position, hold a pair of dumbbells at your side.",
-      "Keeping your elbows slightly bent, raise the weights directly in front of you to shoulder height, avoiding any swinging or cheating.",
-      "Return the weights to your side.",
-      "On the next repetition, raise the weights laterally, raising them out to your side to about shoulder height.",
-      "Return the weights to the starting position and continue alternating to the front and side."
+      "Lie on the floor with two kettlebells next to your shoulders.",
+      "Position one in place on your chest and then the other, gripping the kettlebells on the handle with the palms facing forward.",
+      "Extend both arms, so that the kettlebells are being held above your chest. Lower one kettlebell, bringing it to your chest and turn the wrist in the direction of the locked out kettlebell.",
+      "Raise the kettlebell and repeat on the opposite side."
     ],
-    "description": "In a standing position, hold a pair of dumbbells at your side. Keeping your elbows slightly bent, raise the weights directly in front of you to shoulder height, avoiding any swinging or cheating. Return the weights to your side. On the next repetition, raise the weights laterally, raising them out to your side to about shoulder height. Return the weights to the starting position and continue alternating to the front and side.",
+    "description": "Lie on the floor with two kettlebells next to your shoulders. Position one in place on your chest and then the other, gripping the kettlebells on the handle with the palms facing forward. Extend both arms, so that the kettlebells are being held above your chest. Lower one kettlebell, bringing it to your chest and turn the wrist in the direction of the locked out kettlebell. Raise the kettlebell and repeat on the opposite side.",
     "difficulty": "beginner",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_alternating_hang_clean",
+    "name": "Alternating Hang Clean",
+    "pattern": "hinge",
+    "type": "isometric",
+    "muscles": [
+      {
+        "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "biceps",
+        "role": "secondary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      },
+      {
+        "group": "forearms",
+        "role": "secondary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "lower back",
+        "role": "secondary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Place two kettlebells between your feet. To get in the starting position, push your butt back and look straight ahead.",
+      "Clean one kettlebell to your shoulder and hold on to the other kettlebell in a hanging position. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulders. Rotate your wrist as you do so.",
+      "Lower the cleaned kettlebell to a hanging position and clean the alternate kettlebell. Repeat."
+    ],
+    "description": "Place two kettlebells between your feet. To get in the starting position, push your butt back and look straight ahead. Clean one kettlebell to your shoulder and hold on to the other kettlebell in a hanging position. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulders. Rotate your wrist as you do so. Lower the cleaned kettlebell to a hanging position and clean the alternate kettlebell. Repeat.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_alternating_kettlebell_press",
+    "name": "Alternating Kettlebell Press",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Clean two kettlebells to your shoulders. Clean the kettlebells to your shoulders by extending through the legs and hips as you pull the kettlebells towards your shoulders. Rotate your wrists as you do so.",
+      "Press one directly overhead by extending through the elbow, turning it so the palm faces forward while holding the other kettlebell stationary .",
+      "Lower the pressed kettlebell to the starting position and immediately press with your other arm."
+    ],
+    "description": "Clean two kettlebells to your shoulders. Clean the kettlebells to your shoulders by extending through the legs and hips as you pull the kettlebells towards your shoulders. Rotate your wrists as you do so. Press one directly overhead by extending through the elbow, turning it so the palm faces forward while holding the other kettlebell stationary . Lower the pressed kettlebell to the starting position and immediately press with your other arm.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_alternating_kettlebell_row",
+    "name": "Alternating Kettlebell Row",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "middle back",
+        "role": "primary"
+      },
+      {
+        "group": "biceps",
+        "role": "secondary"
+      },
+      {
+        "group": "lats",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Place two kettlebells in front of your feet. Bend your knees slightly and push your butt out as much as possible. As you bend over to get into the starting position grab both kettlebells by the handles.",
+      "Pull one kettlebell off of the floor while holding on to the other kettlebell. Retract the shoulder blade of the working side, as you flex the elbow, drawing the kettlebell towards your stomach or rib cage.",
+      "Lower the kettlebell in the working arm and repeat with your other arm."
+    ],
+    "description": "Place two kettlebells in front of your feet. Bend your knees slightly and push your butt out as much as possible. As you bend over to get into the starting position grab both kettlebells by the handles. Pull one kettlebell off of the floor while holding on to the other kettlebell. Retract the shoulder blade of the working side, as you flex the elbow, drawing the kettlebell towards your stomach or rib cage. Lower the kettlebell in the working arm and repeat with your other arm.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_alternating_renegade_row",
+    "name": "Alternating Renegade Row",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "middle back",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "secondary"
+      },
+      {
+        "group": "biceps",
+        "role": "secondary"
+      },
+      {
+        "group": "chest",
+        "role": "secondary"
+      },
+      {
+        "group": "lats",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Place two kettlebells on the floor about shoulder width apart. Position yourself on your toes and your hands as though you were doing a pushup, with the body straight and extended. Use the handles of the kettlebells to support your upper body. You may need to position your feet wide for support.",
+      "Push one kettlebell into the floor and row the other kettlebell, retracting the shoulder blade of the working side as you flex the elbow, pulling it to your side.",
+      "Then lower the kettlebell to the floor and begin the kettlebell in the opposite hand. Repeat for several reps."
+    ],
+    "description": "Place two kettlebells on the floor about shoulder width apart. Position yourself on your toes and your hands as though you were doing a pushup, with the body straight and extended. Use the handles of the kettlebells to support your upper body. You may need to position your feet wide for support. Push one kettlebell into the floor and row the other kettlebell, retracting the shoulder blade of the working side as you flex the elbow, pulling it to your side. Then lower the kettlebell to the floor and begin the kettlebell in the opposite hand. Repeat for several reps.",
+    "difficulty": "advanced",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
@@ -355,66 +497,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     ],
     "description": "From a lying position, bend your knees and keep your feet on the floor. Place your ankle of one foot on your opposite knee. Grasp the thigh or knee of the bottom leg and pull both of your legs into the chest. Relax your neck and shoulders. Hold for 10-20 seconds and then switch sides.",
     "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_arnold_dumbbell_press",
-    "name": "Arnold Dumbbell Press",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      },
-      {
-        "group": "triceps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Sit on an exercise bench with back support and hold two dumbbells in front of you at about upper chest level with your palms facing your body and your elbows bent. Tip: Your arms should be next to your torso. The starting position should look like the contracted portion of a dumbbell curl.",
-      "Now to perform the movement, raise the dumbbells as you rotate the palms of your hands until they are facing forward.",
-      "Continue lifting the dumbbells until your arms are extended above you in straight arm position. Breathe out as you perform this portion of the movement.",
-      "After a second pause at the top, begin to lower the dumbbells to the original position by rotating the palms of your hands towards you. Tip: The left arm will be rotated in a counter clockwise manner while the right one will be rotated clockwise. Breathe in as you perform this portion of the movement.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Sit on an exercise bench with back support and hold two dumbbells in front of you at about upper chest level with your palms facing your body and your elbows bent. Tip: Your arms should be next to your torso. The starting position should look like the contracted portion of a dumbbell curl. Now to perform the movement, raise the dumbbells as you rotate the palms of your hands until they are facing forward. Continue lifting the dumbbells until your arms are extended above you in straight arm position. Breathe out as you perform this portion of the movement. After a second pause at the top, begin to lower the dumbbells to the original position by rotating the palms of your hands towards you. Tip: The left arm will be rotated in a counter clockwise manner while the right one will be rotated clockwise. Breathe in as you perform this portion of the movement. Repeat for the recommended amount of repetitions.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_around_the_worlds",
-    "name": "Around The Worlds",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "chest",
-        "role": "primary"
-      },
-      {
-        "group": "shoulders",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Lay down on a flat bench holding a dumbbell in each hand with the palms of the hands facing towards the ceiling. Tip: Your arms should be parallel to the floor and next to your thighs. To avoid injury, make sure that you keep your elbows slightly bent. This will be your starting position.",
-      "Now move the dumbbells by creating a semi-circle as you displace them from the initial position to over the head. All of the movement should happen with the arms parallel to the floor at all times. Breathe in as you perform this portion of the movement.",
-      "Reverse the movement to return the weight to the starting position as you exhale."
-    ],
-    "description": "Lay down on a flat bench holding a dumbbell in each hand with the palms of the hands facing towards the ceiling. Tip: Your arms should be parallel to the floor and next to your thighs. To avoid injury, make sure that you keep your elbows slightly bent. This will be your starting position. Now move the dumbbells by creating a semi-circle as you displace them from the initial position to over the head. All of the movement should happen with the arms parallel to the floor at all times. Breathe in as you perform this portion of the movement. Reverse the movement to return the weight to the starting position as you exhale.",
-    "difficulty": "intermediate",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
@@ -488,116 +570,29 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_bent_over_dumbbell_rear_delt_raise_with_head_on_bench",
-    "name": "Bent Over Dumbbell Rear Delt Raise With Head On Bench",
-    "pattern": "vertical_push",
+    "id": "fedb_bent_press",
+    "name": "Bent Press",
+    "pattern": "core_compression",
     "type": "dynamic",
     "muscles": [
       {
-        "group": "shoulders",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Stand up straight while holding a dumbbell in each hand and with an incline bench in front of you.",
-      "While keeping your back straight and maintaining the natural arch of your back, lean forward until your forehead touches the bench in front of you. Let the arms hang in front of you perpendicular to the ground. The palms of your hands should be facing each other and your torso should be parallel to the floor. This will be your starting position.",
-      "Keeping your torso forward and stationary, and the arms straight with a slight bend at the elbows, lift the dumbbells straight to the side until both arms are parallel to the floor. Exhale as you lift the weights. Caution: avoid swinging the torso or bringing the arms back as opposed to the side.",
-      "After a one second contraction at the top, slowly lower the dumbbells back to the starting position.",
-      "Repeat the recommended amount of repetitions."
-    ],
-    "description": "Stand up straight while holding a dumbbell in each hand and with an incline bench in front of you. While keeping your back straight and maintaining the natural arch of your back, lean forward until your forehead touches the bench in front of you. Let the arms hang in front of you perpendicular to the ground. The palms of your hands should be facing each other and your torso should be parallel to the floor. This will be your starting position. Keeping your torso forward and stationary, and the arms straight with a slight bend at the elbows, lift the dumbbells straight to the side until both arms are parallel to the floor. Exhale as you lift the weights. Caution: avoid swinging the torso or bringing the arms back as opposed to the side. After a one second contraction at the top, slowly lower the dumbbells back to the starting position. Repeat the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_bent_over_two_dumbbell_row",
-    "name": "Bent Over Two-Dumbbell Row",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "middle back",
+        "group": "abdominals",
         "role": "primary"
       },
       {
-        "group": "biceps",
+        "group": "glutes",
         "role": "secondary"
       },
       {
-        "group": "lats",
+        "group": "hamstrings",
         "role": "secondary"
       },
       {
-        "group": "shoulders",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "With a dumbbell in each hand (palms facing your torso), bend your knees slightly and bring your torso forward by bending at the waist; as you bend make sure to keep your back straight until it is almost parallel to the floor. Tip: Make sure that you keep the head up. The weights should hang directly in front of you as your arms hang perpendicular to the floor and your torso. This is your starting position.",
-      "While keeping the torso stationary, lift the dumbbells to your side (as you breathe out), keeping the elbows close to the body (do not exert any force with the forearm other than holding the weights). On the top contracted position, squeeze the back muscles and hold for a second.",
-      "Slowly lower the weight again to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "With a dumbbell in each hand (palms facing your torso), bend your knees slightly and bring your torso forward by bending at the waist; as you bend make sure to keep your back straight until it is almost parallel to the floor. Tip: Make sure that you keep the head up. The weights should hang directly in front of you as your arms hang perpendicular to the floor and your torso. This is your starting position. While keeping the torso stationary, lift the dumbbells to your side (as you breathe out), keeping the elbows close to the body (do not exert any force with the forearm other than holding the weights). On the top contracted position, squeeze the back muscles and hold for a second. Slowly lower the weight again to the starting position as you inhale. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_bent_over_two_dumbbell_row_with_palms_in",
-    "name": "Bent Over Two-Dumbbell Row With Palms In",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "middle back",
-        "role": "primary"
-      },
-      {
-        "group": "biceps",
+        "group": "lower back",
         "role": "secondary"
       },
       {
-        "group": "lats",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "With a dumbbell in each hand (palms facing each other), bend your knees slightly and bring your torso forward, by bending at the waist, while keeping the back straight until it is almost parallel to the floor. Tip: Make sure that you keep the head up. The weights should hang directly in front of you as your arms hang perpendicular to the floor and your torso. This is your starting position.",
-      "While keeping the torso stationary, lift the dumbbells to your side as you breathe out, squeezing your shoulder blades together. On the top contracted position, squeeze the back muscles and hold for a second.",
-      "Slowly lower the weight again to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "With a dumbbell in each hand (palms facing each other), bend your knees slightly and bring your torso forward, by bending at the waist, while keeping the back straight until it is almost parallel to the floor. Tip: Make sure that you keep the head up. The weights should hang directly in front of you as your arms hang perpendicular to the floor and your torso. This is your starting position. While keeping the torso stationary, lift the dumbbells to your side as you breathe out, squeezing your shoulder blades together. On the top contracted position, squeeze the back muscles and hold for a second. Slowly lower the weight again to the starting position as you inhale. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_bent_arm_dumbbell_pullover",
-    "name": "Bent-Arm Dumbbell Pullover",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "chest",
-        "role": "primary"
-      },
-      {
-        "group": "lats",
+        "group": "quadriceps",
         "role": "secondary"
       },
       {
@@ -612,18 +607,15 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "joints": [],
     "role": "work",
     "regions": [
-      "push"
+      "core"
     ],
     "cues": [
-      "Place a dumbbell standing up on a flat bench.",
-      "Ensuring that the dumbbell stays securely placed at the top of the bench, lie perpendicular to the bench (torso across it as in forming a cross) with only your shoulders lying on the surface. Hips should be below the bench and legs bent with feet firmly on the floor. The head will be off the bench as well.",
-      "Grasp the dumbbell with both hands and hold it straight over your chest with a bend in your arms. Both palms should be pressing against the underside one of the sides of the dumbbell. This will be your starting position. Caution: Always ensure that the dumbbell used for this exercise is secure. Using a dumbbell with loose plates can result in the dumbbell falling apart and falling on your face.",
-      "While keeping your arms locked in the bent arm position, lower the weight slowly in an arc behind your head while breathing in until you feel a stretch on the chest.",
-      "At that point, bring the dumbbell back to the starting position using the arc through which the weight was lowered and exhale as you perform this movement.",
-      "Hold the weight on the initial position for a second and repeat the motion for the prescribed number of repetitions."
+      "Clean a kettlebell to your shoulder. Clean the kettlebell to your shoulders by extending through the legs and hips as you raise the kettlebell towards your shoulder. The wrist should rotate as you do so. This will be your starting position.",
+      "Begin my leaning to the side opposite the kettlebell, continuing until you are able to touch the ground with your free hand, keeping your eyes on the kettlebell. As you do so, press the weight vertically be extending through the elbow, keeping your arm perpendicular to the ground.",
+      "Return to an upright position, with the kettlebell above your head. Return the kettlebell to the shoulder and repeat for the desired number of repetitions."
     ],
-    "description": "Place a dumbbell standing up on a flat bench. Ensuring that the dumbbell stays securely placed at the top of the bench, lie perpendicular to the bench (torso across it as in forming a cross) with only your shoulders lying on the surface. Hips should be below the bench and legs bent with feet firmly on the floor. The head will be off the bench as well. Grasp the dumbbell with both hands and hold it straight over your chest with a bend in your arms. Both palms should be pressing against the underside one of the sides of the dumbbell. This will be your starting position. Caution: Always ensure that the dumbbell used for this exercise is secure. Using a dumbbell with loose plates can result in the dumbbell falling apart and falling on your face. While keeping your arms locked in the bent arm position, lower the weight slowly in an arc behind your head while breathing in until you feel a stretch on the chest. At that point, bring the dumbbell back to the starting position using the arc through which the weight was lowered and exhale as you perform this movement. Hold the weight on the initial position for a second and repeat the motion for the prescribed number of repetitions.",
-    "difficulty": "intermediate",
+    "description": "Clean a kettlebell to your shoulder. Clean the kettlebell to your shoulders by extending through the legs and hips as you raise the kettlebell towards your shoulder. The wrist should rotate as you do so. This will be your starting position. Begin my leaning to the side opposite the kettlebell, continuing until you are able to touch the ground with your free hand, keeping your eyes on the kettlebell. As you do so, press the weight vertically be extending through the elbow, keeping your arm perpendicular to the ground. Return to an upright position, with the kettlebell above your head. Return the kettlebell to the shoulder and repeat for the desired number of repetitions.",
+    "difficulty": "advanced",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
@@ -811,6 +803,38 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
+    "id": "fedb_bottoms_up_clean_from_the_hang_position",
+    "name": "Bottoms-Up Clean From The Hang Position",
+    "pattern": "mobility",
+    "type": "isometric",
+    "muscles": [
+      {
+        "group": "forearms",
+        "role": "primary"
+      },
+      {
+        "group": "biceps",
+        "role": "secondary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "general"
+    ],
+    "cues": [
+      "Initiate the exercise by standing upright with a kettlebell in one hand.",
+      "Swing the kettlebell back forcefully and then reverse the motion forcefully. Crush the kettlebell handle as hard as possible and raise the kettlebell to your shoulder."
+    ],
+    "description": "Initiate the exercise by standing upright with a kettlebell in one hand. Swing the kettlebell back forcefully and then reverse the motion forcefully. Crush the kettlebell handle as hard as possible and raise the kettlebell to your shoulder.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
     "id": "fedb_butt_ups",
     "name": "Butt-Ups",
     "pattern": "core_compression",
@@ -835,33 +859,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     ],
     "description": "Begin a pushup position but with your elbows on the ground and resting on your forearms. Your arms should be bent at a 90 degree angle. Arch your back slightly out rather than keeping your back completely straight. Raise your glutes toward the ceiling, squeezing your abs tightly to close the distance between your ribcage and hips. The end result will be that you'll end up in a high bridge position. Exhale as you perform this portion of the movement. Lower back down slowly to your starting position as you breathe in. Tip: Don't let your back sag downwards. Repeat for the recommended amount of repetitions.",
     "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_calf_raise_on_a_dumbbell",
-    "name": "Calf Raise On A Dumbbell",
-    "pattern": "conditioning",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "calves",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "legs"
-    ],
-    "cues": [
-      "Hang on to a sturdy object for balance and stand on a dumbbell handle, preferably one with round plates so that it rolls as in this manner you have to work harder to stabilize yourself; thus increasing the effectiveness of the exercise.",
-      "Now roll your foot slightly forward so that you can get a nice stretch of the calf. This will be your starting position.",
-      "Lift the calf as you roll your foot over the top of the handle so that you get a full extension. Exhale during the execution of this movement. Contract the calf hard at the top and hold for a second. Tip: As you come up, roll the dumbbell slightly backward.",
-      "Now inhale as you roll the dumbbell slightly forward as you come down to get a better stretch.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Hang on to a sturdy object for balance and stand on a dumbbell handle, preferably one with round plates so that it rolls as in this manner you have to work harder to stabilize yourself; thus increasing the effectiveness of the exercise. Now roll your foot slightly forward so that you can get a nice stretch of the calf. This will be your starting position. Lift the calf as you roll your foot over the top of the handle so that you get a full extension. Exhale during the execution of this movement. Contract the calf hard at the top and hold for a second. Tip: As you come up, roll the dumbbell slightly backward. Now inhale as you roll the dumbbell slightly forward as you come down to get a better stretch. Repeat for the recommended amount of repetitions.",
-    "difficulty": "intermediate",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
@@ -1185,41 +1182,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_close_grip_dumbbell_press",
-    "name": "Close-Grip Dumbbell Press",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "triceps",
-        "role": "primary"
-      },
-      {
-        "group": "chest",
-        "role": "secondary"
-      },
-      {
-        "group": "shoulders",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Place a dumbbell standing up on a flat bench.",
-      "Ensuring that the dumbbell stays securely placed at the top of the bench, lie perpendicular to the bench with only your shoulders lying on the surface. Hips should be below the bench and your legs bent with your feet firmly on the floor.",
-      "Grasp the dumbbell with both hands and hold it straight over your chest at arm's length. Both palms should be pressing against the underside of the sides of the dumbbell. This will be your starting position.",
-      "Initiate the movement by lowering the dumbbell to your chest.",
-      "Return to the starting position by extending the elbows."
-    ],
-    "description": "Place a dumbbell standing up on a flat bench. Ensuring that the dumbbell stays securely placed at the top of the bench, lie perpendicular to the bench with only your shoulders lying on the surface. Hips should be below the bench and your legs bent with your feet firmly on the floor. Grasp the dumbbell with both hands and hold it straight over your chest at arm's length. Both palms should be pressing against the underside of the sides of the dumbbell. This will be your starting position. Initiate the movement by lowering the dumbbell to your chest. Return to the starting position by extending the elbows.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
     "id": "fedb_cocoons",
     "name": "Cocoons",
     "pattern": "core_compression",
@@ -1241,67 +1203,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
       "After a brief pause, return to the starting position."
     ],
     "description": "Begin by lying on your back on the ground. Your legs should be straight and your arms extended behind your head. This will be your starting position. To perform the movement, tuck the knees toward your chest, rotating your pelvis to lift your glutes from the floor. As you do so, flex the spine, bringing your arms back over your head to perform a simultaneous crunch motion. After a brief pause, return to the starting position.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_concentration_curls",
-    "name": "Concentration Curls",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "biceps",
-        "role": "primary"
-      },
-      {
-        "group": "forearms",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Sit down on a flat bench with one dumbbell in front of you between your legs. Your legs should be spread with your knees bent and feet on the floor.",
-      "Use your right arm to pick the dumbbell up. Place the back of your right upper arm on the top of your inner right thigh. Rotate the palm of your hand until it is facing forward away from your thigh. Tip: Your arm should be extended and the dumbbell should be above the floor. This will be your starting position.",
-      "While holding the upper arm stationary, curl the weights forward while contracting the biceps as you breathe out. Only the forearms should move. Continue the movement until your biceps are fully contracted and the dumbbells are at shoulder level. Tip: At the top of the movement make sure that the little finger of your arm is higher than your thumb. This guarantees a good contraction. Hold the contracted position for a second as you squeeze the biceps.",
-      "Slowly begin to bring the dumbbells back to starting position as your breathe in. Caution: Avoid swinging motions at any time.",
-      "Repeat for the recommended amount of repetitions. Then repeat the movement with the left arm."
-    ],
-    "description": "Sit down on a flat bench with one dumbbell in front of you between your legs. Your legs should be spread with your knees bent and feet on the floor. Use your right arm to pick the dumbbell up. Place the back of your right upper arm on the top of your inner right thigh. Rotate the palm of your hand until it is facing forward away from your thigh. Tip: Your arm should be extended and the dumbbell should be above the floor. This will be your starting position. While holding the upper arm stationary, curl the weights forward while contracting the biceps as you breathe out. Only the forearms should move. Continue the movement until your biceps are fully contracted and the dumbbells are at shoulder level. Tip: At the top of the movement make sure that the little finger of your arm is higher than your thumb. This guarantees a good contraction. Hold the contracted position for a second as you squeeze the biceps. Slowly begin to bring the dumbbells back to starting position as your breathe in. Caution: Avoid swinging motions at any time. Repeat for the recommended amount of repetitions. Then repeat the movement with the left arm.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_cross_body_hammer_curl",
-    "name": "Cross Body Hammer Curl",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "biceps",
-        "role": "primary"
-      },
-      {
-        "group": "forearms",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Stand up straight with a dumbbell in each hand. Your hands should be down at your side with your palms facing in.",
-      "While keeping your palms facing in and without twisting your arm, curl the dumbbell of the right arm up towards your left shoulder as you exhale. Touch the top of the dumbbell to your shoulder and hold the contraction for a second.",
-      "Slowly lower the dumbbell along the same path as you inhale and then repeat the same movement for the left arm.",
-      "Continue alternating in this fashion until the recommended amount of repetitions is performed for each arm."
-    ],
-    "description": "Stand up straight with a dumbbell in each hand. Your hands should be down at your side with your palms facing in. While keeping your palms facing in and without twisting your arm, curl the dumbbell of the right arm up towards your left shoulder as you exhale. Touch the top of the dumbbell to your shoulder and hold the contraction for a second. Slowly lower the dumbbell along the same path as you inhale and then repeat the same movement for the left arm. Continue alternating in this fashion until the recommended amount of repetitions is performed for each arm.",
     "difficulty": "beginner",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
@@ -1433,37 +1334,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_cuban_press",
-    "name": "Cuban Press",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      },
-      {
-        "group": "traps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Take a dumbbell in each hand with a pronated grip in a standing position. Raise your upper arms so that they are parallel to the floor, allowing your lower arms to hang in the \"scarecrow\" position. This will be your starting position.",
-      "To initiate the movement, externally rotate the shoulders to move the upper arm 180 degrees. Keep the upper arms in place, rotating the upper arms until the wrists are directly above the elbows, the forearms perpendicular to the floor.",
-      "Now press the dumbbells by extending at the elbows, straightening your arms overhead.",
-      "Return to the starting position as you breathe in by reversing the steps.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Take a dumbbell in each hand with a pronated grip in a standing position. Raise your upper arms so that they are parallel to the floor, allowing your lower arms to hang in the \"scarecrow\" position. This will be your starting position. To initiate the movement, externally rotate the shoulders to move the upper arm 180 degrees. Keep the upper arms in place, rotating the upper arms until the wrists are directly above the elbows, the forearms perpendicular to the floor. Now press the dumbbells by extending at the elbows, straightening your arms overhead. Return to the starting position as you breathe in by reversing the steps. Repeat for the recommended amount of repetitions.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
     "id": "fedb_dancers_stretch",
     "name": "Dancer's Stretch",
     "pattern": "mobility",
@@ -1498,14 +1368,190 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_decline_dumbbell_bench_press",
-    "name": "Decline Dumbbell Bench Press",
-    "pattern": "horizontal_push",
+    "id": "fedb_double_kettlebell_alternating_hang_clean",
+    "name": "Double Kettlebell Alternating Hang Clean",
+    "pattern": "hinge",
+    "type": "isometric",
+    "muscles": [
+      {
+        "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "biceps",
+        "role": "secondary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      },
+      {
+        "group": "forearms",
+        "role": "secondary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "lower back",
+        "role": "secondary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Place two kettlebells between your feet. To get in the starting position, push your butt back and look straight ahead.",
+      "Clean one kettlebell to your shoulder and hold on to the other kettlebell.",
+      "With a fluid motion, lower the top kettlebell while driving the bottom kettlebell up."
+    ],
+    "description": "Place two kettlebells between your feet. To get in the starting position, push your butt back and look straight ahead. Clean one kettlebell to your shoulder and hold on to the other kettlebell. With a fluid motion, lower the top kettlebell while driving the bottom kettlebell up.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_double_kettlebell_jerk",
+    "name": "Double Kettlebell Jerk",
+    "pattern": "vertical_push",
     "type": "dynamic",
     "muscles": [
       {
-        "group": "chest",
+        "group": "shoulders",
         "role": "primary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Hold a kettlebell by the handle in each hand.",
+      "Clean the kettlebells to your shoulders by extending through the legs and hips as you pull the kettlebells towards your shoulders. Rotate your wrists as you do so, so that the palms face forward. This will be your starting position.",
+      "Dip your body by bending the knees, keeping your torso upright.",
+      "Immediately reverse direction, driving through the heels, in essence jumping to create momentum.",
+      "As you do so, press the kettlebells overhead to lockout by extending the arms, using your body's momentum to move the weights.",
+      "Return your feet to the ground in a split fashion, with one foot forward and one foot back.",
+      "Keeping the weights overhead, return to a standing position, bringing your feet together. Lower the weights to perform the next repetition."
+    ],
+    "description": "Hold a kettlebell by the handle in each hand. Clean the kettlebells to your shoulders by extending through the legs and hips as you pull the kettlebells towards your shoulders. Rotate your wrists as you do so, so that the palms face forward. This will be your starting position. Dip your body by bending the knees, keeping your torso upright. Immediately reverse direction, driving through the heels, in essence jumping to create momentum. As you do so, press the kettlebells overhead to lockout by extending the arms, using your body's momentum to move the weights. Return your feet to the ground in a split fashion, with one foot forward and one foot back. Keeping the weights overhead, return to a standing position, bringing your feet together. Lower the weights to perform the next repetition.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_double_kettlebell_push_press",
+    "name": "Double Kettlebell Push Press",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Clean two kettlebells to your shoulders.",
+      "Squat down a few inches and reverse the motion rapidly. Use the momentum from the legs to drive the kettlebells overhead.",
+      "Once the kettlebells are locked out, lower the kettlebells to your shoulders and repeat."
+    ],
+    "description": "Clean two kettlebells to your shoulders. Squat down a few inches and reverse the motion rapidly. Use the momentum from the legs to drive the kettlebells overhead. Once the kettlebells are locked out, lower the kettlebells to your shoulders and repeat.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_double_kettlebell_snatch",
+    "name": "Double Kettlebell Snatch",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Place two kettlebells behind your feet. Bend your knees and sit back to pick up the kettlebells.",
+      "Swing the kettlebells between your legs forcefully and reverse the direction.",
+      "Drive through with your hips and lock the ketttlebells overhead in one uninterrupted motion."
+    ],
+    "description": "Place two kettlebells behind your feet. Bend your knees and sit back to pick up the kettlebells. Swing the kettlebells between your legs forcefully and reverse the direction. Drive through with your hips and lock the ketttlebells overhead in one uninterrupted motion.",
+    "difficulty": "advanced",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_double_kettlebell_windmill",
+    "name": "Double Kettlebell Windmill",
+    "pattern": "core_compression",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "abdominals",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
       },
       {
         "group": "shoulders",
@@ -1519,72 +1565,16 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "joints": [],
     "role": "work",
     "regions": [
-      "push"
+      "core"
     ],
     "cues": [
-      "Secure your legs at the end of the decline bench and lie down with a dumbbell on each hand on top of your thighs. The palms of your hand will be facing each other.",
-      "Once you are laying down, move the dumbbells in front of you at shoulder width.",
-      "Once at shoulder width, rotate your wrists forward so that the palms of your hands are facing away from you. This will be your starting position.",
-      "Bring down the weights slowly to your side as you breathe out. Keep full control of the dumbbells at all times. Tip: Throughout the motion, the forearms should always be perpendicular to the floor.",
-      "As you breathe out, push the dumbbells up using your pectoral muscles. Lock your arms in the contracted position, squeeze your chest, hold for a second and then start coming down slowly. Tip: It should take at least twice as long to go down than to come up..",
-      "Repeat the movement for the prescribed amount of repetitions of your training program."
+      "Place a kettlebell in front of your front foot and clean and press a kettlebell overhead with your opposite arm. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulders. Rotate your wrist as you do so, so that the palm faces forward.",
+      "Keeping the kettlebell locked out at all times, push your butt out in the direction of the locked out kettlebell. Turn your feet out at a forty-five degree angle from the arm with the locked out kettlebell.",
+      "Bending at the hip to one side, sticking your butt out, slowly lean until you can retrieve the kettlebell from the floor. Keep your eyes on the kettlebell that you hold over your head at all times.",
+      "Pause for a second after retrieving the kettlebell from the ground and reverse the motion back to the starting position."
     ],
-    "description": "Secure your legs at the end of the decline bench and lie down with a dumbbell on each hand on top of your thighs. The palms of your hand will be facing each other. Once you are laying down, move the dumbbells in front of you at shoulder width. Once at shoulder width, rotate your wrists forward so that the palms of your hands are facing away from you. This will be your starting position. Bring down the weights slowly to your side as you breathe out. Keep full control of the dumbbells at all times. Tip: Throughout the motion, the forearms should always be perpendicular to the floor. As you breathe out, push the dumbbells up using your pectoral muscles. Lock your arms in the contracted position, squeeze your chest, hold for a second and then start coming down slowly. Tip: It should take at least twice as long to go down than to come up.. Repeat the movement for the prescribed amount of repetitions of your training program.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_decline_dumbbell_flyes",
-    "name": "Decline Dumbbell Flyes",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "chest",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Secure your legs at the end of the decline bench and lie down with a dumbbell on each hand on top of your thighs. The palms of your hand will be facing each other.",
-      "Once you are laying down, move the dumbbells in front of you at shoulder width. The palms of the hands should be facing each other and the arms should be perpendicular to the floor and fully extended. This will be your starting position.",
-      "With a slight bend on your elbows in order to prevent stress at the biceps tendon, lower your arms out at both sides in a wide arc until you feel a stretch on your chest. Breathe in as you perform this portion of the movement. Tip: Keep in mind that throughout the movement, the arms should remain stationary; the movement should only occur at the shoulder joint.",
-      "Return your arms back to the starting position as you squeeze your chest muscles and breathe out. Tip: Make sure to use the same arc of motion used to lower the weights.",
-      "Hold for a second at the contracted position and repeat the movement for the prescribed amount of repetitions."
-    ],
-    "description": "Secure your legs at the end of the decline bench and lie down with a dumbbell on each hand on top of your thighs. The palms of your hand will be facing each other. Once you are laying down, move the dumbbells in front of you at shoulder width. The palms of the hands should be facing each other and the arms should be perpendicular to the floor and fully extended. This will be your starting position. With a slight bend on your elbows in order to prevent stress at the biceps tendon, lower your arms out at both sides in a wide arc until you feel a stretch on your chest. Breathe in as you perform this portion of the movement. Tip: Keep in mind that throughout the movement, the arms should remain stationary; the movement should only occur at the shoulder joint. Return your arms back to the starting position as you squeeze your chest muscles and breathe out. Tip: Make sure to use the same arc of motion used to lower the weights. Hold for a second at the contracted position and repeat the movement for the prescribed amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_decline_dumbbell_triceps_extension",
-    "name": "Decline Dumbbell Triceps Extension",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "triceps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Secure your legs at the end of the decline bench and lie down with a dumbbell on each hand on top of your thighs. The palms of your hand will be facing each other.",
-      "Once you are laying down, move the dumbbells in front of you at shoulder width. The palms of the hands should be facing each other and the arms should be perpendicular to the floor and fully extended. This will be your starting position.",
-      "As you breathe in and you keep the upper arms stationary (and elbows in), bring the dumbbells down slowly by moving your forearms in a semicircular motion towards you until your thumbs are next to your ears. Breathe in as you perform this portion of the movement.",
-      "Lift the dumbbells back to the starting position by contracting the triceps and exhaling.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Secure your legs at the end of the decline bench and lie down with a dumbbell on each hand on top of your thighs. The palms of your hand will be facing each other. Once you are laying down, move the dumbbells in front of you at shoulder width. The palms of the hands should be facing each other and the arms should be perpendicular to the floor and fully extended. This will be your starting position. As you breathe in and you keep the upper arms stationary (and elbows in), bring the dumbbells down slowly by moving your forearms in a semicircular motion towards you until your thumbs are next to your ears. Breathe in as you perform this portion of the movement. Lift the dumbbells back to the starting position by contracting the triceps and exhaling. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
+    "description": "Place a kettlebell in front of your front foot and clean and press a kettlebell overhead with your opposite arm. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulders. Rotate your wrist as you do so, so that the palm faces forward. Keeping the kettlebell locked out at all times, push your butt out in the direction of the locked out kettlebell. Turn your feet out at a forty-five degree angle from the arm with the locked out kettlebell. Bending at the hip to one side, sticking your butt out, slowly lean until you can retrieve the kettlebell from the floor. Keep your eyes on the kettlebell that you hold over your head at all times. Pause for a second after retrieving the kettlebell from the ground and reverse the motion back to the starting position.",
+    "difficulty": "intermediate",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
@@ -1631,997 +1621,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
       "Finish the motion by landing with the knees only partially bent, using your legs to absorb the impact."
     ],
     "description": "Begin standing with your knees slightly bent. Quickly squat a short distance, flexing the hips and knees, and immediately extend to jump for maximum vertical height. As you go up, tuck your heels by flexing the knees, attempting to touch the buttocks. Finish the motion by landing with the knees only partially bent, using your legs to absorb the impact.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_alternate_bicep_curl",
-    "name": "Dumbbell Alternate Bicep Curl",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "biceps",
-        "role": "primary"
-      },
-      {
-        "group": "forearms",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Stand (torso upright) with a dumbbell in each hand held at arms length. The elbows should be close to the torso and the palms of your hand should be facing your thighs.",
-      "While holding the upper arm stationary, curl the right weight as you rotate the palm of the hands until they are facing forward. At this point continue contracting the biceps as you breathe out until your biceps is fully contracted and the dumbbells are at shoulder level. Hold the contracted position for a second as you squeeze the biceps. Tip: Only the forearms should move.",
-      "Slowly begin to bring the dumbbell back to the starting position as your breathe in. Tip: Remember to twist the palms back to the starting position (facing your thighs) as you come down.",
-      "Repeat the movement with the left hand. This equals one repetition.",
-      "Continue alternating in this manner for the recommended amount of repetitions."
-    ],
-    "description": "Stand (torso upright) with a dumbbell in each hand held at arms length. The elbows should be close to the torso and the palms of your hand should be facing your thighs. While holding the upper arm stationary, curl the right weight as you rotate the palm of the hands until they are facing forward. At this point continue contracting the biceps as you breathe out until your biceps is fully contracted and the dumbbells are at shoulder level. Hold the contracted position for a second as you squeeze the biceps. Tip: Only the forearms should move. Slowly begin to bring the dumbbell back to the starting position as your breathe in. Tip: Remember to twist the palms back to the starting position (facing your thighs) as you come down. Repeat the movement with the left hand. This equals one repetition. Continue alternating in this manner for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_bench_press",
-    "name": "Dumbbell Bench Press",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "chest",
-        "role": "primary"
-      },
-      {
-        "group": "shoulders",
-        "role": "secondary"
-      },
-      {
-        "group": "triceps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Lie down on a flat bench with a dumbbell in each hand resting on top of your thighs. The palms of your hands will be facing each other.",
-      "Then, using your thighs to help raise the dumbbells up, lift the dumbbells one at a time so that you can hold them in front of you at shoulder width.",
-      "Once at shoulder width, rotate your wrists forward so that the palms of your hands are facing away from you. The dumbbells should be just to the sides of your chest, with your upper arm and forearm creating a 90 degree angle. Be sure to maintain full control of the dumbbells at all times. This will be your starting position.",
-      "Then, as you breathe out, use your chest to push the dumbbells up. Lock your arms at the top of the lift and squeeze your chest, hold for a second and then begin coming down slowly. Tip: Ideally, lowering the weight should take about twice as long as raising it.",
-      "Repeat the movement for the prescribed amount of repetitions of your training program."
-    ],
-    "description": "Lie down on a flat bench with a dumbbell in each hand resting on top of your thighs. The palms of your hands will be facing each other. Then, using your thighs to help raise the dumbbells up, lift the dumbbells one at a time so that you can hold them in front of you at shoulder width. Once at shoulder width, rotate your wrists forward so that the palms of your hands are facing away from you. The dumbbells should be just to the sides of your chest, with your upper arm and forearm creating a 90 degree angle. Be sure to maintain full control of the dumbbells at all times. This will be your starting position. Then, as you breathe out, use your chest to push the dumbbells up. Lock your arms at the top of the lift and squeeze your chest, hold for a second and then begin coming down slowly. Tip: Ideally, lowering the weight should take about twice as long as raising it. Repeat the movement for the prescribed amount of repetitions of your training program.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_bench_press_with_neutral_grip",
-    "name": "Dumbbell Bench Press with Neutral Grip",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "chest",
-        "role": "primary"
-      },
-      {
-        "group": "shoulders",
-        "role": "secondary"
-      },
-      {
-        "group": "triceps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Take a dumbbell in each hand and lay back onto a flat bench. Your feet should be flat on the floor and your shoulder blades retracted.",
-      "Maintaining a neutral grip, palms facing each other, begin with your arms extended directly above you, perpendicular to the floor. This will be your starting position.",
-      "Begin the movement by flexing the elbow, lowering the upper arms to the side. Descend until the dumbbells are to your torso.",
-      "Pause, then extend the elbow and return to the starting position."
-    ],
-    "description": "Take a dumbbell in each hand and lay back onto a flat bench. Your feet should be flat on the floor and your shoulder blades retracted. Maintaining a neutral grip, palms facing each other, begin with your arms extended directly above you, perpendicular to the floor. This will be your starting position. Begin the movement by flexing the elbow, lowering the upper arms to the side. Descend until the dumbbells are to your torso. Pause, then extend the elbow and return to the starting position.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_bicep_curl",
-    "name": "Dumbbell Bicep Curl",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "biceps",
-        "role": "primary"
-      },
-      {
-        "group": "forearms",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Stand up straight with a dumbbell in each hand at arm's length. Keep your elbows close to your torso and rotate the palms of your hands until they are facing forward. This will be your starting position.",
-      "Now, keeping the upper arms stationary, exhale and curl the weights while contracting your biceps. Continue to raise the weights until your biceps are fully contracted and the dumbbells are at shoulder level. Hold the contracted position for a brief pause as you squeeze your biceps.",
-      "Then, inhale and slowly begin to lower the dumbbells back to the starting position.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Stand up straight with a dumbbell in each hand at arm's length. Keep your elbows close to your torso and rotate the palms of your hands until they are facing forward. This will be your starting position. Now, keeping the upper arms stationary, exhale and curl the weights while contracting your biceps. Continue to raise the weights until your biceps are fully contracted and the dumbbells are at shoulder level. Hold the contracted position for a brief pause as you squeeze your biceps. Then, inhale and slowly begin to lower the dumbbells back to the starting position. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_clean",
-    "name": "Dumbbell Clean",
-    "pattern": "hinge",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "hamstrings",
-        "role": "primary"
-      },
-      {
-        "group": "calves",
-        "role": "secondary"
-      },
-      {
-        "group": "forearms",
-        "role": "secondary"
-      },
-      {
-        "group": "glutes",
-        "role": "secondary"
-      },
-      {
-        "group": "lower back",
-        "role": "secondary"
-      },
-      {
-        "group": "quadriceps",
-        "role": "secondary"
-      },
-      {
-        "group": "shoulders",
-        "role": "secondary"
-      },
-      {
-        "group": "traps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "legs"
-    ],
-    "cues": [
-      "Begin standing with a dumbbell in each hand with your feet shoulder width apart.",
-      "Lower the weights to the floor by flexing at the hips and knees, pushing your hips back until the dumbbells reach the floor. This will be your starting position.",
-      "To initiate the movement, violently jump upward by extending the hips, knees, and ankles to acclerate the weights upward. Maintaining a neutral grip on the dumbbells, keep the arms straight until full extension is reached.",
-      "After full extension, rebend the hips and knees to receive the weight in a squat position. Allow the arms to bend, guiding the dumbbells to your shoulders.",
-      "Upon receiving the weight in the squat position, extend the hips and knees to finish in a standing position with the weights on your shoulders."
-    ],
-    "description": "Begin standing with a dumbbell in each hand with your feet shoulder width apart. Lower the weights to the floor by flexing at the hips and knees, pushing your hips back until the dumbbells reach the floor. This will be your starting position. To initiate the movement, violently jump upward by extending the hips, knees, and ankles to acclerate the weights upward. Maintaining a neutral grip on the dumbbells, keep the arms straight until full extension is reached. After full extension, rebend the hips and knees to receive the weight in a squat position. Allow the arms to bend, guiding the dumbbells to your shoulders. Upon receiving the weight in the squat position, extend the hips and knees to finish in a standing position with the weights on your shoulders.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_floor_press",
-    "name": "Dumbbell Floor Press",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "triceps",
-        "role": "primary"
-      },
-      {
-        "group": "chest",
-        "role": "secondary"
-      },
-      {
-        "group": "shoulders",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Lay on the floor holding dumbbells in your hands. Your knees can be bent. Begin with the weights fully extended above you.",
-      "Lower the weights until your upper arm comes in contact with the floor. You can tuck your elbows to emphasize triceps size and strength, or to focus on your chest angle your arms to the side.",
-      "Pause at the bottom, and then bring the weight together at the top by extending through the elbows."
-    ],
-    "description": "Lay on the floor holding dumbbells in your hands. Your knees can be bent. Begin with the weights fully extended above you. Lower the weights until your upper arm comes in contact with the floor. You can tuck your elbows to emphasize triceps size and strength, or to focus on your chest angle your arms to the side. Pause at the bottom, and then bring the weight together at the top by extending through the elbows.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_flyes",
-    "name": "Dumbbell Flyes",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "chest",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Lie down on a flat bench with a dumbbell on each hand resting on top of your thighs. The palms of your hand will be facing each other.",
-      "Then using your thighs to help raise the dumbbells, lift the dumbbells one at a time so you can hold them in front of you at shoulder width with the palms of your hands facing each other. Raise the dumbbells up like you're pressing them, but stop and hold just before you lock out. This will be your starting position.",
-      "With a slight bend on your elbows in order to prevent stress at the biceps tendon, lower your arms out at both sides in a wide arc until you feel a stretch on your chest. Breathe in as you perform this portion of the movement. Tip: Keep in mind that throughout the movement, the arms should remain stationary; the movement should only occur at the shoulder joint.",
-      "Return your arms back to the starting position as you squeeze your chest muscles and breathe out. Tip: Make sure to use the same arc of motion used to lower the weights.",
-      "Hold for a second at the contracted position and repeat the movement for the prescribed amount of repetitions."
-    ],
-    "description": "Lie down on a flat bench with a dumbbell on each hand resting on top of your thighs. The palms of your hand will be facing each other. Then using your thighs to help raise the dumbbells, lift the dumbbells one at a time so you can hold them in front of you at shoulder width with the palms of your hands facing each other. Raise the dumbbells up like you're pressing them, but stop and hold just before you lock out. This will be your starting position. With a slight bend on your elbows in order to prevent stress at the biceps tendon, lower your arms out at both sides in a wide arc until you feel a stretch on your chest. Breathe in as you perform this portion of the movement. Tip: Keep in mind that throughout the movement, the arms should remain stationary; the movement should only occur at the shoulder joint. Return your arms back to the starting position as you squeeze your chest muscles and breathe out. Tip: Make sure to use the same arc of motion used to lower the weights. Hold for a second at the contracted position and repeat the movement for the prescribed amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_incline_row",
-    "name": "Dumbbell Incline Row",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "middle back",
-        "role": "primary"
-      },
-      {
-        "group": "biceps",
-        "role": "secondary"
-      },
-      {
-        "group": "forearms",
-        "role": "secondary"
-      },
-      {
-        "group": "lats",
-        "role": "secondary"
-      },
-      {
-        "group": "shoulders",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Using a neutral grip, lean into an incline bench.",
-      "Take a dumbbell in each hand with a neutral grip, beginning with the arms straight. This will be your starting position.",
-      "Retract the shoulder blades and flex the elbows to row the dumbbells to your side.",
-      "Pause at the top of the motion, and then return to the starting position."
-    ],
-    "description": "Using a neutral grip, lean into an incline bench. Take a dumbbell in each hand with a neutral grip, beginning with the arms straight. This will be your starting position. Retract the shoulder blades and flex the elbows to row the dumbbells to your side. Pause at the top of the motion, and then return to the starting position.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_incline_shoulder_raise",
-    "name": "Dumbbell Incline Shoulder Raise",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      },
-      {
-        "group": "triceps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Sit on an Incline Bench while holding a dumbbell on each hand on top of your thighs.",
-      "Lift your legs up to kick the weights to your shoulders and lean back. Position the dumbbells above your shoulders with your arms extended. The arms should be perpendicular to the floor with your palms facing forward and knuckles pointing towards the ceiling. This will be your starting position.",
-      "While keeping the arms straight and locked, lift the dumbbells by raising the shoulders from the bench as you breathe out.",
-      "Bring back the dumbbells to the starting position as you breathe in.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Sit on an Incline Bench while holding a dumbbell on each hand on top of your thighs. Lift your legs up to kick the weights to your shoulders and lean back. Position the dumbbells above your shoulders with your arms extended. The arms should be perpendicular to the floor with your palms facing forward and knuckles pointing towards the ceiling. This will be your starting position. While keeping the arms straight and locked, lift the dumbbells by raising the shoulders from the bench as you breathe out. Bring back the dumbbells to the starting position as you breathe in. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_lunges",
-    "name": "Dumbbell Lunges",
-    "pattern": "squat",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "quadriceps",
-        "role": "primary"
-      },
-      {
-        "group": "calves",
-        "role": "secondary"
-      },
-      {
-        "group": "glutes",
-        "role": "secondary"
-      },
-      {
-        "group": "hamstrings",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "legs"
-    ],
-    "cues": [
-      "Stand with your torso upright holding two dumbbells in your hands by your sides. This will be your starting position.",
-      "Step forward with your right leg around 2 feet or so from the foot being left stationary behind and lower your upper body down, while keeping the torso upright and maintaining balance. Inhale as you go down. Note: As in the other exercises, do not allow your knee to go forward beyond your toes as you come down, as this will put undue stress on the knee joint. Make sure that you keep your front shin perpendicular to the ground.",
-      "Using mainly the heel of your foot, push up and go back to the starting position as you exhale.",
-      "Repeat the movement for the recommended amount of repetitions and then perform with the left leg."
-    ],
-    "description": "Stand with your torso upright holding two dumbbells in your hands by your sides. This will be your starting position. Step forward with your right leg around 2 feet or so from the foot being left stationary behind and lower your upper body down, while keeping the torso upright and maintaining balance. Inhale as you go down. Note: As in the other exercises, do not allow your knee to go forward beyond your toes as you come down, as this will put undue stress on the knee joint. Make sure that you keep your front shin perpendicular to the ground. Using mainly the heel of your foot, push up and go back to the starting position as you exhale. Repeat the movement for the recommended amount of repetitions and then perform with the left leg.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_lying_one_arm_rear_lateral_raise",
-    "name": "Dumbbell Lying One-Arm Rear Lateral Raise",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      },
-      {
-        "group": "middle back",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "While holding a dumbbell in one hand, lay with your chest down on a slightly inclined (around 15 degrees when measured from the floor) adjustable bench. The other hand can be used to hold to the leg of the bench for stability.",
-      "Position the palm of the hand that is holding the dumbbell in a neutral manner (palms facing your torso) as you keep the arm extended with the elbow slightly bent. This will be your starting position.",
-      "Now raise the arm with the dumbbell to the side until your elbow is at shoulder height and your arm is roughly parallel to the floor as you exhale. Tip: Maintain your arm perpendicular to the torso while keeping your arm extended throughout the movement. Also, keep the contraction at the top for a second.",
-      "Slowly lower the dumbbell to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "While holding a dumbbell in one hand, lay with your chest down on a slightly inclined (around 15 degrees when measured from the floor) adjustable bench. The other hand can be used to hold to the leg of the bench for stability. Position the palm of the hand that is holding the dumbbell in a neutral manner (palms facing your torso) as you keep the arm extended with the elbow slightly bent. This will be your starting position. Now raise the arm with the dumbbell to the side until your elbow is at shoulder height and your arm is roughly parallel to the floor as you exhale. Tip: Maintain your arm perpendicular to the torso while keeping your arm extended throughout the movement. Also, keep the contraction at the top for a second. Slowly lower the dumbbell to the starting position as you inhale. Repeat for the recommended amount of repetitions.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_lying_pronation",
-    "name": "Dumbbell Lying Pronation",
-    "pattern": "mobility",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "forearms",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "general"
-    ],
-    "cues": [
-      "Lie on a flat bench face down with one arm holding a dumbbell and the other hand on top of the bench folded so that you can rest your head on it.",
-      "Bend the elbows of the arm holding the dumbbell so that it creates a 90-degree angle between the upper arm and the forearm.",
-      "Now raise the upper arm so that the forearm is perpendicular to the floor and the upper arm is perpendicular to your torso. Tip: The upper arm should be parallel to the floor and also creating a 90-degree angle with your torso. This will be your starting position.",
-      "As you breathe out, externally rotate your forearm so that the dumbbell is lifted forward as you maintain the 90 degree angle bend between the upper arms and the forearm. You will continue this external rotation until the forearm is parallel to the floor. At this point you will hold the contraction for a second.",
-      "As you breathe in, slowly go back to the starting position.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Lie on a flat bench face down with one arm holding a dumbbell and the other hand on top of the bench folded so that you can rest your head on it. Bend the elbows of the arm holding the dumbbell so that it creates a 90-degree angle between the upper arm and the forearm. Now raise the upper arm so that the forearm is perpendicular to the floor and the upper arm is perpendicular to your torso. Tip: The upper arm should be parallel to the floor and also creating a 90-degree angle with your torso. This will be your starting position. As you breathe out, externally rotate your forearm so that the dumbbell is lifted forward as you maintain the 90 degree angle bend between the upper arms and the forearm. You will continue this external rotation until the forearm is parallel to the floor. At this point you will hold the contraction for a second. As you breathe in, slowly go back to the starting position. Repeat for the recommended amount of repetitions.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_lying_rear_lateral_raise",
-    "name": "Dumbbell Lying Rear Lateral Raise",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "While holding a dumbbell in each hand, lay with your chest down on a slightly inclined (around 15 degrees when measured from the floor) adjustable bench.",
-      "Position the palms of the hands in a neutral manner (palms facing your torso) as you keep the arms extended with the elbows slightly bent. This will be your starting position.",
-      "Now raise the arms to the side until your elbows are at shoulder height and your arms are roughly parallel to the floor as you exhale. Tip: Maintain your arms perpendicular to the torso while keeping them extended throughout the movement. Also, keep the contraction at the top for a second.",
-      "Slowly lower the dumbbells to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions and then switch to the other arm."
-    ],
-    "description": "While holding a dumbbell in each hand, lay with your chest down on a slightly inclined (around 15 degrees when measured from the floor) adjustable bench. Position the palms of the hands in a neutral manner (palms facing your torso) as you keep the arms extended with the elbows slightly bent. This will be your starting position. Now raise the arms to the side until your elbows are at shoulder height and your arms are roughly parallel to the floor as you exhale. Tip: Maintain your arms perpendicular to the torso while keeping them extended throughout the movement. Also, keep the contraction at the top for a second. Slowly lower the dumbbells to the starting position as you inhale. Repeat for the recommended amount of repetitions and then switch to the other arm.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_lying_supination",
-    "name": "Dumbbell Lying Supination",
-    "pattern": "mobility",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "forearms",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "general"
-    ],
-    "cues": [
-      "Lie sideways on a flat bench with one arm holding a dumbbell and the other hand on top of the bench folded so that you can rest your head on it.",
-      "Bend the elbows of the arm holding the dumbbell so that it creates a 90-degree angle between the upper arm and the forearm.",
-      "Now raise the upper arm so that the forearm is parallel to the floor and perpendicular to your torso (Tip: So the forearm will be directly in front of you). The upper arm will be stationary by your torso and should be parallel to the floor (aligned with your torso at all times). This will be your starting position.",
-      "As you breathe out, externally rotate your forearm so that the dumbbell is lifted up in a semicircle motion as you maintain the 90 degree angle bend between the upper arms and the forearm. You will continue this external rotation until the forearm is perpendicular to the floor and the torso pointing towards the ceiling. At this point you will hold the contraction for a second.",
-      "As you breathe in, slowly go back to the starting position.",
-      "Repeat for the recommended amount of repetitions and then switch to the other arm."
-    ],
-    "description": "Lie sideways on a flat bench with one arm holding a dumbbell and the other hand on top of the bench folded so that you can rest your head on it. Bend the elbows of the arm holding the dumbbell so that it creates a 90-degree angle between the upper arm and the forearm. Now raise the upper arm so that the forearm is parallel to the floor and perpendicular to your torso (Tip: So the forearm will be directly in front of you). The upper arm will be stationary by your torso and should be parallel to the floor (aligned with your torso at all times). This will be your starting position. As you breathe out, externally rotate your forearm so that the dumbbell is lifted up in a semicircle motion as you maintain the 90 degree angle bend between the upper arms and the forearm. You will continue this external rotation until the forearm is perpendicular to the floor and the torso pointing towards the ceiling. At this point you will hold the contraction for a second. As you breathe in, slowly go back to the starting position. Repeat for the recommended amount of repetitions and then switch to the other arm.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_one_arm_shoulder_press",
-    "name": "Dumbbell One-Arm Shoulder Press",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      },
-      {
-        "group": "triceps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Grab a dumbbell and either sit on a military press bench or a utility bench that has a back support on it as you place the dumbbells upright on top of your thighs or stand up straight.",
-      "Clean the dumbbell up to bring it to shoulder height. The other hand can be kept fully extended to the side, by the waist or grabbing a fixed surface.",
-      "Rotate the wrist so that the palm of your hand is facing forward. This is your starting position.",
-      "As you exhale, push the dumbbell up until your arm is fully extended.",
-      "After a second pause, slowly come down back to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions and then switch arms."
-    ],
-    "description": "Grab a dumbbell and either sit on a military press bench or a utility bench that has a back support on it as you place the dumbbells upright on top of your thighs or stand up straight. Clean the dumbbell up to bring it to shoulder height. The other hand can be kept fully extended to the side, by the waist or grabbing a fixed surface. Rotate the wrist so that the palm of your hand is facing forward. This is your starting position. As you exhale, push the dumbbell up until your arm is fully extended. After a second pause, slowly come down back to the starting position as you inhale. Repeat for the recommended amount of repetitions and then switch arms.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_one_arm_triceps_extension",
-    "name": "Dumbbell One-Arm Triceps Extension",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "triceps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Grab a dumbbell and either sit on a military press bench or a utility bench that has a back support on it as you place the dumbbells upright on top of your thighs or stand up straight.",
-      "Clean the dumbbell up to bring it to shoulder height and then extend the arm over your head so that the whole arm is perpendicular to the floor and next to your head. The dumbbell should be on top of you. The other hand can be kept fully extended to the side, by the waist, supporting the upper arm that has the dumbbell or grabbing a fixed surface.",
-      "Rotate the wrist so that the palm of your hand is facing forward and the pinkie is facing the ceiling. This will be your starting position.",
-      "Slowly lower the dumbbell behind your head as you hold the upper arm stationary. Inhale as you perform this movement and pause when your triceps are fully stretched.",
-      "Return to the starting position by flexing your triceps as you breathe out. Tip: It is imperative that only the forearm moves. The upper arm should remain at all times stationary next to your head.",
-      "Repeat for the recommended amount of repetitions and switch arms."
-    ],
-    "description": "Grab a dumbbell and either sit on a military press bench or a utility bench that has a back support on it as you place the dumbbells upright on top of your thighs or stand up straight. Clean the dumbbell up to bring it to shoulder height and then extend the arm over your head so that the whole arm is perpendicular to the floor and next to your head. The dumbbell should be on top of you. The other hand can be kept fully extended to the side, by the waist, supporting the upper arm that has the dumbbell or grabbing a fixed surface. Rotate the wrist so that the palm of your hand is facing forward and the pinkie is facing the ceiling. This will be your starting position. Slowly lower the dumbbell behind your head as you hold the upper arm stationary. Inhale as you perform this movement and pause when your triceps are fully stretched. Return to the starting position by flexing your triceps as you breathe out. Tip: It is imperative that only the forearm moves. The upper arm should remain at all times stationary next to your head. Repeat for the recommended amount of repetitions and switch arms.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_one_arm_upright_row",
-    "name": "Dumbbell One-Arm Upright Row",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      },
-      {
-        "group": "biceps",
-        "role": "secondary"
-      },
-      {
-        "group": "traps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Grab a dumbbell and stand up straight with your arm extended in front of you with a slight bend at the elbows and your back straight. This will be your starting position. Tip: The dumbbell should be resting on top of your thigh with the palm of your hands facing your thighs.",
-      "Keep the other hand can be kept fully extended to the side, by the waist or grabbing a fixed surface. This will be your starting position.",
-      "Use your side shoulders to lift the dumbbell as you exhale. The dumbbell should be close to the body as you move it up. Continue to lift it until the dumbbell is nearly in line with your chin. Tip: Your elbows should drive the motion. As you lift the dumbbell, your elbow should always be higher than your forearm. Also, keep your torso stationary and pause for a second at the top of the movement.",
-      "Lower the dumbbell back down slowly to the starting position. Inhale as you perform this portion of the movement.",
-      "Repeat for the recommended amount of repetitions and switch arms."
-    ],
-    "description": "Grab a dumbbell and stand up straight with your arm extended in front of you with a slight bend at the elbows and your back straight. This will be your starting position. Tip: The dumbbell should be resting on top of your thigh with the palm of your hands facing your thighs. Keep the other hand can be kept fully extended to the side, by the waist or grabbing a fixed surface. This will be your starting position. Use your side shoulders to lift the dumbbell as you exhale. The dumbbell should be close to the body as you move it up. Continue to lift it until the dumbbell is nearly in line with your chin. Tip: Your elbows should drive the motion. As you lift the dumbbell, your elbow should always be higher than your forearm. Also, keep your torso stationary and pause for a second at the top of the movement. Lower the dumbbell back down slowly to the starting position. Inhale as you perform this portion of the movement. Repeat for the recommended amount of repetitions and switch arms.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_prone_incline_curl",
-    "name": "Dumbbell Prone Incline Curl",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "biceps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Grab a dumbbell on each hand and lie face down on an incline bench with your shoulders near top of the incline. Your knees can rest on the seat or your legs can be straddled to the sides (my preferred way).",
-      "Let your arms extend and hang naturally in front of you so that they are perpendicular to the floor.",
-      "Now keep your elbows in by your side and face the palms forward. This will be your starting position.",
-      "Raise the dumbbells by contracting the biceps until your arms are fully flexed. Exhale as you perform this portion of the movement and ensure that only the forearms move. The upper arms should remain stationary at all times.",
-      "Lower the dumbbells until your arms are fully extended.",
-      "Repeat for the recommended amount of times."
-    ],
-    "description": "Grab a dumbbell on each hand and lie face down on an incline bench with your shoulders near top of the incline. Your knees can rest on the seat or your legs can be straddled to the sides (my preferred way). Let your arms extend and hang naturally in front of you so that they are perpendicular to the floor. Now keep your elbows in by your side and face the palms forward. This will be your starting position. Raise the dumbbells by contracting the biceps until your arms are fully flexed. Exhale as you perform this portion of the movement and ensure that only the forearms move. The upper arms should remain stationary at all times. Lower the dumbbells until your arms are fully extended. Repeat for the recommended amount of times.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_raise",
-    "name": "Dumbbell Raise",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      },
-      {
-        "group": "biceps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Grab a dumbbell in each arm and stand up straight with your arms extended by your sides with a slight bend at the elbows and your back straight. This will be your starting position. Tip: The dumbbell should be next to your thighs with the palm of your hands facing back.",
-      "Use your side shoulders to lift the dumbbells as you exhale. The dumbbells should be to the side of the body as you move them up. Continue to lift it until the dumbbells are nearly in line with your chin. Tip: Your elbows should drive the motion. As you lift the dumbbell, your elbow should always be higher than your forearm. Also, keep your torso stationary and pause for a second at the top of the movement.",
-      "Lower the dumbbells back down slowly to the starting position. Inhale as you perform this portion of the movement.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Grab a dumbbell in each arm and stand up straight with your arms extended by your sides with a slight bend at the elbows and your back straight. This will be your starting position. Tip: The dumbbell should be next to your thighs with the palm of your hands facing back. Use your side shoulders to lift the dumbbells as you exhale. The dumbbells should be to the side of the body as you move them up. Continue to lift it until the dumbbells are nearly in line with your chin. Tip: Your elbows should drive the motion. As you lift the dumbbell, your elbow should always be higher than your forearm. Also, keep your torso stationary and pause for a second at the top of the movement. Lower the dumbbells back down slowly to the starting position. Inhale as you perform this portion of the movement. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_rear_lunge",
-    "name": "Dumbbell Rear Lunge",
-    "pattern": "squat",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "quadriceps",
-        "role": "primary"
-      },
-      {
-        "group": "calves",
-        "role": "secondary"
-      },
-      {
-        "group": "glutes",
-        "role": "secondary"
-      },
-      {
-        "group": "hamstrings",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "legs"
-    ],
-    "cues": [
-      "Stand with your torso upright holding two dumbbells in your hands by your sides. This will be your starting position.",
-      "Step backward with your right leg around two feet or so from the left foot and lower your upper body down, while keeping the torso upright and maintaining balance. Inhale as you go down. Tip: As in the other exercises, do not allow your knee to go forward beyond your toes as you come down, as this will put undue stress on the knee joint. Make sure that you keep your front shin perpendicular to the ground. Keep the torso upright during the lunge; flexible hip flexors are important. A long lunge emphasizes the Gluteus Maximus; a short lunge emphasizes Quadriceps.",
-      "Push up and go back to the starting position as you exhale. Tip: Use the ball of your feet to push in order to accentuate the quadriceps. To focus on the glutes, press with your heels.",
-      "Now repeat with the opposite leg."
-    ],
-    "description": "Stand with your torso upright holding two dumbbells in your hands by your sides. This will be your starting position. Step backward with your right leg around two feet or so from the left foot and lower your upper body down, while keeping the torso upright and maintaining balance. Inhale as you go down. Tip: As in the other exercises, do not allow your knee to go forward beyond your toes as you come down, as this will put undue stress on the knee joint. Make sure that you keep your front shin perpendicular to the ground. Keep the torso upright during the lunge; flexible hip flexors are important. A long lunge emphasizes the Gluteus Maximus; a short lunge emphasizes Quadriceps. Push up and go back to the starting position as you exhale. Tip: Use the ball of your feet to push in order to accentuate the quadriceps. To focus on the glutes, press with your heels. Now repeat with the opposite leg.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_scaption",
-    "name": "Dumbbell Scaption",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      },
-      {
-        "group": "traps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "This corrective exercise strengthens the muscles that stabilize your shoulder blade. Hold a light weight in each hand, hanging at your sides. Your thumbs should pointing up.",
-      "Begin the movement raising your arms out in front of you, about 30 degrees off center. Your arms should be fully extended as you perform the movement.",
-      "Continue until your arms are parallel to the ground, and then return to the starting position."
-    ],
-    "description": "This corrective exercise strengthens the muscles that stabilize your shoulder blade. Hold a light weight in each hand, hanging at your sides. Your thumbs should pointing up. Begin the movement raising your arms out in front of you, about 30 degrees off center. Your arms should be fully extended as you perform the movement. Continue until your arms are parallel to the ground, and then return to the starting position.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_seated_box_jump",
-    "name": "Dumbbell Seated Box Jump",
-    "pattern": "conditioning",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "quadriceps",
-        "role": "primary"
-      },
-      {
-        "group": "calves",
-        "role": "secondary"
-      },
-      {
-        "group": "glutes",
-        "role": "secondary"
-      },
-      {
-        "group": "hamstrings",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "general",
-      "legs"
-    ],
-    "cues": [
-      "Position a box a couple feet to the side of a bench. Hold a dumbbell to your chest with both hands and seat yourself on the bench facing the box. This will be your starting position.",
-      "Plant your feet firmly on the ground as you lean forward, extending through the hips and knees to jump up and forward.",
-      "Land on the box with both feet, absorbing the impact by allowing the hips and knees to bend.",
-      "Step down and return to the starting position."
-    ],
-    "description": "Position a box a couple feet to the side of a bench. Hold a dumbbell to your chest with both hands and seat yourself on the bench facing the box. This will be your starting position. Plant your feet firmly on the ground as you lean forward, extending through the hips and knees to jump up and forward. Land on the box with both feet, absorbing the impact by allowing the hips and knees to bend. Step down and return to the starting position.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_seated_one_leg_calf_raise",
-    "name": "Dumbbell Seated One-Leg Calf Raise",
-    "pattern": "conditioning",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "calves",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "legs"
-    ],
-    "cues": [
-      "Place a block on the floor about 12 inches from a flat bench.",
-      "Sit on a flat bench and place a dumbbell on your upper left thigh about 3 inches above your knee.",
-      "Now place the ball of your left foot on the block. This will be your starting position.",
-      "Raise your toes up as high as possible as you exhale and you contract your calf muscle. Hold the contraction for a second.",
-      "Slowly return to the starting position, stretching as far down as possible.",
-      "Repeat for your prescribed number of repetitions and then repeat with the right leg."
-    ],
-    "description": "Place a block on the floor about 12 inches from a flat bench. Sit on a flat bench and place a dumbbell on your upper left thigh about 3 inches above your knee. Now place the ball of your left foot on the block. This will be your starting position. Raise your toes up as high as possible as you exhale and you contract your calf muscle. Hold the contraction for a second. Slowly return to the starting position, stretching as far down as possible. Repeat for your prescribed number of repetitions and then repeat with the right leg.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_shoulder_press",
-    "name": "Dumbbell Shoulder Press",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      },
-      {
-        "group": "triceps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "While holding a dumbbell in each hand, sit on a military press bench or utility bench that has back support. Place the dumbbells upright on top of your thighs.",
-      "Now raise the dumbbells to shoulder height one at a time using your thighs to help propel them up into position.",
-      "Make sure to rotate your wrists so that the palms of your hands are facing forward. This is your starting position.",
-      "Now, exhale and push the dumbbells upward until they touch at the top.",
-      "Then, after a brief pause at the top contracted position, slowly lower the weights back down to the starting position while inhaling.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "While holding a dumbbell in each hand, sit on a military press bench or utility bench that has back support. Place the dumbbells upright on top of your thighs. Now raise the dumbbells to shoulder height one at a time using your thighs to help propel them up into position. Make sure to rotate your wrists so that the palms of your hands are facing forward. This is your starting position. Now, exhale and push the dumbbells upward until they touch at the top. Then, after a brief pause at the top contracted position, slowly lower the weights back down to the starting position while inhaling. Repeat for the recommended amount of repetitions.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_shrug",
-    "name": "Dumbbell Shrug",
-    "pattern": "mobility",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "traps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "general"
-    ],
-    "cues": [
-      "Stand erect with a dumbbell on each hand (palms facing your torso), arms extended on the sides.",
-      "Lift the dumbbells by elevating the shoulders as high as possible while you exhale. Hold the contraction at the top for a second. Tip: The arms should remain extended at all times. Refrain from using the biceps to help lift the dumbbells. Only the shoulders should be moving up and down.",
-      "Lower the dumbbells back to the original position.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Stand erect with a dumbbell on each hand (palms facing your torso), arms extended on the sides. Lift the dumbbells by elevating the shoulders as high as possible while you exhale. Hold the contraction at the top for a second. Tip: The arms should remain extended at all times. Refrain from using the biceps to help lift the dumbbells. Only the shoulders should be moving up and down. Lower the dumbbells back to the original position. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_side_bend",
-    "name": "Dumbbell Side Bend",
-    "pattern": "core_compression",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "abdominals",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "core"
-    ],
-    "cues": [
-      "Stand up straight while holding a dumbbell on the left hand (palms facing the torso) as you have the right hand holding your waist. Your feet should be placed at shoulder width. This will be your starting position.",
-      "While keeping your back straight and your head up, bend only at the waist to the right as far as possible. Breathe in as you bend to the side. Then hold for a second and come back up to the starting position as you exhale. Tip: Keep the rest of the body stationary.",
-      "Now repeat the movement but bending to the left instead. Hold for a second and come back to the starting position.",
-      "Repeat for the recommended amount of repetitions and then change hands."
-    ],
-    "description": "Stand up straight while holding a dumbbell on the left hand (palms facing the torso) as you have the right hand holding your waist. Your feet should be placed at shoulder width. This will be your starting position. While keeping your back straight and your head up, bend only at the waist to the right as far as possible. Breathe in as you bend to the side. Then hold for a second and come back up to the starting position as you exhale. Tip: Keep the rest of the body stationary. Now repeat the movement but bending to the left instead. Hold for a second and come back to the starting position. Repeat for the recommended amount of repetitions and then change hands.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_squat",
-    "name": "Dumbbell Squat",
-    "pattern": "squat",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "quadriceps",
-        "role": "primary"
-      },
-      {
-        "group": "calves",
-        "role": "secondary"
-      },
-      {
-        "group": "glutes",
-        "role": "secondary"
-      },
-      {
-        "group": "hamstrings",
-        "role": "secondary"
-      },
-      {
-        "group": "lower back",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "legs"
-    ],
-    "cues": [
-      "Stand up straight while holding a dumbbell on each hand (palms facing the side of your legs).",
-      "Position your legs using a shoulder width medium stance with the toes slightly pointed out. Keep your head up at all times as looking down will get you off balance and also maintain a straight back. This will be your starting position. Note: For the purposes of this discussion we will use the medium stance described above which targets overall development; however you can choose any of the three stances discussed in the foot stances section.",
-      "Begin to slowly lower your torso by bending the knees as you maintain a straight posture with the head up. Continue down until your thighs are parallel to the floor. Tip: If you performed the exercise correctly, the front of the knees should make an imaginary straight line with the toes that is perpendicular to the front. If your knees are past that imaginary line (if they are past your toes) then you are placing undue stress on the knee and the exercise has been performed incorrectly.",
-      "Begin to raise your torso as you exhale by pushing the floor with the heel of your foot mainly as you straighten the legs again and go back to the starting position.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Stand up straight while holding a dumbbell on each hand (palms facing the side of your legs). Position your legs using a shoulder width medium stance with the toes slightly pointed out. Keep your head up at all times as looking down will get you off balance and also maintain a straight back. This will be your starting position. Note: For the purposes of this discussion we will use the medium stance described above which targets overall development; however you can choose any of the three stances discussed in the foot stances section. Begin to slowly lower your torso by bending the knees as you maintain a straight posture with the head up. Continue down until your thighs are parallel to the floor. Tip: If you performed the exercise correctly, the front of the knees should make an imaginary straight line with the toes that is perpendicular to the front. If your knees are past that imaginary line (if they are past your toes) then you are placing undue stress on the knee and the exercise has been performed incorrectly. Begin to raise your torso as you exhale by pushing the floor with the heel of your foot mainly as you straighten the legs again and go back to the starting position. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_squat_to_a_bench",
-    "name": "Dumbbell Squat To A Bench",
-    "pattern": "squat",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "quadriceps",
-        "role": "primary"
-      },
-      {
-        "group": "calves",
-        "role": "secondary"
-      },
-      {
-        "group": "glutes",
-        "role": "secondary"
-      },
-      {
-        "group": "hamstrings",
-        "role": "secondary"
-      },
-      {
-        "group": "lower back",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "legs"
-    ],
-    "cues": [
-      "Stand up straight with a flat bench behind you while holding a dumbbell on each hand (palms facing the side of your legs).",
-      "Position your legs using a shoulder width medium stance with the toes slightly pointed out. Keep your head up at all times as looking down will get you off balance and also maintain a straight back. This will be your starting position. Note: For the purposes of this discussion we will use the medium stance described above which targets overall development; however you can choose any of the three stances discussed in the foot stances section.",
-      "Begin to slowly lower your torso by bending the knees as you maintain a straight posture with the head up. Continue down until you slightly touch the bench behind you. Inhale as you perform this portion of the movement. Tip: If you performed the exercise correctly, the front of the knees should make an imaginary straight line with the toes that is perpendicular to the front. If your knees are past that imaginary line (if they are past your toes) then you are placing undue stress on the knee and the exercise has been performed incorrectly.",
-      "Begin to raise the bar as you exhale by pushing the floor with the heel of your foot mainly as you straighten the legs again and go back to the starting position.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Stand up straight with a flat bench behind you while holding a dumbbell on each hand (palms facing the side of your legs). Position your legs using a shoulder width medium stance with the toes slightly pointed out. Keep your head up at all times as looking down will get you off balance and also maintain a straight back. This will be your starting position. Note: For the purposes of this discussion we will use the medium stance described above which targets overall development; however you can choose any of the three stances discussed in the foot stances section. Begin to slowly lower your torso by bending the knees as you maintain a straight posture with the head up. Continue down until you slightly touch the bench behind you. Inhale as you perform this portion of the movement. Tip: If you performed the exercise correctly, the front of the knees should make an imaginary straight line with the toes that is perpendicular to the front. If your knees are past that imaginary line (if they are past your toes) then you are placing undue stress on the knee and the exercise has been performed incorrectly. Begin to raise the bar as you exhale by pushing the floor with the heel of your foot mainly as you straighten the legs again and go back to the starting position. Repeat for the recommended amount of repetitions.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_step_ups",
-    "name": "Dumbbell Step Ups",
-    "pattern": "squat",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "quadriceps",
-        "role": "primary"
-      },
-      {
-        "group": "calves",
-        "role": "secondary"
-      },
-      {
-        "group": "glutes",
-        "role": "secondary"
-      },
-      {
-        "group": "hamstrings",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "legs"
-    ],
-    "cues": [
-      "Stand up straight while holding a dumbbell on each hand (palms facing the side of your legs).",
-      "Place the right foot on the elevated platform. Step on the platform by extending the hip and the knee of your right leg. Use the heel mainly to lift the rest of your body up and place the foot of the left leg on the platform as well. Breathe out as you execute the force required to come up.",
-      "Step down with the left leg by flexing the hip and knee of the right leg as you inhale. Return to the original standing position by placing the right foot of to next to the left foot on the initial position.",
-      "Repeat with the right leg for the recommended amount of repetitions and then perform with the left leg."
-    ],
-    "description": "Stand up straight while holding a dumbbell on each hand (palms facing the side of your legs). Place the right foot on the elevated platform. Step on the platform by extending the hip and the knee of your right leg. Use the heel mainly to lift the rest of your body up and place the foot of the left leg on the platform as well. Breathe out as you execute the force required to come up. Step down with the left leg by flexing the hip and knee of the right leg as you inhale. Return to the original standing position by placing the right foot of to next to the left foot on the initial position. Repeat with the right leg for the recommended amount of repetitions and then perform with the left leg.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_dumbbell_tricep_extension_pronated_grip",
-    "name": "Dumbbell Tricep Extension -Pronated Grip",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "triceps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Lie down on a flat bench holding two dumbbells directly above your shoulders. Your arms should be fully extended and form a 90 degree angle from your torso and the floor.",
-      "The palms of your hands should be facing forward, and your elbows should be tucked in. This will be your starting position.",
-      "Now, inhale and slowly lower the dumbbells until they are near your ears. Be sure to keep your upper arms stationary and your elbows tucked in.",
-      "Then, exhale and use your triceps to return the weight to the starting position."
-    ],
-    "description": "Lie down on a flat bench holding two dumbbells directly above your shoulders. Your arms should be fully extended and form a 90 degree angle from your torso and the floor. The palms of your hands should be facing forward, and your elbows should be tucked in. This will be your starting position. Now, inhale and slowly lower the dumbbells until they are near your ears. Be sure to keep your upper arms stationary and your elbows tucked in. Then, exhale and use your triceps to return the weight to the starting position.",
     "difficulty": "beginner",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
@@ -2761,14 +1760,22 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_external_rotation",
-    "name": "External Rotation",
-    "pattern": "vertical_push",
+    "id": "fedb_extended_range_one_arm_kettlebell_floor_press",
+    "name": "Extended Range One-Arm Kettlebell Floor Press",
+    "pattern": "horizontal_push",
     "type": "dynamic",
     "muscles": [
       {
-        "group": "shoulders",
+        "group": "chest",
         "role": "primary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
       }
     ],
     "joints": [],
@@ -2777,14 +1784,10 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
       "push"
     ],
     "cues": [
-      "Lie sideways on a flat bench with one arm holding a dumbbell and the other hand on top of the bench folded so that you can rest your head on it.",
-      "Bend the elbows of the arm holding the dumbbell so that it creates a 90-degree angle between the upper arm and the forearm. Tip: Keep the arm parallel to your torso.",
-      "Now bend the elbow while keeping the upper arm stationary. In this manner, the forearm will be parallel to the floor and perpendicular to your torso (Tip: So the forearm will be directly in front of you). The upper arm will be stationary by your torso and should be parallel to the floor (aligned with your torso at all times). This will be your starting position.",
-      "As you breathe out, externally rotate your forearm so that the dumbbell is lifted up in a semicircle motion as you maintain the 90 degree angle bend between the upper arms and the forearm. You will continue this external rotation until the forearm is perpendicular to the floor and the torso pointing towards the ceiling. At this point you will hold the contraction for a second.",
-      "As you breathe in, slowly go back to the starting position.",
-      "Repeat for the recommended amount of repetitions and then switch to the other arm."
+      "Lie on the floor and position a kettlebell for one arm to press. The kettlebell should be held by the handle. The leg on the same side that you are pressing should be bent, with the knee crossing over the midline of the body.",
+      "Press the kettlebell by extending the elbow and adducting the arm, pressing it above your body. Return to the starting position."
     ],
-    "description": "Lie sideways on a flat bench with one arm holding a dumbbell and the other hand on top of the bench folded so that you can rest your head on it. Bend the elbows of the arm holding the dumbbell so that it creates a 90-degree angle between the upper arm and the forearm. Tip: Keep the arm parallel to your torso. Now bend the elbow while keeping the upper arm stationary. In this manner, the forearm will be parallel to the floor and perpendicular to your torso (Tip: So the forearm will be directly in front of you). The upper arm will be stationary by your torso and should be parallel to the floor (aligned with your torso at all times). This will be your starting position. As you breathe out, externally rotate your forearm so that the dumbbell is lifted up in a semicircle motion as you maintain the 90 degree angle bend between the upper arms and the forearm. You will continue this external rotation until the forearm is perpendicular to the floor and the torso pointing towards the ceiling. At this point you will hold the contraction for a second. As you breathe in, slowly go back to the starting position. Repeat for the recommended amount of repetitions and then switch to the other arm.",
+    "description": "Lie on the floor and position a kettlebell for one arm to press. The kettlebell should be held by the handle. The leg on the same side that you are pressing should be bent, with the knee crossing over the midline of the body. Press the kettlebell by extending the elbow and adducting the arm, pressing it above your body. Return to the starting position.",
     "difficulty": "beginner",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
@@ -2888,34 +1891,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_flexor_incline_dumbbell_curls",
-    "name": "Flexor Incline Dumbbell Curls",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "biceps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Hold the dumbbell towards the side farther from you so that you have more weight on the side closest to you. (This can be done for a good effect on all bicep dumbbell exercises). Now do a normal incline dumbbell curl, but keep your wrists as far back as possible so as to neutralize any stress that is placed on them.",
-      "Sit on an incline bench that is angled at 45-degrees while holding a dumbbell on each hand.",
-      "Let your arms hang down on your sides, with the elbows in, and turn the palms of your hands forward with the thumbs pointing away from the body. Tip: You will keep this hand position throughout the movement as there should not be any twisting of the hands as they come up. This will be your starting position.",
-      "Curl up the two dumbbells at the same time until your biceps are fully contracted and exhale. Tip: Do not swing the arms or use momentum. Keep a controlled motion at all times. Hold the contracted position for a second at the top.",
-      "As you inhale, slowly go back to the starting position.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Hold the dumbbell towards the side farther from you so that you have more weight on the side closest to you. (This can be done for a good effect on all bicep dumbbell exercises). Now do a normal incline dumbbell curl, but keep your wrists as far back as possible so as to neutralize any stress that is placed on them. Sit on an incline bench that is angled at 45-degrees while holding a dumbbell on each hand. Let your arms hang down on your sides, with the elbows in, and turn the palms of your hands forward with the thumbs pointing away from the body. Tip: You will keep this hand position throughout the movement as there should not be any twisting of the hands as they come up. This will be your starting position. Curl up the two dumbbells at the same time until your biceps are fully contracted and exhale. Tip: Do not swing the arms or use momentum. Keep a controlled motion at all times. Hold the contracted position for a second at the top. As you inhale, slowly go back to the starting position. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
     "id": "fedb_flutter_kicks",
     "name": "Flutter Kicks",
     "pattern": "hinge",
@@ -2976,59 +1951,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_front_dumbbell_raise",
-    "name": "Front Dumbbell Raise",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Pick a couple of dumbbells and stand with a straight torso and the dumbbells on front of your thighs at arms length with the palms of the hand facing your thighs. This will be your starting position.",
-      "While maintaining the torso stationary (no swinging), lift the left dumbbell to the front with a slight bend on the elbow and the palms of the hands always facing down. Continue to go up until you arm is slightly above parallel to the floor. Exhale as you execute this portion of the movement and pause for a second at the top. Inhale after the second pause.",
-      "Now lower the dumbbell back down slowly to the starting position as you simultaneously lift the right dumbbell.",
-      "Continue alternating in this fashion until all of the recommended amount of repetitions have been performed for each arm."
-    ],
-    "description": "Pick a couple of dumbbells and stand with a straight torso and the dumbbells on front of your thighs at arms length with the palms of the hand facing your thighs. This will be your starting position. While maintaining the torso stationary (no swinging), lift the left dumbbell to the front with a slight bend on the elbow and the palms of the hands always facing down. Continue to go up until you arm is slightly above parallel to the floor. Exhale as you execute this portion of the movement and pause for a second at the top. Inhale after the second pause. Now lower the dumbbell back down slowly to the starting position as you simultaneously lift the right dumbbell. Continue alternating in this fashion until all of the recommended amount of repetitions have been performed for each arm.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_front_incline_dumbbell_raise",
-    "name": "Front Incline Dumbbell Raise",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Sit down on an incline bench with the incline set anywhere between 30 to 60 degrees while holding a dumbbell on each hand. Tip: You can change the angle to hit the muscle a little differently each time.",
-      "Extend your arms straight in front of you and have your palms facing down with the dumbbells raised about 1 inch above your thighs. This will be your starting position.",
-      "Slowly raise the dumbbells straight up until they are slightly above your shoulders, while keeping your elbows locked. Squeeze at the top for a second and make sure you breathe out during this portion of the movement. Tip: Keep your head resting down against the bench and your legs on the floor at all times.",
-      "Lower the arms back to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Sit down on an incline bench with the incline set anywhere between 30 to 60 degrees while holding a dumbbell on each hand. Tip: You can change the angle to hit the muscle a little differently each time. Extend your arms straight in front of you and have your palms facing down with the dumbbells raised about 1 inch above your thighs. This will be your starting position. Slowly raise the dumbbells straight up until they are slightly above your shoulders, while keeping your elbows locked. Squeeze at the top for a second and make sure you breathe out during this portion of the movement. Tip: Keep your head resting down against the bench and your legs on the floor at all times. Lower the arms back to the starting position as you inhale. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
     "id": "fedb_front_leg_raises",
     "name": "Front Leg Raises",
     "pattern": "mobility",
@@ -3054,29 +1976,36 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_front_two_dumbbell_raise",
-    "name": "Front Two-Dumbbell Raise",
-    "pattern": "vertical_push",
+    "id": "fedb_front_squats_with_two_kettlebells",
+    "name": "Front Squats With Two Kettlebells",
+    "pattern": "squat",
     "type": "dynamic",
     "muscles": [
       {
-        "group": "shoulders",
+        "group": "quadriceps",
         "role": "primary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
       }
     ],
     "joints": [],
     "role": "work",
     "regions": [
-      "push"
+      "legs"
     ],
     "cues": [
-      "Pick a couple of dumbbells and stand with a straight torso and the dumbbells on front of your thighs at arms length with the palms of the hand facing your thighs. This will be your starting position.",
-      "While maintaining the torso stationary (no swinging), lift the dumbbells to the front with a slight bend on the elbow and the palms of the hands always facing down. Continue to go up until you arms are slightly above parallel to the floor. Exhale as you execute this portion of the movement and pause for a second at the top.",
-      "As you inhale, lower the dumbbells back down slowly to the starting position.",
-      "Repeat for the recommended amount of repetitions."
+      "Clean two kettlebells to your shoulders. Clean the kettlebells to your shoulders by extending through the legs and hips as you pull the kettlebells towards your shoulders. Rotate your wrists as you do so.",
+      "Looking straight ahead at all times, squat as low as you can and pause at the bottom. As you squat down, push your knees out. You should squat between your legs, keeping an upright torso, with your head and chest up.",
+      "Rise back up by driving through your heels and repeat."
     ],
-    "description": "Pick a couple of dumbbells and stand with a straight torso and the dumbbells on front of your thighs at arms length with the palms of the hand facing your thighs. This will be your starting position. While maintaining the torso stationary (no swinging), lift the dumbbells to the front with a slight bend on the elbow and the palms of the hands always facing down. Continue to go up until you arms are slightly above parallel to the floor. Exhale as you execute this portion of the movement and pause for a second at the top. As you inhale, lower the dumbbells back down slowly to the starting position. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
+    "description": "Clean two kettlebells to your shoulders. Clean the kettlebells to your shoulders by extending through the legs and hips as you pull the kettlebells towards your shoulders. Rotate your wrists as you do so. Looking straight ahead at all times, squat as low as you can and pause at the bottom. As you squat down, push your knees out. You should squat between your legs, keeping an upright torso, with your head and chest up. Rise back up by driving through your heels and repeat.",
+    "difficulty": "intermediate",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
@@ -3142,6 +2071,47 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
       "Continue to alternate legs until all of the recommended repetitions have been performed."
     ],
     "description": "Kneel on the floor or an exercise mat and bend at the waist with your arms extended in front of you (perpendicular to the torso) in order to get into a kneeling push-up position but with the arms spaced at shoulder width. Your head should be looking forward and the bend of the knees should create a 90-degree angle between the hamstrings and the calves. This will be your starting position. As you exhale, lift up your right leg until the hamstrings are in line with the back while maintaining the 90-degree angle bend. Contract the glutes throughout this movement and hold the contraction at the top for a second. Tip: At the end of the movement the upper leg should be parallel to the floor while the calf should be perpendicular to it. Go back to the initial position as you inhale and now repeat with the left leg. Continue to alternate legs until all of the recommended repetitions have been performed.",
+    "difficulty": "beginner",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_goblet_squat",
+    "name": "Goblet Squat",
+    "pattern": "squat",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Stand holding a light kettlebell by the horns close to your chest. This will be your starting position.",
+      "Squat down between your legs until your hamstrings are on your calves. Keep your chest and head up and your back straight.",
+      "At the bottom position, pause and use your elbows to push your knees out. Return to the starting position, and repeat for 10-20 repetitions."
+    ],
+    "description": "Stand holding a light kettlebell by the horns close to your chest. This will be your starting position. Squat down between your legs until your hamstrings are on your calves. Keep your chest and head up and your back straight. At the bottom position, pause and use your elbows to push your knees out. Return to the starting position, and repeat for 10-20 repetitions.",
     "difficulty": "beginner",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
@@ -3231,70 +2201,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     ],
     "description": "Begin in a pushup position on the floor. This will be your starting position. Using both legs, jump forward landing with your feet next to your hands. Keep your head up as you do so. Return to the starting position and immediately repeat the movement, continuing for 10-20 repetitions.",
     "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_hammer_curls",
-    "name": "Hammer Curls",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "biceps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Stand up with your torso upright and a dumbbell on each hand being held at arms length. The elbows should be close to the torso.",
-      "The palms of the hands should be facing your torso. This will be your starting position.",
-      "Now, while holding your upper arm stationary, exhale and curl the weight forward while contracting the biceps. Continue to raise the weight until the biceps are fully contracted and the dumbbell is at shoulder level. Hold the contracted position for a brief moment as you squeeze the biceps. Tip: Focus on keeping the elbow stationary and only moving your forearm.",
-      "After the brief pause, inhale and slowly begin the lower the dumbbells back down to the starting position.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Stand up with your torso upright and a dumbbell on each hand being held at arms length. The elbows should be close to the torso. The palms of the hands should be facing your torso. This will be your starting position. Now, while holding your upper arm stationary, exhale and curl the weight forward while contracting the biceps. Continue to raise the weight until the biceps are fully contracted and the dumbbell is at shoulder level. Hold the contracted position for a brief moment as you squeeze the biceps. Tip: Focus on keeping the elbow stationary and only moving your forearm. After the brief pause, inhale and slowly begin the lower the dumbbells back down to the starting position. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_hammer_grip_incline_db_bench_press",
-    "name": "Hammer Grip Incline DB Bench Press",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "chest",
-        "role": "primary"
-      },
-      {
-        "group": "shoulders",
-        "role": "secondary"
-      },
-      {
-        "group": "triceps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Lie back on an incline bench with a dumbbell on each hand on top of your thighs. The palms of your hand will be facing each other.",
-      "By using your thighs to help you get the dumbbells up, clean the dumbbells one arm at a time so that you can hold them at shoulder width.",
-      "Once at shoulder width, keep the palms of your hands with a neutral grip (palms facing each other). Keep your elbows flared out with the upper arms in line with the shoulders (perpendicular to the torso) and the elbows bent creating a 90-degree angle between the upper arm and the forearm. This will be your starting position.",
-      "Now bring down the weights slowly to your side as you breathe in. Keep full control of the dumbbells at all times.",
-      "As you breathe out, push the dumbbells up using your pectoral muscles. Lock your arms in the contracted position, hold for a second and then start coming down slowly. Tip: It should take at least twice as long to go down than to come up.",
-      "Repeat the movement for the prescribed amount of repetitions.",
-      "When you are done, place the dumbbells back in your thighs and then on the floor. This is the safest manner to dispose of the dumbbells."
-    ],
-    "description": "Lie back on an incline bench with a dumbbell on each hand on top of your thighs. The palms of your hand will be facing each other. By using your thighs to help you get the dumbbells up, clean the dumbbells one arm at a time so that you can hold them at shoulder width. Once at shoulder width, keep the palms of your hands with a neutral grip (palms facing each other). Keep your elbows flared out with the upper arms in line with the shoulders (perpendicular to the torso) and the elbows bent creating a 90-degree angle between the upper arm and the forearm. This will be your starting position. Now bring down the weights slowly to your side as you breathe in. Keep full control of the dumbbells at all times. As you breathe out, push the dumbbells up using your pectoral muscles. Lock your arms in the contracted position, hold for a second and then start coming down slowly. Tip: It should take at least twice as long to go down than to come up. Repeat the movement for the prescribed amount of repetitions. When you are done, place the dumbbells back in your thighs and then on the floor. This is the safest manner to dispose of the dumbbells.",
-    "difficulty": "beginner",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
@@ -3444,222 +2350,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     ],
     "description": "With someone holding down your legs, slide yourself down to the edge a flat bench until your hips hang off the end of the bench. Tip: Your entire upper body should be hanging down towards the floor. Also, you will be in the same position as if you were on a hyperextension bench but the range of motion will be shorter due to the height of the flat bench vs. that of the hyperextension bench. With your body straight, cross your arms in front of you (my preference) or behind your head. This will be your starting position. Tip: You can also hold a weight plate for extra resistance in front of you under your crossed arms. Start bending forward slowly at the waist as far as you can while keeping your back flat. Inhale as you perform this movement. Keep moving forward until you almost touch the floor or you feel a nice stretch on the hamstrings (whichever comes first). Tip: Never round the back as you perform this exercise. Slowly raise your torso back to the initial position as you exhale. Tip: Avoid the temptation to arch your back past a straight line. Also, do not swing the torso at any time in order to protect the back from injury. Repeat for the recommended amount of repetitions.",
     "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_incline_dumbbell_bench_with_palms_facing_in",
-    "name": "Incline Dumbbell Bench With Palms Facing In",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "chest",
-        "role": "primary"
-      },
-      {
-        "group": "shoulders",
-        "role": "secondary"
-      },
-      {
-        "group": "triceps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Lie back on an incline bench with a dumbbell on each hand on top of your thighs. The palms of your hand will be facing each other.",
-      "By using your thighs to help you get the dumbbells up, clean the dumbbells one arm at a time so that you can hold them at shoulder width.",
-      "Once at shoulder width, keep the palms of your hands with a neutral grip (palms facing each other). Keep your elbows flared out with the upper arms in line with the shoulders (perpendicular to the torso) and the elbows bent creating a 90-degree angle between the upper arm and the forearm. This will be your starting position.",
-      "Now bring down the weights slowly to your side as you breathe in. Keep full control of the dumbbells at all times.",
-      "As you breathe out, push the dumbbells up using your pectoral muscles. Lock your arms in the contracted position, hold for a second and then start coming down slowly. Tip: It should take at least twice as long to go down than to come up.",
-      "Repeat the movement for the prescribed amount of repetitions.",
-      "When you are done, place the dumbbells back in your thighs and then on the floor. This is the safest manner to dispose of the dumbbells."
-    ],
-    "description": "Lie back on an incline bench with a dumbbell on each hand on top of your thighs. The palms of your hand will be facing each other. By using your thighs to help you get the dumbbells up, clean the dumbbells one arm at a time so that you can hold them at shoulder width. Once at shoulder width, keep the palms of your hands with a neutral grip (palms facing each other). Keep your elbows flared out with the upper arms in line with the shoulders (perpendicular to the torso) and the elbows bent creating a 90-degree angle between the upper arm and the forearm. This will be your starting position. Now bring down the weights slowly to your side as you breathe in. Keep full control of the dumbbells at all times. As you breathe out, push the dumbbells up using your pectoral muscles. Lock your arms in the contracted position, hold for a second and then start coming down slowly. Tip: It should take at least twice as long to go down than to come up. Repeat the movement for the prescribed amount of repetitions. When you are done, place the dumbbells back in your thighs and then on the floor. This is the safest manner to dispose of the dumbbells.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_incline_dumbbell_curl",
-    "name": "Incline Dumbbell Curl",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "biceps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Sit back on an incline bench with a dumbbell in each hand held at arms length. Keep your elbows close to your torso and rotate the palms of your hands until they are facing forward. This will be your starting position.",
-      "While holding the upper arm stationary, curl the weights forward while contracting the biceps as you breathe out. Only the forearms should move. Continue the movement until your biceps are fully contracted and the dumbbells are at shoulder level. Hold the contracted position for a second.",
-      "Slowly begin to bring the dumbbells back to starting position as your breathe in.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Sit back on an incline bench with a dumbbell in each hand held at arms length. Keep your elbows close to your torso and rotate the palms of your hands until they are facing forward. This will be your starting position. While holding the upper arm stationary, curl the weights forward while contracting the biceps as you breathe out. Only the forearms should move. Continue the movement until your biceps are fully contracted and the dumbbells are at shoulder level. Hold the contracted position for a second. Slowly begin to bring the dumbbells back to starting position as your breathe in. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_incline_dumbbell_flyes",
-    "name": "Incline Dumbbell Flyes",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "chest",
-        "role": "primary"
-      },
-      {
-        "group": "shoulders",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Hold a dumbbell on each hand and lie on an incline bench that is set to an incline angle of no more than 30 degrees.",
-      "Extend your arms above you with a slight bend at the elbows.",
-      "Now rotate the wrists so that the palms of your hands are facing you. Tip: The pinky fingers should be next to each other. This will be your starting position.",
-      "As you breathe in, start to slowly lower the arms to the side while keeping the arms extended and while rotating the wrists until the palms of the hand are facing each other. Tip: At the end of the movement the arms will be by your side with the palms facing the ceiling.",
-      "As you exhale start to bring the dumbbells back up to the starting position by reversing the motion and rotating the hands so that the pinky fingers are next to each other again. Tip: Keep in mind that the movement will only happen at the shoulder joint and at the wrist. There is no motion that happens at the elbow joint.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Hold a dumbbell on each hand and lie on an incline bench that is set to an incline angle of no more than 30 degrees. Extend your arms above you with a slight bend at the elbows. Now rotate the wrists so that the palms of your hands are facing you. Tip: The pinky fingers should be next to each other. This will be your starting position. As you breathe in, start to slowly lower the arms to the side while keeping the arms extended and while rotating the wrists until the palms of the hand are facing each other. Tip: At the end of the movement the arms will be by your side with the palms facing the ceiling. As you exhale start to bring the dumbbells back up to the starting position by reversing the motion and rotating the hands so that the pinky fingers are next to each other again. Tip: Keep in mind that the movement will only happen at the shoulder joint and at the wrist. There is no motion that happens at the elbow joint. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_incline_dumbbell_flyes_with_a_twist",
-    "name": "Incline Dumbbell Flyes - With A Twist",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "chest",
-        "role": "primary"
-      },
-      {
-        "group": "shoulders",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Hold a dumbbell in each hand and lie on an incline bench that is set to an incline angle of no more than 30 degrees.",
-      "Extend your arms above you with a slight bend at the elbows.",
-      "Now rotate the wrists so that the palms of your hands are facing you. Tip: The pinky fingers should be next to each other. This will be your starting position.",
-      "As you breathe in, start to slowly lower the arms to the side while keeping the arms extended and while rotating the wrists until the palms of the hand are facing each other. Tip: At the end of the movement the arms will be by your side with the palms facing the ceiling.",
-      "As you exhale start to bring the dumbbells back up to the starting position by reversing the motion and rotating the hands so that the pinky fingers are next to each other again. Tip: Keep in mind that the movement will only happen at the shoulder joint and at the wrist. There is no motion that happens at the elbow joint.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Hold a dumbbell in each hand and lie on an incline bench that is set to an incline angle of no more than 30 degrees. Extend your arms above you with a slight bend at the elbows. Now rotate the wrists so that the palms of your hands are facing you. Tip: The pinky fingers should be next to each other. This will be your starting position. As you breathe in, start to slowly lower the arms to the side while keeping the arms extended and while rotating the wrists until the palms of the hand are facing each other. Tip: At the end of the movement the arms will be by your side with the palms facing the ceiling. As you exhale start to bring the dumbbells back up to the starting position by reversing the motion and rotating the hands so that the pinky fingers are next to each other again. Tip: Keep in mind that the movement will only happen at the shoulder joint and at the wrist. There is no motion that happens at the elbow joint. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_incline_dumbbell_press",
-    "name": "Incline Dumbbell Press",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "chest",
-        "role": "primary"
-      },
-      {
-        "group": "shoulders",
-        "role": "secondary"
-      },
-      {
-        "group": "triceps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Lie back on an incline bench with a dumbbell in each hand atop your thighs. The palms of your hands will be facing each other.",
-      "Then, using your thighs to help push the dumbbells up, lift the dumbbells one at a time so that you can hold them at shoulder width.",
-      "Once you have the dumbbells raised to shoulder width, rotate your wrists forward so that the palms of your hands are facing away from you. This will be your starting position.",
-      "Be sure to keep full control of the dumbbells at all times. Then breathe out and push the dumbbells up with your chest.",
-      "Lock your arms at the top, hold for a second, and then start slowly lowering the weight. Tip Ideally, lowering the weights should take about twice as long as raising them.",
-      "Repeat the movement for the prescribed amount of repetitions.",
-      "When you are done, place the dumbbells back on your thighs and then on the floor. This is the safest manner to release the dumbbells."
-    ],
-    "description": "Lie back on an incline bench with a dumbbell in each hand atop your thighs. The palms of your hands will be facing each other. Then, using your thighs to help push the dumbbells up, lift the dumbbells one at a time so that you can hold them at shoulder width. Once you have the dumbbells raised to shoulder width, rotate your wrists forward so that the palms of your hands are facing away from you. This will be your starting position. Be sure to keep full control of the dumbbells at all times. Then breathe out and push the dumbbells up with your chest. Lock your arms at the top, hold for a second, and then start slowly lowering the weight. Tip Ideally, lowering the weights should take about twice as long as raising them. Repeat the movement for the prescribed amount of repetitions. When you are done, place the dumbbells back on your thighs and then on the floor. This is the safest manner to release the dumbbells.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_incline_hammer_curls",
-    "name": "Incline Hammer Curls",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "biceps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Seat yourself on an incline bench with a dumbbell in each hand. You should pressed firmly against he back with your feet together. Allow the dumbbells to hang straight down at your side, holding them with a neutral grip. This will be your starting position.",
-      "Initiate the movement by flexing at the elbow, attempting to keep the upper arm stationary.",
-      "Continue to the top of the movement and pause, then slowly return to the start position."
-    ],
-    "description": "Seat yourself on an incline bench with a dumbbell in each hand. You should pressed firmly against he back with your feet together. Allow the dumbbells to hang straight down at your side, holding them with a neutral grip. This will be your starting position. Initiate the movement by flexing at the elbow, attempting to keep the upper arm stationary. Continue to the top of the movement and pause, then slowly return to the start position.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_incline_inner_biceps_curl",
-    "name": "Incline Inner Biceps Curl",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "biceps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Hold a dumbbell in each hand and lie back on an incline bench.",
-      "The dumbbells should be at arm's length hanging at your sides and your palms should be facing out. This will be your starting position.",
-      "Now as you exhale curl the weight outward and up while keeping your forearms in line with your side deltoids. Continue the curl until the dumbbells are at shoulder height and to the sides of your deltoids. Tip: The end of the movement should look similar to a double biceps pose.",
-      "After a second contraction at the top of the movement, start to inhale and slowly lower the weights back to the starting position using the same path used to bring them up.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Hold a dumbbell in each hand and lie back on an incline bench. The dumbbells should be at arm's length hanging at your sides and your palms should be facing out. This will be your starting position. Now as you exhale curl the weight outward and up while keeping your forearms in line with your side deltoids. Continue the curl until the dumbbells are at shoulder height and to the sides of your deltoids. Tip: The end of the movement should look similar to a double biceps pose. After a second contraction at the top of the movement, start to inhale and slowly lower the weights back to the starting position using the same path used to bring them up. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
@@ -4129,6 +2819,683 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
+    "id": "fedb_kettlebell_arnold_press",
+    "name": "Kettlebell Arnold Press",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Clean a kettlebell to your shoulder. Clean the kettlebell to your shoulder by extending through the legs and hips as you raise the kettlebell towards your shoulder. The palm should be facing inward.",
+      "Looking straight ahead, press the kettlebell out and overhead, rotating your wrist so that your palm faces forward at the top of the motion.",
+      "Return the kettlebell to the starting position, with the palm facing in."
+    ],
+    "description": "Clean a kettlebell to your shoulder. Clean the kettlebell to your shoulder by extending through the legs and hips as you raise the kettlebell towards your shoulder. The palm should be facing inward. Looking straight ahead, press the kettlebell out and overhead, rotating your wrist so that your palm faces forward at the top of the motion. Return the kettlebell to the starting position, with the palm facing in.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_kettlebell_dead_clean",
+    "name": "Kettlebell Dead Clean",
+    "pattern": "hinge",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "lower back",
+        "role": "secondary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Place kettlebell between your feet. To get in the starting position, push your butt back and look straight ahead.",
+      "Clean the kettlebell to your shoulder. Clean the kettlebell to your shoulders by extending through the legs and hips as you raise the kettlebell towards your shoulder. The wrist should rotate as you do so.",
+      "Lower the kettlebell, keeping the hamstrings loaded by keeping your back straight and your butt out."
+    ],
+    "description": "Place kettlebell between your feet. To get in the starting position, push your butt back and look straight ahead. Clean the kettlebell to your shoulder. Clean the kettlebell to your shoulders by extending through the legs and hips as you raise the kettlebell towards your shoulder. The wrist should rotate as you do so. Lower the kettlebell, keeping the hamstrings loaded by keeping your back straight and your butt out.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_kettlebell_figure_8",
+    "name": "Kettlebell Figure 8",
+    "pattern": "core_compression",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "abdominals",
+        "role": "primary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "core"
+    ],
+    "cues": [
+      "Place one kettlebell between your legs and take a wider than shoulder width stance. Bend over by pushing your butt out and keeping your back flat.",
+      "Pick up a kettlebell and pass it to your other hand between your legs. The receiving hand should reach from behind the legs. Go back and forth for several repetitions."
+    ],
+    "description": "Place one kettlebell between your legs and take a wider than shoulder width stance. Bend over by pushing your butt out and keeping your back flat. Pick up a kettlebell and pass it to your other hand between your legs. The receiving hand should reach from behind the legs. Go back and forth for several repetitions.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_kettlebell_halo",
+    "name": "Kettlebell Halo",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      },
+      {
+        "group": "middle back",
+        "role": "secondary"
+      },
+      {
+        "group": "abdominals",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Stand tall with your feet hip-width apart. Hold a kettlebell upside down by the horns, with the bell above your hands and close to your chest. Brace your abdominals and squeeze your glutes so your ribcage stays down. This is your starting position.",
+      "Keeping your elbows close to your head, move the kettlebell up past one ear and around behind your head.",
+      "Continue the circle past the opposite ear and back down to the starting position in front of your chest, letting the bell pass close to your body throughout.",
+      "Complete the prescribed number of circles in one direction, then repeat the same number in the opposite direction.",
+      "Move slowly and keep your head, hips and lower back still. If your lower back arches or the bell drifts far from your head, use a lighter weight."
+    ],
+    "description": "Stand tall with your feet hip-width apart. Hold a kettlebell upside down by the horns, with the bell above your hands and close to your chest. Brace your abdominals and squeeze your glutes so your ribcage stays down. This is your starting position. Keeping your elbows close to your head, move the kettlebell up past one ear and around behind your head. Continue the circle past the opposite ear and back down to the starting position in front of your chest, letting the bell pass close to your body throughout. Complete the prescribed number of circles in one direction, then repeat the same number in the opposite direction. Move slowly and keep your head, hips and lower back still. If your lower back arches or the bell drifts far from your head, use a lighter weight.",
+    "difficulty": "beginner",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_kettlebell_halo_with_overhead_extension",
+    "name": "Kettlebell Halo with Overhead Extension",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "triceps",
+        "role": "primary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      },
+      {
+        "group": "middle back",
+        "role": "secondary"
+      },
+      {
+        "group": "abdominals",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Stand tall with your feet hip-width apart. Hold a kettlebell upside down by the horns, with the bell above your hands and close to your chest. Brace your abdominals and squeeze your glutes so your ribcage stays down. This is your starting position.",
+      "Keeping your elbows close to your head, move the kettlebell up past one ear and around until it sits behind your head. Pause here.",
+      "From this position, extend your elbows to press the kettlebell up and overhead until your arms are straight, keeping your upper arms alongside your head.",
+      "Bend your elbows to lower the kettlebell back to the pause position behind your head, under control.",
+      "Continue the circle past the opposite ear and back down to the starting position in front of your chest to complete one repetition.",
+      "Alternate the direction of the circle on each repetition. Keep your head, hips and lower back still throughout; if your lower back arches or you cannot reach the overhead position without leaning back, use a lighter weight or perform the halo and the extension as separate exercises."
+    ],
+    "description": "Stand tall with your feet hip-width apart. Hold a kettlebell upside down by the horns, with the bell above your hands and close to your chest. Brace your abdominals and squeeze your glutes so your ribcage stays down. This is your starting position. Keeping your elbows close to your head, move the kettlebell up past one ear and around until it sits behind your head. Pause here. From this position, extend your elbows to press the kettlebell up and overhead until your arms are straight, keeping your upper arms alongside your head. Bend your elbows to lower the kettlebell back to the pause position behind your head, under control. Continue the circle past the opposite ear and back down to the starting position in front of your chest to complete one repetition. Alternate the direction of the circle on each repetition. Keep your head, hips and lower back still throughout; if your lower back arches or you cannot reach the overhead position without leaning back, use a lighter weight or perform the halo and the extension as separate exercises.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_kettlebell_hang_clean",
+    "name": "Kettlebell Hang Clean",
+    "pattern": "hinge",
+    "type": "isometric",
+    "muscles": [
+      {
+        "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "lower back",
+        "role": "secondary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Place kettlebell between your feet. To get in the starting position, push your butt back and look straight ahead.",
+      "Clean kettlebell to your shoulder. Clean the kettlebell to your shoulders by extending through the legs and hips as you raise the kettlebell towards your shoulder. The wrist should rotate as you do so.",
+      "Lower kettlebell to a hanging position between your legs while keeping the hamstrings loaded. Keep your head up at all times."
+    ],
+    "description": "Place kettlebell between your feet. To get in the starting position, push your butt back and look straight ahead. Clean kettlebell to your shoulder. Clean the kettlebell to your shoulders by extending through the legs and hips as you raise the kettlebell towards your shoulder. The wrist should rotate as you do so. Lower kettlebell to a hanging position between your legs while keeping the hamstrings loaded. Keep your head up at all times.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_kettlebell_one_legged_deadlift",
+    "name": "Kettlebell One-Legged Deadlift",
+    "pattern": "hinge",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "lower back",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Hold a kettlebell by the handle in one hand. Stand on one leg, on the same side that you hold the kettlebell.",
+      "Keeping that knee slightly bent, perform a stiff legged deadlift by bending at the hip, extending your free leg behind you for balance.",
+      "Continue lowering the kettlebell until you are parallel to the ground, and then return to the upright position."
+    ],
+    "description": "Hold a kettlebell by the handle in one hand. Stand on one leg, on the same side that you hold the kettlebell. Keeping that knee slightly bent, perform a stiff legged deadlift by bending at the hip, extending your free leg behind you for balance. Continue lowering the kettlebell until you are parallel to the ground, and then return to the upright position.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_kettlebell_overhead_triceps_extension",
+    "name": "Kettlebell Overhead Triceps Extension",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "triceps",
+        "role": "primary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      },
+      {
+        "group": "abdominals",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Stand with your feet hip-width apart, holding a kettlebell by the horns with both hands. Press it overhead until your arms are extended, with the bell hanging behind your hands.",
+      "Brace your abdominals and keep your upper arms vertical and close to your head. This is your starting position.",
+      "Bend at the elbows to lower the kettlebell behind your head, going as far as your shoulder mobility allows without your elbows flaring outward.",
+      "Extend your elbows to press the kettlebell back to the starting position, keeping your upper arms still throughout.",
+      "Keep your ribcage down and avoid arching your lower back as you extend."
+    ],
+    "description": "Stand with your feet hip-width apart, holding a kettlebell by the horns with both hands. Press it overhead until your arms are extended, with the bell hanging behind your hands. Brace your abdominals and keep your upper arms vertical and close to your head. This is your starting position. Bend at the elbows to lower the kettlebell behind your head, going as far as your shoulder mobility allows without your elbows flaring outward. Extend your elbows to press the kettlebell back to the starting position, keeping your upper arms still throughout. Keep your ribcage down and avoid arching your lower back as you extend.",
+    "difficulty": "beginner",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_kettlebell_pass_between_the_legs",
+    "name": "Kettlebell Pass Between The Legs",
+    "pattern": "core_compression",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "abdominals",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "core"
+    ],
+    "cues": [
+      "Place one kettlebell between your legs and take a comfortable stance. Bend over by pushing your butt out and keeping your back flat.",
+      "Pick up a kettlebell and pass it to your other hand between your legs, in the fashion of a \"W\". Go back and forth for several repetitions."
+    ],
+    "description": "Place one kettlebell between your legs and take a comfortable stance. Bend over by pushing your butt out and keeping your back flat. Pick up a kettlebell and pass it to your other hand between your legs, in the fashion of a \"W\". Go back and forth for several repetitions.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_kettlebell_pirate_ships",
+    "name": "Kettlebell Pirate Ships",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "With a wide stance, hold a kettlebell with both hands. Allow it to hang at waist level with your arms extended. This will be your starting position.",
+      "Initiate the movement by turning to one side, swinging the kettlebell to head height. Briefly pause at the top of the motion.",
+      "Allow the bell to drop as you rotate to the opposite side, again raising the kettlebell to head height.",
+      "Repeat for the desired amount of repetitions."
+    ],
+    "description": "With a wide stance, hold a kettlebell with both hands. Allow it to hang at waist level with your arms extended. This will be your starting position. Initiate the movement by turning to one side, swinging the kettlebell to head height. Briefly pause at the top of the motion. Allow the bell to drop as you rotate to the opposite side, again raising the kettlebell to head height. Repeat for the desired amount of repetitions.",
+    "difficulty": "beginner",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_kettlebell_pistol_squat",
+    "name": "Kettlebell Pistol Squat",
+    "pattern": "squat",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Pick up a kettlebell with two hands and hold it by the horns. Hold one leg off of the floor and squat down on the other.",
+      "Squat down by flexing the knee and sitting back with the hips, holding the kettlebell up in front of you.",
+      "Hold the bottom position for a second and then reverse the motion, driving through the heel and keeping your head and chest up.",
+      "Lower yourself again and repeat."
+    ],
+    "description": "Pick up a kettlebell with two hands and hold it by the horns. Hold one leg off of the floor and squat down on the other. Squat down by flexing the knee and sitting back with the hips, holding the kettlebell up in front of you. Hold the bottom position for a second and then reverse the motion, driving through the heel and keeping your head and chest up. Lower yourself again and repeat.",
+    "difficulty": "advanced",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_kettlebell_seated_press",
+    "name": "Kettlebell Seated Press",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Sit on the floor and spread your legs out comfortably.",
+      "Clean one kettlebell to your shoulder.",
+      "Press the kettlebell up and out until it is locked out overhead. Return to the starting position."
+    ],
+    "description": "Sit on the floor and spread your legs out comfortably. Clean one kettlebell to your shoulder. Press the kettlebell up and out until it is locked out overhead. Return to the starting position.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_kettlebell_seesaw_press",
+    "name": "Kettlebell Seesaw Press",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Clean two kettlebells two your shoulders.",
+      "Press one kettlebell.",
+      "Lower the kettlebell and immediately press the other kettlebell. Make sure to do the same amount of reps on both sides."
+    ],
+    "description": "Clean two kettlebells two your shoulders. Press one kettlebell. Lower the kettlebell and immediately press the other kettlebell. Make sure to do the same amount of reps on both sides.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_kettlebell_sumo_high_pull",
+    "name": "Kettlebell Sumo High Pull",
+    "pattern": "mobility",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "traps",
+        "role": "primary"
+      },
+      {
+        "group": "adductors",
+        "role": "secondary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "general"
+    ],
+    "cues": [
+      "Place a kettlebell on the ground between your feet. Position your feet in a wide stance, and grasp the kettlebell with two hands. Set your hips back as far as possible, with your knees bent. Keep your chest and head up. This will be your starting position.",
+      "Begin by extending the hips and knees, simultaneously pulling the kettlebell to your shoulders, raising your elbows as you do so. Reverse the motion to return to the starting position."
+    ],
+    "description": "Place a kettlebell on the ground between your feet. Position your feet in a wide stance, and grasp the kettlebell with two hands. Set your hips back as far as possible, with your knees bent. Keep your chest and head up. This will be your starting position. Begin by extending the hips and knees, simultaneously pulling the kettlebell to your shoulders, raising your elbows as you do so. Reverse the motion to return to the starting position.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_kettlebell_thruster",
+    "name": "Kettlebell Thruster",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Clean two kettlebells to your shoulders. Clean the kettlebells to your shoulders by extending through the legs and hips as you pull the kettlebells towards your shoulders. Rotate your wrists as you do so. This will be your starting position.",
+      "Begin to squat by flexing your hips and knees, lowering your hips between your legs. Maintain an upright, straight back as you descend as low as you can.",
+      "At the bottom, reverse direction and squat by extending your knees and hips, driving through your heels. As you do so, press both kettlebells overhead by extending your arms straight up, using the momentum from the squat to help drive the weights upward.",
+      "As you begin the next repetition, return the weights to the shoulders."
+    ],
+    "description": "Clean two kettlebells to your shoulders. Clean the kettlebells to your shoulders by extending through the legs and hips as you pull the kettlebells towards your shoulders. Rotate your wrists as you do so. This will be your starting position. Begin to squat by flexing your hips and knees, lowering your hips between your legs. Maintain an upright, straight back as you descend as low as you can. At the bottom, reverse direction and squat by extending your knees and hips, driving through your heels. As you do so, press both kettlebells overhead by extending your arms straight up, using the momentum from the squat to help drive the weights upward. As you begin the next repetition, return the weights to the shoulders.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_kettlebell_turkish_get_up_lunge_style",
+    "name": "Kettlebell Turkish Get-Up (Lunge style)",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "secondary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Lie on your back on the floor and press a kettlebell to the top position by extending the elbow. Bend the knee on the same side as the kettlebell.",
+      "Keeping the kettlebell locked out at all times, pivot to the opposite side and use your non- working arm to assist you in driving forward to the lunge position. Using your free hand, push yourself to a seated position, then progressing to one knee.",
+      "While looking up at the kettlebell, slowly stand up. Reverse the motion back to the starting position and repeat."
+    ],
+    "description": "Lie on your back on the floor and press a kettlebell to the top position by extending the elbow. Bend the knee on the same side as the kettlebell. Keeping the kettlebell locked out at all times, pivot to the opposite side and use your non- working arm to assist you in driving forward to the lunge position. Using your free hand, push yourself to a seated position, then progressing to one knee. While looking up at the kettlebell, slowly stand up. Reverse the motion back to the starting position and repeat.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_kettlebell_turkish_get_up_squat_style",
+    "name": "Kettlebell Turkish Get-Up (Squat style)",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "secondary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Lie on your back on the floor and press a kettlebell to the top position by extending the elbow. Bend the knee on the same side as the kettlebell.",
+      "Keeping the kettlebell locked out at all times, pivot to the opposite side and use your non- working arm to assist you in driving forward to the lunge position.",
+      "Using your free hand, push yourself to a seated position, then progressing to your feet. While looking up at the kettlebell, slowly stand up. Reverse the motion back to the starting position and repeat."
+    ],
+    "description": "Lie on your back on the floor and press a kettlebell to the top position by extending the elbow. Bend the knee on the same side as the kettlebell. Keeping the kettlebell locked out at all times, pivot to the opposite side and use your non- working arm to assist you in driving forward to the lunge position. Using your free hand, push yourself to a seated position, then progressing to your feet. While looking up at the kettlebell, slowly stand up. Reverse the motion back to the starting position and repeat.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_kettlebell_windmill",
+    "name": "Kettlebell Windmill",
+    "pattern": "core_compression",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "abdominals",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "core"
+    ],
+    "cues": [
+      "Place a kettlebell in front of your lead foot and clean and press it overhead with your opposite arm. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulders. Rotate your wrist as you do so, so that the palm faces forward. Press it overhead by extending the elbow.",
+      "Keeping the kettlebell locked out at all times, push your butt out in the direction of the locked out kettlebell. Turn your feet out at a forty-five degree angle from the arm with the locked out kettlebell. Bending at the hip to one side, sticking your butt out, slowly lean until you can touch the floor with your free hand. Keep your eyes on the kettlebell that you hold over your head at all times.",
+      "Pause for a second after reaching the ground and reverse the motion back to the starting position."
+    ],
+    "description": "Place a kettlebell in front of your lead foot and clean and press it overhead with your opposite arm. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulders. Rotate your wrist as you do so, so that the palm faces forward. Press it overhead by extending the elbow. Keeping the kettlebell locked out at all times, push your butt out in the direction of the locked out kettlebell. Turn your feet out at a forty-five degree angle from the arm with the locked out kettlebell. Bending at the hip to one side, sticking your butt out, slowly lean until you can touch the floor with your free hand. Keep your eyes on the kettlebell that you hold over your head at all times. Pause for a second after reaching the ground and reverse the motion back to the starting position.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
     "id": "fedb_kipping_muscle_up",
     "name": "Kipping Muscle Up",
     "pattern": "vertical_pull",
@@ -4431,6 +3798,39 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
+    "id": "fedb_leg_over_floor_press",
+    "name": "Leg-Over Floor Press",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "chest",
+        "role": "primary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Lie on the floor with one kettlebell in place on your chest, holding it by the handle. Extend leg on working side over leg on non-working side.Your free arm can be extended out to your side for support.",
+      "Press the kettlebll into a locked out position.",
+      "Lower the weight until the elbow touches the ground, keeping the kettlebell above the elbow. Repeat for the desired number of repetitions."
+    ],
+    "description": "Lie on the floor with one kettlebell in place on your chest, holding it by the handle. Extend leg on working side over leg on non-working side.Your free arm can be extended out to your side for support. Press the kettlebll into a locked out position. Lower the weight until the elbow touches the ground, keeping the kettlebell above the elbow. Repeat for the desired number of repetitions.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
     "id": "fedb_leg_up_hamstring_stretch",
     "name": "Leg-Up Hamstring Stretch",
     "pattern": "mobility",
@@ -4506,6 +3906,45 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
+    "id": "fedb_lunge_pass_through",
+    "name": "Lunge Pass Through",
+    "pattern": "hinge",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Stand with your torso upright holding a kettlebell in your right hand. This will be your starting position.",
+      "Step forward with your left foot and lower your upper body down by flexing the hip and the knee, keeping the torso upright. Lower your back knee until it nearly touches the ground.",
+      "As you lunge, pass the kettlebell under your front leg to your opposite hand.",
+      "Pressing through the heel of your foot, return to the starting position.",
+      "Repeat the movement for the recommended amount of repetitions, alternating legs."
+    ],
+    "description": "Stand with your torso upright holding a kettlebell in your right hand. This will be your starting position. Step forward with your left foot and lower your upper body down by flexing the hip and the knee, keeping the torso upright. Lower your back knee until it nearly touches the ground. As you lunge, pass the kettlebell under your front leg to your opposite hand. Pressing through the heel of your foot, return to the starting position. Repeat the movement for the recommended amount of repetitions, alternating legs.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
     "id": "fedb_lying_bent_leg_groin",
     "name": "Lying Bent Leg Groin",
     "pattern": "mobility",
@@ -4556,40 +3995,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     ],
     "description": "Lie on your back with your legs extended. Cross one leg over your body with the knee bent, attempting to touch the knee to the ground. Your partner should kneel beside you, holding your shoulder down with one hand and controlling the crossed leg with the other. this will be your starting position. Attempt to raise the bent knee off of the ground as your partner prevents any actual movement. After 10-20 seconds, relax the leg as your partner gently presses the knee towards the floor. Repeat with the other side.",
     "difficulty": "advanced",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_lying_dumbbell_tricep_extension",
-    "name": "Lying Dumbbell Tricep Extension",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "triceps",
-        "role": "primary"
-      },
-      {
-        "group": "chest",
-        "role": "secondary"
-      },
-      {
-        "group": "shoulders",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Lie on a flat bench while holding two dumbbells directly in front of you. Your arms should be fully extended at a 90-degree angle from your torso and the floor. The palms should be facing in and the elbows should be tucked in. This is the starting position.",
-      "As you breathe in and you keep the upper arms stationary with the elbows in, slowly lower the weight until the dumbbells are near your ears.",
-      "At that point, while keeping the elbows in and the upper arms stationary, use the triceps to bring the weight back up to the starting position as you breathe out.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Lie on a flat bench while holding two dumbbells directly in front of you. Your arms should be fully extended at a 90-degree angle from your torso and the floor. The palms should be facing in and the elbows should be tucked in. This is the starting position. As you breathe in and you keep the upper arms stationary with the elbows in, slowly lower the weight until the dumbbells are near your ears. At that point, while keeping the elbows in and the upper arms stationary, use the triceps to bring the weight back up to the starting position as you breathe out. Repeat for the recommended amount of repetitions.",
-    "difficulty": "intermediate",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
@@ -4654,33 +4059,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_lying_one_arm_lateral_raise",
-    "name": "Lying One-Arm Lateral Raise",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "While holding a dumbbell in one hand, lay with your chest down on a flat bench. The other hand can be used to hold to the leg of the bench for stability.",
-      "Position the palm of the hand that is holding the dumbbell in a neutral manner (palms facing your torso) as you keep the arm extended with the elbow slightly bent. This will be your starting position.",
-      "Now raise the arm with the dumbbell to the side until your elbow is at shoulder height and your arm is roughly parallel to the floor as you exhale. Tip: Maintain your arm perpendicular to the torso while keeping your arm extended throughout the movement. Also, keep the contraction at the top for a second.",
-      "Slowly lower the dumbbell to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "While holding a dumbbell in one hand, lay with your chest down on a flat bench. The other hand can be used to hold to the leg of the bench for stability. Position the palm of the hand that is holding the dumbbell in a neutral manner (palms facing your torso) as you keep the arm extended with the elbow slightly bent. This will be your starting position. Now raise the arm with the dumbbell to the side until your elbow is at shoulder height and your arm is roughly parallel to the floor as you exhale. Tip: Maintain your arm perpendicular to the torso while keeping your arm extended throughout the movement. Also, keep the contraction at the top for a second. Slowly lower the dumbbell to the starting position as you inhale. Repeat for the recommended amount of repetitions.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
     "id": "fedb_lying_prone_quadriceps",
     "name": "Lying Prone Quadriceps",
     "pattern": "mobility",
@@ -4705,86 +4083,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     ],
     "description": "Lay face down on the floor with your partner kneeling beside you. Flex one knee and raise that leg off the ground, attempting to touch your glutes with your foot. Your partner should hold the knee and ankle. This will be your starting position. Attempt to extend your knee while your partner prevents any actual movement. After 10-20 seconds, relax your muscles as your partner gently pushes the foot towards your glutes, further stretching the quadriceps and hip flexors. After 10-20 seconds, switch sides.",
     "difficulty": "advanced",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_lying_rear_delt_raise",
-    "name": "Lying Rear Delt Raise",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "While holding a dumbbell in each hand, lay with your chest down on a flat bench.",
-      "Position the palms of the hands in a neutral manner (palms facing your torso) as you keep the arms extended with the elbows slightly bent. This will be your starting position.",
-      "Now raise the arms to the side until your elbows are at shoulder height and your arms are roughly parallel to the floor as you exhale. Tip: Maintain your arms perpendicular to the torso while keeping them extended throughout the movement. Also, keep the contraction at the top for a second.",
-      "Slowly lower the dumbbells to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions and then switch to the other arm."
-    ],
-    "description": "While holding a dumbbell in each hand, lay with your chest down on a flat bench. Position the palms of the hands in a neutral manner (palms facing your torso) as you keep the arms extended with the elbows slightly bent. This will be your starting position. Now raise the arms to the side until your elbows are at shoulder height and your arms are roughly parallel to the floor as you exhale. Tip: Maintain your arms perpendicular to the torso while keeping them extended throughout the movement. Also, keep the contraction at the top for a second. Slowly lower the dumbbells to the starting position as you inhale. Repeat for the recommended amount of repetitions and then switch to the other arm.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_lying_supine_dumbbell_curl",
-    "name": "Lying Supine Dumbbell Curl",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "biceps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Lie down on a flat bench face up while holding a dumbbell in each arm on top of your thighs.",
-      "Bring the dumbbells to the sides with the arms extended and the palms of the hands facing your thighs (neutral grip).",
-      "While keeping the arms close to your torso and elbows in, slowly lower your arms (as you keep them extended with a slight bend at the elbows) as far down towards the floor as you can go. Once you cannot go down any further, lock your upper arms in that position and that will be your starting position.",
-      "As you breathe out, slowly begin to curl the weights up as you simultaneously rotate your wrists so that the palms of the hands face up. Continue curling the weight until your biceps are fully contracted and squeeze hard at the top position for a second. Tip: Only the forearms should move. Upper arms should remain stationary and elbows should stay in throughout the movement.",
-      "Return back to the starting position very slowly."
-    ],
-    "description": "Lie down on a flat bench face up while holding a dumbbell in each arm on top of your thighs. Bring the dumbbells to the sides with the arms extended and the palms of the hands facing your thighs (neutral grip). While keeping the arms close to your torso and elbows in, slowly lower your arms (as you keep them extended with a slight bend at the elbows) as far down towards the floor as you can go. Once you cannot go down any further, lock your upper arms in that position and that will be your starting position. As you breathe out, slowly begin to curl the weights up as you simultaneously rotate your wrists so that the palms of the hands face up. Continue curling the weight until your biceps are fully contracted and squeeze hard at the top position for a second. Tip: Only the forearms should move. Upper arms should remain stationary and elbows should stay in throughout the movement. Return back to the starting position very slowly.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_middle_back_shrug",
-    "name": "Middle Back Shrug",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "middle back",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Lie facedown on an incline bench while holding a dumbbell in each hand. Your arms should be fully extended hanging down and pointing towards the floor. The palms of your hands should be facing each other. This will be your starting position.",
-      "As you exhale, squeeze your shoulder blades together and hold the contraction for a full second. Tip: This movement is just like the reverse action of a hug, or trying to perform rear laterals as if you had no arms.",
-      "As you inhale go back to the starting position.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Lie facedown on an incline bench while holding a dumbbell in each hand. Your arms should be fully extended hanging down and pointing towards the floor. The palms of your hands should be facing each other. This will be your starting position. As you exhale, squeeze your shoulder blades together and hold the contraction for a full second. Tip: This movement is just like the reverse action of a hug, or trying to perform rear laterals as if you had no arms. As you inhale go back to the starting position. Repeat for the recommended amount of repetitions.",
-    "difficulty": "intermediate",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
@@ -4991,127 +4289,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_one_arm_dumbbell_bench_press",
-    "name": "One Arm Dumbbell Bench Press",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "chest",
-        "role": "primary"
-      },
-      {
-        "group": "shoulders",
-        "role": "secondary"
-      },
-      {
-        "group": "triceps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Lie down on a flat bench with a dumbbell in one hand on top of your thigh.",
-      "By using your thigh to help you get the dumbbell up, clean the dumbbell up so that you can hold it in front of you at shoulder width. Use the hand you are not lifting with to help position the dumbbell over you properly.",
-      "Once at shoulder width, rotate your wrist forward so that the palm of your hand is facing away from you. This will be your starting position.",
-      "Bring down the weights slowly to your side as you breathe in. Keep full control of the dumbbell at all times. Tip: Use the hand that you are not lifting with to help keep the dumbbell balance as you may struggle a bit at first. Only use your non-lifting hand if it is needed. Otherwise, keep it resting to the side.",
-      "As you breathe out, push the dumbbells up using your pectoral muscles. Lock your arms in the contracted position, squeeze your chest, hold for a second and then start coming down slowly. Tip: It should take at least twice as long to go down than to come up.",
-      "Repeat the movement for the prescribed amount of repetitions of your training program.",
-      "Switch arms and repeat the movement."
-    ],
-    "description": "Lie down on a flat bench with a dumbbell in one hand on top of your thigh. By using your thigh to help you get the dumbbell up, clean the dumbbell up so that you can hold it in front of you at shoulder width. Use the hand you are not lifting with to help position the dumbbell over you properly. Once at shoulder width, rotate your wrist forward so that the palm of your hand is facing away from you. This will be your starting position. Bring down the weights slowly to your side as you breathe in. Keep full control of the dumbbell at all times. Tip: Use the hand that you are not lifting with to help keep the dumbbell balance as you may struggle a bit at first. Only use your non-lifting hand if it is needed. Otherwise, keep it resting to the side. As you breathe out, push the dumbbells up using your pectoral muscles. Lock your arms in the contracted position, squeeze your chest, hold for a second and then start coming down slowly. Tip: It should take at least twice as long to go down than to come up. Repeat the movement for the prescribed amount of repetitions of your training program. Switch arms and repeat the movement.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_one_arm_dumbbell_preacher_curl",
-    "name": "One Arm Dumbbell Preacher Curl",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "biceps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Grab a dumbbell with the right arm and place the upper arm on top of the preacher bench or the incline bench. The dumbbell should be held at shoulder length. This will be your starting position.",
-      "As you breathe in, slowly lower the dumbbell until your upper arm is extended and the biceps is fully stretched.",
-      "As you exhale, use the biceps to curl the weight up until your biceps is fully contracted and the dumbbell is at shoulder height. Again, remember that to ensure full contraction you need to bring that small finger higher than the thumb.",
-      "Squeeze the biceps hard for a second at the contracted position and repeat for the recommended amount of repetitions.",
-      "Switch arms and repeat the movement."
-    ],
-    "description": "Grab a dumbbell with the right arm and place the upper arm on top of the preacher bench or the incline bench. The dumbbell should be held at shoulder length. This will be your starting position. As you breathe in, slowly lower the dumbbell until your upper arm is extended and the biceps is fully stretched. As you exhale, use the biceps to curl the weight up until your biceps is fully contracted and the dumbbell is at shoulder height. Again, remember that to ensure full contraction you need to bring that small finger higher than the thumb. Squeeze the biceps hard for a second at the contracted position and repeat for the recommended amount of repetitions. Switch arms and repeat the movement.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_one_arm_pronated_dumbbell_triceps_extension",
-    "name": "One Arm Pronated Dumbbell Triceps Extension",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "triceps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Lie flat on a bench while holding a dumbbell at arms length. Your arm should be perpendicular to your body. The palm of your hand should be facing towards your feet as a pronated grip is required to perform this exercise.",
-      "Place your non lifting hand on your bicep for support.",
-      "Slowly begin to lower the dumbbell down as you breathe in.",
-      "Then, begin lifting the dumbbell upward as you contract the triceps. Remember to breathe out during the concentric (lifting part of the exercise).",
-      "Repeat until you have performed your set repetitions.",
-      "Switch arms and repeat the movement."
-    ],
-    "description": "Lie flat on a bench while holding a dumbbell at arms length. Your arm should be perpendicular to your body. The palm of your hand should be facing towards your feet as a pronated grip is required to perform this exercise. Place your non lifting hand on your bicep for support. Slowly begin to lower the dumbbell down as you breathe in. Then, begin lifting the dumbbell upward as you contract the triceps. Remember to breathe out during the concentric (lifting part of the exercise). Repeat until you have performed your set repetitions. Switch arms and repeat the movement.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_one_arm_supinated_dumbbell_triceps_extension",
-    "name": "One Arm Supinated Dumbbell Triceps Extension",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "triceps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Lie flat on a bench while holding a dumbbell at arms length. Your arm should be perpendicular to your body. The palm of your hand should be facing towards your face as a supinated grip is required to perform this exercise.",
-      "Place your non lifting hand on your bicep for support.",
-      "Slowly begin to lower the dumbbell down as you breathe in.",
-      "Then, begin lifting the dumbbell upward as you contract the triceps. Remember to breathe out during the concentric (lifting part of the exercise).",
-      "Repeat until you have performed your set repetitions.",
-      "Switch arms and repeat the movement.",
-      "Switch arms again and repeat the movement."
-    ],
-    "description": "Lie flat on a bench while holding a dumbbell at arms length. Your arm should be perpendicular to your body. The palm of your hand should be facing towards your face as a supinated grip is required to perform this exercise. Place your non lifting hand on your bicep for support. Slowly begin to lower the dumbbell down as you breathe in. Then, begin lifting the dumbbell upward as you contract the triceps. Remember to breathe out during the concentric (lifting part of the exercise). Repeat until you have performed your set repetitions. Switch arms and repeat the movement. Switch arms again and repeat the movement.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
     "id": "fedb_one_half_locust",
     "name": "One Half Locust",
     "pattern": "mobility",
@@ -5213,8 +4390,239 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_one_arm_dumbbell_row",
-    "name": "One-Arm Dumbbell Row",
+    "id": "fedb_one_arm_kettlebell_clean",
+    "name": "One-Arm Kettlebell Clean",
+    "pattern": "hinge",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "lower back",
+        "role": "secondary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Place a kettlebell between your feet. As you bend down to grab the kettlebell, push your butt back and keep your eyes looking forward.",
+      "Clean the kettlebell to your shoulders by extending through the legs and hips as you raise the kettlebell towards your shoulder. The wrist should rotate as you do so.",
+      "Return the weight to the starting position."
+    ],
+    "description": "Place a kettlebell between your feet. As you bend down to grab the kettlebell, push your butt back and keep your eyes looking forward. Clean the kettlebell to your shoulders by extending through the legs and hips as you raise the kettlebell towards your shoulder. The wrist should rotate as you do so. Return the weight to the starting position.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_one_arm_kettlebell_clean_and_jerk",
+    "name": "One-Arm Kettlebell Clean and Jerk",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Hold a kettlebell by the handle.",
+      "Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulder. Rotate your wrist as you do so, so that the palm faces forward.",
+      "Dip your body by bending the knees, keeping your torso upright.",
+      "Immediately reverse direction, driving through the heels, in essence jumping to create momentum. As you do so, press the kettlebell overhead to lockout by extending the arms, using your body's momentum to move the weight.",
+      "Receive the weight overhead by returning to a squat position underneath the weight.",
+      "Keeping the weight overhead, return to a standing position. Lower the weight to the floor to perform the next repetition."
+    ],
+    "description": "Hold a kettlebell by the handle. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulder. Rotate your wrist as you do so, so that the palm faces forward. Dip your body by bending the knees, keeping your torso upright. Immediately reverse direction, driving through the heels, in essence jumping to create momentum. As you do so, press the kettlebell overhead to lockout by extending the arms, using your body's momentum to move the weight. Receive the weight overhead by returning to a squat position underneath the weight. Keeping the weight overhead, return to a standing position. Lower the weight to the floor to perform the next repetition.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_one_arm_kettlebell_floor_press",
+    "name": "One-Arm Kettlebell Floor Press",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "chest",
+        "role": "primary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Lie on the floor holding a kettlebell with one hand, with your upper arm supported by the floor. The palm should be facing in.",
+      "Press the kettlebell straight up toward the ceiling, rotating your wrist.",
+      "Lower the kettlebell back to the starting position and repeat."
+    ],
+    "description": "Lie on the floor holding a kettlebell with one hand, with your upper arm supported by the floor. The palm should be facing in. Press the kettlebell straight up toward the ceiling, rotating your wrist. Lower the kettlebell back to the starting position and repeat.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_one_arm_kettlebell_jerk",
+    "name": "One-Arm Kettlebell Jerk",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Hold a kettlebell by the handle. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulder. Rotate your wrist as you do so, so that the palm faces forward. This will be your starting position.",
+      "Dip your body by bending the knees, keeping your torso upright.",
+      "Immediately reverse direction, driving through the heels, in essence jumping to create momentum. As you do so, press the kettlebell overhead to lockout by extending the arms, using your body's momentum to move the weight. Receive the weight overhead by returning to a squat position underneath the weight. Keeping the weight overhead, return to a standing position.",
+      "Lower the weight to perform the next repetition."
+    ],
+    "description": "Hold a kettlebell by the handle. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulder. Rotate your wrist as you do so, so that the palm faces forward. This will be your starting position. Dip your body by bending the knees, keeping your torso upright. Immediately reverse direction, driving through the heels, in essence jumping to create momentum. As you do so, press the kettlebell overhead to lockout by extending the arms, using your body's momentum to move the weight. Receive the weight overhead by returning to a squat position underneath the weight. Keeping the weight overhead, return to a standing position. Lower the weight to perform the next repetition.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_one_arm_kettlebell_military_press_to_the_side",
+    "name": "One-Arm Kettlebell Military Press To The Side",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Clean a kettlebell to your shoulder. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulder. Rotate your wrist as you do so, so that the palm faces inward. This will be your starting position.",
+      "Look at the kettlebell and press it up and out until it is locked out overhead.",
+      "Lower the kettlebell back to your shoulder under control and repeat. Make sure to contract your lat, butt, and stomach forcefully for added stability and strength."
+    ],
+    "description": "Clean a kettlebell to your shoulder. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulder. Rotate your wrist as you do so, so that the palm faces inward. This will be your starting position. Look at the kettlebell and press it up and out until it is locked out overhead. Lower the kettlebell back to your shoulder under control and repeat. Make sure to contract your lat, butt, and stomach forcefully for added stability and strength.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_one_arm_kettlebell_para_press",
+    "name": "One-Arm Kettlebell Para Press",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Clean a kettlebell to your shoulder. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulder. Rotate your wrist as you do so, so that the palm faces forward. This will be your starting position.",
+      "Hold the kettlebell with the elbow out to the side, and press it up and out until it is locked out overhead.",
+      "Lower the kettlebell back to your shoulder under control and repeat. Make sure to contract your lat, butt, and stomach forcefully for added stability and strength."
+    ],
+    "description": "Clean a kettlebell to your shoulder. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulder. Rotate your wrist as you do so, so that the palm faces forward. This will be your starting position. Hold the kettlebell with the elbow out to the side, and press it up and out until it is locked out overhead. Lower the kettlebell back to your shoulder under control and repeat. Make sure to contract your lat, butt, and stomach forcefully for added stability and strength.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_one_arm_kettlebell_push_press",
+    "name": "One-Arm Kettlebell Push Press",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Hold a kettlebell by the handle. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulder. Rotate your wrist as you do so, so that the palm faces forward. This will be your starting position.",
+      "Dip your body by bending the knees, keeping your torso upright.",
+      "Immediately reverse direction, driving through the heels, in essence jumping to create momentum. As you do so, press the kettlebell overhead to lockout by extending the arms, using your body's momentum to move the weight. Lower the weight to perform the next repetition."
+    ],
+    "description": "Hold a kettlebell by the handle. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulder. Rotate your wrist as you do so, so that the palm faces forward. This will be your starting position. Dip your body by bending the knees, keeping your torso upright. Immediately reverse direction, driving through the heels, in essence jumping to create momentum. As you do so, press the kettlebell overhead to lockout by extending the arms, using your body's momentum to move the weight. Lower the weight to perform the next repetition.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_one_arm_kettlebell_row",
+    "name": "One-Arm Kettlebell Row",
     "pattern": "horizontal_pull",
     "type": "dynamic",
     "muscles": [
@@ -5229,6 +4637,167 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
       {
         "group": "lats",
         "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Place a kettlebell in front of your feet. Bend your knees slightly and then push your butt out as much as possible as you bend over to get in the starting position. Grab the kettlebell and pull it to your stomach, retracting your shoulder blade and flexing the elbow. Keep your back straight. Lower and repeat."
+    ],
+    "description": "Place a kettlebell in front of your feet. Bend your knees slightly and then push your butt out as much as possible as you bend over to get in the starting position. Grab the kettlebell and pull it to your stomach, retracting your shoulder blade and flexing the elbow. Keep your back straight. Lower and repeat.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_one_arm_kettlebell_snatch",
+    "name": "One-Arm Kettlebell Snatch",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "lower back",
+        "role": "secondary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Place a kettlebell between your feet. Bend your knees and push your butt back to get in the proper starting position.",
+      "Look straight ahead and swing the kettlebell back between your legs.",
+      "Immediately reverse the direction and drive through with your hips and knees, accelerating the kettlebell upward. As the kettlebell rises to your shoulder rotate your hand and punch straight up, using momentum to receive the weight locked out overhead."
+    ],
+    "description": "Place a kettlebell between your feet. Bend your knees and push your butt back to get in the proper starting position. Look straight ahead and swing the kettlebell back between your legs. Immediately reverse the direction and drive through with your hips and knees, accelerating the kettlebell upward. As the kettlebell rises to your shoulder rotate your hand and punch straight up, using momentum to receive the weight locked out overhead.",
+    "difficulty": "advanced",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_one_arm_kettlebell_split_jerk",
+    "name": "One-Arm Kettlebell Split Jerk",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Hold a kettlebell by the handle. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulder. Rotate your wrist as you do so, so that the palm faces forward. This will be your starting position.",
+      "Dip your body by bending the knees, keeping your torso upright.",
+      "Immediately reverse direction, driving through the heels, in essence jumping to create momentum. As you do so, press the kettlebell overhead to lockout by extending the arms, using your body's momentum to move the weight.",
+      "Receive the weight overhead by returning to a squat position underneath the weight, positioning one leg in front of you and one leg behind you.",
+      "Keeping the weight overhead, return to a standing position and bring your feet together. Lower the weight to perform the next repetition."
+    ],
+    "description": "Hold a kettlebell by the handle. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulder. Rotate your wrist as you do so, so that the palm faces forward. This will be your starting position. Dip your body by bending the knees, keeping your torso upright. Immediately reverse direction, driving through the heels, in essence jumping to create momentum. As you do so, press the kettlebell overhead to lockout by extending the arms, using your body's momentum to move the weight. Receive the weight overhead by returning to a squat position underneath the weight, positioning one leg in front of you and one leg behind you. Keeping the weight overhead, return to a standing position and bring your feet together. Lower the weight to perform the next repetition.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_one_arm_kettlebell_split_snatch",
+    "name": "One-Arm Kettlebell Split Snatch",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Hold a kettlebell in one hand by the handle.",
+      "Squat towards the floor, and then reverse the motion, extending the hips, knees, and finally the ankles, to raise the kettlebell overhead.",
+      "After fully extending the body, descend into a lunge position to receive the weights overhead, one leg forward and one leg back. Ensure you drive through with your hips and lock the ketttlebells overhead in one uninterrupted motion.",
+      "Return to a standing position, holding the weight overhead, and bring the feet together. Lower the weight to return to the starting position."
+    ],
+    "description": "Hold a kettlebell in one hand by the handle. Squat towards the floor, and then reverse the motion, extending the hips, knees, and finally the ankles, to raise the kettlebell overhead. After fully extending the body, descend into a lunge position to receive the weights overhead, one leg forward and one leg back. Ensure you drive through with your hips and lock the ketttlebells overhead in one uninterrupted motion. Return to a standing position, holding the weight overhead, and bring the feet together. Lower the weight to return to the starting position.",
+    "difficulty": "advanced",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_one_arm_kettlebell_swings",
+    "name": "One-Arm Kettlebell Swings",
+    "pattern": "hinge",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "lower back",
+        "role": "secondary"
       },
       {
         "group": "shoulders",
@@ -5238,103 +4807,138 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "joints": [],
     "role": "work",
     "regions": [
-      "pull"
+      "legs"
     ],
-    "cues": [
-      "Choose a flat bench and place a dumbbell on each side of it.",
-      "Place the right leg on top of the end of the bench, bend your torso forward from the waist until your upper body is parallel to the floor, and place your right hand on the other end of the bench for support.",
-      "Use the left hand to pick up the dumbbell on the floor and hold the weight while keeping your lower back straight. The palm of the hand should be facing your torso. This will be your starting position.",
-      "Pull the resistance straight up to the side of your chest, keeping your upper arm close to your side and keeping the torso stationary. Breathe out as you perform this step. Tip: Concentrate on squeezing the back muscles once you reach the full contracted position. Also, make sure that the force is performed with the back muscles and not the arms. Finally, the upper torso should remain stationary and only the arms should move. The forearms should do no other work except for holding the dumbbell; therefore do not try to pull the dumbbell up using the forearms.",
-      "Lower the resistance straight down to the starting position. Breathe in as you perform this step.",
-      "Repeat the movement for the specified amount of repetitions.",
-      "Switch sides and repeat again with the other arm."
-    ],
-    "description": "Choose a flat bench and place a dumbbell on each side of it. Place the right leg on top of the end of the bench, bend your torso forward from the waist until your upper body is parallel to the floor, and place your right hand on the other end of the bench for support. Use the left hand to pick up the dumbbell on the floor and hold the weight while keeping your lower back straight. The palm of the hand should be facing your torso. This will be your starting position. Pull the resistance straight up to the side of your chest, keeping your upper arm close to your side and keeping the torso stationary. Breathe out as you perform this step. Tip: Concentrate on squeezing the back muscles once you reach the full contracted position. Also, make sure that the force is performed with the back muscles and not the arms. Finally, the upper torso should remain stationary and only the arms should move. The forearms should do no other work except for holding the dumbbell; therefore do not try to pull the dumbbell up using the forearms. Lower the resistance straight down to the starting position. Breathe in as you perform this step. Repeat the movement for the specified amount of repetitions. Switch sides and repeat again with the other arm.",
-    "difficulty": "beginner",
+    "cues": [],
+    "difficulty": "intermediate",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_one_arm_flat_bench_dumbbell_flye",
-    "name": "One-Arm Flat Bench Dumbbell Flye",
-    "pattern": "horizontal_push",
+    "id": "fedb_one_arm_open_palm_kettlebell_clean",
+    "name": "One-Arm Open Palm Kettlebell Clean",
+    "pattern": "hinge",
     "type": "dynamic",
     "muscles": [
       {
-        "group": "chest",
+        "group": "hamstrings",
         "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Lie down on a flat bench with a dumbbell in one hand resting on top of your thigh. The palm of your hand with the dumbbell in it should be at a neutral grip.",
-      "By using your thighs to help you get the dumbbell up, clean the dumbbell so that you can hold it in front of you with your lifting arm being fully extended. Remember to maintain a neutral grip with this exercise. Your non lifting hand should be to the side holding the flat bench for better support. This will be your starting position.",
-      "Your arm with the weight should have a slight bend on your elbow in order to prevent stress at the biceps tendon. Begin by lowering your arm with the weight in it out in a wide arc until you feel a stretch on your chest. Breathe in as you perform this portion of the movement. Tip: Keep in mind that throughout the movement, your lifting arm should remain stationary; the movement should only occur at the shoulder joint.",
-      "Return your lifting arm back to the starting position as you squeeze your chest muscles and breathe out. Tip: Make sure to use the same arc of motion used to lower the weights.",
-      "Hold for a second at the contracted position and repeat the movement for the prescribed amount of repetitions.",
-      "Switch arms and repeat the exercise."
-    ],
-    "description": "Lie down on a flat bench with a dumbbell in one hand resting on top of your thigh. The palm of your hand with the dumbbell in it should be at a neutral grip. By using your thighs to help you get the dumbbell up, clean the dumbbell so that you can hold it in front of you with your lifting arm being fully extended. Remember to maintain a neutral grip with this exercise. Your non lifting hand should be to the side holding the flat bench for better support. This will be your starting position. Your arm with the weight should have a slight bend on your elbow in order to prevent stress at the biceps tendon. Begin by lowering your arm with the weight in it out in a wide arc until you feel a stretch on your chest. Breathe in as you perform this portion of the movement. Tip: Keep in mind that throughout the movement, your lifting arm should remain stationary; the movement should only occur at the shoulder joint. Return your lifting arm back to the starting position as you squeeze your chest muscles and breathe out. Tip: Make sure to use the same arc of motion used to lower the weights. Hold for a second at the contracted position and repeat the movement for the prescribed amount of repetitions. Switch arms and repeat the exercise.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_one_arm_incline_lateral_raise",
-    "name": "One-Arm Incline Lateral Raise",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
+      },
+      {
+        "group": "forearms",
+        "role": "secondary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "lower back",
+        "role": "secondary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      },
       {
         "group": "shoulders",
-        "role": "primary"
+        "role": "secondary"
       }
     ],
     "joints": [],
     "role": "work",
     "regions": [
-      "push"
+      "legs"
     ],
     "cues": [
-      "Lie down sideways on an incline bench press with a dumbbell in the hand. Make sure the shoulder is pressing against the incline bench and the arm is lying across your body with the palm around your navel.",
-      "Hold a dumbbell in your uppermost arm while keeping it extended in front of you parallel to the floor. This is your starting position.",
-      "While keeping the dumbbell parallel to the floor at all times, perform a lateral raise. Your arm should travel straight up until it is pointing at the ceiling. Tip: Exhale as you perform this movement. Hold the dumbbell in the position and feel the contraction in the shoulders for a second.",
-      "While inhaling lower the weight across your body back into the starting position.",
-      "Repeat the movement for the prescribed amount of repetitions.",
-      "Switch arms and repeat the movement."
+      "Place one kettlebell between your feet.",
+      "Grab the handle with one hand and raise the kettlebell rapidly, let it flip so that the ball of the kettlebell lands in the palm of your hand.",
+      "Throw the kettlebell out in front of you and catch the handle with one hand.",
+      "Take the kettlebell to the floor and repeat. Make sure to work both arms."
     ],
-    "description": "Lie down sideways on an incline bench press with a dumbbell in the hand. Make sure the shoulder is pressing against the incline bench and the arm is lying across your body with the palm around your navel. Hold a dumbbell in your uppermost arm while keeping it extended in front of you parallel to the floor. This is your starting position. While keeping the dumbbell parallel to the floor at all times, perform a lateral raise. Your arm should travel straight up until it is pointing at the ceiling. Tip: Exhale as you perform this movement. Hold the dumbbell in the position and feel the contraction in the shoulders for a second. While inhaling lower the weight across your body back into the starting position. Repeat the movement for the prescribed amount of repetitions. Switch arms and repeat the movement.",
-    "difficulty": "beginner",
+    "description": "Place one kettlebell between your feet. Grab the handle with one hand and raise the kettlebell rapidly, let it flip so that the ball of the kettlebell lands in the palm of your hand. Throw the kettlebell out in front of you and catch the handle with one hand. Take the kettlebell to the floor and repeat. Make sure to work both arms.",
+    "difficulty": "intermediate",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_one_arm_side_laterals",
-    "name": "One-Arm Side Laterals",
-    "pattern": "vertical_push",
+    "id": "fedb_one_arm_overhead_kettlebell_squats",
+    "name": "One-Arm Overhead Kettlebell Squats",
+    "pattern": "squat",
     "type": "dynamic",
     "muscles": [
       {
-        "group": "shoulders",
+        "group": "quadriceps",
         "role": "primary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
       }
     ],
     "joints": [],
     "role": "work",
     "regions": [
-      "push"
+      "legs"
     ],
     "cues": [
-      "Pick a dumbbell and place it in one of your hands. Your non lifting hand should be used to grab something steady such as an incline bench press. Lean towards your lifting arm and away from the hand that is gripping the incline bench as this will allow you to keep your balance.",
-      "Stand with a straight torso and have the dumbbell by your side at arm's length with the palm of the hand facing you. This will be your starting position.",
-      "While maintaining the torso stationary (no swinging), lift the dumbbell to your side with a slight bend on the elbow and your hand slightly tilted forward as if pouring water in a glass. Continue to go up until you arm is parallel to the floor. Exhale as you execute this movement and pause for a second at the top.",
-      "Lower the dumbbell back down slowly to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions.",
-      "Switch arms and repeat the exercise."
+      "Clean and press a kettlebell with one arm. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulder. Rotate your wrist as you do so. Press the weight overhead by extending through the elbow.This will be your starting position.",
+      "Looking straight ahead and keeping a kettlebell locked out above you, flex the knees and hips and lower your torso between your legs, keeping your head and chest up.",
+      "Pause at the bottom position for a second before rising back to the top, driving through the heels of your feet."
     ],
-    "description": "Pick a dumbbell and place it in one of your hands. Your non lifting hand should be used to grab something steady such as an incline bench press. Lean towards your lifting arm and away from the hand that is gripping the incline bench as this will allow you to keep your balance. Stand with a straight torso and have the dumbbell by your side at arm's length with the palm of the hand facing you. This will be your starting position. While maintaining the torso stationary (no swinging), lift the dumbbell to your side with a slight bend on the elbow and your hand slightly tilted forward as if pouring water in a glass. Continue to go up until you arm is parallel to the floor. Exhale as you execute this movement and pause for a second at the top. Lower the dumbbell back down slowly to the starting position as you inhale. Repeat for the recommended amount of repetitions. Switch arms and repeat the exercise.",
-    "difficulty": "beginner",
+    "description": "Clean and press a kettlebell with one arm. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulder. Rotate your wrist as you do so. Press the weight overhead by extending through the elbow.This will be your starting position. Looking straight ahead and keeping a kettlebell locked out above you, flex the knees and hips and lower your torso between your legs, keeping your head and chest up. Pause at the bottom position for a second before rising back to the top, driving through the heels of your feet.",
+    "difficulty": "advanced",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_open_palm_kettlebell_clean",
+    "name": "Open Palm Kettlebell Clean",
+    "pattern": "hinge",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "lower back",
+        "role": "secondary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Place one kettlebell between your feet. Clean the kettlebell by extending through the legs and hips as you raise the kettlebell towards your shoulders.",
+      "Release the kettlebell as it comes up, and let it flip so that the ball of the kettlebell lands in the palms of your hands.",
+      "Release the kettlebell out in front of you and catch the handle with both hands. Lower the kettlebell to the starting position and repeat."
+    ],
+    "description": "Place one kettlebell between your feet. Clean the kettlebell by extending through the legs and hips as you raise the kettlebell towards your shoulders. Release the kettlebell as it comes up, and let it flip so that the ball of the kettlebell lands in the palms of your hands. Release the kettlebell out in front of you and catch the handle with both hands. Lower the kettlebell to the starting position and repeat.",
+    "difficulty": "advanced",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
@@ -5407,64 +5011,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_palms_down_dumbbell_wrist_curl_over_a_bench",
-    "name": "Palms-Down Dumbbell Wrist Curl Over A Bench",
-    "pattern": "mobility",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "forearms",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "general"
-    ],
-    "cues": [
-      "Start out by placing two dumbbells on one side of a flat bench.",
-      "Kneel down on both of your knees so that your body is facing the flat bench.",
-      "Use your arms to grab both of the dumbbells with a pronated grip (palms facing down) and bring them up so that your forearms are resting against the flat bench. Your wrists should be hanging over the edge.",
-      "Start out by curling your wrist upwards and exhaling.",
-      "Slowly lower your wrists back down to the starting position while inhaling.",
-      "Your forearms should be stationary as your wrist is the only movement needed to perform this exercise.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Start out by placing two dumbbells on one side of a flat bench. Kneel down on both of your knees so that your body is facing the flat bench. Use your arms to grab both of the dumbbells with a pronated grip (palms facing down) and bring them up so that your forearms are resting against the flat bench. Your wrists should be hanging over the edge. Start out by curling your wrist upwards and exhaling. Slowly lower your wrists back down to the starting position while inhaling. Your forearms should be stationary as your wrist is the only movement needed to perform this exercise. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_palms_up_dumbbell_wrist_curl_over_a_bench",
-    "name": "Palms-Up Dumbbell Wrist Curl Over A Bench",
-    "pattern": "mobility",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "forearms",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "general"
-    ],
-    "cues": [
-      "Start out by placing two dumbbells on one side of a flat bench.",
-      "Kneel down on both of your knees so that your body is facing the flat bench.",
-      "Use your arms to grab both of the dumbbells with a supinated grip (palms up) and bring them up so that your forearms are resting against the flat bench. Your wrists should be hanging over the edge.",
-      "Start out by curling your wrist upwards and exhaling.",
-      "Slowly lower your wrists back down to the starting position while inhaling. Make sure to inhale during this part of the exercise.",
-      "Your forearms should be stationary as your wrist is the only movement needed to perform this exercise.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Start out by placing two dumbbells on one side of a flat bench. Kneel down on both of your knees so that your body is facing the flat bench. Use your arms to grab both of the dumbbells with a supinated grip (palms up) and bring them up so that your forearms are resting against the flat bench. Your wrists should be hanging over the edge. Start out by curling your wrist upwards and exhaling. Slowly lower your wrists back down to the starting position while inhaling. Make sure to inhale during this part of the exercise. Your forearms should be stationary as your wrist is the only movement needed to perform this exercise. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
     "id": "fedb_pelvic_tilt_into_bridge",
     "name": "Pelvic Tilt Into Bridge",
     "pattern": "mobility",
@@ -5515,46 +5061,36 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_plie_dumbbell_squat",
-    "name": "Plie Dumbbell Squat",
-    "pattern": "squat",
+    "id": "fedb_plyo_kettlebell_pushups",
+    "name": "Plyo Kettlebell Pushups",
+    "pattern": "horizontal_push",
     "type": "dynamic",
     "muscles": [
       {
-        "group": "quadriceps",
+        "group": "chest",
         "role": "primary"
       },
       {
-        "group": "abdominals",
+        "group": "shoulders",
         "role": "secondary"
       },
       {
-        "group": "calves",
-        "role": "secondary"
-      },
-      {
-        "group": "glutes",
-        "role": "secondary"
-      },
-      {
-        "group": "hamstrings",
+        "group": "triceps",
         "role": "secondary"
       }
     ],
     "joints": [],
     "role": "work",
     "regions": [
-      "legs"
+      "push"
     ],
     "cues": [
-      "Hold a dumbbell at the base with both hands and stand straight up. Move your legs so that they are wider than shoulder width apart from each other with your knees slightly bent.",
-      "Your toes should be facing out. Note: Your arms should be stationary while performing the exercise. This is the starting position.",
-      "Slowly bend the knees and lower your legs until your thighs are parallel to the floor. Make sure to inhale as this is the eccentric part of the exercise.",
-      "Press mainly with the heel of the foot to bring the body back to the starting position while exhaling.",
-      "Repeat for the recommended amount of repetitions."
+      "Place a kettlebell on the floor. Place yourself in a pushup position, on your toes with one hand on the ground and one hand holding the kettlebell, with your elbows extended. This will be your starting position.",
+      "Begin by lowering yourself as low as you can, keeping your back straight.",
+      "Quickly and forcefully reverse direction, pushing yourself up to the other side of the kettlebell, switching hands as you do so. Continue the movement by descending and repeating the movement back and forth."
     ],
-    "description": "Hold a dumbbell at the base with both hands and stand straight up. Move your legs so that they are wider than shoulder width apart from each other with your knees slightly bent. Your toes should be facing out. Note: Your arms should be stationary while performing the exercise. This is the starting position. Slowly bend the knees and lower your legs until your thighs are parallel to the floor. Make sure to inhale as this is the eccentric part of the exercise. Press mainly with the heel of the foot to bring the body back to the starting position while exhaling. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
+    "description": "Place a kettlebell on the floor. Place yourself in a pushup position, on your toes with one hand on the ground and one hand holding the kettlebell, with your elbows extended. This will be your starting position. Begin by lowering yourself as low as you can, keeping your back straight. Quickly and forcefully reverse direction, pushing yourself up to the other side of the kettlebell, switching hands as you do so. Continue the movement by descending and repeating the movement back and forth.",
+    "difficulty": "advanced",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
@@ -5617,63 +5153,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     ],
     "description": "In a seated position, loop a belt, rope, or band around one foot. This will be your starting position. With the leg extended and the heel off of the ground, pull on the belt so that the foot is everted, with the outside of the foot being pulled towards you. Hold for 10-20 seconds, and then switch sides.",
     "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_power_partials",
-    "name": "Power Partials",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Stand up with your torso upright and a dumbbell on each hand being held at arms length. The elbows should be close to the torso.",
-      "The palms of the hands should be facing your torso. Your feet should be about shoulder width apart. This will be your starting position.",
-      "Keeping your arms straight and the torso stationary, lift the weights out to your sides until they are about shoulder level height while exhaling.",
-      "Feel the contraction for a second and begin to lower the weights back down to the starting position while inhaling. Tip: Keep the palms facing down with the little finger slightly higher while lifting and lowering the weights as it will concentrate the stress on your shoulders mainly.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Stand up with your torso upright and a dumbbell on each hand being held at arms length. The elbows should be close to the torso. The palms of the hands should be facing your torso. Your feet should be about shoulder width apart. This will be your starting position. Keeping your arms straight and the torso stationary, lift the weights out to your sides until they are about shoulder level height while exhaling. Feel the contraction for a second and begin to lower the weights back down to the starting position while inhaling. Tip: Keep the palms facing down with the little finger slightly higher while lifting and lowering the weights as it will concentrate the stress on your shoulders mainly. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_preacher_hammer_dumbbell_curl",
-    "name": "Preacher Hammer Dumbbell Curl",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "biceps",
-        "role": "primary"
-      },
-      {
-        "group": "forearms",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Place the upper part of both arms on top of the preacher bench as you hold a dumbbell in each hand with the palms facing each other (neutral grip).",
-      "As you breathe in, slowly lower the dumbbells until your upper arm is extended and the biceps is fully stretched.",
-      "As you exhale, use the biceps to curl the weight up until your biceps is fully contracted and the dumbbells are at shoulder height.",
-      "Squeeze the biceps hard for a second at the contracted position and repeat for the recommended amount of repetitions."
-    ],
-    "description": "Place the upper part of both arms on top of the preacher bench as you hold a dumbbell in each hand with the palms facing each other (neutral grip). As you breathe in, slowly lower the dumbbells until your upper arm is extended and the biceps is fully stretched. As you exhale, use the biceps to curl the weight up until your biceps is fully contracted and the dumbbells are at shoulder height. Squeeze the biceps hard for a second at the contracted position and repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
@@ -5907,63 +5386,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_reverse_flyes",
-    "name": "Reverse Flyes",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "To begin, lie down on an incline bench with the chest and stomach pressing against the incline. Have the dumbbells in each hand with the palms facing each other (neutral grip).",
-      "Extend the arms in front of you so that they are perpendicular to the angle of the bench. The legs should be stationary while applying pressure with the ball of your toes. This is the starting position.",
-      "Maintaining the slight bend of the elbows, move the weights out and away from each other (to the side) in an arc motion while exhaling. Tip: Try to squeeze your shoulder blades together to get the best results from this exercise.",
-      "The arms should be elevated until they are parallel to the floor.",
-      "Feel the contraction and slowly lower the weights back down to the starting position while inhaling.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "To begin, lie down on an incline bench with the chest and stomach pressing against the incline. Have the dumbbells in each hand with the palms facing each other (neutral grip). Extend the arms in front of you so that they are perpendicular to the angle of the bench. The legs should be stationary while applying pressure with the ball of your toes. This is the starting position. Maintaining the slight bend of the elbows, move the weights out and away from each other (to the side) in an arc motion while exhaling. Tip: Try to squeeze your shoulder blades together to get the best results from this exercise. The arms should be elevated until they are parallel to the floor. Feel the contraction and slowly lower the weights back down to the starting position while inhaling. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_reverse_flyes_with_external_rotation",
-    "name": "Reverse Flyes With External Rotation",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "To begin, lie down on an incline bench set at a 30-degree angle with the chest and stomach pressing against the incline.",
-      "Have the dumbbells in each hand with the palms facing down to the floor. Your arms should be in front of you so that they are perpendicular to the angle of the bench. Tip: Your elbows should have a slight bend. The legs should be stationary while applying pressure with the ball of your toes (your heels should not be touching the floor). This is the starting position.",
-      "Maintaining the slight bend of the elbows, move the weights out and away from each other in an arc motion while exhaling.",
-      "As you lift the weight, your wrist should externally rotate by 90-degrees so that you go from a palms down (pronated) grip to a palms facing each other (neutral) grip. Tip: Try to squeeze your shoulder blades together to get the best results from this exercise.",
-      "The arms should be elevated until they are level with the head.",
-      "Feel the contraction and slowly lower the weights back down to the starting position while inhaling.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "To begin, lie down on an incline bench set at a 30-degree angle with the chest and stomach pressing against the incline. Have the dumbbells in each hand with the palms facing down to the floor. Your arms should be in front of you so that they are perpendicular to the angle of the bench. Tip: Your elbows should have a slight bend. The legs should be stationary while applying pressure with the ball of your toes (your heels should not be touching the floor). This is the starting position. Maintaining the slight bend of the elbows, move the weights out and away from each other in an arc motion while exhaling. As you lift the weight, your wrist should externally rotate by 90-degrees so that you go from a palms down (pronated) grip to a palms facing each other (neutral) grip. Tip: Try to squeeze your shoulder blades together to get the best results from this exercise. The arms should be elevated until they are level with the head. Feel the contraction and slowly lower the weights back down to the starting position while inhaling. Repeat for the recommended amount of repetitions.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
     "id": "fedb_rocket_jump",
     "name": "Rocket Jump",
     "pattern": "conditioning",
@@ -6088,91 +5510,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_seated_bent_over_one_arm_dumbbell_triceps_extension",
-    "name": "Seated Bent-Over One-Arm Dumbbell Triceps Extension",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "triceps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Sit down at the end of a flat bench with a dumbbell in one arm using a neutral grip (palms of the hand facing you).",
-      "Bend your knees slightly and bring your torso forward, by bending at the waist, while keeping the back straight until it is almost parallel to the floor. Make sure that you keep the head up.",
-      "The upper arm with the dumbbell should be close to the torso and aligned with it (lifted up until it is parallel to the floor while the forearms are pointing towards the floor as the hands hold the weights). Tip: There should be a 90-degree angle between the forearms and the upper arm. This is your starting position.",
-      "Keeping the upper arm stationary, use the triceps to lift the weight as you exhale until the forearm is parallel to the floor and the whole arm is extended. Like many other arm exercises, only the forearm moves.",
-      "After a second contraction at the top, slowly lower the dumbbell back to the starting position as you inhale.",
-      "Repeat the movement for the prescribed amount of repetitions.",
-      "Switch arms and repeat the exercise."
-    ],
-    "description": "Sit down at the end of a flat bench with a dumbbell in one arm using a neutral grip (palms of the hand facing you). Bend your knees slightly and bring your torso forward, by bending at the waist, while keeping the back straight until it is almost parallel to the floor. Make sure that you keep the head up. The upper arm with the dumbbell should be close to the torso and aligned with it (lifted up until it is parallel to the floor while the forearms are pointing towards the floor as the hands hold the weights). Tip: There should be a 90-degree angle between the forearms and the upper arm. This is your starting position. Keeping the upper arm stationary, use the triceps to lift the weight as you exhale until the forearm is parallel to the floor and the whole arm is extended. Like many other arm exercises, only the forearm moves. After a second contraction at the top, slowly lower the dumbbell back to the starting position as you inhale. Repeat the movement for the prescribed amount of repetitions. Switch arms and repeat the exercise.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_seated_bent_over_rear_delt_raise",
-    "name": "Seated Bent-Over Rear Delt Raise",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Place a couple of dumbbells looking forward in front of a flat bench.",
-      "Sit on the end of the bench with your legs together and the dumbbells behind your calves.",
-      "Bend at the waist while keeping the back straight in order to pick up the dumbbells. The palms of your hands should be facing each other as you pick them. This will be your starting position.",
-      "Keeping your torso forward and stationary, and the arms slightly bent at the elbows, lift the dumbbells straight to the side until both arms are parallel to the floor. Exhale as you lift the weights. (Note: avoid swinging the torso or bringing the arms back as opposed to the side.)",
-      "After a one second contraction at the top, slowly lower the dumbbells back to the starting position.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Place a couple of dumbbells looking forward in front of a flat bench. Sit on the end of the bench with your legs together and the dumbbells behind your calves. Bend at the waist while keeping the back straight in order to pick up the dumbbells. The palms of your hands should be facing each other as you pick them. This will be your starting position. Keeping your torso forward and stationary, and the arms slightly bent at the elbows, lift the dumbbells straight to the side until both arms are parallel to the floor. Exhale as you lift the weights. (Note: avoid swinging the torso or bringing the arms back as opposed to the side.) After a one second contraction at the top, slowly lower the dumbbells back to the starting position. Repeat for the recommended amount of repetitions.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_seated_bent_over_two_arm_dumbbell_triceps_extension",
-    "name": "Seated Bent-Over Two-Arm Dumbbell Triceps Extension",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "triceps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Sit down at the end of a flat bench with a dumbbell in both arms using a neutral grip (palms of the hand facing you).",
-      "Bend your knees slightly and bring your torso forward, by bending at the waist, while keeping the back straight until it is almost parallel to the floor. Make sure that you keep the head up.",
-      "The upper arms with the dumbbells should be close to the torso and aligned with it (lifted up until they are parallel to the floor while the forearms are pointing towards the floor as the hands hold the weights). Tip: There should be a 90-degree angle between the forearms and the upper arm. This is your starting position.",
-      "Keeping the upper arms stationary, use the triceps to lift the weight as you exhale until the forearms are parallel to the floor and the whole arm is extended. Like many other arm exercises, only the forearm moves.",
-      "After a second contraction at the top, slowly lower the dumbbells back to the starting position as you inhale.",
-      "Repeat the movement for the prescribed amount of repetitions."
-    ],
-    "description": "Sit down at the end of a flat bench with a dumbbell in both arms using a neutral grip (palms of the hand facing you). Bend your knees slightly and bring your torso forward, by bending at the waist, while keeping the back straight until it is almost parallel to the floor. Make sure that you keep the head up. The upper arms with the dumbbells should be close to the torso and aligned with it (lifted up until they are parallel to the floor while the forearms are pointing towards the floor as the hands hold the weights). Tip: There should be a 90-degree angle between the forearms and the upper arm. This is your starting position. Keeping the upper arms stationary, use the triceps to lift the weight as you exhale until the forearms are parallel to the floor and the whole arm is extended. Like many other arm exercises, only the forearm moves. After a second contraction at the top, slowly lower the dumbbells back to the starting position as you inhale. Repeat the movement for the prescribed amount of repetitions.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
     "id": "fedb_seated_biceps",
     "name": "Seated Biceps",
     "pattern": "mobility",
@@ -6237,151 +5574,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
       "Using a band, towel, or your hand if you can reach, pull the toes toward you. Hold for 10 to 20 seconds, then switch sides."
     ],
     "description": "Sit up straight on an exercise mat. Bend one knee and put that foot on the floor to stabilize the torso. Straighten your other leg and flex your ankle. Using a band, towel, or your hand if you can reach, pull the toes toward you. Hold for 10 to 20 seconds, then switch sides.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_seated_dumbbell_curl",
-    "name": "Seated Dumbbell Curl",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "biceps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Sit on a flat bench with a dumbbell on each hand being held at arms length. The elbows should be close to the torso.",
-      "Rotate the palms of the hands so that they are facing your torso. This will be your starting position.",
-      "While holding the upper arm stationary, curl the weights and start twisting the wrists once the dumbbells pass your thighs so that the palms of your hands face forward at the end of the movement. Make sure that you contract the biceps as you breathe out and make sure that only the forearms move. Continue the movement until your biceps are fully contracted and the dumbbells are at shoulder level. Hold the contracted position for a second as you squeeze the biceps.",
-      "Slowly begin to bring the dumbbells back to the starting position as your breathe in and as you rotate the wrists back to a neutral grip.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Sit on a flat bench with a dumbbell on each hand being held at arms length. The elbows should be close to the torso. Rotate the palms of the hands so that they are facing your torso. This will be your starting position. While holding the upper arm stationary, curl the weights and start twisting the wrists once the dumbbells pass your thighs so that the palms of your hands face forward at the end of the movement. Make sure that you contract the biceps as you breathe out and make sure that only the forearms move. Continue the movement until your biceps are fully contracted and the dumbbells are at shoulder level. Hold the contracted position for a second as you squeeze the biceps. Slowly begin to bring the dumbbells back to the starting position as your breathe in and as you rotate the wrists back to a neutral grip. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_seated_dumbbell_inner_biceps_curl",
-    "name": "Seated Dumbbell Inner Biceps Curl",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "biceps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Sit on the end of a flat bench with a dumbbell in each hand being held at arms length. The elbows should be close to the torso.",
-      "Rotate the palms of the hands so that they are facing inward in a neutral position. This will be your starting position.",
-      "While holding the upper arms stationary, curl the dumbbells out and up, turning the palms out as you lift and keeping your forearms in line with your outer deltoids. Tips:",
-      "Only the forearms should move. Continue the movement until your biceps are fully contracted and the dumbbells are at shoulder level. Hold the contracted position for a second as you squeeze the biceps.",
-      "Slowly begin to bring the dumbbells back to the starting position as your breathe in. Remember to rotate your arms as you lower the dumbbells so that you can switch back to a neutral grip.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Sit on the end of a flat bench with a dumbbell in each hand being held at arms length. The elbows should be close to the torso. Rotate the palms of the hands so that they are facing inward in a neutral position. This will be your starting position. While holding the upper arms stationary, curl the dumbbells out and up, turning the palms out as you lift and keeping your forearms in line with your outer deltoids. Tips: Only the forearms should move. Continue the movement until your biceps are fully contracted and the dumbbells are at shoulder level. Hold the contracted position for a second as you squeeze the biceps. Slowly begin to bring the dumbbells back to the starting position as your breathe in. Remember to rotate your arms as you lower the dumbbells so that you can switch back to a neutral grip. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_seated_dumbbell_palms_down_wrist_curl",
-    "name": "Seated Dumbbell Palms-Down Wrist Curl",
-    "pattern": "mobility",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "forearms",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "general"
-    ],
-    "cues": [
-      "Start out by placing two dumbbells on the floor in front of a flat bench.",
-      "Sit down on the edge of the flat bench with your legs at about shoulder width apart. Make sure to keep your feet on the floor.",
-      "Use your arms to grab both of the dumbbells and bring them up so that your forearms are resting against your thighs with the palms of the hands facing down. Your wrists should be hanging over the edge of your thighs.",
-      "Start out by curling your wrist upwards and exhaling.",
-      "Slowly lower your wrists back down to the starting position while inhaling. Make sure to inhale during this part of the exercise. Tip: Your forearms should be stationary as your wrist is the only movement needed to perform this exercise.",
-      "Repeat for the recommended amount of repetitions.",
-      "When finished, simply lower the dumbbells to the floor."
-    ],
-    "description": "Start out by placing two dumbbells on the floor in front of a flat bench. Sit down on the edge of the flat bench with your legs at about shoulder width apart. Make sure to keep your feet on the floor. Use your arms to grab both of the dumbbells and bring them up so that your forearms are resting against your thighs with the palms of the hands facing down. Your wrists should be hanging over the edge of your thighs. Start out by curling your wrist upwards and exhaling. Slowly lower your wrists back down to the starting position while inhaling. Make sure to inhale during this part of the exercise. Tip: Your forearms should be stationary as your wrist is the only movement needed to perform this exercise. Repeat for the recommended amount of repetitions. When finished, simply lower the dumbbells to the floor.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_seated_dumbbell_palms_up_wrist_curl",
-    "name": "Seated Dumbbell Palms-Up Wrist Curl",
-    "pattern": "mobility",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "forearms",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "general"
-    ],
-    "cues": [
-      "Start out by placing two dumbbells on the floor in front of a flat bench.",
-      "Sit down on the edge of the flat bench with your legs at about shoulder width apart. Make sure to keep your feet on the floor.",
-      "Use your arms to grab both of the dumbbells and bring them up so that your forearms are resting against your thighs with the palms of the hands facing up. Your wrists should be hanging over the edge of your thighs.",
-      "Start out by curling your wrist upwards and exhaling.",
-      "Slowly lower your wrists back down to the starting position while inhaling. Make sure to inhale during this part of the exercise. Tip: Your forearms should be stationary as your wrist is the only movement needed to perform this exercise.",
-      "Repeat for the recommended amount of repetitions.",
-      "When finished, simply lower the dumbbells to the floor."
-    ],
-    "description": "Start out by placing two dumbbells on the floor in front of a flat bench. Sit down on the edge of the flat bench with your legs at about shoulder width apart. Make sure to keep your feet on the floor. Use your arms to grab both of the dumbbells and bring them up so that your forearms are resting against your thighs with the palms of the hands facing up. Your wrists should be hanging over the edge of your thighs. Start out by curling your wrist upwards and exhaling. Slowly lower your wrists back down to the starting position while inhaling. Make sure to inhale during this part of the exercise. Tip: Your forearms should be stationary as your wrist is the only movement needed to perform this exercise. Repeat for the recommended amount of repetitions. When finished, simply lower the dumbbells to the floor.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_seated_dumbbell_press",
-    "name": "Seated Dumbbell Press",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      },
-      {
-        "group": "triceps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Grab a couple of dumbbells and sit on a military press bench or a utility bench that has a back support on it as you place the dumbbells upright on top of your thighs.",
-      "Clean the dumbbells up one at a time by using your thighs to bring the dumbbells up to shoulder height at each side.",
-      "Rotate the wrists so that the palms of your hands are facing forward. This is your starting position.",
-      "As you exhale, push the dumbbells up until they touch at the top.",
-      "After a second pause, slowly come down back to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Grab a couple of dumbbells and sit on a military press bench or a utility bench that has a back support on it as you place the dumbbells upright on top of your thighs. Clean the dumbbells up one at a time by using your thighs to bring the dumbbells up to shoulder height at each side. Rotate the wrists so that the palms of your hands are facing forward. This is your starting position. As you exhale, push the dumbbells up until they touch at the top. After a second pause, slowly come down back to the starting position as you inhale. Repeat for the recommended amount of repetitions.",
     "difficulty": "beginner",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
@@ -6585,62 +5777,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_seated_one_arm_dumbbell_palms_down_wrist_curl",
-    "name": "Seated One-Arm Dumbbell Palms-Down Wrist Curl",
-    "pattern": "mobility",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "forearms",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "general"
-    ],
-    "cues": [
-      "Sit on a flat bench with a dumbbell in your right hand.",
-      "Place your feet flat on the floor, at a distance that is slightly wider than shoulder width apart.",
-      "Lean forward and place your right forearm on top of your upper right thigh with your palm down. Tip: Make sure that the back of the wrist lies on top of your knees. This will be your starting position.",
-      "Lower the dumbbell as far as possible as you keep a tight grip on the dumbbell. Inhale as you perform this movement.",
-      "Now curl the dumbbell as high as possible as you contract the forearms and as you exhale. Keep the contraction for a second before you lower again. Tip: The only movement should happen at the wrist.",
-      "Perform for the recommended amount of repetitions, switch arms and repeat the movement."
-    ],
-    "description": "Sit on a flat bench with a dumbbell in your right hand. Place your feet flat on the floor, at a distance that is slightly wider than shoulder width apart. Lean forward and place your right forearm on top of your upper right thigh with your palm down. Tip: Make sure that the back of the wrist lies on top of your knees. This will be your starting position. Lower the dumbbell as far as possible as you keep a tight grip on the dumbbell. Inhale as you perform this movement. Now curl the dumbbell as high as possible as you contract the forearms and as you exhale. Keep the contraction for a second before you lower again. Tip: The only movement should happen at the wrist. Perform for the recommended amount of repetitions, switch arms and repeat the movement.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_seated_one_arm_dumbbell_palms_up_wrist_curl",
-    "name": "Seated One-Arm Dumbbell Palms-Up Wrist Curl",
-    "pattern": "mobility",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "forearms",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "general"
-    ],
-    "cues": [
-      "Sit on a flat bench with a dumbbell in your right hand.",
-      "Place your feet flat on the floor, at a distance that is slightly wider than shoulder width apart.",
-      "Lean forward and place your right forearm on top of your upper right thigh with your palm up. Tip: Make sure that the front of the wrist lies on top of your knees. This will be your starting position.",
-      "Lower the dumbbell as far as possible as you keep a tight grip on the dumbbell. Inhale as you perform this movement.",
-      "Now curl the dumbbell as high as possible as you contract the forearms and as you exhale. Keep the contraction for a second before you lower again. Tip: The only movement should happen at the wrist.",
-      "Perform for the recommended amount of repetitions, switch arms and repeat the movement."
-    ],
-    "description": "Sit on a flat bench with a dumbbell in your right hand. Place your feet flat on the floor, at a distance that is slightly wider than shoulder width apart. Lean forward and place your right forearm on top of your upper right thigh with your palm up. Tip: Make sure that the front of the wrist lies on top of your knees. This will be your starting position. Lower the dumbbell as far as possible as you keep a tight grip on the dumbbell. Inhale as you perform this movement. Now curl the dumbbell as high as possible as you contract the forearms and as you exhale. Keep the contraction for a second before you lower again. Tip: The only movement should happen at the wrist. Perform for the recommended amount of repetitions, switch arms and repeat the movement.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
     "id": "fedb_seated_overhead_stretch",
     "name": "Seated Overhead Stretch",
     "pattern": "mobility",
@@ -6664,93 +5800,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     ],
     "description": "Sit up straight on an exercise mat. Touch the soles of your feet together with your feet six to eight inches in front of your hips. Place one hand on the floor beside you and your other hand behind your head. Lift your elbow to the ceiling as you incline your torso to the other side. Hold for 10 to 20 seconds, then switch sides.",
     "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_seated_side_lateral_raise",
-    "name": "Seated Side Lateral Raise",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Pick a couple of dumbbells and sit at the end of a flat bench with your feet firmly on the floor. Hold the dumbbells with your palms facing in and your arms straight down at your sides at arms' length. This will be your starting position.",
-      "While maintaining the torso stationary (no swinging), lift the dumbbells to your side with a slight bend on the elbow and the hands slightly tilted forward as if pouring water in a glass. Continue to go up until you arms are parallel to the floor. Exhale as you execute this movement and pause for a second at the top.",
-      "Lower the dumbbells back down slowly to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Pick a couple of dumbbells and sit at the end of a flat bench with your feet firmly on the floor. Hold the dumbbells with your palms facing in and your arms straight down at your sides at arms' length. This will be your starting position. While maintaining the torso stationary (no swinging), lift the dumbbells to your side with a slight bend on the elbow and the hands slightly tilted forward as if pouring water in a glass. Continue to go up until you arms are parallel to the floor. Exhale as you execute this movement and pause for a second at the top. Lower the dumbbells back down slowly to the starting position as you inhale. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_seated_triceps_press",
-    "name": "Seated Triceps Press",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "triceps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Sit down on a bench with back support and grasp a dumbbell with both hands and hold it overhead at arm's length. Tip: a better way is to have somebody hand it to you especially if it is very heavy. The resistance should be resting in the palms of your hands with your thumbs around it. The palm of the hand should be facing inward. This will be your starting position.",
-      "Keeping your upper arms close to your head (elbows in) and perpendicular to the floor, lower the resistance in a semi-circular motion behind your head until your forearms touch your biceps. Tip: The upper arms should remain stationary and only the forearms should move. Breathe in as you perform this step.",
-      "Go back to the starting position by using the triceps to raise the dumbbell. Breathe out as you perform this step.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Sit down on a bench with back support and grasp a dumbbell with both hands and hold it overhead at arm's length. Tip: a better way is to have somebody hand it to you especially if it is very heavy. The resistance should be resting in the palms of your hands with your thumbs around it. The palm of the hand should be facing inward. This will be your starting position. Keeping your upper arms close to your head (elbows in) and perpendicular to the floor, lower the resistance in a semi-circular motion behind your head until your forearms touch your biceps. Tip: The upper arms should remain stationary and only the forearms should move. Breathe in as you perform this step. Go back to the starting position by using the triceps to raise the dumbbell. Breathe out as you perform this step. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_see_saw_press_alternating_side_press",
-    "name": "See-Saw Press (Alternating Side Press)",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      },
-      {
-        "group": "abdominals",
-        "role": "secondary"
-      },
-      {
-        "group": "triceps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Grab a dumbbell with each hand and stand up erect.",
-      "Clean (lift) the dumbbells to the chest/shoulder level and then rotate your wrists so that your palms are facing towards you as if you were getting ready to perform an Arnold Press. This will be your starting position.",
-      "Now start extending your left arm overhead as you rotate the wrist so that the palm of your hand faces forward as you go up. Your elbows should come out also as you lift the weight. Simultaneously, you will also be bending from your hip to your opposite side. Tip: If you perform the exercise correctly, is should look as if you are trying to reach for something overhead on the right hand side of your body, but with your left arm. Breathe out as you perform this movement.",
-      "Once you reach the top position breathe in. Then, with the weight fully extended overhead and you bent over to your right hand side, begin the movement to the left side.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Grab a dumbbell with each hand and stand up erect. Clean (lift) the dumbbells to the chest/shoulder level and then rotate your wrists so that your palms are facing towards you as if you were getting ready to perform an Arnold Press. This will be your starting position. Now start extending your left arm overhead as you rotate the wrist so that the palm of your hand faces forward as you go up. Your elbows should come out also as you lift the weight. Simultaneously, you will also be bending from your hip to your opposite side. Tip: If you perform the exercise correctly, is should look as if you are trying to reach for something overhead on the right hand side of your body, but with your left arm. Breathe out as you perform this movement. Once you reach the top position breathe in. Then, with the weight fully extended overhead and you bent over to your right hand side, begin the movement to the left side. Repeat for the recommended amount of repetitions.",
-    "difficulty": "intermediate",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
@@ -6848,64 +5897,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
       "core"
     ],
     "cues": [],
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_side_lateral_raise",
-    "name": "Side Lateral Raise",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Pick a couple of dumbbells and stand with a straight torso and the dumbbells by your side at arms length with the palms of the hand facing you. This will be your starting position.",
-      "While maintaining the torso in a stationary position (no swinging), lift the dumbbells to your side with a slight bend on the elbow and the hands slightly tilted forward as if pouring water in a glass. Continue to go up until you arms are parallel to the floor. Exhale as you execute this movement and pause for a second at the top.",
-      "Lower the dumbbells back down slowly to the starting position as you inhale.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Pick a couple of dumbbells and stand with a straight torso and the dumbbells by your side at arms length with the palms of the hand facing you. This will be your starting position. While maintaining the torso in a stationary position (no swinging), lift the dumbbells to your side with a slight bend on the elbow and the hands slightly tilted forward as if pouring water in a glass. Continue to go up until you arms are parallel to the floor. Exhale as you execute this movement and pause for a second at the top. Lower the dumbbells back down slowly to the starting position as you inhale. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_side_laterals_to_front_raise",
-    "name": "Side Laterals to Front Raise",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      },
-      {
-        "group": "traps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "In a standing position, hold a pair of dumbbells at your side. This will be your starting position.",
-      "Keeping your elbows slightly bent, raise the weights directly in front of you to shoulder height, avoiding any swinging or cheating.",
-      "At the top of the exercise move the weights out in front of you, keeping your arms extended.",
-      "Lower the weights with a controlled motion.",
-      "On the next repetition, raise the weights in front of you to shoulder height before moving the weights laterally to your sides.",
-      "Lower the weights to the starting position."
-    ],
-    "description": "In a standing position, hold a pair of dumbbells at your side. This will be your starting position. Keeping your elbows slightly bent, raise the weights directly in front of you to shoulder height, avoiding any swinging or cheating. At the top of the exercise move the weights out in front of you, keeping your arms extended. Lower the weights with a controlled motion. On the next repetition, raise the weights in front of you to shoulder height before moving the weights laterally to your sides. Lower the weights to the starting position.",
     "difficulty": "beginner",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
@@ -7128,39 +6119,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_single_dumbbell_raise",
-    "name": "Single Dumbbell Raise",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      },
-      {
-        "group": "forearms",
-        "role": "secondary"
-      },
-      {
-        "group": "traps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "With a wide stance, hold a dumbell with both hands, grasping the head of the dumbbell instead of the handle. Your arms should be extended and hanging at the waist. This will be your starting position.",
-      "Raise the weight until it is above shoulder level, keeping your arms extended. Your torso and hips should remain stationary throughout the movement.",
-      "Return to the starting position and repeat for the recommended amount of repetitions."
-    ],
-    "description": "With a wide stance, hold a dumbell with both hands, grasping the head of the dumbbell instead of the handle. Your arms should be extended and hanging at the waist. This will be your starting position. Raise the weight until it is above shoulder level, keeping your arms extended. Your torso and hips should remain stationary throughout the movement. Return to the starting position and repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
     "id": "fedb_single_leg_butt_kick",
     "name": "Single Leg Butt Kick",
     "pattern": "conditioning",
@@ -7378,40 +6336,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_spell_caster",
-    "name": "Spell Caster",
-    "pattern": "core_compression",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "abdominals",
-        "role": "primary"
-      },
-      {
-        "group": "glutes",
-        "role": "secondary"
-      },
-      {
-        "group": "shoulders",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "core"
-    ],
-    "cues": [
-      "Hold a dumbbell in each hand with a pronated grip. Your feet should be wide with your hips and knees extended. This will be your starting position.",
-      "Begin the movement by pulling both of the dumbbells to one side next to your hip, rotating your torso.",
-      "Keeping your arms straight and the dumbbells parallel to the ground, rotate your torso to swing the weights to your opposite side.",
-      "Continue alternating, rotating from one side to the other until the set is complete."
-    ],
-    "description": "Hold a dumbbell in each hand with a pronated grip. Your feet should be wide with your hips and knees extended. This will be your starting position. Begin the movement by pulling both of the dumbbells to one side next to your hip, rotating your torso. Keeping your arms straight and the dumbbells parallel to the ground, rotate your torso to swing the weights to your opposite side. Continue alternating, rotating from one side to the other until the set is complete.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
     "id": "fedb_spider_crawl",
     "name": "Spider Crawl",
     "pattern": "core_compression",
@@ -7491,40 +6415,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_split_squat_with_dumbbells",
-    "name": "Split Squat with Dumbbells",
-    "pattern": "squat",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "quadriceps",
-        "role": "primary"
-      },
-      {
-        "group": "glutes",
-        "role": "secondary"
-      },
-      {
-        "group": "hamstrings",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "legs"
-    ],
-    "cues": [
-      "Position yourself into a staggered stance with the rear foot elevated and front foot forward.",
-      "Hold a dumbbell in each hand, letting them hang at the sides. This will be your starting position.",
-      "Begin by descending, flexing your knee and hip to lower your body down. Maintain good posture througout the movement. Keep the front knee in line with the foot as you perform the exercise.",
-      "At the bottom of the movement, drive through the heel to extend the knee and hip to return to the starting position."
-    ],
-    "description": "Position yourself into a staggered stance with the rear foot elevated and front foot forward. Hold a dumbbell in each hand, letting them hang at the sides. This will be your starting position. Begin by descending, flexing your knee and hip to lower your body down. Maintain good posture througout the movement. Keep the front knee in line with the foot as you perform the exercise. At the bottom of the movement, drive through the heel to extend the knee and hip to return to the starting position.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
     "id": "fedb_split_squats",
     "name": "Split Squats",
     "pattern": "squat",
@@ -7561,94 +6451,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_standing_alternating_dumbbell_press",
-    "name": "Standing Alternating Dumbbell Press",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      },
-      {
-        "group": "triceps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Stand with a dumbbell in each hand. Raise the dumbbells to your shoulders with your palms facing forward and your elbows pointed out. This will be your starting position.",
-      "Extend one arm to press the dumbbell straight up, keeping your off hand in place. Do not lean or jerk the weight during the movement.",
-      "After a brief pause, return the weight to the starting position.",
-      "Repeat for the opposite side, continuing to alternate between arms."
-    ],
-    "description": "Stand with a dumbbell in each hand. Raise the dumbbells to your shoulders with your palms facing forward and your elbows pointed out. This will be your starting position. Extend one arm to press the dumbbell straight up, keeping your off hand in place. Do not lean or jerk the weight during the movement. After a brief pause, return the weight to the starting position. Repeat for the opposite side, continuing to alternate between arms.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_standing_bent_over_one_arm_dumbbell_triceps_extension",
-    "name": "Standing Bent-Over One-Arm Dumbbell Triceps Extension",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "triceps",
-        "role": "primary"
-      },
-      {
-        "group": "shoulders",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "With a dumbbell in one hand and the palm facing your torso, bend your knees slightly and bring your torso forward, by bending at the waist, while keeping the back straight until it is almost parallel to the floor. Make sure that you keep the head up.",
-      "The upper arm should be close to the torso and parallel to the floor while the forearm is pointing towards the floor as the hand holds the weight. Tip: There should be a 90-degree angle between the forearm and the upper arm. This is your starting position.",
-      "Keeping the upper arms stationary, use the triceps to lift the weights as you exhale until the forearms are parallel to the floor and the whole arm is extended. Like many other arm exercises, only the forearm moves.",
-      "After a second contraction at the top, slowly lower the dumbbell back to the starting position as you inhale.",
-      "Repeat the movement for the prescribed amount of repetitions.",
-      "Switch arms and repeat the exercise."
-    ],
-    "description": "With a dumbbell in one hand and the palm facing your torso, bend your knees slightly and bring your torso forward, by bending at the waist, while keeping the back straight until it is almost parallel to the floor. Make sure that you keep the head up. The upper arm should be close to the torso and parallel to the floor while the forearm is pointing towards the floor as the hand holds the weight. Tip: There should be a 90-degree angle between the forearm and the upper arm. This is your starting position. Keeping the upper arms stationary, use the triceps to lift the weights as you exhale until the forearms are parallel to the floor and the whole arm is extended. Like many other arm exercises, only the forearm moves. After a second contraction at the top, slowly lower the dumbbell back to the starting position as you inhale. Repeat the movement for the prescribed amount of repetitions. Switch arms and repeat the exercise.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_standing_bent_over_two_arm_dumbbell_triceps_extension",
-    "name": "Standing Bent-Over Two-Arm Dumbbell Triceps Extension",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "triceps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "With a dumbbell in each hand and the palms facing your torso, bend your knees slightly and bring your torso forward, by bending at the waist, while keeping the back straight until it is almost parallel to the floor. Make sure that you keep the head up. The upper arms should be close to the torso and parallel to the floor while the forearms are pointing towards the floor as the hands hold the weights. Tip: There should be a 90-degree angle between the forearms and the upper arm. This is your starting position.",
-      "Keeping the upper arms stationary, use the triceps to lift the weights as you exhale until the forearms are parallel to the floor and the whole arms are extended. Like many other arm exercises, only the forearm moves.",
-      "After a second contraction at the top, slowly lower the dumbbells back to their starting position as you inhale.",
-      "Repeat the movement for the prescribed amount of repetitions."
-    ],
-    "description": "With a dumbbell in each hand and the palms facing your torso, bend your knees slightly and bring your torso forward, by bending at the waist, while keeping the back straight until it is almost parallel to the floor. Make sure that you keep the head up. The upper arms should be close to the torso and parallel to the floor while the forearms are pointing towards the floor as the hands hold the weights. Tip: There should be a 90-degree angle between the forearms and the upper arm. This is your starting position. Keeping the upper arms stationary, use the triceps to lift the weights as you exhale until the forearms are parallel to the floor and the whole arms are extended. Like many other arm exercises, only the forearm moves. After a second contraction at the top, slowly lower the dumbbells back to their starting position as you inhale. Repeat the movement for the prescribed amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
     "id": "fedb_standing_biceps_stretch",
     "name": "Standing Biceps Stretch",
     "pattern": "mobility",
@@ -7677,209 +6479,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
       "Raise your arms up and hold until you feel a stretch in your biceps."
     ],
     "description": "Clasp your hands behind your back with your palms together, straighten arms and then rotate them so your palms face downward. Raise your arms up and hold until you feel a stretch in your biceps.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_standing_concentration_curl",
-    "name": "Standing Concentration Curl",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "biceps",
-        "role": "primary"
-      },
-      {
-        "group": "forearms",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Taking a dumbbell in your working hand, lean forward. Allow your working arm to hang perpendicular to the ground with the elbow pointing out. This will be your starting position.",
-      "Flex the elbow to curl the weight, keeping the upper arm stationary. At the top of the repetition, flex the biceps and pause.",
-      "Lower the dumbbell back to the starting position.",
-      "Repeat the movement for the prescribed amount of repetitions."
-    ],
-    "description": "Taking a dumbbell in your working hand, lean forward. Allow your working arm to hang perpendicular to the ground with the elbow pointing out. This will be your starting position. Flex the elbow to curl the weight, keeping the upper arm stationary. At the top of the repetition, flex the biceps and pause. Lower the dumbbell back to the starting position. Repeat the movement for the prescribed amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_standing_dumbbell_calf_raise",
-    "name": "Standing Dumbbell Calf Raise",
-    "pattern": "conditioning",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "calves",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "legs"
-    ],
-    "cues": [
-      "Stand with your torso upright holding two dumbbells in your hands by your sides. Place the ball of the foot on a sturdy and stable wooden board (that is around 2-3 inches tall) while your heels extend off and touch the floor. This will be your starting position.",
-      "With the toes pointing either straight (to hit all parts equally), inwards (for emphasis on the outer head) or outwards (for emphasis on the inner head), raise the heels off the floor as you exhale by contracting the calves. Hold the top contraction for a second.",
-      "As you inhale, go back to the starting position by slowly lowering the heels.",
-      "Repeat for the recommended amount of times."
-    ],
-    "description": "Stand with your torso upright holding two dumbbells in your hands by your sides. Place the ball of the foot on a sturdy and stable wooden board (that is around 2-3 inches tall) while your heels extend off and touch the floor. This will be your starting position. With the toes pointing either straight (to hit all parts equally), inwards (for emphasis on the outer head) or outwards (for emphasis on the inner head), raise the heels off the floor as you exhale by contracting the calves. Hold the top contraction for a second. As you inhale, go back to the starting position by slowly lowering the heels. Repeat for the recommended amount of times.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_standing_dumbbell_press",
-    "name": "Standing Dumbbell Press",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      },
-      {
-        "group": "triceps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Standing with your feet shoulder width apart, take a dumbbell in each hand. Raise the dumbbells to head height, the elbows out and about 90 degrees. This will be your starting position.",
-      "Maintaining strict technique with no leg drive or leaning back, extend through the elbow to raise the weights together directly above your head.",
-      "Pause, and slowly return the weight to the starting position."
-    ],
-    "description": "Standing with your feet shoulder width apart, take a dumbbell in each hand. Raise the dumbbells to head height, the elbows out and about 90 degrees. This will be your starting position. Maintaining strict technique with no leg drive or leaning back, extend through the elbow to raise the weights together directly above your head. Pause, and slowly return the weight to the starting position.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_standing_dumbbell_reverse_curl",
-    "name": "Standing Dumbbell Reverse Curl",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "biceps",
-        "role": "primary"
-      },
-      {
-        "group": "forearms",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "To begin, stand straight with a dumbbell in each hand using a pronated grip (palms facing down). Your arms should be fully extended while your feet are shoulder width apart from each other. This is the starting position.",
-      "While holding the upper arms stationary, curl the weights while contracting the biceps as you breathe out. Only the forearms should move. Continue the movement until your biceps are fully contracted and the dumbbells are at shoulder level. Hold the contracted position for a second as you squeeze the muscle.",
-      "Slowly begin to bring the dumbbells back to starting position as your breathe in.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "To begin, stand straight with a dumbbell in each hand using a pronated grip (palms facing down). Your arms should be fully extended while your feet are shoulder width apart from each other. This is the starting position. While holding the upper arms stationary, curl the weights while contracting the biceps as you breathe out. Only the forearms should move. Continue the movement until your biceps are fully contracted and the dumbbells are at shoulder level. Hold the contracted position for a second as you squeeze the muscle. Slowly begin to bring the dumbbells back to starting position as your breathe in. Repeat for the recommended amount of repetitions.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_standing_dumbbell_straight_arm_front_delt_raise_above_head",
-    "name": "Standing Dumbbell Straight-Arm Front Delt Raise Above Head",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Hold the dumbbells in front of your thighs, palms facing your thighs.",
-      "Keep your arms straight with a slight bend at the elbows but keep them locked. This will be your starting position.",
-      "Raise the dumbbells in a semicircular motion to arm's length overhead as you exhale.",
-      "Slowly return to the starting position using the same path as you inhale.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Hold the dumbbells in front of your thighs, palms facing your thighs. Keep your arms straight with a slight bend at the elbows but keep them locked. This will be your starting position. Raise the dumbbells in a semicircular motion to arm's length overhead as you exhale. Slowly return to the starting position using the same path as you inhale. Repeat for the recommended amount of repetitions.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_standing_dumbbell_triceps_extension",
-    "name": "Standing Dumbbell Triceps Extension",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "triceps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "To begin, stand up with a dumbbell held by both hands. Your feet should be about shoulder width apart from each other. Slowly use both hands to grab the dumbbell and lift it over your head until both arms are fully extended.",
-      "The resistance should be resting in the palms of your hands with your thumbs around it. The palm of the hands should be facing up towards the ceiling. This will be your starting position.",
-      "Keeping your upper arms close to your head with elbows in and perpendicular to the floor, lower the resistance in a semicircular motion behind your head until your forearms touch your biceps. Tip: The upper arms should remain stationary and only the forearms should move. Breathe in as you perform this step.",
-      "Go back to the starting position by using the triceps to raise the dumbbell. Breathe out as you perform this step.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "To begin, stand up with a dumbbell held by both hands. Your feet should be about shoulder width apart from each other. Slowly use both hands to grab the dumbbell and lift it over your head until both arms are fully extended. The resistance should be resting in the palms of your hands with your thumbs around it. The palm of the hands should be facing up towards the ceiling. This will be your starting position. Keeping your upper arms close to your head with elbows in and perpendicular to the floor, lower the resistance in a semicircular motion behind your head until your forearms touch your biceps. Tip: The upper arms should remain stationary and only the forearms should move. Breathe in as you perform this step. Go back to the starting position by using the triceps to raise the dumbbell. Breathe out as you perform this step. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_standing_dumbbell_upright_row",
-    "name": "Standing Dumbbell Upright Row",
-    "pattern": "mobility",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "traps",
-        "role": "primary"
-      },
-      {
-        "group": "biceps",
-        "role": "secondary"
-      },
-      {
-        "group": "shoulders",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "general"
-    ],
-    "cues": [
-      "Grasp a dumbbell in each hand with a pronated (palms forward) grip that is slightly less than shoulder width. The dumbbells should be resting on top of your thighs. Your arms should be extended with a slight bend at the elbows and your back should be straight. This will be your starting position.",
-      "Use your side shoulders to lift the dumbbells as you exhale. The dumbbells should be close to the body as you move it up and the elbows should drive the motion. Continue to lift them until they nearly touch your chin. Tip: Your elbows should drive the motion. As you lift the dumbbells, your elbows should always be higher than your forearms. Also, keep your torso stationary and pause for a second at the top of the movement.",
-      "Lower the dumbbells back down slowly to the starting position. Inhale as you perform this portion of the movement.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Grasp a dumbbell in each hand with a pronated (palms forward) grip that is slightly less than shoulder width. The dumbbells should be resting on top of your thighs. Your arms should be extended with a slight bend at the elbows and your back should be straight. This will be your starting position. Use your side shoulders to lift the dumbbells as you exhale. The dumbbells should be close to the body as you move it up and the elbows should drive the motion. Continue to lift them until they nearly touch your chin. Tip: Your elbows should drive the motion. As you lift the dumbbells, your elbows should always be higher than your forearms. Also, keep your torso stationary and pause for a second at the top of the movement. Lower the dumbbells back down slowly to the starting position. Inhale as you perform this portion of the movement. Repeat for the recommended amount of repetitions.",
     "difficulty": "beginner",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
@@ -7991,35 +6590,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_standing_inner_biceps_curl",
-    "name": "Standing Inner-Biceps Curl",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "biceps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Stand up with a dumbbell in each hand being held at arms length. The elbows should be close to the torso. Your legs should be at about shoulder's width apart from each other.",
-      "Rotate the palms of the hands so that they are facing inward in a neutral position. This will be your starting position.",
-      "While holding the upper arms stationary, curl the weights out while contracting the biceps as you breathe out. Your wrist should turn so that when the weights are fully elevated you have supinated grip (palms facing up).",
-      "Only the forearms should move. Continue the movement until your biceps are fully contracted and the dumbbells are at shoulder level. Tip: Keep the forearms aligned with your outer deltoids.",
-      "Hold the contracted position for a second as you squeeze the biceps.",
-      "Slowly begin to bring the dumbbells back to the starting position as your breathe in. Remember to rotate the wrists as you lower the weight in order to switch back to a neutral grip.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Stand up with a dumbbell in each hand being held at arms length. The elbows should be close to the torso. Your legs should be at about shoulder's width apart from each other. Rotate the palms of the hands so that they are facing inward in a neutral position. This will be your starting position. While holding the upper arms stationary, curl the weights out while contracting the biceps as you breathe out. Your wrist should turn so that when the weights are fully elevated you have supinated grip (palms facing up). Only the forearms should move. Continue the movement until your biceps are fully contracted and the dumbbells are at shoulder level. Tip: Keep the forearms aligned with your outer deltoids. Hold the contracted position for a second as you squeeze the biceps. Slowly begin to bring the dumbbells back to the starting position as your breathe in. Remember to rotate the wrists as you lower the weight in order to switch back to a neutral grip. Repeat for the recommended amount of repetitions.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
     "id": "fedb_standing_lateral_stretch",
     "name": "Standing Lateral Stretch",
     "pattern": "mobility",
@@ -8082,133 +6652,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     ],
     "description": "This drill is best done in sand or other soft landing surface. Ensure that you are able to measure distance. Stand in a partial squat stance with feet shoulder width apart. Utilizing a big arm swing and a countermovement of the legs, jump forward as far as you can. Attempt to land with your feet out in front you, reaching as far as possible with your legs. Measure the distance from your landing point to the starting point and track results.",
     "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_standing_one_arm_dumbbell_curl_over_incline_bench",
-    "name": "Standing One-Arm Dumbbell Curl Over Incline Bench",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "biceps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Stand on the back side of an incline bench as if you were going to be a spotter for someone. Have a dumbbell in one hand and rest it across the incline bench with a supinated (palms up) grip.",
-      "Position your non lifting hand at the corner or side of the incline bench. The chest should be pressed against the top part of the incline and your feet should be pressed against the floor at a wide stance. This is the starting position.",
-      "While holding the upper arm stationary, curl the dumbbell upward while contracting the biceps as you breathe out. Only the forearms should move. Continue the movement until your biceps are fully contracted and the dumbbell is at shoulder level. Hold the contracted position for a second.",
-      "Slowly begin to bring the dumbbells back to starting position as your breathe in.",
-      "Repeat for the recommended amount of repetitions.",
-      "Switch arms while performing this exercise."
-    ],
-    "description": "Stand on the back side of an incline bench as if you were going to be a spotter for someone. Have a dumbbell in one hand and rest it across the incline bench with a supinated (palms up) grip. Position your non lifting hand at the corner or side of the incline bench. The chest should be pressed against the top part of the incline and your feet should be pressed against the floor at a wide stance. This is the starting position. While holding the upper arm stationary, curl the dumbbell upward while contracting the biceps as you breathe out. Only the forearms should move. Continue the movement until your biceps are fully contracted and the dumbbell is at shoulder level. Hold the contracted position for a second. Slowly begin to bring the dumbbells back to starting position as your breathe in. Repeat for the recommended amount of repetitions. Switch arms while performing this exercise.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_standing_one_arm_dumbbell_triceps_extension",
-    "name": "Standing One-Arm Dumbbell Triceps Extension",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "triceps",
-        "role": "primary"
-      },
-      {
-        "group": "chest",
-        "role": "secondary"
-      },
-      {
-        "group": "shoulders",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "To begin, stand up with a dumbbell held in one hand. Your feet should be about shoulder width apart from each other. Now fully extend the arm with the dumbbell over your head. Tip: The small finger of your hand should be facing the ceiling and the palm of your hand should be facing forward. The dumbbell should be above your head.",
-      "This will be your starting position.",
-      "Keeping your upper arm close to your head (elbows in) and perpendicular to the floor, lower the resistance in a semicircular motion behind your head until your forearm touch your bicep. Tip: The upper arm should remain stationary and only the forearm should move. Breathe in as you perform this step.",
-      "Go back to the starting position by using the triceps to raise the dumbbell. Breathe out as you perform this step.",
-      "Repeat for the recommended amount of repetitions.",
-      "Switch arms and repeat the exercise."
-    ],
-    "description": "To begin, stand up with a dumbbell held in one hand. Your feet should be about shoulder width apart from each other. Now fully extend the arm with the dumbbell over your head. Tip: The small finger of your hand should be facing the ceiling and the palm of your hand should be facing forward. The dumbbell should be above your head. This will be your starting position. Keeping your upper arm close to your head (elbows in) and perpendicular to the floor, lower the resistance in a semicircular motion behind your head until your forearm touch your bicep. Tip: The upper arm should remain stationary and only the forearm should move. Breathe in as you perform this step. Go back to the starting position by using the triceps to raise the dumbbell. Breathe out as you perform this step. Repeat for the recommended amount of repetitions. Switch arms and repeat the exercise.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_standing_palm_in_one_arm_dumbbell_press",
-    "name": "Standing Palm-In One-Arm Dumbbell Press",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      },
-      {
-        "group": "triceps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Start by having a dumbbell in one hand with your arm fully extended to the side using a neutral grip. Use your other arm to hold on to an incline bench to keep your balance.",
-      "Your feet should be shoulder width apart from each other. Now slowly lift the dumbbell up until you create a 90 degree angle with your arm. Note: Your forearm should be perpendicular to the floor. Continue to maintain a neutral grip throughout the entire exercise.",
-      "Slowly lift the dumbbell up until your arm is fully extended. This the starting position.",
-      "While inhaling lower the weight down until your arm is at a 90 degree angle again.",
-      "Feel the contraction for a second and then lift the weight back up towards the starting position while exhaling. Remember to hold on to the incline bench and keep your feet positioned to keep balance during the exercise.",
-      "Repeat for the recommended amount of repetitions.",
-      "Switch arms and repeat the exercise."
-    ],
-    "description": "Start by having a dumbbell in one hand with your arm fully extended to the side using a neutral grip. Use your other arm to hold on to an incline bench to keep your balance. Your feet should be shoulder width apart from each other. Now slowly lift the dumbbell up until you create a 90 degree angle with your arm. Note: Your forearm should be perpendicular to the floor. Continue to maintain a neutral grip throughout the entire exercise. Slowly lift the dumbbell up until your arm is fully extended. This the starting position. While inhaling lower the weight down until your arm is at a 90 degree angle again. Feel the contraction for a second and then lift the weight back up towards the starting position while exhaling. Remember to hold on to the incline bench and keep your feet positioned to keep balance during the exercise. Repeat for the recommended amount of repetitions. Switch arms and repeat the exercise.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_standing_palms_in_dumbbell_press",
-    "name": "Standing Palms-In Dumbbell Press",
-    "pattern": "vertical_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "shoulders",
-        "role": "primary"
-      },
-      {
-        "group": "triceps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Start by having a dumbbell in each hand with your arm fully extended to the side using a neutral grip. Your feet should be shoulder width apart from each other. Now slowly lift the dumbbells up until you create a 90 degree angle with your arms. Note: Your forearms should be perpendicular to the floor. This the starting position.",
-      "Continue to maintain a neutral grip throughout the entire exercise. Slowly lift the dumbbells up until your arms are fully extended.",
-      "While inhaling lower the weights down until your arm is at a 90 degree angle again.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Start by having a dumbbell in each hand with your arm fully extended to the side using a neutral grip. Your feet should be shoulder width apart from each other. Now slowly lift the dumbbells up until you create a 90 degree angle with your arms. Note: Your forearms should be perpendicular to the floor. This the starting position. Continue to maintain a neutral grip throughout the entire exercise. Slowly lift the dumbbells up until your arms are fully extended. While inhaling lower the weights down until your arm is at a 90 degree angle again. Repeat for the recommended amount of repetitions.",
-    "difficulty": "intermediate",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
@@ -8321,41 +6764,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_stiff_legged_dumbbell_deadlift",
-    "name": "Stiff-Legged Dumbbell Deadlift",
-    "pattern": "hinge",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "hamstrings",
-        "role": "primary"
-      },
-      {
-        "group": "glutes",
-        "role": "secondary"
-      },
-      {
-        "group": "lower back",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "legs"
-    ],
-    "cues": [
-      "Grasp a couple of dumbbells holding them by your side at arm's length.",
-      "Stand with your torso straight and your legs spaced using a shoulder width or narrower stance. The knees should be slightly bent. This is your starting position.",
-      "Keeping the knees stationary, lower the dumbbells to over the top of your feet by bending at the waist while keeping your back straight. Keep moving forward as if you were going to pick something from the floor until you feel a stretch on the hamstrings. Exhale as you perform this movement",
-      "Start bringing your torso up straight again by extending your hips and waist until you are back at the starting position. Inhale as you perform this movement.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Grasp a couple of dumbbells holding them by your side at arm's length. Stand with your torso straight and your legs spaced using a shoulder width or narrower stance. The knees should be slightly bent. This is your starting position. Keeping the knees stationary, lower the dumbbells to over the top of your feet by bending at the waist while keeping your back straight. Keep moving forward as if you were going to pick something from the floor until you feel a stretch on the hamstrings. Exhale as you perform this movement Start bringing your torso up straight again by extending your hips and waist until you are back at the starting position. Inhale as you perform this movement. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
     "id": "fedb_stomach_vacuum",
     "name": "Stomach Vacuum",
     "pattern": "core_anti_extension",
@@ -8380,46 +6788,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     ],
     "description": "To begin, stand straight with your feet shoulder width apart from each other. Place your hands on your hips. This is the starting position. Now slowly inhale as much air as possible and then start to exhale as much as possible while bringing your stomach in as much as possible and hold this position. Try to visualize your navel touching your backbone. One isometric contraction is around 20 seconds. During the 20 second hold, try to breathe normally. Then inhale and bring your stomach back to the starting position. Once you have practiced this exercise, try to perform this exercise for longer than 20 seconds. Tip: You can work your way up to 40-60 seconds. Repeat for the recommended amount of sets.",
     "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_straight_arm_dumbbell_pullover",
-    "name": "Straight-Arm Dumbbell Pullover",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "chest",
-        "role": "primary"
-      },
-      {
-        "group": "lats",
-        "role": "secondary"
-      },
-      {
-        "group": "shoulders",
-        "role": "secondary"
-      },
-      {
-        "group": "triceps",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Place a dumbbell standing up on a flat bench.",
-      "Ensuring that the dumbbell stays securely placed at the top of the bench, lie perpendicular to the bench (torso across it as in forming a cross) with only your shoulders lying on the surface. Hips should be below the bench and legs bent with feet firmly on the floor. The head will be off the bench as well.",
-      "Grasp the dumbbell with both hands and hold it straight over your chest at arms length. Both palms should be pressing against the underside one of the sides of the dumbbell. This will be your starting position.\nCaution: Always ensure that the dumbbell used for this exercise is secure. Using a dumbbell with loose plates can result in the dumbbell falling apart and falling on your face.",
-      "While keeping your arms straight, lower the weight slowly in an arc behind your head while breathing in until you feel a stretch on the chest.",
-      "At that point, bring the dumbbell back to the starting position using the arc through which the weight was lowered and exhale as you perform this movement.",
-      "Hold the weight on the initial position for a second and repeat the motion for the prescribed number of repetitions."
-    ],
-    "description": "Place a dumbbell standing up on a flat bench. Ensuring that the dumbbell stays securely placed at the top of the bench, lie perpendicular to the bench (torso across it as in forming a cross) with only your shoulders lying on the surface. Hips should be below the bench and legs bent with feet firmly on the floor. The head will be off the bench as well. Grasp the dumbbell with both hands and hold it straight over your chest at arms length. Both palms should be pressing against the underside one of the sides of the dumbbell. This will be your starting position.\nCaution: Always ensure that the dumbbell used for this exercise is secure. Using a dumbbell with loose plates can result in the dumbbell falling apart and falling on your face. While keeping your arms straight, lower the weight slowly in an arc behind your head while breathing in until you feel a stretch on the chest. At that point, bring the dumbbell back to the starting position using the arc through which the weight was lowered and exhale as you perform this movement. Hold the weight on the initial position for a second and repeat the motion for the prescribed number of repetitions.",
-    "difficulty": "intermediate",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
@@ -8601,41 +6969,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_tate_press",
-    "name": "Tate Press",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "triceps",
-        "role": "primary"
-      },
-      {
-        "group": "chest",
-        "role": "secondary"
-      },
-      {
-        "group": "shoulders",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Lie down on a flat bench with a dumbbell in each hand on top of your thighs. The palms of your hand will be facing each other.",
-      "By using your thighs to help you get the dumbbells up, clean the dumbbells one arm at a time so that you can hold them in front of you at shoulder width. Note: when holding the dumbbells in front of you, make sure your arms are wider than shoulder width apart from each other using a pronated (palms forward) grip. Allow your elbows to point out. This is your starting position.",
-      "Keeping the upper arms stationary, slowly move the dumbbells in and down in a semi circular motion until they touch the upper chest while inhaling. Keep full control of the dumbbells at all times and do not move the upper arms nor rest the dumbbells on the chest.",
-      "As you breathe out, move the dumbbells up using your triceps and the same semi-circular motion but in reverse. Attempt to keep the dumbbells together as they move up. Lock your arms in the contracted position, hold for a second and then start coming down again slowly again. Tip: It should take at least twice as long to go down than to come up.",
-      "Repeat the movement for the prescribed amount of repetitions of your training program."
-    ],
-    "description": "Lie down on a flat bench with a dumbbell in each hand on top of your thighs. The palms of your hand will be facing each other. By using your thighs to help you get the dumbbells up, clean the dumbbells one arm at a time so that you can hold them in front of you at shoulder width. Note: when holding the dumbbells in front of you, make sure your arms are wider than shoulder width apart from each other using a pronated (palms forward) grip. Allow your elbows to point out. This is your starting position. Keeping the upper arms stationary, slowly move the dumbbells in and down in a semi circular motion until they touch the upper chest while inhaling. Keep full control of the dumbbells at all times and do not move the upper arms nor rest the dumbbells on the chest. As you breathe out, move the dumbbells up using your triceps and the same semi-circular motion but in reverse. Attempt to keep the dumbbells together as they move up. Lock your arms in the contracted position, hold for a second and then start coming down again slowly again. Tip: It should take at least twice as long to go down than to come up. Repeat the movement for the prescribed amount of repetitions of your training program.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
     "id": "fedb_the_straddle",
     "name": "The Straddle",
     "pattern": "mobility",
@@ -8693,32 +7026,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
       "Repeat for the recommended amount of repetitions."
     ],
     "description": "To begin, lie down on the floor or an exercise mat with your back pressed against the floor. Your arms should be lying across your sides with the palms facing down. Your legs should be touching each other. Slowly elevate your legs up in the air until they are almost perpendicular to the floor with a slight bend at the knees. Your feet should be parallel to the floor. Move your arms so that they are fully extended at a 45 degree angle from the floor. This is the starting position. While keeping your lower back pressed against the floor, slowly lift your torso and use your hands to try and touch your toes. Remember to exhale while perform this part of the exercise. Slowly begin to lower your torso and arms back down to the starting position while inhaling. Remember to keep your arms straight out pointing towards your toes. Repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_tricep_dumbbell_kickback",
-    "name": "Tricep Dumbbell Kickback",
-    "pattern": "horizontal_push",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "triceps",
-        "role": "primary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "push"
-    ],
-    "cues": [
-      "Start with a dumbbell in each hand and your palms facing your torso. Keep your back straight with a slight bend in the knees and bend forward at the waist. Your torso should be almost parallel to the floor. Make sure to keep your head up. Your upper arms should be close to your torso and parallel to the floor. Your forearms should be pointed towards the floor as you hold the weights. There should be a 90-degree angle formed between your forearm and upper arm. This is your starting position.",
-      "Now, while keeping your upper arms stationary, exhale and use your triceps to lift the weights until the arm is fully extended. Focus on moving the forearm.",
-      "After a brief pause at the top contraction, inhale and slowly lower the dumbbells back down to the starting position.",
-      "Repeat the movement for the prescribed amount of repetitions."
-    ],
-    "description": "Start with a dumbbell in each hand and your palms facing your torso. Keep your back straight with a slight bend in the knees and bend forward at the waist. Your torso should be almost parallel to the floor. Make sure to keep your head up. Your upper arms should be close to your torso and parallel to the floor. Your forearms should be pointed towards the floor as you hold the weights. There should be a 90-degree angle formed between your forearm and upper arm. This is your starting position. Now, while keeping your upper arms stationary, exhale and use your triceps to lift the weights until the arm is fully extended. Focus on moving the forearm. After a brief pause at the top contraction, inhale and slowly lower the dumbbells back down to the starting position. Repeat the movement for the prescribed amount of repetitions.",
     "difficulty": "beginner",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
@@ -8805,14 +7112,130 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_two_arm_dumbbell_preacher_curl",
-    "name": "Two-Arm Dumbbell Preacher Curl",
+    "id": "fedb_two_arm_kettlebell_clean",
+    "name": "Two-Arm Kettlebell Clean",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "lower back",
+        "role": "secondary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Place two kettlebells between your feet. To get in the starting position, push your butt back and look straight ahead.",
+      "Clean the kettlebells to your shoulders by extending through the legs and hips as you raise the kettlebells towards your shoulders. Rotate your wrists as you do so.",
+      "Lower the kettlebells back to the starting position and repeat."
+    ],
+    "description": "Place two kettlebells between your feet. To get in the starting position, push your butt back and look straight ahead. Clean the kettlebells to your shoulders by extending through the legs and hips as you raise the kettlebells towards your shoulders. Rotate your wrists as you do so. Lower the kettlebells back to the starting position and repeat.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_two_arm_kettlebell_jerk",
+    "name": "Two-Arm Kettlebell Jerk",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Clean two kettlebells to your shoulders. Clean the kettlebells to your shoulders by extending through the legs and hips as you swing the kettlebells towards your shoulders. Rotate your wrists as you do so, so that the palms face forward. Squat down a few inches and reverse the motion rapidly driving both kettlebells overhead. Immediately after the initial push, squat down again and get under the kettlebells. Once the kettlebells are locked out, stand upright to complete the exercise."
+    ],
+    "description": "Clean two kettlebells to your shoulders. Clean the kettlebells to your shoulders by extending through the legs and hips as you swing the kettlebells towards your shoulders. Rotate your wrists as you do so, so that the palms face forward. Squat down a few inches and reverse the motion rapidly driving both kettlebells overhead. Immediately after the initial push, squat down again and get under the kettlebells. Once the kettlebells are locked out, stand upright to complete the exercise.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_two_arm_kettlebell_military_press",
+    "name": "Two-Arm Kettlebell Military Press",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Clean two kettlebells to your shoulders. Clean the kettlebells to your shoulders by extending through the legs and hips as you swing the kettlebells towards your shoulders. Rotate your wrists as you do so, so that the palms face forward.",
+      "Press the kettlebells up and out. As the kettlebells pass your head, lean into the weights so that the kettlebells are racked behind your head. Make sure to contract your lats, butt, and stomach for added stability."
+    ],
+    "description": "Clean two kettlebells to your shoulders. Clean the kettlebells to your shoulders by extending through the legs and hips as you swing the kettlebells towards your shoulders. Rotate your wrists as you do so, so that the palms face forward. Press the kettlebells up and out. As the kettlebells pass your head, lean into the weights so that the kettlebells are racked behind your head. Make sure to contract your lats, butt, and stomach for added stability.",
+    "difficulty": "intermediate",
+    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
+  },
+  {
+    "id": "fedb_two_arm_kettlebell_row",
+    "name": "Two-Arm Kettlebell Row",
     "pattern": "horizontal_pull",
     "type": "dynamic",
     "muscles": [
       {
-        "group": "biceps",
+        "group": "middle back",
         "role": "primary"
+      },
+      {
+        "group": "biceps",
+        "role": "secondary"
+      },
+      {
+        "group": "lats",
+        "role": "secondary"
       }
     ],
     "joints": [],
@@ -8821,13 +7244,11 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
       "pull"
     ],
     "cues": [
-      "Grab a dumbbell with each arm and place the upper arms on top of the preacher bench or the incline bench. The dumbbell should be held at shoulder length. This will be your starting position.",
-      "As you breathe in, slowly lower the dumbbells until your upper arm is extended and the biceps is fully stretched.",
-      "As you exhale, use the biceps to curl the weights up until your biceps is fully contracted and the dumbbells are at shoulder height.",
-      "Squeeze the biceps hard for a second at the contracted position and repeat for the recommended amount of repetitions."
+      "Place two kettlebells in front of your feet. Bend your knees slightly and then push your butt out as much as possible as you bend over to get in the starting position.",
+      "Grab both kettlebells and pull them to your stomach, retracting your shoulder blades and flexing the elbows. Keep your back straight. Lower and repeat."
     ],
-    "description": "Grab a dumbbell with each arm and place the upper arms on top of the preacher bench or the incline bench. The dumbbell should be held at shoulder length. This will be your starting position. As you breathe in, slowly lower the dumbbells until your upper arm is extended and the biceps is fully stretched. As you exhale, use the biceps to curl the weights up until your biceps is fully contracted and the dumbbells are at shoulder height. Squeeze the biceps hard for a second at the contracted position and repeat for the recommended amount of repetitions.",
-    "difficulty": "beginner",
+    "description": "Place two kettlebells in front of your feet. Bend your knees slightly and then push your butt out as much as possible as you bend over to get in the starting position. Grab both kettlebells and pull them to your stomach, retracting your shoulder blades and flexing the elbows. Keep your back straight. Lower and repeat.",
+    "difficulty": "intermediate",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
@@ -8919,45 +7340,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   },
   {
-    "id": "fedb_vertical_swing",
-    "name": "Vertical Swing",
-    "pattern": "conditioning",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "hamstrings",
-        "role": "primary"
-      },
-      {
-        "group": "glutes",
-        "role": "secondary"
-      },
-      {
-        "group": "quadriceps",
-        "role": "secondary"
-      },
-      {
-        "group": "shoulders",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "general",
-      "legs"
-    ],
-    "cues": [
-      "Allow the dumbbell to hang at arms length between your legs, holding it with both hands. Keep your back straight and your head up.",
-      "Swing the dumbbell between your legs, flexing at the hips and bending the knees slightly.",
-      "Powerfully reverse the motion by extending at the hips, knees, and ankles to propel yourself upward, swinging the dumbell over your head.",
-      "As you land, absorb the impact through your legs and draw the dumbbell to your torso before the next repetition."
-    ],
-    "description": "Allow the dumbbell to hang at arms length between your legs, holding it with both hands. Keep your back straight and your head up. Swing the dumbbell between your legs, flexing at the hips and bending the knees slightly. Powerfully reverse the motion by extending at the hips, knees, and ankles to propel yourself upward, swinging the dumbell over your head. As you land, absorb the impact through your legs and draw the dumbbell to your torso before the next repetition.",
-    "difficulty": "beginner",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
     "id": "fedb_wind_sprints",
     "name": "Wind Sprints",
     "pattern": "core_compression",
@@ -9018,72 +7400,6 @@ export const FEDB_CATALOGUE: SeedExercise[] = [
       "Return to the starting position, and repeat with the opposite leg. Continue to alternate for 10-20 repetitions."
     ],
     "description": "Lie on your back with your arms extended out to the sides and your legs straight. This will be your starting position. Lift one leg and quickly cross it over your body, attempting to touch the ground near the opposite hand. Return to the starting position, and repeat with the opposite leg. Continue to alternate for 10-20 repetitions.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_zottman_curl",
-    "name": "Zottman Curl",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "biceps",
-        "role": "primary"
-      },
-      {
-        "group": "forearms",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Stand up with your torso upright and a dumbbell in each hand being held at arms length. The elbows should be close to the torso.",
-      "Make sure the palms of the hands are facing each other. This will be your starting position.",
-      "While holding the upper arm stationary, curl the weights while contracting the biceps as you breathe out. Only the forearms should move. Your wrist should rotate so that you have a supinated (palms up) grip. Continue the movement until your biceps are fully contracted and the dumbbells are at shoulder level.",
-      "Hold the contracted position for a second as you squeeze the biceps.",
-      "Now during the contracted position, rotate your wrist until you now have a pronated (palms facing down) grip with the thumb at a higher position than the pinky.",
-      "Slowly begin to bring the dumbbells back down using the pronated grip.",
-      "As the dumbbells close your thighs, start rotating the wrist so that you go back to a neutral (palms facing your body) grip.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Stand up with your torso upright and a dumbbell in each hand being held at arms length. The elbows should be close to the torso. Make sure the palms of the hands are facing each other. This will be your starting position. While holding the upper arm stationary, curl the weights while contracting the biceps as you breathe out. Only the forearms should move. Your wrist should rotate so that you have a supinated (palms up) grip. Continue the movement until your biceps are fully contracted and the dumbbells are at shoulder level. Hold the contracted position for a second as you squeeze the biceps. Now during the contracted position, rotate your wrist until you now have a pronated (palms facing down) grip with the thumb at a higher position than the pinky. Slowly begin to bring the dumbbells back down using the pronated grip. As the dumbbells close your thighs, start rotating the wrist so that you go back to a neutral (palms facing your body) grip. Repeat for the recommended amount of repetitions.",
-    "difficulty": "intermediate",
-    "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
-  },
-  {
-    "id": "fedb_zottman_preacher_curl",
-    "name": "Zottman Preacher Curl",
-    "pattern": "horizontal_pull",
-    "type": "dynamic",
-    "muscles": [
-      {
-        "group": "biceps",
-        "role": "primary"
-      },
-      {
-        "group": "forearms",
-        "role": "secondary"
-      }
-    ],
-    "joints": [],
-    "role": "work",
-    "regions": [
-      "pull"
-    ],
-    "cues": [
-      "Grab a dumbbell in each hand and place your upper arms on top of the preacher bench or the incline bench. The dumbbells should be held at shoulder height and the elbows should be flexed. Hold the dumbbells with the palms of your hands facing down. This will be your starting position.",
-      "As you breathe in, slowly lower the dumbbells keeping the palms down until your upper arm is extended and your biceps are fully stretched.",
-      "Now rotate your wrists once you are at the bottom of the movement so that the palms of the hands are facing up.",
-      "As you exhale, use your biceps to curl the weights up until they are fully contracted and the dumbbells are at shoulder height. Again, remember that to ensure full contraction you need to bring that small finger higher than the thumb.",
-      "Squeeze the biceps hard for a second at the contracted position and rotate your wrists so that the palms are facing down again.",
-      "Repeat for the recommended amount of repetitions."
-    ],
-    "description": "Grab a dumbbell in each hand and place your upper arms on top of the preacher bench or the incline bench. The dumbbells should be held at shoulder height and the elbows should be flexed. Hold the dumbbells with the palms of your hands facing down. This will be your starting position. As you breathe in, slowly lower the dumbbells keeping the palms down until your upper arm is extended and your biceps are fully stretched. Now rotate your wrists once you are at the bottom of the movement so that the palms of the hands are facing up. As you exhale, use your biceps to curl the weights up until they are fully contracted and the dumbbells are at shoulder height. Again, remember that to ensure full contraction you need to bring that small finger higher than the thumb. Squeeze the biceps hard for a second at the contracted position and rotate your wrists so that the palms are facing down again. Repeat for the recommended amount of repetitions.",
     "difficulty": "intermediate",
     "attribution": "yuhonas/free-exercise-db (Unlicense, public domain), text only"
   }

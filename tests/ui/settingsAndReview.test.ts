@@ -98,7 +98,8 @@ describe("settings tabs", () => {
   it("names equipment in words, and has no Save button because changes save at once", () => {
     const gear = html("gear");
     expect(gear).toContain(EQUIPMENT_LABEL.bar);
-    expect(gear).toContain("Dumbbell or kettlebell");
+    expect(gear).toContain("Dumbbell");
+    expect(gear).toContain("Kettlebell");
     expect(gear).not.toContain("data-save");
   });
 

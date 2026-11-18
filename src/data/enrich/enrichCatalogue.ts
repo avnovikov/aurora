@@ -22,7 +22,7 @@ const DEFAULT_DIFFICULTY: Partial<Record<Pattern, Difficulty>> = {
 const CONDITIONING_WITH_STANDARDS = new Set(["plyo", "calf"]);
 
 /** Optional gym kit — not assumed calisthenics gear; keep off skill ladders (#168). */
-const GEAR_OFF_LADDER = new Set(["band", "dumbbell"]);
+const GEAR_OFF_LADDER = new Set(["band", "dumbbell", "kettlebell"]);
 
 function difficultyOf(exercise: SeedExercise, placement: LadderPlacement | undefined): Difficulty {
   if (placement) {

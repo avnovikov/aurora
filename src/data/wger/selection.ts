@@ -13,12 +13,12 @@ const ALLOWED_EQUIPMENT = new Set([
   "Incline bench",
 ]);
 
-/** wger equipment name for dumbbells. */
-export const DUMBBELL_EQUIPMENT = "Dumbbell";
+/** wger equipment name for kettlebells. */
+export const KETTLEBELL_EQUIPMENT = "Kettlebell";
 
-/** Pure dumbbell: DB plus calisthenics kit except pull-up bar (no bar/kettlebell mixes). */
-const DUMBBELL_COMPANIONS = new Set([
-  DUMBBELL_EQUIPMENT,
+/** Pure kettlebell: KB plus always-available companions (no dumbbell/barbell mixes). */
+const KETTLEBELL_COMPANIONS = new Set([
+  KETTLEBELL_EQUIPMENT,
   ...[...ALLOWED_EQUIPMENT].filter((name) => name !== "Pull-up bar"),
 ]);
 
@@ -84,8 +84,6 @@ export const WGER_DENY: readonly string[] = [
   "Walking",
   "Wall Drills",
   "punches",
-  // #168: wger tags this Dumbbell but the name is a barbell clean & press.
-  "Barbell Clean and press",
 ];
 
 /** Same movement as an existing library entry (or an earlier wger row). */
@@ -95,13 +93,8 @@ export const WGER_SAME_AS_EXISTING: Readonly<Record<string, string>> = {
   "Arm Raises (T/Y/I)": "Prone Y-T-W raise",
   "Australian pull-ups": "Inverted Row",
   "Bench Dips On Floor HD": "Floor dips",
-  // #168: pure-dumbbell twins already imported from free-exercise-db (keep micro-variants).
-  "Benchpress Dumbbells": "Dumbbell Bench Press",
-  "Decline Bench Press Dumbbell": "Decline Dumbbell Bench Press",
   Dips: "Parallel Bar Dip",
   "Double Leg Calf Raise": "Calf raise",
-  "Dumbbell Concentration Curl": "Concentration Curls",
-  "Dumbbell Incline Curl": "Incline Dumbbell Curl",
   "Explosive Push-Ups": "Plyo Push-up",
   "Front Lever": "Full Front Lever",
   "Front Plank": "Forearm Plank",
@@ -115,7 +108,6 @@ export const WGER_SAME_AS_EXISTING: Readonly<Record<string, string>> = {
   "Hip Bridge": "Glute Bridge",
   "Hip Raise, Lying": "Glute Bridge",
   "Hollow Hold": "Hollow Body Hold",
-  "Incline Dumbbell Row": "Dumbbell Incline Row",
   "Knee Raises": "Hanging Knee Raise",
   "Leg Raises, Lying": "Lying Leg Raise",
   "Leg Swings (Front–Back)": "Leg swings",
@@ -148,11 +140,11 @@ export const WGER_SAME_AS_EXISTING: Readonly<Record<string, string>> = {
 
 const MIN_DESCRIPTION_CHARS = 20;
 
-export function isWgerPureDumbbell(equipment: readonly string[]): boolean {
-  if (!equipment.includes(DUMBBELL_EQUIPMENT)) {
+export function isWgerPureKettlebell(equipment: readonly string[]): boolean {
+  if (!equipment.includes(KETTLEBELL_EQUIPMENT)) {
     return false;
   }
-  return equipment.every((item) => DUMBBELL_COMPANIONS.has(item));
+  return equipment.every((item) => KETTLEBELL_COMPANIONS.has(item));
 }
 
 export function isWgerCandidate(record: WgerExerciseRecord): boolean {
@@ -168,7 +160,7 @@ export function isWgerCandidate(record: WgerExerciseRecord): boolean {
   if (record.equipment.length === 1 && record.equipment[0] === BAND_EQUIPMENT) {
     return WGER_ALLOW_BAND.includes(record.name);
   }
-  if (isWgerPureDumbbell(record.equipment)) {
+  if (isWgerPureKettlebell(record.equipment)) {
     return true;
   }
   return record.equipment.every((item) => ALLOWED_EQUIPMENT.has(item));
