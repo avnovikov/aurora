@@ -8,3 +8,4 @@ SECURITY.md          @avnovikov
 package.json         @avnovikov
 package-lock.json    @avnovikov
 android/app/build.gradle @avnovikov
+docs/design/DESIGN.md    @avnovikov

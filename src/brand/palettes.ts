@@ -1,5 +1,5 @@
 /**
- * The six dawn palettes. Values are copied from `.desk/DESIGN.md` (front matter,
+ * The six dawn palettes. Values are copied from `docs/design/DESIGN.md` (front matter,
  * `palettes:`) and are already contrast-checked; change them there first.
  * Heart-rate band colours live here too: they are chosen per palette so the
  * training pulse stays readable on that palette's surface.
