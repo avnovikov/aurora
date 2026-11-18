@@ -6,10 +6,8 @@ import type { DoodleSpec, Point, Pose, Prop } from "./rig";
  * curated steps. Floor at y = 0, up is negative, facing +x: a plank has the
  * head at +x, lying face down has the head at +x.
  *
- * Left out: the cross-body mountain climber (ntc_cross_body_climber). Its
- * defining motion, the knee crossing under the body to the opposite elbow,
- * happens across the body and cannot be told apart from a plain mountain
- * climber in a side or front view.
+ * The cross-body mountain climber (ntc_cross_body_climber) is drawn in batch
+ * AC, side view only: its knee crossing under the body is not visible there.
  */
 
 /** Point `length` from `from` at `degrees` (0 = +x, 90 = down, -90 = up). */

@@ -297,7 +297,19 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "hf_77": "/doodles/doodle-hindu-squat.svg",
   "hf_164": "/doodles/doodle-middle-split.svg",
   "hf_160": "/doodles/doodle-frog-stretch.svg",
-  "hf_6": "/doodles/doodle-archer-push-up.svg"
+  "hf_6": "/doodles/doodle-archer-push-up.svg",
+  "fedb_incline_push_up_medium": "/doodles/doodle-incline-push-up-medium.svg",
+  "fedb_incline_push_up_wide": "/doodles/doodle-incline-push-up-wide.svg",
+  "wger_1716": "/doodles/doodle-incline-shoulder-press-up.svg",
+  "wger_1774": "/doodles/doodle-chair-dips.svg",
+  "wger_197": "/doodles/doodle-dips-between-two-benches.svg",
+  "hf_113": "/doodles/doodle-ab-wheel-rollout.svg",
+  "wger_1573": "/doodles/doodle-ab-wheel.svg",
+  "wger_1909": "/doodles/doodle-leg-wheel.svg",
+  "ntc_cross_body_climber": "/doodles/doodle-cross-body-mountain-climber.svg",
+  "fedb_spider_crawl": "/doodles/doodle-spider-crawl.svg",
+  "wger_57": "/doodles/doodle-bear-walk-2.svg",
+  "fedb_groiners": "/doodles/doodle-groiners.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
