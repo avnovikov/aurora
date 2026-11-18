@@ -198,14 +198,14 @@ function clearHead(neck: Point, spine: number, shoulder: Point): Point {
 }
 
 /** Shoulder held under the bar while the body turns around it (skin the cat, tuck lever). */
-const CAT_SHOULDER: Point = [0, -296];
+export const CAT_SHOULDER: Point = [0, -296];
 
 /**
  * Tucked body turned around the shoulder: `theta` is the shoulder→pelvis
  * direction (90 hanging, 0 hips forward face up, -90 inverted, ±180 face down
  * behind). Knees stay tucked to the chest.
  */
-function tuckedAround(
+export function tuckedAround(
   theta: number,
   shoulder: Point = CAT_SHOULDER,
   legs: "tuck" | number = "tuck",
