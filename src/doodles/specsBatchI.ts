@@ -78,7 +78,7 @@ function lockedShoulderY(foot: Point, hand: Point): number {
 const PLANK_TOP = lockedShoulderY(PLANK_FOOT, PLANK_HAND);
 
 /** High plank (`shoulderY` = PLANK_TOP) or a push-up lowered to `shoulderY`. */
-function plank(shoulderY: number = PLANK_TOP): Pose {
+export function plank(shoulderY: number = PLANK_TOP): Pose {
   const { pelvis, chest } = straightBody(PLANK_FOOT, shoulderY);
   return {
     pelvis,
@@ -92,7 +92,7 @@ function plank(shoulderY: number = PLANK_TOP): Pose {
 
 // ---------------------------------------------------------------- burpee / squat thrust
 
-function stand(): Pose {
+export function stand(): Pose {
   return {
     pelvis: [0, -172],
     chest: [0, -252],
@@ -104,7 +104,7 @@ function stand(): Pose {
 }
 
 /** Deep squat with the hands flat on the floor in front of the feet (spine solved from the hands). */
-function squatHandsDown(): Pose {
+export function squatHandsDown(): Pose {
   const pelvis: Point = [-52, -86];
   const ankle: Point = [-8, 0];
   return {

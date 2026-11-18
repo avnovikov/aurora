@@ -3654,7 +3654,7 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
     "id": "hf_148",
     "summary": "A swing of the legs up and over a bar to finish in a support, training lats, biceps, and core.",
     "steps": [
-      "Hang from a low bar with an overhand grip.",
+      "Hang from a bar with an overhand grip.",
       "Pull your chest toward the bar while driving your legs up.",
       "Bring your hips to the bar and rotate your legs over it.",
       "Finish in a front support on top with arms straight.",
