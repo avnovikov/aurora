@@ -1,11 +1,12 @@
 name: Security & Compliance Scans
 # Parity with HotspotTriage: SAST + deps + secrets. Aurora stack = JS/TS + Java (Capacitor).
 
+# PR gate: main / mvp / release only (branch rulesets). Push to dev is informational.
 on:
   push:
-    branches: [main, mvp, dev]
+    branches: [main, mvp, dev, "release/**"]
   pull_request:
-    branches: [main, mvp, dev]
+    branches: [main, mvp, "release/**"]
   schedule:
     - cron: "0 2 * * 1" # Weekly Monday 2AM UTC
 
