@@ -53,6 +53,50 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1966 (CC-BY-SA-4.0, amwang4)"
   },
   {
+    "id": "wger_1115",
+    "name": "3D lunge warmup",
+    "pattern": "squat",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "As a warmup, use light dumbbells, one in each hand. Lunge in alternating directions, forward, sideways, backwards and 45 degree angles."
+    ],
+    "description": "As a warmup, use light dumbbells, one in each hand. Lunge in alternating directions, forward, sideways, backwards and 45 degree angles.",
+    "attribution": "wger.de exercise 1115 (CC-BY-SA-4.0, philip)"
+  },
+  {
+    "id": "wger_1754",
+    "name": "45° lateral raises",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Dumbbell raise at an angle halfway between a front raise and a lateral raise."
+    ],
+    "description": "Dumbbell raise at an angle halfway between a front raise and a lateral raise.",
+    "attribution": "wger.de exercise 1754 (CC-BY-SA-4.0)"
+  },
+  {
     "id": "wger_1573",
     "name": "Ab wheel",
     "pattern": "core_anti_extension",
@@ -233,6 +277,127 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 2614 (CC-BY-SA-4.0)"
   },
   {
+    "id": "wger_1012",
+    "name": "Alternating bicep curls",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Bend one arm at the elbow, bringing the dumbbell up to your shoulder. Your upper arm should remain motionless during this movement.",
+      "Bring the dumbbell back down until your arm is in its original relaxed position.",
+      "Repeat, switching arms."
+    ],
+    "description": "Bend one arm at the elbow, bringing the dumbbell up to your shoulder. Your upper arm should remain motionless during this movement. Bring the dumbbell back down until your arm is in its original relaxed position. Repeat, switching arms.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1012/8270fdb8-28f1-4eff-b410-af8642085b3f.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / Franpol",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1012 (CC-BY-SA-4.0)"
+  },
+  {
+    "id": "wger_1192",
+    "name": "Alternating Biceps Curls With Dumbbell",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Hold two dumbbells, the arms are streched, the hands are on your",
+      "side, the palms face inwards. Bend one arm at a time and bring the weight with a",
+      "fast movement up. At the same time, rotate your arms by 90 degrees at",
+      "the very beginning of the movement. At the highest point, rotate a",
+      "little the weights further outwards. Without a pause, bring the arm back down, slowly, and do the same with the other arm.",
+      "Don't allow your body to swing during the exercise, all work is done",
+      "by the biceps, which are the only mucles that should move (pay attention",
+      "to the elbows)."
+    ],
+    "description": "Hold two dumbbells, the arms are streched, the hands are on your side, the palms face inwards. Bend one arm at a time and bring the weight with a fast movement up. At the same time, rotate your arms by 90 degrees at the very beginning of the movement. At the highest point, rotate a little the weights further outwards. Without a pause, bring the arm back down, slowly, and do the same with the other arm. Don't allow your body to swing during the exercise, all work is done by the biceps, which are the only mucles that should move (pay attention to the elbows).",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1192/651a4535-8210-4dbd-8f06-61d95fdd9963.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / Franpol",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1192 (CC-BY-SA-4.0, Franpol)"
+  },
+  {
+    "id": "wger_1567",
+    "name": "Alternating dumbbell hammer curl",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Stand with your knees slightly bent and your back straight. Hold a dumbbell in each hand, using a neutral grip at your sides."
+    ],
+    "description": "Stand with your knees slightly bent and your back straight. Hold a dumbbell in each hand, using a neutral grip at your sides.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1567/0a8c155c-a48e-47e8-9df3-e39f025c6cad.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / Mariano_O",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1567 (CC-BY-SA-4.0, Mariano_O)"
+  },
+  {
+    "id": "wger_1501",
+    "name": "Alternative DB Gorilla rows",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "lats",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Slightly bent down and knees to mimic a gorilla position and pull/row up the DBs to the chest. DB stay straight (thumbs pointing up)"
+    ],
+    "description": "Slightly bent down and knees to mimic a gorilla position and pull/row up the DBs to the chest. DB stay straight (thumbs pointing up)",
+    "attribution": "wger.de exercise 1501 (CC-BY-SA-4.0, JohnPreston)"
+  },
+  {
     "id": "wger_1141",
     "name": "Arabesque",
     "pattern": "hinge",
@@ -328,6 +493,69 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "Relieves tension in the upper body, especially useful for people with office jobs or prolonged postures.",
     "attribution": "wger.de exercise 1590 (CC-BY-SA-4.0, MrAlfaRobot)"
+  },
+  {
+    "id": "wger_20",
+    "name": "Arnold Shoulder Press",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Sit on a bench with your back supported. Hold a pair of dumbbells in front of your shoulders, palms facing you and elbows in front of your body.",
+      "Press the dumbbells overhead while rotating your hands, so that your palms face forward at the top. Stop just before your elbows lock out.",
+      "Reverse the movement under control: lower the dumbbells and turn your palms back towards you until you are in the starting position again.",
+      "As shown here: https://www.youtube.com/watch?v=vj2w851ZHRM"
+    ],
+    "description": "Sit on a bench with your back supported. Hold a pair of dumbbells in front of your shoulders, palms facing you and elbows in front of your body. Press the dumbbells overhead while rotating your hands, so that your palms face forward at the top. Stop just before your elbows lock out. Reverse the movement under control: lower the dumbbells and turn your palms back towards you until you are in the starting position again. As shown here: https://www.youtube.com/watch?v=vj2w851ZHRM",
+    "attribution": "wger.de exercise 20 (CC-BY-SA-3.0, trzr23)"
+  },
+  {
+    "id": "wger_31",
+    "name": "Axe Hold",
+    "pattern": "horizontal_push",
+    "type": "isometric",
+    "muscles": [
+      {
+        "group": "triceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Hold a dumbbell in each hand and raise your straight arms out to the sides to shoulder height. Hold this position for as long as you can."
+    ],
+    "description": "Hold a dumbbell in each hand and raise your straight arms out to the sides to shoulder height. Hold this position for as long as you can.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/31/92f6451b-f89d-49d6-9531-8970ea420d97.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 31 (CC-BY-SA-3.0, GrosseHund)"
   },
   {
     "id": "wger_1742",
@@ -578,6 +806,54 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1877 (CC-BY-SA-4.0, hurr99)"
   },
   {
+    "id": "wger_1687",
+    "name": "Bear crawl pull through",
+    "pattern": "conditioning",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "primary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "general",
+      "legs"
+    ],
+    "cues": [
+      "Place a dumbbell at around hip level and assume a bear crawl position. Push the knees off the floor and hold.",
+      "With the opposite hand reach for the dumbbell and pull it to the other side. Place your hand back on the floor and repeat with your other hand."
+    ],
+    "description": "Place a dumbbell at around hip level and assume a bear crawl position. Push the knees off the floor and hold. With the opposite hand reach for the dumbbell and pull it to the other side. Place your hand back on the floor and repeat with your other hand.",
+    "attribution": "wger.de exercise 1687 (CC-BY-SA-4.0, meldun)"
+  },
+  {
     "id": "wger_57",
     "name": "Bear Walk 2",
     "pattern": "conditioning",
@@ -636,6 +912,138 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 57 (CC-BY-SA-4.0, nate303303)"
   },
   {
+    "id": "wger_79",
+    "name": "Bent High Pulls",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "traps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Bend over slightly while holding two dumbbells. Pull the dumbbells up to your chest, keeping your elbows as high as you can."
+    ],
+    "description": "Bend over slightly while holding two dumbbells. Pull the dumbbells up to your chest, keeping your elbows as high as you can.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/79/da58dfbf-748a-461b-891e-3d6bc9cc4be2.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 79 (CC-BY-SA-3.0, lakerbeezel)"
+  },
+  {
+    "id": "wger_81",
+    "name": "Bent Over Dumbbell Rows (Single Arm)",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "lats",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "With dumbbells in hand, bend at the hip until hands hang just below the knees (similar to straight-legged-deadlift starting position). Keep upper body angle constant while contracting your lats to pull you ellbows back pinching the shoulder blades at the top. Try not to stand up with every rep, check hands go below knees on every rep."
+    ],
+    "description": "With dumbbells in hand, bend at the hip until hands hang just below the knees (similar to straight-legged-deadlift starting position). Keep upper body angle constant while contracting your lats to pull you ellbows back pinching the shoulder blades at the top. Try not to stand up with every rep, check hands go below knees on every rep.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/81/a751a438-ae2d-4751-8d61-cef0e9292174.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / Franpol",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 81 (CC-BY-SA-4.0, sebk)"
+  },
+  {
+    "id": "wger_2669",
+    "name": "Bent Over Dumbbell Rows (Two Arms)",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "lats",
+        "role": "primary"
+      },
+      {
+        "group": "traps",
+        "role": "primary"
+      },
+      {
+        "group": "biceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Hold a dumbbell in each hand with a neutral or overhand grip.",
+      "Hinge at the hips, pushing your glutes back, until your torso is roughly 45–75 degrees to the floor. Keep a slight bend in your knees.",
+      "Let the dumbbells hang directly below your shoulders with arms fully extended.",
+      "Keep your back flat, chest up, and core braced — avoid rounding your spine.",
+      "Pull the dumbbells up toward your ribcage/hips, driving your elbows back and squeezing your shoulder blades together at the top.",
+      "Pause briefly at the top of the movement.",
+      "Lower the dumbbells back down under control to the starting position.",
+      "Repeat for the desired number of repetitions. Key Coaching Cues",
+      "Hinge from the hips, not the lower back",
+      "Keep the spine neutral throughout — no rounding",
+      "Lead with the elbows, not the hands",
+      "Avoid using momentum or jerking the weight up",
+      "Control the eccentric (lowering) phase rather than letting the weights drop"
+    ],
+    "description": "Hold a dumbbell in each hand with a neutral or overhand grip. Hinge at the hips, pushing your glutes back, until your torso is roughly 45–75 degrees to the floor. Keep a slight bend in your knees. Let the dumbbells hang directly below your shoulders with arms fully extended. Keep your back flat, chest up, and core braced — avoid rounding your spine. Pull the dumbbells up toward your ribcage/hips, driving your elbows back and squeezing your shoulder blades together at the top. Pause briefly at the top of the movement. Lower the dumbbells back down under control to the starting position. Repeat for the desired number of repetitions. Key Coaching Cues Hinge from the hips, not the lower back Keep the spine neutral throughout — no rounding Lead with the elbows, not the hands Avoid using momentum or jerking the weight up Control the eccentric (lowering) phase rather than letting the weights drop",
+    "attribution": "wger.de exercise 2669 (CC-BY-SA-4.0, karthikrrk)"
+  },
+  {
+    "id": "wger_2762",
+    "name": "Bent Over Row",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "lats",
+        "role": "primary"
+      },
+      {
+        "group": "biceps",
+        "role": "secondary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Standing with the torso bent forward from the hips at roughly 45 degrees, back straight. Hold two dumbbells with an overhand grip, arms hanging below the shoulders. Pull the dumbbells along the body toward the pelvis, elbows close to the torso, briefly squeezing the shoulder blades together at the top. Lower under control. Primary muscle: lats. Keep the torso stable throughout the movement, no arching of the lower back."
+    ],
+    "description": "Standing with the torso bent forward from the hips at roughly 45 degrees, back straight. Hold two dumbbells with an overhand grip, arms hanging below the shoulders. Pull the dumbbells along the body toward the pelvis, elbows close to the torso, briefly squeezing the shoulder blades together at the top. Lower under control. Primary muscle: lats. Keep the torso stable throughout the movement, no arching of the lower back.",
+    "attribution": "wger.de exercise 2762 (CC-BY-SA-4.0, lleeaa)"
+  },
+  {
     "id": "wger_1953",
     "name": "Bent-knee Iron Cross",
     "pattern": "core_compression",
@@ -687,6 +1095,65 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1840 (CC-BY-SA-4.0, Croak6728)"
   },
   {
+    "id": "wger_82",
+    "name": "Bent-over Lateral Raises",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Sit on bench while holding weights. Bend forward as far as possible, with arms slightly bent at the elbow. Perform a lateral raise while maintaining the bend in your elbow."
+    ],
+    "description": "Sit on bench while holding weights. Bend forward as far as possible, with arms slightly bent at the elbow. Perform a lateral raise while maintaining the bend in your elbow.",
+    "attribution": "wger.de exercise 82 (CC-BY-SA-4.0, apeschel)"
+  },
+  {
+    "id": "wger_92",
+    "name": "Biceps Curls With Dumbbell",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Hold two dumbbells, the arms are streched, the hands are on your side, the palms face inwards. Bend the arms and bring the weight with a fast movement up. At the same time, rotate your arms by 90 degrees at the very beginning of the movement. At the highest point, rotate a little the weights further outwards. Without a pause, bring them down, slowly.",
+      "Don't allow your body to swing during the exercise, all work is done by the biceps, which are the only mucles that should move (pay attention to the elbows)."
+    ],
+    "description": "Hold two dumbbells, the arms are streched, the hands are on your side, the palms face inwards. Bend the arms and bring the weight with a fast movement up. At the same time, rotate your arms by 90 degrees at the very beginning of the movement. At the highest point, rotate a little the weights further outwards. Without a pause, bring them down, slowly. Don't allow your body to swing during the exercise, all work is done by the biceps, which are the only mucles that should move (pay attention to the elbows).",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/81/Biceps-curl-1.png",
+        "license": "CC-BY-SA-3.0",
+        "source": "wger.de / Everkinetic",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/81/Biceps-curl-2.png",
+        "license": "CC-BY-SA-3.0",
+        "source": "wger.de / Everkinetic",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 92 (CC-BY-SA-3.0, wger.de)"
+  },
+  {
     "id": "wger_958",
     "name": "Biceps with TRX",
     "pattern": "horizontal_push",
@@ -727,6 +1194,30 @@ export const WGER_CATALOGUE: SeedExercise[] = [
       }
     ],
     "attribution": "wger.de exercise 958 (CC-BY-SA-4.0, clafal)"
+  },
+  {
+    "id": "wger_1483",
+    "name": "Bizeps Curls Trifecta",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "For the Supinated Cross Body Curl, supinate the forearm with palms facing toward the ceiling and forearms coming across the body. Lift the inner-facing weight of the dumbbell towards your shoulder.",
+      "For the Pronated Cross Body Curl, pronate the forearm with palms facing toward the floor (pronated grip or overhand grip) and forearms coming across the body. Lift the inner-facing weight of the dumbbell towards your shoulder.",
+      "For the No Money Curl, you’ll curl the dumbbell as you outwardly rotate the shoulder. Lift the inner-facing weight of the dumbbell towards your outer side of the shoulder."
+    ],
+    "description": "For the Supinated Cross Body Curl, supinate the forearm with palms facing toward the ceiling and forearms coming across the body. Lift the inner-facing weight of the dumbbell towards your shoulder. For the Pronated Cross Body Curl, pronate the forearm with palms facing toward the floor (pronated grip or overhand grip) and forearms coming across the body. Lift the inner-facing weight of the dumbbell towards your shoulder. For the No Money Curl, you’ll curl the dumbbell as you outwardly rotate the shoulder. Lift the inner-facing weight of the dumbbell towards your outer side of the shoulder.",
+    "attribution": "wger.de exercise 1483 (CC-BY-SA-4.0, Moffi)"
   },
   {
     "id": "wger_1475",
@@ -947,6 +1438,44 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1579 (CC-BY-SA-4.0, MU5H)"
   },
   {
+    "id": "wger_1706",
+    "name": "Bulgarian Squat with Dumbbells",
+    "pattern": "squat",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "The Bulgarian split squat consists of performing a squat on one leg with the rear foot resting on a raised platform. Elevating your back leg on a bench creates instability and increases the range of motion of the exercise."
+    ],
+    "description": "The Bulgarian split squat consists of performing a squat on one leg with the rear foot resting on a raised platform. Elevating your back leg on a bench creates instability and increases the range of motion of the exercise.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1706/0c5243cc-2539-4005-aee0-d3a8c5d3a32c.jfif",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / AlucardEvil40",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1706 (CC-BY-SA-4.0, AlucardEvil40)"
+  },
+  {
     "id": "wger_1710",
     "name": "Butchers Block Stretch",
     "pattern": "mobility",
@@ -1087,6 +1616,36 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "Slowly lower your body, keeping the back straight, until your arms are at a right angle. Raise your body again to the initial position, arms extended. Repeat.",
     "attribution": "wger.de exercise 1774 (CC-BY-SA-4.0, tinman)"
+  },
+  {
+    "id": "wger_1825",
+    "name": "Chest-Supported Rear Delt Raise",
+    "pattern": "vertical_push",
+    "type": "isometric",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Position: Set an incline bench to 30-45 degrees. Lie face-down with your chest supported, keeping your head neutral or looking slightly down to avoid neck strain.",
+      "Grip: Hold light dumbbells with a neutral or thumbs-up grip (thumb pointing to the ceiling).",
+      "Movement: With straight or slightly bent elbows, raise the dumbbells up and out in a \"Y\" shape. Focus on moving the shoulders and shoulder blades rather than just lifting the arms.",
+      "Top Position: Squeeze the shoulder blades together and reach high, ensuring the arms are angled to form a \"Y\".",
+      "Control: Lower the dumbbells slowly to the starting position."
+    ],
+    "description": "Position: Set an incline bench to 30-45 degrees. Lie face-down with your chest supported, keeping your head neutral or looking slightly down to avoid neck strain. Grip: Hold light dumbbells with a neutral or thumbs-up grip (thumb pointing to the ceiling). Movement: With straight or slightly bent elbows, raise the dumbbells up and out in a \"Y\" shape. Focus on moving the shoulders and shoulder blades rather than just lifting the arms. Top Position: Squeeze the shoulder blades together and reach high, ensuring the arms are angled to form a \"Y\". Control: Lower the dumbbells slowly to the starting position.",
+    "attribution": "wger.de exercise 1825 (CC-BY-SA-4.0, beagle)"
   },
   {
     "id": "wger_1006",
@@ -1364,6 +1923,40 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1016 (CC-BY-SA-4.0)"
   },
   {
+    "id": "wger_161",
+    "name": "Cross-Bench Dumbbell Pullovers",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "lats",
+        "role": "primary"
+      },
+      {
+        "group": "chest",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Grasp a moderately weighted dumbbell so your palms are flat against the underside of the top plates and your thumbs are around the bar. Lie on your back across a flat bench so only your upper back and shoulders are in contact with the bench. Your feet should be set about shoulder-width apart and your head should hang slightly downward. With the dumbbell supported at arm's length directly about your chest, bend your arms about 15 degrees and keep them bent throughout the movement. Slowly lower the dumbbell backward and downward in a semicircle arc to as low a position as is comfortably possible. Raise it slowly back along the same arc to the starting point, and repeat for the required number of repetitions."
+    ],
+    "description": "Grasp a moderately weighted dumbbell so your palms are flat against the underside of the top plates and your thumbs are around the bar. Lie on your back across a flat bench so only your upper back and shoulders are in contact with the bench. Your feet should be set about shoulder-width apart and your head should hang slightly downward. With the dumbbell supported at arm's length directly about your chest, bend your arms about 15 degrees and keep them bent throughout the movement. Slowly lower the dumbbell backward and downward in a semicircle arc to as low a position as is comfortably possible. Raise it slowly back along the same arc to the starting point, and repeat for the required number of repetitions.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/161/b9b1803e-2817-40bf-8ac7-e398ca86d8b4.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 161 (CC-BY-SA-3.0, powerade69)"
+  },
+  {
     "id": "wger_2685",
     "name": "Cross-Body Stretch",
     "pattern": "mobility",
@@ -1454,6 +2047,125 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 174 (CC-BY-SA-4.0, krisbbb)"
   },
   {
+    "id": "wger_1666",
+    "name": "Curl  - With Shoulder Elevated",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Place elbow so that it is about level with the shoulder. Curl the wieght to your shoulder. Focus on the stretch in the eccentric part of the curl"
+    ],
+    "description": "Place elbow so that it is about level with the shoulder. Curl the wieght to your shoulder. Focus on the stretch in the eccentric part of the curl",
+    "attribution": "wger.de exercise 1666 (CC-BY-SA-4.0, Shiladree)"
+  },
+  {
+    "id": "wger_1502",
+    "name": "DB Cross Body Hammer Curls",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Hammer curl with a neutral grip, curling the dumbbell across your body towards the opposite shoulder. Works the brachialis in particular."
+    ],
+    "description": "Hammer curl with a neutral grip, curling the dumbbell across your body towards the opposite shoulder. Works the brachialis in particular.",
+    "attribution": "wger.de exercise 1502 (CC-BY-SA-4.0, JohnPreston)"
+  },
+  {
+    "id": "wger_1497",
+    "name": "DB Underhand bench press",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "chest",
+        "role": "primary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Underhand grip DB, perform a normal bench press movement, keeping the elbows close to the chest"
+    ],
+    "description": "Underhand grip DB, perform a normal bench press movement, keeping the elbows close to the chest",
+    "attribution": "wger.de exercise 1497 (CC-BY-SA-4.0, JohnPreston)"
+  },
+  {
+    "id": "wger_1496",
+    "name": "DB Upper Chest Variation",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "chest",
+        "role": "primary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Dumbbell in hand in a curl fashion, lean body into the arm to help the dumbbell up above the chest, next to the head, to activate chest and delt combo"
+    ],
+    "description": "Dumbbell in hand in a curl fashion, lean body into the arm to help the dumbbell up above the chest, next to the head, to activate chest and delt combo",
+    "attribution": "wger.de exercise 1496 (CC-BY-SA-4.0, JohnPreston)"
+  },
+  {
+    "id": "wger_1881",
+    "name": "DB Wrist Extension",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "triceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Grab two dumbbells with an overhand grip and lay your forearms across your knees.",
+      "Let your wrists flex fully, then extend your wrists."
+    ],
+    "description": "Grab two dumbbells with an overhand grip and lay your forearms across your knees. Let your wrists flex fully, then extend your wrists.",
+    "attribution": "wger.de exercise 1881 (CC-BY-SA-4.0, Deflation)"
+  },
+  {
     "id": "wger_1889",
     "name": "Decline Bench Leg Raise",
     "pattern": "core_compression",
@@ -1534,6 +2246,63 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "Stretch your deltoids for a certain period of time.",
     "attribution": "wger.de exercise 1536 (CC-BY-SA-4.0, Expenses7000)"
+  },
+  {
+    "id": "wger_1556",
+    "name": "Devil’s Press",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "chest",
+        "role": "primary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "lats",
+        "role": "secondary"
+      },
+      {
+        "group": "abdominals",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Start with a dumbbell in each hand and perform a burpee, letting your chest touch the ground while holding the dumbbells.",
+      "Explosively jump your feet forward and swing the dumbbells between your legs.",
+      "Drive the dumbbells overhead in one continuous motion, locking out your arms.",
+      "Lower the dumbbells with control to return to the starting position and repeat"
+    ],
+    "description": "Start with a dumbbell in each hand and perform a burpee, letting your chest touch the ground while holding the dumbbells. Explosively jump your feet forward and swing the dumbbells between your legs. Drive the dumbbells overhead in one continuous motion, locking out your arms. Lower the dumbbells with control to return to the starting position and repeat",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1556/a23c820b-e08b-4911-a6a4-80f16c15d2e0.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / Settebello",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1556 (CC-BY-SA-4.0, Settebello)"
   },
   {
     "id": "wger_2706",
@@ -1645,6 +2414,1208 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1827 (CC-BY-SA-4.0, beagle)"
   },
   {
+    "id": "wger_1512",
+    "name": "Drop Curl",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Drop curls in a modified position at a slow pace effectively engage the brachialis for arm width.",
+      "Starting position is with both arms in a slight angle towards each other at chest height with a dumbbell in each hand. Lower one dumbbell close to full extended arm position slowly and in a controlled manner during the first half of the curl, then curl it back up to starting position, while the other dumbbell stays at its starting position. Now lower the other dumbbell down. This keeps tension on the brachialis. As we pass the 90deg mark on our way down, the biceps will take over the work."
+    ],
+    "description": "Drop curls in a modified position at a slow pace effectively engage the brachialis for arm width. Starting position is with both arms in a slight angle towards each other at chest height with a dumbbell in each hand. Lower one dumbbell close to full extended arm position slowly and in a controlled manner during the first half of the curl, then curl it back up to starting position, while the other dumbbell stays at its starting position. Now lower the other dumbbell down. This keeps tension on the brachialis. As we pass the 90deg mark on our way down, the biceps will take over the work.",
+    "attribution": "wger.de exercise 1512 (CC-BY-SA-4.0, Moffi)"
+  },
+  {
+    "id": "wger_1639",
+    "name": "Dumbbell Bent Over Face Pull",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "lats",
+        "role": "primary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "This exercise involves using dumbbells to perform a bent over face pull, which targets the upper back and shoulders. The movement involves pulling the weights towards the face while keeping the elbows high and squeezing the shoulder blades together."
+    ],
+    "description": "This exercise involves using dumbbells to perform a bent over face pull, which targets the upper back and shoulders. The movement involves pulling the weights towards the face while keeping the elbows high and squeezing the shoulder blades together.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1639/8927346e-f5ca-4795-bdf1-5ac9309401e7.webp",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / AlucardEvil40",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1639 (CC-BY-SA-4.0, AlucardEvil40)"
+  },
+  {
+    "id": "wger_1226",
+    "name": "Dumbbell bicep curl to press",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Bend your elbows and lift the dumbbells to your shoulders.",
+      "Push the dumbbells over your head while rotating your arms to make your palms face forward. Reverse it to lower down. Repeat the exercise."
+    ],
+    "description": "Bend your elbows and lift the dumbbells to your shoulders. Push the dumbbells over your head while rotating your arms to make your palms face forward. Reverse it to lower down. Repeat the exercise.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1226/a6154dbd-67a0-4a36-8748-0f5af3865e83.jpg",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / Lynn_McIntyre",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1226 (CC-BY-SA-4.0, Lynn_McIntyre)"
+  },
+  {
+    "id": "wger_1504",
+    "name": "Dumbbell Bradford press",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "From a front hold of the DBs in a OHP, press above the head, bring back towards the rear of the shoulders, down, and press back forward."
+    ],
+    "description": "From a front hold of the DBs in a OHP, press above the head, bring back towards the rear of the shoulders, down, and press back forward.",
+    "attribution": "wger.de exercise 1504 (CC-BY-SA-4.0, JohnPreston)"
+  },
+  {
+    "id": "wger_2661",
+    "name": "Dumbbell Calf Raise",
+    "pattern": "conditioning",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "calves",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "general",
+      "legs"
+    ],
+    "cues": [
+      "Stand upright with a dumbbell in each hand, arms hanging at your sides and feet hip-width apart. For a larger range of motion, stand with the balls of your feet on a step or a weight plate.",
+      "Rise up onto your toes as high as you can and pause briefly at the top. Then lower your heels slowly until you feel a stretch in your calves. Keep your knees straight but not locked and your upper body upright."
+    ],
+    "description": "Stand upright with a dumbbell in each hand, arms hanging at your sides and feet hip-width apart. For a larger range of motion, stand with the balls of your feet on a step or a weight plate. Rise up onto your toes as high as you can and pause briefly at the top. Then lower your heels slowly until you feel a stretch in your calves. Keep your knees straight but not locked and your upper body upright.",
+    "attribution": "wger.de exercise 2661 (CC-BY-SA-4.0)"
+  },
+  {
+    "id": "wger_1482",
+    "name": "Dumbbell Cheat Curl",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Starting position is standing with feet shoulder width apart.",
+      "Hands should take an underhand or supinated grip on the dumbbells holding them with hands shoulder width apart.",
+      "Keeping elbows tucked into your sides throughout the entire movement, use momentum to curl the dumbbells, squeezing your biceps at the top of the movement.",
+      "Slowly lower to return to the starting position. Keep the core tight throughout the exercise. Cheating through the concentric curling portion of this challenging exercise gives us a great opportunity to increase time under tension and create eccentric overload with heavier weight when we lower."
+    ],
+    "description": "Starting position is standing with feet shoulder width apart. Hands should take an underhand or supinated grip on the dumbbells holding them with hands shoulder width apart. Keeping elbows tucked into your sides throughout the entire movement, use momentum to curl the dumbbells, squeezing your biceps at the top of the movement. Slowly lower to return to the starting position. Keep the core tight throughout the exercise. Cheating through the concentric curling portion of this challenging exercise gives us a great opportunity to increase time under tension and create eccentric overload with heavier weight when we lower.",
+    "attribution": "wger.de exercise 1482 (CC-BY-SA-4.0, Moffi)"
+  },
+  {
+    "id": "wger_1228",
+    "name": "Dumbbell close grip bench press",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "chest",
+        "role": "primary"
+      },
+      {
+        "group": "triceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Lie down with your back on a flat bench. Hold a dumbbell in each hand. Raise your arms towards the ceiling with your palms facing each other and dumbbells pressed together.",
+      "Slowly lower the dumbbells to your chest, then slowly push them back. Repeat the exercise."
+    ],
+    "description": "Lie down with your back on a flat bench. Hold a dumbbell in each hand. Raise your arms towards the ceiling with your palms facing each other and dumbbells pressed together. Slowly lower the dumbbells to your chest, then slowly push them back. Repeat the exercise.",
+    "attribution": "wger.de exercise 1228 (CC-BY-SA-4.0, Lynn_McIntyre)"
+  },
+  {
+    "id": "wger_1415",
+    "name": "Dumbbell Crunches",
+    "pattern": "core_compression",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "abdominals",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "core"
+    ],
+    "cues": [
+      "Dumbbell crunches are a weighted variation of traditional crunches designed to target the abdominal muscles more intensely. Lie flat on your back with your knees bent and feet flat on the floor. Hold a dumbbell with both hands close to your chest or above your head. Lift your shoulders and upper back off the ground in a crunching motion, engaging your core. Slowly lower yourself back to the starting position. Ensure controlled movements throughout the exercise to prevent strain."
+    ],
+    "description": "Dumbbell crunches are a weighted variation of traditional crunches designed to target the abdominal muscles more intensely. Lie flat on your back with your knees bent and feet flat on the floor. Hold a dumbbell with both hands close to your chest or above your head. Lift your shoulders and upper back off the ground in a crunching motion, engaging your core. Slowly lower yourself back to the starting position. Ensure controlled movements throughout the exercise to prevent strain.",
+    "attribution": "wger.de exercise 1415 (CC-BY-SA-4.0, hpmbala@gmail.com)"
+  },
+  {
+    "id": "wger_1931",
+    "name": "Dumbbell Curl",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      },
+      {
+        "group": "abdominals",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "The Dumbbell Curl is a classic isolation exercise for the arms. Unlike the Hammer Curl, it involves rotating your wrists (supination) as you lift the weights, which allows for a full contraction of the biceps."
+    ],
+    "description": "The Dumbbell Curl is a classic isolation exercise for the arms. Unlike the Hammer Curl, it involves rotating your wrists (supination) as you lift the weights, which allows for a full contraction of the biceps.",
+    "attribution": "wger.de exercise 1931 (CC-BY-SA-4.0, amaesc)"
+  },
+  {
+    "id": "wger_2682",
+    "name": "Dumbbell cyclist squat",
+    "pattern": "squat",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "calves",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Dumbbell squats with elevated heel position. Stand on either squat wedges or weight plates to raise heels higher than toes, while holding the dumbbells on your sides."
+    ],
+    "description": "Dumbbell squats with elevated heel position. Stand on either squat wedges or weight plates to raise heels higher than toes, while holding the dumbbells on your sides.",
+    "attribution": "wger.de exercise 2682 (CC-BY-SA-4.0, JuustoKakku)"
+  },
+  {
+    "id": "wger_1370",
+    "name": "Dumbbell Deadlift",
+    "pattern": "hinge",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Controlled execution",
+      "Don't use momentum",
+      "Slow execution"
+    ],
+    "description": "Controlled execution Don't use momentum Slow execution",
+    "attribution": "wger.de exercise 1370 (CC-BY-SA-4.0, Anastasious)"
+  },
+  {
+    "id": "wger_1616",
+    "name": "Dumbbell donkey kick",
+    "pattern": "squat",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "The dumbbell donkey kick is an effective exercise for working the glute and hamstring muscles. This exercise is usually performed on all fours, using a dumbbell to add resistance. The steps for performing it correctly are described below.",
+      "Starting position: Get on all fours on a mat, with your hands aligned under your shoulders and your knees aligned under your hips.",
+      "Placing the dumbbell: Take a dumbbell and place it behind the knee of the leg you are going to lift. Make sure it is held securely to prevent it from falling during the exercise.",
+      "Exercise:",
+      "Inhale and, as you exhale, lift the leg with the dumbbell upward, keeping the knee bent at a 90-degree angle.",
+      "Raise the leg until it is parallel to the floor, feeling the contraction in the glutes.",
+      "Hold the position for one second at the top and then slowly lower the leg back to the starting position.",
+      "Repetitions: Perform 10 to 15 repetitions per leg, making sure to maintain good form throughout the exercise.",
+      "Sets: Complete 2 to 3 sets, depending on your fitness level."
+    ],
+    "description": "The dumbbell donkey kick is an effective exercise for working the glute and hamstring muscles. This exercise is usually performed on all fours, using a dumbbell to add resistance. The steps for performing it correctly are described below. Starting position: Get on all fours on a mat, with your hands aligned under your shoulders and your knees aligned under your hips. Placing the dumbbell: Take a dumbbell and place it behind the knee of the leg you are going to lift. Make sure it is held securely to prevent it from falling during the exercise. Exercise: Inhale and, as you exhale, lift the leg with the dumbbell upward, keeping the knee bent at a 90-degree angle. Raise the leg until it is parallel to the floor, feeling the contraction in the glutes. Hold the position for one second at the top and then slowly lower the leg back to the starting position. Repetitions: Perform 10 to 15 repetitions per leg, making sure to maintain good form throughout the exercise. Sets: Complete 2 to 3 sets, depending on your fitness level.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1616/97e6fd98-2ca6-486f-b9b2-f0499fe38044.jpg",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1616 (CC-BY-SA-4.0, Tierrasverdes)"
+  },
+  {
+    "id": "wger_1224",
+    "name": "Dumbbell drag curls",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Hold a dumbbell in each hand with your palms facing forward. Pull your elbows back and lift the dumbbells to your chest height. Slowly lower the dumbbell and repeat the exercise."
+    ],
+    "description": "Hold a dumbbell in each hand with your palms facing forward. Pull your elbows back and lift the dumbbells to your chest height. Slowly lower the dumbbell and repeat the exercise.",
+    "attribution": "wger.de exercise 1224 (CC-BY-SA-4.0, Lynn_McIntyre)"
+  },
+  {
+    "id": "wger_1116",
+    "name": "Dumbbell farmer's carry",
+    "pattern": "squat",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Grab half your body weight in each hand and walk."
+    ],
+    "description": "Grab half your body weight in each hand and walk.",
+    "attribution": "wger.de exercise 1116 (CC-BY-SA-4.0, philip)"
+  },
+  {
+    "id": "wger_1503",
+    "name": "Dumbbell Frog Press",
+    "pattern": "squat",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "glutes",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Similar to hip thrust, but with feet put up together, lifting the butt off the ground in a frog like position."
+    ],
+    "description": "Similar to hip thrust, but with feet put up together, lifting the butt off the ground in a frog like position.",
+    "attribution": "wger.de exercise 1503 (CC-BY-SA-4.0, JohnPreston)"
+  },
+  {
+    "id": "wger_1640",
+    "name": "Dumbbell Front Squat",
+    "pattern": "squat",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      },
+      {
+        "group": "abdominals",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "This exercise involves holding a dumbbell in each hand at shoulder height and performing a squat. It targets the lower body muscles, including the quads, hamstrings, and glutes, while also engaging the core and upper body."
+    ],
+    "description": "This exercise involves holding a dumbbell in each hand at shoulder height and performing a squat. It targets the lower body muscles, including the quads, hamstrings, and glutes, while also engaging the core and upper body.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1640/bdea82f1-15ef-4649-8b5a-1303cfc178e7.webp",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / AlucardEvil40",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1640 (CC-BY-SA-4.0, AlucardEvil40)"
+  },
+  {
+    "id": "wger_203",
+    "name": "Dumbbell Goblet Squat",
+    "pattern": "squat",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Grasp dumbbell with both hands at the sides of the upper plates. Hold dumbbell in front of chest, close to torso. Place feet about shoulderwide apart, keep knees slightly bent.",
+      "Squat down until thighs are parallel to floor. Keep back straight, bend and move hips backward to keep knees above feet. Return, keep knees slightly flexed. Repeat.",
+      "Keep bodyweight on heels and look ahead or slightly above to keep back straight."
+    ],
+    "description": "Grasp dumbbell with both hands at the sides of the upper plates. Hold dumbbell in front of chest, close to torso. Place feet about shoulderwide apart, keep knees slightly bent. Squat down until thighs are parallel to floor. Keep back straight, bend and move hips backward to keep knees above feet. Return, keep knees slightly flexed. Repeat. Keep bodyweight on heels and look ahead or slightly above to keep back straight.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/203/1c052351-2af0-4227-aeb0-244008e4b0a8.jpeg",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / philip",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/203/2ab30113-4e08-4d39-9d23-d901ce2c0971.jpeg",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / philip",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/203/300a44ac-4368-48e2-8b18-beea32ab915d.gif",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 203 (CC-BY-SA-4.0, ataraxie67)"
+  },
+  {
+    "id": "wger_1087",
+    "name": "Dumbbell Hang Power Cleans",
+    "pattern": "vertical_pull",
+    "type": "isometric",
+    "muscles": [
+      {
+        "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "On your feet, stand tall with your dumbbells, holding them at your sides. Hinge at the hips to lower them to your knees (picture 1). Stand back up with a slight jump, using the momentum to pull the dumbbells up on to your shoulders (picture 2). Stand up straight, then lower under control to your sides and repeat. Keep this fast and explosive; if your heart rate doesn’t hit the roof, you’re doing them wrong."
+    ],
+    "description": "On your feet, stand tall with your dumbbells, holding them at your sides. Hinge at the hips to lower them to your knees (picture 1). Stand back up with a slight jump, using the momentum to pull the dumbbells up on to your shoulders (picture 2). Stand up straight, then lower under control to your sides and repeat. Keep this fast and explosive; if your heart rate doesn’t hit the roof, you’re doing them wrong.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1087/d85f4e02-b20c-457c-bdfb-0b00e2d14150.jpg",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / philip",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1087 (CC-BY-SA-4.0, philip)"
+  },
+  {
+    "id": "wger_1353",
+    "name": "Dumbbell Hex Press",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "chest",
+        "role": "primary"
+      },
+      {
+        "group": "triceps",
+        "role": "primary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Engage the muscles",
+      "Position your feet wide",
+      "Controlled movement",
+      "Slow movement",
+      "Bring the weights toward your lower chest/stomach"
+    ],
+    "description": "Engage the muscles Position your feet wide Controlled movement Slow movement Bring the weights toward your lower chest/stomach",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1353/138cb483-7d4d-4519-b029-63e4269810a6.webp",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1353 (CC-BY-SA-4.0, Anastasious)"
+  },
+  {
+    "id": "wger_1642",
+    "name": "Dumbbell Hip Thrust",
+    "pattern": "hinge",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "This exercise involves sitting on the ground with a dumbbell resting on the hips, then thrusting the hips upward while squeezing the glutes. It is a great exercise for strengthening the glutes and improving hip mobility."
+    ],
+    "description": "This exercise involves sitting on the ground with a dumbbell resting on the hips, then thrusting the hips upward while squeezing the glutes. It is a great exercise for strengthening the glutes and improving hip mobility.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1642/a81ad922-caf5-47f8-99b4-640cb0717436.webp",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / AlucardEvil40",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1642 (CC-BY-SA-4.0, AlucardEvil40)"
+  },
+  {
+    "id": "wger_2724",
+    "name": "Dumbbell Lateral Raise",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Perform Dumbbell Lateral Raise with controlled form, keeping tension on the target muscles, pausing briefly at the peak contraction, then returning slowly under control without using momentum."
+    ],
+    "description": "Perform Dumbbell Lateral Raise with controlled form, keeping tension on the target muscles, pausing briefly at the peak contraction, then returning slowly under control without using momentum.",
+    "attribution": "wger.de exercise 2724 (CC-BY-SA-4.0, ruochenma)"
+  },
+  {
+    "id": "wger_206",
+    "name": "Dumbbell Lunges Walking",
+    "pattern": "squat",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Starting Position: Stand with feet hip-width apart and hands either on your hips or holding dumbbells at your sides.",
+      "The Stride: Take a wide step forward with your right leg.",
+      "The Descent: Lower your hips until both knees are bent at approximately 90-degree angles .",
+      "The Transition: Drive through your front heel to stand up, bringing your back foot forward to step directly into the next lunge."
+    ],
+    "description": "Starting Position: Stand with feet hip-width apart and hands either on your hips or holding dumbbells at your sides. The Stride: Take a wide step forward with your right leg. The Descent: Lower your hips until both knees are bent at approximately 90-degree angles . The Transition: Drive through your front heel to stand up, bringing your back foot forward to step directly into the next lunge.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/113/Walking-lunges-1.png",
+        "license": "CC-BY-SA-3.0",
+        "source": "wger.de / Everkinetic",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/206/6ec66efd-e74f-4142-bed1-0a0ac74e3294.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / nishant0712",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/113/Walking-lunges-2.png",
+        "license": "CC-BY-SA-3.0",
+        "source": "wger.de / Everkinetic",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/113/Walking-lunges-3.png",
+        "license": "CC-BY-SA-3.0",
+        "source": "wger.de / Everkinetic",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/113/Walking-lunges-4.png",
+        "license": "CC-BY-SA-3.0",
+        "source": "wger.de / Everkinetic",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 206 (CC-BY-SA-3.0, wger.de)"
+  },
+  {
+    "id": "wger_801",
+    "name": "Dumbbell Push-Up",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "chest",
+        "role": "primary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Normal Push-ups on Dumbbells, this brings a further range of movement"
+    ],
+    "description": "Normal Push-ups on Dumbbells, this brings a further range of movement",
+    "attribution": "wger.de exercise 801 (CC-BY-SA-4.0)"
+  },
+  {
+    "id": "wger_1227",
+    "name": "Dumbbell rear delt row",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "biceps",
+        "role": "primary"
+      },
+      {
+        "group": "traps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Hold a dumbbell in each hand. Bend at your hips to make your back almost parallel to the floor. Let your arms hang down. Keep your arms in line with your shoulders. bend and lift your elbows out to the sides until your upper arms are parallel to the floor. Slowly return and repeat"
+    ],
+    "description": "Hold a dumbbell in each hand. Bend at your hips to make your back almost parallel to the floor. Let your arms hang down. Keep your arms in line with your shoulders. bend and lift your elbows out to the sides until your upper arms are parallel to the floor. Slowly return and repeat",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1227/57415c3c-2963-4130-9f6f-79f6a96113b6.gif",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / Lynn_McIntyre",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1227 (CC-BY-SA-4.0, Lynn_McIntyre)"
+  },
+  {
+    "id": "wger_1652",
+    "name": "Dumbbell Romanian Deadlift",
+    "pattern": "hinge",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "This exercise involves holding a dumbbell in each hand and bending forward at the hips while keeping the back straight, then returning to a standing position. It primarily targets the hamstrings and glutes."
+    ],
+    "description": "This exercise involves holding a dumbbell in each hand and bending forward at the hips while keeping the back straight, then returning to a standing position. It primarily targets the hamstrings and glutes.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1652/0306c8c0-70cc-45d4-92de-6fa72ceaa834.webp",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / AlucardEvil40",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1652 (CC-BY-SA-4.0, AlucardEvil40)"
+  },
+  {
+    "id": "wger_1429",
+    "name": "Dumbbell Shoulder Rotations",
+    "pattern": "mobility",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "warmup",
+    "regions": [
+      "general"
+    ],
+    "cues": [
+      "External Rotation : Hold a dumbbell in one hand, keeping your elbow bent at 90 degrees and close to your body. Rotate your forearm outward, away from your body, keeping your elbow stationary. Slowly return to the starting position.",
+      "Internal Rotation : Hold a dumbbell in one hand, keeping your elbow bent at 90 degrees and close to your body. Rotate your forearm inward, toward your body, and slowly return to the starting position. Perform the exercise with controlled movements to avoid strain."
+    ],
+    "description": "External Rotation : Hold a dumbbell in one hand, keeping your elbow bent at 90 degrees and close to your body. Rotate your forearm outward, away from your body, keeping your elbow stationary. Slowly return to the starting position. Internal Rotation : Hold a dumbbell in one hand, keeping your elbow bent at 90 degrees and close to your body. Rotate your forearm inward, toward your body, and slowly return to the starting position. Perform the exercise with controlled movements to avoid strain.",
+    "attribution": "wger.de exercise 1429 (CC-BY-SA-4.0, hpmbala@gmail.com)"
+  },
+  {
+    "id": "wger_1234",
+    "name": "Dumbbell Single-leg Hip Thrust",
+    "pattern": "hinge",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "The single-leg hip thrust is performed by placing your upper back on a weight bench, raising one leg, and extending the hip of the other leg to achieve an isolated contraction of the glute.",
+      "By working each side separately, you can fully isolate your glutes unilaterally, providing maximal training stimulus."
+    ],
+    "description": "The single-leg hip thrust is performed by placing your upper back on a weight bench, raising one leg, and extending the hip of the other leg to achieve an isolated contraction of the glute. By working each side separately, you can fully isolate your glutes unilaterally, providing maximal training stimulus.",
+    "attribution": "wger.de exercise 1234 (CC-BY-SA-4.0, carlos3c)"
+  },
+  {
+    "id": "wger_1947",
+    "name": "Dumbbell snatch",
+    "pattern": "squat",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Key Steps to Execute Correctly:",
+      "Setup: Place the dumbbell between your feet, with your shoulders above your hips, chest up, and back flat.",
+      "The Pull: Explosively extend your hips, knees, and ankles (triple extension) to drive the dumbbell upward, keeping your elbow high and the dumbbell close to your body.",
+      "The Catch: Quickly flex your hips and knees to drop under the dumbbell and receive it overhead with your arm locked in position, landing in a half-squat stance.",
+      "Common Mistakes: Using your arms too much to lift the weight instead of your legs, having a low elbow during the pull phase, and misaligning your shoulder, elbow, and wrist in the final position. For beginners, it’s recommended to start with light loads, focus on technique, and perform 3 to 5 sets of 3 to 5 reps per arm."
+    ],
+    "description": "Key Steps to Execute Correctly: Setup: Place the dumbbell between your feet, with your shoulders above your hips, chest up, and back flat. The Pull: Explosively extend your hips, knees, and ankles (triple extension) to drive the dumbbell upward, keeping your elbow high and the dumbbell close to your body. The Catch: Quickly flex your hips and knees to drop under the dumbbell and receive it overhead with your arm locked in position, landing in a half-squat stance. Common Mistakes: Using your arms too much to lift the weight instead of your legs, having a low elbow during the pull phase, and misaligning your shoulder, elbow, and wrist in the final position. For beginners, it’s recommended to start with light loads, focus on technique, and perform 3 to 5 sets of 3 to 5 reps per arm.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1947/4201a9c0-f9e4-48ca-80f1-b46c7ffe5640.webp",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1947 (CC-BY-SA-4.0, Aleid)"
+  },
+  {
+    "id": "wger_1366",
+    "name": "Dumbbell Split Squat",
+    "pattern": "squat",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Controlled execution",
+      "No momentum",
+      "Execute slowly"
+    ],
+    "description": "Controlled execution No momentum Execute slowly",
+    "attribution": "wger.de exercise 1366 (CC-BY-SA-4.0, Anastasious)"
+  },
+  {
+    "id": "wger_1088",
+    "name": "Dumbbell sumo deadlift",
+    "pattern": "hinge",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Lower your dumbbell to the ground between your legs. Assume a wide stance and with a straight back squat down. With the dumbbell standing upright, grip it by the top of the ‘head’ (picture 1).Keeping your chest up and core braced, push the floor away, driving back upwards to a standing position (picture 2). Repeat. If you can easily achieve 20-30 reps, use two dumbbells."
+    ],
+    "description": "Lower your dumbbell to the ground between your legs. Assume a wide stance and with a straight back squat down. With the dumbbell standing upright, grip it by the top of the ‘head’ (picture 1).Keeping your chest up and core braced, push the floor away, driving back upwards to a standing position (picture 2). Repeat. If you can easily achieve 20-30 reps, use two dumbbells.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1088/9f66b288-ce8f-4154-ba80-78fee267263c.jpg",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / philip",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1088 (CC-BY-SA-4.0, philip)"
+  },
+  {
+    "id": "wger_1684",
+    "name": "Dumbbell Thruster",
+    "pattern": "squat",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Start with the dumbbells resting on your shoulders and squat down. Push",
+      "into standing and raise the dumbbells into an overhead position. Bring",
+      "the dumbbells back to your shoulders and repeat."
+    ],
+    "description": "Start with the dumbbells resting on your shoulders and squat down. Push into standing and raise the dumbbells into an overhead position. Bring the dumbbells back to your shoulders and repeat.",
+    "attribution": "wger.de exercise 1684 (CC-BY-SA-4.0, meldun)"
+  },
+  {
+    "id": "wger_211",
+    "name": "Dumbbell Triceps Extension",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "triceps",
+        "role": "primary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      },
+      {
+        "group": "chest",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Position one dumbbell over head with both hands under inner plate (heart shaped grip).",
+      "With elbows over head, lower forearm behind upper arm by flexing elbows. Flex wrists at bottom to avoid hitting dumbbell on back of neck. Raise dumbbell over head by extending elbows while hyperextending wrists. Return and repeat."
+    ],
+    "description": "Position one dumbbell over head with both hands under inner plate (heart shaped grip). With elbows over head, lower forearm behind upper arm by flexing elbows. Flex wrists at bottom to avoid hitting dumbbell on back of neck. Raise dumbbell over head by extending elbows while hyperextending wrists. Return and repeat.",
+    "attribution": "wger.de exercise 211 (CC-BY-SA-3.0, tuninx)"
+  },
+  {
+    "id": "wger_2739",
+    "name": "Dumbbell Ulnar Deviation",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "triceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Stand with your arm straight down by your side. Hold a dumbbell by one end of the handle with the weighted end pointing behind you. Keeping the arm still, lift the weighted end up behind you using only the wrist, then lower it slowly. This is the opposite of wrist rising and keeps the wrist balanced."
+    ],
+    "description": "Stand with your arm straight down by your side. Hold a dumbbell by one end of the handle with the weighted end pointing behind you. Keeping the arm still, lift the weighted end up behind you using only the wrist, then lower it slowly. This is the opposite of wrist rising and keeps the wrist balanced.",
+    "attribution": "wger.de exercise 2739 (CC-BY-SA-4.0, lightking)"
+  },
+  {
+    "id": "wger_1463",
+    "name": "Dumbbell Underhand Dead Row",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      },
+      {
+        "group": "lats",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Start by holding a pair of dumbbells with your feet shoulder-wide apart and your knees slightly bent.",
+      "Hinge at your hips to lower your torse forward until it's almost parallel to the floor, keeping your back flat and maintaining a slight bend in your knees.",
+      "Exhale as you row the dumbbells to your sides up to chest height, leading with your elbows until your upper arms are just past parallel to the floor and the dumbbells are at ribcage level.",
+      "Slowly lower to the starting position and repeat. Keep your back flat all the time."
+    ],
+    "description": "Start by holding a pair of dumbbells with your feet shoulder-wide apart and your knees slightly bent. Hinge at your hips to lower your torse forward until it's almost parallel to the floor, keeping your back flat and maintaining a slight bend in your knees. Exhale as you row the dumbbells to your sides up to chest height, leading with your elbows until your upper arms are just past parallel to the floor and the dumbbells are at ribcage level. Slowly lower to the starting position and repeat. Keep your back flat all the time.",
+    "attribution": "wger.de exercise 1463 (CC-BY-SA-4.0, Moffi)"
+  },
+  {
+    "id": "wger_1225",
+    "name": "Dumbbell wide bicep curls",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Hold a dumbbell in each hand with your hands slightly wider than shoulder-width apart and palms facing forward.",
+      "Bend your elbows and lift the dumbbells to your shoulders. Slowly return and repeat."
+    ],
+    "description": "Hold a dumbbell in each hand with your hands slightly wider than shoulder-width apart and palms facing forward. Bend your elbows and lift the dumbbells to your shoulders. Slowly return and repeat.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1225/39a0b7e7-9780-425d-84f5-56d10d1690ac.gif",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / Lynn_McIntyre",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1225 (CC-BY-SA-4.0, Lynn_McIntyre)"
+  },
+  {
+    "id": "wger_2725",
+    "name": "Dumbbell Wrist Rising",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "triceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Stand tall with your arm hanging straight down by your side. Hold a dumbbell by one end of the handle so the weighted end points forward and your thumb is on top. Keep the arm completely still and tip the weighted end up toward the ceiling using only the wrist, then lower it slowly. This trains radial deviation, the riser used in arm wrestling. Slide your hand further from the weight to make it harder."
+    ],
+    "description": "Stand tall with your arm hanging straight down by your side. Hold a dumbbell by one end of the handle so the weighted end points forward and your thumb is on top. Keep the arm completely still and tip the weighted end up toward the ceiling using only the wrist, then lower it slowly. This trains radial deviation, the riser used in arm wrestling. Slide your hand further from the weight to make it harder.",
+    "attribution": "wger.de exercise 2725 (CC-BY-SA-4.0, lightking)"
+  },
+  {
+    "id": "wger_1824",
+    "name": "Dumbell Tate Press",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "triceps",
+        "role": "primary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      },
+      {
+        "group": "chest",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Set Up : Lie flat with a dumbbell in each hand. Extend your arms straight up over your chest as if you were at the top of a dumbbell bench press",
+      "Starting Position : Position the dumbbells so they are touching or very close together with a pronated grip (palms facing your feet and thumbs facing each other)",
+      "Lowering : Without moving your upper arms or shoulders, bend your elbows and flare them outward to the sides. Lower the inner ends of the dumbbells toward the center of your chest",
+      "Touch and Pause : Gently touch the dumbbells to your chest. Do not rest the weight on your body; maintain constant tension in your triceps",
+      "Press : Forcefully extend your elbows to return the dumbbells to the starting position. Focus on \"pushing your pinkies toward the sky\" to maximize triceps engagement https://www.youtube.com/watch?v=IgSjoXbpy1M&t=2"
+    ],
+    "description": "Set Up : Lie flat with a dumbbell in each hand. Extend your arms straight up over your chest as if you were at the top of a dumbbell bench press Starting Position : Position the dumbbells so they are touching or very close together with a pronated grip (palms facing your feet and thumbs facing each other) Lowering : Without moving your upper arms or shoulders, bend your elbows and flare them outward to the sides. Lower the inner ends of the dumbbells toward the center of your chest Touch and Pause : Gently touch the dumbbells to your chest. Do not rest the weight on your body; maintain constant tension in your triceps Press : Forcefully extend your elbows to return the dumbbells to the starting position. Focus on \"pushing your pinkies toward the sky\" to maximize triceps engagement https://www.youtube.com/watch?v=IgSjoXbpy1M&t=2",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1824/8e0dfec1-026e-4f95-926b-056d6c6c1333.jpg",
+        "license": "CC0",
+        "source": "wger.de / yuhonas/free-exercise-db",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/1824/0197fece-314f-4be6-b45e-79b7fe355054.jpg",
+        "license": "CC0",
+        "source": "wger.de / yuhonas/free-exercise-db",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1824 (CC-BY-SA-4.0, beagle)"
+  },
+  {
     "id": "wger_1288",
     "name": "Dynamic side plank",
     "pattern": "core_anti_extension",
@@ -1665,6 +3636,32 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "The dynamic side plank involves positioning yourself on your side, supported on one elbow and the side of your foot, then dipping your hips up and down while keeping your body in a straight line.",
     "attribution": "wger.de exercise 1288 (CC-BY-SA-4.0, painDpice)"
+  },
+  {
+    "id": "wger_1498",
+    "name": "Elbows Tucked DB Bench Press",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "triceps",
+        "role": "primary"
+      },
+      {
+        "group": "chest",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Elbows Tucked DB Bench Press, chest press movement focusing on the triceps. DB stays parallel with body"
+    ],
+    "description": "Elbows Tucked DB Bench Press, chest press movement focusing on the triceps. DB stays parallel with body",
+    "attribution": "wger.de exercise 1498 (CC-BY-SA-4.0, JohnPreston)"
   },
   {
     "id": "wger_1391",
@@ -1807,6 +3804,28 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "Deep loaded stretch for deltoids, performed after pressing movements.",
     "attribution": "wger.de exercise 1920 (CC-BY-SA-4.0)"
+  },
+  {
+    "id": "wger_2744",
+    "name": "Fat Grip Dumbbell Hold",
+    "pattern": "horizontal_push",
+    "type": "isometric",
+    "muscles": [
+      {
+        "group": "triceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Fit thick grip sleeves over two dumbbell handles, or wrap the handles in a towel to make them thicker. Stand tall holding one in each hand at your sides and hold for the set time without letting the handles roll in your hands. The thicker handle makes your fingers and thumb work much harder than a normal grip."
+    ],
+    "description": "Fit thick grip sleeves over two dumbbell handles, or wrap the handles in a towel to make them thicker. Stand tall holding one in each hand at your sides and hold for the set time without letting the handles roll in your hands. The thicker handle makes your fingers and thumb work much harder than a normal grip.",
+    "attribution": "wger.de exercise 2744 (CC-BY-SA-4.0, lightking)"
   },
   {
     "id": "wger_2694",
@@ -1962,6 +3981,98 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1000 (CC-BY-SA-4.0)"
   },
   {
+    "id": "wger_238",
+    "name": "Fly With Dumbbells",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "chest",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Take two dumbbells and lay on a bench, make sure the feet are firmly on the ground and your back is not arched, but has good contact with the bench. The arms are stretched in front of you, about shoulder wide. Bend now the arms a bit and let them down with a half-circle movement to the side. Without changing the angle of the elbow bring them in a fluid movement back up."
+    ],
+    "description": "Take two dumbbells and lay on a bench, make sure the feet are firmly on the ground and your back is not arched, but has good contact with the bench. The arms are stretched in front of you, about shoulder wide. Bend now the arms a bit and let them down with a half-circle movement to the side. Without changing the angle of the elbow bring them in a fluid movement back up.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/238/2fc242d3-5bdd-4f97-99bd-678adb8c96fc.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / cshep442",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/238/c6464fb3-1924-4ff1-adfa-fd36da9b5d13.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / cshep442",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 238 (CC-BY-SA-3.0, wger.de)"
+  },
+  {
+    "id": "wger_239",
+    "name": "Fly With Dumbbells, Decline Bench",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "chest",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "The exercise is the same as with a regular bench:",
+      "Take two dumbbells and lay on a bench, make sure the feet are firmly on the ground and your back is not arched, but has good contact with the bench. The arms are stretched in front of you, about shoulder wide. Bend now the arms a bit and let them down with a half-circle movement to the side. Without changing the angle of the elbow bring them in a fluid movement back up."
+    ],
+    "description": "The exercise is the same as with a regular bench: Take two dumbbells and lay on a bench, make sure the feet are firmly on the ground and your back is not arched, but has good contact with the bench. The arms are stretched in front of you, about shoulder wide. Bend now the arms a bit and let them down with a half-circle movement to the side. Without changing the angle of the elbow bring them in a fluid movement back up.",
+    "attribution": "wger.de exercise 239 (CC-BY-SA-3.0, wger.de)"
+  },
+  {
+    "id": "wger_1333",
+    "name": "Forearm Curls (underhand grip)",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "triceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Engage the muscles",
+      "Don't use momentum",
+      "Controlled movement",
+      "Slow movement"
+    ],
+    "description": "Engage the muscles Don't use momentum Controlled movement Slow movement",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1333/89f43354-32e3-473a-9bcf-caca51f1a8e3.webp",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1333 (CC-BY-SA-4.0, Anastasious)"
+  },
+  {
     "id": "wger_994",
     "name": "Forward arm circles",
     "pattern": "mobility",
@@ -2095,6 +4206,48 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "(A) Get in high plank position on your hands and toes. (B) Shift your weight to your left hand as you turn your body to the right; bend your right leg behind you and extend your right arm up. Return to the center and repeat on the opposite side. Continue, alternating sides. Make it easier: Don’t raise your arm after you bend your leg behind you. Make it harder: Balance with your arm and leg extended for two counts.",
     "attribution": "wger.de exercise 260 (CC-BY-SA-4.0, http://www.realsimple.com/health/fitness-exercise/)"
+  },
+  {
+    "id": "wger_1686",
+    "name": "Glute Bridge Single-Arm Press",
+    "pattern": "hinge",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "chest",
+        "role": "primary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      },
+      {
+        "group": "biceps",
+        "role": "secondary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "With one dumbbell in hand, perform a glute bridge. Now hold the dumbbell above your chest, this is the rep starting position. Lower the dumbbell so that your elbow touches the floor or is roughly 45 degrees below your shoulder if using a bench. Push the dumbbell back into the starting position."
+    ],
+    "description": "With one dumbbell in hand, perform a glute bridge. Now hold the dumbbell above your chest, this is the rep starting position. Lower the dumbbell so that your elbow touches the floor or is roughly 45 degrees below your shoulder if using a bench. Push the dumbbell back into the starting position.",
+    "attribution": "wger.de exercise 1686 (CC-BY-SA-4.0, meldun)"
   },
   {
     "id": "wger_1392",
@@ -2316,6 +4469,34 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1007 (CC-BY-SA-4.0)"
   },
   {
+    "id": "wger_1303",
+    "name": "Helms Row",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "lats",
+        "role": "primary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Setup: Place your chest on the end of a bench, using a towel or anything soft to keep your chest protected. You want your chest to be in contact with the bench around the nipple line. Your back should be almost parallel to the floor",
+      "Execution: When you’re starting the exercise, focus on pulling your elbows back until you feel maximum tightness in the lats.",
+      "If you want to get some trap activation with the exercise, relax your shoulder blades when the weights are hanging down and then retract them as you start the rep."
+    ],
+    "description": "Setup: Place your chest on the end of a bench, using a towel or anything soft to keep your chest protected. You want your chest to be in contact with the bench around the nipple line. Your back should be almost parallel to the floor Execution: When you’re starting the exercise, focus on pulling your elbows back until you feel maximum tightness in the lats. If you want to get some trap activation with the exercise, relax your shoulder blades when the weights are hanging down and then retract them as you start the rep.",
+    "attribution": "wger.de exercise 1303 (CC-BY-SA-4.0, carlos3c)"
+  },
+  {
     "id": "wger_1318",
     "name": "High Knee Skips",
     "pattern": "conditioning",
@@ -2510,6 +4691,148 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1846 (CC-BY-SA-4.0, Croak6728)"
   },
   {
+    "id": "wger_537",
+    "name": "Incline Bench Press - Dumbbell",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "chest",
+        "role": "primary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Bench Adjustment and Preparation: Set the bench to an incline of between 30 and 45 degrees (an incline greater than 45° will place too much strain on the shoulders and reduce the stimulus to the chest). Sit down with a dumbbell on each thigh.",
+      "Starting position: Lean back, resting your back against the bench, while using your knees one after the other to push the dumbbells upward to shoulder height.",
+      "Anatomical Stabilization: Plant your feet firmly on the floor. Retract your scapulas (bring your shoulder blades together and press them into the bench) to protect your shoulders and stabilize the load.",
+      "Eccentric Phase (Lowering): Lower the dumbbells slowly and in a controlled manner toward the upper part of your chest. Your elbows should not splay out to the sides (90°); maintain a safe angle of about 45 to 60 degrees relative to your torso.",
+      "Concentric Phase (Lift): Push the dumbbells vertically upward as you exhale. Follow a slightly converging path (without letting them touch at the top). Stop the movement just before locking out your elbows to maintain muscle tension in the upper pectoral."
+    ],
+    "description": "Bench Adjustment and Preparation: Set the bench to an incline of between 30 and 45 degrees (an incline greater than 45° will place too much strain on the shoulders and reduce the stimulus to the chest). Sit down with a dumbbell on each thigh. Starting position: Lean back, resting your back against the bench, while using your knees one after the other to push the dumbbells upward to shoulder height. Anatomical Stabilization: Plant your feet firmly on the floor. Retract your scapulas (bring your shoulder blades together and press them into the bench) to protect your shoulders and stabilize the load. Eccentric Phase (Lowering): Lower the dumbbells slowly and in a controlled manner toward the upper part of your chest. Your elbows should not splay out to the sides (90°); maintain a safe angle of about 45 to 60 degrees relative to your torso. Concentric Phase (Lift): Push the dumbbells vertically upward as you exhale. Follow a slightly converging path (without letting them touch at the top). Stop the movement just before locking out your elbows to maintain muscle tension in the upper pectoral.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/16/Incline-press-1.png",
+        "license": "CC-BY-SA-3.0",
+        "source": "wger.de / Everkinetic",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/537/9f3c7817-3e3d-417d-8b08-2c0a1aa5fe03.jpg",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / erikocobra",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/537/d44aeb87-d654-4033-ad2a-368946b0a97e.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/16/Incline-press-2.png",
+        "license": "CC-BY-SA-3.0",
+        "source": "wger.de / Everkinetic",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 537 (CC-BY-SA-3.0, wger.de)"
+  },
+  {
+    "id": "wger_828",
+    "name": "Incline Bench Reverse Fly",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "traps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "The incline dumbbell reverse fly is an upper-body exercise targeting the posterior or rear deltoids, as well as the postural muscles of the upper back. Because it targets such small muscles, this exercise is usually performed with light weight for high reps, such as 10-15 reps per set or more."
+    ],
+    "description": "The incline dumbbell reverse fly is an upper-body exercise targeting the posterior or rear deltoids, as well as the postural muscles of the upper back. Because it targets such small muscles, this exercise is usually performed with light weight for high reps, such as 10-15 reps per set or more.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/828/2e959dab-f39b-4c7c-9063-eb43064ab5eb.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / cshep442",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/828/abfc7700-fadf-4f2d-ac84-e045e590a2fe.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / cshep442",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 828 (CC-BY-SA-4.0, cshep442)"
+  },
+  {
+    "id": "wger_1283",
+    "name": "Incline Chest-Supported Dumbbell Row",
+    "pattern": "horizontal_pull",
+    "type": "isometric",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      },
+      {
+        "group": "lats",
+        "role": "primary"
+      },
+      {
+        "group": "traps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Set up an adjustable bench at a 45-degree angle.",
+      "Lay on your stomach with your head hanging just above the edge of the bench.",
+      "Grab a dumbbell in each hand and set up with a good posture – core and lats engaged and shoulders neutral.",
+      "Row the dumbbells toward the top of the stomach and squeeze the back at the top of the rep.",
+      "Finally, lower the dumbbells back to the starting position and repeat until all reps are completed."
+    ],
+    "description": "Set up an adjustable bench at a 45-degree angle. Lay on your stomach with your head hanging just above the edge of the bench. Grab a dumbbell in each hand and set up with a good posture – core and lats engaged and shoulders neutral. Row the dumbbells toward the top of the stomach and squeeze the back at the top of the rep. Finally, lower the dumbbells back to the starting position and repeat until all reps are completed.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1283/e7262f70-7512-408a-8d00-4c499ef632fc.jpg",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / carlos3c",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1283 (CC-BY-SA-4.0, carlos3c)"
+  },
+  {
     "id": "wger_171",
     "name": "Incline Crunches",
     "pattern": "core_compression",
@@ -2544,6 +4867,104 @@ export const WGER_CATALOGUE: SeedExercise[] = [
       }
     ],
     "attribution": "wger.de exercise 171 (CC-BY-SA-3.0, wger.de)"
+  },
+  {
+    "id": "wger_1879",
+    "name": "Incline DB Y-Raise",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Set an incline bench to a 45-degree angle and sit facing the bench, chest against the pad, with a dumbbell in each hand, palms facing each other.",
+      "Position your feet firmly on the ground for stability and let your arms hang down naturally with a slight bend in your elbows.",
+      "Engage your core and keep your back straight throughout the movement.",
+      "Raise your arms forward and out to form a Y shape, keeping the movement controlled and your elbows slightly bent.",
+      "Lift until your arms are roughly parallel to the floor and in line with your ears.",
+      "Pause briefly at the top of the movement to engage your shoulder muscles fully, then slowly lower your arms back down to the starting position.",
+      "Ensure the movement is slow and controlled during both the ascent and descent to maximize engagement of the deltoids and supporting muscles.",
+      "Repeat for the desired number of repetitions, maintaining proper form throughout."
+    ],
+    "description": "Set an incline bench to a 45-degree angle and sit facing the bench, chest against the pad, with a dumbbell in each hand, palms facing each other. Position your feet firmly on the ground for stability and let your arms hang down naturally with a slight bend in your elbows. Engage your core and keep your back straight throughout the movement. Raise your arms forward and out to form a Y shape, keeping the movement controlled and your elbows slightly bent. Lift until your arms are roughly parallel to the floor and in line with your ears. Pause briefly at the top of the movement to engage your shoulder muscles fully, then slowly lower your arms back down to the starting position. Ensure the movement is slow and controlled during both the ascent and descent to maximize engagement of the deltoids and supporting muscles. Repeat for the desired number of repetitions, maintaining proper form throughout.",
+    "attribution": "wger.de exercise 1879 (CC-BY-SA-4.0, Deflation)"
+  },
+  {
+    "id": "wger_308",
+    "name": "Incline Dumbbell Fly",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "chest",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Use inclined bench. Hold dumbbells straight out to your sides, elbows slightly bent. Bring arms together above you, keeping angle of elbows fixed."
+    ],
+    "description": "Use inclined bench. Hold dumbbells straight out to your sides, elbows slightly bent. Bring arms together above you, keeping angle of elbows fixed.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/308/2ca22a0a-9843-4bb4-9d12-faf5c8c89180.jpg",
+        "license": "CC0",
+        "source": "wger.de / yuhonas/free-exercise-db",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/308/dd825dd1-8b8c-4db1-bbdd-f2c81e65b7ff.jpg",
+        "license": "CC0",
+        "source": "wger.de / yuhonas/free-exercise-db",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 308 (CC-BY-SA-3.0, tuckerm)"
+  },
+  {
+    "id": "wger_1441",
+    "name": "Incline OHP DB",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Sit on a bench with 45° incline",
+      "Ellbows 45° out",
+      "Move dumbbells down until upper arms are parallel to shoulders",
+      "Move dumbbells up, meeting overhead"
+    ],
+    "description": "Sit on a bench with 45° incline Ellbows 45° out Move dumbbells down until upper arms are parallel to shoulders Move dumbbells up, meeting overhead",
+    "attribution": "wger.de exercise 1441 (CC-BY-SA-4.0, M9)"
   },
   {
     "id": "wger_312",
@@ -2640,6 +5061,57 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1716 (CC-BY-SA-4.0, Croak6728)"
   },
   {
+    "id": "wger_1693",
+    "name": "Incline Static Hold",
+    "pattern": "horizontal_push",
+    "type": "isometric",
+    "muscles": [
+      {
+        "group": "chest",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Hold Position:",
+      "Lower the dumbbells a few inches above your chest — about the midpoint of a normal incline press.",
+      "This is where your upper chest is under maximum tension.",
+      "Static Hold:",
+      "Hold the position for 20–45 seconds while keeping the chest tight.",
+      "Breathe slowly but stay tense — do not relax your chest or shoulders .",
+      "End the set:",
+      "After the hold, carefully bring the dumbbells down and rest."
+    ],
+    "description": "Hold Position: Lower the dumbbells a few inches above your chest — about the midpoint of a normal incline press. This is where your upper chest is under maximum tension. Static Hold: Hold the position for 20–45 seconds while keeping the chest tight. Breathe slowly but stay tense — do not relax your chest or shoulders . End the set: After the hold, carefully bring the dumbbells down and rest.",
+    "attribution": "wger.de exercise 1693 (CC-BY-SA-4.0, daiben)"
+  },
+  {
+    "id": "wger_2728",
+    "name": "Isometric Dumbbell Pronation Hold",
+    "pattern": "horizontal_push",
+    "type": "isometric",
+    "muscles": [
+      {
+        "group": "triceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Rest your forearm on a bench with the palm facing in and the thumb on top. Hold a dumbbell by one end with the weighted end pointing up. Let the weight tip about 45 degrees toward the palm up side, then stop it and hold that position for the set time. The muscles that stop it falling are your pronators, which roll the hand over in arm wrestling. Start with a light weight because the leverage is high."
+    ],
+    "description": "Rest your forearm on a bench with the palm facing in and the thumb on top. Hold a dumbbell by one end with the weighted end pointing up. Let the weight tip about 45 degrees toward the palm up side, then stop it and hold that position for the set time. The muscles that stop it falling are your pronators, which roll the hand over in arm wrestling. Start with a light weight because the leverage is high.",
+    "attribution": "wger.de exercise 2728 (CC-BY-SA-4.0, lightking)"
+  },
+  {
     "id": "wger_1733",
     "name": "Isometric Squat to Failure",
     "pattern": "squat",
@@ -2674,6 +5146,50 @@ export const WGER_CATALOGUE: SeedExercise[] = [
       }
     ],
     "attribution": "wger.de exercise 1733 (CC-BY-SA-4.0, Tierrasverdes)"
+  },
+  {
+    "id": "wger_2729",
+    "name": "Isometric Wrist Curl Hold",
+    "pattern": "horizontal_pull",
+    "type": "isometric",
+    "muscles": [
+      {
+        "group": "triceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Sit on a bench with your forearm resting on your thigh, palm facing up, holding a dumbbell or barbell. Curl the wrist all the way up and hold the top position for the set time, squeezing hard. This builds cupping strength and tendon resilience for grip and arm wrestling. Do it straight after your wrist curls without changing seats."
+    ],
+    "description": "Sit on a bench with your forearm resting on your thigh, palm facing up, holding a dumbbell or barbell. Curl the wrist all the way up and hold the top position for the set time, squeezing hard. This builds cupping strength and tendon resilience for grip and arm wrestling. Do it straight after your wrist curls without changing seats.",
+    "attribution": "wger.de exercise 2729 (CC-BY-SA-4.0, lightking)"
+  },
+  {
+    "id": "wger_2726",
+    "name": "Isometric Wrist Rising Hold",
+    "pattern": "horizontal_push",
+    "type": "isometric",
+    "muscles": [
+      {
+        "group": "triceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Set up exactly as for dumbbell wrist rising: arm straight down by your side, dumbbell held at one end with the weight pointing forward. Tip the weight up to the top position and hold it still for the set time without letting it drop. This builds tendon strength in the riser for arm wrestling. Start light and stop if you feel sharp pain in the wrist or elbow."
+    ],
+    "description": "Set up exactly as for dumbbell wrist rising: arm straight down by your side, dumbbell held at one end with the weight pointing forward. Tip the weight up to the top position and hold it still for the set time without letting it drop. This builds tendon strength in the riser for arm wrestling. Start light and stop if you feel sharp pain in the wrist or elbow.",
+    "attribution": "wger.de exercise 2726 (CC-BY-SA-4.0, lightking)"
   },
   {
     "id": "wger_2748",
@@ -2804,6 +5320,73 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1910 (CC-BY-SA-4.0, cybro)"
   },
   {
+    "id": "wger_1511",
+    "name": "Kong Curl",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "This exercise is somewhat similar to a cable curl and a cable crossover. But instead of a chest/biceps exercise, this exercise targets the brachialis muscle, responsible for that broad arm when viewed from a front view.",
+      "During the exercise, maintain a pronated forearm position with starting position of approx. 45 degree pronated. Start with slightly bend elbows and alternately curl until your hands (your thumb first) meet your upper middle chest (similar to how Kong hits his chest, thus the name of this exercise)."
+    ],
+    "description": "This exercise is somewhat similar to a cable curl and a cable crossover. But instead of a chest/biceps exercise, this exercise targets the brachialis muscle, responsible for that broad arm when viewed from a front view. During the exercise, maintain a pronated forearm position with starting position of approx. 45 degree pronated. Start with slightly bend elbows and alternately curl until your hands (your thumb first) meet your upper middle chest (similar to how Kong hits his chest, thus the name of this exercise).",
+    "attribution": "wger.de exercise 1511 (CC-BY-SA-4.0, Moffi)"
+  },
+  {
+    "id": "wger_1442",
+    "name": "Kreis Press DB",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "biceps",
+        "role": "secondary"
+      },
+      {
+        "group": "chest",
+        "role": "secondary"
+      },
+      {
+        "group": "abdominals",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Sit on a bench with 45° incline",
+      "Hold dumbbells overhead",
+      "Move dumbbells down as if doing overhead press",
+      "Rotate dumbbells palms facing up and extend your arms in front of your body",
+      "Move hands together until dumbbells meet, keep arms extended",
+      "Reverse the motion until dumbbells are overhead again",
+      "This is one repetition"
+    ],
+    "description": "Sit on a bench with 45° incline Hold dumbbells overhead Move dumbbells down as if doing overhead press Rotate dumbbells palms facing up and extend your arms in front of your body Move hands together until dumbbells meet, keep arms extended Reverse the motion until dumbbells are overhead again This is one repetition",
+    "attribution": "wger.de exercise 1442 (CC-BY-SA-4.0, M9)"
+  },
+  {
     "id": "wger_382",
     "name": "L Hold",
     "pattern": "core_compression",
@@ -2864,6 +5447,33 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1853 (CC-BY-SA-4.0, Croak6728)"
   },
   {
+    "id": "wger_1434",
+    "name": "Lat Pull DB",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "lats",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Bend upper body forward",
+      "Move dumbbells near your body with slightly bent arms towards your back"
+    ],
+    "description": "Bend upper body forward Move dumbbells near your body with slightly bent arms towards your back",
+    "attribution": "wger.de exercise 1434 (CC-BY-SA-4.0, M9)"
+  },
+  {
     "id": "wger_1325",
     "name": "Lateral Push Off",
     "pattern": "squat",
@@ -2898,6 +5508,64 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1325 (CC-BY-SA-4.0, cleen)"
   },
   {
+    "id": "wger_2538",
+    "name": "Lateral Raise Isometric",
+    "pattern": "vertical_push",
+    "type": "isometric",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "An isometric lateral raise is a shoulder exercise where you hold your arms out to the sides at waist height for a set amount of time instead of moving up and down"
+    ],
+    "description": "An isometric lateral raise is a shoulder exercise where you hold your arms out to the sides at waist height for a set amount of time instead of moving up and down",
+    "attribution": "wger.de exercise 2538 (CC-BY-SA-4.0, HexoctusEngineering)"
+  },
+  {
+    "id": "wger_348",
+    "name": "Lateral Raises",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "This exercise works the deltoid muscle of the shoulder. The movement starts with the arms straight, and the hands holding weights at the sides or in front of the body. Body is in a slight forward-leaning position with hips and knees bent a little. Arms are kept straight or slightly bent, and raised through an arc of movement in the coronal plane that terminates when the hands are at approximately shoulder height. Weights are lowered to the starting position, completing one rep. When using a cable machine the individual stands with the coronal plane in line with the pulley, which is at or near the ground.[9] The exercise can be completed one shoulder at a time (with the other hand used to stabilize the body against the weight moved), or with both hands simultaneously if two parallel pulleys are available."
+    ],
+    "description": "This exercise works the deltoid muscle of the shoulder. The movement starts with the arms straight, and the hands holding weights at the sides or in front of the body. Body is in a slight forward-leaning position with hips and knees bent a little. Arms are kept straight or slightly bent, and raised through an arc of movement in the coronal plane that terminates when the hands are at approximately shoulder height. Weights are lowered to the starting position, completing one rep. When using a cable machine the individual stands with the coronal plane in line with the pulley, which is at or near the ground.[9] The exercise can be completed one shoulder at a time (with the other hand used to stabilize the body against the weight moved), or with both hands simultaneously if two parallel pulleys are available.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/148/lateral-dumbbell-raises-large-2.png",
+        "license": "CC-BY-SA-3.0",
+        "source": "wger.de / Everkinetic",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/148/lateral-dumbbell-raises-large-1.png",
+        "license": "CC-BY-SA-3.0",
+        "source": "wger.de / Everkinetic",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 348 (CC-BY-SA-3.0, wger.de)"
+  },
+  {
     "id": "wger_1514",
     "name": "Lateral Walk",
     "pattern": "hinge",
@@ -2918,6 +5586,36 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "Lateral walks, also known as side steps or squat walks, are a type of exercise where you move sideways in a squatting position. They can be performed with or without resistance bands. These exercises strengthen the hip abductors, glutes, and other stabilizing muscles.",
     "attribution": "wger.de exercise 1514 (CC-BY-SA-4.0, cozyGalvinism)"
+  },
+  {
+    "id": "wger_351",
+    "name": "Lateral-to-Front Raises",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "traps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "-(1) Perform a lateral raise, pausing at the top of the lift (2).",
+      "-Instead of lowering the weight, bring it to the front of your body so that you appear to be at the top position of a front raise. You will do this by using a Pec Fly motion, maintaining straight arms. (3)",
+      "-Now lower the weight to your quadriceps, or, in other words, lower the dumbbells as though you are completing a Front Raise repetition. (4)",
+      "-Reverse the motion: Perform a front raise (5), at the apex of the lift use a Reverse Fly motion to position the weights at the top of a Lateral Raise (6), and finally, lower the weights until your palms are essentially touching the sides of your thighs (7). THIS IS ONE REP.",
+      "(1) l front view (2) -l- FV (3) l- side view (4) l SV/FV (5) l- SV (6) -l- FV (7) l FV/SV"
+    ],
+    "description": "-(1) Perform a lateral raise, pausing at the top of the lift (2). -Instead of lowering the weight, bring it to the front of your body so that you appear to be at the top position of a front raise. You will do this by using a Pec Fly motion, maintaining straight arms. (3) -Now lower the weight to your quadriceps, or, in other words, lower the dumbbells as though you are completing a Front Raise repetition. (4) -Reverse the motion: Perform a front raise (5), at the apex of the lift use a Reverse Fly motion to position the weights at the top of a Lateral Raise (6), and finally, lower the weights until your palms are essentially touching the sides of your thighs (7). THIS IS ONE REP. (1) l front view (2) -l- FV (3) l- side view (4) l SV/FV (5) l- SV (6) -l- FV (7) l FV/SV",
+    "attribution": "wger.de exercise 351 (CC-BY-SA-4.0, nate303303)"
   },
   {
     "id": "wger_1013",
@@ -3025,6 +5723,28 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1909 (CC-BY-SA-4.0, cybro)"
   },
   {
+    "id": "wger_1967",
+    "name": "Lento avanti seduto",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "slow controlled seated forward exercise with dumbbells"
+    ],
+    "description": "slow controlled seated forward exercise with dumbbells",
+    "attribution": "wger.de exercise 1967 (CC-BY-SA-4.0, Cf)"
+  },
+  {
     "id": "wger_1478",
     "name": "Levitation Crunch",
     "pattern": "core_compression",
@@ -3084,6 +5804,63 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1868 (CC-BY-SA-4.0, Davidgj32)"
   },
   {
+    "id": "wger_1530",
+    "name": "Lying Dumbbell Curls",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Take a",
+      "dumbbell in each hand and lie backwards on a bench, similar to a classic chest press.",
+      "Let your arms hang down at your sides, with the dumbbells possibly touching the",
+      "floor. Now start to lift the dumbbells upwards until your forearms are",
+      "perpendicular to the ceiling. Slowly lower the dumbbells until they almost",
+      "touch the floor again. Keep your ellbows in place to minimize cheating."
+    ],
+    "description": "Take a dumbbell in each hand and lie backwards on a bench, similar to a classic chest press. Let your arms hang down at your sides, with the dumbbells possibly touching the floor. Now start to lift the dumbbells upwards until your forearms are perpendicular to the ceiling. Slowly lower the dumbbells until they almost touch the floor again. Keep your ellbows in place to minimize cheating.",
+    "attribution": "wger.de exercise 1530 (CC-BY-SA-4.0, Moffi)"
+  },
+  {
+    "id": "wger_923",
+    "name": "Lying Dumbbell Row SS Seated Shrug",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "lats",
+        "role": "primary"
+      },
+      {
+        "group": "traps",
+        "role": "primary"
+      },
+      {
+        "group": "biceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "laying on the stomach on a bench with slight angle"
+    ],
+    "description": "laying on the stomach on a bench with slight angle",
+    "attribution": "wger.de exercise 923 (CC-BY-SA-4.0, novadani)"
+  },
+  {
     "id": "wger_1869",
     "name": "Lying Figure Four Stretch",
     "pattern": "mobility",
@@ -3114,6 +5891,51 @@ export const WGER_CATALOGUE: SeedExercise[] = [
       }
     ],
     "attribution": "wger.de exercise 1869 (CC-BY-SA-4.0, Davidgj32)"
+  },
+  {
+    "id": "wger_406",
+    "name": "Lying Rotator Cuff Exercise",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "This is an excercise for problems with the rotator cuff. Primary Infraspinatus, secondary Teres Minor.",
+      "Lying on side. Keep elbow on waist and in 90 dgr angle. Rotate towards stomach. Add weight as fit."
+    ],
+    "description": "This is an excercise for problems with the rotator cuff. Primary Infraspinatus, secondary Teres Minor. Lying on side. Keep elbow on waist and in 90 dgr angle. Rotate towards stomach. Add weight as fit.",
+    "attribution": "wger.de exercise 406 (CC-BY-SA-4.0, Trix)"
+  },
+  {
+    "id": "wger_1490",
+    "name": "Lying Triceps Kickback",
+    "pattern": "hinge",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "triceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Set the bench to an 60deg angle. Stand still and rest your upper body on the inclined bench, ensuring a nearly straight line of your entire body. Squeeze your shoulder blades together, so that your elbows are located behind your torso with your upper arms nearly parallel to the floor. Lift the dumbbells until your arms form a straight line. Slowly lower the dumbbells back to the initial position. Initial position corresponds to an rectangular position of upper and lower arms."
+    ],
+    "description": "Set the bench to an 60deg angle. Stand still and rest your upper body on the inclined bench, ensuring a nearly straight line of your entire body. Squeeze your shoulder blades together, so that your elbows are located behind your torso with your upper arms nearly parallel to the floor. Lift the dumbbells until your arms form a straight line. Slowly lower the dumbbells back to the initial position. Initial position corresponds to an rectangular position of upper and lower arms.",
+    "attribution": "wger.de exercise 1490 (CC-BY-SA-4.0, Moffi)"
   },
   {
     "id": "wger_1584",
@@ -3293,6 +6115,61 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1738 (CC-BY-SA-4.0, 54str)"
   },
   {
+    "id": "wger_1461",
+    "name": "No Leg Drive Dumbbell Chest Press",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "chest",
+        "role": "primary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Set up for a normal Dumbbell chest press but lift your leg ups straight or put them on another bench to remove the leg drive."
+    ],
+    "description": "Set up for a normal Dumbbell chest press but lift your leg ups straight or put them on another bench to remove the leg drive.",
+    "attribution": "wger.de exercise 1461 (CC-BY-SA-4.0, Expenses7000)"
+  },
+  {
+    "id": "wger_1701",
+    "name": "One-Arm Heavy Row",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "lats",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Rowing phase (concentric):",
+      "Pull the dumbbell toward your lower chest or waist , leading with your elbow .",
+      "Keep your torso stable — avoid twisting or rotating your shoulders.",
+      "Pause at the top and squeeze your lats ."
+    ],
+    "description": "Rowing phase (concentric): Pull the dumbbell toward your lower chest or waist , leading with your elbow . Keep your torso stable — avoid twisting or rotating your shoulders. Pause at the top and squeeze your lats .",
+    "attribution": "wger.de exercise 1701 (CC-BY-SA-4.0, daiben)"
+  },
+  {
     "id": "wger_1822",
     "name": "Open Book",
     "pattern": "mobility",
@@ -3363,6 +6240,29 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "Stand between a set of parallel bars. Place your hands, knuckles outwards, on the bars. Push down on your hands to lift yourself off the floor. Hold yourself in this position with your arms straight for the required time.",
     "attribution": "wger.de exercise 1808 (CC-BY-SA-4.0, Croak6728)"
+  },
+  {
+    "id": "wger_1703",
+    "name": "Patadas traseras",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "triceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "The dumbbell kickback is a popular strength training exercise that targets the triceps muscles in the back of your upper arms. It helps strengthen and tone the triceps, contributing to overall arm strength and aesthetics.",
+      "Among the exercises that work the arm muscles, kickback and its variations are very effective. You can easily apply these exercises with dumbbells, cables or resistance bands."
+    ],
+    "description": "The dumbbell kickback is a popular strength training exercise that targets the triceps muscles in the back of your upper arms. It helps strengthen and tone the triceps, contributing to overall arm strength and aesthetics. Among the exercises that work the arm muscles, kickback and its variations are very effective. You can easily apply these exercises with dumbbells, cables or resistance bands.",
+    "attribution": "wger.de exercise 1703 (CC-BY-SA-4.0, Mariano_O)"
   },
   {
     "id": "wger_1872",
@@ -3568,6 +6468,50 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 2488 (CC-BY-SA-4.0, Raj)"
   },
   {
+    "id": "wger_1658",
+    "name": "Preacher Curl - Externally Rotated",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Single arm curl that can be done using a dumbbell and a preacher bench, or a preacher curl machine. Turn body away from the weight"
+    ],
+    "description": "Single arm curl that can be done using a dumbbell and a preacher bench, or a preacher curl machine. Turn body away from the weight",
+    "attribution": "wger.de exercise 1658 (CC-BY-SA-4.0, Shiladree)"
+  },
+  {
+    "id": "wger_1657",
+    "name": "Preacher Curl - Internally Rotated",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Single arm curl that can be done using a dumbbell and a preacher bench, or a preacher curl machine. Turn body towards the weight"
+    ],
+    "description": "Single arm curl that can be done using a dumbbell and a preacher bench, or a preacher curl machine. Turn body towards the weight",
+    "attribution": "wger.de exercise 1657 (CC-BY-SA-4.0, Shiladree)"
+  },
+  {
     "id": "wger_1208",
     "name": "Prisoner Squat",
     "pattern": "squat",
@@ -3682,6 +6626,32 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "Use a box or bench to get your chin above a pull-up bar with your elbows fully bent and shoulders pulled down. Take your feet off the box and hold that top position still for the set time. Keep your chest up and do not let your chin drop below the bar. This strengthens the hardest part of the pull-up.",
     "attribution": "wger.de exercise 2731 (CC-BY-SA-4.0, lightking)"
+  },
+  {
+    "id": "wger_1273",
+    "name": "Pullover",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "chest",
+        "role": "primary"
+      },
+      {
+        "group": "lats",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Doubling as a back and chest exercise, the Dumbbell Pullover can train both your pecs and lats."
+    ],
+    "description": "Doubling as a back and chest exercise, the Dumbbell Pullover can train both your pecs and lats.",
+    "attribution": "wger.de exercise 1273 (CC-BY-SA-4.0, 3leh)"
   },
   {
     "id": "wger_985",
@@ -3805,6 +6775,42 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1287 (CC-BY-SA-4.0, painDpice)"
   },
   {
+    "id": "wger_487",
+    "name": "Rear Delt Raises",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Seated on a bench with the dumbbells on the floor bend over at 45 Degrees and then slowly raise each dumbbell to shoulder height and hold for a couple seconds before lowering to the starting position."
+    ],
+    "description": "Seated on a bench with the dumbbells on the floor bend over at 45 Degrees and then slowly raise each dumbbell to shoulder height and hold for a couple seconds before lowering to the starting position.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/487/ad724e5c-b1ed-49e8-9279-a17545b0dd0b.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / cshep442",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/487/692c598c-0493-42a5-be8b-b9d2e9adcd00.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / cshep442",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 487 (CC-BY-SA-3.0, YYCfit)"
+  },
+  {
     "id": "wger_1960",
     "name": "Rear-foot-elevated Hip Flexor Stretch",
     "pattern": "mobility",
@@ -3831,6 +6837,33 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "Rear-foot-elevated Hip Flexor Stretch Part of: Limber 11 Source: Joe DeFranco Prescription: 5-10 reps each side Type: dynamic Includes dynamic movement plus 3s hold.",
     "attribution": "wger.de exercise 1960 (CC-BY-SA-4.0, Pete-E automation)"
+  },
+  {
+    "id": "wger_490",
+    "name": "Renegade Row",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "lats",
+        "role": "primary"
+      },
+      {
+        "group": "traps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Get into pushup position gripping some dumbbells. Perform one pushup, then drive your left elbo up, bringing the dumbell up to your body. Return the dumbell to starting position.",
+      "Perform another pushup and then row with the other arm to complete one rep."
+    ],
+    "description": "Get into pushup position gripping some dumbbells. Perform one pushup, then drive your left elbo up, bringing the dumbell up to your body. Return the dumbell to starting position. Perform another pushup and then row with the other arm to complete one rep.",
+    "attribution": "wger.de exercise 490 (CC0, fletchgraham)"
   },
   {
     "id": "wger_2448",
@@ -4281,6 +7314,81 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1477 (CC-BY-SA-4.0, Moffi)"
   },
   {
+    "id": "wger_2755",
+    "name": "Seated Dumbbell Biceps Curl",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Sit with your back supported, keep the upper arms fixed at your sides, curl the dumbbells up, pause briefly at the top, lower slowly under control without swinging the back."
+    ],
+    "description": "Sit with your back supported, keep the upper arms fixed at your sides, curl the dumbbells up, pause briefly at the top, lower slowly under control without swinging the back.",
+    "attribution": "wger.de exercise 2755 (CC-BY-SA-4.0, ruochenma)"
+  },
+  {
+    "id": "wger_1620",
+    "name": "Seated Dumbbell Calf Raise",
+    "pattern": "conditioning",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "calves",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "general",
+      "legs"
+    ],
+    "cues": [
+      "The seated dumbbell calf raise is a targeted exercise for strengthening the lower leg muscles. It follows the same movement pattern as the machine version: you place the weight on your knees, and by extending and flexing your ankles, you move the weight."
+    ],
+    "description": "The seated dumbbell calf raise is a targeted exercise for strengthening the lower leg muscles. It follows the same movement pattern as the machine version: you place the weight on your knees, and by extending and flexing your ankles, you move the weight.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1620/edd40e39-e337-4460-a8dd-6127d40ddd16.jpeg",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / AlucardEvil40",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1620 (CC-BY-SA-4.0, AlucardEvil40)"
+  },
+  {
+    "id": "wger_918",
+    "name": "Seated Dumbbell Side Lateral",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "seated slightly leaned forward at beginning of exercise"
+    ],
+    "description": "seated slightly leaned forward at beginning of exercise",
+    "attribution": "wger.de exercise 918 (CC-BY-SA-4.0, novadani)"
+  },
+  {
     "id": "wger_1680",
     "name": "Seated figure four",
     "pattern": "squat",
@@ -4446,6 +7554,36 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1959 (CC-BY-SA-4.0, Pete-E automation)"
   },
   {
+    "id": "wger_1098",
+    "name": "Seated rear delt rise",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "lats",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Seated, bent 45 deg forward. Arms fully stretched out, raise arms up to shoulder height and back down"
+    ],
+    "description": "Seated, bent 45 deg forward. Arms fully stretched out, raise arms up to shoulder height and back down",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1098/fa5328a2-64cb-4afb-a283-b3d948ddaf3f.jpg",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / philip",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1098 (CC-BY-SA-4.0, philip)"
+  },
+  {
     "id": "wger_1841",
     "name": "Seated Shoulder Extension Stretch",
     "pattern": "mobility",
@@ -4473,6 +7611,38 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "Sit with your hands behind you, shoulder width apart. Lock your elbows. Scoot your feet and hips out forwards, lowering your shoulders down towards ground. Go as far as possible to obtain a good stretch. See the video: https://www.youtube.com/watch?v=ihUAbG0e8zw",
     "attribution": "wger.de exercise 1841 (CC-BY-SA-4.0, Croak6728)"
+  },
+  {
+    "id": "wger_1448",
+    "name": "Seated W Curl",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Sit on bench with 60° incline",
+      "Hold dumbbells beside body near the ground, palms facing outwards, arms fully extended",
+      "Move dumbbells up using only biceps and without momentum"
+    ],
+    "description": "Sit on bench with 60° incline Hold dumbbells beside body near the ground, palms facing outwards, arms fully extended Move dumbbells up using only biceps and without momentum",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1448/2184e68c-32b5-413f-a7c1-4a2d1bb98c35.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1448 (CC-BY-SA-4.0, M9)"
   },
   {
     "id": "wger_2523",
@@ -4535,6 +7705,74 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1884 (CC-BY-SA-4.0, teus_ergaster)"
   },
   {
+    "id": "wger_1714",
+    "name": "Shoulder Dumbbell Pendular Exercise",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "lats",
+        "role": "primary"
+      },
+      {
+        "group": "chest",
+        "role": "primary"
+      },
+      {
+        "group": "traps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Lean forward to rest your hand on a chair or other object, holding a dumbbell in the other hand",
+      "Gently swing the dumbbell in a circular motion"
+    ],
+    "description": "Lean forward to rest your hand on a chair or other object, holding a dumbbell in the other hand Gently swing the dumbbell in a circular motion",
+    "attribution": "wger.de exercise 1714 (CC-BY-SA-4.0, Croak6728)"
+  },
+  {
+    "id": "wger_1715",
+    "name": "Shoulder External Rotation with Dumbbell",
+    "pattern": "mobility",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "biceps",
+        "role": "primary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "warmup",
+    "regions": [
+      "general"
+    ],
+    "cues": [
+      "Lie on your side holding a dumbbell in your upper hand",
+      "Tuck your elbow into your side and rest the hand in front of you",
+      "Rotate the shoulder so the hand raises up",
+      "Lower the hand down"
+    ],
+    "description": "Lie on your side holding a dumbbell in your upper hand Tuck your elbow into your side and rest the hand in front of you Rotate the shoulder so the hand raises up Lower the hand down",
+    "attribution": "wger.de exercise 1715 (CC-BY-SA-4.0, Croak6728)"
+  },
+  {
     "id": "wger_2693",
     "name": "Shoulder Flexion Wall Stretch",
     "pattern": "mobility",
@@ -4559,6 +7797,105 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "Place both hands against a wall above shoulder height. Step back and gently move the chest downward while reaching the arms overhead, keeping the back controlled. Hold a comfortable shoulder flexion stretch without forcing the range or arching the lower back.",
     "attribution": "wger.de exercise 2693 (CC0, Original exercise instructions prepared for nalhilal)"
+  },
+  {
+    "id": "wger_567",
+    "name": "Shoulder Press, Dumbbells",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Sit on a bench, the back rest should be almost vertical. Take two dumbbells and bring them up to shoulder height, the palms and the elbows point during the whole exercise to the front. Press the weights up, at the highest point they come very near but don't touch. Go slowly down and repeat."
+    ],
+    "description": "Sit on a bench, the back rest should be almost vertical. Take two dumbbells and bring them up to shoulder height, the palms and the elbows point during the whole exercise to the front. Press the weights up, at the highest point they come very near but don't touch. Go slowly down and repeat.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/123/dumbbell-shoulder-press-large-1.png",
+        "license": "CC-BY-SA-3.0",
+        "source": "wger.de / Everkinetic",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/123/dumbbell-shoulder-press-large-2.png",
+        "license": "CC-BY-SA-3.0",
+        "source": "wger.de / Everkinetic",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 567 (CC-BY-SA-3.0, wger.de)"
+  },
+  {
+    "id": "wger_1338",
+    "name": "Shoulder Raise (Dumbbell)",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Engage the muscles",
+      "Don't use momentum",
+      "Controlled movement",
+      "Slow movement",
+      "Always keep the arms bent",
+      "Don't overextend"
+    ],
+    "description": "Engage the muscles Don't use momentum Controlled movement Slow movement Always keep the arms bent Don't overextend",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1338/9d157b4d-5af0-43c1-bd34-f52144ba1b54.webp",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1338 (CC-BY-SA-4.0, Anastasious)"
+  },
+  {
+    "id": "wger_1443",
+    "name": "Shoulder Raise Side and Front DB",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Stand while holding dumbbells beside body",
+      "Keep arms almost fully extended",
+      "Without momentum raise dumbbells to the side of your body until shoulder height, palms facing down",
+      "Lower dumbbells beside body, palms facing inwards",
+      "Immediately raise dumbbells in front of your body until shoulder height, palms facing down",
+      "Down again",
+      "This is one repetition"
+    ],
+    "description": "Stand while holding dumbbells beside body Keep arms almost fully extended Without momentum raise dumbbells to the side of your body until shoulder height, palms facing down Lower dumbbells beside body, palms facing inwards Immediately raise dumbbells in front of your body until shoulder height, palms facing down Down again This is one repetition",
+    "attribution": "wger.de exercise 1443 (CC-BY-SA-4.0, M9)"
   },
   {
     "id": "wger_570",
@@ -4625,6 +7962,79 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1209 (CC-BY-SA-4.0, lxmx)"
   },
   {
+    "id": "wger_572",
+    "name": "Shrugs, Dumbbells",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Stand with straight body, the hands are hanging freely on the side and hold each a dumbbell. Lift from this position the shoulders as high as you can, but don't bend the arms during the movement. On the highest point, make a short pause of 1 or 2 seconds before returning slowly to the initial position.",
+      "When training with a higher weight, make sure that you still do the whole movement!"
+    ],
+    "description": "Stand with straight body, the hands are hanging freely on the side and hold each a dumbbell. Lift from this position the shoulders as high as you can, but don't bend the arms during the movement. On the highest point, make a short pause of 1 or 2 seconds before returning slowly to the initial position. When training with a higher weight, make sure that you still do the whole movement!",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/151/Dumbbell-shrugs-2.png",
+        "license": "CC-BY-SA-3.0",
+        "source": "wger.de / Everkinetic",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/572/9e730259-1dcd-4b5e-b4cc-9ebc0cfda75c.webp",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / AlucardEvil40",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/151/Dumbbell-shrugs-1.png",
+        "license": "CC-BY-SA-3.0",
+        "source": "wger.de / Everkinetic",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 572 (CC-BY-SA-3.0, wger.de)"
+  },
+  {
+    "id": "wger_1188",
+    "name": "Side bend",
+    "pattern": "core_compression",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "abdominals",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "core"
+    ],
+    "cues": [
+      "With a weight in one hand, extend that arm down and bend the other arm, resting your hand on your head. Now move the hand holding the weight by rotating your torso up and down."
+    ],
+    "description": "With a weight in one hand, extend that arm down and bend the other arm, resting your hand on your head. Now move the hand holding the weight by rotating your torso up and down.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1188/43e714e4-b736-4f3a-8ab4-97821fdff86a.jpg",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1188 (CC-BY-SA-4.0)"
+  },
+  {
     "id": "wger_576",
     "name": "Side Crunch",
     "pattern": "core_compression",
@@ -4659,6 +8069,28 @@ export const WGER_CATALOGUE: SeedExercise[] = [
       }
     ],
     "attribution": "wger.de exercise 576 (CC-BY-SA-3.0, kwrindy)"
+  },
+  {
+    "id": "wger_577",
+    "name": "Side Dumbbell Trunk Flexion",
+    "pattern": "core_compression",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "abdominals",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "core"
+    ],
+    "cues": [
+      "AKA dumbbell side bends. Stand in line with the hips with slightly bent knees, maintain the natural curvature of the spine, hand stretched by the body, grip the barbell with one hand. Make slow and controlled torso side flexions till you reach the angle of approximately 45°."
+    ],
+    "description": "AKA dumbbell side bends. Stand in line with the hips with slightly bent knees, maintain the natural curvature of the spine, hand stretched by the body, grip the barbell with one hand. Make slow and controlled torso side flexions till you reach the angle of approximately 45°.",
+    "attribution": "wger.de exercise 577 (CC-BY-SA-3.0, GiglioRosso)"
   },
   {
     "id": "wger_1202",
@@ -4856,6 +8288,74 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1393 (CC-BY-SA-4.0, captive0592)"
   },
   {
+    "id": "wger_1968",
+    "name": "Single-arm dumbbell shoulder press",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "secondary"
+      },
+      {
+        "group": "chest",
+        "role": "secondary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Press the dumbbell vertically overhead in a controlled motion until your arm is fully extended, without locking the elbow. Slowly lower the dumbbell back to the starting position at shoulder height."
+    ],
+    "description": "Press the dumbbell vertically overhead in a controlled motion until your arm is fully extended, without locking the elbow. Slowly lower the dumbbell back to the starting position at shoulder height.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1968/cd92e973-a0d9-4e5f-9011-5369012598d3.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1968 (CC-BY-SA-4.0, evtimovgeorg)"
+  },
+  {
+    "id": "wger_584",
+    "name": "Single-arm Preacher Curl",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Sit on the preacher curl bench and perform a bicep curl with a dumbbell in one hand. Your other hand can be at rest, or beneath your curling arm's elbow."
+    ],
+    "description": "Sit on the preacher curl bench and perform a bicep curl with a dumbbell in one hand. Your other hand can be at rest, or beneath your curling arm's elbow.",
+    "attribution": "wger.de exercise 584 (CC-BY-SA-3.0, tuckerm)"
+  },
+  {
     "id": "wger_2667",
     "name": "Single-Leg Balance with Eyes Closed",
     "pattern": "mobility",
@@ -4885,6 +8385,44 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "A balance and proprioception drill. Stand on one leg with the knee slightly bent and the other foot lifted clear of the floor, then close your eyes and hold the position. Without visual feedback the ankle and hip stabilisers have to do the work, so expect noticeable wobble. Stand within reach of a wall, counter or chair so you can steady yourself if needed. Hold for the prescribed time, then switch legs. Commonly prescribed in rehabilitation after ankle or knee injury.",
     "attribution": "wger.de exercise 2667 (CC-BY-SA-4.0, trs1800)"
+  },
+  {
+    "id": "wger_1736",
+    "name": "Single-Leg Deadlift with Dumbbell",
+    "pattern": "hinge",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Starting Position: Stand upright with a slight bend in your knees, holding a dumbbell in one or both hands. Shift your weight onto your supporting leg (e.g., your right leg) and lift your non-supporting foot slightly off the floor.",
+      "The Hinge: Keeping your back flat and core engaged, hinge at your hips, pushing your glutes backward. As your torso lowers, extend your non-supporting leg straight back behind you for balance, keeping your hips square to the floor. The dumbbell(s) should lower toward the ground along the line of your supporting leg.",
+      "Range of Motion: Continue lowering your torso until it is nearly parallel to the floor, or you feel an intense stretch in your supporting hamstring, ensuring your back remains neutral throughout the movement.",
+      "Return to Start: Pause at the bottom, then contract your glutes and hamstrings to slowly raise your torso back to the starting position. Your non-supporting leg should return in line with the supporting one.",
+      "Switch Sides: After completing your desired number of repetitions on one side, switch your weight and repeat the movement on the other leg."
+    ],
+    "description": "Starting Position: Stand upright with a slight bend in your knees, holding a dumbbell in one or both hands. Shift your weight onto your supporting leg (e.g., your right leg) and lift your non-supporting foot slightly off the floor. The Hinge: Keeping your back flat and core engaged, hinge at your hips, pushing your glutes backward. As your torso lowers, extend your non-supporting leg straight back behind you for balance, keeping your hips square to the floor. The dumbbell(s) should lower toward the ground along the line of your supporting leg. Range of Motion: Continue lowering your torso until it is nearly parallel to the floor, or you feel an intense stretch in your supporting hamstring, ensuring your back remains neutral throughout the movement. Return to Start: Pause at the bottom, then contract your glutes and hamstrings to slowly raise your torso back to the starting position. Your non-supporting leg should return in line with the supporting one. Switch Sides: After completing your desired number of repetitions on one side, switch your weight and repeat the movement on the other leg.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1736/aa724cc5-c485-4f3e-9d2a-0c6ae4baefbe.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / Tierrasverdes",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1736 (CC-BY-SA-4.0, Tierrasverdes)"
   },
   {
     "id": "wger_1294",
@@ -5083,6 +8621,29 @@ export const WGER_CATALOGUE: SeedExercise[] = [
       }
     ],
     "attribution": "wger.de exercise 1274 (CC-BY-SA-4.0, erikocobra)"
+  },
+  {
+    "id": "wger_245",
+    "name": "Skullcrusher Dumbbells",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "triceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Hold the dumbbells and lay down on a flat bench in such a way that around 1/4 of your head is over the edge. Stretch arms straight up and then lean dumbbells away from your toes to a 10-20 degree angle. Keep upper arm at this angle throughout exercise. Dumbbell shall not be amed at your head, but away over your head. This will maximise gain from exercise with load on triceps all the time.",
+      "Pay attention to your elbows and arms: only the triceps are doing the work, the rest of the arms should not move."
+    ],
+    "description": "Hold the dumbbells and lay down on a flat bench in such a way that around 1/4 of your head is over the edge. Stretch arms straight up and then lean dumbbells away from your toes to a 10-20 degree angle. Keep upper arm at this angle throughout exercise. Dumbbell shall not be amed at your head, but away over your head. This will maximise gain from exercise with load on triceps all the time. Pay attention to your elbows and arms: only the triceps are doing the work, the rest of the arms should not move.",
+    "attribution": "wger.de exercise 245 (CC-BY-SA-3.0, wger.de)"
   },
   {
     "id": "wger_1210",
@@ -5334,6 +8895,28 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "Drop into a squat. Hold one ankle with the opposite hand. Fold your other arm to your chest. Staying in the squat and keeping hold of your ankle, twist to turn your chest-hand back/outwards until your elbow is pointing at the sky. Return to the neutral squatting position with your hand on your chest. Repeat movement as required. Repeat on both sides.",
     "attribution": "wger.de exercise 2528 (CC-BY-SA-4.0, Croak6728)"
+  },
+  {
+    "id": "wger_621",
+    "name": "Standing Bicep Curl",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "biceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Stand holding dumbbells at shoulder width apart. Face forearm upward and keep upper arm still while raising each dumbbell up to your shoulder."
+    ],
+    "description": "Stand holding dumbbells at shoulder width apart. Face forearm upward and keep upper arm still while raising each dumbbell up to your shoulder.",
+    "attribution": "wger.de exercise 621 (CC0, BFad07)"
   },
   {
     "id": "wger_1239",
@@ -5623,6 +9206,62 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "Lie on your back with both legs extended. Raise one leg straight up and gently pull it towards your upper body with both hands around your thigh. Keep the knee as straight as possible and your lower back on the mat. Hold the stretch, then switch legs.",
     "attribution": "wger.de exercise 2761 (CC-BY-SA-4.0, SMS)"
+  },
+  {
+    "id": "wger_1776",
+    "name": "Suitcase Carry",
+    "pattern": "core_compression",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "abdominals",
+        "role": "primary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "core"
+    ],
+    "cues": [
+      "Walk forward and backward with holding dumbbell on one side without leaning to counter the weight."
+    ],
+    "description": "Walk forward and backward with holding dumbbell on one side without leaning to counter the weight.",
+    "attribution": "wger.de exercise 1776 (CC-BY-SA-4.0, aboksz)"
+  },
+  {
+    "id": "wger_1886",
+    "name": "Supine Hip Abduction",
+    "pattern": "hinge",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Starting Position: Lie on your back (supine) on a mat, with your legs extended and relaxed. Arms can be placed alongside your body or out to the sides for stability.",
+      "The Movement: Slightly lift one leg off the floor (keeping it straight or with a slight bend). Move it laterally outward, away from the other leg, as if stepping over a small obstacle.",
+      "Range of Motion: Move the leg as far as comfortable without lifting your pelvis or rotating your torso, feeling a stretch in the inner thigh and hip.",
+      "Return: Slowly bring the leg back to the starting position with controlled movement.",
+      "Goal: Improves lateral hip mobility (abduction) and strengthens the pelvic stabilizer muscles."
+    ],
+    "description": "Starting Position: Lie on your back (supine) on a mat, with your legs extended and relaxed. Arms can be placed alongside your body or out to the sides for stability. The Movement: Slightly lift one leg off the floor (keeping it straight or with a slight bend). Move it laterally outward, away from the other leg, as if stepping over a small obstacle. Range of Motion: Move the leg as far as comfortable without lifting your pelvis or rotating your torso, feeling a stretch in the inner thigh and hip. Return: Slowly bring the leg back to the starting position with controlled movement. Goal: Improves lateral hip mobility (abduction) and strengthens the pelvic stabilizer muscles.",
+    "attribution": "wger.de exercise 1886 (CC-BY-SA-4.0, teus_ergaster)"
   },
   {
     "id": "wger_1876",
@@ -5931,6 +9570,41 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "Hinge forwards and bend your knees slightly. Depress and retract the shoulder you will use. Rest the other hand on your knee. Raise your hand about 15 degrees overhead, maintaining the position of your shoulder.",
     "attribution": "wger.de exercise 1834 (CC-BY-SA-4.0, Croak6728)"
+  },
+  {
+    "id": "wger_1336",
+    "name": "Triceps Overhead (Dumbbell)",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "triceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Keep the elbows fixed",
+      "Engage the muscles",
+      "Don't use momentum",
+      "Controlled movement",
+      "Slow movement",
+      "Don't overextend"
+    ],
+    "description": "Keep the elbows fixed Engage the muscles Don't use momentum Controlled movement Slow movement Don't overextend",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1336/ebf88217-df26-4ef7-94cb-f0c2220c6abe.webp",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1336 (CC-BY-SA-4.0, Anastasious)"
   },
   {
     "id": "wger_2684",
@@ -6251,6 +9925,40 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1704 (CC-BY-SA-4.0, clafal)"
   },
   {
+    "id": "wger_675",
+    "name": "Turkish Get-Up",
+    "pattern": "core_compression",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "abdominals",
+        "role": "primary"
+      },
+      {
+        "group": "chest",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "core"
+    ],
+    "cues": [
+      "Starting on back, move to the standing position with dumbbell in one hand. Switch hands between reps."
+    ],
+    "description": "Starting on back, move to the standing position with dumbbell in one hand. Switch hands between reps.",
+    "attribution": "wger.de exercise 675 (CC-BY-SA-4.0, dookie1481)"
+  },
+  {
     "id": "wger_2679",
     "name": "Tyson push-ups",
     "pattern": "horizontal_push",
@@ -6341,6 +10049,50 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "No stops during movement, hands on the hips.",
     "attribution": "wger.de exercise 1907 (CC-BY-SA-4.0, cybro)"
+  },
+  {
+    "id": "wger_694",
+    "name": "Upright Row w/ Dumbbells",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "traps",
+        "role": "primary"
+      },
+      {
+        "group": "biceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Hold a dumbbell in each hand in front of your body. Keep your palms towards your body. Lift you hands straight up until your hands are under your chin, then lower them. Repeat the exercise."
+    ],
+    "description": "Hold a dumbbell in each hand in front of your body. Keep your palms towards your body. Lift you hands straight up until your hands are under your chin, then lower them. Repeat the exercise.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/694/119e6823-6960-4341-a9e1-aaf78d7fb57c.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / cshep442",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/694/2e69c005-b241-4806-8557-fc5a4d5ee44d.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / cshep442",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 694 (CC-BY-SA-4.0, koreyhinton)"
   },
   {
     "id": "wger_1090",
@@ -6438,6 +10190,31 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1103 (CC-BY-SA-4.0, clafal)"
   },
   {
+    "id": "wger_1205",
+    "name": "Wrist curl, dumbbells",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "triceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Sitting on a bench, grab the dumbbell with your palms facing up and your hands shoulder-width apart. Rest your forearms on your thighs and allow your wrists to hang over your knees.",
+      "Perform the movement by curling your palms and wrists towards your face.",
+      "(optional/variable) Pause at the top.",
+      "Slowly return to the starting position."
+    ],
+    "description": "Sitting on a bench, grab the dumbbell with your palms facing up and your hands shoulder-width apart. Rest your forearms on your thighs and allow your wrists to hang over your knees. Perform the movement by curling your palms and wrists towards your face. (optional/variable) Pause at the top. Slowly return to the starting position.",
+    "attribution": "wger.de exercise 1205 (CC-BY-SA-4.0, wakanda90)"
+  },
+  {
     "id": "wger_2680",
     "name": "Wrist rocks",
     "pattern": "mobility",
@@ -6494,5 +10271,37 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "Extend your right arm straight out in front of you, with your palm facing up (fingers pointing toward the floor). Using your left hand, gently pull the fingers of your right hand toward you until you feel a stretch in your forearm and biceps.",
     "attribution": "wger.de exercise 2686 (CC-BY-SA-4.0, tobias08)"
+  },
+  {
+    "id": "wger_1885",
+    "name": "YTWL Exercise",
+    "pattern": "vertical_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "shoulders",
+        "role": "primary"
+      },
+      {
+        "group": "traps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Purpose: Improves shoulder stability, posture, and scapular (shoulder blade) control. Often used in physical therapy and warm-ups.",
+      "Starting Position: Stand with feet shoulder-width apart. Hinge forward at the hips (like a deadlift) keeping your back flat, or lie face down on an incline bench. Keep your thumbs pointing up throughout.",
+      "Y (Arms up): Extend both arms straight forward and upward at a 135-degree angle from your body, forming a \"Y\". Squeeze your shoulder blades together at the top.",
+      "T (Arms out): Open your arms straight out to the sides, perpendicular to your body, forming a \"T\". Focus on pinching your shoulder blades.",
+      "W (Arms bent): Pull your elbows back, bending them to 90 degrees, and squeeze your shoulder blades to form a \"W\". Keep your wrists firm.",
+      "L (Arms rotated): Start with elbows bent at 90 degrees and close to your body. Rotate your forearms outward (external rotation) like a goalpost, forming an \"L\" or a gate.",
+      "Key Focus: Movements should be slow and controlled. Always lead with the thumbs and think about moving the shoulder blades, not just the arms."
+    ],
+    "description": "Purpose: Improves shoulder stability, posture, and scapular (shoulder blade) control. Often used in physical therapy and warm-ups. Starting Position: Stand with feet shoulder-width apart. Hinge forward at the hips (like a deadlift) keeping your back flat, or lie face down on an incline bench. Keep your thumbs pointing up throughout. Y (Arms up): Extend both arms straight forward and upward at a 135-degree angle from your body, forming a \"Y\". Squeeze your shoulder blades together at the top. T (Arms out): Open your arms straight out to the sides, perpendicular to your body, forming a \"T\". Focus on pinching your shoulder blades. W (Arms bent): Pull your elbows back, bending them to 90 degrees, and squeeze your shoulder blades to form a \"W\". Keep your wrists firm. L (Arms rotated): Start with elbows bent at 90 degrees and close to your body. Rotate your forearms outward (external rotation) like a goalpost, forming an \"L\" or a gate. Key Focus: Movements should be slow and controlled. Always lead with the thumbs and think about moving the shoulder blades, not just the arms.",
+    "attribution": "wger.de exercise 1885 (CC-BY-SA-4.0, teus_ergaster)"
   }
 ] as SeedExercise[];

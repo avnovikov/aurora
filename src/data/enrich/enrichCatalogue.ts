@@ -21,6 +21,9 @@ const DEFAULT_DIFFICULTY: Partial<Record<Pattern, Difficulty>> = {
 /** Families whose conditioning-pattern members still get tier standards. */
 const CONDITIONING_WITH_STANDARDS = new Set(["plyo", "calf"]);
 
+/** Optional gym kit — not assumed calisthenics gear; keep off skill ladders (#168). */
+const GEAR_OFF_LADDER = new Set(["band", "dumbbell"]);
+
 function difficultyOf(exercise: SeedExercise, placement: LadderPlacement | undefined): Difficulty {
   if (placement) {
     return placement.tier;
@@ -64,9 +67,13 @@ export function enrichCatalogue(catalogue: SeedExercise[]): SeedExercise[] {
   // Every exercise must have audited gear (#111); a missing entry throws here.
   const gear = new Map(catalogue.map((exercise) => [exercise.id, curatedEquipmentFor(exercise.id)]));
   for (const exercise of catalogue) {
-    // Gear-dependent moves stay off the ladders: nobody should be advanced or
-    // regressed into a move they cannot do without the gear.
-    const placement = gear.get(exercise.id)!.requires.includes("band") ? undefined : placeOnLadder(exercise.name);
+    // Optional gym-kit moves stay off the ladders: nobody should be advanced or
+    // regressed into a band/dumbbell move they cannot do. Bar/rings/parallettes
+    // stay on ladders — those are assumed calisthenics kit.
+    const requires = gear.get(exercise.id)!.requires;
+    const placement = requires.some((item) => GEAR_OFF_LADDER.has(item))
+      ? undefined
+      : placeOnLadder(exercise.name);
     if (placement) {
       placements.set(exercise.id, placement);
       placed.push({ exercise, placement });

@@ -8,7 +8,7 @@
 
 **Aurora** is private, local-first calisthenics training for Android. **Rassvet** (Рассвет, “dawn”) is the soul mark shown in the app. The UI and spoken voice are British English (`en-GB`).
 
-The Library has **617 exercises** (strength progressions, holds, and mobility). Major calisthenics apps advertise roughly **350+** (Madbarz), **700+** (Calisteniapp), and **1,000+** (Thenx) — Aurora sits in the middle on catalogue size, without a subscription.
+The Library has **800+ exercises** (strength progressions, holds, mobility, and dumbbell work). Major calisthenics apps advertise roughly **350+** (Madbarz), **700+** (Calisteniapp), and **1,000+** (Thenx) — Aurora sits on the upper side of that range on catalogue size, without a subscription.
 
 Aurora is for people who train calisthenics at home and want each session adapted to recovery, available equipment, and recent performance. Training apps usually give you a weekday calendar and a static template. Sleep, joints, and pulse change what you should do before you start. Aurora keeps a **plan queue** instead — an ordered list of upcoming training days — and adjusts the **dose** from sleep, optional pain, recent load, missed reps, stalls, and (on Android) a Bluetooth heart-rate strap.
 
