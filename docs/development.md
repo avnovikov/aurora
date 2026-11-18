@@ -42,9 +42,9 @@ npm run smell     # ESLint + SonarJS complexity (`--max-warnings 0`)
 npm run build     # TypeScript check + Vite production build
 ```
 
-CI also runs `npm run test:ui` (Playwright, phone-sized Chromium with touch) on pull requests and pushes to `main`, `mvp`, and `feature/**`.
+CI also runs `npm run test:ui` (Playwright, phone-sized Chromium with touch) on pull requests and pushes to `main`, `mvp`, `dev`, and `feature/**`.
 
-Run `test`, `smell`, and `build` before opening a PR. A failing smell check fails CI the same way a failing test does: the job exits non-zero and the PR should not merge until it is fixed.
+Run `test`, `smell`, and `build` before opening a PR into **`dev`**. A failing smell check fails CI the same way a failing test does: the job exits non-zero and the PR should not merge until it is fixed.
 
 ## Architecture
 
@@ -64,9 +64,11 @@ Common storage keys: `aurora.poc.profile.v1`, `aurora.poc.planQueue.v1`, `aurora
 
 ## Branches and releases
 
-- **`mvp`** is the integration branch for day-to-day merges (supersedes `poc`).
+- **`dev`** is the day-to-day integration branch. Feature and bug work branches from `origin/dev` and opens PRs into `dev`.
+- **`mvp`** (and `release/**`) are **release** branches. Promote from `dev` when cutting a release candidate; do not land ordinary feature PRs there.
 - Merge to **`main`** only as part of an explicit release (version bump, release notes, signed APK on GitHub Releases).
 - Do not treat a casual merge to `main` as a release.
+- GitHub branch protection requires a PR (no direct pushes) on `main`, `mvp`, `dev`, and `release/**`, with required CI / security checks.
 
 Release APKs are signed on a developer machine. The keystore stays out of Git and out of CI (`android/keystore.properties.example`). Confirm a downloaded APK’s certificate SHA-256 as described in the README Install details.
 

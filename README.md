@@ -4,7 +4,7 @@
 [![CI](https://github.com/avnovikov/aurora/actions/workflows/ci.yml/badge.svg)](https://github.com/avnovikov/aurora/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/avnovikov/aurora?include_prereleases&style=flat)](https://github.com/avnovikov/aurora/releases)
 
-**v0.1.1 — from the `mvp` line.** App id `com.aurora.alvorada` (registered in Android Developer Console).
+**v0.1.1 — from the `mvp` release line.** Day-to-day development targets **`dev`**; `mvp` is for releases. App id `com.aurora.alvorada` (registered in Android Developer Console).
 
 **Aurora** is private, local-first calisthenics training for Android. **Rassvet** (Рассвет, “dawn”) is the soul mark shown in the app. The UI and spoken voice are British English (`en-GB`).
 
