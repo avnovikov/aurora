@@ -1,6 +1,6 @@
 import type { HeartRateZone } from "../pulse/hrZones";
 import { speakExactLine } from "../voice/coachVoice";
-import { REST_EXTEND, REST_GO_ON, type CoachLine } from "../voice/lines";
+import { pickLine, type CoachLine } from "../voice/lines";
 import {
   cueSchedule,
   isOnScreenRestCue,
@@ -128,9 +128,10 @@ export function startRestTimer(
     state.restLeft = REST_ADD_SECONDS;
     tickState.schedule = restSchedule(state.restLeft, withVoice, timedNext);
     tickState.spokenForRest.clear();
-    tickState.heldCue = REST_EXTEND;
+    const extendLine = pickLine("rest_extend");
+    tickState.heldCue = extendLine;
     paint();
-    speakLine(REST_EXTEND);
+    speakLine(extendLine);
   };
 
   const onTick = (): RestTickOutcome => {
@@ -152,8 +153,9 @@ export function startRestTimer(
       })
     ) {
       tickState.alreadyAsked = true;
-      tickState.heldCue = REST_GO_ON;
-      speakLine(REST_GO_ON);
+      const goOnLine = pickLine("rest_go_on");
+      tickState.heldCue = goOnLine;
+      speakLine(goOnLine);
     }
     paint();
     if (withVoice) {
