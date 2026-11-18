@@ -3,9 +3,9 @@ name: Security & Compliance Scans
 
 on:
   push:
-    branches: [main, mvp]
+    branches: [main, mvp, dev]
   pull_request:
-    branches: [main, mvp]
+    branches: [main, mvp, dev]
   schedule:
     - cron: "0 2 * * 1" # Weekly Monday 2AM UTC
 
