@@ -126,14 +126,14 @@ const BR_ANCHOR: Point = [210, -268];
 const BR_FEET = { near: [10, 0] as Point, far: [-6, 0] as Point };
 const BR_SHOULDER = solvePose({ pelvis: BR_PELVIS, chest: BR_CHEST }).arms.near.root;
 
-/** Standing still, the far hand on the hip; the near arm reaches to the band, or the elbow drives back with the forearm forward. */
+/** Standing still, the far arm hanging; the near arm reaches to the band, or the elbow drives back just past the back line (upper arm down and back, never level behind the torso) with the forearm forward. */
 function bandRow(back: boolean): Pose {
-  const elbow = back ? along(BR_SHOULDER, 160, BONES.upperArm) : along(BR_SHOULDER, -2, BONES.upperArm);
-  const hand = back ? along(elbow, 12, BONES.forearm + BONES.hand) : along(elbow, -2, BONES.forearm + BONES.hand);
+  const elbow = back ? along(BR_SHOULDER, 112, BONES.upperArm) : along(BR_SHOULDER, -2, BONES.upperArm);
+  const hand = back ? along(elbow, 2, BONES.forearm + BONES.hand) : along(elbow, -2, BONES.forearm + BONES.hand);
   return {
     pelvis: BR_PELVIS,
     chest: BR_CHEST,
-    hands: { near: hand, far: [14, -178] },
+    hands: { near: hand, far: [10, -146] },
     elbows: { near: { at: elbow }, far: { bend: 1 } },
     feet: BR_FEET,
     toes: { near: 0, far: 0 },

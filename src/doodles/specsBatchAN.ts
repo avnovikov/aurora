@@ -1,6 +1,6 @@
 import { BONES, HIP_SIDE, solvePose } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side } from "./rig";
-import { TWO_VIEWS } from "./sideways";
+import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
 import { SL_HIP_TOP, SL_KNEE_BOTTOM, SL_FOOT_BOTTOM, SIDE_LYING_FLOOR, sideLying } from "./specsWarmup";
 
 /**
@@ -248,7 +248,7 @@ function standingHipFlexor(hip: number): Pose {
 /** Bottom arm straight overhead along the floor, the head resting on it (as in the other side-lying doodles). */
 const SL_PILLOW_HAND: Point = along([-98, -8], 181, 125);
 
-// ---------------------------------------------------------------- side-lying quad stretch (front view, head left)
+// ---------------------------------------------------------------- side-lying quad stretch (side + top view, head left)
 
 type P3 = readonly [number, number, number];
 
@@ -258,37 +258,43 @@ function reach3(from: P3, d: P3, length: number): P3 {
   return [round(from[0] + (d[0] / n) * length), round(from[1] + (d[1] / n) * length), round(from[2] + (d[2] / n) * length)];
 }
 
+/** The point `length` from `from` towards `to` (straight at it, or short of it). */
+const toward3 = (from: P3, to: P3, length: number): P3 => reach3(from, [to[0] - from[0], to[1] - from[1], to[2] - from[2]], length);
+
 /**
- * Lying on the side facing the viewer (forward = -z), two views: the side panel sees the
- * body along its length, the front panel looks along it, so the bottom knee comes forward
- * and the top heel is drawn back behind the glute. `fold` (degrees) is the top shin's
- * direction in the floor plane: 150 heel out behind, 172 heel at the glute.
+ * Lying on the side, side + top views. The body lies along x (head at -x) with its front
+ * towards the side panel's camera (forward = -z), so the view from above shows the fold:
+ * the bottom knee bent forward about 90° (thigh straight out in front, shin back along the
+ * body), the top thigh in line with the trunk and the top shin folded back behind it, the
+ * heel `heelX` from the hip (by the glute when held), the top hand holding the ankle.
+ * The bottom arm is bent on the floor, elbow in front of the chest and hand under the head.
  */
-function sideQuad(fold: number): Keyframe {
+function sideQuad(heelX: number, heelBehind: number): Keyframe {
   const hipBottom: P3 = [0, -30, -8];
   const hipTop: P3 = [0, -30, 8];
-  const kneeBottom = reach3(hipBottom, [0.7, 0.1, -0.7], THIGH);
-  const footBottom = reach3(kneeBottom, [0.55, 0, 0.83], SHIN);
-  const kneeTop = reach3(hipTop, [0.97, -0.1, 0.2], THIGH);
-  const r = (fold * Math.PI) / 180;
-  const ankle = reach3(kneeTop, [Math.cos(r), 0, Math.sin(r)], SHIN);
-  const hand: P3 = [round(ankle[0] + 2), round(ankle[1] + 3), ankle[2]];
-  const pillow: P3 = [-205, -12, -20];
+  const kneeBottom = reach3(hipBottom, [0.04, 0.18, -1], THIGH);
+  const footBottom = reach3(kneeBottom, [1, 0.02, 0.06], SHIN);
+  const kneeTop = reach3(hipTop, [1, -0.1, 0.06], THIGH);
+  const ankle = toward3(kneeTop, [heelX, -48, heelBehind], SHIN);
+  const hand: P3 = [round(ankle[0] - 3), round(ankle[1] - 2), round(ankle[2] + 2)];
+  const rest: P3 = [-139, -10, -21];
+  const restElbow: P3 = [-104, -6, -77];
   const flat = (p: P3): Point => [p[0], p[1]];
   return {
     hold: 0,
     pose: sideLying({
       knees: { near: { at: flat(kneeBottom) }, far: { at: flat(kneeTop) } },
       feet: { near: flat(footBottom), far: flat(ankle) },
-      hands: { near: flat(pillow), far: flat(hand) },
-      elbows: { near: { bend: 1 }, far: { bend: -1 } },
-      toes: { near: 0, far: 90 },
+      hands: { near: flat(rest), far: flat(hand) },
+      elbows: { near: { at: flat(restElbow) }, far: { bend: -1 } },
+      toes: { near: 0, far: -150 },
     }),
     sideways: {
       pelvis: 0,
       knees: { near: { at: kneeBottom[2] }, far: { at: kneeTop[2] } },
       feet: { near: footBottom[2], far: ankle[2] },
-      hands: { near: pillow[2], far: hand[2] },
+      hands: { near: rest[2], far: hand[2] },
+      elbows: { near: { at: restElbow[2] } },
     },
   };
 }
@@ -539,12 +545,11 @@ export const BATCH_AN_SPECS: DoodleSpec[] = [
     id: "fedb_on_your_side_quad_stretch",
     slug: "on-your-side-quad-stretch",
     title: "On Your Side Quad Stretch",
-    views: TWO_VIEWS,
-    props: [SIDE_LYING_FLOOR],
+    views: TOP_VIEWS,
     transition: 1.1,
     frames: [
-      { ...sideQuad(150), hold: 0.5 },
-      { ...sideQuad(172), hold: 1.4 },
+      { ...sideQuad(40, 44), hold: 0.5 },
+      { ...sideQuad(16, 30), hold: 1.4 },
     ],
   },
   {

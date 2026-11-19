@@ -165,11 +165,24 @@ function onCircle(pivot: Point, radius: number, y: number): Point {
 
 /** Bent-knee version: knees fixed 86 above the flat feet, the body one line from the knees to the head. */
 const BK_KNEE: Point = [190, -94];
-const BK_BAR_Y = -330;
 const BK_RADIUS = BONES.thigh + 98;
 const bkShoulder = (y: number): Point => onCircle(BK_KNEE, BK_RADIUS, y);
-const BK_TOP = BK_BAR_Y + 64;
-const BK_HAND: Point = [round(bkShoulder(BK_TOP)[0] + 20), BK_BAR_Y];
+/** Body angle above the floor at the top (chest on the bar): steep enough that the long-arm bottom is still near 40°. */
+const BK_TOP_DEG = 72;
+const BK_TOP = round(BK_KNEE[1] - BK_RADIUS * Math.sin((BK_TOP_DEG * Math.PI) / 180));
+/**
+ * The bar sits on the sternum at the top: a little down the body from the shoulder and out
+ * on the chest side, so the hands are just ahead of the chest and the elbows fold down
+ * behind the torso toward the floor (like the Australian pull-up hold).
+ */
+const BK_HAND: Point = (() => {
+  const s = bkShoulder(BK_TOP);
+  const r = (BK_TOP_DEG * Math.PI) / 180;
+  const down: Point = [Math.cos(r), Math.sin(r)];
+  const front: Point = [Math.sin(r), -Math.cos(r)];
+  return [round(s[0] + down[0] * 18 + front[0] * 20), round(s[1] + down[1] * 18 + front[1] * 20)];
+})();
+const BK_BAR_Y = BK_HAND[1];
 const BK_BOTTOM = lockedBelow(bkShoulder, BK_HAND);
 
 function bentKneeRow(shoulderY: number): Pose {

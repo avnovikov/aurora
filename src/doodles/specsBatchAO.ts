@@ -110,9 +110,10 @@ function facePull(t: number): AuthoredPose {
   };
 }
 
+/** The elbows roll straight out to the side as soon as the arms bend, so they stay high and wide (never tucked toward the hips like a row). */
 const facePullSideways = (t: number): Sideways => ({
   hands: { near: -(22 + 12 * t), far: 22 + 12 * t },
-  elbows: { near: { out: 85 * t }, far: { out: 85 * t } },
+  elbows: { near: { out: t > 0 ? 90 : 0 }, far: { out: t > 0 ? 90 : 0 } },
 });
 
 const STEPS = [0, 0.2, 0.4, 0.6, 0.8, 1];

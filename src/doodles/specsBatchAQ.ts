@@ -206,14 +206,21 @@ const FLY_NARROW = SHOULDER_SIDE;
 /** The handles hang from fixed anchors this far either side of the centre line: where the open hands are. */
 const FLY_WIDTH = 90;
 const FLY_START = along(FALL_ANKLE, -46, BODY_REACH);
+/** Arm direction (degrees below horizontal) of the crossing fly's starting hands. */
+const CROSS_ARM_DEG = 36;
 /** The starting (narrow) hand hangs a strap's length away in 3D: its side-view distance is shorter by the width. */
 const FLY_START_R = Math.sqrt(FLY_L ** 2 - (FLY_WIDTH - FLY_NARROW) ** 2);
 const FLY_A: Point = along(along(FLY_START, 12, FLY_REACH), -90 - 35, FLY_START_R);
+/**
+ * The crossing fly's anchor: the starting hands sit lower, the arms square to the leaning
+ * body, so the hands close (and cross) at the sternum, below the chin in the front panel.
+ */
+const CROSS_A: Point = along(along(FLY_START, CROSS_ARM_DEG, FLY_REACH), -90 - 12, FLY_START_R);
 
 /** Soft elbows, body straight and leaning `lean` degrees above the floor, hands `z` out from the middle. */
-function fly(lean: number, z: number): Keyframe {
+function fly(lean: number, z: number, anchor: Point = FLY_A): Keyframe {
   const shoulder = along(FALL_ANKLE, -lean, BODY_REACH);
-  const hand = strapHand(shoulder, SHOULDER_SIDE, z, FLY_A, FLY_WIDTH, FLY_L, FLY_REACH, 1);
+  const hand = strapHand(shoulder, SHOULDER_SIDE, z, anchor, FLY_WIDTH, FLY_L, FLY_REACH, 1);
   const pose: Pose = {
     ...straightBody(FALL_ANKLE, -lean),
     hands: { near: hand, far: hand },
@@ -267,6 +274,8 @@ const FACE_DEG = PULL_TOP_DEG;
 const FACE_Z = 36;
 const FACE_ELBOW_Z = 80;
 const FACE_HEAD: Point = along(LEAN_ANKLE, FACE_DEG, BODY_REACH + 38);
+/** The face pull starts with the arms long (a hair short of locked) toward the anchor. */
+const FACE_BOTTOM_HAND: Point = along(pullShoulder(PULL_BOTTOM_DEG), -20, ARM_REACH + 0.3);
 /** The elbow at the top: out beside the shoulder in z, so only a little in front of it in the side view. */
 const FACE_ELBOW: Point = along(pullShoulder(FACE_DEG), -60, Math.sqrt(UPPER_ARM ** 2 - (FACE_ELBOW_Z - SHOULDER_SIDE) ** 2));
 /** The hand a forearm's length (in 3D) from that elbow, towards the head. */
@@ -275,31 +284,55 @@ const FACE_HAND: Point = (() => {
   const toHead = Math.hypot(FACE_HEAD[0] - FACE_ELBOW[0], FACE_HEAD[1] - FACE_ELBOW[1]);
   return [round(FACE_ELBOW[0] + ((FACE_HEAD[0] - FACE_ELBOW[0]) / toHead) * reach), round(FACE_ELBOW[1] + ((FACE_HEAD[1] - FACE_ELBOW[1]) / toHead) * reach)];
 })();
-const FACE_A: Point = meet(PULL_BOTTOM_HAND, Math.sqrt(PULL_L ** 2 - (FACE_Z - SHOULDER_SIDE) ** 2), FACE_HAND, PULL_L, 1);
+const FACE_A: Point = meet(FACE_BOTTOM_HAND, Math.sqrt(PULL_L ** 2 - (FACE_Z - SHOULDER_SIDE) ** 2), FACE_HAND, PULL_L, 1);
 
-/** `t` of the way round the strap circle from the starting hand to the temples, a hair outside it between (the arm swings the hand a little inside the circle). */
+/** `t` of the way round the strap circle from the starting hand to the temples. */
 function roundHand(t: number): Point {
-  const a0 = angle(FACE_A, PULL_BOTTOM_HAND);
+  const a0 = angle(FACE_A, FACE_BOTTOM_HAND);
   const a1 = angle(FACE_A, FACE_HAND);
-  const r0 = Math.hypot(PULL_BOTTOM_HAND[0] - FACE_A[0], PULL_BOTTOM_HAND[1] - FACE_A[1]);
+  const r0 = Math.hypot(FACE_BOTTOM_HAND[0] - FACE_A[0], FACE_BOTTOM_HAND[1] - FACE_A[1]);
   const r1 = Math.hypot(FACE_HAND[0] - FACE_A[0], FACE_HAND[1] - FACE_A[1]);
-  return along(FACE_A, a0 + (a1 - a0) * t, r0 + (r1 - r0) * t + 4 * Math.sin(Math.PI * t));
+  return along(FACE_A, a0 + (a1 - a0) * t, r0 + (r1 - r0) * t);
 }
 
-/** The hands travel round their strap from straight ahead to the temples; at the top the elbows are pinned up and out. */
+type P3 = [number, number, number];
+
+/**
+ * The far elbow (side-view point and z) for a far shoulder and hand: of all the points an
+ * upper arm from the shoulder and a forearm from the hand can meet, the one farthest out
+ * to the side, so the elbow flares wide and stays high (upper arm square to the torso)
+ * through the whole pull instead of dropping toward the hips like a row.
+ */
+function wideElbow(shoulder: P3, hand: P3): { at: Point; z: number } {
+  const d: P3 = [hand[0] - shoulder[0], hand[1] - shoulder[1], hand[2] - shoulder[2]];
+  const len = Math.hypot(...d);
+  const u: P3 = [d[0] / len, d[1] / len, d[2] / len];
+  const a = (UPPER_ARM ** 2 - FOREARM_HAND ** 2 + len ** 2) / (2 * len);
+  const r = Math.sqrt(Math.max(0, UPPER_ARM ** 2 - a * a));
+  // Out to the side (+z) with the part along the arm taken off.
+  const w: P3 = [-u[2] * u[0], -u[2] * u[1], 1 - u[2] * u[2]];
+  const wl = Math.hypot(...w) || 1;
+  const e: P3 = [0, 1, 2].map((i) => shoulder[i] + u[i] * a + (w[i] / wl) * r) as P3;
+  return { at: [round(e[0]), round(e[1])], z: round(e[2]) };
+}
+
+/** The hands travel round their strap from straight ahead to the temples, the elbows high and wide all the way. */
 function facePull(t: number): Keyframe {
   const deg = PULL_BOTTOM_DEG + (FACE_DEG - PULL_BOTTOM_DEG) * t;
   const z = SHOULDER_SIDE + (FACE_Z - SHOULDER_SIDE) * t;
   const top = t === 1;
   let hand = roundHand(t);
-  if (t === 0) hand = PULL_BOTTOM_HAND;
+  if (t === 0) hand = FACE_BOTTOM_HAND;
   else if (top) hand = FACE_HAND;
+  if (t === 0) return pullKey(deg, hand, z, { elbows: { near: { bend: 1 }, far: { bend: 1 } } });
+  const shoulder = pullShoulder(deg);
+  const elbow = top ? { at: FACE_ELBOW, z: FACE_ELBOW_Z } : wideElbow([shoulder[0], shoulder[1], SHOULDER_SIDE], [hand[0], hand[1], z]);
   return pullKey(
     deg,
     hand,
     z,
-    top ? { elbows: { near: { at: FACE_ELBOW }, far: { at: FACE_ELBOW } } } : {},
-    top ? { elbows: { near: { at: -FACE_ELBOW_Z }, far: { at: FACE_ELBOW_Z } } } : {},
+    { elbows: { near: { at: elbow.at }, far: { at: elbow.at } } },
+    { elbows: { near: { at: -elbow.z }, far: { at: elbow.z } } },
   );
 }
 
@@ -348,15 +381,15 @@ export const BATCH_AQ_SPECS: DoodleSpec[] = [
     slug: "suspended-chest-fly-crossing",
     title: "Suspended Chest Fly (Crossing)",
     views: TWO_VIEWS,
-    straps: { anchor: FLY_A, end: "handle", width: FLY_WIDTH },
+    straps: { anchor: CROSS_A, end: "handle", width: FLY_WIDTH },
     transition: 0.8,
     frames: [
-      { ...fly(46, FLY_NARROW), hold: 0.2 },
-      { ...fly(42, 60), hold: 0 },
-      { ...fly(38, 90), hold: 0.5 },
-      { ...fly(42, 60), hold: 0 },
-      { ...fly(44, -8), hold: 0.4 },
-      { ...fly(45, 7), hold: 0 },
+      { ...fly(46, FLY_NARROW, CROSS_A), hold: 0.2 },
+      { ...fly(42, 60, CROSS_A), hold: 0 },
+      { ...fly(38, 90, CROSS_A), hold: 0.5 },
+      { ...fly(42, 60, CROSS_A), hold: 0 },
+      { ...fly(44, -8, CROSS_A), hold: 0.4 },
+      { ...fly(45, 7, CROSS_A), hold: 0 },
     ],
   },
   {

@@ -1,6 +1,7 @@
 import { BONES, HIP_SIDE, other, SHOULDER_SIDE, solvePose, zOut } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
-import { TWO_VIEWS } from "./sideways";
+import { solveKeyframe3 } from "./rig3d";
+import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
 import { BATCH_AA_SPECS } from "./specsBatchAA";
 
 /**
@@ -8,7 +9,7 @@ import { BATCH_AA_SPECS } from "./specsBatchAA";
  * side-view figure faces +x; lying face up has the head at -x. Import only from ./rig
  * (and the dual-view helpers).
  *
- * Every twist is drawn in two views (side + front). The rig cannot turn the
+ * Every twist is drawn in two views (side + front; the oblique crunch side + top). The rig cannot turn the
  * torso, so a twist is shown by what moves across: an elbow travelling to the
  * opposite knee, hands passing from one side of the hips to the other, a knee or
  * a leg crossing the body, with the near limbs bright over the far ones. The
@@ -332,21 +333,45 @@ function elbowAcross(spine: Spine, side: Side, towards: Side, reach = 52): LimbS
 /** The bench or chair the feet rest on. */
 const BENCH: Prop = { kind: "box", x: 60, y: -80, w: 120, h: 80, frontHalf: 26 };
 
-/** Oblique crunch: feet on a bench, `working` hand beside the head, the other arm on the floor. */
+/** Sideways lean of the chest (towards the opposite knee) as the working shoulder lifts. */
+const OBLIQUE_LEAN = 14;
+
+/**
+ * Oblique crunch (side + top view): feet on a bench, `working` hand beside the head, the
+ * other arm on the floor. Lifting, the chest leans across towards the opposite knee and the
+ * working elbow swings over the body to it, so from above the elbow crosses the midline.
+ */
 function oblique(working: Side, up: boolean): Keyframe {
-  const theta = up ? 224 : 186;
+  const theta = up ? 232 : 186;
   const spine = torso(theta, up ? CRUNCH.tuck : 2);
   const rest = other(working);
   const legs: Limbs["legs"] = {};
   for (const s of ["near", "far"] as Side[]) {
     const hip = roots(spine, 0).leg[s];
     const foot: P3 = [96, -82, zOut(s) * 18];
-    legs[s] = { plan: chain(hip, LEG, foot, [(hip[0] + 96) / 2, -150, foot[2]]), toe: 0 };
+    legs[s] = { plan: chain(hip, LEG, foot, [(hip[0] + 96) / 2, -150, zOut(s) * 40]), toe: 0 };
   }
-  const arms = handsBehind(spine, theta) as Record<Side, LimbSpec>;
-  if (up) arms[working] = elbowAcross(spine, working, rest, 60);
-  arms[rest] = armAlong(spine, rest, 12, zOut(rest) * 46, 0);
-  return frame(up ? 0.5 : 0.4, spine, { arms, legs });
+  const chestZ = up ? zOut(rest) * OBLIQUE_LEAN : 0;
+  // Shoulders and head after the lean: the arms root there.
+  const leaned = solveKeyframe3(solvePose(spine), spine, { chest: chestZ });
+  const shoulder = (side: Side): P3 => leaned.arms[side].root as P3;
+  const head = leaned.head as P3;
+  const arms: Limbs["arms"] = {};
+  if (up) {
+    // The elbow points across the body at the opposite knee; the forearm folds back to the hand by the ear.
+    const knee = (legs[rest] as LimbSpec).plan.mid;
+    const s0 = shoulder(working);
+    const mid = add3(s0, mul3(unit3(sub3([knee[0], knee[1], knee[2] + zOut(rest) * 45], s0)), ARM[0]));
+    const ear: P3 = [head[0] - 14, head[1] - 4, head[2] + zOut(working) * 40];
+    arms[working] = { plan: { mid, end: add3(mid, mul3(unit3(sub3(ear, mid)), ARM[1])) } };
+  } else {
+    const s0 = shoulder(working);
+    arms[working] = { plan: chain(s0, ARM, behindHead(spine, theta, zOut(working) * 24), [s0[0] + 10, s0[1] - 40, zOut(working) * 90]) };
+  }
+  const sr = shoulder(rest);
+  arms[rest] = { plan: chain(sr, ARM, [12, -7, sr[2] + zOut(rest) * 24], [12, -90, sr[2] + zOut(rest) * 24]) };
+  const key = frame(up ? 0.5 : 0.4, spine, { arms, legs });
+  return { ...key, sideways: { ...key.sideways, chest: chestZ } };
 }
 
 // ---------------------------------------------------------------- windmills (lying, arms out, one straight leg across)
@@ -568,7 +593,7 @@ export const BATCH_AM_SPECS: DoodleSpec[] = [
     id: "fedb_oblique_crunches",
     slug: "oblique-crunches",
     title: "Oblique Crunches",
-    views: TWO_VIEWS,
+    views: TOP_VIEWS,
     props: [BENCH],
     transition: 0.7,
     frames: [oblique("near", false), oblique("near", true), oblique("far", false), oblique("far", true)],
