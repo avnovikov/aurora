@@ -594,7 +594,24 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "fedb_spinal_stretch": "/doodles/doodle-spinal-stretch.svg",
   "wger_1861": "/doodles/doodle-side-stretch.svg",
   "fedb_standing_lateral_stretch": "/doodles/doodle-standing-lateral-stretch.svg",
-  "wger_1426": "/doodles/doodle-standing-side-crunches.svg"
+  "wger_1426": "/doodles/doodle-standing-side-crunches.svg",
+  "wger_1391": "/doodles/doodle-elephant-walks.svg",
+  "wger_1733": "/doodles/doodle-isometric-squat-to-failure.svg",
+  "wger_1584": "/doodles/doodle-march-or-jog-in-place.svg",
+  "wger_1874": "/doodles/doodle-runners-lunge-stretch.svg",
+  "wger_1710": "/doodles/doodle-butchers-block-stretch.svg",
+  "fedb_chair_upper_body_stretch": "/doodles/doodle-chair-upper-body-stretch.svg",
+  "wger_2685": "/doodles/doodle-cross-body-stretch.svg",
+  "fedb_dancers_stretch": "/doodles/doodle-dancers-stretch.svg",
+  "wger_1207": "/doodles/doodle-scorpion-kick.svg",
+  "hf_168": "/doodles/doodle-scorpion-stretch.svg",
+  "wger_1474": "/doodles/doodle-w-raise.svg",
+  "wger_1477": "/doodles/doodle-seated-corkscrew.svg",
+  "wger_1711": "/doodles/doodle-sleeper-stretch.svg",
+  "wger_1397": "/doodles/doodle-standing-pancake-good-morning.svg",
+  "wger_1845": "/doodles/doodle-seated-pancake-good-morning.svg",
+  "fedb_the_straddle": "/doodles/doodle-the-straddle.svg",
+  "ntc_incline_archer_push_up": "/doodles/doodle-incline-archer-push-up.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
