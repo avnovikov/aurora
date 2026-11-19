@@ -385,7 +385,15 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "wger_1956": "/doodles/doodle-fire-hydrant-circles.svg",
   "wger_1672": "/doodles/doodle-seated-hip-abduction.svg",
   "wger_1908": "/doodles/doodle-butterfly-superman.svg",
-  "wger_171": "/doodles/doodle-incline-crunches.svg"
+  "wger_171": "/doodles/doodle-incline-crunches.svg",
+  "fedb_kettlebell_hang_clean": "/doodles/doodle-kettlebell-hang-clean.svg",
+  "fedb_kettlebell_dead_clean": "/doodles/doodle-kettlebell-dead-clean.svg",
+  "fedb_one_arm_kettlebell_clean": "/doodles/doodle-one-arm-kettlebell-clean.svg",
+  "fedb_bottoms_up_clean_from_the_hang_position": "/doodles/doodle-bottoms-up-clean-from-the-hang.svg",
+  "fedb_kettlebell_one_legged_deadlift": "/doodles/doodle-kettlebell-one-legged-deadlift.svg",
+  "fedb_kettlebell_sumo_high_pull": "/doodles/doodle-kettlebell-sumo-high-pull.svg",
+  "fedb_kettlebell_pirate_ships": "/doodles/doodle-kettlebell-pirate-ships.svg",
+  "fedb_one_arm_kettlebell_clean_and_jerk": "/doodles/doodle-one-arm-kettlebell-clean-and-jerk.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
