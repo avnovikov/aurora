@@ -8,6 +8,7 @@ import {
 import {
   historyFeedListHtml,
   legacyHistoryBannerHtml,
+  sessionPulsesHtml,
 } from "../progress/historyFeedPresent";
 import { patternLabel } from "../progress/patternLabels";
 import { loadHistory } from "../session/history";
@@ -35,6 +36,7 @@ export function renderHistoryView(
       <h1>Logged sets</h1>
       ${filterChipHtml(filter, Boolean(options.onClearFilter))}
       ${legacyHistoryBannerHtml(feed.hasLegacyOnly, feed.rows.length)}
+      ${sessionPulsesHtml(feed.sessionPulses, exerciseNamesFromGraph())}
       ${bodyHtml(feed.rows, feed.hasLegacyOnly, Boolean(options.onOpenExercise))}
     </main>
   `;
@@ -89,4 +91,12 @@ function bodyHtml(
     `;
   }
   return historyFeedListHtml(rows, { linkTitles });
+}
+
+function exerciseNamesFromGraph(): Record<string, string> {
+  const names: Record<string, string> = {};
+  for (const id of Object.keys(EXERCISE_GRAPH)) {
+    names[id] = displayNameOf(id, EXERCISE_GRAPH);
+  }
+  return names;
 }

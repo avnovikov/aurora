@@ -173,6 +173,25 @@ export interface HistorySetRecord {
   completedReps: number;
   loggedAt: string;
   stopReason: string;
+  /** Mean strap bpm for this set; absent when no samples. */
+  averageBpm?: number;
+}
+
+/** Session strap payload on history (see session-pulse-history design). */
+export interface HistoryPulseSeriesPoint {
+  t: number;
+  bpm: number;
+}
+
+export interface HistoryPulseExerciseAverage {
+  exerciseId: string;
+  averageBpm: number;
+  sampleCount: number;
+}
+
+export interface HistoryPulse {
+  series: HistoryPulseSeriesPoint[];
+  byExercise: HistoryPulseExerciseAverage[];
 }
 
 export interface HistoryEntry {
@@ -185,4 +204,6 @@ export interface HistoryEntry {
   exerciseIds: string[];
   /** Set log from the session; absent on legacy history rows. */
   sets?: HistorySetRecord[];
+  /** Strap timeseries + per-exercise averages; absent when no samples. */
+  pulse?: HistoryPulse;
 }

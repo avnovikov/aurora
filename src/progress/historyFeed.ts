@@ -22,6 +22,15 @@ export interface HistoryFeedRow {
   stopReason: string;
   /** Total sets in the session (legacy rows only — per-set detail was never stored). */
   sessionSetCount?: number;
+  /** Mean strap bpm for this set when samples existed. */
+  averageBpm?: number;
+}
+
+export interface HistorySessionPulse {
+  sessionId: string;
+  templateName: string;
+  completedAt: string;
+  pulse: NonNullable<HistoryEntry["pulse"]>;
 }
 
 export interface HistoryFeedModel {
@@ -29,6 +38,8 @@ export interface HistoryFeedModel {
   rows: HistoryFeedRow[];
   /** True when at least one legacy (no-sets) session contributed rows or was seen. */
   hasLegacyOnly: boolean;
+  /** Sessions in this feed that stored a strap timeseries. */
+  sessionPulses: HistorySessionPulse[];
 }
 
 /**
@@ -47,7 +58,8 @@ export function buildHistoryFeed(input: {
     filter,
   );
   rows.sort(compareWhenDesc);
-  return { filter, rows, hasLegacyOnly };
+  const sessionPulses = sessionPulsesForFeed(input.history, filter, rows);
+  return { filter, rows, hasLegacyOnly, sessionPulses };
 }
 
 function flattenFilteredHistory(
@@ -104,7 +116,46 @@ function toSetFeedRow(
     when: set.loggedAt || session.completedAt,
     sessionId: session.id,
     stopReason: set.stopReason,
+    ...(set.averageBpm !== undefined ? { averageBpm: set.averageBpm } : {}),
   };
+}
+
+function sessionPulsesForFeed(
+  history: readonly HistoryEntry[],
+  filter: HistoryFilter,
+  rows: readonly HistoryFeedRow[],
+): HistorySessionPulse[] {
+  const sessionIdsInFeed = new Set(rows.map((row) => row.sessionId));
+  const pulses: HistorySessionPulse[] = [];
+  for (const session of history) {
+    if (!sessionHasPulseSeries(session)) {
+      continue;
+    }
+    if (filter.kind !== "all" && !sessionIdsInFeed.has(session.id)) {
+      continue;
+    }
+    pulses.push({
+      sessionId: session.id,
+      templateName: session.templateName,
+      completedAt: session.completedAt,
+      pulse: session.pulse,
+    });
+  }
+  pulses.sort(compareCompletedAtDesc);
+  return pulses;
+}
+
+function sessionHasPulseSeries(
+  session: HistoryEntry,
+): session is HistoryEntry & { pulse: NonNullable<HistoryEntry["pulse"]> } {
+  return Boolean(session.pulse && session.pulse.series.length > 0);
+}
+
+function compareCompletedAtDesc(a: HistorySessionPulse, b: HistorySessionPulse): number {
+  if (a.completedAt === b.completedAt) {
+    return 0;
+  }
+  return a.completedAt < b.completedAt ? 1 : -1;
 }
 
 function toLegacyFeedRow(
