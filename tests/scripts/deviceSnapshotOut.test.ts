@@ -1,5 +1,3 @@
-import { mkdtempSync } from "node:fs";
-import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -10,6 +8,9 @@ import {
   sanitizeFixtureName,
 } from "../../scripts/lib/deviceSnapshotOut.mjs";
 
+/** Fixed absolute dir for path math only — no real mkdir/tmpdir. */
+const FIXTURE_DIR = "/aurora-test-fixtures";
+
 describe("sanitizeFixtureName", () => {
   it("keeps a plain basename and adds .json when missing", () => {
     expect(sanitizeFixtureName("pixel10")).toBe("pixel10.json");
@@ -18,7 +19,7 @@ describe("sanitizeFixtureName", () => {
 
   it("strips directories and unsafe characters", () => {
     expect(sanitizeFixtureName("../etc/passwd")).toBe("passwd.json");
-    expect(sanitizeFixtureName("/tmp/../../evil name!.json")).toBe("evilname.json");
+    expect(sanitizeFixtureName("/var/evil name!.json")).toBe("evilname.json");
   });
 
   it("rejects empty results", () => {
@@ -29,9 +30,10 @@ describe("sanitizeFixtureName", () => {
 
 describe("resolveFixturePath", () => {
   it("always resolves under the fixture directory", () => {
-    const dir = mkdtempSync(join(tmpdir(), "aurora-fixture-"));
-    expect(resolveFixturePath(dir, undefined, "a.json")).toBe(join(dir, "a.json"));
-    expect(resolveFixturePath(dir, "../../escape.json", "a.json")).toBe(join(dir, "escape.json"));
+    expect(resolveFixturePath(FIXTURE_DIR, undefined, "a.json")).toBe(join(FIXTURE_DIR, "a.json"));
+    expect(resolveFixturePath(FIXTURE_DIR, "../../escape.json", "a.json")).toBe(
+      join(FIXTURE_DIR, "escape.json"),
+    );
   });
 });
 
