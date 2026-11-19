@@ -91,19 +91,8 @@ export function historySessionBlockHtml(
   const when = formatHistoryWhen(block.completedAt);
   const assessment = sessionEvaluationLabel(block.evaluation);
   const header = `${escapeHtml(block.templateName)} · ${escapeHtml(when)} · ${escapeHtml(assessment)}`;
-  const body = block.legacy
-    ? `<ol class="history-feed">${block.legacyRows
-        .map((row) => historyFeedRowHtml(row, options))
-        .join("")}</ol>`
-    : `<ol class="history-feed">${block.exercises
-        .map((exercise) => historyExerciseRollupHtml(exercise, options))
-        .join("")}</ol>`;
-  const pulse =
-    block.pulse && block.pulse.series.length > 0
-      ? `<p class="hint" data-pulse-series>${escapeHtml(
-          formatSeriesPreview(block.pulse.series.map((p) => p.bpm)),
-        )}</p>`
-      : "";
+  const body = historySessionBlockFeedHtml(block, options);
+  const pulse = sessionBlockPulseHintHtml(block.pulse);
   return `
     <section class="history-session" data-session-id="${escapeHtml(block.sessionId)}">
       <p class="history-session-header">${header}</p>
@@ -111,6 +100,28 @@ export function historySessionBlockHtml(
       ${pulse}
     </section>
   `;
+}
+
+function historySessionBlockFeedHtml(
+  block: HistorySessionBlock,
+  options: { linkTitles?: boolean },
+): string {
+  const rows = block.legacy
+    ? block.legacyRows.map((row) => historyFeedRowHtml(row, options))
+    : block.exercises.map((exercise) =>
+        historyExerciseRollupHtml(exercise, options),
+      );
+  return `<ol class="history-feed">${rows.join("")}</ol>`;
+}
+
+function sessionBlockPulseHintHtml(
+  pulse: HistorySessionBlock["pulse"],
+): string {
+  if (!pulse || pulse.series.length === 0) {
+    return "";
+  }
+  const seriesText = formatSeriesPreview(pulse.series.map((p) => p.bpm));
+  return `<p class="hint" data-pulse-series>${escapeHtml(seriesText)}</p>`;
 }
 
 function historyExerciseRollupHtml(

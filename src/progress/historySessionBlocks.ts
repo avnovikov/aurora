@@ -78,14 +78,10 @@ function blockForSession(
     return null;
   }
   return {
-    sessionId: session.id,
-    templateName: session.templateName,
-    completedAt: session.completedAt,
-    evaluation: session.evaluation,
+    ...baseSessionBlockFields(session),
     exercises,
     legacy: false,
     legacyRows: [],
-    ...sessionPulseFields(session),
   };
 }
 
@@ -102,21 +98,26 @@ function legacyBlockForSession(
     return null;
   }
   return {
+    ...baseSessionBlockFields(session),
+    exercises: [],
+    legacy: true,
+    legacyRows,
+  };
+}
+
+function baseSessionBlockFields(
+  session: HistoryEntry,
+): Pick<
+  HistorySessionBlock,
+  "sessionId" | "templateName" | "completedAt" | "evaluation" | "pulse"
+> {
+  return {
     sessionId: session.id,
     templateName: session.templateName,
     completedAt: session.completedAt,
     evaluation: session.evaluation,
-    exercises: [],
-    legacy: true,
-    legacyRows,
-    ...sessionPulseFields(session),
+    ...(sessionPulseIfPresent(session) ?? {}),
   };
-}
-
-function sessionPulseFields(
-  session: HistoryEntry,
-): { pulse: HistoryPulse } | Record<string, never> {
-  return sessionPulseIfPresent(session) ?? {};
 }
 
 function rollupExercises(
@@ -135,12 +136,11 @@ function rollupExercises(
     if (!passesExerciseFilter(set.exerciseId, filter, graph)) {
       continue;
     }
-    let bucket = byId.get(set.exerciseId);
-    if (!bucket) {
-      bucket = { reps: [], setBpms: [] };
-      byId.set(set.exerciseId, bucket);
+    if (!byId.has(set.exerciseId)) {
+      byId.set(set.exerciseId, { reps: [], setBpms: [] });
       order.push(set.exerciseId);
     }
+    const bucket = byId.get(set.exerciseId)!;
     bucket.reps.push(set.completedReps);
     if (set.averageBpm !== undefined) {
       bucket.setBpms.push(set.averageBpm);
@@ -211,10 +211,7 @@ function compareCompletedAtDesc(
   a: HistorySessionBlock,
   b: HistorySessionBlock,
 ): number {
-  if (a.completedAt === b.completedAt) {
-    return 0;
-  }
-  return a.completedAt < b.completedAt ? 1 : -1;
+  return b.completedAt.localeCompare(a.completedAt);
 }
 
 function passesExerciseFilter(
