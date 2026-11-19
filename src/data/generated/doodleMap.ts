@@ -636,7 +636,15 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "wger_9": "/doodles/doodle-2-handed-kettlebell-swing.svg",
   "wger_974": "/doodles/doodle-curl-with-kettlebell-two-hands.svg",
   "wger_975": "/doodles/doodle-one-handed-kettlebell-curls.svg",
-  "wger_2447": "/doodles/doodle-hip-airplane.svg"
+  "wger_2447": "/doodles/doodle-hip-airplane.svg",
+  "wger_1011": "/doodles/doodle-neck-extension-stretch.svg",
+  "wger_1018": "/doodles/doodle-neck-side-tilt.svg",
+  "wger_1015": "/doodles/doodle-neck-circles-clockwise.svg",
+  "wger_1016": "/doodles/doodle-neck-circles-counterclockwise.svg",
+  "wger_1017": "/doodles/doodle-neck-half-circles.svg",
+  "wger_1939": "/doodles/doodle-neck-cars.svg",
+  "wger_1013": "/doodles/doodle-left-levator-scapulae-stretch.svg",
+  "wger_1014": "/doodles/doodle-right-levator-scapulae-stretch.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
