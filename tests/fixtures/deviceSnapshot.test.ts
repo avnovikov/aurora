@@ -65,7 +65,8 @@ describe(`device snapshot ${SNAPSHOT}`, () => {
     );
     expect(counted).toEqual([]);
     // Migration derives loggedTier from bestReps 60.
-    expect(memories.calf_raise.skillTier).toBe("elite");
+    // Endura bilateral calf: intermediate 60, advanced 100 (#189).
+    expect(memories.calf_raise.skillTier).toBe("intermediate");
     expect(memories.calf_raise.bestReps).toBe(60);
     // Skipped in the session: no best reps. Its "intermediate" equals the plan level,
     // so migration cannot tell a pick from a plan write: it becomes planTier and is listed to confirm.
