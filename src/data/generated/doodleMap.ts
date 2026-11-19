@@ -385,7 +385,21 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "wger_1956": "/doodles/doodle-fire-hydrant-circles.svg",
   "wger_1672": "/doodles/doodle-seated-hip-abduction.svg",
   "wger_1908": "/doodles/doodle-butterfly-superman.svg",
-  "wger_171": "/doodles/doodle-incline-crunches.svg"
+  "wger_171": "/doodles/doodle-incline-crunches.svg",
+  "fedb_90_90_hamstring": "/doodles/doodle-90-90-hamstring.svg",
+  "fedb_leg_up_hamstring_stretch": "/doodles/doodle-leg-up-hamstring-stretch.svg",
+  "fedb_all_fours_quad_stretch": "/doodles/doodle-all-fours-quad-stretch.svg",
+  "fedb_calf_stretch_elbows_against_wall": "/doodles/doodle-calf-stretch-elbows-against-wall.svg",
+  "fedb_runners_stretch": "/doodles/doodle-runners-stretch.svg",
+  "fedb_seated_calf_stretch": "/doodles/doodle-seated-calf-stretch.svg",
+  "fedb_standing_elevated_quad_stretch": "/doodles/doodle-standing-elevated-quad-stretch.svg",
+  "fedb_standing_gastrocnemius_calf_stretch": "/doodles/doodle-standing-gastrocnemius-calf-stretch.svg",
+  "fedb_standing_hip_flexors": "/doodles/doodle-standing-hip-flexors.svg",
+  "fedb_on_your_side_quad_stretch": "/doodles/doodle-on-your-side-quad-stretch.svg",
+  "fedb_side_lying_groin_stretch": "/doodles/doodle-side-lying-groin-stretch.svg",
+  "fedb_adductor_groin": "/doodles/doodle-adductor-groin.svg",
+  "fedb_seated_floor_hamstring_stretch": "/doodles/doodle-seated-floor-hamstring-stretch.svg",
+  "fedb_groin_and_back_stretch": "/doodles/doodle-groin-and-back-stretch.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
