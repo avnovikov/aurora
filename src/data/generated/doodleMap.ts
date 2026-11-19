@@ -385,7 +385,21 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "wger_1956": "/doodles/doodle-fire-hydrant-circles.svg",
   "wger_1672": "/doodles/doodle-seated-hip-abduction.svg",
   "wger_1908": "/doodles/doodle-butterfly-superman.svg",
-  "wger_171": "/doodles/doodle-incline-crunches.svg"
+  "wger_171": "/doodles/doodle-incline-crunches.svg",
+  "wger_927": "/doodles/doodle-suspended-chest-fly-crossing.svg",
+  "wger_2765": "/doodles/doodle-suspended-y-raise.svg",
+  "wger_2766": "/doodles/doodle-suspended-face-pull.svg",
+  "wger_2763": "/doodles/doodle-suspended-chest-fly.svg",
+  "fedb_suspended_row": "/doodles/doodle-suspended-row.svg",
+  "wger_674": "/doodles/doodle-suspended-leaning-row.svg",
+  "wger_959": "/doodles/doodle-suspended-row-pull-up-lead-up.svg",
+  "wger_958": "/doodles/doodle-suspended-curl.svg",
+  "fedb_suspended_push_up": "/doodles/doodle-suspended-push-up.svg",
+  "wger_2764": "/doodles/doodle-suspended-push-up-low-handles.svg",
+  "fedb_suspended_fallout": "/doodles/doodle-suspended-fallout.svg",
+  "wger_1246": "/doodles/doodle-suspended-rollout.svg",
+  "fedb_suspended_reverse_crunch": "/doodles/doodle-suspended-reverse-crunch.svg",
+  "fedb_suspended_split_squat": "/doodles/doodle-suspended-split-squat.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
