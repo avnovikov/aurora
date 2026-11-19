@@ -2,12 +2,14 @@ import { describe, expect, it } from "vitest";
 import {
   BONES,
   HIP_SIDE,
+  reach3,
   resolveSideways,
+  solveKeyframes,
+  type DoodleSpec,
   type AuthoredPose,
   type Point,
   type Pose,
 } from "../../src/doodles/rig";
-import { reach3, spreadFeet } from "../../src/doodles/sideways";
 
 const PELVIS: Point = [-30, -87];
 
@@ -62,15 +64,57 @@ describe("resolveSideways", () => {
     expect(out.feet?.far).toEqual(reach3(knee, 200, BONES.shin, 0));
   });
 
-  it("spreads planted feet exactly like spreadFeet", () => {
-    const plain: Pose = {
+  it("spreads planted feet in along the floor so legs keep their length", () => {
+    const plain: AuthoredPose = {
       pelvis: PELVIS,
       feet: { near: [-200, -18], far: [-200, -18] },
+      spreadFeet: true,
     };
-    const sw = { pelvis: -20, feet: { near: -40, far: 40 } };
-    expect(resolveSideways({ ...plain, spreadFeet: true }, sw)).toEqual(
-      spreadFeet(plain, sw),
-    );
+    const out = resolveSideways(plain, { pelvis: -20, feet: { near: -40, far: 40 } });
+    expect(out.feet?.near).toEqual([-199.36, -18]);
+    expect(out.feet?.far).toEqual([-191.63, -18]);
+  });
+
+  it("passes a knee with only bend through unchanged", () => {
+    const pose: AuthoredPose = {
+      pelvis: PELVIS,
+      knees: { near: { bend: -1 } },
+      feet: { near: { dir: 170 } },
+    };
+    const out = resolveSideways(pose, {});
+    expect(out.knees?.near).toEqual({ bend: -1 });
+  });
+
+  it("keeps a plain knee at and hangs a foot hint off it", () => {
+    const knee: Point = [-10, -40];
+    const pose: AuthoredPose = {
+      pelvis: PELVIS,
+      knees: { near: { at: knee } },
+      feet: { near: { dir: 170 } },
+    };
+    const out = resolveSideways(pose, { knees: { near: { at: 24 } }, feet: { near: 2 } });
+    expect(out.knees?.near?.at).toEqual(knee);
+    expect(out.feet?.near).toEqual(reach3(knee, 170, BONES.shin, 2 - 24));
+  });
+
+  it("resolves hints per keyframe through solveKeyframes", () => {
+    const sideways = { knees: { near: { at: 24 } }, feet: { near: 2 } };
+    const spec: DoodleSpec = {
+      id: "t",
+      slug: "t",
+      title: "T",
+      frames: [
+        {
+          hold: 0,
+          pose: { pelvis: PELVIS, knees: { near: { dir: 40 } }, feet: { near: { dir: 170 } } },
+          sideways,
+        },
+      ],
+    };
+    const [key] = solveKeyframes(spec);
+    const knee = reach3(PELVIS, 40, BONES.thigh, 24 - -HIP_SIDE);
+    expect(key.pose.knees?.near?.at).toEqual(knee);
+    expect(key.pose.feet?.near).toEqual(reach3(knee, 170, BONES.shin, 2 - 24));
   });
 
   it("needs an explicit pelvis for hints", () => {

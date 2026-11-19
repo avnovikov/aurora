@@ -209,6 +209,20 @@ function resolveLeg(
   return { knee, foot: resolveFoot(pelvis, hipZ, kneeZ, knee?.at, foot, sw.feet?.[side] ?? hipZ) };
 }
 
+/** Per-side knee pins and foot points gathered from resolved legs. */
+function collectLegs(legs: readonly (readonly [Side, { knee?: JointHint; foot?: Point }])[]): {
+  knees: Partial<Record<Side, JointHint>>;
+  feet: Partial<Record<Side, Point>>;
+} {
+  const knees: Partial<Record<Side, JointHint>> = {};
+  const feet: Partial<Record<Side, Point>> = {};
+  for (const [side, leg] of legs) {
+    if (leg.knee) knees[side] = leg.knee;
+    if (leg.foot) feet[side] = leg.foot;
+  }
+  return { knees, feet };
+}
+
 /**
  * Turns an authored pose's sideways hints into plain pins (see `AuthoredPose`),
  * foreshortening each by its joint's z from `sideways`: hips at
@@ -222,12 +236,11 @@ export function resolveSideways(pose: AuthoredPose, sideways: Sideways = {}): Po
   const { spreadFeet: spread, knees: kneeHints, feet: footHints, ...rest } = pose;
   const planted = spread ? spreadPlanted(pelvis, footHints ?? {}, sideways) : { ...footHints };
   const legs = (["near", "far"] as Side[]).map((side) => [side, resolveLeg(pelvis, side, sideways, kneeHints?.[side], planted[side])] as const);
-  const pick = <T>(part: "knee" | "foot"): Partial<Record<Side, T>> =>
-    Object.fromEntries(legs.filter(([, leg]) => leg[part]).map(([side, leg]) => [side, leg[part]]));
+  const { knees, feet } = collectLegs(legs);
   return {
     ...rest,
-    ...(kneeHints ? { knees: pick<JointHint>("knee") } : {}),
-    ...(footHints ? { feet: pick<Point>("foot") } : {}),
+    ...(kneeHints ? { knees } : {}),
+    ...(footHints ? { feet } : {}),
   };
 }
 

@@ -1,4 +1,4 @@
-import { BONES, SHOULDER_SIDE, resolveSideways, solvePose, zOut, type AuthoredPose, type Point, type Pose, type Side, type Sideways } from "./rig";
+import { BONES, SHOULDER_SIDE, resolveSideways, solvePose, zOut, type AuthoredPose, type Point, type Side, type Sideways } from "./rig";
 
 /**
  * Helpers for authoring dual-view keyframes (#174): 2D pins placed so the 3D
@@ -47,11 +47,4 @@ export function lockedY3(
     else b = mid;
   }
   return Math.round(((a + b) / 2) * 10) / 10;
-}
-
-export { reach3 } from "./rig";
-
-/** Planted straight legs with feet out sideways (removed in Task 2: use `spreadFeet: true` on the pose). */
-export function spreadFeet(pose: Pose, sw: Sideways): Pose {
-  return resolveSideways({ ...pose, spreadFeet: true }, sw);
 }
