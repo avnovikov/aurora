@@ -42,21 +42,40 @@ const keyframe = (pose: Pose, hold: number, face?: Face, sideways?: Sideways): K
 
 // ---------------------------------------------------------------- chin to chest (hands behind the head)
 
-/** The chin sinks `nod` degrees with the fingers laced behind the head and the elbows forward. */
-function chinDown(nod: number): { pose: Pose; sideways: Sideways } {
+/**
+ * Fingers laced low on the back of the head (the base of the skull) with the
+ * elbows forward and narrow: shared by every hands-behind-the-head frame. The
+ * hands sit at the head's edge (z ±HAND_Z), so from the front the forearms end
+ * there; from the side the forearm runs back under the face, below the nose
+ * tick. `nod` turns the head (and the hands with it) chin down.
+ */
+const HAND_Z = 23;
+const ELBOW_OUT = 16;
+const BACK = 12;
+const LOW = 10;
+/** Shoulders drawn down a little, away from the ears, so the bent elbows keep their range. */
+const SETTLE = -5;
+function handsBehindHead(nod: number): { pose: Pose; sideways: Sideways } {
   const head = headAt(nod);
   const face = along([0, 0], nod, 1);
-  const up: Point = [face[1], -face[0]];
-  // The back of the skull: behind the face and a touch up.
-  const hand: Point = [round(head[0] - face[0] * 27 + up[0] * 8), round(head[1] - face[1] * 27 + up[1] * 8)];
+  const down: Point = [-face[1], face[0]];
+  const low = LOW + (8 * nod) / 55;
+  const hand: Point = [round(head[0] - face[0] * BACK + down[0] * low), round(head[1] - face[1] * BACK + down[1] * low)];
   return {
     pose: seated({
-      hands: { near: hand, far: [hand[0] + 2, hand[1]] },
+      hands: { near: hand, far: hand },
       elbows: { near: { bend: 1 }, far: { bend: 1 } },
     }),
-    sideways: { hands: { near: -5, far: 5 }, elbows: { near: { out: 44 }, far: { out: 44 } } },
+    sideways: {
+      hands: { near: -HAND_Z, far: HAND_Z },
+      elbows: { near: { out: ELBOW_OUT }, far: { out: ELBOW_OUT } },
+      shoulders: { near: { up: SETTLE }, far: { up: SETTLE } },
+    },
   };
 }
+
+/** The chin sinks `nod` degrees with the fingers laced behind the head and the elbows forward. */
+const chinDown = (nod: number): { pose: Pose; sideways: Sideways } => handsBehindHead(nod);
 
 const chinFrame = (nod: number, hold: number): Keyframe => {
   const { pose, sideways } = chinDown(nod);
@@ -123,14 +142,8 @@ function foreheadPress(): { pose: Pose; sideways: Sideways } {
   };
 }
 
-/** Both hands laced behind the head, the elbows out, pressing back. */
-function behindHead(): { pose: Pose; sideways: Sideways } {
-  const hand: Point = [round(HEAD0[0] - 27), round(HEAD0[1] - 4)];
-  return {
-    pose: seated({ hands: { near: hand, far: [hand[0] + 2, hand[1]] }, elbows: { near: { bend: 1 }, far: { bend: 1 } } }),
-    sideways: { hands: { near: -5, far: 5 }, elbows: { near: { out: 44 }, far: { out: 44 } } },
-  };
-}
+/** Both hands laced behind the head, pressing back: the shared hands-behind-the-head frame. */
+const behindHead = (): { pose: Pose; sideways: Sideways } => handsBehindHead(0);
 
 /** One hand flat on the side of the head (`hand` near: the viewer's left), pressing the head into it. */
 function sideHold(hand: Side): { pose: Pose; sideways: Sideways } {
@@ -158,7 +171,7 @@ function chinTuck(back: number): Pose {
   const head: Point = [round(HEAD0[0] - back), round(NECK[1] - Math.sqrt(NECK_LEN ** 2 - back ** 2))];
   return seated({
     head,
-    hands: { near: [round(head[0] + 38), round(head[1] + 16)], far: [12, -96] },
+    hands: { near: [round(head[0] + 23), round(head[1] + 13)], far: [12, -96] },
     elbows: { near: { bend: 1 } },
   });
 }
@@ -206,7 +219,7 @@ export const BATCH_BL_SPECS: DoodleSpec[] = [
     views: TWO_VIEWS,
     props: [CHAIR, FLOOR_PROP],
     transition: 1.1,
-    frames: [restFrame(0.5), ...tiltIn(-40, "near", false, 1.4), restFrame(0.5), ...tiltIn(40, "far", false, 1.4)],
+    frames: [restFrame(0.5), ...tiltIn(-40, "near", true, 1.4), restFrame(0.5), ...tiltIn(40, "far", true, 1.4)],
   },
   {
     id: "wger_1008",
@@ -261,7 +274,7 @@ export const BATCH_BL_SPECS: DoodleSpec[] = [
     transition: 0.9,
     frames: [
       { pose: chinTuck(0), hold: 0.6, face: { nod: 0 } },
-      { pose: chinTuck(20), hold: 1.4, face: { nod: 5 } },
+      { pose: chinTuck(13), hold: 1.4, face: { nod: 5 } },
     ],
   },
   {

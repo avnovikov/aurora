@@ -120,6 +120,16 @@ const atFloor = (): Pose => {
   return figure(FLOOR_STANCE, { hand: [round(s[0] + 4), FLOOR_HAND] }, { hand: [round(s[0] - 2), FLOOR_HAND] });
 };
 
+/**
+ * One-arm snatch from the floor: the hike first (straight arm, the bell back
+ * behind the knees), the hip snap floating the bell up close to the body
+ * (arm long down the front, then the elbow bent low with the bell by the face),
+ * then the punch through to lockout.
+ */
+const snatchHike = (): Pose => figure(HIKE, hanging(sh(HIKE), 128), free(HIKE, 100));
+const snatchFloat = (): Pose => figure(EXT, straight(sh(EXT), 74), free(EXT));
+const snatchClose = (): Pose => figure(EXT, bent(sh(EXT), 34, -96), free(EXT));
+
 const SPLIT: Stand = { pelvis: [0, -142], spine: -90, feet: [[70, 0], [-82, -18]], toes: [0, 60], knees: true };
 const splitCatch = (): Pose => figure(SPLIT, overhead(sh(SPLIT)), free(SPLIT, 100), { head: lookUp(SPLIT) });
 
@@ -231,12 +241,12 @@ const SPECS: DoodleSpec[] = [
     transition: 0.4,
     frames: [
       kf(atFloor(), 0.3),
-      kf(figure(HIKE, hanging(sh(HIKE), 112), free(HIKE, 100)), 0.1, "swing"),
-      kf(extended(), 0, "swing"),
-      kf(highPull(), 0, "swing"),
+      kf(snatchHike(), 0.25, "swing"),
+      kf(snatchFloat(), 0, "swing"),
+      kf(snatchClose(), 0, "rack"),
       kf(snatchTop(), 0.5, "rack"),
       kf(dropped(), 0, "swing"),
-      kf(figure(HIKE, hanging(sh(HIKE), 112), free(HIKE, 100)), 0.1, "swing"),
+      kf(snatchHike(), 0.1, "swing"),
     ],
   },
   {

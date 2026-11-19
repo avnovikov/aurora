@@ -43,22 +43,28 @@ function hingeDown(handX: number, spine: number): { pelvis: Point; chest: Point;
   return { ...torsoFromShoulder(shoulder, spine), shoulder };
 }
 
-const ROW_HINGE = hingeDown(24, -20);
+const ROW_HINGE = hingeDown(24, -2);
 
 /**
  * Two-arm row: both bells on the floor ahead of the feet, hips back, back flat.
  * `pull`: both elbows drawn back past the ribs, the bells at the stomach.
  */
-function twoArmRow(pull: boolean): Pose {
+function twoArmRow(pull: boolean | "lowering"): Pose {
   const { pelvis, chest, shoulder } = ROW_HINGE;
-  const elbow = along(shoulder, 168, 60);
+  // The elbows drive up past the back (like the one-arm row), so the bells come to the stomach.
+  const elbow = along(shoulder, -132, 60);
   const up = (dx: number): Point => [round(elbow[0] + 7 + dx), round(elbow[1] + 65.6)];
+  // Lowering: the arms open forward under the shoulders first, so the bells drop clear of the knees.
+  const low = (dx: number): Point => [round(shoulder[0] + 14 + dx), round(shoulder[1] + 76)];
+  let hands: Pose["hands"] = { near: [shoulder[0], FLOOR_HAND], far: [shoulder[0] - 2, FLOOR_HAND] };
+  if (pull === true) hands = { near: up(0), far: up(-2) };
+  if (pull === "lowering") hands = { near: low(0), far: low(-2) };
   return {
     pelvis,
     chest,
-    hands: pull ? { near: up(0), far: up(-2) } : { near: [shoulder[0], FLOOR_HAND], far: [shoulder[0] - 2, FLOOR_HAND] },
-    elbows: pull ? { near: { at: elbow }, far: { at: elbow } } : BENT,
-    feet: { near: [-6, 0], far: [-12, 0] },
+    hands,
+    elbows: pull === true ? { near: { at: elbow }, far: { at: elbow } } : BENT,
+    feet: { near: [-16, 0], far: [-22, 0] },
     toes: { near: 0, far: 0 },
   };
 }
@@ -159,20 +165,29 @@ function plankRow(row: boolean): Pose {
 
 /**
  * Standing on one leg with a soft knee, the bell hanging by the side in the near
- * hand. `stand` is the leg on the floor; the other knee is bent, the foot held up behind.
+ * hand. `stand` is the leg on the floor; the other foot is just lifted, knee bent
+ * and the foot a little off the floor behind. `stand` undefined: both feet down,
+ * the moment of the switch (the standing foot stays down until the other lands).
+ * The band the bell hangs from isn't drawn: the gear hangs it straight from the grip.
  */
-function sideHold(stand: Side): Pose {
-  const pelvis: Point = [0, -168];
-  const up: Side = stand === "near" ? "far" : "near";
-  const knee = along(pelvis, 84, 88);
-  return {
+function sideHold(stand: Side | undefined): Pose {
+  const pelvis: Point = [0, -166];
+  const base = {
     pelvis,
     chest: chestOf(pelvis, -90),
-    hands: { near: [10, -146], far: [-6, -146] },
+    hands: { near: [10, -144] as Point, far: [-6, -144] as Point },
     elbows: BENT,
-    knees: { [up]: { at: knee } } as Pose["knees"],
-    feet: { [stand]: [0, 0], [up]: along(knee, 196, 86) } as Pose["feet"],
-    toes: { [stand]: 0, [up]: 60 } as Pose["toes"],
+  };
+  if (!stand) {
+    return { ...base, knees: { near: { bend: -1 }, far: { bend: -1 } }, feet: { near: [4, 0], far: [-4, 0] }, toes: { near: 0, far: 0 } };
+  }
+  const up: Side = stand === "near" ? "far" : "near";
+  const knee = along(pelvis, 50, 88);
+  return {
+    ...base,
+    knees: { [stand]: { bend: -1 }, [up]: { at: knee } } as Pose["knees"],
+    feet: { [stand]: [2, 0], [up]: along(knee, 124, 86) } as Pose["feet"],
+    toes: { [stand]: 0, [up]: 20 } as Pose["toes"],
   };
 }
 
@@ -322,28 +337,47 @@ function curlPose(fore: number, both: boolean): Pose {
 
 // ---------------------------------------------------------------- hip airplane (side + front)
 
+/** How far the hips and shoulders roll open (degrees), together as one unit about the standing hip. */
+const AIRPLANE_ROLL = 75;
+/** Arms out like wings: shoulder centre to fingertip along the shoulder line. */
+const WING = 147;
+
 /**
  * Stand on the near leg (soft knee), hinge until the torso and the free (far) leg make a long
- * line. `open` is 0 with the hips square, 1 with the hips rotated open: the free leg
- * turns out to the side (front panel) while the standing hip and knee stay put.
+ * line, arms out to the sides like wings. `open` 0: hips and shoulders square to the floor;
+ * 1: pelvis and torso rolled open together (`hipTwist` = `twist`) about the standing hip, the
+ * free-side hip, shoulder and arm turning up to the ceiling and the free leg lifting with them,
+ * the near arm pointing down at the floor. Twist + turns the far shoulder towards the chest's
+ * front (the floor, hinged), so opening is negative.
  */
 function airplane(open: number): Keyframe {
   const pelvis: Point = [0, -164];
   const spine = -6;
-  const rise = round(8 * open);
+  const roll = -AIRPLANE_ROLL * open;
+  const r = (roll * Math.PI) / 180;
+  const centre = shoulderOf(pelvis, spine);
+  // The chest's front for a hinged spine: the spine direction turned +90 (down).
+  const u = (spine * Math.PI) / 180;
+  const front: Point = [-Math.sin(u), Math.cos(u)];
+  const reach = WING * Math.sin(r);
+  const wing = (sign: number): Point => [round(centre[0] + sign * reach * front[0]), round(centre[1] + sign * reach * front[1])];
+  const wingZ = round(WING * Math.cos(r));
   return {
     hold: open === 0 || open === 1 ? 0.5 : 0,
     pose: {
       pelvis,
       chest: chestOf(pelvis, spine),
-      hands: { near: off(shoulderOf(pelvis, spine), 6, REACH), far: off(shoulderOf(pelvis, spine), 4, REACH) },
+      hands: { far: wing(1), near: wing(-1) },
       elbows: { near: { bend: 1 }, far: { bend: 1 } },
-      feet: { near: [0, 0], far: { dir: 188 + rise, length: 173.9 } },
+      knees: { near: { bend: -1 } },
+      feet: { near: [2, 0], far: { dir: 188 - 8 * open, length: 173.9 } },
       toes: { near: 0 },
     },
     sideways: {
-      feet: { near: -8, far: round(8 + 90 * open) },
-      hands: { near: -26, far: 26 },
+      twist: round(roll),
+      hipTwist: round(roll),
+      feet: { near: -8, far: round(8 + 26 * open) },
+      hands: { near: -wingZ, far: wingZ },
     },
   };
 }
@@ -356,7 +390,7 @@ export const BATCH_BK_SPECS: DoodleSpec[] = [
     props: [FLOOR_PROP],
     kettlebell: { hands: ["near", "far"], size: BELL },
     transition: 0.7,
-    frames: [kf(twoArmRow(false), 0.4), kf(twoArmRow(true), 0.5)],
+    frames: [kf(twoArmRow(false), 0.4), kf(twoArmRow(true), 0.5), kf(twoArmRow("lowering"), 0)],
   },
   {
     id: "wger_1003",
@@ -393,7 +427,7 @@ export const BATCH_BK_SPECS: DoodleSpec[] = [
     props: [FLOOR_PROP],
     kettlebell: { hands: ["near"], size: BELL },
     transition: 0.8,
-    frames: [kf(sideHold("far"), 0.6), kf(sideHold("near"), 0.6)],
+    frames: [kf(sideHold("far"), 0.6), kf(sideHold(undefined), 0.1), kf(sideHold("near"), 0.6), kf(sideHold(undefined), 0.1)],
   },
   {
     id: "wger_1360",
