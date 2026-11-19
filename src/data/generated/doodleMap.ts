@@ -487,7 +487,16 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "ntc_archer_inverted_row": "/doodles/doodle-archer-inverted-row.svg",
   "ntc_archer_straight_bar_dip": "/doodles/doodle-archer-straight-bar-dip.svg",
   "ntc_archer_dip": "/doodles/doodle-archer-dip.svg",
-  "wger_1919": "/doodles/doodle-push-up-chest-stretch.svg"
+  "wger_1919": "/doodles/doodle-push-up-chest-stretch.svg",
+  "fedb_alternating_hang_clean": "/doodles/doodle-alternating-hang-clean.svg",
+  "fedb_double_kettlebell_alternating_hang_clean": "/doodles/doodle-double-kettlebell-alternating-hang-clean.svg",
+  "fedb_kettlebell_figure_8": "/doodles/doodle-kettlebell-figure-8.svg",
+  "fedb_kettlebell_pass_between_the_legs": "/doodles/doodle-kettlebell-pass-between-the-legs.svg",
+  "fedb_lunge_pass_through": "/doodles/doodle-lunge-pass-through.svg",
+  "fedb_kettlebell_halo": "/doodles/doodle-kettlebell-halo.svg",
+  "fedb_kettlebell_halo_with_overhead_extension": "/doodles/doodle-kettlebell-halo-with-overhead-extension.svg",
+  "fedb_kettlebell_overhead_triceps_extension": "/doodles/doodle-kettlebell-overhead-triceps-extension.svg",
+  "fedb_bent_press": "/doodles/doodle-bent-press.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
