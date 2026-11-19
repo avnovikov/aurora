@@ -389,6 +389,7 @@ export const GENERATED_DOODLES: Record<string, string> = {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   "ntc_australian_chin_up": "/doodles/doodle-australian-chin-up.svg",
   "ntc_australian_pull_up_hold": "/doodles/doodle-australian-pull-up-hold.svg",
   "hf_41": "/doodles/doodle-ring-row.svg",
@@ -438,6 +439,17 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "fedb_kettlebell_pirate_ships": "/doodles/doodle-kettlebell-pirate-ships.svg",
   "fedb_one_arm_kettlebell_clean_and_jerk": "/doodles/doodle-one-arm-kettlebell-clean-and-jerk.svg"
 >>>>>>> feature/212-doodles-ar
+=======
+  "fedb_alternating_floor_press": "/doodles/doodle-alternating-floor-press.svg",
+  "fedb_alternating_kettlebell_press": "/doodles/doodle-alternating-kettlebell-press.svg",
+  "fedb_kettlebell_seesaw_press": "/doodles/doodle-kettlebell-seesaw-press.svg",
+  "fedb_extended_range_one_arm_kettlebell_floor_press": "/doodles/doodle-extended-range-one-arm-kettlebell-floor-press.svg",
+  "fedb_kettlebell_seated_press": "/doodles/doodle-kettlebell-seated-press.svg",
+  "fedb_kettlebell_arnold_press": "/doodles/doodle-kettlebell-arnold-press.svg",
+  "fedb_double_kettlebell_push_press": "/doodles/doodle-double-kettlebell-push-press.svg",
+  "fedb_double_kettlebell_jerk": "/doodles/doodle-double-kettlebell-jerk.svg",
+  "fedb_double_kettlebell_snatch": "/doodles/doodle-double-kettlebell-snatch.svg"
+>>>>>>> feature/212-doodles-as
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
