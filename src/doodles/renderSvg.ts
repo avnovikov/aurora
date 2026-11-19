@@ -92,6 +92,14 @@ function bandSvg(spec: DoodleSpec, poses: Solved[], timing: string, map: Mapper)
   return `<g style="stroke:${FOCUS_COLOUR}" stroke-width="${BAND_WIDTH}">${animatedPolyline(bandPath(spec.band), poses, timing, 1, map)}</g>`;
 }
 
+/** A board's posts stand this far in from each end. */
+export const BOARD_POST_INSET = 16;
+
+/** Point on the board's line at `x`. */
+function onBoard(from: Point, to: Point, x: number): Point {
+  return [x, Math.round((from[1] + ((to[1] - from[1]) * (x - from[0])) / (to[0] - from[0])) * 10) / 10];
+}
+
 /** Segments a prop is drawn with (also used by the validator for crossings). */
 export function propSegments(prop: Prop): [Point, Point][] {
   switch (prop.kind) {
@@ -105,6 +113,16 @@ export function propSegments(prop: Prop): [Point, Point][] {
         [[x + w, y + h], [x, y + h]],
         [[x, y + h], [x, y]],
       ];
+    }
+    case "board": {
+      const plank: [Point, Point] = [prop.from, prop.to];
+      if (prop.posts === false) return [plank];
+      const step = Math.sign(prop.to[0] - prop.from[0]) * BOARD_POST_INSET;
+      const posts = [prop.from[0] + step, prop.to[0] - step].map((x): [Point, Point] => {
+        const top = onBoard(prop.from, prop.to, x);
+        return [top, [x, 0]];
+      });
+      return [plank, ...posts];
     }
     case "parallelBars":
       return [

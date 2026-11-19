@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { project } from "../../src/doodles/project";
 import { dualLayout, frontProps } from "../../src/doodles/renderDual";
-import { figurePoints, renderDoodleSvg } from "../../src/doodles/renderSvg";
+import { figurePoints, propSegments, renderDoodleSvg } from "../../src/doodles/renderSvg";
 import { BONES, solvePose, type DoodleSpec, type Pose, type Prop, type Side } from "../../src/doodles/rig";
 import { dist3, sampleTimeline3, solveKeyframe3, type Figure3 } from "../../src/doodles/rig3d";
 import { dualViewGuards, validateSpec } from "../../src/doodles/validate";
@@ -137,20 +137,28 @@ describe("dual-view rendering and validation", () => {
   });
 });
 
-describe("front-view props", () => {
-  it("draws a sloped board of short bar strokes as its end-on outline, not a solid block", () => {
-    const board: Prop[] = Array.from({ length: 10 }, (_, i) => ({ kind: "bar", y: -50 - i * 4, x1: i * 4, x2: i * 4 + 4 }));
-    const front = frontProps([...board, { kind: "bar", y: -150, x1: 60, x2: 60 }], 100);
-    expect(front).toEqual([
-      { kind: "bar", y: -150, x1: 10, x2: 190 },
-      { kind: "box", x: 64, y: -86, w: 72, h: 36 },
+describe("board prop", () => {
+  const board: Prop = { kind: "board", from: [-100, -50], to: [100, -150] };
+
+  it("draws the plank and a post 16 in from each end down to the floor", () => {
+    expect(propSegments(board)).toEqual([
+      [[-100, -50], [100, -150]],
+      [[-84, -58], [-84, 0]],
+      [[84, -142], [84, 0]],
+    ]);
+    expect(propSegments({ ...board, posts: false })).toEqual([[[-100, -50], [100, -150]]]);
+  });
+
+  it("is seen end-on from the front: its outline plus a leg at each edge", () => {
+    expect(frontProps([board], 100)).toEqual([
+      { kind: "box", x: 64, y: -150, w: 72, h: 100 },
+      { kind: "box", x: 64, y: -50, w: 0, h: 50 },
+      { kind: "box", x: 136, y: -50, w: 0, h: 50 },
     ]);
   });
 
-  it("draws a thin bench post as two legs at the board's edges", () => {
-    expect(frontProps([{ kind: "box", x: 0, y: -60, w: 1, h: 60 }])).toEqual([
-      { kind: "box", x: -36, y: -60, w: 0, h: 60 },
-      { kind: "box", x: 36, y: -60, w: 0, h: 60 },
-    ]);
+  it("is allowed in two views and checked as one obstacle", () => {
+    const spec: DoodleSpec = { ...RAISE, props: [{ kind: "board", from: [-150, -60], to: [-60, -60], posts: false }] };
+    expect(dualViewGuards(spec)).toEqual([]);
   });
 });
