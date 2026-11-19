@@ -521,7 +521,13 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "fedb_seated_overhead_stretch": "/doodles/doodle-seated-overhead-stretch.svg",
   "wger_1841": "/doodles/doodle-seated-shoulder-stretch-hands-behind.svg",
   "fedb_shoulder_circles": "/doodles/doodle-shoulder-circles.svg",
-  "wger_2693": "/doodles/doodle-wall-lat-stretch.svg"
+  "wger_2693": "/doodles/doodle-wall-lat-stretch.svg",
+  "fedb_shoulder_stretch": "/doodles/doodle-shoulder-stretch.svg",
+  "fedb_side_wrist_pull": "/doodles/doodle-side-wrist-pull.svg",
+  "fedb_standing_biceps_stretch": "/doodles/doodle-standing-biceps-stretch.svg",
+  "fedb_upward_stretch": "/doodles/doodle-upward-stretch.svg",
+  "hf_167": "/doodles/doodle-wrist-circles.svg",
+  "wger_1274": "/doodles/doodle-seated-calf-stretch-towel.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */

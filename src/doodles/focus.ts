@@ -59,6 +59,7 @@ export const FOCUS_BY_ID: Readonly<Record<string, Focus>> = {
   wrist_load: BOTH_WRISTS,
   wger_2680: BOTH_WRISTS, // Wrist rocks
   fedb_kneeling_forearm_stretch: BOTH_WRISTS,
+  hf_167: { joints: ["wrist.near", "hand.near"], highlight: ["forearm.near", "hand.near", "forearm.far", "hand.far"], zoom: 4, label: "wrists" }, // Wrist circles
   wger_2686: { joints: ["wrist.near", "hand.near"], highlight: ["forearm.near", "hand.near"], zoom: 3, label: "wrist" }, // Wrist stretch
   // Ankles and calves (pistol depth)
   ankle_rocks: {
