@@ -2,8 +2,9 @@ import { BONES, SEGMENTS, dist, reflectSolved, sampleTimeline, type DoodleSpec, 
 import { bells, strapAnchor, strapAttach, strapSides } from "./gear";
 import type { Panel } from "./project";
 import { dualLayout, handZ, propDepth } from "./renderDual";
-import { figurePoints, propSegments, specViewBox } from "./renderSvg";
-import { dist3, sampleTimeline3, type Figure3, type Point3 } from "./rig3d";
+import { topLayout } from "./renderTop";
+import { figurePoints, propSegments, specViewBox, type ViewBox } from "./renderSvg";
+import { dist3, sampleTimeline3, type Figure3, type Point3, type Timeline3 } from "./rig3d";
 
 /** Validator for doodle specs (rig v2 spec, "Validator" section). JSON-serialisable output. */
 
@@ -468,22 +469,35 @@ function validateFlat(spec: DoodleSpec): SpecReport {
 
 // ---------------------------------------------------------------- dual view
 
-/** Props a dual-view doodle can draw from the front. */
-const DUAL_PROPS = new Set<Prop["kind"]>(["bar", "box", "board", "floor", "parallelBars", "parallettes"]);
+/** Props each second panel can draw (front: end-on; top: footprints and rails). */
+const SECOND_PANEL_PROPS: Record<"front" | "top", ReadonlySet<Prop["kind"]>> = {
+  front: new Set<Prop["kind"]>(["bar", "box", "board", "floor", "parallelBars", "parallettes"]),
+  top: new Set<Prop["kind"]>(["bar", "box", "board", "floor", "parallelBars", "parallettes"]),
+};
+
+/** Hand-held gear has no drawing from above yet. */
+function topGearGuards(spec: DoodleSpec): string[] {
+  const gear: [string, unknown][] = [["straps", spec.straps], ["kettlebell", spec.kettlebell], ["handBand", spec.handBand]];
+  return gear
+    .filter(([, value]) => value !== undefined && value !== false)
+    .map(([name]) => `views ["side", "top"] can't be combined with ${name} (no top drawing yet)`);
+}
 
 /** Spec-level rules for `views` / `sideways` (dual-view spec, "Scope" and "Solver"). */
 export function dualViewGuards(spec: DoodleSpec): string[] {
   const errors: string[] = [];
   const sideways = spec.frames.some((frame) => frame.sideways);
   if (!spec.views) {
-    if (sideways) errors.push("keyframe sideways needs views: [\"side\", \"front\"]");
+    if (sideways) errors.push("keyframe sideways needs views: [\"side\", \"front\"] or [\"side\", \"top\"]");
     return errors;
   }
+  const second = spec.views[1];
   if (spec.view === "front") errors.push("views can't be combined with view: \"front\"");
   if (spec.frames.some((frame) => frame.mirror !== undefined)) errors.push("views can't be combined with mirror (turning round)");
-  if (spec.wheel !== undefined) errors.push("views can't be combined with wheel (no front drawing of an ab wheel yet)");
+  if (spec.wheel !== undefined) errors.push(`views can't be combined with wheel (no ${second} drawing of an ab wheel yet)`);
+  if (second === "top") errors.push(...topGearGuards(spec));
   for (const prop of spec.props ?? []) {
-    if (!DUAL_PROPS.has(prop.kind)) errors.push(`prop ${prop.kind} can't be drawn in two views`);
+    if (!SECOND_PANEL_PROPS[second].has(prop.kind)) errors.push(`prop ${prop.kind} can't be drawn in the ${second} view`);
   }
   return errors;
 }
@@ -546,10 +560,29 @@ function anatomy3(f: Figure3): string[] {
   return issues;
 }
 
-/** Dual-view specs: bone lengths and joint ranges in 3D, floor and props on the side view, both panels in frame. */
+/** The two panels of a two-view spec: the side panel, and the front or top panel placed in the drawing. */
+interface Panels {
+  view: ViewBox;
+  side: Solved[];
+  second: Solved[];
+  name: "front" | "top";
+  /** A second-panel point where it is drawn. */
+  place: (p: Point) => Point;
+}
+
+function panelsOf(spec: DoodleSpec, timeline: Timeline3): Panels {
+  if (spec.views?.[1] === "top") {
+    const top = topLayout(spec, timeline);
+    return { view: top.view, side: top.side, second: top.top, name: "top", place: ([x, y]) => [x, y + top.topShift] };
+  }
+  const dual = dualLayout(spec, timeline);
+  return { view: dual.view, side: dual.side, second: dual.front, name: "front", place: ([x, y]) => [x + dual.frontShift, y] };
+}
+
+/** Two-view specs: bone lengths and joint ranges in 3D, floor and props on the side view, both panels in frame. */
 function validateDual(spec: DoodleSpec): SpecReport {
   const timeline = sampleTimeline3(spec);
-  const layout = dualLayout(spec, timeline);
+  const layout = panelsOf(spec, timeline);
   const box = layout.view;
   const inBox = ([x, y]: Point): boolean => x >= box.x && x <= box.x + box.w && y >= box.y && y <= box.y + box.h;
   const boneLists = timeline.poses.map((f) => bones(f));
@@ -559,12 +592,12 @@ function validateDual(spec: DoodleSpec): SpecReport {
   const keyframes = timeline.keyframeIndex.map((sampleIndex, index): KeyframeReport => {
     const figure = timeline.poses[sampleIndex];
     const side = layout.side[sampleIndex];
-    const front = layout.front[sampleIndex];
+    const second = layout.second[sampleIndex];
     const outsideViewBox = [
       ...figurePoints(side).filter(({ point }) => !inBox(point)).map(({ name, point }) => ({ joint: `side ${name}`, point: roundPoint(point) })),
-      ...figurePoints(front)
-        .filter(({ point }) => !inBox([point[0] + layout.frontShift, point[1]]))
-        .map(({ name, point }) => ({ joint: `front ${name}`, point: roundPoint(point) })),
+      ...figurePoints(second)
+        .filter(({ point }) => !inBox(layout.place(point)))
+        .map(({ name, point }) => ({ joint: `${layout.name} ${name}`, point: roundPoint(point) })),
     ];
     return {
       index,
@@ -595,7 +628,7 @@ function validateDual(spec: DoodleSpec): SpecReport {
   // Straps are judged in 3D: the side panel's anchor at the front panel's sideways position.
   const strapLengths = (side: Side): number[] => {
     const anchor = spec.straps!.anchor;
-    const z = strapAnchor(spec, layout.front, side, "front")[0];
+    const z = strapAnchor(spec, layout.second, side, "front")[0];
     const joint = (f: Figure3): Point3 => {
       if (spec.straps!.to === "knees") return f.legs[side].mid;
       return spec.straps!.to === "feet" ? f.legs[side].joint : f.arms[side].end;

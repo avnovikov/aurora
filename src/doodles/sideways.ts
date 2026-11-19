@@ -8,6 +8,8 @@ import { solveKeyframe3 } from "./rig3d";
 
 /** `views` of a dual-view doodle. */
 export const TWO_VIEWS = ["side", "front"] as const;
+/** `views` of a side + top doodle (floor moves seen from above). */
+export const TOP_VIEWS = ["side", "top"] as const;
 
 const SIDES: Side[] = ["near", "far"];
 

@@ -33,8 +33,8 @@ type Box = Extract<Prop, { kind: "box" }>;
 const FRONT_BAR_HALF = 90;
 const FRONT_BOX_HALF = 60;
 /** View labels, in rig units (the doodle row is about half scale). */
-const LABEL_SIZE = 22;
-const LABEL_GAP = 12;
+export const LABEL_SIZE = 22;
+export const LABEL_GAP = 12;
 const LABEL_OPACITY = 0.6;
 
 /** A bar seen end-on from the front: a stroke across the panel. */
@@ -170,18 +170,22 @@ const PART_POINTS: Record<BodyPart, (f: Figure3) => Point3[]> = {
   armNear: (f) => limbPoints(f.arms.near),
 };
 
-/** Mean forward position (x) of a part over the loop: larger x is nearer the front panel's viewer. */
-function depthOf(part: BodyPart, poses: Figure3[]): number {
+/** Mean of `axis` over a part's points over the loop. */
+function depthOf(part: BodyPart, poses: Figure3[], axis: (p: Point3) => number): number {
   const all = poses.flatMap(PART_POINTS[part]);
-  return all.reduce((sum, p) => sum + p[0], 0) / Math.max(1, all.length);
+  return all.reduce((sum, p) => sum + axis(p), 0) / Math.max(1, all.length);
 }
 
 const isBodyPart = (part: FigurePart): part is BodyPart => !(part in ATTACHED);
 
-/** Front panel draw order: furthest from the viewer first, attached parts right after their anchor. */
-function frontOrder(spec: DoodleSpec, poses: Figure3[]): FigurePart[] {
+/**
+ * Draw order by depth: parts with the smallest mean `axis` first (furthest from
+ * the viewer), attached parts right after their anchor. Front panel: x (larger
+ * x is nearer the viewer). Top panel: -y (higher parts on top).
+ */
+export function depthOrder(spec: DoodleSpec, poses: Figure3[], axis: (p: Point3) => number = (p) => p[0]): FigurePart[] {
   const parts = FIGURE_PARTS.filter(isBodyPart);
-  const depth = new Map(parts.map((part) => [part, depthOf(part, poses)]));
+  const depth = new Map(parts.map((part) => [part, depthOf(part, poses, axis)]));
   const sorted = [...parts].sort((a, b) => depth.get(a)! - depth.get(b)!);
   const attached = Object.entries(attachedFor(spec)) as [FigurePart, BodyPart][];
   return sorted.flatMap((part) => [part, ...attached.filter(([, anchor]) => anchor === part).map(([extra]) => extra)]);
@@ -217,7 +221,7 @@ export function dualLayout(spec: DoodleSpec, timeline: Timeline3 = sampleTimelin
   };
 }
 
-function label(text: string, x: number, y: number): string {
+export function label(text: string, x: number, y: number): string {
   return `<text x="${fmt(x)}" y="${fmt(y)}" style="fill:${INK}" opacity="${LABEL_OPACITY}" stroke="none" font-family="system-ui, sans-serif" font-size="${LABEL_SIZE}" text-anchor="middle">${text}</text>`;
 }
 
@@ -236,7 +240,7 @@ export function renderDualSvg(spec: DoodleSpec): string {
     highlightSvg(focus, layout.front, timing, shift),
     resolveFloors(frontProps(props, layout.frontShift, handZ(timeline.poses[0])), layout.front, layout.frontShift).map(propSvg).join(""),
     // Seen from the front both sides are square on: no faded far side.
-    figureSvg(spec, layout.front, timing, shift, { farOpacity: 1, order: frontOrder(spec, timeline.poses), panel: "front" }),
+    figureSvg(spec, layout.front, timing, shift, { farOpacity: 1, order: depthOrder(spec, timeline.poses), panel: "front" }),
     label("side", layout.labels.side, layout.labels.y),
     label("front", layout.labels.front, layout.labels.y),
   ]);

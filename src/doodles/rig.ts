@@ -370,7 +370,7 @@ export interface DoodleSpec {
    * Draw the move twice, side view and front view next to each other, from one
    * 3D-solved figure (keyframe `sideways`). Only when a reviewer asks for it (ADD VIEW).
    */
-  views?: readonly ["side", "front"];
+  views?: readonly ["side", "front"] | readonly ["side", "top"];
 }
 
 export const BONES = {

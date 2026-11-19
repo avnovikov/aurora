@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { project } from "../../src/doodles/project";
 import { dualLayout, frontProps, propDepth } from "../../src/doodles/renderDual";
+import { topLayout, topProps } from "../../src/doodles/renderTop";
 import { figurePoints, FLOOR_MARGIN, propSegments, renderDoodleSvg, resolveFloors } from "../../src/doodles/renderSvg";
 import { BONES, resolveSideways, solvePose, type AuthoredPose, type DoodleSpec, type Pose, type Prop, type Side } from "../../src/doodles/rig";
 import { dist3, sampleTimeline3, solveKeyframe3, type Figure3 } from "../../src/doodles/rig3d";
@@ -364,5 +365,72 @@ describe("depth-aware prop crossings (two views)", () => {
     expect(propDepth({ kind: "parallelBars", y: -200, x1: 0, x2: 100 }, hands)).toEqual([[-34, -26], [26, 34]]);
     expect(propDepth({ kind: "parallettes", y: -40, xs: [0] }, hands)).toEqual([[-52, -28], [28, 52]]);
     expect(propDepth({ kind: "floor" }, hands)).toEqual([]);
+  });
+});
+
+describe("top view (views: [\"side\", \"top\"])", () => {
+  const TOP: DoodleSpec = { ...RAISE, id: "test_top", slug: "test-top", views: ["side", "top"] };
+
+  it("projects (x, -z): x as in the side view, the near side (z < 0) at the bottom", () => {
+    const f = solveKeyframe3(solvePose(resolveSideways(RAISE.frames[1].pose as AuthoredPose, RAISE.frames[1].sideways)), RAISE.frames[1].pose as Pose, RAISE.frames[1].sideways);
+    const top = project(f, "top");
+    const side = project(f, "side");
+    expect(top.arms.far.end).toEqual([f.arms.far.end[0], -f.arms.far.end[2]]);
+    expect(top.head[0]).toBe(side.head[0]);
+    // The far hand (z > 0) is above the near shoulder (z < 0) on the panel.
+    expect(top.arms.far.end[1]).toBeLessThan(top.arms.near.root[1]);
+  });
+
+  it("stacks the top panel under the side panel with the same x, everything in frame", () => {
+    const layout = topLayout(TOP);
+    const { x, y, w, h } = layout.view;
+    const inside = ([px, py]: readonly [number, number]) => px >= x && px <= x + w && py >= y && py <= y + h;
+    const sideBottom = Math.max(...layout.side.flatMap((pose) => figurePoints(pose).map((p) => p.point[1])));
+    const topTop = Math.min(...layout.top.flatMap((pose) => figurePoints(pose).map((p) => p.point[1] + layout.topShift)));
+    expect(topTop).toBeGreaterThan(sideBottom);
+    expect(layout.labels.top[1]).toBeGreaterThan(layout.labels.side[1]);
+    for (const pose of layout.side) expect(figurePoints(pose).every((p) => inside(p.point))).toBe(true);
+    for (const pose of layout.top) expect(figurePoints(pose).every((p) => inside([p.point[0], p.point[1] + layout.topShift]))).toBe(true);
+    const svg = renderDoodleSvg(TOP);
+    expect(svg).toContain(">side</text>");
+    expect(svg).toContain(">top</text>");
+    expect(svg).not.toContain(">front</text>");
+  });
+
+  it("validates the same 3D checks as the front view", () => {
+    expect(validateSpec(TOP).errors).toEqual([]);
+    const far = { ...TOP.frames[1], sideways: { hands: { far: 400 } } };
+    expect(validateSpec({ ...TOP, frames: [TOP.frames[0], far] }).errors.some((e) => e.includes("hands.far unreachable"))).toBe(true);
+  });
+
+  it("draws props from above: footprints for box, board and bar, rails and handles along x, no floor", () => {
+    expect(
+      topProps([
+        { kind: "floor" },
+        { kind: "box", x: -100, y: -60, w: 200, h: 60, frontHalf: 30 },
+        { kind: "board", from: [100, -40], to: [-50, -80] },
+        { kind: "bar", y: -400, x1: -10, x2: 10 },
+        { kind: "parallelBars", y: -216, x1: -190, x2: 190 },
+        { kind: "parallettes", y: -40, xs: [60] },
+      ], { near: -34, far: 34 }),
+    ).toEqual([
+      { kind: "box", x: -100, y: -30, w: 200, h: 60 },
+      { kind: "box", x: -50, y: -36, w: 150, h: 72 },
+      { kind: "box", x: -10, y: -90, w: 20, h: 180 },
+      { kind: "bar", y: 30, x1: -190, x2: 190 },
+      { kind: "bar", y: -30, x1: -190, x2: 190 },
+      { kind: "bar", y: 34, x1: 38, x2: 82 },
+      { kind: "bar", y: -34, x1: 38, x2: 82 },
+    ]);
+  });
+
+  it("guards: props allowed, hand-held gear and the ab wheel not (no top drawing yet)", () => {
+    expect(dualViewGuards({ ...TOP, props: [{ kind: "floor" }, { kind: "box", x: 0, y: -40, w: 40, h: 40 }, { kind: "parallelBars", y: -200, x1: 0, x2: 100 }] })).toEqual([]);
+    expect(dualViewGuards({ ...TOP, straps: { anchor: [0, -400], end: "ring" } })).toEqual([expect.stringContaining("straps")]);
+    expect(dualViewGuards({ ...TOP, kettlebell: { hands: ["near"] } })).toEqual([expect.stringContaining("kettlebell")]);
+    expect(dualViewGuards({ ...TOP, handBand: true })).toEqual([expect.stringContaining("handBand")]);
+    expect(dualViewGuards({ ...TOP, wheel: 30 })).toEqual([expect.stringContaining("wheel")]);
+    expect(dualViewGuards({ ...TOP, frames: [{ ...TOP.frames[0], mirror: 0 }, TOP.frames[1]] })).toHaveLength(1);
+    expect(validateSpec({ ...TOP, handBand: true }).ok).toBe(false);
   });
 });
