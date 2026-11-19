@@ -7,7 +7,7 @@
  * Everything here is plain 2D geometry on one panel's poses, so the renderer,
  * the drawing's bounds and the validator share it.
  */
-import type { Panel } from "./project";
+import type { Panel, View } from "./project";
 import { BONES, ease, KETTLEBELL, zOut, type BellMode, type DoodleSpec, type Keyframe, type Point, type Side, type Solved } from "./rig";
 import type { Figure3, Point3 } from "./rig3d";
 
@@ -26,6 +26,12 @@ const sides = (list: readonly Side[] | undefined): Side[] => [...(list ?? ["near
 /** The panel a spec's single view draws (`view: "front"` is a front panel). */
 export const panelOf = (spec: DoodleSpec): Panel => (spec.view === "front" ? "front" : "side");
 
+/** The second panel of a two-view spec (undefined for one view). */
+export const secondView = (spec: DoodleSpec): "front" | "top" | undefined => spec.views?.[1];
+
+/** The panel gear is drawn for on a view: the top view has no gear drawing (guarded), so it reads as the side. */
+export const gearPanel = (view: View): Panel => (view === "top" ? "side" : view);
+
 /** Which sides carry a strap. */
 export function strapSides(spec: DoodleSpec): Side[] {
   return spec.straps ? sides(spec.straps.sides) : [];
@@ -34,11 +40,19 @@ export function strapSides(spec: DoodleSpec): Side[] {
 /** A band looped round the upper arm (`to: "elbows"`) sits this share of the way from shoulder to elbow. */
 export const ELBOW_LOOP = 0.8;
 
+/** Limbs of a figure in 2D (`Solved`) or 3D (`Figure3`). */
+interface Limbed<P> {
+  arms: Record<Side, { root: P; mid: P; end: P }>;
+  legs: Record<Side, { mid: P; joint: P }>;
+}
+
 /** The joint a strap or anchored band holds: the hand tip, just above the elbow, the knee, or the ankle (`to`). */
-export function strapAttach(spec: DoodleSpec, pose: Solved, side: Side): Point {
+export function strapAttach<P extends readonly number[]>(spec: DoodleSpec, pose: Limbed<P>, side: Side): P {
   switch (spec.straps?.to) {
-    case "elbows":
-      return lerp(pose.arms[side].root, pose.arms[side].mid, ELBOW_LOOP);
+    case "elbows": {
+      const { root, mid } = pose.arms[side];
+      return root.map((v, i) => v + (mid[i] - v) * ELBOW_LOOP) as unknown as P;
+    }
     case "knees":
       return pose.legs[side].mid;
     case "feet":
@@ -49,14 +63,15 @@ export function strapAttach(spec: DoodleSpec, pose: Solved, side: Side): Point {
 }
 
 /**
- * Where a strap hangs from on this panel. Side: the spec's anchor. Front: the
+ * Where a strap hangs from on this panel. Side (and a single `view: "front"`
+ * spec, whose anchor is in front-panel coordinates): the spec's anchor. Front panel of two views: the
  * anchor's height, `straps.width` either side of the centre line, or (no
  * width) straight above where the strap's hand (or knee) is in the first
  * sample. Either way the anchor is fixed over the loop.
  */
 export function strapAnchor(spec: DoodleSpec, poses: Solved[], side: Side, panel: Panel): Point {
   const { anchor, width } = spec.straps!;
-  if (panel === "side") return anchor;
+  if (panel === "side" || (spec.view === "front" && !spec.views)) return anchor;
   if (width !== undefined) return [zOut(side) * width, anchor[1]];
   return [strapAttach(spec, poses[0], side)[0], anchor[1]];
 }

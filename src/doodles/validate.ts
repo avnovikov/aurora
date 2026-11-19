@@ -1,5 +1,5 @@
-import { BONES, SEGMENTS, dist, reflectSolved, sampleTimeline, type DoodleSpec, type Point, type Prop, type Side, type Solved } from "./rig";
-import { bellHolders, bells, bellSize, byTheHorns, ELBOW_LOOP, handsOff, strapAnchor, strapAttach, strapSides } from "./gear";
+import { BONES, SEGMENTS, dist, reflectSolved, sampleTimeline, type DoodleSpec, type Keyframe, type Point, type Prop, type Sideways, type Side, type Solved } from "./rig";
+import { bellHolders, bells, bellSize, byTheHorns, handsOff, panelOf, secondView, strapAnchor, strapAttach, strapSides } from "./gear";
 import type { Panel } from "./project";
 import { dualLayout, handZ, propDepth } from "./renderDual";
 import { topLayout } from "./renderTop";
@@ -360,6 +360,13 @@ function perHandIssues(spec: DoodleSpec, bells: readonly Side[]): string[] {
   });
 }
 
+/** A racked bell sits on the forearm's back in the drawing, which a mirror turn would flip to the wrong side. */
+function rackMirrorIssues(spec: DoodleSpec): string[] {
+  const racked = (bell: Keyframe["bell"]): boolean => bell === "rack" || (typeof bell === "object" && (Object.values(bell) as string[]).includes("rack"));
+  const mirrored = spec.frames.some((frame) => frame.mirror !== undefined);
+  return mirrored && spec.frames.some((frame) => racked(frame.bell)) ? ["bell rack can't be combined with mirror (the rack flips sides)"] : [];
+}
+
 function bellGuards(spec: DoodleSpec): string[] {
   const errors: string[] = [];
   if (!spec.kettlebell) {
@@ -371,6 +378,7 @@ function bellGuards(spec: DoodleSpec): string[] {
   if (bells.length === 0) errors.push("kettlebell.hands is empty");
   if (handsOff(spec) && bells.length !== 1) errors.push("keyframe bellIn needs one kettlebell (one hand in kettlebell.hands)");
   if (byTheHorns(spec) && bells.length !== 1) errors.push("bell horns needs one kettlebell (one hand in kettlebell.hands)");
+  errors.push(...rackMirrorIssues(spec));
   return [...errors, ...perHandIssues(spec, bells)];
 }
 
@@ -497,7 +505,7 @@ function validateFlat(spec: DoodleSpec): SpecReport {
     errors.push(`bone length error ${maxBoneLengthErrorAllSamples} > ${BONE_TOLERANCE}`);
   }
   errors.push(...keyframeErrors(keyframes), ...transitionAnatomy, ...transitionPropCrossings);
-  errors.push(...gearIssues(spec, timeline.poses, timeline, spec.view === "front" ? "front" : "side"));
+  errors.push(...gearIssues(spec, timeline.poses, timeline, panelOf(spec)));
   errors.push(...bellGripIssues(spec, (k) => {
     const pose = timeline.poses[timeline.keyframeIndex[k]];
     return dist(pose.arms.near.end, pose.arms.far.end);
@@ -518,18 +526,27 @@ function validateFlat(spec: DoodleSpec): SpecReport {
 
 // ---------------------------------------------------------------- dual view
 
-/** Props each second panel can draw (front: end-on; top: footprints and rails). */
-const SECOND_PANEL_PROPS: Record<"front" | "top", ReadonlySet<Prop["kind"]>> = {
-  front: new Set<Prop["kind"]>(["bar", "box", "board", "floor", "parallelBars", "parallettes"]),
-  top: new Set<Prop["kind"]>(["bar", "box", "board", "floor", "parallelBars", "parallettes"]),
-};
-
 /** Hand-held gear has no drawing from above yet. */
 function topGearGuards(spec: DoodleSpec): string[] {
   const gear: [string, unknown][] = [["straps", spec.straps], ["kettlebell", spec.kettlebell], ["handBand", spec.handBand]];
   return gear
     .filter(([, value]) => value !== undefined && value !== false)
     .map(([name]) => `views ["side", "top"] can't be combined with ${name} (no top drawing yet)`);
+}
+
+/** The keyframes whose spine leans sideways (`chest` set and not at the pelvis z), with their pivot. */
+function leaning(spec: DoodleSpec): { index: number; pivot: NonNullable<Sideways["pivot"]> }[] {
+  return spec.frames.flatMap((frame, index) => {
+    const sw = frame.sideways;
+    return sw?.chest !== undefined && sw.chest !== (sw.pelvis ?? 0) ? [{ index, pivot: sw.pivot ?? "pelvis" }] : [];
+  });
+}
+
+/** The lean between two keyframes turns about the first one's pivot, so leaning keyframes must agree (or the spine jumps). */
+function leanPivotGuards(spec: DoodleSpec): string[] {
+  const keys = leaning(spec);
+  const clash = keys.find((key) => key.pivot !== keys[0]?.pivot);
+  return clash ? [`sideways.pivot differs between frame ${keys[0].index} ("${keys[0].pivot}") and frame ${clash.index} ("${clash.pivot}"); give the same pivot on every leaning keyframe`] : [];
 }
 
 /** Spec-level rules for `views` / `sideways` (dual-view spec, "Scope" and "Solver"). */
@@ -545,9 +562,9 @@ export function dualViewGuards(spec: DoodleSpec): string[] {
   if (spec.frames.some((frame) => frame.mirror !== undefined)) errors.push("views can't be combined with mirror (turning round)");
   if (spec.wheel !== undefined) errors.push(`views can't be combined with wheel (no ${second} drawing of an ab wheel yet)`);
   if (second === "top") errors.push(...topGearGuards(spec));
-  for (const prop of spec.props ?? []) {
-    if (!SECOND_PANEL_PROPS[second].has(prop.kind)) errors.push(`prop ${prop.kind} can't be drawn in the ${second} view`);
-  }
+  // Every prop kind has a front and a top drawing (frontProps, topProps switch exhaustively), so a new kind
+  // that lacks one fails to compile there rather than needing a guard here.
+  errors.push(...leanPivotGuards(spec));
   return errors;
 }
 
@@ -620,12 +637,26 @@ interface Panels {
 }
 
 function panelsOf(spec: DoodleSpec, timeline: Timeline3): Panels {
-  if (spec.views?.[1] === "top") {
+  if (secondView(spec) === "top") {
     const top = topLayout(spec, timeline);
     return { view: top.view, side: top.side, second: top.top, name: "top", place: ([x, y]) => [x, y + top.topShift] };
   }
   const dual = dualLayout(spec, timeline);
   return { view: dual.view, side: dual.side, second: dual.front, name: "front", place: ([x, y]) => [x + dual.frontShift, y] };
+}
+
+/** A lean can't be wider than the spine is long before it leans (the 2D pelvis to chest); the solver clamps it silently otherwise. */
+function leanReach(spec: DoodleSpec): string[] {
+  if (!spec.frames.some((frame) => frame.sideways?.chest !== undefined)) return [];
+  const flat = sampleTimeline(spec);
+  return spec.frames.flatMap((frame, k) => {
+    const sw = frame.sideways;
+    if (sw?.chest === undefined) return [];
+    const lean = Math.abs(sw.chest - (sw.pelvis ?? 0));
+    const pose = flat.poses[flat.keyframeIndex[k]];
+    const spine = dist(pose.pelvis, pose.chest);
+    return lean > spine ? [`frame ${k}: sideways.chest is ${round(lean, 1)} from the pelvis, more than the ${round(spine, 1)} spine; the lean is clamped`] : [];
+  });
 }
 
 /** Two-view specs: bone lengths and joint ranges in 3D, floor and props on the side view, both panels in frame. */
@@ -674,20 +705,12 @@ function validateDual(spec: DoodleSpec): SpecReport {
   const transitionAnatomy = between(timeline, (f) => anatomy3(f));
   const transitionPropCrossings = between(timeline, (_, i) => propIssues(spec, layout.side[i], depthAt(i)));
   errors.push(...keyframeErrors(keyframes), ...transitionAnatomy, ...transitionPropCrossings);
+  errors.push(...leanReach(spec));
   // Straps are judged in 3D: the side panel's anchor at the front panel's sideways position.
   const strapLengths = (side: Side): number[] => {
     const anchor = spec.straps!.anchor;
     const z = strapAnchor(spec, layout.second, side, "front")[0];
-    const joint = (f: Figure3): Point3 => {
-      if (spec.straps!.to === "elbows") {
-        const { root, mid } = f.arms[side];
-        const loop = (i: number): number => root[i] + (mid[i] - root[i]) * ELBOW_LOOP;
-        return [loop(0), loop(1), loop(2)];
-      }
-      if (spec.straps!.to === "knees") return f.legs[side].mid;
-      return spec.straps!.to === "feet" ? f.legs[side].joint : f.arms[side].end;
-    };
-    return timeline.poses.map((f) => dist3([anchor[0], anchor[1], z], joint(f)));
+    return timeline.poses.map((f) => dist3([anchor[0], anchor[1], z], strapAttach(spec, f, side)));
   };
   errors.push(...gearIssues(spec, layout.side, timeline, "side", strapLengths));
   errors.push(...bellGripIssues(spec, (k) => {

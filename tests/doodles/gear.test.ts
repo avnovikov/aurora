@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { bellAt, bellHolders, bells, ELBOW_LOOP, gearPoints, HANDLE_HALF, RING_RADIUS, strapAnchor, strapAttach, strapLine } from "../../src/doodles/gear";
+import { bellAt, bellHolders, bellInFront, bells, ELBOW_LOOP, gearPoints, HANDLE_HALF, RING_RADIUS, strapAnchor, strapAttach, strapLine } from "../../src/doodles/gear";
 import { dualLayout } from "../../src/doodles/renderDual";
+import { sampleTimeline3 } from "../../src/doodles/rig3d";
 import { figureExtent, fmt, renderDoodleSvg } from "../../src/doodles/renderSvg";
 import { BONES, KETTLEBELL, kettlebellOnFloor, onStrap, sampleTimeline, solvePose, type DoodleSpec, type Point, type Pose } from "../../src/doodles/rig";
 import { dualViewGuards, gearGuards, validateSpec } from "../../src/doodles/validate";
@@ -235,6 +236,23 @@ describe("per-hand bell modes", () => {
   });
 });
 
+describe("strap anchor in a single front view", () => {
+  it("uses the spec's anchor directly", () => {
+    const spec: DoodleSpec = { ...RINGS, view: "front" };
+    expect(strapAnchor(spec, sampleTimeline(spec).poses, "near", "front")).toEqual(ANCHOR);
+  });
+});
+
+describe("rack with mirror", () => {
+  it("rejects a racked bell (either hand) on a spec that turns round", () => {
+    const turn = (bell: DoodleSpec["frames"][number]["bell"]): DoodleSpec => ({ ...BELLS, frames: [{ ...BELLS.frames[0], bell }, { ...BELLS.frames[1], bell, mirror: 0 }] });
+    const error = "bell rack can't be combined with mirror (the rack flips sides)";
+    expect(gearGuards(turn("rack"))).toEqual([error]);
+    expect(gearGuards(turn({ far: "rack" }))).toEqual([error]);
+    expect(gearGuards(turn("swing"))).toEqual([]);
+  });
+});
+
 describe("bell hand-offs (bellIn)", () => {
   const r = KETTLEBELL.size;
   const together: Point = [40, -200];
@@ -345,6 +363,17 @@ describe("bell by the horns", () => {
     expect(front[sampleTimeline(HALO).keyframeIndex[4]]).toBe("0");
     // One view: drawn once, over the figure.
     expect(renderDoodleSvg({ ...HALO, views: undefined, frames: HALO.frames.map(({ sideways: _sideways, ...frame }) => frame) }).match(/<path d="M[^"]+ Q/g)).toHaveLength(1);
+  });
+
+  it("is in front of the head in the side panel when it is on the near side (z below the head's)", () => {
+    const timeline = sampleTimeline3(HALO);
+    const side = bellInFront(HALO, timeline.poses, "side");
+    const front = bellInFront(HALO, timeline.poses, "front");
+    // Round the near ear (keyframe 2, z -60) the bell is nearer the side camera; round the far ear (keyframe 6) it is behind the head.
+    expect(side[timeline.keyframeIndex[2]]).toBe(true);
+    expect(side[timeline.keyframeIndex[6]]).toBe(false);
+    // The two panels disagree about where the bell is in front: behind the head (keyframe 4) only the front panel hides it.
+    expect(front[timeline.keyframeIndex[4]]).toBe(false);
   });
 
   it("rejects horns with the hands apart, and with two bells", () => {

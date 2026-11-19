@@ -1,6 +1,6 @@
 import { FOCUS_BY_ID, type Focus, type Segment } from "./focus";
-import { bellSize, bells, byTheHorns, gearPoints, handsOff, panelOf, RING_RADIUS, strapAnchor, strapAttach, strapLine, strapSides } from "./gear";
-import type { Panel } from "./project";
+import { bellSize, bells, byTheHorns, gearPanel, gearPoints, handsOff, panelOf, RING_RADIUS, secondView, strapAnchor, strapAttach, strapLine, strapSides } from "./gear";
+import type { Panel, View } from "./project";
 import { dualLayout, renderDualSvg } from "./renderDual";
 import { renderTopSvg, topLayout } from "./renderTop";
 import { sampleTimeline, SEGMENTS, type DoodleSpec, type Point, type Prop, type Side, type Solved } from "./rig";
@@ -342,7 +342,8 @@ export function frame(drawing: ViewBox): ViewBox {
 }
 
 /** Everything the figure, its gear and props touch over the loop on one panel (no inset). */
-export function figureExtent(poses: Solved[], props: readonly Prop[], spec: DoodleSpec, panel: Panel = panelOf(spec)): ViewBox {
+export function figureExtent(poses: Solved[], props: readonly Prop[], spec: DoodleSpec, view: View = panelOf(spec)): ViewBox {
+  const panel = gearPanel(view);
   const r = spec.wheel;
   return bounds([
     ...poses.flatMap((pose) => figurePoints(pose).map((p) => p.point)),
@@ -370,7 +371,7 @@ function layoutFor(spec: DoodleSpec, poses: Solved[]): Layout {
 }
 
 export function specViewBox(spec: DoodleSpec, poses?: Solved[]): ViewBox {
-  if (spec.views) return spec.views[1] === "top" ? topLayout(spec).view : dualLayout(spec).view;
+  if (spec.views) return secondView(spec) === "top" ? topLayout(spec).view : dualLayout(spec).view;
   poses ??= sampleTimeline(spec).poses;
   return layoutFor(spec, poses).view;
 }
@@ -428,8 +429,8 @@ interface FigureOptions {
   farOpacity?: number;
   /** Back-to-front order (the front panel sorts by depth). */
   order?: readonly FigurePart[];
-  /** Which panel the poses are (front: straps hang above each hand, racked bells sit outside the forearm). */
-  panel?: Panel;
+  /** Which panel the poses are (front: straps hang above each hand, racked bells sit outside the forearm; top: no gear, as side). */
+  panel?: View;
   /** Per sample, whether a bell held by the horns is in front of the head (two views; see `bellInFront`). */
   bellInFront?: boolean[];
 }
@@ -443,8 +444,9 @@ export function figureSvg(
   poses: Solved[],
   timing: string,
   map: Mapper,
-  { headScale = 1, farOpacity = FAR_OPACITY, order = FIGURE_PARTS, panel = panelOf(spec), bellInFront }: FigureOptions = {},
+  { headScale = 1, farOpacity = FAR_OPACITY, order = FIGURE_PARTS, panel: view = panelOf(spec), bellInFront }: FigureOptions = {},
 ): string {
+  const panel = gearPanel(view);
   const parts: Record<FigurePart, () => string> = {
     legFar: () => animatedPolyline(legPath("far"), poses, timing, farOpacity, map),
     armFar: () => animatedPolyline(armPath("far"), poses, timing, farOpacity, map),
@@ -531,7 +533,7 @@ ${label}`;
 
 /** Animated SVG (SMIL), loops forever; plays standalone, in an <img>, or inlined (doodleMarkup). */
 export function renderDoodleSvg(spec: DoodleSpec): string {
-  if (spec.views) return spec.views[1] === "top" ? renderTopSvg(spec) : renderDualSvg(spec);
+  if (spec.views) return secondView(spec) === "top" ? renderTopSvg(spec) : renderDualSvg(spec);
   const timeline = sampleTimeline(spec);
   const { poses } = timeline;
   const timing = timingAttr(timeline);

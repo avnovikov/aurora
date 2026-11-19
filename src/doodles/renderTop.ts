@@ -6,7 +6,7 @@
  */
 import { FOCUS_BY_ID } from "./focus";
 import { project } from "./project";
-import { BOARD_HALF, depthOrder, handZ, label, LABEL_GAP, LABEL_SIZE, type HandZ } from "./renderDual";
+import { depthOrder, handZ, label, LABEL_GAP, LABEL_SIZE, propDepth, railHalf, type HandZ } from "./renderDual";
 import {
   figureExtent,
   figureSvg,
@@ -25,47 +25,43 @@ import {
 import type { DoodleSpec, Prop, Solved } from "./rig";
 import { sampleTimeline3, type Timeline3 } from "./rig3d";
 
-/** Sideways half-extents seen from above (as from the front). */
-const TOP_BAR_HALF = 90;
-const TOP_BOX_HALF = 60;
-const TOP_RAIL_HALF = 30;
 /** Half-length of a parallette handle (as in the side view). */
-const HANDLE_HALF = 22;
+const PARALLETTE_HALF = 22;
 
-/** A footprint from x1 to x2 across ±half (screen y = -z). */
-const footprint = (x1: number, x2: number, half: number): Prop => ({
+/** A footprint from x1 to x2 across a sideways extent (screen y = -z), `shift` down. */
+const footprint = (x1: number, x2: number, [low, high]: [number, number], shift: number): Prop => ({
   kind: "box",
   x: Math.min(x1, x2),
-  y: -half,
+  y: -high + shift,
   w: Math.abs(x2 - x1),
-  h: 2 * half,
+  h: high - low,
 });
 
-/** A line along x at sideways position z. */
-const alongX = (x1: number, x2: number, z: number): Prop => ({ kind: "bar", y: -z, x1, x2 });
+/** A line along x at sideways position z, `shift` down. */
+const alongX = (x1: number, x2: number, z: number, shift: number): Prop => ({ kind: "bar", y: -z + shift, x1, x2 });
 
 /**
- * Props seen from above: box, bench board and bar as their footprints, the
- * rails of parallel bars and parallette handles as lines along x at their z.
- * The floor is the panel itself and isn't drawn.
+ * Props seen from above, `shift` down: box, bench board and bar as their
+ * footprints, the rails of parallel bars and parallette handles as lines along
+ * x at their z. The floor is the panel itself and isn't drawn.
  */
-export function topProps(props: readonly Prop[], hands: HandZ = handZ(undefined)): Prop[] {
+export function topProps(props: readonly Prop[], hands: HandZ = handZ(undefined), shift = 0): Prop[] {
   return props.flatMap((prop): Prop[] => {
     switch (prop.kind) {
       case "floor":
         return [];
       case "bar":
-        return [footprint(prop.x1, prop.x2, TOP_BAR_HALF)];
+        return [footprint(prop.x1, prop.x2, propDepth(prop, hands)[0], shift)];
       case "box":
-        return [footprint(prop.x, prop.x + prop.w, prop.frontHalf ?? TOP_BOX_HALF)];
+        return [footprint(prop.x, prop.x + prop.w, propDepth(prop, hands)[0], shift)];
       case "board":
-        return [footprint(prop.from[0], prop.to[0], BOARD_HALF)];
+        return [footprint(prop.from[0], prop.to[0], propDepth(prop, hands)[0], shift)];
       case "parallelBars": {
-        const half = prop.frontHalf ?? TOP_RAIL_HALF;
-        return [alongX(prop.x1, prop.x2, -half), alongX(prop.x1, prop.x2, half)];
+        const half = railHalf(prop);
+        return [alongX(prop.x1, prop.x2, -half, shift), alongX(prop.x1, prop.x2, half, shift)];
       }
       case "parallettes":
-        return prop.xs.flatMap((x) => [hands.near, hands.far].map((z) => alongX(x - HANDLE_HALF, x + HANDLE_HALF, z)));
+        return prop.xs.flatMap((x) => [hands.near, hands.far].map((z) => alongX(x - PARALLETTE_HALF, x + PARALLETTE_HALF, z, shift)));
     }
   });
 }
@@ -84,7 +80,7 @@ export function topLayout(spec: DoodleSpec, timeline: Timeline3 = sampleTimeline
   const top = timeline.poses.map((pose) => project(pose, "top"));
   const props = spec.props ?? [];
   const sideBox = figureExtent(side, resolveFloors(props, side), spec, "side");
-  const topBox = figureExtent(top, topProps(props, handZ(timeline.poses[0])), spec, "side");
+  const topBox = figureExtent(top, topProps(props, handZ(timeline.poses[0])), spec, "top");
   const sideLabel = sideBox.y + sideBox.h + LABEL_GAP + LABEL_SIZE;
   // Under the side panel's label, with the usual padding between the panels.
   const topShift = sideLabel + LABEL_SIZE * 0.3 + PADDING - topBox.y;
@@ -114,19 +110,10 @@ export function renderTopSvg(spec: DoodleSpec): string {
     resolveFloors(props, layout.side).map(propSvg).join(""),
     figureSvg(spec, layout.side, timing, identity, { panel: "side" }),
     highlightSvg(focus, layout.top, timing, shift),
-    topProps(props, handZ(timeline.poses[0]))
-      .map((prop) => propSvg(shiftProp(prop, layout.topShift)))
-      .join(""),
+    topProps(props, handZ(timeline.poses[0]), layout.topShift).map(propSvg).join(""),
     // Seen from above both sides are square on; higher parts are drawn over lower ones.
-    figureSvg(spec, layout.top, timing, shift, { farOpacity: 1, order: depthOrder(spec, timeline.poses, (p) => -p[1]), panel: "side" }),
+    figureSvg(spec, layout.top, timing, shift, { farOpacity: 1, order: depthOrder(spec, timeline.poses, (p) => -p[1]), panel: "top" }),
     label("side", ...layout.labels.side),
     label("top", ...layout.labels.top),
   ]);
-}
-
-/** A top-view prop moved down by `dy` (only the kinds `topProps` makes). */
-function shiftProp(prop: Prop, dy: number): Prop {
-  if (prop.kind === "box") return { ...prop, y: prop.y + dy };
-  if (prop.kind === "bar") return { ...prop, y: prop.y + dy };
-  return prop;
 }

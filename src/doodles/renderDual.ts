@@ -4,7 +4,7 @@
  */
 import { FOCUS_BY_ID } from "./focus";
 import { bellInFront, byTheHorns } from "./gear";
-import { project } from "./project";
+import { project, type Panel } from "./project";
 import {
   figureExtent,
   FIGURE_PARTS,
@@ -30,42 +30,49 @@ import { sampleTimeline3, type Figure3, type Limb3, type Point3, type Timeline3 
 type Bar = Extract<Prop, { kind: "bar" }>;
 type Box = Extract<Prop, { kind: "box" }>;
 
-/** Half-width of a bar and a box seen from the front. */
-const FRONT_BAR_HALF = 90;
-const FRONT_BOX_HALF = 60;
+/**
+ * Sideways (z) half-extents of each prop, as drawn from the front and from
+ * above, and checked by the depth-aware crossings (one table for all three).
+ */
+export const PROP_HALF = {
+  bar: 90,
+  /** A box, unless it gives `frontHalf`. */
+  box: 60,
+  /** A bench board (and its legs) seen end-on. */
+  board: 36,
+  /** Parallel bars' rails each side of the centre, unless `frontHalf`. */
+  rail: 30,
+  /** A rail or handle seen end-on. */
+  railEnd: 4,
+  /** A parallette's foot on the floor, seen from the front. */
+  parallette: 12,
+} as const;
 /** View labels, in rig units (the doodle row is about half scale). */
 export const LABEL_SIZE = 22;
 export const LABEL_GAP = 12;
 const LABEL_OPACITY = 0.6;
 
 /** A bar seen end-on from the front: a stroke across the panel. */
-const frontBar = (bar: Bar, shift: number): Prop => ({ kind: "bar", y: bar.y, x1: shift - FRONT_BAR_HALF, x2: shift + FRONT_BAR_HALF });
+const frontBar = (bar: Bar, shift: number): Prop => ({ kind: "bar", y: bar.y, x1: shift - PROP_HALF.bar, x2: shift + PROP_HALF.bar });
 
 /** A box seen from the front, `frontHalf` either side of the panel's centre. */
 function frontBox(box: Box, shift: number): Prop {
-  const half = box.frontHalf ?? FRONT_BOX_HALF;
+  const half = box.frontHalf ?? PROP_HALF.box;
   return { kind: "box", x: shift - half, y: box.y, w: 2 * half, h: box.h };
 }
-
-/** Half-width of a bench board (and its legs) seen end-on. */
-export const BOARD_HALF = 36;
 
 /** A board seen end-on: its outline from its highest to its lowest point, and a leg at each edge. */
 function frontBoard(board: Extract<Prop, { kind: "board" }>, shift: number): Prop[] {
   const top = Math.min(board.from[1], board.to[1]);
   const bottom = Math.max(board.from[1], board.to[1]);
-  const outline: Prop = { kind: "box", x: shift - BOARD_HALF, y: top, w: 2 * BOARD_HALF, h: bottom - top };
+  const outline: Prop = { kind: "box", x: shift - PROP_HALF.board, y: top, w: 2 * PROP_HALF.board, h: bottom - top };
   if (board.posts === false) return [outline];
-  const legs = [shift - BOARD_HALF, shift + BOARD_HALF].map((x): Prop => ({ kind: "box", x, y: bottom, w: 1, h: -bottom }));
+  const legs = [shift - PROP_HALF.board, shift + PROP_HALF.board].map((x): Prop => ({ kind: "box", x, y: bottom, w: 1, h: -bottom }));
   return [outline, ...legs];
 }
 
-/** Default rail half-spacing of parallel bars seen from the front. */
-export const FRONT_RAIL_HALF = 30;
-/** Half-size of a rail or parallette handle seen end-on. */
-const END_ON_HALF = 4;
-/** Half-width of a parallette's foot on the floor, seen from the front. */
-const PARALLETTE_FOOT = 12;
+/** A parallel bars' rail half-spacing: its `frontHalf`, or the default. */
+export const railHalf = (bars: Extract<Prop, { kind: "parallelBars" }>): number => bars.frontHalf ?? PROP_HALF.rail;
 
 /** Sideways position (z) of each hand in the first keyframe: where parallettes stand. */
 export type HandZ = Record<Side, number>;
@@ -75,22 +82,22 @@ export const handZ = (first: Figure3 | undefined): HandZ => ({
 });
 
 /** A rail or handle seen end-on: a small square centred on (z, y). */
-const endOn = (z: number, y: number): Prop => ({ kind: "box", x: z - END_ON_HALF, y: y - END_ON_HALF, w: 2 * END_ON_HALF, h: 2 * END_ON_HALF });
+const endOn = (z: number, y: number): Prop => ({ kind: "box", x: z - PROP_HALF.railEnd, y: y - PROP_HALF.railEnd, w: 2 * PROP_HALF.railEnd, h: 2 * PROP_HALF.railEnd });
 /** A plain vertical line from (z, top) to the floor. */
 const upright = (z: number, top: number): Prop => ({ kind: "board", from: [z, top], to: [z, 0], posts: false });
 
 /** Parallel bars seen end-on: each rail a small square at ±frontHalf on its upright. */
 function frontParallelBars(bars: Extract<Prop, { kind: "parallelBars" }>, shift: number): Prop[] {
-  const half = bars.frontHalf ?? FRONT_RAIL_HALF;
-  return [-half, half].flatMap((z) => [endOn(shift + z, bars.y), upright(shift + z, bars.y + END_ON_HALF)]);
+  const half = railHalf(bars);
+  return [-half, half].flatMap((z) => [endOn(shift + z, bars.y), upright(shift + z, bars.y + PROP_HALF.railEnd)]);
 }
 
 /** Parallettes seen end-on: a handle at each hand's z on an upright, with a foot on the floor. */
 function frontParallettes(bars: Extract<Prop, { kind: "parallettes" }>, shift: number, hands: HandZ): Prop[] {
   return [hands.near, hands.far].flatMap((z): Prop[] => [
     endOn(shift + z, bars.y),
-    upright(shift + z, bars.y + END_ON_HALF),
-    { kind: "bar", y: 0, x1: shift + z - PARALLETTE_FOOT, x2: shift + z + PARALLETTE_FOOT },
+    upright(shift + z, bars.y + PROP_HALF.railEnd),
+    { kind: "bar", y: 0, x1: shift + z - PROP_HALF.parallette, x2: shift + z + PROP_HALF.parallette },
   ]);
 }
 
@@ -124,17 +131,17 @@ export function propDepth(prop: Prop, hands: HandZ): [number, number][] {
   const around = (z: number, half: number): [number, number] => [z - half, z + half];
   switch (prop.kind) {
     case "bar":
-      return [around(0, FRONT_BAR_HALF)];
+      return [around(0, PROP_HALF.bar)];
     case "box":
-      return [around(0, prop.frontHalf ?? FRONT_BOX_HALF)];
+      return [around(0, prop.frontHalf ?? PROP_HALF.box)];
     case "board":
-      return [around(0, BOARD_HALF)];
+      return [around(0, PROP_HALF.board)];
     case "parallelBars": {
-      const half = prop.frontHalf ?? FRONT_RAIL_HALF;
-      return [around(-half, END_ON_HALF), around(half, END_ON_HALF)];
+      const half = railHalf(prop);
+      return [around(-half, PROP_HALF.railEnd), around(half, PROP_HALF.railEnd)];
     }
     case "parallettes":
-      return [around(hands.near, PARALLETTE_FOOT), around(hands.far, PARALLETTE_FOOT)];
+      return [around(hands.near, PROP_HALF.parallette), around(hands.far, PROP_HALF.parallette)];
     case "floor":
       return [];
   }
@@ -242,7 +249,7 @@ export function renderDualSvg(spec: DoodleSpec): string {
   const props = spec.props ?? [];
   // A bell held by the horns hides behind the head when it is further from the viewer.
   const horns = byTheHorns(spec);
-  const inFront = (panel: "side" | "front"): boolean[] | undefined => (horns ? bellInFront(spec, timeline.poses, panel) : undefined);
+  const inFront = (panel: Panel): boolean[] | undefined => (horns ? bellInFront(spec, timeline.poses, panel) : undefined);
   return svgShell(layout.view, spec.title, [
     highlightSvg(focus, layout.side, timing, identity),
     resolveFloors(props, layout.side).map(propSvg).join(""),

@@ -256,6 +256,35 @@ describe("sideways torso lean (sideways.chest, pivot)", () => {
     }
   });
 
+  it("rejects leaning keyframes that name different pivots", () => {
+    const lean = (...pivots: (("pelvis" | "chest") | undefined)[]): DoodleSpec => ({
+      id: "test_pivots",
+      slug: "test-pivots",
+      title: "Test pivots",
+      views: ["side", "front"],
+      frames: pivots.map((pivot) => ({ pose: upright, sideways: { chest: -30, ...(pivot ? { pivot } : {}) }, hold: 0.3 })),
+    });
+    expect(dualViewGuards(lean("chest", "chest"))).toEqual([]);
+    expect(dualViewGuards(lean(undefined, "pelvis"))).toEqual([]);
+    expect(dualViewGuards(lean("chest", "pelvis"))).toEqual([expect.stringContaining("sideways.pivot differs between frame 0")]);
+    expect(dualViewGuards(lean("chest", undefined))).toHaveLength(1);
+    // A keyframe that does not lean says nothing about the pivot.
+    const flat = { ...lean("chest", "chest"), frames: [lean("chest").frames[0], { pose: upright, hold: 0.3 }] };
+    expect(dualViewGuards(flat)).toEqual([]);
+  });
+
+  it("reports a lean wider than the spine is long (the solver clamps it)", () => {
+    const wide = (chest: number): DoodleSpec => ({
+      id: "test_wide",
+      slug: "test-wide",
+      title: "Test wide",
+      views: ["side", "front"],
+      frames: [{ pose: upright, hold: 0.3 }, { pose: upright, sideways: { chest }, hold: 0.3 }],
+    });
+    expect(validateSpec(wide(-60)).errors).toEqual([]);
+    expect(validateSpec(wide(-95)).errors).toEqual([expect.stringMatching(/^frame 1: sideways\.chest is 95 from the pelvis, more than the 80 spine/)]);
+  });
+
   it("validates a leaning dual spec, blending the lean between keyframes with true bone lengths", () => {
     const spec: DoodleSpec = {
       id: "test_lean",
@@ -350,6 +379,11 @@ describe("depth-aware prop crossings (two views)", () => {
 
   it("fails a limb through the box (inside its frontHalf)", () => {
     expect(crossings(bench(-12, ["side", "front"]))).not.toEqual([]);
+  });
+
+  it("judges the top view by the same depth: beside the box passes, through it fails", () => {
+    expect(crossings(bench(-46, ["side", "top"]))).toEqual([]);
+    expect(crossings(bench(-12, ["side", "top"]))).not.toEqual([]);
   });
 
   it("keeps the one-view check: every prop is solid in the drawing plane", () => {
