@@ -24,7 +24,7 @@ Doodles are animated SVG stick figures generated from TypeScript pose specs. Nev
 - In a single view the rig keeps every bone at full length and cannot shorten a limb pointing at the viewer, so motion straight toward the camera (fire hydrant from the side, a lateral plank walk) doesn't show in one view. Draw the best single view anyway and say which plane it misses; the judge decides whether it needs a second view (see "Two views"), where foreshortening is correct.
   - A knee that bends toward the camera is the common case: in front view any lowering throws that knee 40–60 units sideways (it reads as a lateral lunge), and in side view the crossing of a Dragon Squat or curtsy lunge is sideways and invisible. These are the typical ADD VIEW cases.
   - A side-view knee that travels out to the side (Spiderman) has to swing forward under the hip, with the foot lifted, on its way to the elbow. Keep that frame brief so it doesn't read as kneeling.
-- Props: bar, box, parallelBars, parallettes, plus an optional `band` between the thighs. A straight-arm support on low parallettes reads as sitting on a stool: draw it on dip bars.
+- Props: bar, box, board (sloped plank: `{ kind: "board", from, to, posts? }`), floor (`{ kind: "floor" }`, sized by the renderer; opt-in), parallelBars, parallettes, plus an optional `band` between the thighs. A straight-arm support on low parallettes reads as sitting on a stool: draw it on dip bars.
 
 ## Two views (only when the judge asks)
 
@@ -35,7 +35,7 @@ Every move is drawn in **one view first**. A second view is added only when the 
 - `out` (degrees) rolls a knee's or elbow's bend outward from the forward plane: 0 is today's bend, 90 points the joint straight out to the side (flared elbows, a fire-hydrant knee).
 - Each bone keeps its true length in 3D, so a limb that goes sideways is drawn **shorter in the side view**. That's correct, not a bug.
 - **Pin the chest** when hands go wide. Without it the 2D spine leans as if the hands were straight ahead and the arm can't reach (`hands.far unreachable`).
-- Props in two views: `bar` and `box` only. A box is 120 wide from the front; `frontHalf` narrows it (a seat narrower than spread knees, so the shins don't run along its sides). A sloped bench drawn as short bar strokes (`slopedBench` in `specsBatchAD.ts`) shows end-on as the board's outline, and its thin posts as two legs. No `mirror` (turning round) and no `view: "front"` together with `views`.
+- Props in two views: `bar`, `box`, `board` and `floor`. A box is 120 wide from the front; `frontHalf` narrows it (a seat narrower than spread knees, so the shins don't run along its sides). A board is seen end-on as its outline with two legs; each panel sizes its own floor. No `mirror` (turning round) and no `view: "front"` together with `views`.
 - Still out: twists and rotations of the torso (windshield wiper, side plank with rotation, kickthrough). A sideways offset doesn't show rotation.
 
 ## Descriptions vs doodles

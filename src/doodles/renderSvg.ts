@@ -92,9 +92,21 @@ function bandSvg(spec: DoodleSpec, poses: Solved[], timing: string, map: Mapper)
   return `<g style="stroke:${FOCUS_COLOUR}" stroke-width="${BAND_WIDTH}">${animatedPolyline(bandPath(spec.band), poses, timing, 1, map)}</g>`;
 }
 
+/** A board's posts stand this far in from each end. */
+export const BOARD_POST_INSET = 16;
+
+/** Point on the board's line at `x`. */
+function onBoard(from: Point, to: Point, x: number): Point {
+  if (to[0] === from[0]) return [x, Math.max(from[1], to[1])]; // vertical: the higher end
+  return [x, Math.round((from[1] + ((to[1] - from[1]) * (x - from[0])) / (to[0] - from[0])) * 10) / 10];
+}
+
 /** Segments a prop is drawn with (also used by the validator for crossings). */
 export function propSegments(prop: Prop): [Point, Point][] {
   switch (prop.kind) {
+    case "floor":
+      // Unresolved, a floor draws and blocks nothing (see resolveFloors).
+      return [];
     case "bar":
       return [[[prop.x1, prop.y], [prop.x2, prop.y]]];
     case "box": {
@@ -105,6 +117,16 @@ export function propSegments(prop: Prop): [Point, Point][] {
         [[x + w, y + h], [x, y + h]],
         [[x, y + h], [x, y]],
       ];
+    }
+    case "board": {
+      const plank: [Point, Point] = [prop.from, prop.to];
+      if (prop.posts === false) return [plank];
+      const step = Math.sign(prop.to[0] - prop.from[0]) * BOARD_POST_INSET;
+      const posts = [prop.from[0] + step, prop.to[0] - step].map((x): [Point, Point] => {
+        const top = onBoard(prop.from, prop.to, x);
+        return [top, [x, 0]];
+      });
+      return [plank, ...posts];
     }
     case "parallelBars":
       return [
@@ -166,6 +188,25 @@ export function propPoints(prop: Prop): Point[] {
         ])
       : [];
   return [...propSegments(prop).flat(), ...grips];
+}
+
+/** How far a floor line runs past the figure (and props on the floor) at each end. */
+export const FLOOR_MARGIN = 30;
+
+/**
+ * Props ready to draw: each `floor` becomes a line at y = 0 under everything
+ * the figure reaches over the loop, plus any prop standing on the floor.
+ */
+export function resolveFloors(props: readonly Prop[], poses: Solved[], dx = 0): Prop[] {
+  if (!props.some((prop) => prop.kind === "floor")) return [...props];
+  const xs = [
+    // `dx` moves the figure as the panel is drawn (the front panel sits right of the side panel).
+    ...poses.flatMap((pose) => figurePoints(pose).map((p) => p.point[0] + dx)),
+    ...props.flatMap(propPoints).filter(([, y]) => Math.abs(y) < 1).map(([x]) => x),
+  ];
+  const x1 = Math.floor(Math.min(...xs) - FLOOR_MARGIN);
+  const x2 = Math.ceil(Math.max(...xs) + FLOOR_MARGIN);
+  return props.map((prop): Prop => (prop.kind === "floor" ? { kind: "bar", y: 0, x1, x2 } : prop));
 }
 
 /** Every drawn figure point (joints plus the head circle's extent). */
@@ -249,7 +290,7 @@ interface Layout {
 }
 
 function layoutFor(spec: DoodleSpec, poses: Solved[]): Layout {
-  const figure = figureExtent(poses, spec.props ?? [], spec.wheel);
+  const figure = figureExtent(poses, resolveFloors(spec.props ?? [], poses), spec.wheel);
   const focus = FOCUS_BY_ID[spec.id];
   const inset = insetFor(focus, poses, figure);
   const drawing = inset ? union(figure, insetExtent(inset, focus)) : figure;
@@ -396,7 +437,7 @@ export function renderDoodleSvg(spec: DoodleSpec): string {
   const { poses } = timeline;
   const timing = timingAttr(timeline);
   const { view, focus, inset } = layoutFor(spec, poses);
-  const props = (spec.props ?? []).map(propSvg).join("");
+  const props = resolveFloors(spec.props ?? [], poses).map(propSvg).join("");
   return svgShell(view, spec.title, [
     highlightSvg(focus, poses, timing, identity),
     `${props}\n${figureSvg(spec, poses, timing, identity, { farOpacity: farOpacityOf(spec) })}`,

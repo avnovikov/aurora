@@ -1,4 +1,4 @@
-import type { DoodleSpec, Point, Pose, Prop } from "./rig";
+import type { DoodleSpec, Point, Pose } from "./rig";
 
 /**
  * Batch I: conditioning moves (burpee family, climbers, crawls, run-in-place,
@@ -40,9 +40,6 @@ function knee(hip: Point, ankle: Point, forward: boolean): Point {
   const b = meet(hip, THIGH, ankle, SHIN, -1);
   return forward === a[0] > b[0] ? a : b;
 }
-
-/** Floor line under jumps, so take-off and landing read. */
-const floor = (x1: number, x2: number): Prop => ({ kind: "bar", y: 0, x1, x2 });
 
 // ---------------------------------------------------------------- plank (same geometry as the floor push-up)
 
@@ -500,7 +497,7 @@ export const BATCH_I_SPECS: DoodleSpec[] = [
     slug: "ski-hops",
     title: "Ski hops",
     view: "front",
-    props: [floor(-120, 120)],
+    props: [{ kind: "floor" }],
     transition: 0.18,
     frames: [
       { hold: 0.1, pose: skiHop(-55, false) },

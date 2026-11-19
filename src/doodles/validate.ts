@@ -213,6 +213,8 @@ function crosses(a: Point, b: Point, c: Point, d: Point): boolean {
 
 /** Prop segments a limb must not pass through (parallel-bar rails run past the body, so only uprights count). */
 function obstacles(prop: Prop): [Point, Point][] {
+  // The floor is the below-floor rule, not an obstacle.
+  if (prop.kind === "floor") return [];
   const segments = propSegments(prop);
   return prop.kind === "parallelBars" ? segments.slice(1) : segments;
 }
@@ -377,7 +379,7 @@ function validateFlat(spec: DoodleSpec): SpecReport {
 // ---------------------------------------------------------------- dual view
 
 /** Props a dual-view doodle can draw from the front. */
-const DUAL_PROPS = new Set<Prop["kind"]>(["bar", "box"]);
+const DUAL_PROPS = new Set<Prop["kind"]>(["bar", "box", "board", "floor"]);
 
 /** Spec-level rules for `views` / `sideways` (dual-view spec, "Scope" and "Solver"). */
 export function dualViewGuards(spec: DoodleSpec): string[] {
@@ -391,7 +393,7 @@ export function dualViewGuards(spec: DoodleSpec): string[] {
   if (spec.frames.some((frame) => frame.mirror !== undefined)) errors.push("views can't be combined with mirror (turning round)");
   if (spec.wheel !== undefined) errors.push("views can't be combined with wheel (no front drawing of an ab wheel yet)");
   for (const prop of spec.props ?? []) {
-    if (!DUAL_PROPS.has(prop.kind)) errors.push(`prop ${prop.kind} can't be drawn in two views (bar and box only)`);
+    if (!DUAL_PROPS.has(prop.kind)) errors.push(`prop ${prop.kind} can't be drawn in two views (bar, box, board and floor only)`);
   }
   return errors;
 }

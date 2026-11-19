@@ -15,6 +15,7 @@ import {
   INK,
   PADDING,
   propSvg,
+  resolveFloors,
   svgShell,
   timingAttr,
   union,
@@ -45,49 +46,36 @@ function frontBox(box: Box, shift: number): Prop {
   return { kind: "box", x: shift - half, y: box.y, w: 2 * half, h: box.h };
 }
 
-/** Front bars this close in height belong to one sloped board drawn as short strokes. */
-const BOARD_GAP = 8;
 /** Half-width of a bench board (and its legs) seen end-on. */
-const BOARD_HALF = 36;
-/** Boxes this thin are a bench's posts. */
-const POST_WIDTH = 2;
+export const BOARD_HALF = 36;
 
-/**
- * All props as seen from the front. A sloped board drawn as a run of short bar
- * strokes would stack into a solid block end-on; it is drawn as its outline
- * (the board's end, from its lowest to its highest point) so the figure on it
- * stays visible, and a thin post as the bench's two legs at the board's edges.
- */
+/** A board seen end-on: its outline from its highest to its lowest point, and a leg at each edge. */
+function frontBoard(board: Extract<Prop, { kind: "board" }>, shift: number): Prop[] {
+  const top = Math.min(board.from[1], board.to[1]);
+  const bottom = Math.max(board.from[1], board.to[1]);
+  const outline: Prop = { kind: "box", x: shift - BOARD_HALF, y: top, w: 2 * BOARD_HALF, h: bottom - top };
+  if (board.posts === false) return [outline];
+  const legs = [shift - BOARD_HALF, shift + BOARD_HALF].map((x): Prop => ({ kind: "box", x, y: bottom, w: 1, h: -bottom }));
+  return [outline, ...legs];
+}
+
+/** All props as seen from the front (dualViewGuards admits only the kinds handled here). */
 export function frontProps(props: readonly Prop[], shift = 0): Prop[] {
-  const bars = props.filter((prop): prop is Bar => prop.kind === "bar");
-  // Only bars and boxes pass dualViewGuards.
-  const others = props.flatMap((prop): Prop[] => {
-    if (prop.kind !== "box") return [];
-    if (prop.w <= POST_WIDTH) {
-      return [shift - BOARD_HALF, shift + BOARD_HALF].map((x): Prop => ({ kind: "box", x, y: prop.y, w: 0, h: prop.h }));
+  return props.flatMap((prop): Prop[] => {
+    switch (prop.kind) {
+      case "bar":
+        return [frontBar(prop, shift)];
+      case "box":
+        return [frontBox(prop, shift)];
+      case "board":
+        return frontBoard(prop, shift);
+      case "floor":
+        // Passed through; resolved against the front poses.
+        return [prop];
+      default:
+        return [];
     }
-    return [frontBox(prop, shift)];
   });
-  return [...boardRuns(bars).flatMap((run) => frontBars(run, shift)), ...others];
-}
-
-/** Bars grouped into runs of strokes that sit close together in height. */
-function boardRuns(bars: readonly Bar[]): Bar[][] {
-  const runs: Bar[][] = [];
-  for (const bar of [...bars].sort((a, b) => a.y - b.y)) {
-    const run = runs[runs.length - 1];
-    if (run && bar.y - run[run.length - 1].y <= BOARD_GAP) run.push(bar);
-    else runs.push([bar]);
-  }
-  return runs;
-}
-
-/** One run seen from the front: a lone bar stays a bar, a sloped board becomes its outline. */
-function frontBars(run: readonly Bar[], shift: number): Prop[] {
-  if (run.length < 3) return run.map((bar) => frontBar(bar, shift));
-  const top = run[0].y;
-  const bottom = run[run.length - 1].y;
-  return [{ kind: "box", x: shift - BOARD_HALF, y: top, w: 2 * BOARD_HALF, h: bottom - top }];
 }
 
 /** Parts drawn with another (band round the thighs, wheel in the hand), and the part they follow. */
@@ -134,8 +122,8 @@ export function dualLayout(spec: DoodleSpec, timeline: Timeline3 = sampleTimelin
   const side = timeline.poses.map((pose) => project(pose, "side"));
   const front = timeline.poses.map((pose) => project(pose, "front"));
   const props = spec.props ?? [];
-  const sideBox = figureExtent(side, props, spec.wheel);
-  const frontBox = figureExtent(front, frontProps(props), spec.wheel);
+  const sideBox = figureExtent(side, resolveFloors(props, side), spec.wheel);
+  const frontBox = figureExtent(front, resolveFloors(frontProps(props), front), spec.wheel);
   const frontShift = sideBox.x + sideBox.w + 2 * PADDING - frontBox.x;
   const shifted: ViewBox = { ...frontBox, x: frontBox.x + frontShift };
   const figures = union(sideBox, shifted);
@@ -165,10 +153,10 @@ export function renderDualSvg(spec: DoodleSpec): string {
   const props = spec.props ?? [];
   return svgShell(layout.view, spec.title, [
     highlightSvg(focus, layout.side, timing, identity),
-    props.map(propSvg).join(""),
+    resolveFloors(props, layout.side).map(propSvg).join(""),
     figureSvg(spec, layout.side, timing, identity),
     highlightSvg(focus, layout.front, timing, shift),
-    frontProps(props, layout.frontShift).map(propSvg).join(""),
+    resolveFloors(frontProps(props, layout.frontShift), layout.front, layout.frontShift).map(propSvg).join(""),
     // Seen from the front both sides are square on: no faded far side.
     figureSvg(spec, layout.front, timing, shift, { farOpacity: 1, order: frontOrder(timeline.poses) }),
     label("side", layout.labels.side, layout.labels.y),

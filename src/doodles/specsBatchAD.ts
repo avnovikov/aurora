@@ -323,28 +323,6 @@ function bicepsCurl(f: number): Pose {
 
 // ---------------------------------------------------------------- sloped benches
 
-/**
- * A sloped bench top from `a` to `b`, drawn as short overlapping bar strokes so
- * it reads as one straight sloping board, with a post under each end.
- */
-export function slopedBench(a: Point, b: Point): Prop[] {
-  const n = Math.ceil(Math.abs(b[0] - a[0]) / 4);
-  const top: Prop[] = [];
-  for (let i = 0; i < n; i += 1) {
-    const x1 = round(a[0] + ((b[0] - a[0]) * i) / n);
-    const x2 = round(a[0] + ((b[0] - a[0]) * (i + 1)) / n);
-    const y = round(a[1] + ((b[1] - a[1]) * (i + 0.5)) / n);
-    top.push({ kind: "bar", y, x1, x2 });
-  }
-  const post = (p: Point, inset: number): Prop => {
-    const x = round(p[0] + inset);
-    const t = (x - a[0]) / (b[0] - a[0]);
-    const y = round(a[1] + (b[1] - a[1]) * t + 4);
-    return { kind: "box", x, y, w: 1, h: -y };
-  };
-  return [...top, post(a, Math.sign(b[0] - a[0]) * 16), post(b, -Math.sign(b[0] - a[0]) * 16)];
-}
-
 /** Point on the line a→b at x. */
 const onLine = (a: Point, b: Point, x: number): Point => [x, round(a[1] + ((b[1] - a[1]) * (x - a[0])) / (b[0] - a[0]))];
 
@@ -353,15 +331,16 @@ const DECLINE_HIGH: Point = [-240, -130];
 const DECLINE_LOW: Point = [60, -54];
 const DECLINE_DEG = angle(DECLINE_HIGH, DECLINE_LOW);
 /** Lying on the bench: the body line sits this far above the board. */
-const LIE = 9;
+const LIE = 10;
 const DECLINE_PELVIS = along(onLine(DECLINE_HIGH, DECLINE_LOW, -40), DECLINE_DEG - 90, LIE);
 
 function declineLegRaise(legDeg: number): Pose {
   const pelvis = DECLINE_PELVIS;
   const up = DECLINE_DEG + 180;
   const chest = along(pelvis, up, 80);
-  const head = along(chest, up, 56);
-  const grip = along(onLine(DECLINE_HIGH, DECLINE_LOW, -234), DECLINE_DEG - 90, 4);
+  // Head tilted off the board, as in the incline crunch, so it clears the plank.
+  const head = along(chest, up + 12, 56);
+  const grip = along(onLine(DECLINE_HIGH, DECLINE_LOW, -210), DECLINE_DEG - 90, LIE - 5);
   const ankle = along(pelvis, legDeg, LEG);
   return {
     pelvis,
@@ -483,7 +462,7 @@ export const BATCH_AD_SPECS: DoodleSpec[] = [
     id: "wger_1889",
     slug: "decline-bench-leg-raise",
     title: "Decline Bench Leg Raise",
-    props: slopedBench(DECLINE_HIGH, DECLINE_LOW),
+    props: [{ kind: "board", from: DECLINE_HIGH, to: DECLINE_LOW }],
     transition: 1.1,
     frames: [
       { hold: 0.4, pose: declineLegRaise(DECLINE_DEG - 8) },

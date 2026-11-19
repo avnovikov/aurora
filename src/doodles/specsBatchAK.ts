@@ -1,7 +1,6 @@
 import { BONES, HIP_SIDE, SHOULDER_SIDE } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Prop } from "./rig";
 import { TWO_VIEWS } from "./sideways";
-import { slopedBench } from "./specsBatchAD";
 import { allFoursKey, HYDRANT_SHIN, HYDRANT_THIGH, liftedKnee, type Dir3 } from "./specsBatchAG";
 
 /**
@@ -278,7 +277,7 @@ export const BATCH_AK_SPECS: DoodleSpec[] = [
     slug: "incline-crunches",
     title: "Incline Crunches",
     views: TWO_VIEWS,
-    props: [...slopedBench(INCLINE_LOW, INCLINE_HIGH), { kind: "bar", y: ROLLER[1], x1: ROLLER[0], x2: ROLLER[0], grips: [ROLLER[0]] }],
+    props: [{ kind: "board", from: INCLINE_LOW, to: INCLINE_HIGH }, { kind: "bar", y: ROLLER[1], x1: ROLLER[0], x2: ROLLER[0], grips: [ROLLER[0]] }],
     transition: 1,
     frames: [
       { ...inclineCrunch(0), hold: 0.4 },
