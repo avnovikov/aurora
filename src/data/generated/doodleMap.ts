@@ -500,7 +500,20 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "fedb_kettlebell_halo": "/doodles/doodle-kettlebell-halo.svg",
   "fedb_kettlebell_halo_with_overhead_extension": "/doodles/doodle-kettlebell-halo-with-overhead-extension.svg",
   "fedb_kettlebell_overhead_triceps_extension": "/doodles/doodle-kettlebell-overhead-triceps-extension.svg",
-  "fedb_bent_press": "/doodles/doodle-bent-press.svg"
+  "fedb_bent_press": "/doodles/doodle-bent-press.svg",
+  "wger_1828": "/doodles/doodle-abdominal-draw-in.svg",
+  "wger_2488": "/doodles/doodle-posterior-pelvic-tilt.svg",
+  "wger_1478": "/doodles/doodle-levitation-crunch.svg",
+  "fedb_dynamic_back_stretch": "/doodles/doodle-dynamic-back-stretch.svg",
+  "wger_1399": "/doodles/doodle-roll-down.svg",
+  "fedb_one_half_locust": "/doodles/doodle-one-half-locust.svg",
+  "wger_1868": "/doodles/doodle-lunge-with-twist-stretch.svg",
+  "wger_260": "/doodles/doodle-full-sit-outs.svg",
+  "wger_576": "/doodles/doodle-side-crunch.svg",
+  "fedb_lower_back_curl": "/doodles/doodle-lower-back-curl.svg",
+  "wger_1912": "/doodles/doodle-core-rotation.svg",
+  "fedb_middle_back_stretch": "/doodles/doodle-middle-back-stretch.svg",
+  "fedb_chair_lower_back_stretch": "/doodles/doodle-chair-lower-back-stretch.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
