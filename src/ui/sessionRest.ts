@@ -29,15 +29,15 @@ export function restCueText(
 }
 
 function speakRestCue(
-  left: number,
+  secondsLeft: number,
   schedule: readonly RestCueEvent[],
   spoken: Set<number>,
 ): void {
-  const due = cueAt(left, schedule);
-  if (!due || spoken.has(left)) {
+  const due = cueAt(secondsLeft, schedule);
+  if (!due || spoken.has(secondsLeft)) {
     return;
   }
-  spoken.add(left);
+  spoken.add(secondsLeft);
   void speakExactLine({
     id: due.lineId,
     assetKey: due.assetKey,
@@ -113,11 +113,11 @@ export function startRestTimer(
     void speakExactLine(line);
   };
 
-  const paintAndSpeakDueCue = (secondsLeft: number): void => {
-    paint();
-    if (withVoice) {
-      speakRestCue(secondsLeft, tickState.schedule, tickState.spokenForRest);
+  const speakDueCue = (secondsLeft: number): void => {
+    if (!withVoice) {
+      return;
     }
+    speakRestCue(secondsLeft, tickState.schedule, tickState.spokenForRest);
   };
 
   const finish = (): void => {
@@ -130,9 +130,9 @@ export function startRestTimer(
     onDoneRest();
   };
 
-  /** Natural countdown end: speak the at-0 cue (usually go), then hand off. */
-  const finishOnClock = (): void => {
-    paintAndSpeakDueCue(0);
+  const speakZeroCueThenFinish = (): void => {
+    paint();
+    speakDueCue(0);
     finish();
   };
 
@@ -155,7 +155,7 @@ export function startRestTimer(
         extendRest();
         return "extended";
       }
-      finishOnClock();
+      speakZeroCueThenFinish();
       return "finished";
     }
     if (
@@ -170,7 +170,8 @@ export function startRestTimer(
       tickState.heldCue = goOnLine;
       speakLine(goOnLine);
     }
-    paintAndSpeakDueCue(state.restLeft);
+    paint();
+    speakDueCue(state.restLeft);
     return "continue";
   };
 
