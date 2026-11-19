@@ -4,7 +4,7 @@
 [![CI](https://github.com/avnovikov/aurora/actions/workflows/ci.yml/badge.svg)](https://github.com/avnovikov/aurora/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/avnovikov/aurora?include_prereleases&style=flat)](https://github.com/avnovikov/aurora/releases)
 
-**v0.1.1 — from the `mvp` release line.** Day-to-day development targets **`dev`**; `mvp` is for releases. App id `com.aurora.alvorada` (registered in Android Developer Console).
+**v0.1.2 — from the `mvp` release line.** Day-to-day development targets **`dev`**; `mvp` is for releases. App id `com.aurora.alvorada` (registered in Android Developer Console). Release notes: [docs/RELEASE_NOTES.md](docs/RELEASE_NOTES.md).
 
 **Aurora** is private, local-first calisthenics training for Android. **Rassvet** (Рассвет, “dawn”) is the soul mark shown in the app. The UI and spoken voice are British English (`en-GB`).
 
@@ -25,7 +25,7 @@ Four gaps in the apps I used are why I wrote Aurora.
 
 ## Download
 
-**[Download Aurora v0.1.1 for Android](https://github.com/avnovikov/aurora/releases/latest)**
+**[Download Aurora v0.1.2 for Android](https://github.com/avnovikov/aurora/releases/latest)**
 
 Install the APK by allowing installation from your browser or file manager when Android asks.
 
@@ -194,6 +194,6 @@ Exercise catalogue imports follow each source’s licence: wger (CC), MuscleWiki
 
 ---
 
-## Known limitations in v0.1.1
+## Known limitations in v0.1.2
 
 Older history entries created before set-level logging may appear only as session summaries rather than individual sets. Heart-rate-strap connection is available only in the Android app. There is no cloud sync and no account recovery if you lose the phone.

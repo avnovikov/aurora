@@ -1,6 +1,6 @@
 # Privacy Policy — Aurora · Rassvet
 
-**Version:** 0.1.1  
+**Version:** 0.1.2  
 **Effective:** public release line from `v0.1.0` (package id `com.aurora.alvorada` from `v0.1.1`)
 
 This policy describes how Aurora handles information in version 0.1. It is product documentation for a local-only app, not legal advice.

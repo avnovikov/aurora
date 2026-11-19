@@ -82,7 +82,7 @@ Full security (CodeQL, npm audit high+, Trivy HIGH+, Gitleaks) is a merge gate o
 
 Release APKs are signed on a developer machine. The keystore stays out of Git and out of CI (`android/keystore.properties.example`). Confirm a downloaded APK’s certificate SHA-256 as described in the README Install details.
 
-Version shown in the README and Android `versionName` for this line: **0.1.1**.
+Version shown in the README and Android `versionName` for this line: **0.1.2**. Release notes: [RELEASE_NOTES.md](RELEASE_NOTES.md).
 
 ## Device snapshots
 
