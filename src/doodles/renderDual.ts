@@ -55,7 +55,7 @@ function frontBoard(board: Extract<Prop, { kind: "board" }>, shift: number): Pro
   const bottom = Math.max(board.from[1], board.to[1]);
   const outline: Prop = { kind: "box", x: shift - BOARD_HALF, y: top, w: 2 * BOARD_HALF, h: bottom - top };
   if (board.posts === false) return [outline];
-  const legs = [shift - BOARD_HALF, shift + BOARD_HALF].map((x): Prop => ({ kind: "box", x, y: bottom, w: 0, h: -bottom }));
+  const legs = [shift - BOARD_HALF, shift + BOARD_HALF].map((x): Prop => ({ kind: "box", x, y: bottom, w: 1, h: -bottom }));
   return [outline, ...legs];
 }
 

@@ -331,15 +331,16 @@ const DECLINE_HIGH: Point = [-240, -130];
 const DECLINE_LOW: Point = [60, -54];
 const DECLINE_DEG = angle(DECLINE_HIGH, DECLINE_LOW);
 /** Lying on the bench: the body line sits this far above the board. */
-const LIE = 22;
+const LIE = 10;
 const DECLINE_PELVIS = along(onLine(DECLINE_HIGH, DECLINE_LOW, -40), DECLINE_DEG - 90, LIE);
 
 function declineLegRaise(legDeg: number): Pose {
   const pelvis = DECLINE_PELVIS;
   const up = DECLINE_DEG + 180;
   const chest = along(pelvis, up, 80);
-  const head = along(chest, up, 56);
-  const grip = along(onLine(DECLINE_HIGH, DECLINE_LOW, -234), DECLINE_DEG - 90, LIE - 5);
+  // Head tilted off the board, as in the incline crunch, so it clears the plank.
+  const head = along(chest, up + 12, 56);
+  const grip = along(onLine(DECLINE_HIGH, DECLINE_LOW, -210), DECLINE_DEG - 90, LIE - 5);
   const ankle = along(pelvis, legDeg, LEG);
   return {
     pelvis,

@@ -152,14 +152,28 @@ describe("board prop", () => {
   it("is seen end-on from the front: its outline plus a leg at each edge", () => {
     expect(frontProps([board], 100)).toEqual([
       { kind: "box", x: 64, y: -150, w: 72, h: 100 },
-      { kind: "box", x: 64, y: -50, w: 0, h: 50 },
-      { kind: "box", x: 136, y: -50, w: 0, h: 50 },
+      { kind: "box", x: 64, y: -50, w: 1, h: 50 },
+      { kind: "box", x: 136, y: -50, w: 1, h: 50 },
     ]);
   });
 
-  it("is allowed in two views and checked as one obstacle", () => {
+  it("is allowed in two views (no dual-view guard fires)", () => {
     const spec: DoodleSpec = { ...RAISE, props: [{ kind: "board", from: [-150, -60], to: [-60, -60], posts: false }] };
     expect(dualViewGuards(spec)).toEqual([]);
+  });
+
+  it("reports a limb crossing it as exactly one crossing", () => {
+    const spec: DoodleSpec = {
+      id: "test_board_cross",
+      slug: "test-board-cross",
+      title: "Test board cross",
+      props: [{ kind: "board", from: [30, -300], to: [32, -100], posts: false }],
+      frames: [
+        { pose: { pelvis: [0, -172], hands: { near: [60, -170] }, feet: { near: [0, 0], far: [0, 0] }, toes: { near: 0, far: 0 } }, hold: 0.4 },
+      ],
+    };
+    const crossings = validateSpec(spec).errors.filter((e) => e.startsWith("frame 0:") && e.includes("crosses prop 0"));
+    expect(crossings).toEqual(["frame 0: forearm.near crosses prop 0"]);
   });
 });
 

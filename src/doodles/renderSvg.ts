@@ -97,6 +97,7 @@ export const BOARD_POST_INSET = 16;
 
 /** Point on the board's line at `x`. */
 function onBoard(from: Point, to: Point, x: number): Point {
+  if (to[0] === from[0]) return [x, Math.max(from[1], to[1])]; // vertical: the higher end
   return [x, Math.round((from[1] + ((to[1] - from[1]) * (x - from[0])) / (to[0] - from[0])) * 10) / 10];
 }
 
