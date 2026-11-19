@@ -1,5 +1,6 @@
 import type {
   HistoryEntry,
+  HistoryPulse,
   HistorySetRecord,
   SessionEvaluation,
 } from "../domain/program";
@@ -13,6 +14,8 @@ export interface CommitSessionEvaluationInput {
   planned: PlannedSession;
   log: WorkoutLog;
   memories: Record<string, ExerciseMemory>;
+  /** Built from the live session buffer; omit when empty. */
+  pulse?: HistoryPulse;
 }
 
 export interface CommitSessionEvaluationResult {
@@ -29,6 +32,7 @@ export function commitSessionEvaluation({
   planned,
   log,
   memories,
+  pulse,
 }: CommitSessionEvaluationInput): CommitSessionEvaluationResult {
   const exerciseIds = planned.work.map((item) => item.exerciseId);
   return {
@@ -40,9 +44,14 @@ export function commitSessionEvaluation({
       setCount: log.entries.length,
       exerciseIds,
       sets: log.entries.map(toHistorySetRecord),
+      ...optionalPulse(pulse),
     },
     memories: applySetLogToMemory(memories, log, { lightDay: planned.lightDay }),
   };
+}
+
+function optionalPulse(pulse: HistoryPulse | undefined): { pulse?: HistoryPulse } {
+  return pulse ? { pulse } : {};
 }
 
 function toHistorySetRecord(entry: SetLogEntry): HistorySetRecord {
@@ -53,5 +62,12 @@ function toHistorySetRecord(entry: SetLogEntry): HistorySetRecord {
     completedReps: entry.completedReps,
     loggedAt: entry.loggedAt,
     stopReason: entry.stopReason,
+    ...optionalAverageBpm(entry.averageBpm),
   };
+}
+
+function optionalAverageBpm(
+  averageBpm: number | undefined,
+): { averageBpm?: number } {
+  return averageBpm === undefined ? {} : { averageBpm };
 }
