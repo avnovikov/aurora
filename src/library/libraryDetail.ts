@@ -149,7 +149,7 @@ export function detailHtml(exercise: SeedExercise, view: DetailView = {}): strin
   const targetBadge = isTemplateTarget(exercise.id, resolved.targetIds)
     ? `<p class="lib-badge">Target</p>`
     : "";
-  const tier = currentTier(resolved.memory);
+  const effective = effectiveTier(resolved.memory);
 
   return `
     <main class="shell lib-detail" data-back-swipe>
@@ -168,7 +168,7 @@ export function detailHtml(exercise: SeedExercise, view: DetailView = {}): strin
       ${sectionHtml(jointLoadHtml(exercise, resolved.jointHistory))}
       ${sectionHtml(stepsHtml(exercise))}
       ${cuesAndMistakesHtml(exercise)}
-      ${standardsHtml(exercise, tier)}
+      ${standardsHtml(exercise, effective)}
       ${skillPickerHtml(exercise, resolved.memory, resolved.inferenceHint)}
       <div class="ex-tray">
         ${planActionsHtml(exercise, resolved.planStatus)}
@@ -221,9 +221,29 @@ function loggedSetsSectionHtml(
   `;
 }
 
-/** The tier the level select shows: declared first, then the logged one. */
-function currentTier(memory: DetailMemoryView): SkillTier {
-  return memory.declaredTier ?? memory.skillTier ?? "beginner";
+/** The level select: only the athlete's own pick (#116), never inferred/plan. */
+function pickerTier(memory: DetailMemoryView): SkillTier {
+  return memory.declaredTier ?? "beginner";
+}
+
+/** Effective level for standards mark and the "Effective level" hint. */
+function effectiveTier(memory: DetailMemoryView): SkillTier {
+  return memory.skillTier ?? memory.declaredTier ?? "beginner";
+}
+
+/** True when inferred/plan skill differs from what the picker shows. */
+function effectiveDiffersFromPicker(memory: DetailMemoryView): boolean {
+  return memory.skillTier !== undefined && memory.skillTier !== memory.declaredTier;
+}
+
+function levelHintHtml(memory: DetailMemoryView): string {
+  if (effectiveDiffersFromPicker(memory)) {
+    return `<p class="hint" data-effective-level>Effective level · ${escapeHtml(effectiveLabel(effectiveTier(memory)))}</p>`;
+  }
+  if (memory.declaredTier === undefined) {
+    return `<p class="hint">Set your starting level; logged sets refine it.</p>`;
+  }
+  return "";
 }
 
 /** The doodle (or licensed photos) in its own full-width row; its markup is untouched. */
@@ -358,25 +378,21 @@ function skillPickerHtml(
   if (!exercise.standards) {
     return "";
   }
-  const current = currentTier(memory);
+  const picked = pickerTier(memory);
   const options = SKILL_TIERS.map((tier) => {
-    const selected = tier === current ? "selected" : "";
+    const selected = tier === picked ? "selected" : "";
     return `<option value="${tier}" ${selected}>${SKILL_TIER_LABELS[tier]}</option>`;
   }).join("");
   const hintHtml = inferenceHint
     ? `<p class="hint" data-inference-hint>${escapeHtml(inferenceHint)}</p>`
     : "";
-  const levelHint =
-    memory.bestReps === undefined
-      ? `<p class="hint">Set your starting level; logged sets refine it.</p>`
-      : `<p class="hint">Effective level · ${escapeHtml(effectiveLabel(memory.skillTier ?? current))}</p>`;
   return `
     <div class="ex-level">
       <label for="ex-tier" class="eyebrow">Your level</label>
       <select id="ex-tier" data-skill-tier aria-label="Skill tier for ${escapeHtml(displayExerciseName(exercise.name))}">
         ${options}
       </select>
-      ${levelHint}
+      ${levelHintHtml(memory)}
       ${levelEvidenceHtml(memory)}
       ${hintHtml}
     </div>

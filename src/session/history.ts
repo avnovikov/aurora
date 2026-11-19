@@ -201,8 +201,12 @@ function capHarderRungs(
     if (member.rank <= placement.rank) {
       continue;
     }
-    const target = next[member.id] ?? emptyMemory(member.id);
-    next[member.id] = withCapFrom(target, { tier: failedAt, from: exerciseId, at: nowIso });
+    const existing = next[member.id];
+    // #116: only cap harder rungs that already have a memory row.
+    if (!existing) {
+      continue;
+    }
+    next[member.id] = withCapFrom(existing, { tier: failedAt, from: exerciseId, at: nowIso });
   }
 }
 

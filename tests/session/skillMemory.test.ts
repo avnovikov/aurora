@@ -9,9 +9,11 @@ import { indexOf } from "../helpers/ladderIndex";
 
 describe("skill memory", () => {
   it("stores a declared tier from Library", () => {
-    const next = declareSkillTier({}, "pullup", "intermediate");
+    const now = new Date("2026-11-17T12:00:00Z");
+    const next = declareSkillTier({}, "pullup", "intermediate", now);
     expect(next.memories.pullup?.declaredTier).toBe("intermediate");
     expect(next.memories.pullup?.skillTier).toBe("intermediate");
+    expect(next.memories.pullup?.declaredAt).toBe(now.toISOString());
   });
 
   it("raises bestReps and skillTier from a logged set", () => {
@@ -42,6 +44,21 @@ describe("declare (#112)", () => {
     const { memories, inferredCount } = declareSkillTier(first, "next", "advanced", NOW, index);
     expect(inferredCount).toBe(1);
     expect(memories.mid?.inferred?.tier).toBe("intermediate");
+  });
+
+  it("does not mutate the input memories map (#116)", () => {
+    const start = { top: emptyMemory("top") };
+    const before = structuredClone(start);
+    declareSkillTier(start, "top", "advanced", NOW, index);
+    expect(start).toEqual(before);
+  });
+
+  it("a re-pick updates declaredAt (#116)", () => {
+    const later = new Date("2026-11-18T12:00:00Z");
+    const first = declareSkillTier({}, "top", "advanced", NOW, index).memories;
+    const second = declareSkillTier(first, "top", "elite", later, index).memories;
+    expect(second.top?.declaredTier).toBe("elite");
+    expect(second.top?.declaredAt).toBe(later.toISOString());
   });
 
   it("logged reps write loggedTier and lastSessionAt (#112)", () => {
