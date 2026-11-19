@@ -385,7 +385,18 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "wger_1956": "/doodles/doodle-fire-hydrant-circles.svg",
   "wger_1672": "/doodles/doodle-seated-hip-abduction.svg",
   "wger_1908": "/doodles/doodle-butterfly-superman.svg",
-  "wger_171": "/doodles/doodle-incline-crunches.svg"
+  "wger_171": "/doodles/doodle-incline-crunches.svg",
+  "wger_1380": "/doodles/doodle-band-pull-apart.svg",
+  "wger_1826": "/doodles/doodle-band-external-rotation.svg",
+  "wger_1433": "/doodles/doodle-band-low-to-high-chop.svg",
+  "wger_2494": "/doodles/doodle-terminal-knee-extension.svg",
+  "wger_2635": "/doodles/doodle-seated-band-row.svg",
+  "ntc_bent_knee_australian_pull_up": "/doodles/doodle-bent-knee-australian-pull-up.svg",
+  "ntc_feet_elevated_australian_pull_up": "/doodles/doodle-feet-elevated-australian-pull-up.svg",
+  "ntc_archer_inverted_row": "/doodles/doodle-archer-inverted-row.svg",
+  "ntc_archer_straight_bar_dip": "/doodles/doodle-archer-straight-bar-dip.svg",
+  "ntc_archer_dip": "/doodles/doodle-archer-dip.svg",
+  "wger_1919": "/doodles/doodle-push-up-chest-stretch.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
