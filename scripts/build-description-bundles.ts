@@ -5,30 +5,15 @@
  *
  *   tsx scripts/build-description-bundles.ts <outDir> [batchCount]
  */
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { cleanLines } from "../src/data/describe/cleanText.ts";
-import { buildFedbCatalogue, parseFedbJson } from "../src/data/fedb/buildCatalogue.ts";
-import { FEDB_ATTRIBUTION } from "../src/data/fedb/types.ts";
-import { FEDB_CATALOGUE } from "../src/data/generated/fedbCatalogue.ts";
-import { HF_CATALOGUE } from "../src/data/generated/hfCatalogue.ts";
 import { LIBRARY_CATALOGUE } from "../src/data/libraryCatalogue.ts";
-import { NTC_CATALOGUE } from "../src/data/ntc/ntcCatalogue.ts";
-import { SEED_EXERCISES } from "../src/data/seed.ts";
-import { buildWgerCatalogue } from "../src/data/wger/buildCatalogue.ts";
-import { wgerAttribution, wgerDescriptionLines } from "../src/data/wger/mapWgerExercise.ts";
-import type { WgerExerciseRecord } from "../src/data/wger/types.ts";
+import { loadSourceCorpus } from "./load-source-corpus.ts";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "..");
-
-interface SourceText {
-  source: string;
-  name: string;
-  lines: string[];
-}
 
 async function main(): Promise<void> {
   const [outDir, batchArg] = process.argv.slice(2);
@@ -36,41 +21,17 @@ async function main(): Promise<void> {
     throw new Error("usage: build-description-bundles.ts <outDir> [batchCount]");
   }
   const batchCount = Number(batchArg ?? 6);
-  const fedbRaw = parseFedbJson(await readFile(path.join(repoRoot, "data/raw/free-exercise-db.json"), "utf8"));
-  const wgerRaw = JSON.parse(
-    await readFile(path.join(repoRoot, "data/raw/wger-exercises.json"), "utf8"),
-  ) as WgerExerciseRecord[];
-
-  const extra = new Map<string, SourceText[]>();
-  const add = (id: string, text: SourceText): void => {
-    if (text.lines.length > 0) {
-      extra.set(id, [...(extra.get(id) ?? []), text]);
-    }
-  };
-
-  const fedb = buildFedbCatalogue(fedbRaw, [...SEED_EXERCISES, ...HF_CATALOGUE, ...NTC_CATALOGUE]);
-  for (const { record, intoId } of fedb.duplicates) {
-    add(intoId, { source: FEDB_ATTRIBUTION, name: record.name, lines: cleanLines(record.instructions) });
-  }
-  const wger = buildWgerCatalogue(wgerRaw, [...SEED_EXERCISES, ...HF_CATALOGUE, ...NTC_CATALOGUE, ...FEDB_CATALOGUE]);
-  for (const { record, intoId } of wger.duplicates) {
-    add(intoId, { source: wgerAttribution(record), name: record.name, lines: cleanLines(wgerDescriptionLines(record.description)) });
-  }
-
+  const corpus = await loadSourceCorpus(repoRoot);
   const byId = new Map(LIBRARY_CATALOGUE.map((item) => [item.id, item]));
   const nameOf = (id?: string): string | undefined => (id ? byId.get(id)?.name : undefined);
   const sourcesById: Record<string, string[]> = {};
 
   const bundles = LIBRARY_CATALOGUE.map((exercise) => {
-    const own: SourceText = {
-      source: exercise.attribution ?? "Aurora seed (written in-house)",
-      name: exercise.name,
-      lines: cleanLines(
-        exercise.description ? [...new Set([exercise.description, ...exercise.cues])] : exercise.cues,
-      ),
-    };
-    const texts = [own, ...(extra.get(exercise.id) ?? [])];
-    sourcesById[exercise.id] = [...new Set(texts.map((text) => text.source))];
+    const source = corpus.get(exercise.id);
+    if (!source) {
+      throw new Error(`missing source corpus for ${exercise.id}`);
+    }
+    sourcesById[exercise.id] = [...new Set(source.texts.map((text) => text.source))];
     return {
       id: exercise.id,
       name: exercise.name,
@@ -83,7 +44,7 @@ async function main(): Promise<void> {
       easier: nameOf(exercise.easierId),
       harder: nameOf(exercise.harderId),
       cautions: exercise.cautions ?? [],
-      sourceTexts: texts.map(({ name, lines }) => ({ name, lines })),
+      sourceTexts: source.texts.map(({ name, lines }) => ({ name, lines })),
     };
   });
 

@@ -2275,49 +2275,62 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
   },
   "fedb_alternating_kettlebell_row": {
     "id": "fedb_alternating_kettlebell_row",
-    "summary": "Place two kettlebells in front of your feet. Bend your knees slightly and push your butt out as much as possible. As you bend over to get into the setup grab both kettlebells by the handles.",
+    "summary": "A hinged two-bell row that pulls one kettlebell at a time while the other stays on the floor.",
     "steps": [
-      "Set up for Alternating Kettlebell Row with a kettlebell with a braced torso and stable base.",
-      "Move through a full range with control, then return without losing posture."
+      "Place two kettlebells in front of your feet, bend your knees slightly, and hinge at the hips with a flat back.",
+      "Grip both handles and pull one kettlebell toward your hip, retracting that shoulder blade.",
+      "Lower it with control, then row the other side.",
+      "Keep your torso quiet as you alternate."
     ],
     "cues": [
-      "Place two kettlebells in front of your feet",
-      "Pull one kettlebell off of the floor while holding on",
-      "Lower the kettlebell in the working arm and repeat"
+      "Hinge with a flat back",
+      "Row to the hip",
+      "Torso stays still"
     ],
     "mistakes": [
-      "Using momentum instead of controlled strength"
+      "Rounding the lower back",
+      "Twisting to yank the bell up",
+      "Standing taller mid-rep"
     ]
   },
   "fedb_alternating_renegade_row": {
     "id": "fedb_alternating_renegade_row",
-    "summary": "Push one kettlebell into the floor and row the other kettlebell, retracting the shoulder blade of the working side as you flex the elbow, pulling it to your side.",
+    "summary": "A plank on two kettlebells with alternating single-arm rows that trains the back while the core resists rotation.",
     "steps": [
-      "Set up for Alternating Renegade Row with a kettlebell with a braced torso and stable base.",
-      "Move through a full range with control, then return without losing posture."
+      "Place two kettlebells about shoulder-width apart and take a plank on the handles, body in a straight line.",
+      "Press one kettlebell into the floor while you row the other to your side, elbow close.",
+      "Lower the bell to the floor and row the opposite arm.",
+      "Keep the hips level as you alternate."
     ],
     "cues": [
-      "Place two kettlebells on the floor about shoulder",
-      "Push one kettlebell into the floor and row the other"
+      "Hips stay level",
+      "Press the support bell down",
+      "Row without twisting"
     ],
     "mistakes": [
-      "Using momentum instead of controlled strength"
+      "Hips rocking side to side",
+      "Sagging through the plank",
+      "Flaring the elbow wide"
     ]
   },
   "fedb_bent_press": {
     "id": "fedb_bent_press",
-    "summary": "Clean a kettlebell to your shoulder. Clean the kettlebell to your shoulders by extending through the legs and hips as you raise the kettlebell towards your shoulder. The wrist should rotate as you do so.",
+    "summary": "A kettlebell lift that cleans to the shoulder, then leans away until the free hand touches the floor with the bell locked out overhead.",
     "steps": [
-      "Set up for Bent Press with a kettlebell with a braced torso and stable base.",
-      "Move through a full range with control, then return without losing posture."
+      "Clean a kettlebell to your shoulder with the elbow tucked and the forearm vertical.",
+      "Lean away from the bell, eyes on it, until your free hand can touch the floor.",
+      "Keep the pressing arm locked as you stand back up with the bell overhead.",
+      "Lower with control and repeat."
     ],
     "cues": [
-      "Clean a kettlebell to your shoulder",
-      "Begin my leaning to the side opposite the kettlebell,",
-      "Return to an upright position, with the kettlebell"
+      "Eyes on the bell",
+      "Lock the overhead arm",
+      "Lean, then stand"
     ],
     "mistakes": [
-      "Using momentum instead of controlled strength"
+      "Pressing the bell instead of leaning under it",
+      "Losing the lockout",
+      "Rounding the back hard"
     ]
   },
   "fedb_bottoms_up_clean_from_the_hang_position": {
@@ -2408,49 +2421,62 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
   },
   "fedb_double_kettlebell_windmill": {
     "id": "fedb_double_kettlebell_windmill",
-    "summary": "Keeping the kettlebell locked out at all times, push your butt out in the direction of the locked out kettlebell. Turn your feet out at a forty-five degree angle from the arm with the locked out kettlebell.",
+    "summary": "A windmill with one kettlebell locked overhead and the other retrieved from the floor as you hinge sideways.",
     "steps": [
-      "Set up for Double Kettlebell Windmill with a kettlebell with a braced torso and stable base.",
-      "Move through a full range with control, then return without losing posture."
+      "Clean and press one kettlebell overhead; place the other in front of your lead foot.",
+      "Turn the feet out about forty-five degrees and push the hip toward the overhead side.",
+      "Hinge sideways, eyes on the top bell, until you can pick up the floor kettlebell.",
+      "Pause briefly, then reverse to stand with both bells controlled."
     ],
     "cues": [
-      "Place a kettlebell in front of your front foot and",
-      "Keeping the kettlebell locked out at all times, push",
-      "Bending at the hip to one side, sticking your butt",
-      "Pause for a second after retrieving the kettlebell"
+      "Top arm stays locked",
+      "Hinge at the hip",
+      "Eyes on the overhead bell"
     ],
-    "mistakes": []
+    "mistakes": [
+      "Bending the overhead elbow",
+      "Rounding forward instead of hinging",
+      "Looking away from the top bell"
+    ]
   },
   "fedb_extended_range_one_arm_kettlebell_floor_press": {
     "id": "fedb_extended_range_one_arm_kettlebell_floor_press",
-    "summary": "Press the kettlebell by extending the elbow and adducting the arm, pressing it above your body. Return to the setup.",
+    "summary": "A one-arm floor press with a kettlebell that starts from a deeper shoulder position than a standard floor press.",
     "steps": [
-      "Set up for Extended Range One-Arm Kettlebell Floor Press with a kettlebell with a braced torso and stable base.",
-      "Move through a full range with control, then return without losing posture."
+      "Lie on the floor and set a kettlebell in the pressing hand by the handle.",
+      "Bend the same-side knee for stability and keep the non-pressing arm on the floor.",
+      "Press the kettlebell up by extending the elbow until the arm is straight above you.",
+      "Lower with control until the upper arm meets the floor, then press again."
     ],
     "cues": [
-      "Lie on the floor and position a kettlebell for one arm",
-      "Press the kettlebell by extending the elbow and"
+      "Upper arm to the floor",
+      "Wrist stacked over elbow",
+      "Stable base"
     ],
     "mistakes": [
-      "Using momentum instead of controlled strength"
+      "Flared elbow with no control",
+      "Arching the lower back",
+      "Bouncing off the floor"
     ]
   },
   "fedb_front_squats_with_two_kettlebells": {
     "id": "fedb_front_squats_with_two_kettlebells",
-    "summary": "Clean two kettlebells to your shoulders. Clean the kettlebells to your shoulders by extending through the legs and hips as you pull the kettlebells towards your shoulders. Rotate your wrists as you do so.",
+    "summary": "A front squat holding two kettlebells at the shoulders, sitting between the legs with an upright torso.",
     "steps": [
-      "Set up for Front Squats With Two Kettlebells with a kettlebell with a braced torso and stable base.",
-      "Move through a full range with control, then return without losing posture."
+      "Clean two kettlebells to the rack at your shoulders, elbows forward.",
+      "Look straight ahead and squat as low as you can, pushing the knees out.",
+      "Pause briefly at the bottom between your legs.",
+      "Drive through the heels to stand and repeat."
     ],
     "cues": [
-      "Clean two kettlebells to your shoulders",
-      "Looking straight ahead at all times, squat as low as",
-      "Rise back up by driving through your heels and repeat"
+      "Elbows high",
+      "Knees out",
+      "Torso upright"
     ],
     "mistakes": [
-      "Using momentum instead of controlled strength",
-      "Letting the lower back round under load"
+      "Collapsing the chest",
+      "Knees caving in",
+      "Rising onto the toes"
     ]
   },
   "fedb_goblet_squat": {
@@ -2748,17 +2774,23 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
   },
   "fedb_kettlebell_windmill": {
     "id": "fedb_kettlebell_windmill",
-    "summary": "Pause for a second after reaching the ground and reverse the motion back to the setup.",
+    "summary": "A side hinge with one kettlebell locked overhead while the free hand reaches toward the floor.",
     "steps": [
-      "Set up for Kettlebell Windmill with a kettlebell with a braced torso and stable base.",
-      "Move through a full range with control, then return without losing posture."
+      "Clean and press a kettlebell overhead with one arm; place the feet turned out about forty-five degrees.",
+      "Push the hip toward the overhead side and keep the top arm locked.",
+      "Hinge sideways, eyes on the bell, until the free hand nears the floor.",
+      "Pause briefly, then reverse to stand tall."
     ],
     "cues": [
-      "Place a kettlebell in front of your lead foot and",
-      "Keeping the kettlebell locked out at all times, push",
-      "Pause for a second after reaching the ground and"
+      "Top arm locked",
+      "Hips push sideways",
+      "Eyes on the bell"
     ],
-    "mistakes": []
+    "mistakes": [
+      "Bending the overhead elbow",
+      "Rounding the spine",
+      "Looking away from the bell"
+    ]
   },
   "fedb_leg_over_floor_press": {
     "id": "fedb_leg_over_floor_press",
@@ -2899,32 +2931,42 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
   },
   "fedb_one_arm_kettlebell_push_press": {
     "id": "fedb_one_arm_kettlebell_push_press",
-    "summary": "Dip your body by bending the knees, keeping your torso upright.",
+    "summary": "A one-arm kettlebell press that uses a short dip and drive of the legs to help lock the bell overhead.",
     "steps": [
-      "Set up for One-Arm Kettlebell Push Press with a kettlebell with a braced torso and stable base.",
-      "Move through a full range with control, then return without losing posture."
+      "Clean a kettlebell to your shoulder with the elbow tucked and forearm vertical.",
+      "Dip by bending the knees while keeping the torso upright.",
+      "Drive through the heels and press the kettlebell overhead to a locked elbow.",
+      "Lower to the shoulder with control and repeat."
     ],
     "cues": [
-      "Hold a kettlebell by the handle",
-      "Dip your body by bending the knees, keeping your torso",
-      "Immediately reverse direction, driving through the"
+      "Dip, then drive",
+      "Torso stays upright",
+      "Finish locked out"
     ],
     "mistakes": [
-      "Using momentum instead of controlled strength"
+      "Pressing without the leg drive",
+      "Leaning back hard",
+      "Soft elbow at the top"
     ]
   },
   "fedb_one_arm_kettlebell_row": {
     "id": "fedb_one_arm_kettlebell_row",
-    "summary": "One-Arm Kettlebell Row is a horizontal pull exercise with a kettlebell, done with steady control through the full range.",
+    "summary": "A hinged single-arm kettlebell row that pulls the bell to the hip while the torso stays braced.",
     "steps": [
-      "Set up for One-Arm Kettlebell Row with a kettlebell with a braced torso and stable base.",
-      "Move through a full range with control, then return without losing posture."
+      "Place a kettlebell in front of your feet, bend the knees slightly, and hinge with a flat back.",
+      "Grip the handle and pull the bell to your hip, retracting the shoulder blade.",
+      "Lower it with control until the arm is long.",
+      "Finish the set, then switch sides."
     ],
     "cues": [
-      "Place a kettlebell in front of your feet"
+      "Flat back",
+      "Pull to the hip",
+      "Shoulder blade back"
     ],
     "mistakes": [
-      "Using momentum instead of controlled strength"
+      "Rounding the back",
+      "Yanking with momentum",
+      "Shrugging the ear to the shoulder"
     ]
   },
   "fedb_one_arm_kettlebell_snatch": {
@@ -3080,15 +3122,23 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
   },
   "fedb_two_arm_kettlebell_jerk": {
     "id": "fedb_two_arm_kettlebell_jerk",
-    "summary": "Two-Arm Kettlebell Jerk is a vertical push exercise with a kettlebell, done with steady control through the full range.",
+    "summary": "A two-kettlebell jerk that cleans to the shoulders, then dips and drives both bells overhead.",
     "steps": [
-      "Set up for Two-Arm Kettlebell Jerk with a kettlebell with a braced torso and stable base.",
-      "Move through a full range with control, then return without losing posture."
+      "Clean two kettlebells to the rack at your shoulders.",
+      "Dip by bending the knees with an upright torso.",
+      "Drive upward and lock both kettlebells overhead.",
+      "Lower to the shoulders with control and repeat."
     ],
     "cues": [
-      "Clean two kettlebells to your shoulders"
+      "Dip and drive",
+      "Lock both elbows",
+      "Ribs down"
     ],
-    "mistakes": []
+    "mistakes": [
+      "Pressing without leg drive",
+      "Bending the back",
+      "Soft elbows overhead"
+    ]
   },
   "fedb_two_arm_kettlebell_military_press": {
     "id": "fedb_two_arm_kettlebell_military_press",
@@ -3141,15 +3191,23 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
   },
   "wger_974": {
     "id": "wger_974",
-    "summary": "Curl with kettlebell two hands is a horizontal pull exercise with a kettlebell, done with steady control through the full range.",
+    "summary": "A two-hand kettlebell curl that flexes both elbows together from a hang to shoulder height.",
     "steps": [
-      "Set up for Curl with kettlebell two hands with a kettlebell with a braced torso and stable base.",
-      "Move through a full range with control, then return without losing posture."
+      "Stand tall and grip one kettlebell with both hands on the handle.",
+      "Start with the arms long and curl the bell by bending both elbows.",
+      "Raise until the hands reach about shoulder height without swinging.",
+      "Lower slowly to a full hang and repeat."
     ],
     "cues": [
-      "Stand upright and grip the kettlebell with both hands"
+      "Elbows by the ribs",
+      "No swing",
+      "Lower slowly"
     ],
-    "mistakes": []
+    "mistakes": [
+      "Using hip momentum",
+      "Flaring the elbows",
+      "Shrugging the shoulders"
+    ]
   },
   "wger_1360": {
     "id": "wger_1360",
@@ -3182,29 +3240,42 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
   },
   "wger_1099": {
     "id": "wger_1099",
-    "summary": "Sling a rubber band on a kettlebell and lift the kettlebell by the rubber band. Let it hang by your side and stand on one leg, switch leg while continuing hold. Repeat with other hand.",
+    "summary": "A single-leg hold with a kettlebell hanging from a band at your side, switching legs while you keep balance.",
     "steps": [
-      "Set up for Dynamic side hold with a kettlebell with a braced torso and stable base.",
-      "Hold the position with steady breathing, keeping tension without losing posture."
+      "Loop a band through a kettlebell handle and hold the band so the bell hangs by your side.",
+      "Stand on one leg with a soft knee and a tall torso.",
+      "Hold the balance, then switch the standing leg without dropping the bell.",
+      "Keep the hanging arm quiet and the hips level."
     ],
     "cues": [
-      "Sling a rubber band on a kettlebell and lift the"
+      "Soft standing knee",
+      "Hips level",
+      "Quiet hanging arm"
     ],
-    "mistakes": []
+    "mistakes": [
+      "Collapsing the standing hip",
+      "Swinging the kettlebell",
+      "Holding your breath"
+    ]
   },
   "wger_2447": {
     "id": "wger_2447",
-    "summary": "The movement should mainly come from the hip. Keep your standing foot stable and avoid letting your knee collapse inward.",
+    "summary": "A single-leg hinge that opens and closes the hip like an airplane wing while the standing leg stays stable.",
     "steps": [
-      "Set up for Hip Airplane with a kettlebell with a braced torso and stable base.",
-      "Move through a full range with control, then return without losing posture."
+      "Stand on one leg and hinge forward until the torso and free leg form a long line.",
+      "Keep the back flat and the standing knee soft.",
+      "Rotate the hips open and closed from the standing hip without letting the knee cave in.",
+      "Return to standing and switch sides."
     ],
     "cues": [
-      "Stand on one leg and lean your upper body slightly",
-      "The movement should mainly come from the hip"
+      "Move from the hip",
+      "Standing knee steady",
+      "Long line head to heel"
     ],
     "mistakes": [
-      "Letting the lower back round under load"
+      "Knee collapsing inward",
+      "Rounding the back",
+      "Wobbling through the foot"
     ]
   },
   "wger_1003": {
@@ -3250,32 +3321,43 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
   },
   "wger_331": {
     "id": "wger_331",
-    "summary": "You want to bend from the hips as far as you can without letting your back round forwards . Then, snap your hips forwards quickly and standing up straight, locking your body in an upright posture.",
+    "summary": "A hip-hinge swing that snaps the kettlebell forward with the hips, not a lift with the arms.",
     "steps": [
-      "Set up for Kettlebell Swings with a kettlebell with a braced torso and stable base.",
-      "Move through a full range with control, then return without losing posture."
+      "Hold the kettlebell with both hands, feet about shoulder-width, knees soft.",
+      "Hinge at the hips with a flat back and swing the bell back between the legs.",
+      "Snap the hips forward to stand tall so the bell floats up in front of you.",
+      "Let it arc back down and repeat, arms staying long."
     ],
     "cues": [
-      "Hold the kettlebell securely in both hands",
-      "You want to bend from the hips as far as you can",
-      "The speed you do this will cause your arms and the"
+      "Hips snap, arms guide",
+      "Flat back",
+      "Soft knees"
     ],
     "mistakes": [
-      "Using momentum instead of controlled strength",
-      "Letting the lower back round under load"
+      "Squatting instead of hinging",
+      "Lifting with the arms",
+      "Rounding the spine"
     ]
   },
   "wger_2727": {
     "id": "wger_2727",
-    "summary": "Kettlebell Wrist Turnover is a horizontal push exercise with a kettlebell, done with steady control through the full range.",
+    "summary": "A forearm-supported kettlebell rotation that turns the wrist while the elbow stays still.",
     "steps": [
-      "Set up for Kettlebell Wrist Turnover with a kettlebell with a braced torso and stable base.",
-      "Move through a full range with control, then return without losing posture."
+      "Rest your forearm on a bench or your knee and hold a light kettlebell by the handle with the bell hanging down.",
+      "Keep the elbow and forearm still.",
+      "Slowly rotate the wrist so the bell turns through a controlled arc.",
+      "Reverse the rotation and repeat, then switch arms."
     ],
     "cues": [
-      "Rest your forearm on a bench or your knee and hold a"
+      "Elbow still",
+      "Slow rotation",
+      "Light load"
     ],
-    "mistakes": []
+    "mistakes": [
+      "Moving the whole arm",
+      "Using a heavy bell",
+      "Rushing the turn"
+    ]
   },
   "wger_975": {
     "id": "wger_975",
@@ -3291,16 +3373,22 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
   },
   "wger_1022": {
     "id": "wger_1022",
-    "summary": "Start position as row, extend to plank and back. Finish with row and repeat.",
+    "summary": "A single-arm row that opens into a plank and returns, finishing each rep with another row.",
     "steps": [
-      "Set up for Single Arm Plank to Row with a kettlebell with a braced torso and stable base.",
-      "Hold the position with steady breathing, keeping tension without losing posture."
+      "Start in a hinged row stance with one hand on a kettlebell or support.",
+      "Row the load to your side, then extend the hips and free arm into a plank line.",
+      "Return to the hinged row stance with control.",
+      "Finish with another row and repeat."
     ],
     "cues": [
-      "Start position as row, extend to plank and back"
+      "Row, then plank",
+      "Hips square",
+      "Control the return"
     ],
     "mistakes": [
-      "Using momentum instead of controlled strength"
+      "Losing the plank line",
+      "Twisting the hips",
+      "Rushing the transitions"
     ]
   },
   "wger_2668": {
@@ -7086,22 +7174,22 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
   },
   "fedb_glute_kickback": {
     "id": "fedb_glute_kickback",
-    "summary": "An all-fours leg lift that drives one bent leg up behind you to isolate the glutes.",
+    "summary": "A kneeling kickback that lifts one bent leg behind you until the thigh lines up with the torso, training the glutes.",
     "steps": [
-      "Start on hands and knees with hands under shoulders and knees bent at 90 degrees.",
-      "Brace your core and keep your back flat.",
-      "Lift one leg until the thigh is level with your back, foot pointing to the ceiling.",
-      "Lower with control, then switch sides."
+      "Kneel on the floor with hands under the shoulders and knees under the hips.",
+      "Keep a soft bend in one knee and lift that leg behind you until the thigh is in line with your back.",
+      "Squeeze the glute at the top without arching the lower back.",
+      "Lower with control and alternate legs."
     ],
     "cues": [
-      "Back flat",
+      "Thigh in line with the back",
       "Squeeze at the top",
-      "Knee stays bent"
+      "Hips square"
     ],
     "mistakes": [
       "Arching the lower back to lift higher",
-      "Rotating the hip open",
-      "Swinging the leg"
+      "Swinging the leg",
+      "Twisting the hips"
     ]
   },
   "fedb_gorilla_chin_crunch": {
@@ -9436,22 +9524,22 @@ export const DESCRIPTIONS: Record<string, CuratedDescription> = {
   },
   "wger_1933": {
     "id": "wger_1933",
-    "summary": "A short-range floor curl that lifts the shoulders and upper back to strengthen the abdominals.",
+    "summary": "A short-range floor crunch that lifts only the shoulders and upper back while the lower back stays pressed down.",
     "steps": [
-      "Lie on your back with knees bent and feet flat.",
-      "Place your hands lightly behind your head or across your chest.",
-      "Exhale and curl your shoulders and upper back off the floor.",
-      "Keep your lower back on the floor and pause briefly.",
-      "Lower slowly with control."
+      "Lie on your back on a mat with knees bent and feet flat.",
+      "Place the hands lightly by the head or across the chest.",
+      "Lift the shoulders and upper back off the floor without sitting all the way up.",
+      "Lower with control, keeping the lower back pressed to the mat."
     ],
     "cues": [
-      "Ribs toward hips",
-      "Chin off the chest",
-      "Low back stays down"
+      "Lower back pressed down",
+      "Short range",
+      "Exhale on the lift"
     ],
     "mistakes": [
       "Pulling on the neck",
-      "Jerking up with momentum"
+      "Turning it into a full sit-up",
+      "Arching the lower back"
     ]
   },
   "wger_1828": {
