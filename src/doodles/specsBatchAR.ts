@@ -173,10 +173,11 @@ function sumoFrame(stage: "bottom" | "stand" | "top", hold: number): Keyframe {
 /** Clean and jerk, two views: in the front panel the racked fist sits at the collarbone and the locked-out arm beside the head. */
 const RACK_Z = -14;
 const LOCKOUT_Z = -30;
-const jerkFrame = (pose: Pose, hold: number, z: number): Keyframe => ({
+const HANG_Z = -22;
+const jerkFrame = (pose: Pose, hold: number, z: number, bell: BellMode = "rack"): Keyframe => ({
   pose,
   hold,
-  bell: "rack",
+  bell,
   sideways: { hands: { near: z }, feet: { near: -9, far: 9 } },
 });
 
@@ -302,9 +303,9 @@ export const BATCH_AR_SPECS: DoodleSpec[] = [
     transition: 0.7,
     frames: [
       pirateFrame(65, 0, 0.3, "hang"),
-      pirateFrame(-4, -45, 0.4, "swing"),
+      pirateFrame(-18, -88, 0.4, "swing"),
       pirateFrame(65, 0, 0.3, "hang"),
-      pirateFrame(-4, 45, 0.4, "swing"),
+      pirateFrame(-18, 88, 0.4, "swing"),
     ],
   },
   {
@@ -316,12 +317,16 @@ export const BATCH_AR_SPECS: DoodleSpec[] = [
     kettlebell: { hands: ["near"], size: BELL },
     transition: 0.45,
     frames: [
+      jerkFrame(standHang(), 0.3, HANG_Z, "hang"),
+      jerkFrame(hangBetween(), 0.2, HANG_Z, "hang"),
+      jerkFrame(pull(), 0, RACK_Z, "swing"),
       jerkFrame(rack(), 0.4, RACK_Z),
       jerkFrame(dipped("rack"), 0.1, RACK_Z),
       jerkFrame(overhead(), 0, LOCKOUT_Z),
       jerkFrame(dipped("overhead"), 0.3, LOCKOUT_Z),
       jerkFrame(overhead(), 0.6, LOCKOUT_Z),
       jerkFrame(rack(), 0.2, RACK_Z),
+      jerkFrame(pull(), 0, RACK_Z, "swing"),
     ],
   },
 ];
