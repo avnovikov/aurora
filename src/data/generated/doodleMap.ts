@@ -385,7 +385,20 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "wger_1956": "/doodles/doodle-fire-hydrant-circles.svg",
   "wger_1672": "/doodles/doodle-seated-hip-abduction.svg",
   "wger_1908": "/doodles/doodle-butterfly-superman.svg",
-  "wger_171": "/doodles/doodle-incline-crunches.svg"
+  "wger_171": "/doodles/doodle-incline-crunches.svg",
+  "fedb_cross_body_crunch": "/doodles/doodle-cross-body-crunch.svg",
+  "fedb_air_bike": "/doodles/doodle-air-bike.svg",
+  "hf_115": "/doodles/doodle-bicycle-crunch.svg",
+  "fedb_alternate_heel_touchers": "/doodles/doodle-alternate-heel-touchers.svg",
+  "fedb_elbow_to_knee": "/doodles/doodle-elbow-to-knee.svg",
+  "fedb_oblique_crunches": "/doodles/doodle-oblique-crunches.svg",
+  "fedb_windmills": "/doodles/doodle-windmills.svg",
+  "fedb_crossover_reverse_lunge": "/doodles/doodle-crossover-reverse-lunge.svg",
+  "fedb_single_leg_butt_kick": "/doodles/doodle-single-leg-butt-kick.svg",
+  "hf_114": "/doodles/doodle-russian-twist.svg",
+  "hf_155": "/doodles/doodle-quadruped-thoracic-rotation.svg",
+  "hf_144": "/doodles/doodle-front-kickthrough.svg",
+  "ntc_archer_push_up_hold": "/doodles/doodle-archer-push-up-hold.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
