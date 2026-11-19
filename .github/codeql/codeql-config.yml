@@ -1,0 +1,19 @@
+name: Aurora CodeQL
+# security-and-quality alone omits kind: alert-suppression, so in-source
+# `lgtm[...]` / `codeql[...]` comments never apply. Include AlertSuppression
+# for JS and Java explicitly (see #203).
+queries:
+  - uses: security-and-quality
+  - uses: codeql/javascript-queries:AlertSuppression.ql
+  - uses: codeql/java-queries:AlertSuppression.ql
+
+# Skip dependency trees and Gradle outputs (see #206). For interpreted JS/TS
+# this drops extraction; for Java, Autobuild/manual still follows the compile
+# classpath — remaining Capacitor alerts are dismissed as won't-fix.
+paths-ignore:
+  - node_modules
+  - "**/node_modules"
+  - "**/node_modules/**"
+  - android/**/build/**
+  - "**/intermediates/**"
+  - "**/problems-report.html"

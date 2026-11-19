@@ -28,20 +28,33 @@ export function defaultFixtureName(capturedAt, deviceModel) {
   return `${String(capturedAt).slice(0, 10)}-${model}.json`;
 }
 
+/** True when a CDP key is an aurora.* storage key (never __proto__ / constructor). */
+export function isAuroraStorageKey(key) {
+  return typeof key === "string" && /^aurora\.[A-Za-z0-9._-]+$/.test(key);
+}
+
 /**
  * Accept only a plain object whose keys are aurora.* (what the CDP expression returns).
- * Rebuilds a new object so callers do not pass through raw remote JSON text.
+ * Clones via JSON so we never assign remote property names onto a fresh object
+ * (avoids js/remote-property-injection).
  */
 export function auroraLocalStorageFromCdp(value) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
     throw new Error("CDP localStorage result must be a plain object");
   }
-  const localStorage = {};
-  for (const [key, entry] of Object.entries(value)) {
-    if (!key.startsWith("aurora.")) {
+  for (const key of Object.keys(value)) {
+    if (!isAuroraStorageKey(key)) {
       throw new Error(`unexpected localStorage key: ${key}`);
     }
-    localStorage[key] = entry;
   }
-  return localStorage;
+  const clone = JSON.parse(JSON.stringify(value));
+  if (clone === null || typeof clone !== "object" || Array.isArray(clone)) {
+    throw new Error("CDP localStorage clone must be a plain object");
+  }
+  for (const key of Object.keys(clone)) {
+    if (!isAuroraStorageKey(key)) {
+      throw new Error(`unexpected localStorage key after clone: ${key}`);
+    }
+  }
+  return clone;
 }
