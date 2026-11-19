@@ -510,7 +510,18 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "fedb_dynamic_chest_stretch": "/doodles/doodle-dynamic-chest-stretch.svg",
   "fedb_elbows_back": "/doodles/doodle-elbows-back.svg",
   "wger_1027": "/doodles/doodle-elevated-prayer-stretch.svg",
-  "wger_1920": "/doodles/doodle-extreme-shoulder-stretch.svg"
+  "wger_1920": "/doodles/doodle-extreme-shoulder-stretch.svg",
+  "fedb_hug_knees_to_chest": "/doodles/doodle-hug-knees-to-chest.svg",
+  "fedb_iron_crosses_stretch": "/doodles/doodle-iron-crosses-stretch.svg",
+  "fedb_isometric_chest_squeezes": "/doodles/doodle-isometric-chest-squeezes.svg",
+  "wger_1452": "/doodles/doodle-knee-to-chest-stretch.svg",
+  "fedb_one_arm_against_wall": "/doodles/doodle-one-arm-against-wall.svg",
+  "fedb_one_knee_to_chest": "/doodles/doodle-one-knee-to-chest.svg",
+  "fedb_overhead_stretch": "/doodles/doodle-overhead-stretch.svg",
+  "fedb_seated_overhead_stretch": "/doodles/doodle-seated-overhead-stretch.svg",
+  "wger_1841": "/doodles/doodle-seated-shoulder-stretch-hands-behind.svg",
+  "fedb_shoulder_circles": "/doodles/doodle-shoulder-circles.svg",
+  "wger_2693": "/doodles/doodle-wall-lat-stretch.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
