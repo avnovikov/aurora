@@ -57,6 +57,8 @@ export interface PlanPageModel {
   level: { options: ReadonlyArray<{ id: string; label: string }>; value: string; open: boolean };
   /** Result of the last action ("Excluded Nordic curl. Now: Sliding Leg Curl."). */
   status?: string;
+  /** Auto-raise from logged performance (#115); dismissible. */
+  raiseNotice?: string;
 }
 
 function actionHtml(attr: string, value: string, label: string): string {
@@ -250,7 +252,7 @@ function levelPanelHtml(level: PlanPageModel["level"]): string {
     <details class="lib-filters" data-plan-level-panel${level.open || active ? " open" : ""}>
       <summary>${summary}</summary>
       ${chipRowHtml("plan-level", "Plan level", level.value, level.options)}
-      <p class="lib-meta plan-level-note">Used when you add days or remake a day: moves are picked at this level and it is recorded as your level on them, as in the Library. It never lowers a level your results have earned. Days already in the plan keep their moves.</p>
+      <p class="lib-meta plan-level-note">Used when you add days or remake a day: moves are picked at this level as a dose default. It can rise from your logged results when enough of your next days are ready. Lower it here yourself — it never lowers a level your results have earned. Days already in the plan keep their moves.</p>
     </details>
   `;
 }
@@ -264,6 +266,9 @@ export function planPageHtml(model: PlanPageModel): string {
   const count = model.days.length;
   const hasDays = count > 0;
   const status = model.status ? `<p class="plan-status" data-plan-status aria-live="polite">${escapeHtml(model.status)}</p>` : "";
+  const raiseNotice = model.raiseNotice
+    ? `<p class="plan-status" data-plan-level-raise aria-live="polite">${escapeHtml(model.raiseNotice)} <button type="button" data-plan-level-raise-dismiss>Dismiss</button></p>`
+    : "";
   const empty = hasDays
     ? ""
     : `<p class="tagline" data-plan-empty>No days yet. Add an area below to build the first block.</p>`;
@@ -277,6 +282,7 @@ export function planPageHtml(model: PlanPageModel): string {
       <h1>Coming up</h1>
       ${countLine}
       ${empty}
+      ${raiseNotice}
       ${status}
       <ol class="plan-days" aria-label="Days coming up">
         ${model.days.map((day) => dayHtml(day, count, model.makeOptions)).join("")}

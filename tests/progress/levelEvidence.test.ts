@@ -37,9 +37,10 @@ describe("level evidence", () => {
     expect(liveInferredTier(future, NOW)).toBe("intermediate");
   });
 
-  it("evidence tier = max(tested, live inferred, plan default)", () => {
+  it("evidence tier = max(tested, live inferred, plan default); plan default yields to logged", () => {
     expect(evidenceTier(base, NOW)).toBeUndefined();
-    expect(evidenceTier({ ...base, planTier: "intermediate", loggedTier: "beginner" }, NOW)).toBe("intermediate");
+    expect(evidenceTier({ ...base, planTier: "intermediate" }, NOW)).toBe("intermediate");
+    expect(evidenceTier({ ...base, planTier: "intermediate", loggedTier: "beginner" }, NOW)).toBe("beginner");
     expect(refreshSkillTier({ ...base, declaredTier: "advanced" }, NOW).skillTier).toBe("advanced");
     expect(refreshSkillTier(base, NOW).skillTier).toBeUndefined();
   });
