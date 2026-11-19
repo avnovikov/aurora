@@ -318,15 +318,40 @@ function stationGapHtml(next: WarmupStep | undefined, state: ViewState): string 
   `;
 }
 
-/** The rest countdown as the hero, under its eyebrow; extra lines go after the cue. */
-function restHeroHtml(eyebrow: string, state: ViewState, extra = ""): string {
+/**
+ * Rest countdown as the hero. `lead` sits under the phase eyebrow (work rest
+ * puts the next-move row there); `extra` goes after the cue.
+ */
+function restHeroHtml(
+  eyebrow: string,
+  state: ViewState,
+  { lead = "", extra = "" }: { lead?: string; extra?: string } = {},
+): string {
   return `
       <section class="session-hero">
         <p class="eyebrow session-phase">${eyebrow}</p>
+        ${lead}
         <p class="session-dose">${doseFigureHtml(`<span class="reps" data-rest-left>${state.restLeft}</span>`, SECONDS_UNIT_HTML)}</p>
         <p class="rest-cue" data-rest-cue></p>
         ${extra}
       </section>`;
+}
+
+/** Compact doodle + next-set line for work rest; no empty frame when the move has no doodle. */
+function workRestNextHtml(item: PlannedWorkItem | null, state: ViewState): string {
+  let picture = "";
+  let line = "next set";
+  if (item) {
+    const move = displayExerciseName(item.exerciseName);
+    const doodle = doodleMarkup(item.doodlePath, move);
+    if (doodle) picture = `<div class="rest-next-doodle">${doodle}</div>`;
+    line = `next ${escapeHtml(move)} · Set ${state.setIndex} of ${item.dose.sets}`;
+  }
+  return `
+    <div class="rest-next">
+      ${picture}
+      <p class="rest-next-line">${line}</p>
+    </div>`;
 }
 
 interface HeroParts {
@@ -522,16 +547,14 @@ function workHtml(item: PlannedWorkItem, state: ViewState, adjust: WorkAdjustUi 
 function restHtml(planned: PlannedSession, state: ViewState): string {
   const item = currentWork(planned, state);
   const reps = nextSetReps(state, 0);
-  const nextLine = item
-    ? `next ${escapeHtml(displayExerciseName(item.exerciseName))} · Set ${state.setIndex} of ${item.dose.sets}`
-    : "next set";
   const getReady = isGetReadyRest(state);
+  const phase = getReady ? "Get ready" : "Rest";
   const getReadyNote = getReady
     ? `<p class="tagline">Easy rest after the ramp: walk, breathe, stay warm.</p>`
     : "";
   return `
     <div class="rest-stage swipe-stage" data-swipe-stage="rest">
-      ${restHeroHtml(`${getReady ? "Get ready" : "Rest"} · ${nextLine}`, state, getReadyNote)}
+      ${restHeroHtml(phase, state, { lead: workRestNextHtml(item, state), extra: getReadyNote })}
       <section class="session-read">
         <p class="tagline">Next set reps</p>
         ${repsStepperHtml("rest-reps-row", `<span class="reps-edit">${reps}</span>`)}
