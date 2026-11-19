@@ -500,7 +500,21 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "fedb_kettlebell_halo": "/doodles/doodle-kettlebell-halo.svg",
   "fedb_kettlebell_halo_with_overhead_extension": "/doodles/doodle-kettlebell-halo-with-overhead-extension.svg",
   "fedb_kettlebell_overhead_triceps_extension": "/doodles/doodle-kettlebell-overhead-triceps-extension.svg",
-  "fedb_bent_press": "/doodles/doodle-bent-press.svg"
+  "fedb_bent_press": "/doodles/doodle-bent-press.svg",
+  "wger_1966": "/doodles/doodle-half-kneeling-thoracic-rotation.svg",
+  "fedb_ankle_circles": "/doodles/doodle-ankle-circles.svg",
+  "fedb_ankle_on_the_knee": "/doodles/doodle-ankle-on-the-knee.svg",
+  "wger_1840": "/doodles/doodle-lying-hamstring-stretch.svg",
+  "wger_1475": "/doodles/doodle-plank-knee-to-opposite-elbow.svg",
+  "fedb_chair_leg_extended_stretch": "/doodles/doodle-chair-leg-extended-stretch.svg",
+  "wger_1400": "/doodles/doodle-crossed-leg-forward-fold.svg",
+  "wger_1827": "/doodles/doodle-hands-to-knees-press.svg",
+  "wger_2615": "/doodles/doodle-heel-on-box-hamstring-stretch.svg",
+  "wger_1398": "/doodles/doodle-lying-hamstring-mobility.svg",
+  "fedb_knee_across_the_body": "/doodles/doodle-knee-across-the-body.svg",
+  "fedb_knee_circles": "/doodles/doodle-knee-circles.svg",
+  "wger_2617": "/doodles/doodle-quad-sets.svg",
+  "wger_2687": "/doodles/doodle-quadriceps-stretch.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
