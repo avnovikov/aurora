@@ -263,10 +263,10 @@ const JACK_IN = 4;
 const JACK_OUT = 62;
 const feetAt = (z: number): Sideways => ({ feet: { near: -z, far: z } });
 
-/** Planted plank with the feet at ±`z`. */
+/** Planted plank with the feet spread to the width of the keyframe's `sideways`. */
 const jackPlank = (): AuthoredPose => ({ ...plank(), spreadFeet: true });
 
-/** Both feet off the floor mid-jump at ±`z`: straight legs swing up a little, hands planted. */
+/** Both feet off the floor mid-jump, as wide as the keyframe's `sideways` puts them: straight legs swing up a little, hands planted. */
 function plankJackAir(): AuthoredPose {
   const base = plank();
   const pelvis = base.pelvis as Point;
@@ -332,7 +332,7 @@ const LEG = 173.6;
  * Chest for `pose` (pelvis pinned) at `chord` from the pelvis, turned between
  * `lo` and `hi` degrees until the near shoulder is a locked arm from `hand`.
  */
-function lockChest(pose: Pose, chord: number, hand: Point, lo: number, hi: number): Point {
+function lockChest(pose: Pick<Pose, "pelvis" | "hands">, chord: number, hand: Point, lo: number, hi: number): Point {
   const pelvis = pose.pelvis as Point;
   const at = (deg: number): Point => {
     const r = (deg * Math.PI) / 180;

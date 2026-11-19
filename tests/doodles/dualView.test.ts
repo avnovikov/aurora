@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { project } from "../../src/doodles/project";
 import { dualLayout, frontProps } from "../../src/doodles/renderDual";
 import { figurePoints, FLOOR_MARGIN, propSegments, renderDoodleSvg, resolveFloors } from "../../src/doodles/renderSvg";
-import { BONES, solvePose, type DoodleSpec, type Pose, type Prop, type Side } from "../../src/doodles/rig";
+import { BONES, resolveSideways, solvePose, type AuthoredPose, type DoodleSpec, type Pose, type Prop, type Side } from "../../src/doodles/rig";
 import { dist3, sampleTimeline3, solveKeyframe3, type Figure3 } from "../../src/doodles/rig3d";
 import { dualViewGuards, validateSpec } from "../../src/doodles/validate";
 
@@ -64,7 +64,7 @@ describe("dual-view guards", () => {
 
 describe("3D solve", () => {
   it("keeps every limb bone at its true length", () => {
-    const f = solveKeyframe3(solvePose(RAISE.frames[1].pose), RAISE.frames[1].pose as Pose, RAISE.frames[1].sideways);
+    const f = solveKeyframe3(solvePose(resolveSideways(RAISE.frames[1].pose as AuthoredPose, RAISE.frames[1].sideways)), RAISE.frames[1].pose as Pose, RAISE.frames[1].sideways);
     for (const [actual, expected] of bones(f)) expect(actual).toBeCloseTo(expected, 6);
   });
 
@@ -80,7 +80,7 @@ describe("3D solve", () => {
   });
 
   it("draws an arm reaching sideways shorter in the side view, full width in the front view", () => {
-    const f = solveKeyframe3(solvePose(RAISE.frames[1].pose), RAISE.frames[1].pose as Pose, RAISE.frames[1].sideways);
+    const f = solveKeyframe3(solvePose(resolveSideways(RAISE.frames[1].pose as AuthoredPose, RAISE.frames[1].sideways)), RAISE.frames[1].pose as Pose, RAISE.frames[1].sideways);
     const side = project(f, "side").arms.far;
     const front = project(f, "front").arms.far;
     expect(Math.hypot(side.end[0] - side.root[0], side.end[1] - side.root[1])).toBeLessThan(20);
@@ -88,7 +88,7 @@ describe("3D solve", () => {
   });
 
   it("puts the far side on the viewer's right in the front view", () => {
-    const f = solveKeyframe3(solvePose(RAISE.frames[1].pose), RAISE.frames[1].pose as Pose, RAISE.frames[1].sideways);
+    const f = solveKeyframe3(solvePose(resolveSideways(RAISE.frames[1].pose as AuthoredPose, RAISE.frames[1].sideways)), RAISE.frames[1].pose as Pose, RAISE.frames[1].sideways);
     const front = project(f, "front");
     expect(front.arms.far.end[0]).toBeGreaterThan(front.head[0]);
     expect(front.arms.near.root[0]).toBeLessThan(front.head[0]);

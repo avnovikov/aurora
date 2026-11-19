@@ -23,7 +23,7 @@ describe("resolveSideways", () => {
     const pose: AuthoredPose = { pelvis: PELVIS, knees: { near: { dir: 40 } } };
     const out = resolveSideways(pose, { knees: { near: { at: 24 } } });
     expect(out.knees?.near?.at).toEqual(
-      reach3(PELVIS, 40, BONES.thigh, 24 - -HIP_SIDE),
+      reach3(PELVIS, 40, BONES.thigh, 24 + HIP_SIDE),
     );
   });
 
@@ -37,7 +37,7 @@ describe("resolveSideways", () => {
       knees: { near: { at: 24 } },
       feet: { near: 2 },
     });
-    const knee = reach3(PELVIS, 40, BONES.thigh, 24 - -HIP_SIDE);
+    const knee = reach3(PELVIS, 40, BONES.thigh, 24 + HIP_SIDE);
     expect(out.feet?.near).toEqual(reach3(knee, 170, BONES.shin, 2 - 24));
   });
 
@@ -71,8 +71,27 @@ describe("resolveSideways", () => {
       spreadFeet: true,
     };
     const out = resolveSideways(plain, { pelvis: -20, feet: { near: -40, far: 40 } });
+    // Spread literals checked against the old spreadFeet formula and the byte-identical snapshot.
     expect(out.feet?.near).toEqual([-199.36, -18]);
     expect(out.feet?.far).toEqual([-191.63, -18]);
+  });
+
+  it("spreads only the Point foot when the other foot is a direction hint", () => {
+    const pose: AuthoredPose = {
+      pelvis: PELVIS,
+      feet: { near: [-200, -18], far: { dir: 170 } },
+      spreadFeet: true,
+    };
+    const sw = { pelvis: -20, feet: { near: -40, far: 40 } };
+    const out = resolveSideways(pose, sw);
+    expect(out.feet?.near).toEqual([-199.36, -18]);
+    expect(out.feet?.far).toEqual(reach3(PELVIS, 170, BONES.thigh + BONES.shin, 40 - (-20 + HIP_SIDE)));
+  });
+
+  it("rejects a knee hint with both dir and at", () => {
+    expect(() => resolveSideways({ pelvis: PELVIS, knees: { near: { dir: 40, at: [0, -50] } } })).toThrow(
+      /both dir and at/,
+    );
   });
 
   it("passes a knee with only bend through unchanged", () => {
@@ -112,7 +131,7 @@ describe("resolveSideways", () => {
       ],
     };
     const [key] = solveKeyframes(spec);
-    const knee = reach3(PELVIS, 40, BONES.thigh, 24 - -HIP_SIDE);
+    const knee = reach3(PELVIS, 40, BONES.thigh, 24 + HIP_SIDE);
     expect(key.pose.knees?.near?.at).toEqual(knee);
     expect(key.pose.feet?.near).toEqual(reach3(knee, 170, BONES.shin, 2 - 24));
   });

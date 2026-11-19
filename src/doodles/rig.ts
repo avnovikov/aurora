@@ -176,6 +176,7 @@ function spreadPlanted(
 /** A knee hint with its direction resolved to a pin. */
 function resolveKnee(pelvis: Point, hipZ: number, kneeZ: number, hint: KneeHint): JointHint {
   const { dir, length, ...joint } = hint;
+  if (dir !== undefined && hint.at) throw new Error("knee hint has both dir and at");
   const at = dir === undefined ? hint.at : reach3(pelvis, dir, length ?? BONES.thigh, kneeZ - hipZ);
   return at ? { ...joint, at } : joint;
 }

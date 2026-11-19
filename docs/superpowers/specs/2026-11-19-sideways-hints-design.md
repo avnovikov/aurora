@@ -31,7 +31,7 @@ It runs:
 - in `solveKeyframes`, on each keyframe before solving — so the 2D timing and spine, the 3D limbs and the validator all see the resolved pose;
 - in `lockedY3`, on each pose it tries.
 
-`reach3` and `spreadFeet` become private helpers of the resolver.
+`spreadFeet` becomes a private helper of the resolver; `reach3` stays exported from `rig.ts` (tests use it).
 
 ### Migration
 
