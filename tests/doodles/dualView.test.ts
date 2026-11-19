@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { project } from "../../src/doodles/project";
-import { dualLayout, frontProps } from "../../src/doodles/renderDual";
+import { dualLayout, frontProps, propDepth } from "../../src/doodles/renderDual";
 import { figurePoints, FLOOR_MARGIN, propSegments, renderDoodleSvg, resolveFloors } from "../../src/doodles/renderSvg";
 import { BONES, resolveSideways, solvePose, type AuthoredPose, type DoodleSpec, type Pose, type Prop, type Side } from "../../src/doodles/rig";
 import { dist3, sampleTimeline3, solveKeyframe3, type Figure3 } from "../../src/doodles/rig3d";
@@ -51,7 +51,6 @@ describe("dual-view guards", () => {
   it("reject views with mirror, front view, unsupported props, and sideways without views", () => {
     expect(dualViewGuards({ ...RAISE, frames: [{ ...RAISE.frames[0], mirror: 0 }, RAISE.frames[1]] })).toHaveLength(1);
     expect(dualViewGuards({ ...RAISE, view: "front" })).toHaveLength(1);
-    expect(dualViewGuards({ ...RAISE, props: [{ kind: "parallettes", y: -20, xs: [0] }] })).toHaveLength(1);
     expect(dualViewGuards({ ...RAISE, views: undefined })).toHaveLength(1);
     expect(validateSpec({ ...RAISE, view: "front" }).ok).toBe(false);
   });
@@ -214,5 +213,156 @@ describe("floor prop", () => {
     expect(validateSpec(spec).errors).toEqual([]);
     const svg = renderDoodleSvg(spec);
     expect(svg.match(/<line x1="[^"]+" y1="0"/g)).toHaveLength(2);
+  });
+});
+
+/** Every bone of a 3D figure with its true length, spine included. */
+const allBones = (f: Figure3) => [
+  [dist3(f.pelvis, f.waist), BONES.pelvisWaist],
+  [dist3(f.waist, f.chest), BONES.waistChest],
+  [dist3(f.chest, f.neck), BONES.chestNeck],
+  [dist3(f.neck, f.head), BONES.neckHead],
+  ...bones(f),
+];
+
+describe("sideways torso lean (sideways.chest, pivot)", () => {
+  const upright: Pose = { pelvis: [0, -172], chest: [0, -252], feet: { near: [0, 0], far: [0, 0] }, toes: { near: 0, far: 0 } };
+  const solve = (sw: Parameters<typeof solveKeyframe3>[2]) => solveKeyframe3(solvePose(upright), upright, sw);
+
+  it("keeps every bone at its true length with a leaning spine", () => {
+    for (const sw of [{ chest: -50 }, { pelvis: 20, chest: -30 }, { pelvis: 30, chest: 0, pivot: "chest" as const }]) {
+      for (const [actual, expected] of allBones(solve(sw))) expect(actual).toBeCloseTo(expected, 6);
+    }
+  });
+
+  it("tilts the spine in the front view and shortens it in the side view (pelvis pivot)", () => {
+    const f = solve({ chest: -50 });
+    expect(f.chest[2]).toBeCloseTo(-50, 6);
+    expect(f.pelvis).toEqual([0, -172, 0]);
+    const side = project(f, "side");
+    expect(Math.hypot(side.chest[0] - side.pelvis[0], side.chest[1] - side.pelvis[1])).toBeCloseTo(Math.sqrt(80 ** 2 - 50 ** 2), 6);
+    // The shoulders tilt with the spine: the near (lean) side drops; the hips stay level.
+    expect(f.arms.near.root[1]).toBeGreaterThan(f.arms.far.root[1] + 20);
+    expect(f.legs.near.root[1]).toBeCloseTo(f.legs.far.root[1], 9);
+  });
+
+  it("moves the hips under still shoulders with pivot: chest", () => {
+    const still = solve(undefined);
+    const f = solve({ pelvis: 30, chest: 0, pivot: "chest" });
+    expect(f.pelvis[2]).toBeCloseTo(30, 6);
+    for (const s of ["near", "far"] as Side[]) {
+      for (let i = 0; i < 3; i += 1) expect(f.arms[s].root[i]).toBeCloseTo(still.arms[s].root[i], 9);
+    }
+  });
+
+  it("validates a leaning dual spec, blending the lean between keyframes with true bone lengths", () => {
+    const spec: DoodleSpec = {
+      id: "test_lean",
+      slug: "test-lean",
+      title: "Test lean",
+      views: ["side", "front"],
+      frames: [
+        { pose: upright, hold: 0.3 },
+        { pose: upright, sideways: { chest: -45 }, hold: 0.3 },
+      ],
+    };
+    expect(validateSpec(spec).errors).toEqual([]);
+    const timeline = sampleTimeline3(spec);
+    for (const pose of timeline.poses) for (const [actual, expected] of allBones(pose)) expect(Math.abs(actual - expected)).toBeLessThan(1e-6);
+    const mid = timeline.poses[timeline.keyframeIndex[1] - 7];
+    expect(mid.chest[2]).toBeLessThan(-5);
+    expect(mid.chest[2]).toBeGreaterThan(-45);
+  });
+});
+
+describe("parallel bars and parallettes in two views", () => {
+  it("are allowed in two views", () => {
+    expect(dualViewGuards({ ...RAISE, props: [{ kind: "parallettes", y: -20, xs: [0] }] })).toEqual([]);
+    expect(dualViewGuards({ ...RAISE, props: [{ kind: "parallelBars", y: -216, x1: -190, x2: 190 }] })).toEqual([]);
+  });
+
+  it("draw parallel bars end-on: a rail at ±frontHalf on an upright to the floor", () => {
+    const front = frontProps([{ kind: "parallelBars", y: -216, x1: -190, x2: 190 }], 100);
+    expect(front).toEqual([
+      { kind: "box", x: 66, y: -220, w: 8, h: 8 },
+      { kind: "board", from: [70, -212], to: [70, 0], posts: false },
+      { kind: "box", x: 126, y: -220, w: 8, h: 8 },
+      { kind: "board", from: [130, -212], to: [130, 0], posts: false },
+    ]);
+    const narrow = frontProps([{ kind: "parallelBars", y: -216, x1: -190, x2: 190, frontHalf: 26 }]);
+    expect(narrow[0]).toMatchObject({ x: -30 });
+  });
+
+  it("draw parallettes end-on at each hand's z, with a foot on the floor", () => {
+    const front = frontProps([{ kind: "parallettes", y: -40, xs: [0] }], 0, { near: -34, far: 34 });
+    expect(front).toEqual([
+      { kind: "box", x: -38, y: -44, w: 8, h: 8 },
+      { kind: "board", from: [-34, -36], to: [-34, 0], posts: false },
+      { kind: "bar", y: 0, x1: -46, x2: -22 },
+      { kind: "box", x: 30, y: -44, w: 8, h: 8 },
+      { kind: "board", from: [34, -36], to: [34, 0], posts: false },
+      { kind: "bar", y: 0, x1: 22, x2: 46 },
+    ]);
+  });
+
+  it("render on the front panel of a dip in two views", () => {
+    const dip: DoodleSpec = {
+      ...RAISE,
+      props: [{ kind: "parallelBars", y: -150, x1: -190, x2: 190 }],
+      frames: [{ ...RAISE.frames[0], sideways: { hands: { near: -30, far: 30 } } }],
+    };
+    const svg = renderDoodleSvg(dip);
+    expect(svg.match(/<rect [^>]*width="8" height="8"/g)).toHaveLength(2);
+  });
+});
+
+describe("depth-aware prop crossings (two views)", () => {
+  /** Lying on a bench near its near edge (pelvis z -22), the near leg hanging down at z `footZ`. */
+  const bench = (footZ: number, views?: DoodleSpec["views"]): DoodleSpec => ({
+    id: "test_bench_leg",
+    slug: "test-bench-leg",
+    title: "Test bench leg",
+    ...(views ? { views } : {}),
+    props: [{ kind: "box", x: -190, y: -90, w: 260, h: 90, frontHalf: 30 }],
+    frames: [
+      {
+        pose: {
+          pelvis: [0, -100],
+          chest: [-80, -100],
+          head: [-133.4, -117],
+          hands: { near: [-30, -124], far: [-30, -124] },
+          elbows: { near: { bend: -1 }, far: { bend: -1 } },
+          knees: { near: { at: [40, -40] }, far: { at: [62, -163] } },
+          feet: { near: [40, -4], far: [110, -92] },
+          toes: { far: 0 },
+        },
+        ...(views ? { sideways: { pelvis: -22, knees: { near: { at: footZ } }, feet: { near: footZ } } } : {}),
+        hold: 0.5,
+      },
+    ],
+  });
+  const crossings = (spec: DoodleSpec) => validateSpec(spec).errors.filter((e) => e.includes("crosses prop 0"));
+
+  it("passes a limb beside a box (outside its frontHalf)", () => {
+    expect(crossings(bench(-46, ["side", "front"]))).toEqual([]);
+  });
+
+  it("fails a limb through the box (inside its frontHalf)", () => {
+    expect(crossings(bench(-12, ["side", "front"]))).not.toEqual([]);
+  });
+
+  it("keeps the one-view check: every prop is solid in the drawing plane", () => {
+    expect(crossings(bench(0))).not.toEqual([]);
+  });
+
+  it("gives each prop its front extent", () => {
+    const hands = { near: -40, far: 40 };
+    expect(propDepth({ kind: "box", x: 0, y: -40, w: 10, h: 40 }, hands)).toEqual([[-60, 60]]);
+    expect(propDepth({ kind: "box", x: 0, y: -40, w: 10, h: 40, frontHalf: 30 }, hands)).toEqual([[-30, 30]]);
+    expect(propDepth({ kind: "bar", y: -200, x1: 0, x2: 10 }, hands)).toEqual([[-90, 90]]);
+    expect(propDepth({ kind: "board", from: [0, -40], to: [100, -40] }, hands)).toEqual([[-36, 36]]);
+    expect(propDepth({ kind: "parallelBars", y: -200, x1: 0, x2: 100 }, hands)).toEqual([[-34, -26], [26, 34]]);
+    expect(propDepth({ kind: "parallettes", y: -40, xs: [0] }, hands)).toEqual([[-52, -28], [28, 52]]);
+    expect(propDepth({ kind: "floor" }, hands)).toEqual([]);
   });
 });
