@@ -527,7 +527,20 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "fedb_standing_biceps_stretch": "/doodles/doodle-standing-biceps-stretch.svg",
   "fedb_upward_stretch": "/doodles/doodle-upward-stretch.svg",
   "hf_167": "/doodles/doodle-wrist-circles.svg",
-  "wger_1274": "/doodles/doodle-seated-calf-stretch-towel.svg"
+  "wger_1274": "/doodles/doodle-seated-calf-stretch-towel.svg",
+  "wger_1867": "/doodles/doodle-hip-flexor-stretch.svg",
+  "wger_1839": "/doodles/doodle-solo-hip-flexor-stretch.svg",
+  "wger_1960": "/doodles/doodle-rear-foot-elevated-hip-flexor-stretch.svg",
+  "wger_1589": "/doodles/doodle-leg-and-hip-stretch.svg",
+  "wger_1869": "/doodles/doodle-lying-figure-four-stretch.svg",
+  "wger_2656": "/doodles/doodle-happy-baby.svg",
+  "wger_1884": "/doodles/doodle-shinbox-ir-stretch.svg",
+  "wger_1959": "/doodles/doodle-seated-piriformis-stretch.svg",
+  "wger_1863": "/doodles/doodle-hip-crossover.svg",
+  "wger_1680": "/doodles/doodle-seated-figure-four.svg",
+  "wger_1872": "/doodles/doodle-pigeon-stretch.svg",
+  "wger_2614": "/doodles/doodle-adductor-rock-backs.svg",
+  "wger_1476": "/doodles/doodle-butterfly-sit-up.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
