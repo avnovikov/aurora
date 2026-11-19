@@ -580,7 +580,21 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "fedb_lower_back_curl": "/doodles/doodle-lower-back-curl.svg",
   "wger_1912": "/doodles/doodle-core-rotation.svg",
   "fedb_middle_back_stretch": "/doodles/doodle-middle-back-stretch.svg",
-  "fedb_chair_lower_back_stretch": "/doodles/doodle-chair-lower-back-stretch.svg"
+  "fedb_chair_lower_back_stretch": "/doodles/doodle-chair-lower-back-stretch.svg",
+  "fedb_standing_pelvic_tilt": "/doodles/doodle-standing-pelvic-tilt.svg",
+  "fedb_stomach_vacuum": "/doodles/doodle-stomach-vacuum.svg",
+  "fedb_upper_back_stretch": "/doodles/doodle-upper-back-stretch.svg",
+  "wger_1810": "/doodles/doodle-sphinx.svg",
+  "wger_1451": "/doodles/doodle-torso-rotation-stretch.svg",
+  "wger_1377": "/doodles/doodle-torso-twist.svg",
+  "ntc_supine_twist": "/doodles/doodle-supine-spinal-twist.svg",
+  "ntc_thread_the_needle": "/doodles/doodle-thread-the-needle.svg",
+  "fedb_side_lying_floor_stretch": "/doodles/doodle-side-lying-floor-stretch.svg",
+  "hf_170": "/doodles/doodle-side-lying-windmill.svg",
+  "fedb_spinal_stretch": "/doodles/doodle-spinal-stretch.svg",
+  "wger_1861": "/doodles/doodle-side-stretch.svg",
+  "fedb_standing_lateral_stretch": "/doodles/doodle-standing-lateral-stretch.svg",
+  "wger_1426": "/doodles/doodle-standing-side-crunches.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
