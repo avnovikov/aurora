@@ -13,9 +13,7 @@ import { PLANK_FOOT, lockedShoulderY, rep, straightBody } from "./specsBatchC";
  * Left out:
  *   hf_136               Japanese Handstand: the text asks for a handstand with the hands lowered
  *     to hip level, which no body position does.
- *   ntc_plank_hip_dips   drawn in two views and rejected: the rig shifts the whole spine sideways,
- *     so the front panel shows a plank swaying (head, shoulders and hips together) with arms,
- *     torso and legs stacked behind the head; the hips dipping under square shoulders can't be told.
+ * ntc_plank_hip_dips is drawn in batch AW (side + top view, hips swinging under square shoulders).
  */
 
 /** Point `length` from `from` at `degrees` (0 = +x, 90 = down, -90 = up). */
