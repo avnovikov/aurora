@@ -8,25 +8,17 @@ import {
   informativeTokens,
   loadAllowlistIds,
   looksLikeTemplate,
+  scoreCatalogueRow,
   scoreFidelity,
   tokenRecall,
   type FidelityAllowlist,
 } from "../../src/data/describe/fidelity";
-import { buildSourceCorpus } from "../../src/data/describe/sourceCorpus";
 import type { CuratedDescription } from "../../src/data/describe/types";
 import { DESCRIPTIONS } from "../../src/data/generated/descriptions";
 import { LIBRARY_CATALOGUE } from "../../src/data/libraryCatalogue";
-import type { WgerExerciseRecord } from "../../src/data/wger/types";
+import { loadSourceCorpus } from "../../scripts/load-source-corpus";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-
-async function sourceCorpus() {
-  const fedbJson = await readFile(path.join(repoRoot, "data/raw/free-exercise-db.json"), "utf8");
-  const wgerRaw = JSON.parse(
-    await readFile(path.join(repoRoot, "data/raw/wger-exercises.json"), "utf8"),
-  ) as WgerExerciseRecord[];
-  return buildSourceCorpus(fedbJson, wgerRaw);
-}
 
 const sample: CuratedDescription = {
   id: "x",
@@ -143,21 +135,23 @@ describe("catalogue fidelity gate", () => {
         await readFile(path.join(repoRoot, "data/curated/description-fidelity-allowlist.json"), "utf8"),
       ) as FidelityAllowlist,
     );
-    const corpus = await sourceCorpus();
+    const corpus = await loadSourceCorpus(repoRoot);
     const hardFails = LIBRARY_CATALOGUE.flatMap((exercise) => {
-      const curated = DESCRIPTIONS[exercise.id];
       const source = corpus.get(exercise.id);
-      if (!curated || !source) {
-        return [`missing:${exercise.id}`];
+      const result = scoreCatalogueRow(
+        {
+          id: exercise.id,
+          name: exercise.name,
+          curated: DESCRIPTIONS[exercise.id],
+          sourceCorpus: source?.corpus,
+          sourceChars: source?.sourceChars ?? 0,
+        },
+        allowlist,
+      );
+      if (result.missing || !result.score) {
+        return [`missing:${result.missing ?? exercise.id}`];
       }
-      const score = scoreFidelity({
-        id: exercise.id,
-        name: exercise.name,
-        sourceCorpus: source.corpus,
-        sourceChars: source.sourceChars,
-        curated,
-        allowlistIds: allowlist,
-      });
+      const { score } = result;
       return score.hardFail
         ? [`${score.id}:recall=${score.recall.toFixed(3)}:template=${score.template}`]
         : [];

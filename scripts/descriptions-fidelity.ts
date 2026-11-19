@@ -12,7 +12,7 @@ import { fileURLToPath } from "node:url";
 
 import {
   loadAllowlistIds,
-  scoreFidelity,
+  scoreCatalogueRow,
   type FidelityAllowlist,
   type FidelityScore,
 } from "../src/data/describe/fidelity.ts";
@@ -21,6 +21,18 @@ import { LIBRARY_CATALOGUE } from "../src/data/libraryCatalogue.ts";
 import { loadSourceCorpus } from "./load-source-corpus.ts";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+
+function logHardFails(hardFails: FidelityScore[]): void {
+  console.error("Hard fails (rewrite from originals):");
+  for (const fail of hardFails.slice(0, 40)) {
+    console.error(
+      `  ${fail.id}\trecall=${fail.recall.toFixed(3)}\ttemplate=${fail.template}\toverTrim=${fail.overTrim}\tsrc=${fail.sourceChars}`,
+    );
+  }
+  if (hardFails.length > 40) {
+    console.error(`  … and ${hardFails.length - 40} more`);
+  }
+}
 
 function tsvRow(score: FidelityScore): string {
   return [
@@ -38,38 +50,42 @@ function tsvRow(score: FidelityScore): string {
   ].join("\t");
 }
 
+function scoreLibrary(
+  allowlist: ReadonlySet<string>,
+  corpus: Awaited<ReturnType<typeof loadSourceCorpus>>,
+): { scores: FidelityScore[]; missing: string[] } {
+  const scores: FidelityScore[] = [];
+  const missing: string[] = [];
+  for (const exercise of LIBRARY_CATALOGUE) {
+    const source = corpus.get(exercise.id);
+    const result = scoreCatalogueRow(
+      {
+        id: exercise.id,
+        name: exercise.name,
+        curated: DESCRIPTIONS[exercise.id],
+        sourceCorpus: source?.corpus,
+        sourceChars: source?.sourceChars ?? 0,
+      },
+      allowlist,
+    );
+    if (result.missing) {
+      missing.push(result.missing);
+      continue;
+    }
+    if (result.score) {
+      scores.push(result.score);
+    }
+  }
+  scores.sort((a, b) => a.recall - b.recall || a.id.localeCompare(b.id));
+  return { scores, missing };
+}
+
 async function main(): Promise<void> {
   const allowlistPath = path.join(repoRoot, "data/curated/description-fidelity-allowlist.json");
   const allowlist = loadAllowlistIds(
     JSON.parse(await readFile(allowlistPath, "utf8")) as FidelityAllowlist,
   );
-  const corpus = await loadSourceCorpus(repoRoot);
-
-  const scores: FidelityScore[] = [];
-  const missing: string[] = [];
-  for (const exercise of LIBRARY_CATALOGUE) {
-    const curated = DESCRIPTIONS[exercise.id];
-    if (!curated) {
-      missing.push(exercise.id);
-      continue;
-    }
-    const source = corpus.get(exercise.id);
-    if (!source) {
-      throw new Error(`no source corpus for ${exercise.id}`);
-    }
-    scores.push(
-      scoreFidelity({
-        id: exercise.id,
-        name: exercise.name,
-        sourceCorpus: source.corpus,
-        sourceChars: source.sourceChars,
-        curated,
-        allowlistIds: allowlist,
-      }),
-    );
-  }
-
-  scores.sort((a, b) => a.recall - b.recall || a.id.localeCompare(b.id));
+  const { scores, missing } = scoreLibrary(allowlist, await loadSourceCorpus(repoRoot));
 
   const reportDir = path.join(repoRoot, "reports");
   await mkdir(reportDir, { recursive: true });
@@ -87,15 +103,7 @@ async function main(): Promise<void> {
   );
   console.log(`Report: ${reportPath}`);
   if (hardFails.length > 0) {
-    console.error("Hard fails (rewrite from originals):");
-    for (const fail of hardFails.slice(0, 40)) {
-      console.error(
-        `  ${fail.id}\trecall=${fail.recall.toFixed(3)}\ttemplate=${fail.template}\toverTrim=${fail.overTrim}\tsrc=${fail.sourceChars}`,
-      );
-    }
-    if (hardFails.length > 40) {
-      console.error(`  … and ${hardFails.length - 40} more`);
-    }
+    logHardFails(hardFails);
     process.exitCode = 1;
   }
   if (missing.length > 0) {

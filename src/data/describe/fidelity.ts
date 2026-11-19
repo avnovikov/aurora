@@ -3,7 +3,7 @@
  *
  * Thresholds (starting point):
  * - Soft warn: recall < 0.25
- * - Hard fail: recall < 0.15, or template flag with recall < 0.25
+ * - Hard fail: recall < 0.15, any template flag, or over-trim flag
  * - Thin originals (source_chars < THIN_SOURCE_CHARS) are allowlisted automatically
  *   (house-written when source is empty / near-empty).
  *
@@ -95,7 +95,6 @@ const STOPWORDS = new Set([
   "it",
   "its",
   "will",
-  "be",
   "should",
   "can",
   "do",
@@ -231,8 +230,8 @@ export function scoreFidelity(input: {
   const thinSource = isNonInstructionalSource(input.sourceCorpus, input.sourceChars);
   const allowlisted = thinSource || input.allowlistIds.has(input.id);
   const softWarn = !allowlisted && recall < SOFT_RECALL;
-  const hardFail =
-    !allowlisted && (recall < HARD_RECALL || template || overTrim);
+  // overTrim ⊆ template (isOverTrimmed requires template), so it is report-only.
+  const hardFail = !allowlisted && (recall < HARD_RECALL || template);
 
   return {
     id: input.id,
@@ -251,4 +250,35 @@ export function scoreFidelity(input: {
 
 export function loadAllowlistIds(raw: FidelityAllowlist | null | undefined): Set<string> {
   return new Set(raw?.ids ?? []);
+}
+
+export interface CatalogueFidelityInput {
+  id: string;
+  name: string;
+  curated: CuratedDescription | undefined;
+  sourceCorpus: string | undefined;
+  sourceChars: number;
+}
+
+/** Score one catalogue row; returns a hard-fail label when curated/source is missing. */
+export function scoreCatalogueRow(
+  row: CatalogueFidelityInput,
+  allowlistIds: ReadonlySet<string>,
+): { score?: FidelityScore; missing?: string } {
+  if (!row.curated) {
+    return { missing: row.id };
+  }
+  if (row.sourceCorpus === undefined) {
+    throw new Error(`no source corpus for ${row.id}`);
+  }
+  return {
+    score: scoreFidelity({
+      id: row.id,
+      name: row.name,
+      sourceCorpus: row.sourceCorpus,
+      sourceChars: row.sourceChars,
+      curated: row.curated,
+      allowlistIds,
+    }),
+  };
 }

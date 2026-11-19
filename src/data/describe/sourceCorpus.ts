@@ -38,12 +38,13 @@ export interface SourceCorpusEntry {
 }
 
 function ownText(exercise: SeedExercise): SourceTextBlock {
+  const lines = exercise.description
+    ? [...new Set([exercise.description, ...exercise.cues])]
+    : exercise.cues;
   return {
     source: exercise.attribution ?? "Aurora seed (written in-house)",
     name: exercise.name,
-    lines: cleanLines(
-      exercise.description ? [...new Set([exercise.description, ...exercise.cues])] : exercise.cues,
-    ),
+    lines: cleanLines(lines),
   };
 }
 
@@ -55,29 +56,28 @@ function unenrichedCatalogue(): SeedExercise[] {
   return buildLibraryCatalogue(merged.seed, merged.imported);
 }
 
-/**
- * Build original source lines for every Library id from already-loaded raw JSON.
- */
-export function buildSourceCorpus(
+function appendBlock(
+  extras: Map<string, SourceTextBlock[]>,
+  intoId: string,
+  text: SourceTextBlock,
+): void {
+  if (text.lines.length === 0) {
+    return;
+  }
+  extras.set(intoId, [...(extras.get(intoId) ?? []), text]);
+}
+
+/** Folded duplicate lines keyed by the Library id they merged into. */
+function foldedExtras(
   fedbJson: string,
   wgerRaw: WgerExerciseRecord[],
-): Map<string, SourceCorpusEntry> {
-  const catalogue = unenrichedCatalogue();
-  const byId = new Map(catalogue.map((exercise) => [exercise.id, exercise]));
+): Map<string, SourceTextBlock[]> {
   const extras = new Map<string, SourceTextBlock[]>();
-
-  const add = (intoId: string, text: SourceTextBlock): void => {
-    if (text.lines.length === 0) {
-      return;
-    }
-    extras.set(intoId, [...(extras.get(intoId) ?? []), text]);
-  };
-
-  const fedbRaw = parseFedbJson(fedbJson);
   const prior = [...SEED_EXERCISES, ...HF_CATALOGUE, ...NTC_CATALOGUE];
-  const fedb = buildFedbCatalogue(fedbRaw, prior);
+
+  const fedb = buildFedbCatalogue(parseFedbJson(fedbJson), prior);
   for (const { record, intoId } of fedb.duplicates) {
-    add(intoId, {
+    appendBlock(extras, intoId, {
       source: FEDB_ATTRIBUTION,
       name: record.name,
       lines: cleanLines(record.instructions),
@@ -86,35 +86,45 @@ export function buildSourceCorpus(
 
   const wger = buildWgerCatalogue(wgerRaw, [...prior, ...FEDB_CATALOGUE]);
   for (const { record, intoId } of wger.duplicates) {
-    add(intoId, {
+    appendBlock(extras, intoId, {
       source: wgerAttribution(record),
       name: record.name,
       lines: cleanLines(wgerDescriptionLines(record.description)),
     });
   }
+  return extras;
+}
 
-  const out = new Map<string, SourceCorpusEntry>();
-  for (const exercise of catalogue) {
-    const own = ownText(exercise);
-    const folded = extras.get(exercise.id) ?? [];
-    const texts = [own, ...folded].filter((block) => block.lines.length > 0);
-    if (texts.length === 0) {
-      texts.push(own);
-    }
-    const corpus = own.lines.join(" ");
-    out.set(exercise.id, {
-      id: exercise.id,
-      name: exercise.name,
-      texts,
-      corpus,
-      sourceChars: corpus.length,
-    });
+function entryFor(
+  exercise: SeedExercise,
+  extras: Map<string, SourceTextBlock[]>,
+): SourceCorpusEntry {
+  const own = ownText(exercise);
+  const texts = [own, ...(extras.get(exercise.id) ?? [])].filter((block) => block.lines.length > 0);
+  if (texts.length === 0) {
+    texts.push(own);
   }
+  const corpus = own.lines.join(" ");
+  return {
+    id: exercise.id,
+    name: exercise.name,
+    texts,
+    corpus,
+    sourceChars: corpus.length,
+  };
+}
 
-  for (const id of byId.keys()) {
-    if (!out.has(id)) {
-      throw new Error(`source corpus missing library id ${id}`);
-    }
+/**
+ * Build original source lines for every Library id from already-loaded raw JSON.
+ */
+export function buildSourceCorpus(
+  fedbJson: string,
+  wgerRaw: WgerExerciseRecord[],
+): Map<string, SourceCorpusEntry> {
+  const extras = foldedExtras(fedbJson, wgerRaw);
+  const out = new Map<string, SourceCorpusEntry>();
+  for (const exercise of unenrichedCatalogue()) {
+    out.set(exercise.id, entryFor(exercise, extras));
   }
   return out;
 }
