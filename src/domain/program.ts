@@ -95,6 +95,7 @@ export const EQUIPMENT_IDS = [
   "rings",
   "parallettes",
   "dumbbell",
+  "kettlebell",
   "band",
   "partner",
   "suspension",

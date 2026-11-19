@@ -6,7 +6,7 @@ The Capacitor Android shell and the web preview share one tab bar. Tab ids and l
 
 A **Session** is not a tab. It replaces the shell while a workout runs, then returns to the tab bar.
 
-Screenshots: `docs/help/screenshots/`. First-time walkthrough: [../tutorial/take-your-first-morning-with-aurora.md](../tutorial/take-your-first-morning-with-aurora.md). Local-only health data: [../TERMS.md](../TERMS.md).
+Screenshots: `docs/help/screenshots/`. First-time walkthrough: [../tutorial/take-your-first-morning-with-aurora.md](../tutorial/take-your-first-morning-with-aurora.md). Local-only health data: [../PRIVACY.md](../PRIVACY.md).
 
 ## Tab bar
 

@@ -4,11 +4,13 @@
 [![CI](https://github.com/avnovikov/aurora/actions/workflows/ci.yml/badge.svg)](https://github.com/avnovikov/aurora/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/avnovikov/aurora?include_prereleases&style=flat)](https://github.com/avnovikov/aurora/releases)
 
-**v0.1.1 — from the `mvp` line.** App id `com.aurora.alvorada` (registered in Android Developer Console).
+**v0.1.1 — from the `mvp` release line.** Day-to-day development targets **`dev`**; `mvp` is for releases. App id `com.aurora.alvorada` (registered in Android Developer Console).
 
 **Aurora** is private, local-first calisthenics training for Android. **Rassvet** (Рассвет, “dawn”) is the soul mark shown in the app. The UI and spoken voice are British English (`en-GB`).
 
 You pick a **Target** — a skill goal such as freestanding handstand or muscle-up. Aurora keeps programming the **current step** on that path (not the end skill every session) and **Progress** shows how close you are. Area days (upper body, legs, core, …) sit in the same **plan queue** and still adapt when sleep, joints, or stalls say so.
+
+The Library has **700+ exercises** (strength progressions, holds, mobility, and kettlebell work). Major calisthenics apps advertise roughly **350+** (Madbarz), **700+** (Calisteniapp), and **1,000+** (Thenx) — Aurora sits on the upper side of that range on catalogue size, without a subscription.
 
 Aurora is for people who train calisthenics at home and want each session aimed at a real skill, then adjusted for recovery, equipment, and recent performance. Training apps usually give you a weekday calendar and a static template. Sleep, joints, and pulse change what you should do before you start. Aurora keeps a plan queue instead of a fixed Monday–Sunday grid, and adjusts the **dose** from sleep, optional pain, recent load, missed reps, stalls, and (on Android) a Bluetooth heart-rate strap.
 
@@ -123,7 +125,8 @@ For a compact tab and Session lookup: [Shell-tab reference](docs/reference/auror
 |----------|----------|
 | [First-morning tutorial](docs/tutorial/take-your-first-morning-with-aurora.md) | Guided walkthrough with screenshots |
 | [Shell-tab reference](docs/reference/aurora-shell-tabs.md) | Tabs, Session, first-run screens, plan-queue terms, storage keys |
-| [Terms and privacy](docs/TERMS.md) | Local-only processing, AuroraSecure, disclaimer |
+| [Terms](docs/TERMS.md) | Use conditions, licence, medical disclaimer |
+| [Privacy](docs/PRIVACY.md) | Local-only data; GDPR and CCPA/CPRA checklist |
 | [Development guide](docs/development.md) | Local preview, Android build, tests, branches, snapshots |
 | [Lightsail deployment](docs/deploy/lightsail.md) | Optional HTTPS hosting for a later PWA experiment |
 
@@ -165,7 +168,7 @@ Uninstalling Aurora or clearing its app storage permanently deletes your local d
 
 On Android, sensitive `aurora.poc.*` values go through **AuroraSecure** (Keystore-backed). A local browser preview used only for development may fall back to plaintext `localStorage`.
 
-Full terms: [docs/TERMS.md](docs/TERMS.md). **Not medical advice.** Stop if you feel pain, dizziness, or distress.
+Full policy: [docs/PRIVACY.md](docs/PRIVACY.md). Terms of use: [docs/TERMS.md](docs/TERMS.md). **Not medical advice.** Stop if you feel pain, dizziness, or distress.
 
 ---
 
@@ -179,7 +182,7 @@ For local development, Android development, testing, quality checks, branch poli
 
 ## Catalogue
 
-The Library has **617 exercises** (strength progressions, holds, and mobility) you can browse and filter. Major calisthenics apps advertise roughly **350+** (Madbarz), **700+** (Calisteniapp), and **1,000+** (Thenx) — Aurora sits in the middle on raw catalogue size, without a subscription. Catalogue size is not the product story; Targets, dose, and local-first planning are.
+The Library has **700+ exercises** (strength progressions, holds, mobility, and kettlebell work) you can browse and filter. Major calisthenics apps advertise roughly **350+** (Madbarz), **700+** (Calisteniapp), and **1,000+** (Thenx) — Aurora sits on the upper side of that range on catalogue size, without a subscription. Catalogue size is not the product story; Targets, dose, and local-first planning are.
 
 Exercise catalogue imports follow each source’s licence: wger (CC), MuscleWiki (non-profit notice), free-exercise-db, Hugging Face calisthenics imports, and in-house NTC-style cues. Using the catalogue does not transfer those upstream rights beyond what those licences allow.
 

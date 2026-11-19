@@ -37,6 +37,16 @@ Include a clear description, affected version/commit if known, and reproduction 
 - **Dependency updates:** Dependabot covers npm, GitHub Actions, and Android Gradle.
 - **Release provenance:** `v*` tags generate a CycloneDX SBOM attached to the GitHub Release; the signed APK is built on a trusted machine and uploaded separately.
 
+## npm audit allowlist
+
+CI runs `node scripts/npm-audit-high.mjs` (not raw `npm audit --audit-level=high`). High/critical findings fail the job unless allowlisted.
+
+| Advisory | Package | Decision | Why |
+|----------|---------|----------|-----|
+| [GHSA-fc5q-39xc-vjpf](https://github.com/advisories/GHSA-fc5q-39xc-vjpf) | picomatch | **Ignore** | Advisory withdrawn; no patched release. `npm audit fix --force` would downgrade Vite/Vitest. Revisit if a real patched picomatch ships or npm stops reporting it. |
+
+Allowlist lives in `scripts/npm-audit-high.mjs` (`ALLOWLIST`). Do not add IDs without a short reason in this table.
+
 ## Verify a released APK
 
 Certificate SHA-256 (also in the README):

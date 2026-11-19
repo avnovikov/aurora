@@ -38,17 +38,34 @@ Every move is drawn in **one view first**. A second view is added only when the 
 - Props in two views: `bar` and `box` only. A box is 120 wide from the front; `frontHalf` narrows it (a seat narrower than spread knees, so the shins don't run along its sides). A sloped bench drawn as short bar strokes (`slopedBench` in `specsBatchAD.ts`) shows end-on as the board's outline, and its thin posts as two legs. No `mirror` (turning round) and no `view: "front"` together with `views`.
 - Still out: twists and rotations of the torso (windshield wiper, side plank with rotation, kickthrough). A sideways offset doesn't show rotation.
 
+## Descriptions vs doodles
+
+Curated Library text is owned by the **description fidelity judge**, not by the doodle drawer.
+
+- Do **not** edit `data/curated/descriptions/*.json` while drawing.
+- Draw from the exercise **name**, existing curated text in `src/data/generated/descriptions.ts`, and gear in `src/data/generated/equipment.ts`.
+- If the text contradicts the move you would draw: **DROP/skip** that id (say why) or hand off a **description rewrite** pass first. Do not patch copy mid-batch.
+- Gate: `npm run descriptions:fidelity` (also covered by `tests/data/fidelity.test.ts`). Hard fails must be rewritten from originals before doodles proceed on those ids.
+
 ## Prompt: drawing a batch
 
 > You are adding animated stick-figure doodles for exercises in the Aurora calisthenics app. Work only in the worktree `<path>` (branch `<branch>`). Do not touch other worktrees, never use git stash, do not push.
 >
-> Read `docs/doodles-authoring.md`, `src/doodles/rig.ts`, the top of `src/doodles/specs.ts` and the existing batch files closest to your moves. The move's text is in `src/data/generated/descriptions.ts`, and its gear is in `src/data/generated/equipment.ts`. Draw what the text says. Don't edit the text, not even to suit the rig: if it looks wrong or can't be drawn as written, leave it and say so in your report.
+> Read `docs/doodles-authoring.md`, `src/doodles/rig.ts`, the top of `src/doodles/specs.ts` and the existing batch files closest to your moves. The move's text is in `src/data/generated/descriptions.ts`, and its gear is in `src/data/generated/equipment.ts`. The name and existing curated coaching are the authority for how to draw: draw what the text says. **Do not edit** `data/curated/descriptions`. If text contradicts the move, DROP/skip that id or stop for a description rewrite pass — do not rewrite copy while drawing.
 >
 > Create `src/doodles/specsBatch<X>.ts` exporting `BATCH_<X>_SPECS`, and register it in `DOODLE_SPECS`. Write one spec per id, with `id` set to the exercise id, `slug` in kebab case and `title` set to the name: `<ids>`.
 >
 > Quality bar: a wrong doodle is worse than none. Get the body position and gear right, and show the motion in the right plane, big enough to read. Use near/far depth (see the authoring doc) for limbs that pass in front of or behind each other. Render cards for every id, read every PNG, and iterate. Always draw **one** view (side, or front when the motion is lateral). Don't leave a move out just because it travels in two planes: draw the best single view and say in your report which plane it can't show; the judge decides whether it needs a second view. Leave a move out only if it twists or rotates the torso, or no view shows its main motion at all, and say why.
 >
-> Finish: `npm run doodles` with no errors, `npx tsc --noEmit`, `npm run -s lint` and `npx vitest run`. Commit as `feat(doodles): batch <X> — N new doodles`. Report ids done, ids left out with reasons, text fixes and doubts.
+> Finish: `npm run doodles` with no errors, `npx tsc --noEmit`, `npm run -s lint` and `npx vitest run`. Commit as `feat(doodles): batch <X> — N new doodles`. Report ids done, ids left out with reasons, and doubts. Do not list description edits — you must not make them.
+
+## Prompt: description rewrite (before doodles if fidelity fails)
+
+> You are rewriting curated Library descriptions so they pass the fidelity judge. Work only in the worktree `<path>` (branch `<branch>`). Do not touch doodle specs unless required for compile.
+>
+> Run `npm run -s descriptions:fidelity` and open `reports/description-fidelity.tsv`. For each **hard fail** id, rewrite the entry in `data/curated/descriptions/*.json` from that exercise’s original source lines only (same corpus as `scripts/build-description-bundles.ts` / `loadSourceCorpus`). Preserve house style (`descriptionProblems` in `src/data/describe/validate.ts`). Keep seated/standing/incline as distinct moves. Do **not** invent biomechanics that are not in the sources. Do not use generic fills (“Set up for … braced torso”).
+>
+> Then: `npm run -s descriptions:compile`, `npm run -s descriptions:fidelity` (zero hard fails), and `npx vitest run tests/data/descriptions.test.ts tests/data/fidelity.test.ts`. Commit as `fix(descriptions): rewrite fidelity hard fails`.
 
 ## Prompt: independent review
 

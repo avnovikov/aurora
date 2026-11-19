@@ -4,8 +4,10 @@ import {
   stationEffort,
   type WarmupStep,
 } from "../rules/warmupPlan";
+import { setKettlebellCoachContext } from "../voice/coachContext";
 import { speakExactLine } from "../voice/coachVoice";
 import { holdCueSchedule, type HoldCueEvent } from "../voice/holdCue";
+import { isKettlebellExercise } from "../voice/kettlebellExercise";
 import type { ViewState } from "./sessionTypes";
 
 export { sideSwitchAt };
@@ -63,8 +65,16 @@ export function startStationHold(
   const switchAt = sideSwitchAt(step);
   let switchLeft = 0;
   // A per-side station already speaks "Change side" at its halfway point.
+  const kettlebellContext = isKettlebellExercise(step);
+  setKettlebellCoachContext(kettlebellContext);
   const schedule =
-    switchAt === null ? holdCueSchedule(step.holdSeconds, Math.random, stationEffort(step)) : [];
+    switchAt === null
+      ? holdCueSchedule(step.holdSeconds, {
+          random: Math.random,
+          effort: stationEffort(step),
+          kettlebellContext,
+        })
+      : [];
   const spoken = new Set<number>();
   syncHoldProgress(state, left, switchLeft);
   paintHold(root, left, schedule);

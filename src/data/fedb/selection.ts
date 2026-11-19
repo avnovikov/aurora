@@ -5,6 +5,9 @@ import type { FedbExerciseRecord } from "./types";
 /** Equipment values that mean "no gear needed". */
 const BODYWEIGHT_EQUIPMENT = new Set<string | null>(["body only", null]);
 
+/** Pure kettlebell in free-exercise-db (source spelling is plural). */
+export const KETTLEBELL_EQUIPMENT = "kettlebells";
+
 /**
  * Tagged `other` in free-exercise-db but trainable with a bar, rings,
  * parallel bars, a chair, or nothing at all.
@@ -95,7 +98,7 @@ export function isFedbCandidate(record: FedbExerciseRecord): boolean {
   if (FEDB_DENY.includes(record.name)) {
     return false;
   }
-  if (BODYWEIGHT_EQUIPMENT.has(record.equipment)) {
+  if (BODYWEIGHT_EQUIPMENT.has(record.equipment) || record.equipment === KETTLEBELL_EQUIPMENT) {
     return true;
   }
   return record.equipment === "other" && FEDB_ALLOW_OTHER.includes(record.name);

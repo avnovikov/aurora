@@ -2,7 +2,9 @@ import { clearSession, saveSession } from "../session/storage";
 import { formatClock, sessionClockSnapshot } from "../session/sessionClock";
 import { startWakeLock } from "../session/wakeLock";
 import { theoreticalRemainingSeconds } from "./sessionClockProgress";
+import { setKettlebellCoachContext } from "../voice/coachContext";
 import { speakCoachLine } from "../voice/coachVoice";
+import { isKettlebellExercise } from "../voice/kettlebellExercise";
 import {
   disconnectHeartRate,
   PULSE_STRAP_DISCONNECTED,
@@ -86,6 +88,13 @@ function exerciseForWorkItem(item: PlannedWorkItem | null) {
     return undefined;
   }
   return EXERCISE_GRAPH[item.exerciseId];
+}
+
+function syncKettlebellCoachContext(item: PlannedWorkItem | null): void {
+  const exercise = exerciseForWorkItem(item);
+  setKettlebellCoachContext(
+    exercise !== undefined && isKettlebellExercise(exercise),
+  );
 }
 
 function isHoldWorkItem(item: PlannedWorkItem | null): boolean {
@@ -251,11 +260,16 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     void speakCoachLine("warmup_done");
     paint();
     if (getReady > 0) {
+      // Transition rest is not "after a KB set" — clear until real work starts.
+      setKettlebellCoachContext(false);
       startRest(() => {
         state.phase = "work";
+        syncKettlebellCoachContext(currentWork(options.planned, state));
         paint();
       }, true);
+      return;
     }
+    syncKettlebellCoachContext(currentWork(options.planned, state));
   };
 
   const resolveLightenConfirm = (acceptedLight: boolean): void => {
@@ -424,6 +438,9 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   };
 
   const finishExercise = (restBeforeNext?: number): void => {
+    const finishedExercise = exerciseForWorkItem(currentWork(options.planned, state));
+    const restKeepsComrade =
+      finishedExercise !== undefined && isKettlebellExercise(finishedExercise);
     // Keep Never-again Undo across advance (plan/exclusion restore); drop live-item snapshot.
     if (workAdjust.undo) {
       workAdjust = {
@@ -449,10 +466,12 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     if (restBeforeNext !== undefined && restBeforeNext > 0) {
       state.phase = "rest";
       state.restLeft = restBeforeNext;
+      setKettlebellCoachContext(restKeepsComrade);
       paint();
       startRest(
         () => {
           state.phase = "work";
+          syncKettlebellCoachContext(currentWork(options.planned, state));
           paint();
         },
         true,
@@ -461,13 +480,16 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       return;
     }
     state.phase = "work";
+    syncKettlebellCoachContext(currentWork(options.planned, state));
     paint();
   };
 
   const handlers: SessionControlHandlers = {
     onPaint: paint,
-    onStartRest: (withVoice, onDone) =>
-      startRest(onDone, withVoice, isHoldWorkItem(currentWork(options.planned, state))),
+    onStartRest: (withVoice, onDone) => {
+      syncKettlebellCoachContext(currentWork(options.planned, state));
+      startRest(onDone, withVoice, isHoldWorkItem(currentWork(options.planned, state)));
+    },
     onFinishExercise: finishExercise,
     onSkipRest: skipRest,
     onFinishStation: () => warmupHandle?.finish(),
