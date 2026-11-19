@@ -31,7 +31,8 @@ export const EQUIPMENT_LABEL: Record<EquipmentId, string> = {
   bar: "Pull-up bar",
   rings: "Rings",
   parallettes: "Parallettes",
-  dumbbell: "Dumbbell or kettlebell",
+  dumbbell: "Dumbbell",
+  kettlebell: "Kettlebell",
   band: "Resistance band",
   partner: "Partner",
   suspension: "Suspension straps (TRX)",
@@ -204,7 +205,7 @@ export function settingsPageHtml(model: SettingsPageModel): string {
       <h1>Your setup</h1>
       ${tabBarHtml(model.tab)}
       ${levelsToConfirmHtml(model.levelsToConfirm)}
-      <p class="settings-status" role="status" data-settings-status></p>
+      <p class="settings-status" role="status" data-settings-status tabindex="-1"></p>
       <section class="settings-panel" id="settings-panel" role="tabpanel" aria-labelledby="settings-tab-${model.tab}">
         ${panelHtml(model)}
       </section>

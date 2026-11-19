@@ -4,6 +4,7 @@ import {
   GAP_PREFIX,
   moveName,
   phaseLine,
+  restNextLine,
   stage,
   startSession,
   swipe,
@@ -66,7 +67,8 @@ test.describe("work swipe", () => {
   test("swiping a set logs it and starts the rest; swiping the rest starts the next set", async ({ page }) => {
     await swipe(page, workSwipeSurface(page));
     await expect(stage(page, "rest")).toBeVisible();
-    await expect(phaseLine(page)).toHaveText(/^Rest · next .* Set 2 of \d+/);
+    await expect(phaseLine(page)).toHaveText(/^Rest$/);
+    await expect(restNextLine(page)).toHaveText(/^next .* Set 2 of \d+/i);
     await swipe(page, stage(page, "rest"));
     await expect(phaseLine(page)).toHaveText(/^Set 2 of \d+/);
   });

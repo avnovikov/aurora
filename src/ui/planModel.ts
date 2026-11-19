@@ -7,6 +7,7 @@ import { easierChoice, swapChoices } from "../plan/dayEdits";
 import { previewQueue, type AthleteState, type PreviewItem } from "../plan/dayPreview";
 import { hasProgressionPath } from "../plan/pathPlacement";
 import { PLAN_LEVELS, loadPlanLevel } from "../plan/planLevel";
+import { loadPlanLevelRaiseNotice } from "../plan/planLevelRaise";
 import { listAllTemplates, resolveTemplate } from "../plan/templates";
 import { warmupCooldownLabel } from "../rules/sessionDuration";
 import { templateDurationLabel, templateTargetsLabel } from "./formatTemplate";
@@ -103,5 +104,6 @@ export function buildPlanModel(queue: PlanQueue, state: AthleteState, ui: PlanUi
     addOpen: ui.addOpen,
     level: { options: PLAN_LEVELS, value: loadPlanLevel(), open: ui.levelOpen },
     status: ui.status,
+    raiseNotice: loadPlanLevelRaiseNotice()?.message,
   };
 }

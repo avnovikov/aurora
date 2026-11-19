@@ -1,6 +1,12 @@
-import { nextSkillTier } from "../domain/skillTier";
+import { nextSkillTier, SKILL_TIER_LABELS } from "../domain/skillTier";
+import type {
+  Exercise,
+  ExerciseMemory,
+  ExerciseStandards,
+  SkillTier,
+} from "../domain/types";
 import { displayExerciseName } from "../library/displayName";
-import type { Exercise, ExerciseMemory } from "../domain/types";
+import type { PlanLevel } from "../plan/planLevel";
 import { hasTrainingSignal } from "./chainMap";
 import { withinTierProgress } from "./withinTierProgress";
 
@@ -8,11 +14,12 @@ export interface WeakLinkCard {
   exerciseId: string;
   exerciseName: string;
   withinPercent: number;
-  /** Average within-% across all trained standardised moves. */
-  cohortAveragePercent: number;
+  /** Cohort within-% (auto) or 100 when scoring against a declared plan bar. */
+  baselinePercent: number;
   deltaPercent: number;
   bestReps: number;
-  nextTierBar: number | null;
+  /** Next-tier bar (auto) or declared plan-level bar. */
+  targetBar: number | null;
   reason: string;
 }
 
@@ -25,71 +32,142 @@ interface ScoredMove {
   exerciseName: string;
   withinPercent: number;
   bestReps: number;
-  nextTierBar: number | null;
+  targetBar: number | null;
+  barLabel: string | null;
 }
 
-const MAX_CARDS = 5;
+const MAX_CARDS = 3;
+const DECLARED_LEVEL_BASELINE = 100;
+
+type TrainedMoveScorer = (
+  id: string,
+  exercise: Exercise,
+  standards: ExerciseStandards,
+  bestReps: number,
+) => ScoredMove | null;
 
 /**
- * Rank trained moves by how far below the athlete's typical within-tier fill.
+ * Rank trained moves that lag: vs declared plan-level bars, or (on auto) vs
+ * the athlete's typical within-tier fill.
  */
 export function buildWeakLinkBoard(input: {
   graph: Record<string, Exercise>;
   memories: Record<string, ExerciseMemory>;
+  planLevel?: PlanLevel;
 }): WeakLinkBoardModel {
-  const scored = scoreTrainedMoves(input.graph, input.memories);
+  const planLevel = input.planLevel ?? "auto";
+  const isAuto = planLevel === "auto";
+  const scored = isAuto
+    ? scoreAgainstCohort(input.graph, input.memories)
+    : scoreAgainstPlanLevel(input.graph, input.memories, planLevel);
+
   if (scored.length === 0) {
     return { cards: [] };
   }
 
-  const cohortAveragePercent = Math.round(averageWithinPercent(scored));
+  const baselinePercent = isAuto
+    ? Math.round(averageWithinPercent(scored))
+    : DECLARED_LEVEL_BASELINE;
+
   const cards = scored
-    .map((row) => toWeakLinkCard(row, cohortAveragePercent))
+    .map((row) => toWeakLinkCard(row, baselinePercent, isAuto))
     .filter((card) => card.deltaPercent < 0)
-    .sort((a, b) => a.deltaPercent - b.deltaPercent)
+    .sort((a, b) => a.deltaPercent - b.deltaPercent || a.bestReps - b.bestReps)
     .slice(0, MAX_CARDS);
 
   return { cards };
 }
 
-function scoreTrainedMoves(
+function mapTrainedMoves(
   graph: Record<string, Exercise>,
   memories: Record<string, ExerciseMemory>,
+  score: TrainedMoveScorer,
 ): ScoredMove[] {
   const scored: ScoredMove[] = [];
-
   for (const [id, memory] of Object.entries(memories)) {
     if (!hasTrainingSignal(memory) || memory.bestReps === undefined) {
       continue;
     }
     const exercise = graph[id];
-    if (!exercise?.standards) {
+    const standards = exercise?.standards;
+    if (!exercise || !standards) {
       continue;
     }
-    const progress = withinTierProgress(memory.bestReps, exercise.standards);
+    const row = score(id, exercise, standards, memory.bestReps);
+    if (row !== null) {
+      scored.push(row);
+    }
+  }
+  return scored;
+}
+
+function scoreAgainstCohort(
+  graph: Record<string, Exercise>,
+  memories: Record<string, ExerciseMemory>,
+): ScoredMove[] {
+  return mapTrainedMoves(graph, memories, (id, exercise, standards, bestReps) => {
+    const progress = withinTierProgress(bestReps, standards);
     const next = nextSkillTier(progress.tier);
-    scored.push({
+    return {
       exerciseId: id,
       exerciseName: displayExerciseName(exercise.name),
       withinPercent: progress.withinPercent,
-      bestReps: memory.bestReps,
-      nextTierBar: next ? exercise.standards[next] : null,
-    });
-  }
+      bestReps,
+      targetBar: next ? standards[next] : null,
+      barLabel: next ? "next bar" : null,
+    };
+  });
+}
 
-  return scored;
+function scoreAgainstPlanLevel(
+  graph: Record<string, Exercise>,
+  memories: Record<string, ExerciseMemory>,
+  planLevel: SkillTier,
+): ScoredMove[] {
+  const levelLabel = SKILL_TIER_LABELS[planLevel];
+  return mapTrainedMoves(graph, memories, (id, exercise, standards, bestReps) => {
+    const bar = standards[planLevel];
+    if (!Number.isFinite(bar) || bar <= 0) {
+      return null;
+    }
+    return {
+      exerciseId: id,
+      exerciseName: displayExerciseName(exercise.name),
+      withinPercent: percentOfBar(bestReps, bar),
+      bestReps,
+      targetBar: bar,
+      barLabel: levelLabel,
+    };
+  });
+}
+
+/** Share of the declared/target bar, capped at 100%. */
+function percentOfBar(bestReps: number, bar: number): number {
+  assertPositiveBar(bar);
+  return Math.min(DECLARED_LEVEL_BASELINE, Math.round((bestReps / bar) * 100));
+}
+
+function assertPositiveBar(bar: number): void {
+  if (!Number.isFinite(bar) || bar <= 0) {
+    throw new Error(`target bar must be a positive number; got ${bar}`);
+  }
 }
 
 function toWeakLinkCard(
   row: ScoredMove,
-  cohortAveragePercent: number,
+  baselinePercent: number,
+  isAuto: boolean,
 ): WeakLinkCard {
-  const deltaPercent = row.withinPercent - cohortAveragePercent;
+  const deltaPercent = row.withinPercent - baselinePercent;
   return {
-    ...row,
-    cohortAveragePercent,
+    exerciseId: row.exerciseId,
+    exerciseName: row.exerciseName,
+    withinPercent: row.withinPercent,
+    baselinePercent,
     deltaPercent,
-    reason: reasonFor(deltaPercent, row.bestReps, row.nextTierBar),
+    bestReps: row.bestReps,
+    targetBar: row.targetBar,
+    reason: reasonFor(deltaPercent, row, isAuto),
   };
 }
 
@@ -106,12 +184,15 @@ function averageWithinPercent(rows: readonly ScoredMove[]): number {
 
 function reasonFor(
   deltaPercent: number,
-  bestReps: number,
-  nextTierBar: number | null,
+  row: ScoredMove,
+  isAuto: boolean,
 ): string {
-  const delta = `${deltaPercent}% vs your level average`;
-  if (nextTierBar === null) {
+  const delta = isAuto
+    ? `${deltaPercent}% vs your level average`
+    : `${deltaPercent}% vs ${row.barLabel ?? "plan level"}`;
+
+  if (row.targetBar === null || row.barLabel === null) {
     return delta;
   }
-  return `Best ${bestReps} · next bar ${nextTierBar} · ${delta}`;
+  return `Best ${row.bestReps} · ${row.barLabel} ${row.targetBar} · ${delta}`;
 }

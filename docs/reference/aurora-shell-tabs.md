@@ -6,7 +6,7 @@ The Capacitor Android shell and the web preview share one tab bar. Tab ids and l
 
 A **Session** is not a tab. It replaces the shell while a workout runs, then returns to the tab bar.
 
-Screenshots: `docs/help/screenshots/`. First-time walkthrough: [../tutorial/take-your-first-morning-with-aurora.md](../tutorial/take-your-first-morning-with-aurora.md). Local-only health data: [../TERMS.md](../TERMS.md).
+Screenshots: `docs/help/screenshots/`. First-time walkthrough: [../tutorial/take-your-first-morning-with-aurora.md](../tutorial/take-your-first-morning-with-aurora.md). Local-only health data: [../PRIVACY.md](../PRIVACY.md).
 
 ## Tab bar
 
@@ -14,10 +14,10 @@ Screenshots: `docs/help/screenshots/`. First-time walkthrough: [../tutorial/take
 | :---- | :---- | :---- |
 | Today | Next plan-queue day; ≈ minutes; pulse status and Connect; sleep check-in (required before Start); optional pain; Start; optional “Train something else today” | [04-today.png](../help/screenshots/04-today.png) |
 | Library | Exercise catalogue; search; filters Show / Area & muscle / Level; detail (cues, standards, personal bests, plan actions when available) | [02-library.png](../help/screenshots/02-library.png) |
-| Progress | Level profile by movement pattern (novice→elite, within-tier %); weak-links; current readiness (rows open History for that thread) | [06-progress.png](../help/screenshots/06-progress.png) |
-| History | Logged sessions and sets (exercise · set · reps or hold · when); legacy rows may be session summaries only | [07-history.png](../help/screenshots/07-history.png) |
+| Progress | Level profile by movement pattern (novice→elite, within-tier %); weak-links; current readiness toward Targets (rows open History for that thread) | [06-progress.png](../help/screenshots/06-progress.png) |
+| History | Session blocks (plan · when · assessment; exercise reps rolled up + optional avg BPM); legacy rows stay session summaries | [07-history.png](../help/screenshots/07-history.png) |
 | Body | Muscle load front/back map and ranked list; periods Week / Month / Quarter / Half year / Year; primaries full, secondaries half, stabilisers quarter | [08-body.png](../help/screenshots/08-body.png) |
-| Plan | Ordered queue of upcoming days (not a weekday calendar); Today is the first card; per-exercise Swap / Easier; remake area or skill; reorder; add days; plan level | [03-plan.png](../help/screenshots/03-plan.png) |
+| Plan | Ordered queue of upcoming days (not a weekday calendar); Today is the first card; area days and skill paths with Targets; per-exercise Swap / Easier; remake area or skill; reorder; add days; plan level | [03-plan.png](../help/screenshots/03-plan.png) |
 | Settings | Sub-tabs You / Gear / Training / App: bodyweight, resting and max HR, injuries, equipment, training defaults, palette, voice | [01-settings.png](../help/screenshots/01-settings.png) |
 
 ## Session (not a tab)
@@ -38,8 +38,9 @@ Screenshots: `docs/help/screenshots/`. First-time walkthrough: [../tutorial/take
 | Term | Meaning |
 | :---- | :---- |
 | Plan queue | Ordered list of day ids; Today runs the first item; completing a session advances the queue |
-| Dose | Prescribed sets and reps or hold for a station; may be lightened by sleep, pain, load, or pulse at start |
-| Area day | A queue card built for Upper body, Lower body, Core, Full body, Mobility, Joint care, or a Skill target |
+| Target | Skill end-goal on a path (e.g. freestanding handstand, muscle-up); Plan days train the current step; Progress shows distance toward it |
+| Dose | Prescribed sets and reps or hold for a station; may be lightened by sleep, pain, load, or pulse at start; does not replace the Target |
+| Area day | A queue card built for Upper body, Lower body, Core, Full body, Mobility, Joint care, or a skill path aimed at a Target |
 
 ## On-device storage
 

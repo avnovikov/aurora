@@ -20,6 +20,9 @@ dist-ssr
 test-results/
 playwright-report/
 
+# Local fidelity / audit reports (regenerate with npm run descriptions:fidelity)
+reports/
+
 # Capacitor / Android local
 android/.gradle/
 android/app/build/

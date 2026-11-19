@@ -2,7 +2,9 @@ import { clearSession, saveSession } from "../session/storage";
 import { formatClock, sessionClockSnapshot } from "../session/sessionClock";
 import { startWakeLock } from "../session/wakeLock";
 import { theoreticalRemainingSeconds } from "./sessionClockProgress";
+import { setKettlebellCoachContext } from "../voice/coachContext";
 import { speakCoachLine } from "../voice/coachVoice";
+import { isKettlebellExercise } from "../voice/kettlebellExercise";
 import {
   disconnectHeartRate,
   PULSE_STRAP_DISCONNECTED,
@@ -18,7 +20,7 @@ import { shellHtml, type WorkAdjustUi } from "./sessionChalk";
 import { wireSessionControls, type SessionControlHandlers } from "./sessionControls";
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import { resolveExerciseTiming } from "../domain/timing";
-import type { PlannedWorkItem } from "../rules/planSession";
+import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
 import { displayExerciseName } from "../library/displayName";
 import { startRestTimer, type RestTimerHandle } from "./sessionRest";
 import {
@@ -37,7 +39,7 @@ import {
 import { loadMemories } from "../session/history";
 import { pulseConnectedAt, pulseDisconnected } from "./pulseState";
 import { attachSessionPulse, paintPulseReading, sessionHeartRateZone } from "./sessionPulse";
-import type { SessionViewOptions } from "./sessionTypes";
+import type { SessionViewOptions, ViewState } from "./sessionTypes";
 import { seedStationHold, startStationHold, type WarmupTimerHandle } from "./sessionWarmup";
 import { prefetchDoodles } from "../doodles/doodleMarkup";
 import { loadAthleteState } from "./athleteState";
@@ -54,6 +56,13 @@ import {
 } from "./sessionWorkAdjust";
 import type { BpmSample } from "../pulse/warmupWoundUp";
 import {
+  averageBpmInWindow,
+  buildHistoryPulse,
+  createPulseSessionBuffer,
+  recordPulseSample,
+  type PulseSessionBuffer,
+} from "../pulse/pulseSessionBuffer";
+import {
   warmupLightenConfirmHtml,
   wireWarmupLightenConfirm,
 } from "./warmupLightenConfirm";
@@ -64,6 +73,22 @@ import {
 } from "./sessionWarmupLighten";
 
 export type { SessionViewOptions } from "./sessionTypes";
+
+function appendLivePulseSample(
+  pulseBuffer: PulseSessionBuffer,
+  planned: PlannedSession,
+  state: ViewState,
+  bpm: number,
+  atMs: number,
+): void {
+  const workItem = state.phase === "work" ? currentWork(planned, state) : null;
+  recordPulseSample(pulseBuffer, {
+    t: atMs,
+    bpm,
+    phase: state.phase,
+    exerciseId: workItem?.exerciseId ?? null,
+  });
+}
 
 function prefetchSessionDoodles(planned: SessionViewOptions["planned"]): void {
   const warmupAndCooldown = [...planned.warmup, ...(planned.cooldown ?? [])];
@@ -88,6 +113,13 @@ function exerciseForWorkItem(item: PlannedWorkItem | null) {
   return EXERCISE_GRAPH[item.exerciseId];
 }
 
+function syncKettlebellCoachContext(item: PlannedWorkItem | null): void {
+  const exercise = exerciseForWorkItem(item);
+  setKettlebellCoachContext(
+    exercise !== undefined && isKettlebellExercise(exercise),
+  );
+}
+
 function isHoldWorkItem(item: PlannedWorkItem | null): boolean {
   const exercise = exerciseForWorkItem(item);
   return exercise !== undefined && resolveExerciseTiming(exercise).effort === "hold";
@@ -107,6 +139,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   let clockTimer: number | null = null;
   let workAdjust: WorkAdjustChrome = { swapOpen: false };
   const warmupBpmSamples: BpmSample[] = [];
+  const pulseBuffer = createPulseSessionBuffer();
   let pendingLighten: PendingWarmupLighten | null = null;
   const wakeLock = startWakeLock();
   const slowSetCue = createSlowSetCueController({
@@ -251,11 +284,16 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     void speakCoachLine("warmup_done");
     paint();
     if (getReady > 0) {
+      // Transition rest is not "after a KB set" — clear until real work starts.
+      setKettlebellCoachContext(false);
       startRest(() => {
         state.phase = "work";
+        syncKettlebellCoachContext(currentWork(options.planned, state));
         paint();
       }, true);
+      return;
     }
+    syncKettlebellCoachContext(currentWork(options.planned, state));
   };
 
   const resolveLightenConfirm = (acceptedLight: boolean): void => {
@@ -343,7 +381,12 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     // Defer so the Log-set / swipe pointer event cannot click through
     // into the evaluation buttons that replace this view.
     window.setTimeout(() => {
-      options.onDone(state.log, options.planned, state.startedAtMs);
+      options.onDone(
+        state.log,
+        options.planned,
+        state.startedAtMs,
+        buildHistoryPulse(pulseBuffer),
+      );
     }, 0);
   };
 
@@ -424,6 +467,9 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   };
 
   const finishExercise = (restBeforeNext?: number): void => {
+    const finishedExercise = exerciseForWorkItem(currentWork(options.planned, state));
+    const restKeepsComrade =
+      finishedExercise !== undefined && isKettlebellExercise(finishedExercise);
     // Keep Never-again Undo across advance (plan/exclusion restore); drop live-item snapshot.
     if (workAdjust.undo) {
       workAdjust = {
@@ -449,10 +495,12 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     if (restBeforeNext !== undefined && restBeforeNext > 0) {
       state.phase = "rest";
       state.restLeft = restBeforeNext;
+      setKettlebellCoachContext(restKeepsComrade);
       paint();
       startRest(
         () => {
           state.phase = "work";
+          syncKettlebellCoachContext(currentWork(options.planned, state));
           paint();
         },
         true,
@@ -461,13 +509,16 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       return;
     }
     state.phase = "work";
+    syncKettlebellCoachContext(currentWork(options.planned, state));
     paint();
   };
 
   const handlers: SessionControlHandlers = {
     onPaint: paint,
-    onStartRest: (withVoice, onDone) =>
-      startRest(onDone, withVoice, isHoldWorkItem(currentWork(options.planned, state))),
+    onStartRest: (withVoice, onDone) => {
+      syncKettlebellCoachContext(currentWork(options.planned, state));
+      startRest(onDone, withVoice, isHoldWorkItem(currentWork(options.planned, state)));
+    },
     onFinishExercise: finishExercise,
     onSkipRest: skipRest,
     onFinishStation: () => warmupHandle?.finish(),
@@ -517,10 +568,12 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     },
     onPulseLostSim: tickPulseWatch,
     onPulseBpm: (bpm) => {
+      const atMs = Date.now();
       state.bpm = bpm;
-      state.pulse = pulseConnectedAt(state.pulse, Date.now());
+      state.pulse = pulseConnectedAt(state.pulse, atMs);
+      appendLivePulseSample(pulseBuffer, options.planned, state, bpm, atMs);
       if (state.phase === "warmup" && !pendingLighten) {
-        warmupBpmSamples.push({ bpm, atMs: Date.now() });
+        warmupBpmSamples.push({ bpm, atMs });
       }
       // In place: a full repaint once a second would cut off a swipe mid-drag.
       paintPulseReading(root, state);
@@ -531,6 +584,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       state.pulseStatus = PULSE_STRAP_DISCONNECTED;
       paint();
     },
+    pulseAverageBpmForSet: (startMs, endMs) => averageBpmInWindow(pulseBuffer, startMs, endMs),
   };
 
   const wireControls = (): void => {

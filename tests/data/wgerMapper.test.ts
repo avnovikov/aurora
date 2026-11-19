@@ -12,6 +12,7 @@ import {
   wgerDescriptionLines,
 } from "../../src/data/wger/mapWgerExercise";
 import {
+  KETTLEBELL_EQUIPMENT,
   WGER_ALLOW_UNTAGGED,
   WGER_DENY,
   WGER_SAME_AS_EXISTING,
@@ -83,8 +84,11 @@ describe("wger mapping", () => {
     ]);
   });
 
-  it("rejects gym equipment, machines and empty descriptions", () => {
+  it("rejects machines, empty descriptions, and non-pure kettlebell mixes", () => {
+    expect(isWgerCandidate(record({ equipment: [KETTLEBELL_EQUIPMENT] }))).toBe(true);
+    expect(isWgerCandidate(record({ equipment: [KETTLEBELL_EQUIPMENT, "Bench"] }))).toBe(true);
     expect(isWgerCandidate(record({ equipment: ["Dumbbell"] }))).toBe(false);
+    expect(isWgerCandidate(record({ equipment: [KETTLEBELL_EQUIPMENT, "Dumbbell"] }))).toBe(false);
     expect(isWgerCandidate(record({ name: "Foam Roller quadriceps" }))).toBe(false);
     expect(isWgerCandidate(record({ description: "<p></p>" }))).toBe(false);
     expect(isWgerCandidate(record({ equipment: [] }))).toBe(false);

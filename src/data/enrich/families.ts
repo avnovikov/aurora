@@ -147,16 +147,23 @@ export const FAMILIES: readonly Family[] = [
     ],
     excludes: ["front lever", "leg raise", "knee raise", "toes to bar", "german hang", "chin tuck", "chin to chest"],
     rungs: [
-      r(6, "elite", ["one arm pull", "one arm chin", "ring muscle"]),
+      r(6, "elite", ["one arm pull", "one arm chin", "ring muscle", "one arm australian", "one arm inverted"]),
+      r(5, "elite", ["muscle up"]),
+      // Specific Australian / inverted-row keywords before bare "archer" (bar archer pull-up).
+      r(3, "advanced", ["archer australian", "archer inverted"]),
+      r(2, "intermediate", [
+        "jumping pull", "negative", "eccentric", "isometric hold", "top position",
+        "feet elevated australian", "elevated australian", "australian pull-up hold",
+        "australian pull up hold", "wide grip inverted", "australian chin",
+      ]),
+      r(1, "beginner", [
+        "scapular pull", "scapula pull", "arch hang", "recruitment",
+        "bent-knee australian", "bent knee australian",
+      ]),
       r(4, "elite", [
         "kipping muscle", "archer", "typewriter", "l sit pull", "side to side", "explosive pull",
         "towel pull", "headbanger", "one handed hang", "sternum",
       ]),
-      r(5, "elite", ["muscle up"]),
-      r(2, "intermediate", [
-        "jumping pull", "negative", "eccentric", "isometric hold", "top position",
-      ]),
-      r(1, "beginner", ["scapular pull", "scapula pull", "arch hang", "recruitment"]),
       r(0, "beginner", ["dead hang", "active hang", "deadhang", " hang "]),
     ],
     fallback: { rank: 3, tier: "advanced" },
@@ -165,9 +172,14 @@ export const FAMILIES: readonly Family[] = [
     id: "row",
     includes: [" row", "australian", "horizontal traction", "face pull"],
     rungs: [
-      r(3, "advanced", ["one arm inverted", "one arm row"]),
-      r(2, "intermediate", ["wide grip inverted", "feet elevated"]),
-      r(0, "beginner", ["trx", "rings", "ring row", "incline row", "suspended row", "mid row", "face pull", "traction"]),
+      r(4, "advanced", ["one arm inverted", "one arm row", "one arm australian"]),
+      r(3, "advanced", ["archer"]),
+      r(2, "intermediate", ["wide grip inverted", "feet elevated", "elevated australian", "pull-up hold", "pull up hold"]),
+      r(1, "intermediate", ["australian chin", "chin-up", "chin up"]),
+      r(0, "beginner", [
+        "bent-knee", "bent knee", "trx", "rings", "ring row", "incline row", "suspended row",
+        "mid row", "face pull", "traction",
+      ]),
     ],
     fallback: { rank: 1, tier: "intermediate" },
     harderTo: { family: "pull", rank: 3 },

@@ -1,6 +1,6 @@
 import type { HeartRateZone } from "../pulse/hrZones";
 import { speakExactLine } from "../voice/coachVoice";
-import { REST_EXTEND, REST_GO_ON, type CoachLine } from "../voice/lines";
+import { pickLine, type CoachLine } from "../voice/lines";
 import {
   cueSchedule,
   isOnScreenRestCue,
@@ -29,15 +29,15 @@ export function restCueText(
 }
 
 function speakRestCue(
-  left: number,
+  secondsLeft: number,
   schedule: readonly RestCueEvent[],
   spoken: Set<number>,
 ): void {
-  const due = cueAt(left, schedule);
-  if (!due || spoken.has(left)) {
+  const due = cueAt(secondsLeft, schedule);
+  if (!due || spoken.has(secondsLeft)) {
     return;
   }
-  spoken.add(left);
+  spoken.add(secondsLeft);
   void speakExactLine({
     id: due.lineId,
     assetKey: due.assetKey,
@@ -113,6 +113,13 @@ export function startRestTimer(
     void speakExactLine(line);
   };
 
+  const speakDueCue = (secondsLeft: number): void => {
+    if (!withVoice) {
+      return;
+    }
+    speakRestCue(secondsLeft, tickState.schedule, tickState.spokenForRest);
+  };
+
   const finish = (): void => {
     if (finished) {
       return;
@@ -123,14 +130,21 @@ export function startRestTimer(
     onDoneRest();
   };
 
+  const speakZeroCueThenFinish = (): void => {
+    paint();
+    speakDueCue(0);
+    finish();
+  };
+
   const extendRest = (): void => {
     // One go-on ask for the whole rest, including later extensions.
     state.restLeft = REST_ADD_SECONDS;
     tickState.schedule = restSchedule(state.restLeft, withVoice, timedNext);
     tickState.spokenForRest.clear();
-    tickState.heldCue = REST_EXTEND;
+    const extendLine = pickLine("rest_extend");
+    tickState.heldCue = extendLine;
     paint();
-    speakLine(REST_EXTEND);
+    speakLine(extendLine);
   };
 
   const onTick = (): RestTickOutcome => {
@@ -141,7 +155,7 @@ export function startRestTimer(
         extendRest();
         return "extended";
       }
-      finish();
+      speakZeroCueThenFinish();
       return "finished";
     }
     if (
@@ -152,13 +166,12 @@ export function startRestTimer(
       })
     ) {
       tickState.alreadyAsked = true;
-      tickState.heldCue = REST_GO_ON;
-      speakLine(REST_GO_ON);
+      const goOnLine = pickLine("rest_go_on");
+      tickState.heldCue = goOnLine;
+      speakLine(goOnLine);
     }
     paint();
-    if (withVoice) {
-      speakRestCue(state.restLeft, tickState.schedule, tickState.spokenForRest);
-    }
+    speakDueCue(state.restLeft);
     return "continue";
   };
 

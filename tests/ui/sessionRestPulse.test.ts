@@ -25,6 +25,13 @@ function countSpoken(text: string): number {
   return spokenTexts().filter((spoken) => spoken === text).length;
 }
 
+function countSpokenById(lineId: string): number {
+  return speakExactLine.mock.calls.filter((call) => {
+    const line = call[0] as { id?: string };
+    return line.id === lineId;
+  }).length;
+}
+
 function restRoot(): {
   root: HTMLElement;
   left: { textContent: string };
@@ -199,6 +206,100 @@ describe("rest pulse", () => {
     expect(countSpoken(REST_GO_ON.text)).toBe(0);
 
     handle.clear();
+  });
+
+  describe("go cue at zero", () => {
+    function startRest(options: {
+      restLeft: number;
+      withVoice: boolean;
+      timedNext?: boolean;
+      readZone?: () => HeartRateZone | null;
+    }) {
+      const { root } = restRoot();
+      const onDone = vi.fn();
+      const handle = startRestTimer(
+        root,
+        restState(options.restLeft),
+        options.withVoice,
+        onDone,
+        {
+          timedNext: options.timedNext,
+          readZone: options.readZone ?? (() => null),
+        },
+      );
+      return { handle, onDone };
+    }
+
+    it("speaks go when rest reaches zero", () => {
+      const { handle, onDone } = startRest({
+        restLeft: 1,
+        withVoice: true,
+      });
+
+      advanceSeconds(1);
+      expect(onDone).toHaveBeenCalledTimes(1);
+      expect(countSpokenById("go")).toBe(1);
+
+      handle.clear();
+    });
+
+    it("speaks go when a short timed-next rest reaches zero", () => {
+      const { handle, onDone } = startRest({
+        restLeft: 2,
+        withVoice: true,
+        timedNext: true,
+      });
+
+      advanceSeconds(2);
+      expect(onDone).toHaveBeenCalledTimes(1);
+      expect(countSpokenById("go")).toBe(1);
+
+      handle.clear();
+    });
+
+    it("stays silent at zero when voice is off", () => {
+      const { handle, onDone } = startRest({
+        restLeft: 2,
+        withVoice: false,
+        timedNext: true,
+      });
+
+      advanceSeconds(2);
+      expect(onDone).toHaveBeenCalledTimes(1);
+      expect(speakExactLine).not.toHaveBeenCalled();
+
+      handle.clear();
+    });
+
+    it("does not speak go when the athlete finishes rest early", () => {
+      const { handle, onDone } = startRest({
+        restLeft: 10,
+        withVoice: true,
+        timedNext: true,
+      });
+
+      advanceSeconds(1);
+      handle.finish();
+      expect(onDone).toHaveBeenCalledTimes(1);
+      expect(countSpokenById("go")).toBe(0);
+
+      handle.clear();
+    });
+
+    it("does not speak go when a hot expiry extends the rest", () => {
+      const { handle, onDone } = startRest({
+        restLeft: 1,
+        withVoice: true,
+        readZone: () => "work",
+      });
+
+      advanceSeconds(1);
+      expect(onDone).not.toHaveBeenCalled();
+      expect(countSpokenById("go")).toBe(0);
+      expect(countSpoken(REST_EXTEND.text)).toBe(1);
+
+      handle.clear();
+    });
   });
 
   it("ends immediately on finish while an extension is running", () => {

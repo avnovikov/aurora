@@ -3,6 +3,7 @@ import { EXERCISE_GRAPH } from "../../src/data/exerciseGraph";
 import { SESSION_TEMPLATES, templateToStarter } from "../../src/data/seed";
 import type { Readiness } from "../../src/domain/types";
 import { resolveExerciseTiming } from "../../src/domain/timing";
+import { displayExerciseName } from "../../src/library/displayName";
 import { escapeHtml } from "../../src/library/present";
 import {
   disconnectHeartRate,
@@ -79,6 +80,14 @@ function workView(planned: PlannedSession, workIndex = 0): ViewState {
     prescribedReps: item.dose.reps,
     addedLoadKg: 0,
   };
+  return state;
+}
+
+function restView(planned: PlannedSession, setIndex = 2, restLeft = 90): ViewState {
+  const state = workView(planned);
+  state.phase = "rest";
+  state.setIndex = setIndex;
+  state.restLeft = restLeft;
   return state;
 }
 
@@ -225,16 +234,37 @@ describe("dose as hero", () => {
 
   it("shows the rest countdown as the hero in seconds", () => {
     const planned = planLegs();
-    const state = workView(planned);
-    state.phase = "rest";
-    state.setIndex = 2;
-    state.restLeft = 90;
-    const html = shellHtml(planned, state);
+    const html = shellHtml(planned, restView(planned));
     const dose = slice(html, '<p class="session-dose"', "</p>");
     expect(dose).toContain('<span class="reps" data-rest-left>90</span>');
     expect(dose).toMatch(/class="session-dose-unit" aria-hidden="true">s</);
-    expect(html).toContain("Rest · next");
     expect(html).toContain("data-rest-cue");
+  });
+
+  it("names the next set beside its doodle on work rest", () => {
+    const planned = planLegs();
+    const item = planned.work[0]!;
+    expect(item.doodlePath).toBeTruthy();
+    const html = shellHtml(planned, restView(planned));
+    const next = displayExerciseName(item.exerciseName);
+    expect(html).toMatch(/<p class="eyebrow session-phase">Rest<\/p>/);
+    expect(html).not.toContain("Rest · next");
+    expect(html).toContain('class="rest-next"');
+    expect(html).toContain('class="rest-next-doodle"');
+    expect(html).toContain('class="doodle"');
+    expect(html).toContain(`next ${next} · Set 2 of ${item.dose.sets}`);
+    expect(html.indexOf('class="rest-next"')).toBeLessThan(html.indexOf('data-rest-left'));
+  });
+
+  it("keeps the next-set line without a doodle frame when the move has none", () => {
+    const planned = planLegs();
+    const item = planned.work[0]!;
+    item.doodlePath = undefined;
+    const html = shellHtml(planned, restView(planned));
+    expect(html).toContain('class="rest-next"');
+    expect(html).toContain(`next ${displayExerciseName(item.exerciseName)} · Set 2 of ${item.dose.sets}`);
+    expect(html).not.toContain('class="rest-next-doodle"');
+    expect(html).not.toContain('class="doodle"');
   });
 });
 

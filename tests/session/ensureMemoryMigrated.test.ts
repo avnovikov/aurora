@@ -85,7 +85,8 @@ describe("ensureMemoryMigrated (#112)", () => {
     expect(() => {
       memories = loadMemories(NOW);
     }).not.toThrow();
-    expect(memories.calf_raise?.skillTier).toBe("elite");
+    // Endura bilateral calf: 60 reps = intermediate (#189).
+    expect(memories.calf_raise?.skillTier).toBe("intermediate");
     expect(memories.hf_71).toBeDefined();
     expect(memories.hf_87).toBeDefined();
   });

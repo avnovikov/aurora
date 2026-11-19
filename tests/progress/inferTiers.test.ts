@@ -87,4 +87,45 @@ describe("inferTiers", () => {
     expect(run(memories).memories.mid?.inferred?.tier).toBe("beginner");
     expect(run(memories, { confirmingFamilies: new Set(["f"]) }).memories.mid?.inferred?.tier).toBe("intermediate");
   });
+
+  it("novice supporters (stepDown null) infer nothing (#116)", () => {
+    const out = run({ top: declared("top", "novice"), next: declared("next", "novice") }).memories;
+    expect(out.mid?.inferred).toBeUndefined();
+    expect(out.low?.inferred).toBeUndefined();
+  });
+
+  it("same-rank peers do not infer each other (#116)", () => {
+    const sameRank = indexOf({ f: [["a", 2], ["b", 2], ["c", 2]] });
+    const out = inferTiers({
+      memories: { a: declared("a", "advanced"), b: declared("b", "advanced") },
+      now: NOW,
+      index: sameRank,
+    }).memories;
+    expect(out.c?.inferred).toBeUndefined();
+  });
+
+  it("a weaker candidate lowers an existing inferred tier (#116)", () => {
+    const start = {
+      top: declared("top", "intermediate"),
+      next: declared("next", "intermediate"),
+      mid: {
+        ...emptyMemory("mid"),
+        inferred: { tier: "advanced" as const, from: ["next", "top"], at: NOW.toISOString() },
+      },
+    };
+    expect(run(start).memories.mid?.inferred?.tier).toBe("beginner");
+  });
+
+  it("preserves inferred.at when the tier is unchanged (#116)", () => {
+    const originalAt = "2026-11-10T12:00:00.000Z";
+    const start = {
+      top: declared("top", "advanced"),
+      next: declared("next", "advanced"),
+      mid: {
+        ...emptyMemory("mid"),
+        inferred: { tier: "intermediate" as const, from: ["next", "top"], at: originalAt },
+      },
+    };
+    expect(run(start).memories.mid?.inferred?.at).toBe(originalAt);
+  });
 });

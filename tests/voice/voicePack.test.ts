@@ -45,7 +45,10 @@ describe("coach voice pack", () => {
 
     expect([...baked.keys()].sort()).toEqual(keys);
     for (const line of ALL_COACH_LINES) {
-      expect(baked.get(line.assetKey)).toEqual({ model: scriptModel(), text: line.text });
+      expect(baked.get(line.assetKey)).toEqual({
+        model: scriptModel(),
+        text: line.bakeText ?? line.text,
+      });
     }
 
     const wavs = readdirSync(VOICE_DIR).filter((file) => file.endsWith(".wav"));
