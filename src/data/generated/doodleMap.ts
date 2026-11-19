@@ -657,7 +657,17 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "wger_1455": "/doodles/doodle-towel-superman.svg",
   "hf_151": "/doodles/doodle-shoulder-dislocate.svg",
   "fedb_chest_and_front_of_shoulder_stretch": "/doodles/doodle-stick-chest-and-shoulder-stretch.svg",
-  "fedb_round_the_world_shoulder_stretch": "/doodles/doodle-round-the-world-shoulder-stretch.svg"
+  "fedb_round_the_world_shoulder_stretch": "/doodles/doodle-round-the-world-shoulder-stretch.svg",
+  "fedb_chin_to_chest_stretch": "/doodles/doodle-chin-to-chest-stretch.svg",
+  "wger_1010": "/doodles/doodle-back-neck-stretch.svg",
+  "fedb_side_neck_stretch": "/doodles/doodle-side-neck-stretch.svg",
+  "wger_1008": "/doodles/doodle-left-neck-stretch.svg",
+  "wger_1009": "/doodles/doodle-right-neck-stretch.svg",
+  "wger_1007": "/doodles/doodle-head-turns.svg",
+  "fedb_isometric_neck_exercise_front_and_back": "/doodles/doodle-isometric-neck-front-and-back.svg",
+  "fedb_isometric_neck_exercise_sides": "/doodles/doodle-isometric-neck-sides.svg",
+  "wger_1006": "/doodles/doodle-chin-tuck.svg",
+  "fedb_looking_at_ceiling": "/doodles/doodle-looking-at-ceiling.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
