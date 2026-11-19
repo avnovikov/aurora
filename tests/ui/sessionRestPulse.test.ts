@@ -25,6 +25,13 @@ function countSpoken(text: string): number {
   return spokenTexts().filter((spoken) => spoken === text).length;
 }
 
+function spokenGoCount(): number {
+  return speakExactLine.mock.calls.filter((call) => {
+    const line = call[0] as { id?: string };
+    return line.id === "go";
+  }).length;
+}
+
 function restRoot(): {
   root: HTMLElement;
   left: { textContent: string };
@@ -197,8 +204,72 @@ describe("rest pulse", () => {
     expect(state.restLeft).toBe(0);
     expect(countSpoken(REST_EXTEND.text)).toBe(0);
     expect(countSpoken(REST_GO_ON.text)).toBe(0);
+    expect(spokenGoCount()).toBe(1);
 
     handle.clear();
+  });
+
+  describe("go cue at zero", () => {
+    it("speaks go when a short timed-next rest reaches zero", () => {
+      const { root } = restRoot();
+      const onDone = vi.fn();
+      const handle = startRestTimer(root, restState(2), true, onDone, {
+        timedNext: true,
+        readZone: () => null,
+      });
+
+      advanceSeconds(2);
+      expect(onDone).toHaveBeenCalledTimes(1);
+      expect(spokenGoCount()).toBe(1);
+
+      handle.clear();
+    });
+
+    it("stays silent at zero when voice is off", () => {
+      const { root } = restRoot();
+      const onDone = vi.fn();
+      const handle = startRestTimer(root, restState(2), false, onDone, {
+        timedNext: true,
+        readZone: () => null,
+      });
+
+      advanceSeconds(2);
+      expect(onDone).toHaveBeenCalledTimes(1);
+      expect(speakExactLine).not.toHaveBeenCalled();
+
+      handle.clear();
+    });
+
+    it("does not speak go when the athlete finishes rest early", () => {
+      const { root } = restRoot();
+      const onDone = vi.fn();
+      const handle = startRestTimer(root, restState(10), true, onDone, {
+        timedNext: true,
+        readZone: () => null,
+      });
+
+      advanceSeconds(1);
+      handle.finish();
+      expect(onDone).toHaveBeenCalledTimes(1);
+      expect(spokenGoCount()).toBe(0);
+
+      handle.clear();
+    });
+
+    it("does not speak go when a hot expiry extends the rest", () => {
+      const { root } = restRoot();
+      const onDone = vi.fn();
+      const handle = startRestTimer(root, restState(1), true, onDone, {
+        readZone: () => "work",
+      });
+
+      advanceSeconds(1);
+      expect(onDone).not.toHaveBeenCalled();
+      expect(spokenGoCount()).toBe(0);
+      expect(countSpoken(REST_EXTEND.text)).toBe(1);
+
+      handle.clear();
+    });
   });
 
   it("ends immediately on finish while an extension is running", () => {

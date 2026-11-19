@@ -113,6 +113,13 @@ export function startRestTimer(
     void speakExactLine(line);
   };
 
+  const paintAndSpeakDueCue = (secondsLeft: number): void => {
+    paint();
+    if (withVoice) {
+      speakRestCue(secondsLeft, tickState.schedule, tickState.spokenForRest);
+    }
+  };
+
   const finish = (): void => {
     if (finished) {
       return;
@@ -121,6 +128,12 @@ export function startRestTimer(
     window.clearInterval(timerId);
     state.restLeft = 0;
     onDoneRest();
+  };
+
+  /** Natural countdown end: speak the at-0 cue (usually go), then hand off. */
+  const finishOnClock = (): void => {
+    paintAndSpeakDueCue(0);
+    finish();
   };
 
   const extendRest = (): void => {
@@ -142,7 +155,7 @@ export function startRestTimer(
         extendRest();
         return "extended";
       }
-      finish();
+      finishOnClock();
       return "finished";
     }
     if (
@@ -157,10 +170,7 @@ export function startRestTimer(
       tickState.heldCue = goOnLine;
       speakLine(goOnLine);
     }
-    paint();
-    if (withVoice) {
-      speakRestCue(state.restLeft, tickState.schedule, tickState.spokenForRest);
-    }
+    paintAndSpeakDueCue(state.restLeft);
     return "continue";
   };
 
