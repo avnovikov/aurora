@@ -1,7 +1,9 @@
 import { BONES, HIP_SIDE, solvePose } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side } from "./rig";
+import { sub3, type Point3 } from "./rig3d";
 import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
 import { SL_HIP_TOP, SL_KNEE_BOTTOM, SL_FOOT_BOTTOM, SIDE_LYING_FLOOR, sideLying } from "./specsWarmup";
+import { FLOOR_PROP, along, angle, round, supineTorso } from "./geom";
 
 /**
  * Batch AN: stretches. Floor at y = 0, up is negative, the side-view figure
@@ -11,21 +13,10 @@ import { SL_HIP_TOP, SL_KNEE_BOTTOM, SL_FOOT_BOTTOM, SIDE_LYING_FLOOR, sideLying
  * ./specs (that would be circular).
  */
 
-const round = (value: number): number => Math.round(value * 10) / 10;
-
-/** Point `length` from `from` at `degrees` (0 = +x, 90 = down, -90 = up). */
-function along(from: Point, degrees: number, length: number): Point {
-  const r = (degrees * Math.PI) / 180;
-  return [round(from[0] + Math.cos(r) * length), round(from[1] + Math.sin(r) * length)];
-}
-
-const angleBetween = (from: Point, to: Point): number => (Math.atan2(to[1] - from[1], to[0] - from[0]) * 180) / Math.PI;
-
 const THIGH = BONES.thigh;
 const SHIN = BONES.shin;
 /** Hip to ankle with the knee a hair short of straight. */
 const LEG = 173.4;
-const FLOOR: Prop = { kind: "floor" };
 
 // ---------------------------------------------------------------- lying on the back (head at -x)
 
@@ -33,10 +24,7 @@ const SUPINE_PELVIS: Point = [0, -22];
 
 /** Lying face up: upper back and head on the floor, pelvis a hand's width up. Arms are left to the caller. */
 function supine(): Pose {
-  const pelvis = SUPINE_PELVIS;
-  const dy = -18 - pelvis[1];
-  const chest: Point = [round(pelvis[0] - Math.sqrt(79.6 ** 2 - dy * dy)), -18];
-  return { pelvis, chest, head: [round(chest[0] - 55), -24], spine: { bend: -1 } };
+  return supineTorso(SUPINE_PELVIS, 79.6);
 }
 
 /** The straight leg flat on the floor: ankle just above it, toes up. */
@@ -205,7 +193,7 @@ const GA_HEEL: Point = [116, -38];
  */
 function gastroc(lean: number, hip: number, grab: boolean): Pose {
   const pelvis: Point = [-16, hip];
-  const thighAngle = angleBetween(pelvis, GA_HEEL);
+  const thighAngle = angle(pelvis, GA_HEEL);
   const onThigh = (reach: number, side: number): Point => {
     const p = along(pelvis, thighAngle, reach);
     return [round(p[0] + side), round(p[1] - 8)];
@@ -250,16 +238,14 @@ const SL_PILLOW_HAND: Point = along([-98, -8], 181, 125);
 
 // ---------------------------------------------------------------- side-lying quad stretch (side + top view, head left)
 
-type P3 = readonly [number, number, number];
-
 /** A point `length` from `from` along the direction `d` (normalised). */
-function reach3(from: P3, d: P3, length: number): P3 {
+function reach3(from: Point3, d: Point3, length: number): Point3 {
   const n = Math.hypot(d[0], d[1], d[2]);
   return [round(from[0] + (d[0] / n) * length), round(from[1] + (d[1] / n) * length), round(from[2] + (d[2] / n) * length)];
 }
 
 /** The point `length` from `from` towards `to` (straight at it, or short of it). */
-const toward3 = (from: P3, to: P3, length: number): P3 => reach3(from, [to[0] - from[0], to[1] - from[1], to[2] - from[2]], length);
+const toward3 = (from: Point3, to: Point3, length: number): Point3 => reach3(from, sub3(to, from), length);
 
 /**
  * Lying on the side, side + top views. The body lies along x (head at -x) with its front
@@ -270,16 +256,16 @@ const toward3 = (from: P3, to: P3, length: number): P3 => reach3(from, [to[0] - 
  * The bottom arm is bent on the floor, elbow in front of the chest and hand under the head.
  */
 function sideQuad(heelX: number, heelBehind: number): Keyframe {
-  const hipBottom: P3 = [0, -30, -8];
-  const hipTop: P3 = [0, -30, 8];
+  const hipBottom: Point3 = [0, -30, -8];
+  const hipTop: Point3 = [0, -30, 8];
   const kneeBottom = reach3(hipBottom, [0.04, 0.18, -1], THIGH);
   const footBottom = reach3(kneeBottom, [1, 0.02, 0.06], SHIN);
   const kneeTop = reach3(hipTop, [1, -0.1, 0.06], THIGH);
   const ankle = toward3(kneeTop, [heelX, -48, heelBehind], SHIN);
-  const hand: P3 = [round(ankle[0] - 3), round(ankle[1] - 2), round(ankle[2] + 2)];
-  const rest: P3 = [-139, -10, -21];
-  const restElbow: P3 = [-104, -6, -77];
-  const flat = (p: P3): Point => [p[0], p[1]];
+  const hand: Point3 = [round(ankle[0] - 3), round(ankle[1] - 2), round(ankle[2] + 2)];
+  const rest: Point3 = [-139, -10, -21];
+  const restElbow: Point3 = [-104, -6, -77];
+  const flat = (p: Point3): Point => [p[0], p[1]];
   return {
     hold: 0,
     pose: sideLying({
@@ -445,7 +431,7 @@ export const BATCH_AN_SPECS: DoodleSpec[] = [
     id: "fedb_90_90_hamstring",
     slug: "90-90-hamstring",
     title: "90 90 Hamstring",
-    props: [FLOOR],
+    props: [FLOOR_PROP],
     transition: 1.3,
     frames: [
       { hold: 0.6, pose: ninety(0) },
@@ -456,7 +442,7 @@ export const BATCH_AN_SPECS: DoodleSpec[] = [
     id: "fedb_leg_up_hamstring_stretch",
     slug: "leg-up-hamstring-stretch",
     title: "Leg-Up Hamstring Stretch",
-    props: [FLOOR],
+    props: [FLOOR_PROP],
     transition: 1.3,
     frames: [
       { hold: 0.6, pose: legUp(-90) },
@@ -467,7 +453,7 @@ export const BATCH_AN_SPECS: DoodleSpec[] = [
     id: "fedb_all_fours_quad_stretch",
     slug: "all-fours-quad-stretch",
     title: "All Fours Quad Stretch",
-    props: [FLOOR],
+    props: [FLOOR_PROP],
     transition: 1.1,
     frames: [
       { hold: 0.6, pose: allFoursQuad(-150, false) },
@@ -479,7 +465,7 @@ export const BATCH_AN_SPECS: DoodleSpec[] = [
     id: "fedb_calf_stretch_elbows_against_wall",
     slug: "calf-stretch-elbows-against-wall",
     title: "Calf Stretch Elbows Against Wall",
-    props: [CW_WALL, FLOOR],
+    props: [CW_WALL, FLOOR_PROP],
     transition: 1.2,
     frames: [
       { hold: 0.6, pose: wallCalf(62) },
@@ -490,7 +476,7 @@ export const BATCH_AN_SPECS: DoodleSpec[] = [
     id: "fedb_runners_stretch",
     slug: "runners-stretch",
     title: "Runner's Stretch",
-    props: [FLOOR],
+    props: [FLOOR_PROP],
     transition: 1.1,
     frames: [
       { hold: 0.6, pose: runners([-42, -84]) },
@@ -501,7 +487,7 @@ export const BATCH_AN_SPECS: DoodleSpec[] = [
     id: "fedb_seated_calf_stretch",
     slug: "seated-calf-stretch",
     title: "Seated Calf Stretch",
-    props: [FLOOR],
+    props: [FLOOR_PROP],
     transition: 1.1,
     frames: [
       { hold: 0.6, pose: seatedCalf(80, -80) },
@@ -512,7 +498,7 @@ export const BATCH_AN_SPECS: DoodleSpec[] = [
     id: "fedb_standing_elevated_quad_stretch",
     slug: "standing-elevated-quad-stretch",
     title: "Standing Elevated Quad Stretch",
-    props: [BENCH, FLOOR],
+    props: [BENCH, FLOOR_PROP],
     transition: 1.1,
     frames: [
       { hold: 0.6, pose: elevatedQuad(-10) },
@@ -523,7 +509,7 @@ export const BATCH_AN_SPECS: DoodleSpec[] = [
     id: "fedb_standing_gastrocnemius_calf_stretch",
     slug: "standing-gastrocnemius-calf-stretch",
     title: "Standing Gastrocnemius Calf Stretch",
-    props: [STEP, FLOOR],
+    props: [STEP, FLOOR_PROP],
     transition: 1.2,
     frames: [
       { hold: 0.6, pose: gastroc(50, -150, false) },
@@ -534,7 +520,7 @@ export const BATCH_AN_SPECS: DoodleSpec[] = [
     id: "fedb_standing_hip_flexors",
     slug: "standing-hip-flexors",
     title: "Standing Hip Flexors",
-    props: [FLOOR],
+    props: [FLOOR_PROP],
     transition: 1.1,
     frames: [
       { hold: 0.6, pose: standingHipFlexor(-8) },
@@ -569,7 +555,7 @@ export const BATCH_AN_SPECS: DoodleSpec[] = [
     slug: "adductor-groin",
     title: "Adductor Groin",
     views: TWO_VIEWS,
-    props: [FLOOR],
+    props: [FLOOR_PROP],
     transition: 1.4,
     frames: [
       { ...adductor(4), hold: 0.5 },
@@ -581,7 +567,7 @@ export const BATCH_AN_SPECS: DoodleSpec[] = [
     slug: "seated-floor-hamstring-stretch",
     title: "Seated Floor Hamstring Stretch",
     views: TWO_VIEWS,
-    props: [FLOOR],
+    props: [FLOOR_PROP],
     transition: 1.3,
     frames: [
       { ...seatedHamstring(86, false), hold: 0.5 },
@@ -593,7 +579,7 @@ export const BATCH_AN_SPECS: DoodleSpec[] = [
     slug: "groin-and-back-stretch",
     title: "Groin and Back Stretch",
     views: TWO_VIEWS,
-    props: [FLOOR],
+    props: [FLOOR_PROP],
     transition: 1.3,
     frames: [
       { ...butterfly(0), hold: 0.6 },

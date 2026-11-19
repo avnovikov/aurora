@@ -1,5 +1,6 @@
 import { onStrap, SHOULDER_SIDE, type DoodleSpec, type Keyframe, type Point, type Pose, type Sideways } from "./rig";
-import { TWO_VIEWS } from "./sideways";
+import { LOCKED_REACH, TWO_VIEWS } from "./sideways";
+import { along, angle, round } from "./geom";
 
 /**
  * Batch AQ (#212): suspension-trainer (TRX) moves. Straps hang from one anchor
@@ -12,22 +13,10 @@ import { TWO_VIEWS } from "./sideways";
  * fly, reverse crunch, split squat) the anchor is behind.
  */
 
-const round = (value: number): number => Math.round(value * 10) / 10;
-
-/** Point `length` from `from` at `degrees` (0 = +x, 90 = down, -90 = up). */
-function along(from: Point, degrees: number, length: number): Point {
-  const r = (degrees * Math.PI) / 180;
-  return [round(from[0] + Math.cos(r) * length), round(from[1] + Math.sin(r) * length)];
-}
-
-const angle = (from: Point, to: Point): number => (Math.atan2(to[1] - from[1], to[0] - from[0]) * 180) / Math.PI;
-
 /** Pelvis to shoulder, pelvis to the ankle of a straight leg, ankle to shoulder along a straight body. */
 const SHOULDER_REACH = 98;
 const LEG_REACH = 173.9;
 const BODY_REACH = LEG_REACH + SHOULDER_REACH;
-/** Shoulder to fingertip, arm straight (a hair short of locked). */
-const ARM_REACH = 125.6;
 const UPPER_ARM = 60;
 /** Elbow to fingertip. */
 const FOREARM_HAND = 66;
@@ -53,7 +42,6 @@ const shoulderFrom = (ankle: Point, hand: Point, reach: number, side: 1 | -1): P
 // ---------------------------------------------------------------- leaning rows (facing the anchor)
 
 const LEAN_ANKLE: Point = [0, -10];
-const ELBOW_SIDE = 1;
 
 interface RowShape {
   anchor: Point;
@@ -68,7 +56,7 @@ interface RowShape {
 /** Heels down, body straight, hands on the strap; the shoulder follows the hand at `reach`. */
 function leanRow(shape: RowShape, top: boolean, extra: Partial<Pose> = {}): Pose {
   const hand = onStrap(shape.anchor, shape.length, top ? shape.top : shape.bottom);
-  const shoulder = shoulderFrom(LEAN_ANKLE, hand, top ? shape.topReach : ARM_REACH, -1);
+  const shoulder = shoulderFrom(LEAN_ANKLE, hand, top ? shape.topReach : LOCKED_REACH, -1);
   const deg = angle(LEAN_ANKLE, shoulder);
   return {
     ...straightBody(LEAN_ANKLE, deg),
@@ -83,7 +71,6 @@ function leanRow(shape: RowShape, top: boolean, extra: Partial<Pose> = {}): Pose
 const ROW_A: RowShape = { anchor: [-10, -300], length: 125, bottom: -24, top: -28, topReach: 62 };
 const ROW_B: RowShape = { anchor: [10, -290], length: 115, bottom: -22, top: -26, topReach: 66 };
 const ROW_C: RowShape = { anchor: [-20, -310], length: 135, bottom: -20, top: -26, topReach: 72 };
-
 
 function rowFrames(shape: RowShape, hold: [number, number]): Keyframe[] {
   const mid: RowShape = { ...shape };
@@ -115,7 +102,6 @@ function suspendedPush(reach: number): Pose {
   };
 }
 
-
 // ---------------------------------------------------------------- leaning curl (facing the anchor)
 
 /** Body direction (degrees from the ankle) at the top, with the hands at the forehead. */
@@ -123,7 +109,7 @@ const CURL_TOP_DEG = -125;
 /** The face looks forward of the spine (a quarter turn clockwise of the way the body points). */
 const CURL_HAND: Point = along(along(LEAN_ANKLE, CURL_TOP_DEG, BODY_REACH + 38), CURL_TOP_DEG + 90, 56);
 const CURL_ANCHOR: Point = along(CURL_HAND, -20, 90);
-const CURL_BOTTOM_SHOULDER = shoulderFrom(LEAN_ANKLE, CURL_HAND, ARM_REACH, -1);
+const CURL_BOTTOM_SHOULDER = shoulderFrom(LEAN_ANKLE, CURL_HAND, LOCKED_REACH, -1);
 
 /**
  * The hands hang still on the straps; the body rises to them as the elbows
@@ -134,7 +120,7 @@ function curl(t: number): Pose {
   const deg = bottom + (CURL_TOP_DEG - bottom) * t;
   const shoulder = along(LEAN_ANKLE, deg, BODY_REACH);
   const reach = Math.hypot(CURL_HAND[0] - shoulder[0], CURL_HAND[1] - shoulder[1]);
-  const elbow = reach < ARM_REACH - 2 ? meet(shoulder, UPPER_ARM, CURL_HAND, FOREARM_HAND, ELBOW_SIDE) : undefined;
+  const elbow = reach < LOCKED_REACH - 2 ? meet(shoulder, UPPER_ARM, CURL_HAND, FOREARM_HAND, 1) : undefined;
   return {
     ...straightBody(LEAN_ANKLE, deg),
     hands: { near: CURL_HAND, far: CURL_HAND },
@@ -156,14 +142,14 @@ interface FalloutShape {
 /** A shape whose hands start `startAngle` degrees below horizontal forward of the shoulder at `startLean`, the anchor `tilt` degrees back from straight above them. */
 function falloutShape(startLean: number, startAngle: number, length: number, tilt: number): FalloutShape {
   const shoulder = along(FALL_ANKLE, -startLean, BODY_REACH);
-  const hand = along(shoulder, startAngle, ARM_REACH);
+  const hand = along(shoulder, startAngle, LOCKED_REACH);
   return { anchor: along(hand, -90 - tilt, length), length };
 }
 
 /** Straight body leaning `lean` degrees above the floor; straight arms from the shoulder to the hand on the strap circle. */
 function fallout(shape: FalloutShape, lean: number): Pose {
   const shoulder = along(FALL_ANKLE, -lean, BODY_REACH);
-  const hand = meet(shoulder, ARM_REACH, shape.anchor, shape.length, 1);
+  const hand = meet(shoulder, LOCKED_REACH, shape.anchor, shape.length, 1);
   const chest = along(FALL_ANKLE, -lean, LEG_REACH + 80);
   return {
     pelvis: along(FALL_ANKLE, -lean, LEG_REACH),
@@ -179,7 +165,6 @@ function fallout(shape: FalloutShape, lean: number): Pose {
 const FALL_SIDEWAYS: Sideways = { hands: { near: -SHOULDER_SIDE, far: SHOULDER_SIDE }, feet: { near: -10, far: 10 } };
 const FALL_A = falloutShape(46, 10, 120, 35);
 const FALL_B = falloutShape(50, 0, 110, 40);
-
 
 // ---------------------------------------------------------------- two-view helpers
 
@@ -275,7 +260,7 @@ const FACE_Z = 36;
 const FACE_ELBOW_Z = 80;
 const FACE_HEAD: Point = along(LEAN_ANKLE, FACE_DEG, BODY_REACH + 38);
 /** The face pull starts with the arms long (a hair short of locked) toward the anchor. */
-const FACE_BOTTOM_HAND: Point = along(pullShoulder(PULL_BOTTOM_DEG), -20, ARM_REACH + 0.3);
+const FACE_BOTTOM_HAND: Point = along(pullShoulder(PULL_BOTTOM_DEG), -20, LOCKED_REACH + 0.3);
 /** The elbow at the top: out beside the shoulder in z, so only a little in front of it in the side view. */
 const FACE_ELBOW: Point = along(pullShoulder(FACE_DEG), -60, Math.sqrt(UPPER_ARM ** 2 - (FACE_ELBOW_Z - SHOULDER_SIDE) ** 2));
 /** The hand a forearm's length (in 3D) from that elbow, towards the head. */
@@ -346,7 +331,7 @@ const KNEE_BEND = -1;
 /** The spine keeps its length: the pelvis circles the shoulder, `tilt` degrees above the plank's line. */
 function crunch(swing: number, spineDeg: number | undefined): Pose {
   const ankle = onStrap(CRUNCH_ANCHOR, CRUNCH_L, swing);
-  const shoulder: Point = [CRUNCH_HAND[0], CRUNCH_HAND[1] - ARM_REACH];
+  const shoulder: Point = [CRUNCH_HAND[0], CRUNCH_HAND[1] - LOCKED_REACH];
   const body = spineDeg === undefined ? straightBody(ankle, angle(ankle, shoulder)) : { pelvis: along(shoulder, spineDeg, SHOULDER_REACH) };
   return {
     ...body,
@@ -484,7 +469,7 @@ export const BATCH_AQ_SPECS: DoodleSpec[] = [
     straps: { anchor: PUSH_ANCHOR, end: "handle" },
     transition: 1,
     frames: [
-      { hold: 0.4, pose: suspendedPush(ARM_REACH) },
+      { hold: 0.4, pose: suspendedPush(LOCKED_REACH) },
       { hold: 0.4, pose: suspendedPush(70) },
     ],
   },
@@ -495,7 +480,7 @@ export const BATCH_AQ_SPECS: DoodleSpec[] = [
     straps: { anchor: PUSH_ANCHOR, end: "handle" },
     transition: 1,
     frames: [
-      { hold: 0.4, pose: suspendedPush(ARM_REACH) },
+      { hold: 0.4, pose: suspendedPush(LOCKED_REACH) },
       { hold: 0.4, pose: suspendedPush(84) },
     ],
   },

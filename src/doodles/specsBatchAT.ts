@@ -1,6 +1,7 @@
-import { BONES, solvePose, type DoodleSpec, type Keyframe, type Point, type Pose, type Sideways } from "./rig";
+import { BONES, HIP_SIDE, solvePose, type DoodleSpec, type Keyframe, type Point, type Pose, type Sideways } from "./rig";
 import { LOCKED_REACH, TWO_VIEWS } from "./sideways";
 import { solveKeyframe3 } from "./rig3d";
+import { along, freeHand, round } from "./geom";
 
 /**
  * Batch AT (#212): kettlebell squats, presses, windmills, floor presses and the
@@ -12,14 +13,6 @@ import { solveKeyframe3 } from "./rig3d";
  *     so the lean is drawn face-on)
  *   floor presses, Turkish get-up                                   side view, lying
  */
-
-const round = (value: number): number => Math.round(value * 10) / 10;
-
-/** Point `length` from `from` at `degrees` (0 = +x, 90 = down, -90 = up). */
-function along(from: Point, degrees: number, length: number): Point {
-  const r = (degrees * Math.PI) / 180;
-  return [round(from[0] + Math.cos(r) * length), round(from[1] + Math.sin(r) * length)];
-}
 
 const kf = (pose: Pose, hold: number, extra: Partial<Keyframe> = {}): Keyframe => ({ pose, hold, ...extra });
 const BENT = { near: { bend: 1 }, far: { bend: 1 } } as const;
@@ -91,8 +84,6 @@ function pistol(depth: 0 | 1): Pose {
     toes: { near: 0, far: leg - 80 },
   };
 }
-
-
 
 // ---------------------------------------------------------------- floor presses (lying, side view)
 
@@ -289,7 +280,6 @@ const sidePress = (stage: 0 | 1 | 2 | 3): Pose =>
     bellElbow: PRESS_ELBOW[stage],
   });
 
-
 // ---------------------------------------------------------------- advanced windmill (two views, sideways torso lean)
 
 /**
@@ -300,7 +290,6 @@ const sidePress = (stage: 0 | 1 | 2 | 3): Pose =>
 const ADV_FAR_LEG = 173.4;
 const ADV_NEAR_LEG = 168;
 const ADV_FEET_Z = { near: -89, far: 81 } as const;
-const ADV_HIP_Z = 8;
 
 interface AdvStage {
   pelvis: Point;
@@ -326,24 +315,14 @@ function advancedWindmill(stage: AdvStage): Keyframe["pose"] & { sideways: Sidew
   const footX = (leg: number, hipZ: number, footZ: number): number =>
     round(pelvis[0] + Math.sqrt(leg ** 2 - pelvis[1] ** 2 - (footZ - hipZ) ** 2));
   const feet: Pose["feet"] = {
-    near: [footX(ADV_NEAR_LEG, pz - ADV_HIP_Z, ADV_FEET_Z.near), 0],
-    far: [footX(ADV_FAR_LEG, pz + ADV_HIP_Z, ADV_FEET_Z.far), 0],
+    near: [footX(ADV_NEAR_LEG, pz - HIP_SIDE, ADV_FEET_Z.near), 0],
+    far: [footX(ADV_FAR_LEG, pz + HIP_SIDE, ADV_FEET_Z.far), 0],
   };
   const base: Pose = { pelvis, chest, feet, toes: { near: 0, far: 0 } };
   const figure = solveKeyframe3(solvePose(base), base, sideways);
   const [fx, fy, fz] = figure.arms.far.root;
-  const [nx, ny, nz] = figure.arms.near.root;
   const farHand: Point = [round(fx), round(fy - LOCKED_REACH)];
-  let nearHand: Point;
-  let nearZ: number;
-  if (stage.floor) {
-    nearZ = round(nz - 12);
-    const dy = -4 - ny;
-    nearHand = [round(nx + Math.sqrt(Math.max(0, (LOCKED_REACH - 0.6) ** 2 - dy ** 2 - 12 ** 2))), -4];
-  } else {
-    nearZ = round(nz - 6);
-    nearHand = [round(nx), round(ny + Math.sqrt((LOCKED_REACH - 4) ** 2 - 36))];
-  }
+  const { hand: nearHand, z: nearZ } = freeHand(figure.arms.near.root, stage.floor, LOCKED_REACH);
   return {
     ...base,
     hands: { near: nearHand, far: farHand },

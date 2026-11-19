@@ -1,6 +1,7 @@
 import { kettlebellOnFloor, SHOULDER_SIDE } from "./rig";
 import type { BellMode, DoodleSpec, Keyframe, Point, Pose, Sideways } from "./rig";
 import { TWO_VIEWS } from "./sideways";
+import { along, chestOf, round, shoulderOf } from "./geom";
 
 /**
  * Batch AR (#212): kettlebell cleans, a one-legged deadlift, the sumo high pull.
@@ -9,25 +10,11 @@ import { TWO_VIEWS } from "./sideways";
  * Gear: one bell in the near hand (`hang` below the grip, `rack` on the back of
  * the forearm, `swing` along the forearm: a bottoms-up bell stands on the fist).
  *
- * Left out: the two-bell cleans (a bell's mode is per keyframe, so one bell
- * can't hang while the other is racked) and the pass-throughs (figure 8, pass
- * between the legs, lunge pass-through: the bell changes hands, and a bell is
- * bound to one hand for the whole loop).
+ * The two-bell cleans and the pass-throughs are drawn in batch AV.
  */
-
-const round = (value: number): number => Math.round(value * 10) / 10;
-
-/** Point `length` from `from` at `degrees` (0 = +x, 90 = down, -90 = up). */
-function along(from: Point, degrees: number, length: number): Point {
-  const r = (degrees * Math.PI) / 180;
-  return [round(from[0] + Math.cos(r) * length), round(from[1] + Math.sin(r) * length)];
-}
 
 const BELL = 14;
 const FLOOR_HAND = round(kettlebellOnFloor(BELL));
-/** Shoulder: 98 up the spine from the pelvis. */
-const shoulderOf = (pelvis: Point, spine: number): Point => along(pelvis, spine, 98);
-const chestOf = (pelvis: Point, spine: number): Point => along(pelvis, spine, 80);
 /** Arm reach (shoulder to fingertip), a hair short so a locked arm draws straight. */
 const REACH = 125.4;
 

@@ -1,24 +1,16 @@
-import type { Bend, DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
+import type { Bend, DoodleSpec, Keyframe, Point, Pose, Side, Sideways } from "./rig";
 import { kettlebellOnFloor } from "./rig";
 import { TWO_VIEWS } from "./sideways";
+import { along, round, FLOOR_PROP } from "./geom";
 
 /**
  * Batch AS (#212): kettlebell presses, jerks, snatches and halos. Floor at
  * y = 0, up is negative, the side-view figure faces +x; in the front panel the
  * near side is on the viewer's left. Bells use the spec-level `kettlebell`
  * gear and the per-keyframe `bell` mode (rack: on the back of the forearm).
- * Import only from ./rig and ./sideways, never ./specs.
+ * Never import ./specs (circular).
  */
 
-const round = (value: number): number => Math.round(value * 10) / 10;
-
-/** Point `length` from `from` at `degrees` (0 = +x, 90 = down, -90 = up). */
-function along(from: Point, degrees: number, length: number): Point {
-  const r = (degrees * Math.PI) / 180;
-  return [round(from[0] + Math.cos(r) * length), round(from[1] + Math.sin(r) * length)];
-}
-
-const FLOOR: Prop = { kind: "floor" };
 
 // ---------------------------------------------------------------- standing figure
 
@@ -159,7 +151,6 @@ function seatedHand(t: number): Point {
   return [round(u * u * SEAT_RACK[0] + 2 * u * t * c[0] + t * t * SEAT_TOP[0]), round(u * u * SEAT_RACK[1] + 2 * u * t * c[1] + t * t * SEAT_TOP[1])];
 }
 
-
 // ---------------------------------------------------------------- arnold press (two views)
 
 /** One-arm Arnold press: palm in at the shoulder, elbow swings out in the middle, palm forward at the top. */
@@ -287,14 +278,13 @@ function snatchFrames(): Keyframe[] {
 
 // ---------------------------------------------------------------- specs
 
-
 export const BATCH_AS_SPECS: DoodleSpec[] = [
   {
     id: "fedb_alternating_floor_press",
     slug: "alternating-floor-press",
     title: "Alternating Floor Press",
     views: TWO_VIEWS,
-    props: [FLOOR],
+    props: [FLOOR_PROP],
     kettlebell: { hands: ["near", "far"] },
     transition: 0.8,
     frames: [altFloor("near"), altFloor("far")],
@@ -304,7 +294,7 @@ export const BATCH_AS_SPECS: DoodleSpec[] = [
     slug: "alternating-kettlebell-press",
     title: "Alternating Kettlebell Press",
     views: TWO_VIEWS,
-    props: [FLOOR],
+    props: [FLOOR_PROP],
     kettlebell: { hands: ["near", "far"] },
     transition: 0.7,
     frames: [
@@ -323,7 +313,7 @@ export const BATCH_AS_SPECS: DoodleSpec[] = [
     slug: "kettlebell-seesaw-press",
     title: "Kettlebell Seesaw Press",
     views: TWO_VIEWS,
-    props: [FLOOR],
+    props: [FLOOR_PROP],
     kettlebell: { hands: ["near", "far"] },
     transition: 0.6,
     frames: [withHold(twoArms(1, 0), 0.3), twoArms(0.5, 0.5), withHold(twoArms(0, 1), 0.3), twoArms(0.5, 0.5)],
@@ -332,7 +322,7 @@ export const BATCH_AS_SPECS: DoodleSpec[] = [
     id: "fedb_extended_range_one_arm_kettlebell_floor_press",
     slug: "extended-range-one-arm-kettlebell-floor-press",
     title: "Extended Range One Arm Kettlebell Floor Press",
-    props: [FLOOR],
+    props: [FLOOR_PROP],
     kettlebell: { hands: ["near"] },
     transition: 0.8,
     frames: [
@@ -345,7 +335,7 @@ export const BATCH_AS_SPECS: DoodleSpec[] = [
     slug: "kettlebell-seated-press",
     title: "Kettlebell Seated Press",
     views: TWO_VIEWS,
-    props: [FLOOR],
+    props: [FLOOR_PROP],
     kettlebell: { hands: ["near"] },
     transition: 0.7,
     frames: [
@@ -360,7 +350,7 @@ export const BATCH_AS_SPECS: DoodleSpec[] = [
     slug: "kettlebell-arnold-press",
     title: "Kettlebell Arnold Press",
     views: TWO_VIEWS,
-    props: [FLOOR],
+    props: [FLOOR_PROP],
     kettlebell: { hands: ["near"] },
     transition: 0.7,
     frames: [arnold(0, 0.4), arnold(0.5), arnold(1, 0.4), arnold(0.5)],
@@ -370,7 +360,7 @@ export const BATCH_AS_SPECS: DoodleSpec[] = [
     slug: "double-kettlebell-push-press",
     views: TWO_VIEWS,
     title: "Double Kettlebell Push Press",
-    props: [FLOOR],
+    props: [FLOOR_PROP],
     kettlebell: { hands: ["near", "far"] },
     transition: 0.35,
     frames: pushPressFrames().map(inLine),
@@ -380,7 +370,7 @@ export const BATCH_AS_SPECS: DoodleSpec[] = [
     slug: "double-kettlebell-jerk",
     views: TWO_VIEWS,
     title: "Double Kettlebell Jerk",
-    props: [FLOOR],
+    props: [FLOOR_PROP],
     kettlebell: { hands: ["near", "far"] },
     transition: 0.35,
     frames: jerkFrames().map(inLine),
@@ -390,7 +380,7 @@ export const BATCH_AS_SPECS: DoodleSpec[] = [
     slug: "double-kettlebell-snatch",
     views: TWO_VIEWS,
     title: "Double Kettlebell Snatch",
-    props: [FLOOR],
+    props: [FLOOR_PROP],
     kettlebell: { hands: ["near", "far"] },
     transition: 0.4,
     frames: snatchFrames(),

@@ -1,8 +1,9 @@
-import { onStrap, solveJoint } from "./rig";
+import { onStrap, SHOULDER_SIDE, solveJoint } from "./rig";
 import type { AuthoredPose, DoodleSpec, Keyframe, Point, Pose, Sideways } from "./rig";
 import { TWO_VIEWS } from "./sideways";
 import { CAT_SHOULDER, tuckedAround } from "./specsBatchJ";
 import { LOCKED, lockedShoulderY, rep, straightBody } from "./specsBatchC";
+import { along, lerp, round } from "./geom";
 
 /**
  * Batch AP (#212): gymnastic-ring moves. Rings hang from `straps` (a fixed
@@ -10,12 +11,6 @@ import { LOCKED, lockedShoulderY, rep, straightBody } from "./specsBatchC";
  * Floor at y = 0, up is negative, the side-view figure faces +x.
  */
 
-/** Point `length` from `from` at `degrees` (0 = +x, 90 = down, -90 = up). */
-function along(from: Point, degrees: number, length: number): Point {
-  const r = (degrees * Math.PI) / 180;
-  return [round(from[0] + Math.cos(r) * length), round(from[1] + Math.sin(r) * length)];
-}
-const round = (value: number): number => Math.round(value * 10) / 10;
 const roundPoint = (p: Point): Point => [round(p[0]), round(p[1])];
 
 // ---------------------------------------------------------------- muscle-ups (hang to support, body rising past fixed rings)
@@ -90,7 +85,6 @@ const hangShoulder = (deg: number, swing = 0): Point => along(onStrap(MU_ANCHOR,
 
 const MU_STRAPS = { anchor: MU_ANCHOR, end: "ring" } as const;
 
-const lerp = (a: number, b: number, t: number): number => a + (b - a) * t;
 const lerpPoint = (a: Point, b: Point, t: number): Point => [round(lerp(a[0], b[0], t)), round(lerp(a[1], b[1], t))];
 
 /** `t` of the way from one rise to another (shoulder, lean, legs, tilt, swing). */
@@ -166,11 +160,14 @@ const ringDip = (): Keyframe[] => [
 
 /** Locked arm, shoulder to fingertip, a little short so the pins always reach. */
 const ARM = 125.2;
-const SHOULDER_Z = 22;
 const FOOT_Z = 10;
 
 /** Arm reach split into height: the shoulder is this far above a hand `dz` out to the side (and `dx` ahead or behind). */
 const armRise = (dz: number, dx = 0, reach = ARM): number => Math.sqrt(Math.max(0, reach * reach - dz * dz - dx * dx));
+
+/** Hand height on a strap of length `strap` from `anchor`, the hand `z - zRef` out to the side of the strap's line. */
+const strapHandY = (anchor: Point, strap: number, z: number, zRef: number): number =>
+  anchor[1] + Math.sqrt(strap ** 2 - (z - zRef) ** 2);
 
 const wideHands = (z: number): Sideways => ({ hands: { near: -z, far: z }, feet: { near: -FOOT_Z, far: FOOT_Z } });
 
@@ -192,8 +189,8 @@ function hangingBody(shoulderY: number, handY: number, z: number): Keyframe {
 const SUP_ANCHOR: Point = [0, -560];
 const SUP_STRAP = 300;
 const supportFrame = (z: number, hold: number): Keyframe => {
-  const handY = SUP_ANCHOR[1] + Math.sqrt(SUP_STRAP ** 2 - (z - 24) ** 2);
-  return { ...hangingBody(handY - armRise(z - SHOULDER_Z), handY, z), hold };
+  const handY = strapHandY(SUP_ANCHOR, SUP_STRAP, z, 24);
+  return { ...hangingBody(handY - armRise(z - SHOULDER_SIDE), handY, z), hold };
 };
 
 // Iron cross: from support (arms down, rings by the hips) the arms open out level with the shoulders.
@@ -201,8 +198,8 @@ const CROSS_ANCHOR: Point = [0, -474];
 const CROSS_STRAP = 220;
 const CROSS_Z = 146;
 const crossFrame = (z: number, hold: number): Keyframe => {
-  const handY = CROSS_ANCHOR[1] + Math.sqrt(CROSS_STRAP ** 2 - (z - 26) ** 2);
-  return { ...hangingBody(handY - armRise(z - SHOULDER_Z), handY, z), hold };
+  const handY = strapHandY(CROSS_ANCHOR, CROSS_STRAP, z, 26);
+  return { ...hangingBody(handY - armRise(z - SHOULDER_SIDE), handY, z), hold };
 };
 
 /**
@@ -229,8 +226,8 @@ const MAL_ANCHOR: Point = [MAL_HAND_X, -420];
 const MAL_STRAP = 220;
 const MAL_Z = 118;
 const malteseFrame = (z: number, hold: number): Keyframe => {
-  const handY = MAL_ANCHOR[1] + Math.sqrt(MAL_STRAP ** 2 - (z - 26) ** 2);
-  const bodyY = handY - armRise(z - SHOULDER_Z, 98 - MAL_HAND_X);
+  const handY = strapHandY(MAL_ANCHOR, MAL_STRAP, z, 26);
+  const bodyY = handY - armRise(z - SHOULDER_SIDE, 98 - MAL_HAND_X);
   return { ...levelBody(1, bodyY, MAL_HAND_X, handY, z), hold };
 };
 
@@ -240,8 +237,8 @@ const VIC_STRAP = 200;
 const VIC_BODY_Y = -100;
 const VIC_ANCHOR: Point = [VIC_HAND_X, VIC_BODY_Y - armRise(4, 98 + VIC_HAND_X) - VIC_STRAP];
 const victorianFrame = (z: number, hold: number): Keyframe => {
-  const handY = VIC_ANCHOR[1] + Math.sqrt(VIC_STRAP ** 2 - (z - 26) ** 2);
-  const bodyY = handY + armRise(z - SHOULDER_Z, 98 + VIC_HAND_X);
+  const handY = strapHandY(VIC_ANCHOR, VIC_STRAP, z, 26);
+  const bodyY = handY + armRise(z - SHOULDER_SIDE, 98 + VIC_HAND_X);
   return { ...levelBody(-1, bodyY, VIC_HAND_X, handY, z), hold };
 };
 
@@ -266,9 +263,9 @@ function flyShoulderY(hand: Point, dz: number): number {
 }
 
 const flyFrame = (z: number, hold: number): Keyframe => {
-  const handY = FLY_ANCHOR[1] + Math.sqrt(FLY_STRAP ** 2 - (z - 26) ** 2);
+  const handY = strapHandY(FLY_ANCHOR, FLY_STRAP, z, 26);
   const hand: Point = [FLY_ANCHOR[0], round(handY)];
-  const { pelvis, chest } = straightBody(FLY_FOOT, flyShoulderY(hand, z - SHOULDER_Z));
+  const { pelvis, chest } = straightBody(FLY_FOOT, flyShoulderY(hand, z - SHOULDER_SIDE));
   const pose: AuthoredPose = {
     pelvis,
     chest,

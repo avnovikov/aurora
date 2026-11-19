@@ -1,7 +1,8 @@
-import { BONES, solvePose, zOut } from "./rig";
+import { BONES, HIP_SIDE, solvePose, zOut } from "./rig";
 import type { AuthoredPose, DoodleSpec, Keyframe, Point, Pose, Side, Sideways } from "./rig";
 import { solveKeyframe3 } from "./rig3d";
 import { TOP_VIEWS } from "./sideways";
+import { along, round } from "./geom";
 
 /**
  * Batch AW (#212): moves that waited for the sideways torso lean, the top view
@@ -14,14 +15,6 @@ import { TOP_VIEWS } from "./sideways";
  *     can lean but not roll about the spine; swapping the axes (z as "up") would draw a
  *     supine figure with knees up in the side panel, so no pair of views shows it honestly.
  */
-
-const round = (value: number): number => Math.round(value * 10) / 10;
-
-/** Point `length` from `from` at `degrees` (0 = +x, 90 = down, -90 = up). */
-function along(from: Point, degrees: number, length: number): Point {
-  const r = (degrees * Math.PI) / 180;
-  return [round(from[0] + Math.cos(r) * length), round(from[1] + Math.sin(r) * length)];
-}
 
 // ---------------------------------------------------------------- forearm plank hip dips (side + top)
 
@@ -71,7 +64,6 @@ const hipDip = (z: number, hold: number): Keyframe => ({ hold, pose: hipDipPose(
 const HS_PELVIS: Point = [0, -12];
 const HS_THIGH = BONES.thigh - 0.5;
 const HS_SHIN = BONES.shin - 0.5;
-const HS_HIP = 8;
 
 /** Seated tall, hands on the floor behind for support. */
 const hipSwitchBase = (): AuthoredPose => ({
@@ -88,8 +80,8 @@ const hipSwitchBase = (): AuthoredPose => ({
  */
 function hipSwitchSide(front: Side, toward: 1 | -1, hold: number): Keyframe {
   const rear = front === "near" ? "far" : "near";
-  const frontHip = zOut(front) * HS_HIP;
-  const rearHip = zOut(rear) * HS_HIP;
+  const frontHip = zOut(front) * HIP_SIDE;
+  const rearHip = zOut(rear) * HIP_SIDE;
   const rearKneeZ = rearHip + toward * HS_THIGH;
   return {
     hold,
@@ -177,7 +169,7 @@ function quadStretch(stage: QuadStage): Keyframe {
     sideways: {
       pelvis: QS_Z,
       knees: { near: { at: QS_KNEE_Z } },
-      feet: { near: QS_KNEE_Z + at.footDz, far: QS_Z + HS_HIP },
+      feet: { near: QS_KNEE_Z + at.footDz, far: QS_Z + HIP_SIDE },
       hands: { near: at.handZ, far: QS_Z + 6 },
     },
   };

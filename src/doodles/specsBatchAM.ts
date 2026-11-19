@@ -1,13 +1,14 @@
-import { BONES, HIP_SIDE, other, SHOULDER_SIDE, solvePose, zOut } from "./rig";
+import { BONES, deg, HIP_SIDE, other, SHOULDER_SIDE, solvePose, zOut } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
-import { solveKeyframe3 } from "./rig3d";
+import { add3, dot3, norm3, scale3, solveKeyframe3, sub3, type Point3 } from "./rig3d";
 import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
 import { BATCH_AA_SPECS } from "./specsBatchAA";
+import { along, round, FLOOR_PROP } from "./geom";
 
 /**
  * Batch AM (#212): core work and twists. Floor at y = 0, up is negative, the
- * side-view figure faces +x; lying face up has the head at -x. Import only from ./rig
- * (and the dual-view helpers).
+ * side-view figure faces +x; lying face up has the head at -x. Never import
+ * ./specs (circular).
  *
  * Every twist is drawn in two views (side + front; the oblique crunch side + top). The rig cannot turn the
  * torso, so a twist is shown by what moves across: an elbow travelling to the
@@ -18,37 +19,19 @@ import { BATCH_AA_SPECS } from "./specsBatchAA";
  * Limbs are placed in 3D by `chain` / `dirs` (exact bone lengths); `frame` turns
  * the plans into pins and the keyframe's `sideways` z values, so nothing is typed twice.
  *
- * Left out:
- *   hf_158  90/90 Hip Switch: both legs swing flat along the floor, so side and
- *     front views only show lines on the ground; the switch needs a top view.
- *   hf_170  Side-Lying Thoracic Rotation: the figure lies on its side, with the
- *     shoulders stacked one above the other. The rig keeps both shoulders level,
- *     so the lying pose and the arm sweeping up and over cannot be drawn.
+ * Left out: hf_170 Side-Lying Thoracic Rotation (see batch AW for why). hf_158
+ * 90/90 Hip Switch needs a top view and is drawn in batch AW.
  */
-
-type P3 = readonly [number, number, number];
-
-const round = (value: number): number => Math.round(value * 10) / 10;
-
-/** Point `length` from `from` at `degrees` (0 = +x, 90 = down, -90 = up). */
-function along(from: Point, degrees: number, length: number): Point {
-  const r = (degrees * Math.PI) / 180;
-  return [round(from[0] + Math.cos(r) * length), round(from[1] + Math.sin(r) * length)];
-}
 
 // ---------------------------------------------------------------- 3D limb placement
 
-const sub3 = (a: P3, b: P3): P3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
-const add3 = (a: P3, b: P3): P3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
-const mul3 = (a: P3, k: number): P3 => [a[0] * k, a[1] * k, a[2] * k];
-const dot3 = (a: P3, b: P3): number => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-const len3 = (a: P3): number => Math.hypot(a[0], a[1], a[2]);
-const unit3 = (a: P3): P3 => mul3(a, 1 / (len3(a) || 1));
+/** Unit vector; a zero vector stays zero. */
+const unit3 = (a: Point3): Point3 => scale3(a, 1 / (norm3(a) || 1));
 
 /** Middle joint and end of a two-bone limb. */
 interface Plan {
-  mid: P3;
-  end: P3;
+  mid: Point3;
+  end: Point3;
 }
 
 const ARM: [number, number] = [BONES.upperArm, BONES.forearm + BONES.hand];
@@ -58,40 +41,40 @@ const LEG: [number, number] = [BONES.thigh, BONES.shin];
  * A limb from `root` reaching `end` (pulled in if it is too far) with the middle
  * joint on the `hint` side of the root-end line; both bones keep their lengths.
  */
-function chain(root: P3, [l1, l2]: [number, number], end: P3, hint: P3): Plan {
+function chain(root: Point3, [l1, l2]: [number, number], end: Point3, hint: Point3): Plan {
   const full = sub3(end, root);
-  const d = Math.min(Math.max(len3(full), Math.abs(l1 - l2) + 1), l1 + l2 - 0.3);
+  const d = Math.min(Math.max(norm3(full), Math.abs(l1 - l2) + 1), l1 + l2 - 0.3);
   const u = unit3(full);
   const a = (l1 * l1 - l2 * l2 + d * d) / (2 * d);
   const h = Math.sqrt(Math.max(0, l1 * l1 - a * a));
-  const centre = add3(root, mul3(u, a));
+  const centre = add3(root, scale3(u, a));
   const toHint = sub3(hint, centre);
-  let n = sub3(toHint, mul3(u, dot3(toHint, u)));
-  if (len3(n) < 1e-6) n = sub3([0, -1, 0], mul3(u, u[1] * -1));
-  return { mid: add3(centre, mul3(unit3(n), h)), end: add3(root, mul3(u, d)) };
+  let n = sub3(toHint, scale3(u, dot3(toHint, u)));
+  if (norm3(n) < 1e-6) n = sub3([0, -1, 0], scale3(u, u[1] * -1));
+  return { mid: add3(centre, scale3(unit3(n), h)), end: add3(root, scale3(u, d)) };
 }
 
 /** A limb given as two directions (each is normalised): the upper bone, then the lower. */
-function dirs(root: P3, [l1, l2]: [number, number], d1: P3, d2: P3): Plan {
-  const mid = add3(root, mul3(unit3(d1), l1));
-  return { mid, end: add3(mid, mul3(unit3(d2), l2)) };
+function dirs(root: Point3, [l1, l2]: [number, number], d1: Point3, d2: Point3): Plan {
+  const mid = add3(root, scale3(unit3(d1), l1));
+  return { mid, end: add3(mid, scale3(unit3(d2), l2)) };
 }
 
 /** A straight limb `length` along `d`. */
-const straight = (root: P3, l: [number, number], d: P3): Plan => dirs(root, l, d, d);
+const straight = (root: Point3, l: [number, number], d: Point3): Plan => dirs(root, l, d, d);
 
 /**
  * An arm with the elbow 60 from the shoulder `toward` a point and the forearm folded back
  * `bendDeg` from the upper arm, swinging round towards `fold` (a point near the head).
  */
-function elbowThen(root: P3, elbowToward: P3, fold: P3, bendDeg = 145): Plan {
+function elbowThen(root: Point3, elbowToward: Point3, fold: Point3, bendDeg = 145): Plan {
   const u = unit3(sub3(elbowToward, root));
-  const mid = add3(root, mul3(u, ARM[0]));
+  const mid = add3(root, scale3(u, ARM[0]));
   const v = sub3(fold, mid);
-  const w = unit3(sub3(v, mul3(u, dot3(v, u))));
+  const w = unit3(sub3(v, scale3(u, dot3(v, u))));
   const r = (bendDeg * Math.PI) / 180;
-  const f = add3(mul3(u, Math.cos(r)), mul3(w, Math.sin(r)));
-  return { mid, end: add3(mid, mul3(f, ARM[1])) };
+  const f = add3(scale3(u, Math.cos(r)), scale3(w, Math.sin(r)));
+  return { mid, end: add3(mid, scale3(f, ARM[1])) };
 }
 
 interface LimbSpec {
@@ -109,12 +92,12 @@ interface Limbs {
 type Spine = Pick<Pose, "pelvis" | "chest" | "head" | "spine">;
 
 /** Where a limb roots: the solved spine's shoulder and hip, set out sideways about the spine at z = `pz`. */
-function roots(spine: Spine, pz: number): { arm: Record<Side, P3>; leg: Record<Side, P3> } {
+function roots(spine: Spine, pz: number): { arm: Record<Side, Point3>; leg: Record<Side, Point3> } {
   const solved = solvePose(spine);
-  const at = (p: Point, z: number): P3 => [p[0], p[1], z];
+  const at = (p: Point, z: number): Point3 => [p[0], p[1], z];
   const sides: Side[] = ["near", "far"];
-  const arm = {} as Record<Side, P3>;
-  const leg = {} as Record<Side, P3>;
+  const arm = {} as Record<Side, Point3>;
+  const leg = {} as Record<Side, Point3>;
   for (const side of sides) {
     arm[side] = at(solved.arms[side].root, pz + zOut(side) * SHOULDER_SIDE);
     leg[side] = at(solved.legs[side].root, pz + zOut(side) * HIP_SIDE);
@@ -122,7 +105,7 @@ function roots(spine: Spine, pz: number): { arm: Record<Side, P3>; leg: Record<S
   return { arm, leg };
 }
 
-const flat = (p: P3): Point => [round(p[0]), round(p[1])];
+const flat = (p: Point3): Point => [round(p[0]), round(p[1])];
 
 const SIDES: Side[] = ["near", "far"];
 
@@ -184,19 +167,19 @@ function torso(theta: number, tuck: number, pelvis: Point = PELVIS): Spine {
 }
 
 /** Back of the head, where the hands rest. */
-const behindHead = (spine: Spine, theta: number, z: number): P3 => {
+const behindHead = (spine: Spine, theta: number, z: number): Point3 => {
   const head = spine.head as Point;
   const p = along(head, theta - 90, 24);
   return [p[0], p[1], z];
 };
 
 /** Hands lightly behind the head; each elbow wide unless `hints` pull it somewhere. */
-function handsBehind(spine: Spine, theta: number, hints: Partial<Record<Side, P3>> = {}, pz = 0): Limbs["arms"] {
+function handsBehind(spine: Spine, theta: number, hints: Partial<Record<Side, Point3>> = {}, pz = 0): Limbs["arms"] {
   const { arm } = roots(spine, pz);
   const out = {} as Record<Side, LimbSpec>;
   for (const side of ["near", "far"] as Side[]) {
     const s = arm[side];
-    const wide: P3 = [s[0] - 10, s[1] - 6, pz + zOut(side) * 90];
+    const wide: Point3 = [s[0] - 10, s[1] - 6, pz + zOut(side) * 90];
     out[side] = { plan: chain(s, ARM, behindHead(spine, theta, pz + zOut(side) * 24), hints[side] ?? wide) };
   }
   return out;
@@ -205,14 +188,14 @@ function handsBehind(spine: Spine, theta: number, hints: Partial<Record<Side, P3
 /** Feet flat on the floor at x, z, knees up. */
 function flatFoot(spine: Spine, side: Side, x: number, z: number, pz = 0): LimbSpec {
   const hip = roots(spine, pz).leg[side];
-  const foot: P3 = [x, -2, z];
+  const foot: Point3 = [x, -2, z];
   return { plan: chain(hip, LEG, foot, [(hip[0] + x) / 2, -150, z]), toe: 0 };
 }
 
 /** Leg bent with the foot up off the floor: knee over the hip, shin sloping down forward. */
 function tucked(spine: Spine, side: Side, kneeAt: Point, shinDeg: number, z: number, pz = 0): LimbSpec {
   const hip = roots(spine, pz).leg[side];
-  const knee: P3 = [kneeAt[0], kneeAt[1], z];
+  const knee: Point3 = [kneeAt[0], kneeAt[1], z];
   const d1 = sub3(knee, hip);
   const plan = dirs(hip, LEG, d1, [Math.cos((shinDeg * Math.PI) / 180), Math.sin((shinDeg * Math.PI) / 180), 0]);
   return { plan, toe: round(shinDeg + 10) };
@@ -221,7 +204,7 @@ function tucked(spine: Spine, side: Side, kneeAt: Point, shinDeg: number, z: num
 /** A straight leg lifted `elev` degrees above the floor line, z kept at the hip's. */
 function reachLeg(spine: Spine, side: Side, elev: number, z: number, pz = 0): LimbSpec {
   const hip = roots(spine, pz).leg[side];
-  const d: P3 = [Math.cos((elev * Math.PI) / 180), -Math.sin((elev * Math.PI) / 180), (z - hip[2]) / 174];
+  const d: Point3 = [Math.cos((elev * Math.PI) / 180), -Math.sin((elev * Math.PI) / 180), (z - hip[2]) / 174];
   return { plan: straight(hip, LEG, d), toe: round(-elev + 10) };
 }
 
@@ -231,11 +214,11 @@ function reachLeg(spine: Spine, side: Side, elev: number, z: number, pz = 0): Li
  * The arm on `side` with its elbow reaching `to` (the knee it meets) and the hand folded
  * back towards the head, which the other arm cups wide as usual.
  */
-function armsAcross(spine: Spine, theta: number, side: Side, to: P3): Limbs["arms"] {
+function armsAcross(spine: Spine, theta: number, side: Side, to: Point3): Limbs["arms"] {
   const arms = handsBehind(spine, theta) as Record<Side, LimbSpec>;
   const head = spine.head as Point;
   const shoulder = roots(spine, 0).arm[side];
-  const fold: P3 = [head[0], head[1] + 20, zOut(side) * 30];
+  const fold: Point3 = [head[0], head[1] + 20, zOut(side) * 30];
   arms[side] = { plan: elbowThen(shoulder, [to[0] + 10, to[1] - 4, to[2]], fold) };
   return arms;
 }
@@ -283,7 +266,7 @@ function heelTouch(side: Side | null): Keyframe {
   const theta = 209;
   const spine = torso(theta, 6);
   const pz = side ? zOut(side) * 22 : 0;
-  const foot = { near: [34, -2, -38] as P3, far: [34, -2, 38] as P3 };
+  const foot = { near: [34, -2, -38] as Point3, far: [34, -2, 38] as Point3 };
   const legs: Limbs["legs"] = {};
   const arms: Limbs["arms"] = {};
   for (const s of ["near", "far"] as Side[]) {
@@ -311,7 +294,7 @@ function elbowKnee(raised: Side, up: boolean): Keyframe {
   const support = flatFoot(spine, raised, 40, zOut(raised) * 14);
   const knee = support.plan.mid;
   const hip = roots(spine, 0).leg[crossed];
-  const ankle: P3 = [knee[0] - 4, knee[1] - 9, knee[2]];
+  const ankle: Point3 = [knee[0] - 4, knee[1] - 9, knee[2]];
   const cross: LimbSpec = { plan: chain(hip, LEG, ankle, [(hip[0] + ankle[0]) / 2, ankle[1] + 20, zOut(crossed) * 120]), toe: -10 };
   const legs: Limbs["legs"] = { [raised]: support, [crossed]: cross };
   const arms = handsBehind(spine, theta) as Record<Side, LimbSpec>;
@@ -326,7 +309,7 @@ function elbowKnee(raised: Side, up: boolean): Keyframe {
 function elbowAcross(spine: Spine, side: Side, towards: Side, reach = 52): LimbSpec {
   const shoulder = roots(spine, 0).arm[side];
   const head = spine.head as Point;
-  const toward: P3 = [shoulder[0] + 26, shoulder[1] - 24, shoulder[2] + zOut(towards) * reach];
+  const toward: Point3 = [shoulder[0] + 26, shoulder[1] - 24, shoulder[2] + zOut(towards) * reach];
   return { plan: chain(shoulder, ARM, [head[0] + 6, head[1] + 14, zOut(side) * 34], toward) };
 }
 
@@ -348,22 +331,22 @@ function oblique(working: Side, up: boolean): Keyframe {
   const legs: Limbs["legs"] = {};
   for (const s of ["near", "far"] as Side[]) {
     const hip = roots(spine, 0).leg[s];
-    const foot: P3 = [96, -82, zOut(s) * 18];
+    const foot: Point3 = [96, -82, zOut(s) * 18];
     legs[s] = { plan: chain(hip, LEG, foot, [(hip[0] + 96) / 2, -150, zOut(s) * 40]), toe: 0 };
   }
   const chestZ = up ? zOut(rest) * OBLIQUE_LEAN : 0;
   // Shoulders and head after the lean: the arms root there.
   const leaned = solveKeyframe3(solvePose(spine), spine, { chest: chestZ });
-  const shoulder = (side: Side): P3 => leaned.arms[side].root as P3;
-  const head = leaned.head as P3;
+  const shoulder = (side: Side): Point3 => leaned.arms[side].root as Point3;
+  const head = leaned.head as Point3;
   const arms: Limbs["arms"] = {};
   if (up) {
     // The elbow points across the body at the opposite knee; the forearm folds back to the hand by the ear.
     const knee = (legs[rest] as LimbSpec).plan.mid;
     const s0 = shoulder(working);
-    const mid = add3(s0, mul3(unit3(sub3([knee[0], knee[1], knee[2] + zOut(rest) * 45], s0)), ARM[0]));
-    const ear: P3 = [head[0] - 14, head[1] - 4, head[2] + zOut(working) * 40];
-    arms[working] = { plan: { mid, end: add3(mid, mul3(unit3(sub3(ear, mid)), ARM[1])) } };
+    const mid = add3(s0, scale3(unit3(sub3([knee[0], knee[1], knee[2] + zOut(rest) * 45], s0)), ARM[0]));
+    const ear: Point3 = [head[0] - 14, head[1] - 4, head[2] + zOut(working) * 40];
+    arms[working] = { plan: { mid, end: add3(mid, scale3(unit3(sub3(ear, mid)), ARM[1])) } };
   } else {
     const s0 = shoulder(working);
     arms[working] = { plan: chain(s0, ARM, behindHead(spine, theta, zOut(working) * 24), [s0[0] + 10, s0[1] - 40, zOut(working) * 90]) };
@@ -386,15 +369,14 @@ function windmill(lifted: Side, phi: number): Keyframe {
   }
   const down = reachLeg(spine, other(lifted), 3, zOut(other(lifted)) * HIP_SIDE);
   const r = (phi * Math.PI) / 180;
-  const d: P3 = [0.08, -Math.cos(r), -zOut(lifted) * Math.sin(r)];
+  const d: Point3 = [0.08, -Math.cos(r), -zOut(lifted) * Math.sin(r)];
   const swing: LimbSpec = { plan: straight(leg[lifted], LEG, d), toe: -90 };
   return frame(0.4, spine, { arms, legs: { [lifted]: swing, [other(lifted)]: down } });
 }
 
 // ---------------------------------------------------------------- standing helpers
 
-const rad = (degrees: number): number => (degrees * Math.PI) / 180;
-const dir2 = (degrees: number, z = 0): P3 => [Math.cos(rad(degrees)), Math.sin(rad(degrees)), z];
+const dir2 = (degrees: number, z = 0): Point3 => [Math.cos(deg(degrees)), Math.sin(deg(degrees)), z];
 
 /** Upright (or leaning) spine from the pelvis: `lean` degrees from vertical towards +x. */
 function upright(pelvis: Point, lean = 0): Spine {
@@ -402,7 +384,7 @@ function upright(pelvis: Point, lean = 0): Spine {
 }
 
 /** Forearms folded with the hands clasped at `hand`, elbows hinted outward and down. */
-function claspedArms(spine: Spine, hand: P3, flare = 30): Limbs["arms"] {
+function claspedArms(spine: Spine, hand: Point3, flare = 30): Limbs["arms"] {
   const { arm } = roots(spine, 0);
   const out = {} as Record<Side, LimbSpec>;
   for (const side of ["near", "far"] as Side[]) {
@@ -413,7 +395,6 @@ function claspedArms(spine: Spine, hand: P3, flare = 30): Limbs["arms"] {
 
 // ---------------------------------------------------------------- crossover reverse lunge
 
-const FLOOR: Prop = { kind: "floor" };
 
 /**
  * Reverse lunge, near leg in front (shin upright, thigh level), far leg stepped back with the
@@ -434,8 +415,8 @@ function crossoverLunge(down: boolean, turn: number): Keyframe {
       };
   const shoulder = arm.near;
   const reach = 66;
-  const t = rad(turn);
-  const hand: P3 = [shoulder[0] + reach * Math.cos(t) + 4, shoulder[1] + 36, -reach * Math.sin(t)];
+  const t = deg(turn);
+  const hand: Point3 = [shoulder[0] + reach * Math.cos(t) + 4, shoulder[1] + 36, -reach * Math.sin(t)];
   return frame(down ? 0.5 : 0.4, spine, { arms: claspedArms(spine, hand), legs });
 }
 
@@ -479,8 +460,8 @@ function russianTwist(turn: number): Keyframe {
   }
   const chest = spine.chest as Point;
   const forward = dir2(325);
-  const t = rad(turn);
-  const hand: P3 = [chest[0] + 54 * forward[0] * Math.cos(t), chest[1] + 54 * forward[1] * Math.cos(t), 54 * Math.sin(t)];
+  const t = deg(turn);
+  const hand: Point3 = [chest[0] + 54 * forward[0] * Math.cos(t), chest[1] + 54 * forward[1] * Math.cos(t), 54 * Math.sin(t)];
   return frame(0.45, spine, { arms: claspedArms(spine, hand, 34), legs });
 }
 
@@ -491,7 +472,7 @@ const QUAD_PELVIS: Point = [-92, -93];
 const QUAD_SPINE: Spine = { pelvis: QUAD_PELVIS, chest: along(QUAD_PELVIS, -20.3, 80) };
 
 /** The support limbs of the quadruped: both knees on the floor, the far hand planted. */
-function quadruped(spine: Spine): { legs: NonNullable<Limbs["legs"]>; far: LimbSpec; shoulder: P3; head: P3 } {
+function quadruped(spine: Spine): { legs: NonNullable<Limbs["legs"]>; far: LimbSpec; shoulder: Point3; head: Point3 } {
   const { arm, leg } = roots(spine, 0);
   const solved = solvePose(spine);
   const legs: NonNullable<Limbs["legs"]> = {};
@@ -508,8 +489,8 @@ function quadruped(spine: Spine): { legs: NonNullable<Limbs["legs"]>; far: LimbS
  */
 function thoracic(up: boolean): Keyframe {
   const { legs, far, shoulder, head } = quadruped(QUAD_SPINE);
-  const ear: P3 = [head[0] + 2, head[1] + 2, -26];
-  const hint: P3 = up ? [shoulder[0], shoulder[1] - 80, -90] : [shoulder[0] + 6, shoulder[1] + 80, 10];
+  const ear: Point3 = [head[0] + 2, head[1] + 2, -26];
+  const hint: Point3 = up ? [shoulder[0], shoulder[1] - 80, -90] : [shoulder[0] + 6, shoulder[1] + 80, 10];
   const near: LimbSpec = { plan: chain(shoulder, ARM, ear, hint) };
   return frame(0.6, QUAD_SPINE, { arms: { near, far }, legs });
 }
@@ -527,14 +508,14 @@ function kickThrough(turn: number): Keyframe {
   const pelvis: Point = [-95 + 8 * turn, -103 - rise];
   const spine: Spine = { pelvis, chest: along(pelvis, -14.7 - 6 * turn, 80) };
   const { arm, leg } = roots(spine, 0);
-  const handNear: P3 = [arm.near[0] + 4 * (1 - turn) + 14 * turn, -3 - 150 * turn, -22 - 40 * turn];
+  const handNear: Point3 = [arm.near[0] + 4 * (1 - turn) + 14 * turn, -3 - 150 * turn, -22 - 40 * turn];
   const arms: Limbs["arms"] = {
     near: { plan: chain(arm.near, ARM, handNear, [arm.near[0] + 20 * (1 - turn) - 10 * turn, arm.near[1] + 40, -22 - 40 * turn]) },
     far: { plan: chain(arm.far, ARM, [arm.far[0] + 2, -3, 22], [arm.far[0] + 30, -60, 22]) },
   };
   const near: LimbSpec = { plan: chain(leg.near, LEG, [-140, -19, -8], [leg.near[0] + 40, -25, -8]), toe: 75 };
-  const through: P3 = [leg.far[0] + 108 * turn - 56 * (1 - turn), -2 - 13 * turn - 0 * (1 - turn), 8 - 98 * turn];
-  const farFoot: P3 = turn === 0 ? [-140, -19, 8] : through;
+  const through: Point3 = [leg.far[0] + 108 * turn - 56 * (1 - turn), -2 - 13 * turn, 8 - 98 * turn];
+  const farFoot: Point3 = turn === 0 ? [-140, -19, 8] : through;
   let farToe = 75;
   if (turn > 0.5) farToe = -70;
   else if (turn > 0) farToe = 20;
@@ -544,9 +525,20 @@ function kickThrough(turn: number): Keyframe {
 
 /** Archer push-up hold: the archer push-up's own keyframes, with a long hold at the bottom. */
 function archerHold(): Keyframe[] {
-  const frames = (BATCH_AA_SPECS.find((spec) => spec.id === "hf_6") as DoodleSpec).frames;
-  return frames.map((f, i) => (i === 2 ? { ...f, hold: 2 } : f));
+  const archerPushUp = BATCH_AA_SPECS.find((spec) => spec.id === "hf_6");
+  if (!archerPushUp) throw new Error("specsBatchAM: archer push-up hf_6 missing from batch AA");
+  return archerPushUp.frames.map((f, i) => (i === 2 ? { ...f, hold: 2 } : f));
 }
+
+/** The bicycle crunch is the air bike under another name (hf_115 reuses it). */
+const AIR_BIKE: DoodleSpec = {
+  id: "fedb_air_bike",
+  slug: "air-bike",
+  title: "Air Bike",
+  views: TWO_VIEWS,
+  transition: 0.7,
+  frames: [bike("near"), bike("far")],
+};
 
 export const BATCH_AM_SPECS: DoodleSpec[] = [
   {
@@ -557,22 +549,8 @@ export const BATCH_AM_SPECS: DoodleSpec[] = [
     transition: 0.7,
     frames: [crossBody(null), crossBody("near"), crossBody(null), crossBody("far")],
   },
-  {
-    id: "fedb_air_bike",
-    slug: "air-bike",
-    title: "Air Bike",
-    views: TWO_VIEWS,
-    transition: 0.7,
-    frames: [bike("near"), bike("far")],
-  },
-  {
-    id: "hf_115",
-    slug: "bicycle-crunch",
-    title: "Bicycle Crunch",
-    views: TWO_VIEWS,
-    transition: 0.7,
-    frames: [bike("near"), bike("far")],
-  },
+  AIR_BIKE,
+  { ...AIR_BIKE, id: "hf_115", slug: "bicycle-crunch", title: "Bicycle Crunch" },
   {
     id: "fedb_alternate_heel_touchers",
     slug: "alternate-heel-touchers",
@@ -611,7 +589,7 @@ export const BATCH_AM_SPECS: DoodleSpec[] = [
     slug: "crossover-reverse-lunge",
     title: "Crossover Reverse Lunge",
     views: TWO_VIEWS,
-    props: [FLOOR],
+    props: [FLOOR_PROP],
     transition: 0.6,
     frames: [crossoverLunge(false, 0), crossoverLunge(true, 0), crossoverLunge(true, 80), crossoverLunge(true, 0)],
   },
@@ -619,7 +597,7 @@ export const BATCH_AM_SPECS: DoodleSpec[] = [
     id: "fedb_single_leg_butt_kick",
     slug: "single-leg-butt-kick",
     title: "Single Leg Butt Kick",
-    props: [FLOOR],
+    props: [FLOOR_PROP],
     transition: 0.25,
     frames: [buttKick(-170, 0), buttKick(-138, 0), buttKick(-205, 0), buttKick(-224, 1), buttKick(-150, 0)],
   },
@@ -628,7 +606,7 @@ export const BATCH_AM_SPECS: DoodleSpec[] = [
     slug: "russian-twist",
     title: "Russian Twist",
     views: TWO_VIEWS,
-    props: [FLOOR],
+    props: [FLOOR_PROP],
     transition: 0.7,
     frames: [russianTwist(-80), russianTwist(0), russianTwist(80), russianTwist(0)],
   },
@@ -637,7 +615,7 @@ export const BATCH_AM_SPECS: DoodleSpec[] = [
     slug: "quadruped-thoracic-rotation",
     title: "Quadruped Thoracic Rotation",
     views: TWO_VIEWS,
-    props: [FLOOR],
+    props: [FLOOR_PROP],
     transition: 0.9,
     frames: [thoracic(false), thoracic(true)],
   },
@@ -646,7 +624,7 @@ export const BATCH_AM_SPECS: DoodleSpec[] = [
     slug: "front-kickthrough",
     title: "Front Kickthrough",
     views: TWO_VIEWS,
-    props: [FLOOR],
+    props: [FLOOR_PROP],
     transition: 0.6,
     frames: [kickThrough(0), kickThrough(0.5), kickThrough(1), kickThrough(0.5)],
   },

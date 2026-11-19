@@ -2,6 +2,7 @@ import { solvePose } from "./rig";
 import type { BellMode, DoodleSpec, Keyframe, Point, Pose, Side, Sideways } from "./rig";
 import { solveKeyframe3 } from "./rig3d";
 import { LOCKED_REACH, TWO_VIEWS } from "./sideways";
+import { FLOOR_PROP, along, chestOf, freeHand, round, shoulderOf } from "./geom";
 
 /**
  * Batch AV (#212): kettlebell moves that were blocked on gear and rig gaps:
@@ -11,24 +12,13 @@ import { LOCKED_REACH, TWO_VIEWS } from "./sideways";
  * the horns) and the bent press (the torso leans sideways).
  *
  * Floor at y = 0, up is negative, the side-view figure faces +x; in the front
- * panel the near side (z < 0) is on the viewer's left. Import only from ./rig
- * and ./sideways, never ./specs.
+ * panel the near side (z < 0) is on the viewer's left. Never import ./specs
+ * (circular).
  */
 
-const round = (value: number): number => Math.round(value * 10) / 10;
-
-/** Point `length` from `from` at `degrees` (0 = +x, 90 = down, -90 = up). */
-function along(from: Point, degrees: number, length: number): Point {
-  const r = (degrees * Math.PI) / 180;
-  return [round(from[0] + Math.cos(r) * length), round(from[1] + Math.sin(r) * length)];
-}
-
 const BELL = 14;
-const FLOOR: DoodleSpec["props"] = [{ kind: "floor" }];
 /** Arm reach (shoulder to fingertip), a hair short so a straight arm draws straight. */
 const REACH = 125.4;
-const shoulderOf = (pelvis: Point, spine: number): Point => along(pelvis, spine, 98);
-const chestOf = (pelvis: Point, spine: number): Point => along(pelvis, spine, 80);
 
 // ---------------------------------------------------------------- alternating hang cleans (side view)
 
@@ -123,7 +113,7 @@ const CLEAN_SPECS: DoodleSpec[] = [
     id: "fedb_alternating_hang_clean",
     slug: "alternating-hang-clean",
     title: "Alternating Hang Clean",
-    props: FLOOR,
+    props: [FLOOR_PROP],
     kettlebell: { hands: ["near", "far"], size: BELL },
     transition: 0.32,
     frames: [...oneClean("near"), ...oneClean("far")],
@@ -132,13 +122,12 @@ const CLEAN_SPECS: DoodleSpec[] = [
     id: "fedb_double_kettlebell_alternating_hang_clean",
     slug: "double-kettlebell-alternating-hang-clean",
     title: "Double Kettlebell Alternating Hang Clean",
-    props: FLOOR,
+    props: [FLOOR_PROP],
     kettlebell: { hands: ["near", "far"], size: BELL },
     transition: 0.32,
     frames: [...swapClean("near"), ...swapClean("far")],
   },
 ];
-
 
 // ---------------------------------------------------------------- passing the bell between the hands (two views)
 
@@ -235,7 +224,7 @@ const PASS_SPECS: DoodleSpec[] = [
     slug: "kettlebell-figure-8",
     title: "Kettlebell Figure 8",
     views: TWO_VIEWS,
-    props: FLOOR,
+    props: [FLOOR_PROP],
     kettlebell: { hands: ["near"], size: BELL },
     transition: 0.5,
     frames: FIGURE_8,
@@ -245,7 +234,7 @@ const PASS_SPECS: DoodleSpec[] = [
     slug: "kettlebell-pass-between-the-legs",
     title: "Kettlebell Pass Between the Legs",
     views: TWO_VIEWS,
-    props: FLOOR,
+    props: [FLOOR_PROP],
     kettlebell: { hands: ["near"], size: BELL },
     transition: 0.55,
     frames: BETWEEN_LEGS,
@@ -255,13 +244,12 @@ const PASS_SPECS: DoodleSpec[] = [
     slug: "lunge-pass-through",
     title: "Lunge Pass-Through",
     views: TWO_VIEWS,
-    props: FLOOR,
+    props: [FLOOR_PROP],
     kettlebell: { hands: ["near"], size: BELL },
     transition: 0.7,
     frames: [lungeFrame(null, 0.3, "near"), lungeFrame("far", 0.25, "far"), lungeFrame(null, 0.3, "far"), lungeFrame("near", 0.25, "near")],
   },
 ];
-
 
 // ---------------------------------------------------------------- by the horns: halos and overhead triceps extension (two views)
 
@@ -420,7 +408,6 @@ function closeHaloFrame(theta: number, hold: number): Keyframe {
   };
 }
 
-
 const HALO_KEYS = 24;
 const closeHaloFrames: Keyframe[] = Array.from({ length: HALO_KEYS }, (_, k) => closeHaloFrame(-(360 / HALO_KEYS) * k, 0));
 
@@ -430,7 +417,7 @@ const HORN_SPECS: DoodleSpec[] = [
     slug: "kettlebell-halo",
     title: "Kettlebell Halo",
     views: TWO_VIEWS,
-    props: FLOOR,
+    props: [FLOOR_PROP],
     kettlebell: { hands: ["near"], size: BELL },
     transition: 0.18,
     frames: closeHaloFrames,
@@ -440,7 +427,7 @@ const HORN_SPECS: DoodleSpec[] = [
     slug: "kettlebell-halo-with-overhead-extension",
     title: "Kettlebell Halo with Overhead Extension",
     views: TWO_VIEWS,
-    props: FLOOR,
+    props: [FLOOR_PROP],
     kettlebell: { hands: ["near"], size: BELL },
     transition: 0.4,
     frames: [
@@ -461,13 +448,12 @@ const HORN_SPECS: DoodleSpec[] = [
     slug: "kettlebell-overhead-triceps-extension",
     title: "Kettlebell Overhead Triceps Extension",
     views: TWO_VIEWS,
-    props: FLOOR,
+    props: [FLOOR_PROP],
     kettlebell: { hands: ["near"], size: BELL },
     transition: 0.9,
     frames: [tricepsFrame("lock", 0.5), tricepsFrame("bottom", 0.4)],
   },
 ];
-
 
 // ---------------------------------------------------------------- bent press (two views, sideways torso lean)
 
@@ -533,17 +519,7 @@ function pressFrame(body: PressBody, arm: PressArm, hold: number, floor = false)
     elbow = [fs[0] + d[0] * 60, fs[1] + d[1] * 60, fs[2] + d[2] * 60];
   }
   // The free hand: on the floor beside the lead foot, or hanging by the side.
-  const [nx, ny, nz] = shoulders.near;
-  let nearHand: Point;
-  let nearZ: number;
-  if (floor) {
-    nearZ = round(nz - 12);
-    const dy = -4 - ny;
-    nearHand = [round(nx + Math.sqrt(Math.max(0, (LOCKED_REACH - 0.6) ** 2 - dy ** 2 - 12 ** 2))), -4];
-  } else {
-    nearZ = round(nz - 6);
-    nearHand = [round(nx), round(ny + Math.sqrt((LOCKED_REACH - 4) ** 2 - 36))];
-  }
+  const { hand: nearHand, z: nearZ } = freeHand(shoulders.near, floor, LOCKED_REACH);
   const r3 = (p: V3): V3 => p.map(round) as V3;
   const [hx, hy, hz] = r3(hand);
   const [ex, ey, ez] = r3(elbow);
@@ -579,7 +555,7 @@ const BENT_PRESS: DoodleSpec = {
   slug: "bent-press",
   title: "Bent Press",
   views: TWO_VIEWS,
-  props: FLOOR,
+  props: [FLOOR_PROP],
   kettlebell: { hands: ["far"], size: BELL },
   transition: 0.9,
   frames: [

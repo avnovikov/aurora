@@ -2,6 +2,7 @@ import { BONES, HIP_SIDE, other, solvePose, zOut } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
 import { lockedY3, TWO_VIEWS } from "./sideways";
 import { LOCKED } from "./specsBatchC";
+import { along, round } from "./geom";
 
 /**
  * Batch AU (#212): band drills (pull-apart, external rotation, wood chop,
@@ -9,14 +10,6 @@ import { LOCKED } from "./specsBatchC";
  * inverted row, archer dips and a push-up chest stretch on parallettes.
  * Floor at y = 0, up is negative, the side-view figure faces +x.
  */
-
-const round = (value: number): number => Math.round(value * 10) / 10;
-
-/** Point `length` from `from` at `degrees` (0 = +x, 90 = down, -90 = up). */
-function along(from: Point, degrees: number, length: number): Point {
-  const r = (degrees * Math.PI) / 180;
-  return [round(from[0] + Math.cos(r) * length), round(from[1] + Math.sin(r) * length)];
-}
 
 const LEG = BONES.thigh + BONES.shin - 0.1;
 

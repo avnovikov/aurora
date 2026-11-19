@@ -3,6 +3,7 @@ import type { Pose } from "./rig";
 import type { AuthoredPose, DoodleSpec, Keyframe, Point, Prop, Side, Sideways } from "./rig";
 import { TWO_VIEWS } from "./sideways";
 import { PLANK_FOOT, lockedShoulderY, rep, straightBody } from "./specsBatchC";
+import { along, lerp, round, supineTorso } from "./geom";
 
 /**
  * Batch AO (#212): the most-scheduled moves that had no doodle. Inverted rows
@@ -15,14 +16,6 @@ import { PLANK_FOOT, lockedShoulderY, rep, straightBody } from "./specsBatchC";
  *     to hip level, which no body position does.
  * ntc_plank_hip_dips is drawn in batch AW (side + top view, hips swinging under square shoulders).
  */
-
-/** Point `length` from `from` at `degrees` (0 = +x, 90 = down, -90 = up). */
-function along(from: Point, degrees: number, length: number): Point {
-  const r = (degrees * Math.PI) / 180;
-  return [round(from[0] + Math.cos(r) * length), round(from[1] + Math.sin(r) * length)];
-}
-const round = (value: number): number => Math.round(value * 10) / 10;
-const lerp = (a: number, b: number, t: number): number => a + (b - a) * t;
 
 // ---------------------------------------------------------------- Australian pull-ups (low bar)
 
@@ -129,10 +122,7 @@ const WIPER_FOOT_Z = 4;
 
 /** On the back, arms straight out to the sides (T) with the palms down: hands level with the shoulders and on the floor. */
 function wiperBase(): { pose: AuthoredPose; handZ: number } {
-  const dy = -18 - WIPER_PELVIS[1];
-  const chest: Point = [round(WIPER_PELVIS[0] - Math.sqrt(SUPINE_CHORD ** 2 - dy * dy)), -18];
-  const head: Point = [round(chest[0] - 55), -24];
-  const base: AuthoredPose = { pelvis: WIPER_PELVIS, chest, head, spine: { bend: -1 } };
+  const base: AuthoredPose = supineTorso(WIPER_PELVIS, SUPINE_CHORD);
   const shoulder = solvePose(base as Pose).arms.near.root;
   const handY = -6;
   // Straight out sideways from the shoulder (z +-22): the arm's reach is all in z.
