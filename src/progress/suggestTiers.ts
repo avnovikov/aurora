@@ -13,13 +13,28 @@ export interface TierSuggestion {
   totalFamilies: number;
 }
 
+/** First pattern in ladder order; members without a pattern are skipped (#116). */
+function firstPatternInFamily(
+  members: readonly { id: string }[],
+  patternOf: (exerciseId: string) => string | undefined,
+): string | undefined {
+  for (const member of members) {
+    const pattern = patternOf(member.id);
+    if (pattern !== undefined) {
+      return pattern;
+    }
+  }
+  return undefined;
+}
+
+/** Group families by pattern (from each family's first patterned member). */
 function familiesByPattern(
   index: FamilyLadderIndex,
   patternOf: (exerciseId: string) => string | undefined,
 ): Map<string, string[]> {
   const byPattern = new Map<string, string[]>();
   for (const [familyId, members] of index.byFamily) {
-    const pattern = members.map((m) => patternOf(m.id)).find((p) => p !== undefined);
+    const pattern = firstPatternInFamily(members, patternOf);
     if (pattern) {
       byPattern.set(pattern, [...(byPattern.get(pattern) ?? []), familyId]);
     }

@@ -42,9 +42,9 @@ npm run smell     # ESLint + SonarJS complexity (`--max-warnings 0`)
 npm run build     # TypeScript check + Vite production build
 ```
 
-CI also runs `npm run test:ui` (Playwright, phone-sized Chromium with touch) on pull requests and pushes to `main`, `mvp`, and `feature/**`.
+CI also runs `npm run test:ui` (Playwright, phone-sized Chromium with touch) on pull requests and pushes to `main`, `mvp`, `dev`, `release/**`, and `feature/**`.
 
-Run `test`, `smell`, and `build` before opening a PR. A failing smell check fails CI the same way a failing test does: the job exits non-zero and the PR should not merge until it is fixed.
+Run `test`, `smell`, and `build` before opening a PR into **`dev`**. A failing smell check fails CI the same way a failing test does: the job exits non-zero and the PR should not merge until it is fixed.
 
 ## Architecture
 
@@ -64,13 +64,25 @@ Common storage keys: `aurora.poc.profile.v1`, `aurora.poc.planQueue.v1`, `aurora
 
 ## Branches and releases
 
-- **`mvp`** is the integration branch for day-to-day merges (supersedes `poc`).
+- **`dev`** is the day-to-day integration branch. Feature and bug work branches from `origin/dev` and opens PRs into `dev`.
+- **`mvp`** (and `release/**`) are **release** branches. Promote from `dev` when cutting a release candidate; do not land ordinary feature PRs there.
 - Merge to **`main`** only as part of an explicit release (version bump, release notes, signed APK on GitHub Releases).
 - Do not treat a casual merge to `main` as a release.
 
+### Branch protection (solo maintainer)
+
+Rulesets require a PR (no direct pushes; no delete / force-push) on `main`, `mvp`, `dev`, and `release/**`. Repo admins may bypass when needed.
+
+| Target | Required checks before merge |
+|--------|------------------------------|
+| **`dev`** | `test-and-smell`, `ui` |
+| **`main`**, **`mvp`**, **`release/**`** | `test-and-smell`, `ui`, `SAST + Dependencies + Secrets` |
+
+Full security (CodeQL, npm audit high+, Trivy HIGH+, Gitleaks) is a merge gate only on release lines and `main`. It still runs on push to `dev` (informational) and on a weekly schedule. Dependabot and secret scanning stay enabled at the repo level.
+
 Release APKs are signed on a developer machine. The keystore stays out of Git and out of CI (`android/keystore.properties.example`). Confirm a downloaded APK’s certificate SHA-256 as described in the README Install details.
 
-Version shown in the README and Android `versionName` for this line: **0.1.1**.
+Version shown in the README and Android `versionName` for this line: **0.1.2**. Release notes: [RELEASE_NOTES.md](RELEASE_NOTES.md).
 
 ## Device snapshots
 
@@ -99,5 +111,6 @@ Requires USB debugging and a debuggable build. Snapshots used for Help / tutoria
 | [README](../README.md) | Product orientation, download, privacy |
 | [First-morning tutorial](tutorial/take-your-first-morning-with-aurora.md) | End-user walkthrough |
 | [Shell-tab reference](reference/aurora-shell-tabs.md) | Tabs, Session, storage keys |
-| [Terms](TERMS.md) | Local-only processing and disclaimer |
+| [Terms](TERMS.md) | Use conditions and disclaimer |
+| [Privacy](PRIVACY.md) | Local-only data; GDPR and CCPA/CPRA checklist |
 | [Lightsail deploy](deploy/lightsail.md) | Optional HTTPS host |

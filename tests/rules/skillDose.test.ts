@@ -26,16 +26,26 @@ describe("skillDose", () => {
       memory({ declaredTier: "intermediate" }),
     );
     expect(result.tier).toBe("intermediate");
-    expect(result.dose.reps).toBe(8);
+    // Endura intermediate pull-up floor 8 − targetRir 2 → 6 working reps (#189).
+    expect(result.dose.reps).toBe(6);
     expect(result.applied).toBe(true);
   });
 
   it("promotes tier from a strong best set", () => {
     const tier = effectiveSkillTier(
+      memory({ bestReps: 15, declaredTier: "beginner" }),
+      SEED_GRAPH.pullup,
+    );
+    // Endura pull-up: advanced 13, elite 18 (#189).
+    expect(tier).toBe("advanced");
+  });
+
+  it("promotes to elite when best reps clear the Endura elite floor", () => {
+    const tier = effectiveSkillTier(
       memory({ bestReps: 20, declaredTier: "beginner" }),
       SEED_GRAPH.pullup,
     );
-    expect(tier).toBe("advanced");
+    expect(tier).toBe("elite");
   });
 
   it("advances progression immediately for advanced athletes", () => {
@@ -72,7 +82,7 @@ describe("skillDose", () => {
       capped,
       memory({ declaredTier: "intermediate" }),
     );
-    // Intermediate pull-up working reps would be 8; clamp to max 6.
+    // Intermediate working reps are already 6; still within the 3–6 band.
     expect(result.dose.reps).toBe(6);
   });
 });

@@ -1,4 +1,4 @@
-import type { DoodleSpec, Point, Pose, Prop } from "./rig";
+import type { DoodleSpec, Point, Pose } from "./rig";
 
 /**
  * Batch I: conditioning moves (burpee family, climbers, crawls, run-in-place,
@@ -6,10 +6,8 @@ import type { DoodleSpec, Point, Pose, Prop } from "./rig";
  * curated steps. Floor at y = 0, up is negative, facing +x: a plank has the
  * head at +x, lying face down has the head at +x.
  *
- * Left out: the cross-body mountain climber (ntc_cross_body_climber). Its
- * defining motion, the knee crossing under the body to the opposite elbow,
- * happens across the body and cannot be told apart from a plain mountain
- * climber in a side or front view.
+ * The cross-body mountain climber (ntc_cross_body_climber) is drawn in batch
+ * AC, side view only: its knee crossing under the body is not visible there.
  */
 
 /** Point `length` from `from` at `degrees` (0 = +x, 90 = down, -90 = up). */
@@ -42,9 +40,6 @@ function knee(hip: Point, ankle: Point, forward: boolean): Point {
   const b = meet(hip, THIGH, ankle, SHIN, -1);
   return forward === a[0] > b[0] ? a : b;
 }
-
-/** Floor line under jumps, so take-off and landing read. */
-const floor = (x1: number, x2: number): Prop => ({ kind: "bar", y: 0, x1, x2 });
 
 // ---------------------------------------------------------------- plank (same geometry as the floor push-up)
 
@@ -502,7 +497,7 @@ export const BATCH_I_SPECS: DoodleSpec[] = [
     slug: "ski-hops",
     title: "Ski hops",
     view: "front",
-    props: [floor(-120, 120)],
+    props: [{ kind: "floor" }],
     transition: 0.18,
     frames: [
       { hold: 0.1, pose: skiHop(-55, false) },

@@ -56,7 +56,7 @@ function deepSquat(pelvisY: number): Pose {
  * camera sits a little above the floor, so the bent knees (forward, towards the
  * viewer) draw slightly below the hips and rest on the floor line.
  */
-export const SIDE_LYING_FLOOR: Prop = { kind: "bar", y: 0, x1: -250, x2: 250 };
+export const SIDE_LYING_FLOOR: Prop = { kind: "floor" };
 const SL_PELVIS: Point = [0, -30];
 export const SL_HIP_BOTTOM: Point = [0, -22];
 export const SL_HIP_TOP: Point = [0, -38];

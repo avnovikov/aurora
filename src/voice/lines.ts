@@ -1,7 +1,10 @@
 import type { EffortKind } from "../domain/types";
+import { getKettlebellCoachContext } from "./coachContext";
+
 /**
  * Calm pro-coach copy with light Scouse colour (occasional “mate”).
  * Delivery: Piper northern English male via scripts/prebuild-voice.sh.
+ * Kettlebell sessions may hear “comrade” (phonetic bake: kahm-rahd).
  */
 
 export type CoachLineId =
@@ -29,9 +32,18 @@ export interface CoachLine {
   /** Stable asset key under /voice/{assetKey}.wav */
   assetKey: string;
   text: string;
+  /** Piper input when it should differ from `text` (phonetic accent). */
+  bakeText?: string;
   /** Only for one kind of timed station: "hold" lines never over reps, rep lines never over holds. */
   only?: EffortKind;
+  /** Eligible only when kettlebell coach context is on. */
+  kettlebellOnly?: boolean;
 }
+
+/** Chance to pick a kettlebellOnly twin when context is on and twins exist. */
+export const COMRADE_PICK_CHANCE = 0.2;
+
+const COMRADE_BAKE = "kahm-rahd";
 
 const GET_READY: CoachLine[] = [
   { id: "get_ready", assetKey: "get_ready", text: "Get ready..." },
@@ -44,6 +56,13 @@ const GET_READY: CoachLine[] = [
     id: "get_ready",
     assetKey: "get_ready_c",
     text: "Next set in a few — breathe.",
+  },
+  {
+    id: "get_ready",
+    assetKey: "get_ready_comrade",
+    text: "Coming up, comrade — reset your stance.",
+    bakeText: `Coming up, ${COMRADE_BAKE} — reset your stance.`,
+    kettlebellOnly: true,
   },
 ];
 
@@ -84,6 +103,14 @@ export const REST_GO_ON: CoachLine = {
   text: "You seem rested, mate. Want to go on?",
 };
 
+export const REST_GO_ON_COMRADE: CoachLine = {
+  id: "rest_go_on",
+  assetKey: "rest_go_on_comrade",
+  text: "You seem rested, comrade. Want to go on?",
+  bakeText: `You seem rested, ${COMRADE_BAKE}. Want to go on?`,
+  kettlebellOnly: true,
+};
+
 export const REST_EXTEND: CoachLine = {
   id: "rest_extend",
   assetKey: "rest_extend",
@@ -91,7 +118,20 @@ export const REST_EXTEND: CoachLine = {
   text: "Still up, mate. Another 30.",
 };
 
-const REST_PULSE: CoachLine[] = [REST_GO_ON, REST_EXTEND];
+export const REST_EXTEND_COMRADE: CoachLine = {
+  id: "rest_extend",
+  assetKey: "rest_extend_comrade",
+  text: "Still up, comrade. Another 30.",
+  bakeText: `Still up, ${COMRADE_BAKE}. Another 30.`,
+  kettlebellOnly: true,
+};
+
+const REST_PULSE: CoachLine[] = [
+  REST_GO_ON,
+  REST_GO_ON_COMRADE,
+  REST_EXTEND,
+  REST_EXTEND_COMRADE,
+];
 
 const HALFWAY: CoachLine[] = [
   { id: "halfway", assetKey: "halfway", text: "Halfway there, mate." },
@@ -102,6 +142,20 @@ const HALFWAY: CoachLine[] = [
     text: "Halfway, love. Nice and steady.",
   },
   { id: "halfway", assetKey: "halfway_d", text: "Halfway — keep the reps coming.", only: "reps" },
+  {
+    id: "halfway",
+    assetKey: "halfway_comrade",
+    text: "Halfway there, comrade.",
+    bakeText: `Halfway there, ${COMRADE_BAKE}.`,
+    kettlebellOnly: true,
+  },
+  {
+    id: "halfway",
+    assetKey: "halfway_comrade_c",
+    text: "Halfway, comrade. Nice and steady.",
+    bakeText: `Halfway, ${COMRADE_BAKE}. Nice and steady.`,
+    kettlebellOnly: true,
+  },
 ];
 
 const REST_BANTER: CoachLine[] = [
@@ -164,6 +218,13 @@ const SESSION: CoachLine[] = [
     text: "Other side when you're ready.",
   },
   {
+    id: "change_side",
+    assetKey: "change_side_comrade",
+    text: "Change side, comrade.",
+    bakeText: `Change side, ${COMRADE_BAKE}.`,
+    kettlebellOnly: true,
+  },
+  {
     id: "set_logged",
     assetKey: "set_logged",
     text: "Set in the bank. Nice one.",
@@ -192,6 +253,13 @@ const SESSION: CoachLine[] = [
     id: "set_pace_nudge",
     assetKey: "set_pace_nudge_c",
     text: "That last one dragged — nice clean reps this set.",
+  },
+  {
+    id: "set_pace_nudge",
+    assetKey: "set_pace_nudge_comrade",
+    text: "Over two minutes last time — smoother tempo, comrade.",
+    bakeText: `Over two minutes last time — smoother tempo, ${COMRADE_BAKE}.`,
+    kettlebellOnly: true,
   },
   {
     id: "session_done",
@@ -225,14 +293,60 @@ export function linesFor(id: CoachLineId): CoachLine[] {
   return ALL_COACH_LINES.filter((line) => line.id === id);
 }
 
+export interface PickLineOptions {
+  /** Override session KB flag. Default: `getKettlebellCoachContext()`. */
+  kettlebellContext?: boolean;
+  /** Keep lines whose `only` matches (or is unset). */
+  effort?: EffortKind;
+}
+
 export function pickLine(
   id: CoachLineId,
   random: () => number = Math.random,
+  options: PickLineOptions = {},
 ): CoachLine {
-  const options = linesFor(id);
-  if (options.length === 0) {
+  const kettlebellContext =
+    options.kettlebellContext ?? getKettlebellCoachContext();
+  const pool = eligibleLines(id, kettlebellContext, options.effort);
+  if (pool.length === 0) {
     throw new Error(`No coach lines for id ${id}`);
   }
-  const index = Math.floor(random() * options.length);
-  return options[Math.min(index, options.length - 1)];
+
+  const comrades = pool.filter((line) => line.kettlebellOnly === true);
+  const normals = pool.filter((line) => line.kettlebellOnly !== true);
+
+  if (
+    kettlebellContext &&
+    comrades.length > 0 &&
+    normals.length > 0 &&
+    random() < COMRADE_PICK_CHANCE
+  ) {
+    return pickUniform(comrades, random);
+  }
+
+  return pickUniform(normals.length > 0 ? normals : pool, random);
+}
+
+function eligibleLines(
+  id: CoachLineId,
+  kettlebellContext: boolean,
+  effort: EffortKind | undefined,
+): CoachLine[] {
+  return linesFor(id).filter((line) => {
+    if (line.kettlebellOnly === true && !kettlebellContext) {
+      return false;
+    }
+    if (effort !== undefined && line.only !== undefined && line.only !== effort) {
+      return false;
+    }
+    return true;
+  });
+}
+
+function pickUniform(lines: readonly CoachLine[], random: () => number): CoachLine {
+  if (lines.length === 0) {
+    throw new Error("pickUniform requires at least one line");
+  }
+  const index = Math.floor(random() * lines.length);
+  return lines[Math.min(index, lines.length - 1)]!;
 }

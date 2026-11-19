@@ -72,6 +72,11 @@ export interface SessionControlHandlers {
   onPulseLostSim: () => void;
   onPulseBpm: (bpm: number) => void;
   onPulseDisconnected: () => void;
+  /**
+   * Mean strap bpm for `[setStartedAtMs, now]` while logging a completed/failed
+   * set. Return null when the session buffer has no samples in that window.
+   */
+  pulseAverageBpmForSet?: (startMs: number, endMs: number) => number | null;
 }
 
 export function wireSessionControls(
@@ -259,24 +264,31 @@ export function completeSet(
     return;
   }
   const prescribed = prescribedForNextSet(work);
-  const completed = stopReason === "skipped" ? 0 : prescribed;
+  const completed = completedRepsForStop(stopReason, prescribed);
   handlers.onWorkSetEnding(item.exerciseId);
   const durationSeconds = loggedSetDurationSeconds(work.setStartedAtMs, stopReason);
-  state.log = appendSet(state.log, {
-    slotId: item.slotId,
-    exerciseId: item.exerciseId,
-    setIndex: state.setIndex,
-    prescribedReps: prescribed,
-    completedReps: completed,
-    addedLoadKg: work.addedLoadKg,
+  const averageBpm = averageBpmForLoggedSet(
     stopReason,
-    ...(durationSeconds !== undefined ? { durationSeconds } : {}),
-  });
+    work.setStartedAtMs,
+    handlers.pulseAverageBpmForSet,
+  );
+  state.log = appendSet(
+    state.log,
+    loggedSetFields({
+      slotId: item.slotId,
+      exerciseId: item.exerciseId,
+      setIndex: state.setIndex,
+      prescribedReps: prescribed,
+      completedReps: completed,
+      addedLoadKg: work.addedLoadKg,
+      stopReason,
+      durationSeconds,
+      averageBpm,
+    }),
+  );
   persistSetMemory(item.exerciseId, completed, durationSeconds, handlers);
-  if (stopReason === "completed") {
-    void speakCoachLine("set_logged");
-  }
-  if (state.setIndex >= item.dose.sets || stopReason === "skipped") {
+  announceSetLoggedIfCompleted(stopReason);
+  if (isLastSetOrSkipped(state.setIndex, item.dose.sets, stopReason)) {
     handlers.onFinishExercise(
       restBeforeNextExercise(stopReason, state.workIndex, planned.work.length, item.restSeconds),
     );
@@ -285,6 +297,64 @@ export function completeSet(
   state.setIndex += 1;
   state.workState = workStateAfterLoggedSet(work, state.setIndex, prescribed);
   beginRest(state, handlers, item.restSeconds);
+}
+
+function completedRepsForStop(stopReason: SetStopReason, prescribed: number): number {
+  if (stopReason === "skipped") {
+    return 0;
+  }
+  return prescribed;
+}
+
+function averageBpmForLoggedSet(
+  stopReason: SetStopReason,
+  setStartedAtMs: number | undefined,
+  pulseAverageBpmForSet: SessionControlHandlers["pulseAverageBpmForSet"],
+): number | null {
+  if (stopReason === "skipped" || setStartedAtMs === undefined) {
+    return null;
+  }
+  return pulseAverageBpmForSet?.(setStartedAtMs, Date.now()) ?? null;
+}
+
+function loggedSetFields(input: {
+  slotId: string;
+  exerciseId: string;
+  setIndex: number;
+  prescribedReps: number;
+  completedReps: number;
+  addedLoadKg: number;
+  stopReason: SetStopReason;
+  durationSeconds: number | undefined;
+  averageBpm: number | null;
+}): Parameters<typeof appendSet>[1] {
+  return {
+    slotId: input.slotId,
+    exerciseId: input.exerciseId,
+    setIndex: input.setIndex,
+    prescribedReps: input.prescribedReps,
+    completedReps: input.completedReps,
+    addedLoadKg: input.addedLoadKg,
+    stopReason: input.stopReason,
+    ...(input.durationSeconds !== undefined
+      ? { durationSeconds: input.durationSeconds }
+      : {}),
+    ...(input.averageBpm !== null ? { averageBpm: input.averageBpm } : {}),
+  };
+}
+
+function announceSetLoggedIfCompleted(stopReason: SetStopReason): void {
+  if (stopReason === "completed") {
+    void speakCoachLine("set_logged");
+  }
+}
+
+function isLastSetOrSkipped(
+  setIndex: number,
+  totalSets: number,
+  stopReason: SetStopReason,
+): boolean {
+  return setIndex >= totalSets || stopReason === "skipped";
 }
 
 /** Rest after the last set of an exercise only when another exercise follows and the set was not skipped. */

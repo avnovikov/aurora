@@ -86,13 +86,20 @@ describe("enriched library", () => {
     expect(byId[pike.harderId!]?.name).toMatch(/elevated pike/i);
   });
 
-  it("uses norm-anchored standards where tests exist", () => {
+  it("uses Endura / coaching-anchored standards where tests exist (#189)", () => {
+    // Endura forearm plank men 20–29: 55 / 105 / 165 / 270s
     expect(byName("Forearm Plank").standards).toEqual({
-      novice: 30, beginner: 60, intermediate: 90, advanced: 150, elite: 220,
+      novice: 37, beginner: 55, intermediate: 105, advanced: 165, elite: 270,
     });
     expect(byName("Side Plank").standards?.intermediate).toBe(60);
     expect(byName("Single-Leg Calf Raise").standards?.intermediate).toBeGreaterThanOrEqual(20);
-    expect(byName("Single Leg Glute Bridge").standards?.beginner).toBe(20);
+    // Endura single-leg glute bridge men 20–29
+    expect(byName("Single Leg Glute Bridge").standards?.beginner).toBe(12);
+    expect(byName("Supported Split Squat").standards).toEqual({
+      novice: 5, beginner: 8, intermediate: 18, advanced: 34, elite: 54,
+    });
+    expect(byName("Split Squats").standards?.intermediate).toBe(15);
+    expect(byName("Split Squats").standards?.advanced).toBe(28);
   });
 
   it("treats static skills as holds and hanging raises as reps", () => {

@@ -222,6 +222,8 @@ export function renderSettingsView(root: HTMLElement, options: SettingsViewOptio
       root.querySelector("[data-levels-confirm-done]")?.addEventListener("click", () => {
         clearLevelsToConfirm();
         root.querySelector("[data-levels-to-confirm]")?.remove();
+        say("Levels to confirm cleared.");
+        root.querySelector<HTMLElement>("[data-settings-status]")?.focus();
       });
       wireTabs(controller);
       wireYou(controller);

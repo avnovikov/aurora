@@ -11,6 +11,7 @@ export const SESSION_KEY = "aurora.poc.session.v1";
 export const PLAN_QUEUE_KEY = "aurora.poc.planQueue.v1";
 export const EXCLUDED_EXERCISES_KEY = "aurora.poc.excludedExercises.v1";
 export const PLAN_LEVEL_KEY = "aurora.poc.planLevel.v1";
+export const PLAN_LEVEL_RAISE_NOTICE_KEY = "aurora.poc.planLevelRaiseNotice.v1";
 export const TEMPLATE_OVERRIDES_KEY = "aurora.poc.templateOverrides.v1";
 export const DELOAD_KEY = "aurora.poc.deload.v1";
 export const SCHEDULE_OVERRIDE_KEY = "aurora.poc.scheduleOverride.v1";
@@ -28,6 +29,7 @@ export const STORAGE_KEYS = [
   PLAN_QUEUE_KEY,
   EXCLUDED_EXERCISES_KEY,
   PLAN_LEVEL_KEY,
+  PLAN_LEVEL_RAISE_NOTICE_KEY,
   TEMPLATE_OVERRIDES_KEY,
   DELOAD_KEY,
   SCHEDULE_OVERRIDE_KEY,

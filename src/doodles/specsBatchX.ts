@@ -18,7 +18,8 @@ import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side } from "./rig";
  *     with a knee drive. Front view keeps only the sideways part (the forward
  *     travel and the knee drive point at the camera), so it read as a plain
  *     sideways bound duplicating Skater Bound (hf_98); side view loses the
- *     sideways part, which is the point of the drill.
+ *     sideways part, which is the point of the drill. Now drawn in front view
+ *     in batch AH, for the judge to decide on a second view.
  */
 
 const round = (value: number): number => Math.round(value * 10) / 10;
@@ -33,9 +34,6 @@ const angle = (from: Point, to: Point): number => (Math.atan2(to[1] - from[1], t
 
 /** Shoulder of a straight spine (pelvis → chest is 80, shoulder 18 further). */
 const shoulderAt = (pelvis: Point, spine: number): Point => along(pelvis, spine, 98);
-
-/** Floor line, so take-off and landing read. */
-const floor = (x1: number, x2: number): Prop => ({ kind: "bar", y: 0, x1, x2 });
 
 const other = (side: Side): Side => (side === "near" ? "far" : "near");
 
@@ -545,7 +543,7 @@ export const BATCH_X_SPECS: DoodleSpec[] = [
     id: "hf_141",
     slug: "depth-jump",
     title: "Depth Jump",
-    props: [DEPTH_BOX, floor(-240, 80)],
+    props: [DEPTH_BOX, { kind: "floor" }],
     transition: 0.3,
     frames: [
       { hold: 0.4, pose: stand(-150, "sides", DEPTH_TOP) },
@@ -565,7 +563,7 @@ export const BATCH_X_SPECS: DoodleSpec[] = [
     id: "fedb_rocket_jump",
     slug: "rocket-jump",
     title: "Rocket Jump",
-    props: [floor(-110, 110)],
+    props: [{ kind: "floor" }],
     transition: 0.35,
     frames: rocketJump().map((pose, i) => ({ hold: [0.3, 0.1, 0.1, 0.25][i], pose })),
   },
@@ -573,7 +571,7 @@ export const BATCH_X_SPECS: DoodleSpec[] = [
     id: "fedb_knee_tuck_jump",
     slug: "knee-tuck-jump",
     title: "Knee Tuck Jump",
-    props: [floor(-110, 130)],
+    props: [{ kind: "floor" }],
     transition: 0.3,
     frames: [
       { hold: 0.3, pose: stand(0, "chest") },
@@ -588,7 +586,7 @@ export const BATCH_X_SPECS: DoodleSpec[] = [
     id: "wger_1576",
     slug: "snap-down",
     title: "Snap Down",
-    props: [floor(-120, 110)],
+    props: [{ kind: "floor" }],
     transition: 0.3,
     frames: [
       { hold: 0.4, pose: snapTall() },
@@ -602,7 +600,7 @@ export const BATCH_X_SPECS: DoodleSpec[] = [
     id: "hf_96",
     slug: "lunge-jump",
     title: "Lunge Jump",
-    props: [floor(-120, 120)],
+    props: [{ kind: "floor" }],
     transition: 0.3,
     frames: [
       { hold: 0.15, pose: lunge("near", "back") },
@@ -615,7 +613,7 @@ export const BATCH_X_SPECS: DoodleSpec[] = [
     id: "fedb_standing_long_jump",
     slug: "standing-long-jump",
     title: "Standing Long Jump",
-    props: [floor(-90, 340)],
+    props: [{ kind: "floor" }],
     transition: 0.3,
     frames: [
       { hold: 0.2, pose: bent(0, 24, -82, "sides") },
@@ -633,7 +631,7 @@ export const BATCH_X_SPECS: DoodleSpec[] = [
     id: "hf_97",
     slug: "frog-jump",
     title: "Frog Jump",
-    props: [floor(-120, 300)],
+    props: [{ kind: "floor" }],
     transition: 0.3,
     frames: [
       { hold: 0.2, pose: deepSquat(0, "back") },
@@ -650,7 +648,7 @@ export const BATCH_X_SPECS: DoodleSpec[] = [
     id: "hf_95",
     slug: "box-jump",
     title: "Box Jump",
-    props: [BOX, floor(-80, 260)],
+    props: [BOX, { kind: "floor" }],
     transition: 0.32,
     frames: [
       { hold: 0.25, pose: stand(24) },
@@ -672,7 +670,7 @@ export const BATCH_X_SPECS: DoodleSpec[] = [
     id: "fedb_bench_jump",
     slug: "bench-jump",
     title: "Bench Jump",
-    props: [BENCH, floor(-90, BENCH_LAND + 90)],
+    props: [BENCH, { kind: "floor" }],
     transition: 0.3,
     frames: [...benchJumpOver(), ...benchJumpOver(BENCH_MID)],
   },
@@ -681,7 +679,7 @@ export const BATCH_X_SPECS: DoodleSpec[] = [
     slug: "side-standing-long-jump",
     title: "Side Standing Long Jump",
     view: "front",
-    props: [floor(-240, 240)],
+    props: [{ kind: "floor" }],
     transition: 0.32,
     frames: [
       { hold: 0.2, pose: sideLoad(-140, 1) },
@@ -697,7 +695,7 @@ export const BATCH_X_SPECS: DoodleSpec[] = [
     slug: "star-jump",
     title: "Star Jump",
     view: "front",
-    props: [floor(-150, 150)],
+    props: [{ kind: "floor" }],
     transition: 0.32,
     frames: [
       { hold: 0.25, pose: frontStance(0, 60, -172, frontArms([0, -172], 8, 2)) },
@@ -711,7 +709,7 @@ export const BATCH_X_SPECS: DoodleSpec[] = [
     slug: "skating",
     title: "Skating",
     view: "front",
-    props: [floor(-200, 200)],
+    props: [{ kind: "floor" }],
     transition: 0.3,
     frames: [
       { hold: 0.12, pose: oneLeg("near", -120, -148, "cross", skaterArms([-86, -148], "near")) },
@@ -725,7 +723,7 @@ export const BATCH_X_SPECS: DoodleSpec[] = [
     slug: "skater-bound",
     title: "Skater Bound",
     view: "front",
-    props: [floor(-210, 210)],
+    props: [{ kind: "floor" }],
     transition: 0.32,
     frames: [
       { hold: 0.35, pose: oneLeg("near", -130, -144, "cross", skaterArms([-96, -144], "near")) },
@@ -739,7 +737,7 @@ export const BATCH_X_SPECS: DoodleSpec[] = [
     slug: "single-leg-lateral-hop",
     title: "Single-Leg Lateral Hop",
     view: "front",
-    props: [MARKER, floor(-130, 130)],
+    props: [MARKER, { kind: "floor" }],
     transition: 0.24,
     frames: [
       { hold: 0.08, pose: oneLeg("near", -HOP_LAND, -160, "lift", frontArms([34 - HOP_LAND, -160], 26, 20)) },

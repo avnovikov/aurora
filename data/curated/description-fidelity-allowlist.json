@@ -1,0 +1,6 @@
+{
+  "ids": [
+    "wger_1738"
+  ],
+  "_comment": "Explicit Library ids exempt from fidelity hard-fail. Prefer rewriting curated text from originals; use this only for documented thin/house-only exceptions beyond automatic non-instructional detection. wger_1738: own source is a Pull-Up vs TRX comparison blurb with no how-to steps."
+}

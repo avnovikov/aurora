@@ -1,3 +1,4 @@
+import type { HistoryPulse } from "../domain/program";
 import type { PlannedSession } from "../rules/planSession";
 import type { ActiveWorkState, WorkoutLog } from "../session/setLog";
 import type { PersistedSession } from "../session/storage";
@@ -7,7 +8,12 @@ export interface SessionViewOptions {
   planned: PlannedSession;
   resume?: PersistedSession;
   /** Called with the live planned session (may have been lightened mid-warmup). */
-  onDone: (log: WorkoutLog, planned: PlannedSession, startedAtMs: number) => void;
+  onDone: (
+    log: WorkoutLog,
+    planned: PlannedSession,
+    startedAtMs: number,
+    pulse?: HistoryPulse,
+  ) => void;
   /** The athlete's own weight from Settings; "Add weight" starts there. */
   addWeightKg?: number;
 }

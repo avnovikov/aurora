@@ -38,3 +38,10 @@ rest_banter_c	en_GB-northern_english_male-medium.onnx	Breathe. The next set's no
 rest_banter_d	en_GB-northern_english_male-medium.onnx	Halfway through the sit-about. You're winning.
 rest_go_on	en_GB-northern_english_male-medium.onnx	You seem rested, mate. Want to go on?
 rest_extend	en_GB-northern_english_male-medium.onnx	Still up, mate. Another 30.
+get_ready_comrade	en_GB-northern_english_male-medium.onnx	Coming up, kahm-rahd — reset your stance.
+halfway_comrade	en_GB-northern_english_male-medium.onnx	Halfway there, kahm-rahd.
+halfway_comrade_c	en_GB-northern_english_male-medium.onnx	Halfway, kahm-rahd. Nice and steady.
+rest_go_on_comrade	en_GB-northern_english_male-medium.onnx	You seem rested, kahm-rahd. Want to go on?
+rest_extend_comrade	en_GB-northern_english_male-medium.onnx	Still up, kahm-rahd. Another 30.
+change_side_comrade	en_GB-northern_english_male-medium.onnx	Change side, kahm-rahd.
+set_pace_nudge_comrade	en_GB-northern_english_male-medium.onnx	Over two minutes last time — smoother tempo, kahm-rahd.

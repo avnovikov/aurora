@@ -13,6 +13,15 @@ const ALLOWED_EQUIPMENT = new Set([
   "Incline bench",
 ]);
 
+/** wger equipment name for kettlebells. */
+export const KETTLEBELL_EQUIPMENT = "Kettlebell";
+
+/** Pure kettlebell: KB plus always-available companions (no dumbbell/barbell mixes). */
+const KETTLEBELL_COMPANIONS = new Set([
+  KETTLEBELL_EQUIPMENT,
+  ...[...ALLOWED_EQUIPMENT].filter((name) => name !== "Pull-up bar"),
+]);
+
 /** Untagged in wger (no equipment listed) but clearly bodyweight. */
 export const WGER_ALLOW_UNTAGGED: readonly string[] = [
   "Bent-knee Iron Cross",
@@ -131,6 +140,13 @@ export const WGER_SAME_AS_EXISTING: Readonly<Record<string, string>> = {
 
 const MIN_DESCRIPTION_CHARS = 20;
 
+export function isWgerPureKettlebell(equipment: readonly string[]): boolean {
+  if (!equipment.includes(KETTLEBELL_EQUIPMENT)) {
+    return false;
+  }
+  return equipment.every((item) => KETTLEBELL_COMPANIONS.has(item));
+}
+
 export function isWgerCandidate(record: WgerExerciseRecord): boolean {
   if (WGER_DENY.includes(record.name) || DENY_PATTERN.test(record.name)) {
     return false;
@@ -143,6 +159,9 @@ export function isWgerCandidate(record: WgerExerciseRecord): boolean {
   }
   if (record.equipment.length === 1 && record.equipment[0] === BAND_EQUIPMENT) {
     return WGER_ALLOW_BAND.includes(record.name);
+  }
+  if (isWgerPureKettlebell(record.equipment)) {
+    return true;
   }
   return record.equipment.every((item) => ALLOWED_EQUIPMENT.has(item));
 }

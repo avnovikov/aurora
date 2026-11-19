@@ -247,14 +247,68 @@ describe("inferred tiers at session close (#112 rule 7, rule 2)", () => {
     expect(out.hollow_hold?.inferred).toBeUndefined();
   });
 
-  it("a failed set removes the inferred tier and caps harder rungs", () => {
+  it("a failed set removes the inferred tier and caps harder rungs that already have memory", () => {
     const out = applySetLogToMemory(
-      { hollow_hold: inferred("hollow_hold") },
+      {
+        hollow_hold: inferred("hollow_hold"),
+        ab_wheel: memory("ab_wheel"),
+      },
       log(set("hollow_hold", 6, "muscular_failure")),
       { now: NOW, index },
     );
     expect(out.hollow_hold?.inferred).toBeUndefined();
     expect(out.ab_wheel?.failedCaps).toMatchObject([{ tier: "intermediate", from: "hollow_hold" }]);
+  });
+
+  it("does not create empty memory rows just to hold harder-rung caps (#116)", () => {
+    const out = applySetLogToMemory(
+      { hollow_hold: inferred("hollow_hold") },
+      log(set("hollow_hold", 6, "muscular_failure")),
+      { now: NOW, index },
+    );
+    expect(out.ab_wheel).toBeUndefined();
+    expect(out.hf_108).toBeUndefined();
+  });
+
+  it("confirm and cap can land in the same session (#116)", () => {
+    const start = {
+      hollow_hold: inferred("hollow_hold"),
+      ab_wheel: inferred("ab_wheel"),
+      hf_108: memory("hf_108", { declaredTier: "advanced", declaredAt: NOW.toISOString() }),
+    };
+    const out = applySetLogToMemory(
+      start,
+      log(set("hollow_hold", 10, "completed"), set("ab_wheel", 6, "muscular_failure")),
+      { now: NOW, index },
+    );
+    expect(out.hollow_hold).toMatchObject({ loggedTier: "intermediate" });
+    expect(out.hollow_hold?.inferred).toBeUndefined();
+    expect(out.ab_wheel?.inferred).toBeUndefined();
+    expect(out.hf_108?.failedCaps).toMatchObject([{ from: "ab_wheel" }]);
+  });
+
+  it("not_standard leaves an inferred tier in place (#116)", () => {
+    const ladder = indexOf({ f: [["high", 3], ["mid", 2], ["low", 1]] });
+    const start = {
+      low: memory("low", {
+        inferred: { tier: "intermediate" as const, from: ["high", "mid"], at: NOW.toISOString() },
+      }),
+      mid: memory("mid", { declaredTier: "advanced", declaredAt: NOW.toISOString() }),
+      high: memory("high", { declaredTier: "advanced", declaredAt: NOW.toISOString() }),
+    };
+    const out = applySetLogToMemory(
+      start,
+      log(entry({
+        exerciseId: "low",
+        completedReps: 8,
+        prescribedReps: 10,
+        stopReason: "completed",
+      })),
+      { now: NOW, index: ladder },
+    );
+    expect(out.low?.inferred?.tier).toBe("intermediate");
+    expect(out.low?.loggedTier).toBeUndefined();
+    expect(out.low?.lastSessionAt).toBe(NOW.toISOString());
   });
 });
 
@@ -285,8 +339,14 @@ describe("failure caps per source (#112 rule 2)", () => {
     expect(out.low?.sessionsBelowFloor).toBe(0);
   });
 
+  const seeded = () => ({
+    low: memory("low"),
+    mid: memory("mid"),
+    high: memory("high"),
+  });
+
   it("a failure caps harder rungs until the same move is at standard again", () => {
-    const failed = run({}, fail("low"));
+    const failed = run(seeded(), fail("low"));
     expect(failed.mid?.failedCaps).toMatchObject([{ from: "low" }]);
     expect(failed.high?.failedCaps).toMatchObject([{ from: "low" }]);
     const cleared = run(failed, pass("low"));
@@ -295,7 +355,7 @@ describe("failure caps per source (#112 rule 2)", () => {
   });
 
   it("keeps one cap per failing source", () => {
-    const afterLow = run({}, fail("low"));
+    const afterLow = run(seeded(), fail("low"));
     const afterMid = run(afterLow, fail("mid"));
     expect(afterMid.high?.failedCaps?.map((c) => c.from).sort()).toEqual(["low", "mid"]);
     const afterPass = run(afterMid, pass("mid"));
@@ -303,13 +363,13 @@ describe("failure caps per source (#112 rule 2)", () => {
   });
 
   it("two consecutive failures on one move leave exactly one self-cap", () => {
-    const twice = run(run({}, fail("low")), fail("low"));
+    const twice = run(run(seeded(), fail("low")), fail("low"));
     expect(twice.low?.failedCaps?.filter((c) => c.from === "low")).toHaveLength(1);
     expect(twice.low?.failedCaps).toHaveLength(1);
   });
 
   it("another move's clean session does not clear a cap", () => {
-    const failed = run({}, fail("low"));
+    const failed = run(seeded(), fail("low"));
     const out = run(failed, pass("high"));
     expect(out.high?.failedCaps?.map((c) => c.from)).toEqual(["low"]);
   });

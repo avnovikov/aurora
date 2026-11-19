@@ -44,7 +44,9 @@ describe("warm-up → work transition", () => {
     expect(isGetReadyRest(state)).toBe(true);
     expect(isWarmupSurface(planned, state)).toBe(false);
     expect(persistPhase(planned, state)).toBe("work");
-    expect(shellHtml(planned, state)).toContain("Get ready · next");
+    const html = shellHtml(planned, state);
+    expect(html).toMatch(/<p class="eyebrow session-phase">Get ready<\/p>/);
+    expect(html).toContain('class="rest-next-line"');
   });
 
   it("goes straight to work after a warm-up with no ramp (Mobility)", () => {
@@ -61,7 +63,9 @@ describe("warm-up → work transition", () => {
     enterWorkAfterWarmup(planned, state);
     state.setIndex = 2;
     expect(isGetReadyRest(state)).toBe(false);
-    expect(shellHtml(planned, state)).toContain("Rest · next");
+    const html = shellHtml(planned, state);
+    expect(html).toMatch(/<p class="eyebrow session-phase">Rest<\/p>/);
+    expect(html).toContain('class="rest-next-line"');
   });
 
   it("counts the Get ready rest in the planned session estimate", () => {

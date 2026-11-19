@@ -64,12 +64,18 @@ export async function unlockCoachAudio(): Promise<void> {
  */
 export async function speakCoachLine(
   id: CoachLineId,
-  options: { louder?: boolean; random?: () => number } = {},
+  options: {
+    louder?: boolean;
+    random?: () => number;
+    kettlebellContext?: boolean;
+  } = {},
 ): Promise<void> {
   if (muted) {
     return;
   }
-  const line = pickLine(id, options.random);
+  const line = pickLine(id, options.random, {
+    kettlebellContext: options.kettlebellContext,
+  });
   await speakExactLine(line, options.louder === true);
 }
 

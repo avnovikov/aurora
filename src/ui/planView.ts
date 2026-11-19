@@ -7,6 +7,10 @@ import type { BlockKind } from "../plan/generateBlock";
 import { isGeneralCare } from "../plan/jointCareDay";
 import { PLAN_LEVELS, savePlanLevel, type PlanLevel } from "../plan/planLevel";
 import {
+  clearPlanLevelRaiseNotice,
+  maybeRaisePlanLevelForQueue,
+} from "../plan/planLevelRaise";
+import {
   appendQueueItem,
   completeToday,
   loadPlanQueue,
@@ -256,9 +260,10 @@ function wireAdd({ root, act }: PlanController): void {
   );
 }
 
-function wireLevel({ root, ui, act }: PlanController): void {
+function wireLevel({ root, ui, act, paint }: PlanController): void {
   onChipClick(root, "plan-level", (value) =>
     act(() => {
+      clearPlanLevelRaiseNotice();
       savePlanLevel(value as PlanLevel);
       ui.levelOpen = true;
       const label = PLAN_LEVELS.find((level) => level.id === value)?.label ?? value;
@@ -269,6 +274,11 @@ function wireLevel({ root, ui, act }: PlanController): void {
   );
   root.querySelector<HTMLDetailsElement>("details[data-plan-level-panel]")?.addEventListener("toggle", (event) => {
     ui.levelOpen = (event.currentTarget as HTMLDetailsElement).open;
+  });
+  on(root, "[data-plan-level-raise-dismiss]", () => {
+    clearPlanLevelRaiseNotice();
+    ui.status = undefined;
+    paint();
   });
 }
 
@@ -306,6 +316,7 @@ function wirePanels({ root, ui }: PlanController): void {
 
 export function renderPlanView(root: HTMLElement): void {
   const ui: Ui = { openDays: new Set([0]), swap: null, openExercises: new Set(), addOpen: false, levelOpen: false };
+  maybeRaisePlanLevelForQueue(loadPlanQueue());
   const controller: PlanController = {
     root,
     ui,
@@ -348,6 +359,9 @@ export function advancePlanAfterSession(): void {
   const override = loadScheduleOverride();
   const queue = loadPlanQueue();
   const finished = finishedSessionBeforeAdvance(override, queue);
+
+  // Score the days just trained (queue head) before advancing (#115).
+  maybeRaisePlanLevelForQueue(queue);
 
   let nextQueue = completeToday(queue, override);
   clearScheduleOverride();

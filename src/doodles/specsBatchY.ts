@@ -586,7 +586,7 @@ export const BATCH_Y_SPECS: DoodleSpec[] = [
     title: "Straddle L-Sit",
     view: "front",
     // Floor line, so the lift of the hips and legs reads.
-    props: [{ kind: "bar", y: 0, x1: -200, x2: 200 }],
+    props: [{ kind: "floor" }],
     transition: 0.8,
     frames: [
       { hold: 0.4, pose: straddle(false) },

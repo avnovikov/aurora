@@ -1,0 +1,1396 @@
+[
+ {
+  "id": "fedb_advanced_kettlebell_windmill",
+  "summary": "Clean and press a kettlebell overhead with one arm.",
+  "steps": [
+   "Clean and press a kettlebell overhead with one arm.",
+   "Lower yourself as far as possible.",
+   "Pause for a second and reverse the motion back to the setup."
+  ],
+  "cues": [
+   "Clean and press a kettlebell overhead with one arm",
+   "Keeping the kettlebell locked out at all times, push",
+   "Lower yourself as far as possible",
+   "Pause for a second and reverse the motion back to the"
+  ],
+  "mistakes": []
+ },
+ {
+  "id": "fedb_alternating_floor_press",
+  "summary": "Lie on the floor with two kettlebells next to your shoulders.",
+  "steps": [
+   "Lie on the floor with two kettlebells next to your shoulders.",
+   "Position one in place on your chest and then the other, gripping the kettlebells on the handle with the palms facing forward.",
+   "Raise the kettlebell and repeat on the opposite side."
+  ],
+  "cues": [
+   "Lie on the floor with two kettlebells next to your",
+   "Position one in place on your chest and then the",
+   "Extend both arms, so that the kettlebells are being",
+   "Raise the kettlebell and repeat on the opposite side"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength"
+  ]
+ },
+ {
+  "id": "fedb_alternating_hang_clean",
+  "summary": "Place two kettlebells between your feet. To get in the setup, push your butt back and look straight ahead.",
+  "steps": [
+   "Place two kettlebells between your feet. To get in the setup, push your butt back and look straight ahead.",
+   "Lower the cleaned kettlebell to a hanging position and clean the alternate kettlebell. Repeat."
+  ],
+  "cues": [
+   "Place two kettlebells between your feet",
+   "Clean one kettlebell to your shoulder and hold on to",
+   "Lower the cleaned kettlebell to a hanging position and"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength",
+   "Letting the lower back round under load"
+  ]
+ },
+ {
+  "id": "fedb_alternating_kettlebell_press",
+  "summary": "Clean two kettlebells to your shoulders. Clean the kettlebells to your shoulders by extending through the legs and hips as you pull the kettlebells towards your shoulders. Rotate your wrists as you do so.",
+  "steps": [
+   "Press one directly overhead by extending through the elbow, turning it so the palm faces forward while holding the other kettlebell stationary .",
+   "Lower the pressed kettlebell to the setup and immediately press with your other arm."
+  ],
+  "cues": [
+   "Clean two kettlebells to your shoulders",
+   "Press one directly overhead by extending through the",
+   "Lower the pressed kettlebell to the setup and"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength"
+  ]
+ },
+ {
+  "id": "fedb_alternating_kettlebell_row",
+  "summary": "A hinged two-bell row that pulls one kettlebell at a time while the other stays on the floor.",
+  "steps": [
+   "Place two kettlebells in front of your feet, bend your knees slightly, and hinge at the hips with a flat back.",
+   "Grip both handles and pull one kettlebell toward your hip, retracting that shoulder blade.",
+   "Lower it with control, then row the other side.",
+   "Keep your torso quiet as you alternate."
+  ],
+  "cues": [
+   "Hinge with a flat back",
+   "Row to the hip",
+   "Torso stays still"
+  ],
+  "mistakes": [
+   "Rounding the lower back",
+   "Twisting to yank the bell up",
+   "Standing taller mid-rep"
+  ]
+ },
+ {
+  "id": "fedb_alternating_renegade_row",
+  "summary": "A plank on two kettlebells with alternating single-arm rows that trains the back while the core resists rotation.",
+  "steps": [
+   "Place two kettlebells about shoulder-width apart and take a plank on the handles, body in a straight line.",
+   "Press one kettlebell into the floor while you row the other to your side, elbow close.",
+   "Lower the bell to the floor and row the opposite arm.",
+   "Keep the hips level as you alternate."
+  ],
+  "cues": [
+   "Hips stay level",
+   "Press the support bell down",
+   "Row without twisting"
+  ],
+  "mistakes": [
+   "Hips rocking side to side",
+   "Sagging through the plank",
+   "Flaring the elbow wide"
+  ]
+ },
+ {
+  "id": "fedb_bent_press",
+  "summary": "A kettlebell lift that cleans to the shoulder, then leans away until the free hand touches the floor with the bell locked out overhead.",
+  "steps": [
+   "Clean a kettlebell to your shoulder with the elbow tucked and the forearm vertical.",
+   "Lean away from the bell, eyes on it, until your free hand can touch the floor.",
+   "Keep the pressing arm locked as you stand back up with the bell overhead.",
+   "Lower with control and repeat."
+  ],
+  "cues": [
+   "Eyes on the bell",
+   "Lock the overhead arm",
+   "Lean, then stand"
+  ],
+  "mistakes": [
+   "Pressing the bell instead of leaning under it",
+   "Losing the lockout",
+   "Rounding the back hard"
+  ]
+ },
+ {
+  "id": "fedb_bottoms_up_clean_from_the_hang_position",
+  "summary": "Initiate the exercise by standing upright with a kettlebell in one hand.",
+  "steps": [
+   "Initiate the exercise by standing upright with a kettlebell in one hand.",
+   "Swing the kettlebell back forcefully and then reverse the motion forcefully. Crush the kettlebell handle as hard as possible and raise the kettlebell to your shoulder."
+  ],
+  "cues": [
+   "Initiate the exercise by standing upright with a",
+   "Swing the kettlebell back forcefully and then reverse"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength"
+  ]
+ },
+ {
+  "id": "fedb_double_kettlebell_alternating_hang_clean",
+  "summary": "Place two kettlebells between your feet. To get in the setup, push your butt back and look straight ahead.",
+  "steps": [
+   "Place two kettlebells between your feet. To get in the setup, push your butt back and look straight ahead.",
+   "Clean one kettlebell to your shoulder and hold on to the other kettlebell.",
+   "With a fluid motion, lower the top kettlebell while driving the bottom kettlebell up."
+  ],
+  "cues": [
+   "Place two kettlebells between your feet",
+   "Clean one kettlebell to your shoulder and hold on to",
+   "With a fluid motion, lower the top kettlebell while"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength",
+   "Letting the lower back round under load"
+  ]
+ },
+ {
+  "id": "fedb_double_kettlebell_jerk",
+  "summary": "Hold a kettlebell by the handle in each hand.",
+  "steps": [
+   "Hold a kettlebell by the handle in each hand.",
+   "Dip your body by bending the knees, keeping your torso upright.",
+   "Immediately reverse direction, driving through the heels, in essence jumping to create momentum.",
+   "As you do so, press the kettlebells overhead to lockout by extending the arms, using your body's momentum to move the weights.",
+   "Return your feet to the ground in a split fashion, with one foot forward and one foot back.",
+   "Keeping the weights overhead, return to a standing position, bringing your feet together. Lower the weights to perform the next repetition."
+  ],
+  "cues": [
+   "Immediately reverse direction, driving through the",
+   "As you do so, press the kettlebells overhead to",
+   "Return your feet to the ground in a split fashion,",
+   "Keeping the weights overhead, return to a standing"
+  ],
+  "mistakes": []
+ },
+ {
+  "id": "fedb_double_kettlebell_push_press",
+  "summary": "Clean two kettlebells to your shoulders.",
+  "steps": [
+   "Clean two kettlebells to your shoulders.",
+   "Squat down a few inches and reverse the motion rapidly. Use the momentum from the legs to drive the kettlebells overhead.",
+   "Once the kettlebells are locked out, lower the kettlebells to your shoulders and repeat."
+  ],
+  "cues": [
+   "Clean two kettlebells to your shoulders",
+   "Squat down a few inches and reverse the motion rapidly",
+   "Once the kettlebells are locked out, lower the"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength"
+  ]
+ },
+ {
+  "id": "fedb_double_kettlebell_snatch",
+  "summary": "Place two kettlebells behind your feet. Bend your knees and sit back to pick up the kettlebells.",
+  "steps": [
+   "Place two kettlebells behind your feet. Bend your knees and sit back to pick up the kettlebells.",
+   "Swing the kettlebells between your legs forcefully and reverse the direction.",
+   "Drive through with your hips and lock the ketttlebells overhead in one uninterrupted motion."
+  ],
+  "cues": [
+   "Place two kettlebells behind your feet",
+   "Swing the kettlebells between your legs forcefully and",
+   "Drive through with your hips and lock the ketttlebells"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength"
+  ]
+ },
+ {
+  "id": "fedb_double_kettlebell_windmill",
+  "summary": "A windmill with one kettlebell locked overhead and the other retrieved from the floor as you hinge sideways.",
+  "steps": [
+   "Clean and press one kettlebell overhead; place the other in front of your lead foot.",
+   "Turn the feet out about forty-five degrees and push the hip toward the overhead side.",
+   "Hinge sideways, eyes on the top bell, until you can pick up the floor kettlebell.",
+   "Pause briefly, then reverse to stand with both bells controlled."
+  ],
+  "cues": [
+   "Top arm stays locked",
+   "Hinge at the hip",
+   "Eyes on the overhead bell"
+  ],
+  "mistakes": [
+   "Bending the overhead elbow",
+   "Rounding forward instead of hinging",
+   "Looking away from the top bell"
+  ]
+ },
+ {
+  "id": "fedb_extended_range_one_arm_kettlebell_floor_press",
+  "summary": "A one-arm floor press with a kettlebell that starts from a deeper shoulder position than a standard floor press.",
+  "steps": [
+   "Lie on the floor and set a kettlebell in the pressing hand by the handle.",
+   "Bend the same-side knee for stability and keep the non-pressing arm on the floor.",
+   "Press the kettlebell up by extending the elbow until the arm is straight above you.",
+   "Lower with control until the upper arm meets the floor, then press again."
+  ],
+  "cues": [
+   "Upper arm to the floor",
+   "Wrist stacked over elbow",
+   "Stable base"
+  ],
+  "mistakes": [
+   "Flared elbow with no control",
+   "Arching the lower back",
+   "Bouncing off the floor"
+  ]
+ },
+ {
+  "id": "fedb_front_squats_with_two_kettlebells",
+  "summary": "A front squat holding two kettlebells at the shoulders, sitting between the legs with an upright torso.",
+  "steps": [
+   "Clean two kettlebells to the rack at your shoulders, elbows forward.",
+   "Look straight ahead and squat as low as you can, pushing the knees out.",
+   "Pause briefly at the bottom between your legs.",
+   "Drive through the heels to stand and repeat."
+  ],
+  "cues": [
+   "Elbows high",
+   "Knees out",
+   "Torso upright"
+  ],
+  "mistakes": [
+   "Collapsing the chest",
+   "Knees caving in",
+   "Rising onto the toes"
+  ]
+ },
+ {
+  "id": "fedb_goblet_squat",
+  "summary": "Stand holding a light kettlebell by the horns close to your chest.",
+  "steps": [
+   "Stand holding a light kettlebell by the horns close to your chest.",
+   "Squat down between your legs until your hamstrings are on your calves. Keep your chest and head up and your back straight."
+  ],
+  "cues": [
+   "Stand holding a light kettlebell by the horns close to",
+   "Squat down between your legs until your hamstrings are"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength",
+   "Letting the lower back round under load"
+  ]
+ },
+ {
+  "id": "fedb_kettlebell_arnold_press",
+  "summary": "Clean a kettlebell to your shoulder. Clean the kettlebell to your shoulder by extending through the legs and hips as you raise the kettlebell towards your shoulder. The palm should be facing inward.",
+  "steps": [
+   "Looking straight ahead, press the kettlebell out and overhead, rotating your wrist so that your palm faces forward at the top of the motion.",
+   "Return the kettlebell to the setup, with the palm facing in."
+  ],
+  "cues": [
+   "Clean a kettlebell to your shoulder",
+   "Looking straight ahead, press the kettlebell out and",
+   "Return the kettlebell to the setup, with the palm"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength"
+  ]
+ },
+ {
+  "id": "fedb_kettlebell_dead_clean",
+  "summary": "Place kettlebell between your feet. To get in the setup, push your butt back and look straight ahead.",
+  "steps": [
+   "Place kettlebell between your feet. To get in the setup, push your butt back and look straight ahead.",
+   "Lower the kettlebell, keeping the hamstrings loaded by keeping your back straight and your butt out."
+  ],
+  "cues": [
+   "Place kettlebell between your feet",
+   "Clean the kettlebell to your shoulder",
+   "Lower the kettlebell, keeping the hamstrings loaded by"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength",
+   "Letting the lower back round under load"
+  ]
+ },
+ {
+  "id": "fedb_kettlebell_figure_8",
+  "summary": "Place one kettlebell between your legs and take a wider than shoulder width stance. Bend over by pushing your butt out and keeping your back flat.",
+  "steps": [
+   "Place one kettlebell between your legs and take a wider than shoulder width stance. Bend over by pushing your butt out and keeping your back flat.",
+   "Pick up a kettlebell and pass it to your other hand between your legs. The receiving hand should reach from behind the legs. Go back and forth for several repetitions."
+  ],
+  "cues": [
+   "Place one kettlebell between your legs and take a",
+   "Pick up a kettlebell and pass it to your other hand"
+  ],
+  "mistakes": []
+ },
+ {
+  "id": "fedb_kettlebell_halo",
+  "summary": "Stand tall with your feet hip-width apart. Hold a kettlebell upside down by the horns, with the bell above your hands and close to your chest. Brace your abdominals and squeeze your glutes so your ribcage stays down.",
+  "steps": [
+   "Keeping your elbows close to your head, move the kettlebell up past one ear and around behind your head.",
+   "Continue the circle past the opposite ear and back down to the setup in front of your chest, letting the bell pass close to your body throughout.",
+   "Complete the prescribed number of circles in one direction, then repeat the same number in the opposite direction.",
+   "Move slowly and keep your head, hips and lower back still. If your lower back arches or the bell drifts far from your head, use a lighter weight."
+  ],
+  "cues": [
+   "Keeping your elbows close to your head, move the",
+   "Continue the circle past the opposite ear and back",
+   "Complete the prescribed number of circles in one",
+   "Move slowly and keep your head, hips and lower back"
+  ],
+  "mistakes": []
+ },
+ {
+  "id": "fedb_kettlebell_halo_with_overhead_extension",
+  "summary": "Stand tall with your feet hip-width apart. Hold a kettlebell upside down by the horns, with the bell above your hands and close to your chest. Brace your abdominals and squeeze your glutes so your ribcage stays down.",
+  "steps": [
+   "Keeping your elbows close to your head, move the kettlebell up past one ear and around until it sits behind your head. Pause here.",
+   "From this position, extend your elbows to press the kettlebell up and overhead until your arms are straight, keeping your upper arms alongside your head.",
+   "Bend your elbows to lower the kettlebell back to the pause position behind your head, under control.",
+   "Continue the circle past the opposite ear and back down to the setup in front of your chest to complete one repetition."
+  ],
+  "cues": [
+   "From this position, extend your elbows to press the",
+   "Bend your elbows to lower the kettlebell back to the",
+   "Continue the circle past the opposite ear and back",
+   "Alternate the direction of the circle on each"
+  ],
+  "mistakes": []
+ },
+ {
+  "id": "fedb_kettlebell_hang_clean",
+  "summary": "Place kettlebell between your feet. To get in the setup, push your butt back and look straight ahead.",
+  "steps": [
+   "Place kettlebell between your feet. To get in the setup, push your butt back and look straight ahead.",
+   "Lower kettlebell to a hanging position between your legs while keeping the hamstrings loaded. Keep your head up at all times."
+  ],
+  "cues": [
+   "Place kettlebell between your feet",
+   "Clean kettlebell to your shoulder",
+   "Lower kettlebell to a hanging position between your"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength",
+   "Letting the lower back round under load"
+  ]
+ },
+ {
+  "id": "fedb_kettlebell_one_legged_deadlift",
+  "summary": "Hold a kettlebell by the handle in one hand. Stand on one leg, on the same side that you hold the kettlebell.",
+  "steps": [
+   "Hold a kettlebell by the handle in one hand. Stand on one leg, on the same side that you hold the kettlebell.",
+   "Keeping that knee slightly bent, perform a stiff legged deadlift by bending at the hip, extending your free leg behind you for balance.",
+   "Continue lowering the kettlebell until you are parallel to the ground, and then return to the upright position."
+  ],
+  "cues": [
+   "Hold a kettlebell by the handle in one hand",
+   "Keeping that knee slightly bent, perform a stiff",
+   "Continue lowering the kettlebell until you are"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength",
+   "Letting the lower back round under load"
+  ]
+ },
+ {
+  "id": "fedb_kettlebell_overhead_triceps_extension",
+  "summary": "Stand with your feet hip-width apart, holding a kettlebell by the horns with both hands. Press it overhead until your arms are extended, with the bell hanging behind your hands.",
+  "steps": [
+   "Stand with your feet hip-width apart, holding a kettlebell by the horns with both hands. Press it overhead until your arms are extended, with the bell hanging behind your hands.",
+   "Brace your abdominals and keep your upper arms vertical and close to your head.",
+   "Bend at the elbows to lower the kettlebell behind your head, going as far as your shoulder mobility allows without your elbows flaring outward.",
+   "Extend your elbows to press the kettlebell back to the setup, keeping your upper arms still throughout.",
+   "Keep your ribcage down and avoid arching your lower back as you extend."
+  ],
+  "cues": [
+   "Brace your abdominals and keep your upper arms",
+   "Bend at the elbows to lower the kettlebell behind your",
+   "Extend your elbows to press the kettlebell back to the",
+   "Keep your ribcage down and avoid arching your lower"
+  ],
+  "mistakes": []
+ },
+ {
+  "id": "fedb_kettlebell_pass_between_the_legs",
+  "summary": "Place one kettlebell between your legs and take a comfortable stance. Bend over by pushing your butt out and keeping your back flat.",
+  "steps": [
+   "Place one kettlebell between your legs and take a comfortable stance. Bend over by pushing your butt out and keeping your back flat.",
+   "Pick up a kettlebell and pass it to your other hand between your legs, in the fashion of a \"W\". Go back and forth for several repetitions."
+  ],
+  "cues": [
+   "Place one kettlebell between your legs and take a",
+   "Pick up a kettlebell and pass it to your other hand"
+  ],
+  "mistakes": []
+ },
+ {
+  "id": "fedb_kettlebell_pirate_ships",
+  "summary": "With a wide stance, hold a kettlebell with both hands. Allow it to hang at waist level with your arms extended.",
+  "steps": [
+   "With a wide stance, hold a kettlebell with both hands. Allow it to hang at waist level with your arms extended.",
+   "Initiate the movement by turning to one side, swinging the kettlebell to head height. Briefly pause at the top of the motion.",
+   "Allow the bell to drop as you rotate to the opposite side, again raising the kettlebell to head height."
+  ],
+  "cues": [
+   "With a wide stance, hold a kettlebell with both hands",
+   "Initiate the movement by turning to one side, swinging",
+   "Allow the bell to drop as you rotate to the opposite"
+  ],
+  "mistakes": []
+ },
+ {
+  "id": "fedb_kettlebell_pistol_squat",
+  "summary": "Pick up a kettlebell with two hands and hold it by the horns. Hold one leg off of the floor and squat down on the other.",
+  "steps": [
+   "Pick up a kettlebell with two hands and hold it by the horns. Hold one leg off of the floor and squat down on the other.",
+   "Squat down by flexing the knee and sitting back with the hips, holding the kettlebell up in front of you.",
+   "Hold the bottom position for a second and then reverse the motion, driving through the heel and keeping your head and chest up.",
+   "Lower yourself again and repeat."
+  ],
+  "cues": [
+   "Pick up a kettlebell with two hands and hold it by the",
+   "Squat down by flexing the knee and sitting back with",
+   "Hold the bottom position for a second and then reverse",
+   "Lower yourself again and repeat"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength",
+   "Letting the lower back round under load"
+  ]
+ },
+ {
+  "id": "fedb_kettlebell_seated_press",
+  "summary": "Sit on the floor and spread your legs out comfortably. Clean one kettlebell to your shoulder. Press the kettlebell up and out until it is locked out overhead. Return to the setup.",
+  "steps": [
+   "Sit on the floor and spread your legs out comfortably. Clean one kettlebell to your shoulder. Press the kettlebell up and out until it is locked out overhead. Return to the setup.",
+   "Sit on the floor and spread your legs out comfortably.",
+   "Clean one kettlebell to your shoulder.",
+   "Press the kettlebell up and out until it is locked out overhead. Return to the setup."
+  ],
+  "cues": [
+   "Sit on the floor and spread your legs out comfortably",
+   "Clean one kettlebell to your shoulder",
+   "Press the kettlebell up and out until it is locked out"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength"
+  ]
+ },
+ {
+  "id": "fedb_kettlebell_seesaw_press",
+  "summary": "Clean two kettlebells two your shoulders. Press one kettlebell. Lower the kettlebell and immediately press the other kettlebell. Make sure to do the same amount of reps on both sides.",
+  "steps": [
+   "Clean two kettlebells two your shoulders.",
+   "Press one kettlebell.",
+   "Lower the kettlebell and immediately press the other kettlebell. Make sure to do the same amount of reps on both sides."
+  ],
+  "cues": [
+   "Clean two kettlebells two your shoulders",
+   "Press one kettlebell",
+   "Lower the kettlebell and immediately press the other"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength"
+  ]
+ },
+ {
+  "id": "fedb_kettlebell_sumo_high_pull",
+  "summary": "Place a kettlebell on the ground between your feet. Position your feet in a wide stance, and grasp the kettlebell with two hands. Set your hips back as far as possible, with your knees bent. Keep your chest and head up.",
+  "steps": [
+   "Set up for Kettlebell Sumo High Pull with a kettlebell with a braced torso and stable base.",
+   "Move through a full range with control, then return without losing posture."
+  ],
+  "cues": [
+   "Place a kettlebell on the ground between your feet",
+   "Begin by extending the hips and knees, simultaneously"
+  ],
+  "mistakes": []
+ },
+ {
+  "id": "fedb_kettlebell_thruster",
+  "summary": "Clean two kettlebells to your shoulders. Clean the kettlebells to your shoulders by extending through the legs and hips as you pull the kettlebells towards your shoulders. Rotate your wrists as you do so.",
+  "steps": [
+   "Begin to squat by flexing your hips and knees, lowering your hips between your legs. Maintain an upright, straight back as you descend as low as you can.",
+   "As you begin the next repetition, return the weights to the shoulders."
+  ],
+  "cues": [
+   "Clean two kettlebells to your shoulders",
+   "Begin to squat by flexing your hips and knees,",
+   "At the bottom, reverse direction and squat by",
+   "As you begin the next repetition, return the weights"
+  ],
+  "mistakes": []
+ },
+ {
+  "id": "fedb_kettlebell_turkish_get_up_lunge_style",
+  "summary": "Lie on your back on the floor and press a kettlebell to the top position by extending the elbow. Bend the knee on the same side as the kettlebell.",
+  "steps": [
+   "Lie on your back on the floor and press a kettlebell to the top position by extending the elbow. Bend the knee on the same side as the kettlebell.",
+   "While looking up at the kettlebell, slowly stand up. Reverse the motion back to the setup and repeat."
+  ],
+  "cues": [
+   "Lie on your back on the floor and press a kettlebell",
+   "Keeping the kettlebell locked out at all times, pivot",
+   "While looking up at the kettlebell, slowly stand up"
+  ],
+  "mistakes": [
+   "Letting the lower back round under load"
+  ]
+ },
+ {
+  "id": "fedb_kettlebell_turkish_get_up_squat_style",
+  "summary": "Lie on your back on the floor and press a kettlebell to the top position by extending the elbow. Bend the knee on the same side as the kettlebell.",
+  "steps": [
+   "Lie on your back on the floor and press a kettlebell to the top position by extending the elbow. Bend the knee on the same side as the kettlebell.",
+   "Keeping the kettlebell locked out at all times, pivot to the opposite side and use your non- working arm to assist you in driving forward to the lunge position."
+  ],
+  "cues": [
+   "Lie on your back on the floor and press a kettlebell",
+   "Keeping the kettlebell locked out at all times, pivot",
+   "Using your free hand, push yourself to a seated"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength",
+   "Letting the lower back round under load"
+  ]
+ },
+ {
+  "id": "fedb_kettlebell_windmill",
+  "summary": "A side hinge with one kettlebell locked overhead while the free hand reaches toward the floor.",
+  "steps": [
+   "Clean and press a kettlebell overhead with one arm; place the feet turned out about forty-five degrees.",
+   "Push the hip toward the overhead side and keep the top arm locked.",
+   "Hinge sideways, eyes on the bell, until the free hand nears the floor.",
+   "Pause briefly, then reverse to stand tall."
+  ],
+  "cues": [
+   "Top arm locked",
+   "Hips push sideways",
+   "Eyes on the bell"
+  ],
+  "mistakes": [
+   "Bending the overhead elbow",
+   "Rounding the spine",
+   "Looking away from the bell"
+  ]
+ },
+ {
+  "id": "fedb_leg_over_floor_press",
+  "summary": "Lie on the floor with one kettlebell in place on your chest, holding it by the handle. Extend leg on working side over leg on non-working side.Your free arm can be extended out to your side for support.",
+  "steps": [
+   "Press the kettlebll into a locked out position.",
+   "Lower the weight until the elbow touches the ground, keeping the kettlebell above the elbow."
+  ],
+  "cues": [
+   "Lie on the floor with one kettlebell in place on your",
+   "Press the kettlebll into a locked out position",
+   "Lower the weight until the elbow touches the ground,"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength"
+  ]
+ },
+ {
+  "id": "fedb_lunge_pass_through",
+  "summary": "Stand with your torso upright holding a kettlebell in your right hand.",
+  "steps": [
+   "Stand with your torso upright holding a kettlebell in your right hand.",
+   "Step forward with your left foot and lower your upper body down by flexing the hip and the knee, keeping the torso upright. Lower your back knee until it nearly touches the ground.",
+   "As you lunge, pass the kettlebell under your front leg to your opposite hand.",
+   "Pressing through the heel of your foot, return to the setup.",
+   "Repeat the movement for the your reps, alternating legs."
+  ],
+  "cues": [
+   "Step forward with your left foot and lower your upper",
+   "As you lunge, pass the kettlebell under your front leg",
+   "Pressing through the heel of your foot, return to the",
+   "Repeat the movement for the your reps, alternating legs"
+  ],
+  "mistakes": [
+   "Letting the lower back round under load"
+  ]
+ },
+ {
+  "id": "fedb_one_arm_kettlebell_clean",
+  "summary": "Place a kettlebell between your feet. As you bend down to grab the kettlebell, push your butt back and keep your eyes looking forward.",
+  "steps": [
+   "Place a kettlebell between your feet. As you bend down to grab the kettlebell, push your butt back and keep your eyes looking forward.",
+   "Clean the kettlebell to your shoulders by extending through the legs and hips as you raise the kettlebell towards your shoulder. The wrist should rotate as you do so.",
+   "Return the weight to the setup."
+  ],
+  "cues": [
+   "Place a kettlebell between your feet",
+   "Clean the kettlebell to your shoulders by extending",
+   "Return the weight to the setup"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength",
+   "Letting the lower back round under load"
+  ]
+ },
+ {
+  "id": "fedb_one_arm_kettlebell_clean_and_jerk",
+  "summary": "Hold a kettlebell by the handle.",
+  "steps": [
+   "Hold a kettlebell by the handle.",
+   "Dip your body by bending the knees, keeping your torso upright.",
+   "Receive the weight overhead by returning to a squat position underneath the weight.",
+   "Keeping the weight overhead, return to a standing position. Lower the weight to the floor to perform the next repetition."
+  ],
+  "cues": [
+   "Dip your body by bending the knees, keeping your torso",
+   "Immediately reverse direction, driving through the",
+   "Receive the weight overhead by returning to a squat",
+   "Keeping the weight overhead, return to a standing"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength"
+  ]
+ },
+ {
+  "id": "fedb_one_arm_kettlebell_floor_press",
+  "summary": "Lie on the floor holding a kettlebell with one hand, with your upper arm supported by the floor. The palm should be facing in.",
+  "steps": [
+   "Lie on the floor holding a kettlebell with one hand, with your upper arm supported by the floor. The palm should be facing in.",
+   "Press the kettlebell straight up toward the ceiling, rotating your wrist.",
+   "Lower the kettlebell back to the setup and repeat."
+  ],
+  "cues": [
+   "Lie on the floor holding a kettlebell with one hand,",
+   "Press the kettlebell straight up toward the ceiling,",
+   "Lower the kettlebell back to the setup and repeat"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength"
+  ]
+ },
+ {
+  "id": "fedb_one_arm_kettlebell_jerk",
+  "summary": "Dip your body by bending the knees, keeping your torso upright.",
+  "steps": [
+   "Dip your body by bending the knees, keeping your torso upright.",
+   "Lower the weight to perform the next repetition."
+  ],
+  "cues": [
+   "Hold a kettlebell by the handle",
+   "Dip your body by bending the knees, keeping your torso",
+   "Immediately reverse direction, driving through the",
+   "Lower the weight to perform the next repetition"
+  ],
+  "mistakes": []
+ },
+ {
+  "id": "fedb_one_arm_kettlebell_military_press_to_the_side",
+  "summary": "Look at the kettlebell and press it up and out until it is locked out overhead.",
+  "steps": [
+   "Look at the kettlebell and press it up and out until it is locked out overhead.",
+   "Lower the kettlebell back to your shoulder under control and repeat. Make sure to contract your lat, butt, and stomach forcefully for added stability and strength."
+  ],
+  "cues": [
+   "Clean a kettlebell to your shoulder",
+   "Look at the kettlebell and press it up and out until",
+   "Lower the kettlebell back to your shoulder under"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength"
+  ]
+ },
+ {
+  "id": "fedb_one_arm_kettlebell_para_press",
+  "summary": "Hold the kettlebell with the elbow out to the side, and press it up and out until it is locked out overhead.",
+  "steps": [
+   "Hold the kettlebell with the elbow out to the side, and press it up and out until it is locked out overhead.",
+   "Lower the kettlebell back to your shoulder under control and repeat. Make sure to contract your lat, butt, and stomach forcefully for added stability and strength."
+  ],
+  "cues": [
+   "Clean a kettlebell to your shoulder",
+   "Hold the kettlebell with the elbow out to the side,",
+   "Lower the kettlebell back to your shoulder under"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength"
+  ]
+ },
+ {
+  "id": "fedb_one_arm_kettlebell_push_press",
+  "summary": "A one-arm kettlebell press that uses a short dip and drive of the legs to help lock the bell overhead.",
+  "steps": [
+   "Clean a kettlebell to your shoulder with the elbow tucked and forearm vertical.",
+   "Dip by bending the knees while keeping the torso upright.",
+   "Drive through the heels and press the kettlebell overhead to a locked elbow.",
+   "Lower to the shoulder with control and repeat."
+  ],
+  "cues": [
+   "Dip, then drive",
+   "Torso stays upright",
+   "Finish locked out"
+  ],
+  "mistakes": [
+   "Pressing without the leg drive",
+   "Leaning back hard",
+   "Soft elbow at the top"
+  ]
+ },
+ {
+  "id": "fedb_one_arm_kettlebell_row",
+  "summary": "A hinged single-arm kettlebell row that pulls the bell to the hip while the torso stays braced.",
+  "steps": [
+   "Place a kettlebell in front of your feet, bend the knees slightly, and hinge with a flat back.",
+   "Grip the handle and pull the bell to your hip, retracting the shoulder blade.",
+   "Lower it with control until the arm is long.",
+   "Finish the set, then switch sides."
+  ],
+  "cues": [
+   "Flat back",
+   "Pull to the hip",
+   "Shoulder blade back"
+  ],
+  "mistakes": [
+   "Rounding the back",
+   "Yanking with momentum",
+   "Shrugging the ear to the shoulder"
+  ]
+ },
+ {
+  "id": "fedb_one_arm_kettlebell_snatch",
+  "summary": "Place a kettlebell between your feet. Bend your knees and push your butt back to get in the proper setup.",
+  "steps": [
+   "Place a kettlebell between your feet. Bend your knees and push your butt back to get in the proper setup.",
+   "Look straight ahead and swing the kettlebell back between your legs."
+  ],
+  "cues": [
+   "Place a kettlebell between your feet",
+   "Look straight ahead and swing the kettlebell back",
+   "Immediately reverse the direction and drive through"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength"
+  ]
+ },
+ {
+  "id": "fedb_one_arm_kettlebell_split_jerk",
+  "summary": "Dip your body by bending the knees, keeping your torso upright.",
+  "steps": [
+   "Dip your body by bending the knees, keeping your torso upright.",
+   "Receive the weight overhead by returning to a squat position underneath the weight, positioning one leg in front of you and one leg behind you.",
+   "Keeping the weight overhead, return to a standing position and bring your feet together. Lower the weight to perform the next repetition."
+  ],
+  "cues": [
+   "Dip your body by bending the knees, keeping your torso",
+   "Immediately reverse direction, driving through the",
+   "Receive the weight overhead by returning to a squat",
+   "Keeping the weight overhead, return to a standing"
+  ],
+  "mistakes": []
+ },
+ {
+  "id": "fedb_one_arm_kettlebell_split_snatch",
+  "summary": "Hold a kettlebell in one hand by the handle.",
+  "steps": [
+   "Hold a kettlebell in one hand by the handle.",
+   "Squat towards the floor, and then reverse the motion, extending the hips, knees, and finally the ankles, to raise the kettlebell overhead.",
+   "Return to a standing position, holding the weight overhead, and bring the feet together. Lower the weight to return to the setup."
+  ],
+  "cues": [
+   "Hold a kettlebell in one hand by the handle",
+   "Squat towards the floor, and then reverse the motion,",
+   "After fully extending the body, descend into a lunge",
+   "Return to a standing position, holding the weight"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength"
+  ]
+ },
+ {
+  "id": "fedb_one_arm_kettlebell_swings",
+  "summary": "One-Arm Kettlebell Swings is a hinge exercise with a kettlebell, done with steady control through the full range.",
+  "steps": [
+   "Set up for One-Arm Kettlebell Swings with a kettlebell with a braced torso and stable base.",
+   "Move through a full range with control, then return without losing posture."
+  ],
+  "cues": [
+   "Brace the torso"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength",
+   "Letting the lower back round under load"
+  ]
+ },
+ {
+  "id": "fedb_one_arm_open_palm_kettlebell_clean",
+  "summary": "Place one kettlebell between your feet.",
+  "steps": [
+   "Place one kettlebell between your feet.",
+   "Grab the handle with one hand and raise the kettlebell rapidly, let it flip so that the ball of the kettlebell lands in the palm of your hand.",
+   "Throw the kettlebell out in front of you and catch the handle with one hand.",
+   "Take the kettlebell to the floor and repeat. Make sure to work both arms."
+  ],
+  "cues": [
+   "Place one kettlebell between your feet",
+   "Grab the handle with one hand and raise the kettlebell",
+   "Throw the kettlebell out in front of you and catch the",
+   "Take the kettlebell to the floor and repeat"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength",
+   "Letting the lower back round under load"
+  ]
+ },
+ {
+  "id": "fedb_one_arm_overhead_kettlebell_squats",
+  "summary": "Clean and press a kettlebell with one arm. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulder. Rotate your wrist as you do so.",
+  "steps": [
+   "Looking straight ahead and keeping a kettlebell locked out above you, flex the knees and hips and lower your torso between your legs, keeping your head and chest up.",
+   "Pause at the bottom position for a second before rising back to the top, driving through the heels of your feet."
+  ],
+  "cues": [
+   "Clean and press a kettlebell with one arm",
+   "Looking straight ahead and keeping a kettlebell locked",
+   "Pause at the bottom position for a second before"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength",
+   "Letting the lower back round under load"
+  ]
+ },
+ {
+  "id": "fedb_open_palm_kettlebell_clean",
+  "summary": "Place one kettlebell between your feet. Clean the kettlebell by extending through the legs and hips as you raise the kettlebell towards your shoulders.",
+  "steps": [
+   "Place one kettlebell between your feet. Clean the kettlebell by extending through the legs and hips as you raise the kettlebell towards your shoulders.",
+   "Release the kettlebell as it comes up, and let it flip so that the ball of the kettlebell lands in the palms of your hands.",
+   "Release the kettlebell out in front of you and catch the handle with both hands. Lower the kettlebell to the setup and repeat."
+  ],
+  "cues": [
+   "Place one kettlebell between your feet",
+   "Release the kettlebell as it comes up, and let it flip",
+   "Release the kettlebell out in front of you and catch"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength",
+   "Letting the lower back round under load"
+  ]
+ },
+ {
+  "id": "fedb_plyo_kettlebell_pushups",
+  "summary": "Place a kettlebell on the floor. Place yourself in a pushup position, on your toes with one hand on the ground and one hand holding the kettlebell, with your elbows extended.",
+  "steps": [
+   "Place a kettlebell on the floor. Place yourself in a pushup position, on your toes with one hand on the ground and one hand holding the kettlebell, with your elbows extended.",
+   "Begin by lowering yourself as low as you can, keeping your back straight."
+  ],
+  "cues": [
+   "Place a kettlebell on the floor",
+   "Begin by lowering yourself as low as you can, keeping",
+   "Quickly and forcefully reverse direction, pushing"
+  ],
+  "mistakes": []
+ },
+ {
+  "id": "fedb_two_arm_kettlebell_clean",
+  "summary": "Place two kettlebells between your feet. To get in the setup, push your butt back and look straight ahead.",
+  "steps": [
+   "Place two kettlebells between your feet. To get in the setup, push your butt back and look straight ahead.",
+   "Clean the kettlebells to your shoulders by extending through the legs and hips as you raise the kettlebells towards your shoulders. Rotate your wrists as you do so.",
+   "Lower the kettlebells back to the setup and repeat."
+  ],
+  "cues": [
+   "Place two kettlebells between your feet",
+   "Clean the kettlebells to your shoulders by extending",
+   "Lower the kettlebells back to the setup and repeat"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength"
+  ]
+ },
+ {
+  "id": "fedb_two_arm_kettlebell_jerk",
+  "summary": "A two-kettlebell jerk that cleans to the shoulders, then dips and drives both bells overhead.",
+  "steps": [
+   "Clean two kettlebells to the rack at your shoulders.",
+   "Dip by bending the knees with an upright torso.",
+   "Drive upward and lock both kettlebells overhead.",
+   "Lower to the shoulders with control and repeat."
+  ],
+  "cues": [
+   "Dip and drive",
+   "Lock both elbows",
+   "Ribs down"
+  ],
+  "mistakes": [
+   "Pressing without leg drive",
+   "Bending the back",
+   "Soft elbows overhead"
+  ]
+ },
+ {
+  "id": "fedb_two_arm_kettlebell_military_press",
+  "summary": "Press the kettlebells up and out. As the kettlebells pass your head, lean into the weights so that the kettlebells are racked behind your head. Make sure to contract your lats, butt, and stomach for added stability.",
+  "steps": [
+   "Set up for Two-Arm Kettlebell Military Press with a kettlebell with a braced torso and stable base.",
+   "Move through a full range with control, then return without losing posture."
+  ],
+  "cues": [
+   "Clean two kettlebells to your shoulders",
+   "Press the kettlebells up and out"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength"
+  ]
+ },
+ {
+  "id": "fedb_two_arm_kettlebell_row",
+  "summary": "Place two kettlebells in front of your feet. Bend your knees slightly and then push your butt out as much as possible as you bend over to get in the setup.",
+  "steps": [
+   "Place two kettlebells in front of your feet. Bend your knees slightly and then push your butt out as much as possible as you bend over to get in the setup.",
+   "Grab both kettlebells and pull them to your stomach, retracting your shoulder blades and flexing the elbows. Keep your back straight. Lower and repeat."
+  ],
+  "cues": [
+   "Place two kettlebells in front of your feet",
+   "Grab both kettlebells and pull them to your stomach,"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength"
+  ]
+ },
+ {
+  "id": "wger_9",
+  "summary": "Stand with your feet slightly wider than shoulder-width, the kettlebell on the floor about 20-30 cm in front of your toes.",
+  "steps": [
+   "Stand with your feet slightly wider than shoulder-width, the kettlebell on the floor about 20-30 cm in front of your toes.",
+   "Hinge at the hips with a slight bend in the knees and a flat back, and grip the handle with both hands.",
+   "Let the kettlebell swing back down, hinge again as it passes between your legs and go straight into the next rep."
+  ],
+  "cues": [
+   "Stand with your feet slightly wider than",
+   "Hinge at the hips with a slight bend in the knees and",
+   "Hike the kettlebell back between your legs, then drive",
+   "Let the kettlebell swing back down, hinge again as it"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength",
+   "Letting the lower back round under load"
+  ]
+ },
+ {
+  "id": "wger_974",
+  "summary": "A two-hand kettlebell curl that flexes both elbows together from a hang to shoulder height.",
+  "steps": [
+   "Stand tall and grip one kettlebell with both hands on the handle.",
+   "Start with the arms long and curl the bell by bending both elbows.",
+   "Raise until the hands reach about shoulder height without swinging.",
+   "Lower slowly to a full hang and repeat."
+  ],
+  "cues": [
+   "Elbows by the ribs",
+   "No swing",
+   "Lower slowly"
+  ],
+  "mistakes": [
+   "Using hip momentum",
+   "Flaring the elbows",
+   "Shrugging the shoulders"
+  ]
+ },
+ {
+  "id": "wger_1360",
+  "summary": "Full-body muscles building exercise. the move provides a huge range of benefits in terms of strength & size and is extremely functional.",
+  "steps": [
+   "Set up for Double Kettlebell Clean and Press with a kettlebell with a braced torso and stable base.",
+   "Move through a full range with control, then return without losing posture."
+  ],
+  "cues": [
+   "Full-body muscles building exercise"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength"
+  ]
+ },
+ {
+  "id": "wger_1361",
+  "summary": "The kettlebell front squat is a compound, multi-joint exercise that works several muscle groups.",
+  "steps": [
+   "Set up for Double Kettlebell Front Squat with a kettlebell with a braced torso and stable base.",
+   "Move through a full range with control, then return without losing posture."
+  ],
+  "cues": [
+   "The kettlebell front squat is a compound, multi-joint"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength",
+   "Letting the lower back round under load"
+  ]
+ },
+ {
+  "id": "wger_1099",
+  "summary": "A single-leg hold with a kettlebell hanging from a band at your side, switching legs while you keep balance.",
+  "steps": [
+   "Loop a band through a kettlebell handle and hold the band so the bell hangs by your side.",
+   "Stand on one leg with a soft knee and a tall torso.",
+   "Hold the balance, then switch the standing leg without dropping the bell.",
+   "Keep the hanging arm quiet and the hips level."
+  ],
+  "cues": [
+   "Soft standing knee",
+   "Hips level",
+   "Quiet hanging arm"
+  ],
+  "mistakes": [
+   "Collapsing the standing hip",
+   "Swinging the kettlebell",
+   "Holding your breath"
+  ]
+ },
+ {
+  "id": "wger_2447",
+  "summary": "A single-leg hinge that opens and closes the hip like an airplane wing while the standing leg stays stable.",
+  "steps": [
+   "Stand on one leg and hinge forward until the torso and free leg form a long line.",
+   "Keep the back flat and the standing knee soft.",
+   "Rotate the hips open and closed from the standing hip without letting the knee cave in.",
+   "Return to standing and switch sides."
+  ],
+  "cues": [
+   "Move from the hip",
+   "Standing knee steady",
+   "Long line head to heel"
+  ],
+  "mistakes": [
+   "Knee collapsing inward",
+   "Rounding the back",
+   "Wobbling through the foot"
+  ]
+ },
+ {
+  "id": "wger_1003",
+  "summary": "Hinge at the hips and slightly bend at the knees to put your hands on the kettlebell handles. Your back should be straight as you perform the movement.",
+  "steps": [
+   "Hinge at the hips and slightly bend at the knees to put your hands on the kettlebell handles. Your back should be straight as you perform the movement.",
+   "Grab the kettlebell handles, with your hands pushing in opposite directions as if to pull the handle apart.",
+   "While contacting your abs and glutes, stand straight up.",
+   "Hinge at the hips again to bring the kettlebell back down, similarly to step 1.",
+   "Repeat from step 3. Tips:."
+  ],
+  "cues": [
+   "While contacting your abs and glutes, stand straight up",
+   "Hinge at the hips again to bring the kettlebell back",
+   "Repeat from step 3",
+   "Be sure you're performing the movements correctly, as"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength",
+   "Letting the lower back round under load"
+  ]
+ },
+ {
+  "id": "wger_1612",
+  "summary": "Place your feet wider than shoulder-width apart, pointing your toes outward.",
+  "steps": [
+   "Place your feet wider than shoulder-width apart, pointing your toes outward.",
+   "Keep your back straight, shoulders back, and chest up.",
+   "The knees must follow the same direction as the toes and not move forward.",
+   "When going up, it is advisable to contract your glutes to maximize the effectiveness of the exercise.."
+  ],
+  "cues": [
+   "Place your feet wider than shoulder-width apart,",
+   "Keep your back straight, shoulders back, and chest up",
+   "The knees must follow the same direction as the toes",
+   "When going up, it is advisable to contract your glutes"
+  ],
+  "mistakes": [
+   "Using momentum instead of controlled strength",
+   "Letting the lower back round under load"
+  ]
+ },
+ {
+  "id": "wger_331",
+  "summary": "A hip-hinge swing that snaps the kettlebell forward with the hips, not a lift with the arms.",
+  "steps": [
+   "Hold the kettlebell with both hands, feet about shoulder-width, knees soft.",
+   "Hinge at the hips with a flat back and swing the bell back between the legs.",
+   "Snap the hips forward to stand tall so the bell floats up in front of you.",
+   "Let it arc back down and repeat, arms staying long."
+  ],
+  "cues": [
+   "Hips snap, arms guide",
+   "Flat back",
+   "Soft knees"
+  ],
+  "mistakes": [
+   "Squatting instead of hinging",
+   "Lifting with the arms",
+   "Rounding the spine"
+  ]
+ },
+ {
+  "id": "wger_2727",
+  "summary": "A forearm-supported kettlebell rotation that turns the wrist while the elbow stays still.",
+  "steps": [
+   "Rest your forearm on a bench or your knee and hold a light kettlebell by the handle with the bell hanging down.",
+   "Keep the elbow and forearm still.",
+   "Slowly rotate the wrist so the bell turns through a controlled arc.",
+   "Reverse the rotation and repeat, then switch arms."
+  ],
+  "cues": [
+   "Elbow still",
+   "Slow rotation",
+   "Light load"
+  ],
+  "mistakes": [
+   "Moving the whole arm",
+   "Using a heavy bell",
+   "Rushing the turn"
+  ]
+ },
+ {
+  "id": "wger_975",
+  "summary": "Standing with the kettlebell in one hand and bent at the elbow, start from a fully extended position until your hand reaches shoulder height. To perform the movement correctly, try not to push with your back or body.",
+  "steps": [
+   "Set up for One-handed kettlebell curls with a kettlebell with a braced torso and stable base.",
+   "Move through a full range with control, then return without losing posture."
+  ],
+  "cues": [
+   "Standing with the kettlebell in one hand and bent at"
+  ],
+  "mistakes": []
+ },
+ {
+  "id": "wger_1022",
+  "summary": "A single-arm row that opens into a plank and returns, finishing each rep with another row.",
+  "steps": [
+   "Start in a hinged row stance with one hand on a kettlebell or support.",
+   "Row the load to your side, then extend the hips and free arm into a plank line.",
+   "Return to the hinged row stance with control.",
+   "Finish with another row and repeat."
+  ],
+  "cues": [
+   "Row, then plank",
+   "Hips square",
+   "Control the return"
+  ],
+  "mistakes": [
+   "Losing the plank line",
+   "Twisting the hips",
+   "Rushing the transitions"
+  ]
+ },
+ {
+  "id": "wger_2668",
+  "summary": "Single-Leg Balance with Kettlebell Circles is a mobility exercise with a kettlebell, done with steady control through the full range.",
+  "steps": [
+   "Set up for Single-Leg Balance with Kettlebell Circles with a kettlebell with a braced torso and stable base.",
+   "Move through a full range with control, then return without losing posture."
+  ],
+  "cues": [
+   "A balance drill that adds a moving load"
+  ],
+  "mistakes": []
+ },
+ {
+  "id": "wger_1734",
+  "summary": "How to do a single-leg kettlebell lunge.",
+  "steps": [
+   "How to do a single-leg kettlebell lunge.",
+   "Step and Lower: Take a large step forward (or backward, which is safer for your knees) with one leg, lowering your hips until both knees form a 90-degree angle.",
+   "Focus: Shift your weight onto your front (or bent) leg, keeping your back straight and your torso upright.",
+   "Return: Push off with your front leg to return to the setup."
+  ],
+  "cues": [
+   "Preparation: Stand with your feet together",
+   "Step and Lower: Take a large step forward (or",
+   "Focus: Shift your weight onto your front (or bent)",
+   "Return: Push off with your front leg to return to the"
+  ],
+  "mistakes": [
+   "Letting the lower back round under load"
+  ]
+ },
+ {
+  "id": "ntc_incline_archer_push_up",
+  "summary": "An archer push-up with the hands elevated so less of your bodyweight loads the working arm. Use it as the bridge from two-arm incline work to floor Archer Push-Ups and toward one-arm progressions.",
+  "steps": [
+   "Place both hands on a stable bench or step, wider than shoulder width, feet on the floor.",
+   "Brace a rigid plank from heels to head.",
+   "Lower by bending the working elbow and shifting your chest toward that hand while the assisting arm stays nearly straight.",
+   "Press back to the start without twisting the hips, then alternate sides.",
+   "Hands on a bench or step, wider than shoulders.",
+   "Bend one elbow and shift chest toward that hand.",
+   "Keep the other arm nearly straight as a light assist."
+  ],
+  "cues": [
+   "Hands on a bench or step, wider than shoulders",
+   "Bend one elbow and shift chest toward that hand",
+   "Keep the other arm nearly straight as a light assist",
+   "Hips square; equal reps each side"
+  ],
+  "mistakes": []
+ },
+ {
+  "id": "ntc_archer_push_up_hold",
+  "summary": "An isometric pause in the loaded side of an Archer Push-Up. Builds the control needed between full archer reps and one-arm push-up work.",
+  "steps": [
+   "An isometric pause in the loaded side of an Archer Push-Up. Builds the control needed between full archer reps and one-arm push-up work.",
+   "Start in a wide floor push-up stance.",
+   "Shift into the archer bottom: working elbow bent, assisting arm nearly straight, chest toward the working hand.",
+   "Hold without collapsing the hips or twisting.",
+   "Come up, rest briefly, then hold the other side.",
+   "Lower into an archer bottom on one side.",
+   "Pause with the working elbow bent and assist arm straight."
+  ],
+  "cues": [
+   "Come up, rest briefly, then hold the other side",
+   "Lower into an archer bottom on one side",
+   "Pause with the working elbow bent and assist arm",
+   "Keep hips square; switch sides each set"
+  ],
+  "mistakes": []
+ },
+ {
+  "id": "ntc_bent_knee_australian_pull_up",
+  "summary": "The easiest Australian pull-up (inverted / bodyweight row): higher bar and bent knees so less of your weight is on the arms. Graduate to a straight-leg Inverted Row when 3×10–12 is clean.",
+  "steps": [
+   "Set a bar around chest height. Sit underneath, bend the knees about 90°, and take an overhand grip.",
+   "Keep a straight line from knees to head and hang with arms straight.",
+   "Pull the chest to the bar, then lower under control to full arm extension.",
+   "Bar at about chest height; knees bent, feet flat.",
+   "Body about 45 degrees; pull chest to the bar.",
+   "Also called a bent-knee inverted row."
+  ],
+  "cues": [
+   "Pull the chest to the bar, then lower under control to",
+   "Bar at about chest height; knees bent, feet flat",
+   "Body about 45 degrees; pull chest to the bar",
+   "Also called a bent-knee inverted row"
+  ],
+  "mistakes": []
+ },
+ {
+  "id": "ntc_australian_chin_up",
+  "summary": "A supinated-grip Australian pull-up (inverted row). Same horizontal-pull pattern as the overhand Inverted Row, with more biceps involvement. Also searched as Australian chin-up.",
+  "steps": [
+   "A supinated-grip Australian pull-up (inverted row). Same horizontal-pull pattern as the overhand Inverted Row, with more biceps involvement. Also searched as Australian chin-up.",
+   "Set a low bar (about hip-to-waist height). Hang underneath with an underhand grip, heels on the floor, body straight.",
+   "Pull the lower chest to the bar without shrugging.",
+   "Lower to straight arms under control.",
+   "Same as an Australian pull-up / inverted row, underhand (supinated) grip.",
+   "Pull lower chest to the bar; body rigid.",
+   "More biceps bias than the overhand Australian pull-up."
+  ],
+  "cues": [
+   "Lower to straight arms under control",
+   "Same as an Australian pull-up / inverted row,",
+   "Pull lower chest to the bar; body rigid",
+   "More biceps bias than the overhand Australian pull-up"
+  ],
+  "mistakes": []
+ },
+ {
+  "id": "ntc_feet_elevated_australian_pull_up",
+  "summary": "An Australian pull-up / inverted row with the feet raised so the body is nearly horizontal and more of your weight is on the arms. The usual step between a strict Inverted Row and archer / one-arm rows.",
+  "steps": [
+   "Set a low bar and place your heels on a stable box or bench at about bar height.",
+   "Hang with arms straight, body rigid and close to horizontal.",
+   "Pull the chest to the bar, then lower fully without dropping the hips.",
+   "Heels on a box or bench level with the bar.",
+   "Body near horizontal; pull chest to the bar.",
+   "Also called feet-elevated inverted row."
+  ],
+  "cues": [
+   "Pull the chest to the bar, then lower fully without",
+   "Heels on a box or bench level with the bar",
+   "Body near horizontal; pull chest to the bar",
+   "Also called feet-elevated inverted row"
+  ],
+  "mistakes": []
+ },
+ {
+  "id": "ntc_australian_pull_up_hold",
+  "summary": "An isometric pause at the top of an Australian pull-up (inverted row). Builds the chest-to-bar position before adding elevation, archer work, or harder rows.",
+  "steps": [
+   "An isometric pause at the top of an Australian pull-up (inverted row). Builds the chest-to-bar position before adding elevation, archer work, or harder rows.",
+   "From a straight-leg Australian pull-up / inverted-row setup, pull the chest to the bar.",
+   "Hold with rigid hips and depressed shoulders.",
+   "Lower under control when the hold ends.",
+   "Pull chest to the low bar and pause.",
+   "Body straight; squeeze the shoulder blades.",
+   "Also called an inverted-row hold."
+  ],
+  "cues": [
+   "Lower under control when the hold ends",
+   "Pull chest to the low bar and pause",
+   "Body straight; squeeze the shoulder blades",
+   "Also called an inverted-row hold"
+  ],
+  "mistakes": []
+ },
+ {
+  "id": "ntc_archer_inverted_row",
+  "summary": "A unilateral Australian pull-up (inverted row) where one arm does most of the work and the other stays nearly straight for light assist. Bridges feet-elevated rows toward one-arm inverted rows.",
+  "steps": [
+   "Set a bar around hip-to-waist height (or low rings/straps) and hang underneath with a wide grip, body straight, heels on the floor.",
+   "Pull by bending the working elbow and driving the lower chest toward that hand while the assisting arm stays nearly straight on the bar.",
+   "Touch the working-side chest to the bar without a chin reach or bounce, then lower under control to straight arms.",
+   "Alternate sides with equal reps.",
+   "Wide grip under a low bar (or rings / straps).",
+   "Pull chest toward one hand; other arm stays nearly straight.",
+   "Heels planted, body rigid; no hip twist."
+  ],
+  "cues": [
+   "Wide grip under a low bar (or rings / straps)",
+   "Pull chest toward one hand; other arm stays nearly",
+   "Heels planted, body rigid; no hip twist",
+   "Also called archer inverted row / archer row / archer"
+  ],
+  "mistakes": []
+ },
+ {
+  "id": "ntc_archer_dip",
+  "summary": "A unilateral dip on parallettes or dip bars that loads one arm while the other stays more extended. A standard advanced dip progression before single-arm dip work.",
+  "steps": [
+   "A unilateral dip on parallettes or dip bars that loads one arm while the other stays more extended. A standard advanced dip progression before single-arm dip work.",
+   "Support yourself above parallettes or dip bars with locked elbows and shoulders pulled down.",
+   "Lower by shifting toward one arm: bend that elbow while the opposite arm stays more extended for support.",
+   "Descend until the working upper arm is about parallel to the floor (or as deep as your shoulders allow with control).",
+   "Press back to support and alternate sides.",
+   "Support on parallettes or dip bars, hands slightly wider.",
+   "Lower toward one side; working elbow bends, assist arm stays straighter."
+  ],
+  "cues": [
+   "Press back to support and alternate sides",
+   "Support on parallettes or dip bars, hands slightly",
+   "Lower toward one side; working elbow bends, assist arm",
+   "Shoulders depressed; equal work each side"
+  ],
+  "mistakes": []
+ },
+ {
+  "id": "ntc_archer_straight_bar_dip",
+  "summary": "An archer dip on a single straight bar (the dip used in muscle-up lockout strength). Harder leverage than parallel-bar archer dips; keep depth matched on both sides.",
+  "steps": [
+   "An archer dip on a single straight bar (the dip used in muscle-up lockout strength). Harder leverage than parallel-bar archer dips; keep depth matched on both sides.",
+   "Take a wide overhand grip on a single straight bar and lock out in support with shoulders depressed.",
+   "Lean slightly forward and lower toward one arm, bending that elbow while the other stays more extended.",
+   "Touch chest or abs toward the bar under control without resting, then press back to support.",
+   "Alternate sides with the same depth and control.",
+   "Wide overhand support on one straight bar.",
+   "Lower toward one arm with a slight forward lean."
+  ],
+  "cues": [
+   "Wide overhand support on one straight bar",
+   "Lower toward one arm with a slight forward lean",
+   "Assist arm stays more extended; chest or abs approach",
+   "Alternate sides evenly"
+  ],
+  "mistakes": []
+ }
+]

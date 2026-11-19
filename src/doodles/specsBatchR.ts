@@ -20,6 +20,7 @@ import { lockedShoulderY, pushUp } from "./specsBatchC";
  *     camera in front view. With full-length bones any lowering throws that knee
  *     40-60 units sideways (a lateral lunge) or the hips off the feet; in side view
  *     the crossing is sideways and invisible (a low-leg pistol, a reverse lunge).
+ *     Both are now drawn in side view in batch AH, for the judge to decide on a second view.
  *   fedb_crossover_reverse_lunge   the defining torso rotation has no joint in the rig.
  *   ntc_fire_hydrant   the knee lifts straight at the camera from the side; from
  *     the front the all-fours torso points at the camera and cannot be foreshortened.

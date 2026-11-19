@@ -16,6 +16,8 @@ export interface SetLogEntry {
   readonly loggedAt: string;
   /** Elapsed work time for this set (rep sets); omitted on skip. */
   readonly durationSeconds?: number;
+  /** Mean strap bpm during this set window; omitted when no samples. */
+  readonly averageBpm?: number;
 }
 
 export interface ActiveWorkState {
@@ -115,5 +117,14 @@ function assertAppendable(
   assertNonNegativeFinite(entry.completedReps, "completedReps must be >= 0");
   if (entry.durationSeconds !== undefined) {
     assertNonNegativeWholeSeconds(entry.durationSeconds);
+  }
+  if (entry.averageBpm !== undefined) {
+    assertPositiveWholeBpm(entry.averageBpm);
+  }
+}
+
+function assertPositiveWholeBpm(value: number): void {
+  if (!Number.isInteger(value) || value < 1) {
+    throw new Error(`averageBpm must be a positive integer; got ${value}`);
   }
 }

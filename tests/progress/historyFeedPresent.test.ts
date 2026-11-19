@@ -40,9 +40,16 @@ describe("historyFeedPresent", () => {
     );
   });
 
+  it("includes Avg pulse when the set has averageBpm", () => {
+    expect(historyFeedRowMeta({ ...setRow, averageBpm: 142 })).toMatch(
+      /Avg pulse 142/,
+    );
+  });
+
   it("can render titles as Library links", () => {
     const html = historyFeedListHtml([setRow], { linkTitles: true });
     expect(html).toContain('data-open-exercise="hf_71"');
     expect(html).toContain("Pistol squat");
   });
+
 });

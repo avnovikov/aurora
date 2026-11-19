@@ -11,8 +11,8 @@ describe("detailHtml", () => {
     expect(html).toContain("Pull-up");
     // Raw seed entry (not enriched), so no level or gear yet: area and primary muscle only.
     expect(html).toMatch(/class="lib-meta">Upper body · Back</);
-    expect(html).toContain('data-lib-back');
-    expect(html).toContain('data-back-swipe');
+    expect(html).toContain("data-lib-back");
+    expect(html).toContain("data-back-swipe");
     expect(html).toContain("Target");
     expect(html).toContain("data-chain-id=");
     expect(html).toContain("Your level");
@@ -25,5 +25,17 @@ describe("detailHtml", () => {
     const targets = collectTemplateTargetIds();
     const html = detailHtml(exercise, { targetIds: targets, catalogueById: SEED_GRAPH });
     expect(html).not.toContain("lib-badge");
+  });
+
+  it("pre-selects only declaredTier, not an effective inferred/plan tier (#116)", () => {
+    const exercise = SEED_GRAPH.pullup;
+    const html = detailHtml(exercise, {
+      catalogueById: SEED_GRAPH,
+      memory: { skillTier: "advanced" },
+    });
+    expect(html).toMatch(/<option value="beginner"\s+selected>/);
+    expect(html).toContain("data-effective-level");
+    expect(html).toContain("Effective level · Advanced");
+    expect(html).not.toMatch(/<option value="advanced"\s+selected>/);
   });
 });

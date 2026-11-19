@@ -1,0 +1,17 @@
+name: Aurora CodeQL
+# security-and-quality suite. AlertSuppression cannot be referenced as
+# `codeql/…:AlertSuppression.ql` in a codescanning-config (invalid specifier);
+# in-source lgtm comments still need a follow-up pack/suite (#203).
+queries:
+  - uses: security-and-quality
+
+# Skip dependency trees and Gradle outputs (see #206). For interpreted JS/TS
+# this drops extraction; for Java, the compile classpath may still see Capacitor
+# — remaining library alerts are dismissed as won't-fix.
+paths-ignore:
+  - node_modules
+  - "**/node_modules"
+  - "**/node_modules/**"
+  - android/**/build/**
+  - "**/intermediates/**"
+  - "**/problems-report.html"
