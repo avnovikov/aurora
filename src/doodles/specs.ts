@@ -954,12 +954,15 @@ function scapPlank(sink: 0 | 1): Pose {
     };
   }
   // Shoulders stay put over the hands (arms straight); only the chest segment tilts about them.
+  // `sink` already returned above — this branch is the raised plank only.
   const shoulder: Point = [60, -126];
+  const chestTilt = -20 + 180;
+  const chest = along(shoulder, chestTilt, 18);
   return {
     pelvis: [-29.4, -86.7],
-    chest: along(shoulder, (sink ? -28 : -20) + 180, 18),
+    chest,
     // Head drops with the chest as the shoulder blades squeeze together.
-    head: along(along(shoulder, (sink ? -28 : -20) + 180, 18), sink ? 8 : -16, 56),
+    head: along(chest, -16, 56),
     hands: { near: [60, 0], far: [59, 0] },
     feet: { near: [-190, -19], far: [-190, -19] },
     toes: { near: 62, far: 62 },

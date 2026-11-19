@@ -23,6 +23,8 @@ public final class ContentKeyVault {
   static final String CONTENT_KEY_FILE = "content_key.enc";
   private static final String ANDROID_KEYSTORE = "AndroidKeyStore";
   private static final int CONTENT_KEY_BYTES = 32;
+  /** Reused so CodeQL does not flag a one-shot SecureRandom (java/random-used-once). */
+  private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
   private final File vaultDir;
   private final SecretKey contentKey;
@@ -79,7 +81,7 @@ public final class ContentKeyVault {
 
   private static SecretKey mintContentKey(SecretKey wrappingKey, File contentKeyFile) {
     byte[] raw = new byte[CONTENT_KEY_BYTES];
-    new SecureRandom().nextBytes(raw);
+    SECURE_RANDOM.nextBytes(raw);
     StorageKeyFiles.writeAll(contentKeyFile, SecureEnvelope.seal(wrappingKey, raw));
     return new SecretKeySpec(raw, "AES");
   }
