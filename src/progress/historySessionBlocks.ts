@@ -7,9 +7,14 @@ import type {
 import type { Exercise } from "../domain/types";
 import { displayNameOf } from "../library/displayName";
 import {
+  legacyFeedRowsForSession,
   type HistoryFeedRow,
   type HistoryFilter,
 } from "./historyFeed";
+import {
+  isLegacyHistorySession,
+  passesHistoryExerciseFilter,
+} from "./historyFilter";
 
 export interface HistoryExerciseRollup {
   exerciseId: string;
@@ -50,14 +55,13 @@ export function buildHistorySessionBlocks(input: {
   let hasLegacyOnly = false;
 
   for (const session of input.history) {
-    const built = blockForSession(session, input.graph, filter);
-    if (!built) {
-      continue;
-    }
-    if (built.legacy) {
+    if (isLegacyHistorySession(session)) {
       hasLegacyOnly = true;
     }
-    blocks.push(built);
+    const built = blockForSession(session, input.graph, filter);
+    if (built) {
+      blocks.push(built);
+    }
   }
 
   blocks.sort(compareCompletedAtDesc);
@@ -90,10 +94,10 @@ function legacyBlockForSession(
   graph: Record<string, Exercise>,
   filter: HistoryFilter,
 ): HistorySessionBlock | null {
-  if (session.exerciseIds.length === 0 && session.setCount === 0) {
+  if (!isLegacyHistorySession(session)) {
     return null;
   }
-  const legacyRows = legacyRowsForSession(session, graph, filter);
+  const legacyRows = legacyFeedRowsForSession(session, graph, filter);
   if (legacyRows.length === 0) {
     return null;
   }
@@ -127,13 +131,10 @@ function rollupExercises(
   filter: HistoryFilter,
 ): HistoryExerciseRollup[] {
   const order: string[] = [];
-  const byId = new Map<
-    string,
-    { reps: number[]; setBpms: number[] }
-  >();
+  const byId = new Map<string, { reps: number[]; setBpms: number[] }>();
 
   for (const set of sets) {
-    if (!passesExerciseFilter(set.exerciseId, filter, graph)) {
+    if (!passesHistoryExerciseFilter(set.exerciseId, filter, graph)) {
       continue;
     }
     if (!byId.has(set.exerciseId)) {
@@ -168,28 +169,6 @@ function rollupExercises(
   });
 }
 
-function legacyRowsForSession(
-  session: HistoryEntry,
-  graph: Record<string, Exercise>,
-  filter: HistoryFilter,
-): HistoryFeedRow[] {
-  return session.exerciseIds
-    .filter((exerciseId) => passesExerciseFilter(exerciseId, filter, graph))
-    .map((exerciseId) => ({
-      key: `${session.id}:legacy:${exerciseId}`,
-      kind: "legacy_session" as const,
-      exerciseId,
-      exerciseName: displayNameOf(exerciseId, graph),
-      setIndex: 0,
-      completedReps: 0,
-      prescribedReps: 0,
-      when: session.completedAt,
-      sessionId: session.id,
-      stopReason: "completed",
-      sessionSetCount: session.setCount,
-    }));
-}
-
 function sessionPulseIfPresent(
   session: HistoryEntry,
 ): { pulse: HistoryPulse } | undefined {
@@ -212,22 +191,4 @@ function compareCompletedAtDesc(
   b: HistorySessionBlock,
 ): number {
   return b.completedAt.localeCompare(a.completedAt);
-}
-
-function passesExerciseFilter(
-  exerciseId: string,
-  filter: HistoryFilter,
-  graph: Record<string, Exercise>,
-): boolean {
-  switch (filter.kind) {
-    case "all":
-      return true;
-    case "exercise":
-      return exerciseId === filter.exerciseId;
-    case "pattern":
-      if (filter.exerciseIds.includes(exerciseId)) {
-        return true;
-      }
-      return graph[exerciseId]?.pattern === filter.pattern;
-  }
 }

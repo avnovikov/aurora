@@ -88,4 +88,10 @@ describe("historySessionBlocksHtml", () => {
     const html = historySessionBlocksHtml([], { hasLegacyOnly: false });
     expect(html).toContain("No sessions yet");
   });
+
+  it("uses legacy empty copy when storage has summary-only sessions", () => {
+    const html = historySessionBlocksHtml([], { hasLegacyOnly: true });
+    expect(html).toContain("No matching sessions.");
+    expect(html).toContain("Older sessions only stored a summary");
+  });
 });

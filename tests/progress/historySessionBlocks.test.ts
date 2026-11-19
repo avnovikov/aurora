@@ -194,4 +194,14 @@ describe("buildHistorySessionBlocks", () => {
     });
     expect(blocks[0]?.pulse?.series).toHaveLength(2);
   });
+
+  it("keeps hasLegacyOnly when a filter excludes all legacy rows", () => {
+    const { blocks, hasLegacyOnly } = buildHistorySessionBlocks({
+      history: [legacySession],
+      graph,
+      filter: { kind: "exercise", exerciseId: "a" },
+    });
+    expect(blocks).toHaveLength(0);
+    expect(hasLegacyOnly).toBe(true);
+  });
 });

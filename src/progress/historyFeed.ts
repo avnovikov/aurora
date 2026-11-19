@@ -1,11 +1,13 @@
 import type { HistoryEntry, HistorySetRecord } from "../domain/program";
-import type { Exercise, Pattern } from "../domain/types";
+import type { Exercise } from "../domain/types";
 import { displayNameOf } from "../library/displayName";
+import {
+  isLegacyHistorySession,
+  passesHistoryExerciseFilter,
+  type HistoryFilter,
+} from "./historyFilter";
 
-export type HistoryFilter =
-  | { kind: "all" }
-  | { kind: "pattern"; pattern: Pattern; exerciseIds: readonly string[] }
-  | { kind: "exercise"; exerciseId: string };
+export type { HistoryFilter } from "./historyFilter";
 
 export type HistoryFeedRowKind = "set" | "legacy_session";
 
@@ -26,20 +28,11 @@ export interface HistoryFeedRow {
   averageBpm?: number;
 }
 
-export interface HistorySessionPulse {
-  sessionId: string;
-  templateName: string;
-  completedAt: string;
-  pulse: NonNullable<HistoryEntry["pulse"]>;
-}
-
 export interface HistoryFeedModel {
   filter: HistoryFilter;
   rows: HistoryFeedRow[];
-  /** True when at least one legacy (no-sets) session contributed rows or was seen. */
+  /** True when history contains at least one legacy (no-sets) session. */
   hasLegacyOnly: boolean;
-  /** Sessions in this feed that stored a strap timeseries. */
-  sessionPulses: HistorySessionPulse[];
 }
 
 /**
@@ -58,8 +51,20 @@ export function buildHistoryFeed(input: {
     filter,
   );
   rows.sort(compareWhenDesc);
-  const sessionPulses = sessionPulsesForFeed(input.history, filter, rows);
-  return { filter, rows, hasLegacyOnly, sessionPulses };
+  return { filter, rows, hasLegacyOnly };
+}
+
+/** Legacy summary rows for one session, filtered like the set feed. */
+export function legacyFeedRowsForSession(
+  session: HistoryEntry,
+  graph: Record<string, Exercise>,
+  filter: HistoryFilter,
+): HistoryFeedRow[] {
+  return session.exerciseIds
+    .filter((exerciseId) =>
+      passesHistoryExerciseFilter(exerciseId, filter, graph),
+    )
+    .map((exerciseId) => toLegacyFeedRow(session, exerciseId, graph));
 }
 
 function flattenFilteredHistory(
@@ -73,14 +78,14 @@ function flattenFilteredHistory(
   for (const session of history) {
     const sets = session.sets;
     if (!sets || sets.length === 0) {
-      if (session.exerciseIds.length > 0 || session.setCount > 0) {
+      if (isLegacyHistorySession(session)) {
         hasLegacyOnly = true;
-        rows.push(...legacyRowsForSession(session, graph, filter));
+        rows.push(...legacyFeedRowsForSession(session, graph, filter));
       }
       continue;
     }
     for (const set of sets) {
-      if (!passesExerciseFilter(set.exerciseId, filter, graph)) {
+      if (!passesHistoryExerciseFilter(set.exerciseId, filter, graph)) {
         continue;
       }
       rows.push(toSetFeedRow(session, set, graph));
@@ -88,16 +93,6 @@ function flattenFilteredHistory(
   }
 
   return { rows, hasLegacyOnly };
-}
-
-function legacyRowsForSession(
-  session: HistoryEntry,
-  graph: Record<string, Exercise>,
-  filter: HistoryFilter,
-): HistoryFeedRow[] {
-  return session.exerciseIds
-    .filter((exerciseId) => passesExerciseFilter(exerciseId, filter, graph))
-    .map((exerciseId) => toLegacyFeedRow(session, exerciseId, graph));
 }
 
 function toSetFeedRow(
@@ -118,44 +113,6 @@ function toSetFeedRow(
     stopReason: set.stopReason,
     ...(set.averageBpm !== undefined ? { averageBpm: set.averageBpm } : {}),
   };
-}
-
-function sessionPulsesForFeed(
-  history: readonly HistoryEntry[],
-  filter: HistoryFilter,
-  rows: readonly HistoryFeedRow[],
-): HistorySessionPulse[] {
-  const sessionIdsInFeed = new Set(rows.map((row) => row.sessionId));
-  const pulses: HistorySessionPulse[] = [];
-  for (const session of history) {
-    if (!sessionHasPulseSeries(session)) {
-      continue;
-    }
-    if (filter.kind !== "all" && !sessionIdsInFeed.has(session.id)) {
-      continue;
-    }
-    pulses.push({
-      sessionId: session.id,
-      templateName: session.templateName,
-      completedAt: session.completedAt,
-      pulse: session.pulse,
-    });
-  }
-  pulses.sort(compareCompletedAtDesc);
-  return pulses;
-}
-
-function sessionHasPulseSeries(
-  session: HistoryEntry,
-): session is HistoryEntry & { pulse: NonNullable<HistoryEntry["pulse"]> } {
-  return Boolean(session.pulse && session.pulse.series.length > 0);
-}
-
-function compareCompletedAtDesc(a: HistorySessionPulse, b: HistorySessionPulse): number {
-  if (a.completedAt === b.completedAt) {
-    return 0;
-  }
-  return a.completedAt < b.completedAt ? 1 : -1;
 }
 
 function toLegacyFeedRow(
@@ -179,26 +136,5 @@ function toLegacyFeedRow(
 }
 
 function compareWhenDesc(a: HistoryFeedRow, b: HistoryFeedRow): number {
-  if (a.when === b.when) {
-    return 0;
-  }
-  return a.when < b.when ? 1 : -1;
-}
-
-function passesExerciseFilter(
-  exerciseId: string,
-  filter: HistoryFilter,
-  graph: Record<string, Exercise>,
-): boolean {
-  switch (filter.kind) {
-    case "all":
-      return true;
-    case "exercise":
-      return exerciseId === filter.exerciseId;
-    case "pattern":
-      if (filter.exerciseIds.includes(exerciseId)) {
-        return true;
-      }
-      return graph[exerciseId]?.pattern === filter.pattern;
-  }
+  return b.when.localeCompare(a.when);
 }

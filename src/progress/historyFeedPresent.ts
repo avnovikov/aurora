@@ -1,7 +1,6 @@
-import type { HistoryPulse } from "../domain/program";
 import { escapeHtml } from "../library/present";
 import { sessionEvaluationLabel } from "../session/history";
-import type { HistoryFeedRow, HistorySessionPulse } from "./historyFeed";
+import type { HistoryFeedRow } from "./historyFeed";
 import type { HistorySessionBlock } from "./historySessionBlocks";
 
 /** Shared History / Library detail list of logged sets. */
@@ -20,49 +19,6 @@ export function historyFeedListHtml(
   return `<ol class="history-feed">${rows.map((row) => historyFeedRowHtml(row, options)).join("")}</ol>`;
 }
 
-/** Compact strap summary for one finished session. */
-export function sessionPulseBlockHtml(input: {
-  templateName: string;
-  completedAt: string;
-  pulse: HistoryPulse;
-  exerciseNames: Record<string, string>;
-}): string {
-  const when = formatHistoryWhen(input.completedAt);
-  const averages = input.pulse.byExercise
-    .map((row) => {
-      const name = input.exerciseNames[row.exerciseId] ?? row.exerciseId;
-      return `${escapeHtml(name)} · avg ${row.averageBpm}`;
-    })
-    .join(" · ");
-  const seriesText = formatSeriesPreview(input.pulse.series.map((p) => p.bpm));
-  return `
-    <section class="history-pulse" data-session-pulse>
-      <p class="history-ex">${escapeHtml(input.templateName)} · pulse</p>
-      <p class="history-meta">${escapeHtml(when)}${averages ? ` · ${averages}` : ""}</p>
-      <p class="hint" data-pulse-series>${escapeHtml(seriesText)}</p>
-    </section>
-  `;
-}
-
-export function sessionPulsesHtml(
-  sessions: readonly HistorySessionPulse[],
-  exerciseNames: Record<string, string>,
-): string {
-  if (sessions.length === 0) {
-    return "";
-  }
-  return sessions
-    .map((session) =>
-      sessionPulseBlockHtml({
-        templateName: session.templateName,
-        completedAt: session.completedAt,
-        pulse: session.pulse,
-        exerciseNames,
-      }),
-    )
-    .join("");
-}
-
 /** History tab: one block per finished session. */
 export function historySessionBlocksHtml(
   blocks: readonly HistorySessionBlock[],
@@ -72,9 +28,12 @@ export function historySessionBlocksHtml(
     const hint = options.hasLegacyOnly
       ? "Older sessions only stored a summary. New sessions keep each set."
       : "Finish a session to see it here.";
+    const tagline = options.hasLegacyOnly
+      ? "No matching sessions."
+      : "No sessions yet.";
     return `
       <section class="progress-empty">
-        <p class="tagline">No sessions yet.</p>
+        <p class="tagline">${tagline}</p>
         <p class="hint">${hint}</p>
       </section>
     `;

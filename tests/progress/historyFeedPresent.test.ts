@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
   historyFeedListHtml,
   historyFeedRowMeta,
-  sessionPulseBlockHtml,
 } from "../../src/progress/historyFeedPresent";
 import type { HistoryFeedRow } from "../../src/progress/historyFeed";
 
@@ -53,23 +52,4 @@ describe("historyFeedPresent", () => {
     expect(html).toContain("Pistol squat");
   });
 
-  it("renders a compact session pulse block from series", () => {
-    const html = sessionPulseBlockHtml({
-      templateName: "Lower body",
-      completedAt: "2026-11-19T09:43:59.596Z",
-      pulse: {
-        series: [
-          { t: 1_000, bpm: 100 },
-          { t: 2_000, bpm: 140 },
-          { t: 3_000, bpm: 120 },
-        ],
-        byExercise: [{ exerciseId: "hf_71", averageBpm: 130, sampleCount: 2 }],
-      },
-      exerciseNames: { hf_71: "Pistol squat" },
-    });
-    expect(html).toContain("data-session-pulse");
-    expect(html).toContain("Lower body");
-    expect(html).toContain("Pistol squat · avg 130");
-    expect(html).toMatch(/100[\s\S]*140[\s\S]*120/);
-  });
 });
