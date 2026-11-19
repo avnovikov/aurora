@@ -1,4 +1,6 @@
+import { BONES, HIP_SIDE, other, zOut } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side } from "./rig";
+import { TWO_VIEWS } from "./sideways";
 
 /**
  * Batch AH (#174): standing leg moves and plyometrics. Floor at y = 0, up is
@@ -24,8 +26,6 @@ function along(from: Point, degrees: number, length: number): Point {
 
 const angle = (from: Point, to: Point): number => (Math.atan2(to[1] - from[1], to[0] - from[0]) * 180) / Math.PI;
 
-const other = (side: Side): Side => (side === "near" ? "far" : "near");
-
 /** Floor line, so take-off and landing read. */
 const floor = (x1: number, x2: number): Prop => ({ kind: "bar", y: 0, x1, x2 });
 
@@ -34,8 +34,8 @@ const shoulderAt = (pelvis: Point, spine: number): Point => along(pelvis, spine,
 
 /** Arm reach with the elbow nearly locked (shoulder to fingertip). */
 const ARM = 125;
-const THIGH = 88;
-const SHIN = 86;
+const THIGH = BONES.thigh;
+const SHIN = BONES.shin;
 
 // ---------------------------------------------------------------- side view arms
 
@@ -356,8 +356,7 @@ function frontFeet(pelvis: Point, nearX: number, farX: number, arms: Pick<Pose, 
 
 /** Step jack: one foot stepped out to `side`, arms swung overhead in a V. */
 function stepJackOut(side: Side): Pose {
-  const dir = side === "near" ? -1 : 1;
-  const pelvis: Point = [dir * 36, -166];
+  const pelvis: Point = [zOut(side) * 36, -166];
   const top: Point = [pelvis[0], pelvis[1] - 80];
   const nearX = side === "near" ? -96 : -10;
   const farX = side === "far" ? 96 : 10;
@@ -372,13 +371,10 @@ const stepJackIn = (): Pose => frontFeet([0, -172], -10, 10, frontArms([0, -172]
 // gives absolute z (near side negative, on the front panel's left). Bones keep
 // their true length in 3D, so a leg set out sideways needs a lower pelvis.
 
-/** Sign of a side's z: near is negative. */
-const zSign = (side: Side): number => (side === "near" ? -1 : 1);
-
 /** Pelvis y so the `side` leg spans `reach` in 3D from its hip (pelvis x / z) to a floor foot. */
 function pelvisOver(pelvisX: number, pelvisZ: number, side: Side, foot: Point, footZ: number, reach: number): number {
   const dx = foot[0] - pelvisX;
-  const dz = footZ - (pelvisZ + zSign(side) * 8);
+  const dz = footZ - (pelvisZ + zOut(side) * HIP_SIDE);
   return round(foot[1] - Math.sqrt(reach * reach - dx * dx - dz * dz));
 }
 
@@ -420,7 +416,7 @@ function balanceArms(pelvis: Point, pelvisZ: number): { arms: Pick<Pose, "hands"
 
 /** Lateral push off: landed on `stance`, its knee bent forward over the toes; the free leg hangs, heel lifted behind. */
 function pushOffLand(stance: Side, footZ: number): Keyframe {
-  const sign = zSign(stance);
+  const sign = zOut(stance);
   const pelvisZ = sign * (footZ - 26);
   const foot: Point = [0, 0];
   const x = -14;
@@ -530,7 +526,7 @@ function shuffles(from: number, dir: 1 | -1): Keyframe[] {
 
 /** Diagonal bound: landed on `stance` out to its side, knee bent; the other leg trails behind. */
 function boundLand(stance: Side): Keyframe {
-  const sign = zSign(stance);
+  const sign = zOut(stance);
   const pelvisZ = sign * 74;
   const foot: Point = [24, 0];
   const pelvis: Point = [0, pelvisOver(0, pelvisZ, stance, foot, sign * 100, 154)];
@@ -561,7 +557,7 @@ function boundLand(stance: Side): Keyframe {
  * and up to hip height.
  */
 function boundPush(stance: Side): Keyframe {
-  const sign = zSign(stance);
+  const sign = zOut(stance);
   const pelvisZ = sign * 58;
   const foot: Point = [-38, -6];
   const pelvis: Point = [0, pelvisOver(0, pelvisZ, stance, foot, sign * 100, 172)];
@@ -588,7 +584,7 @@ function boundPush(stance: Side): Keyframe {
 
 /** Flight from `from` towards the other side: the push-off leg trails, the knee still high, reaching to land. */
 function boundAir(from: Side): Keyframe {
-  const sign = zSign(from);
+  const sign = zOut(from);
   const pelvis: Point = [0, -212];
   const to = other(from);
   const trailKnee = along(pelvis, 120, THIGH);
@@ -617,7 +613,7 @@ export const BATCH_AH_SPECS: DoodleSpec[] = [
     id: "hf_81",
     slug: "curtsy-lunge",
     title: "Curtsy Lunge",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     transition: 0.7,
     frames: [
       curtsyKey(curtsy(0), 0.4, 10, 0),
@@ -632,7 +628,7 @@ export const BATCH_AH_SPECS: DoodleSpec[] = [
     id: "hf_71",
     slug: "dragon-squat",
     title: "Dragon Squat",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     transition: 0.6,
     frames: [dragonKey(0, 0.4), dragonKey(0.5, 0), dragonKey(1, 0.5), dragonKey(0.5, 0)],
   },
@@ -642,7 +638,7 @@ export const BATCH_AH_SPECS: DoodleSpec[] = [
     id: "wger_1325",
     slug: "lateral-push-off",
     title: "Lateral Push Off",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     props: [floor(-110, 110)],
     transition: 0.3,
     frames: [pushOffLand("near", 80), hopAir(-196, 24), pushOffLand("far", 80), hopAir(-196, 24)],
@@ -653,7 +649,7 @@ export const BATCH_AH_SPECS: DoodleSpec[] = [
     id: "wger_1195",
     slug: "side-slides-squats",
     title: "Side Slides + Squats",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     transition: 0.16,
     frames: [
       slideSquatKey(-60),
@@ -718,7 +714,7 @@ export const BATCH_AH_SPECS: DoodleSpec[] = [
     id: "fedb_alternate_leg_diagonal_bound",
     slug: "alternate-leg-diagonal-bound",
     title: "Alternate Leg Diagonal Bound",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     transition: 0.3,
     frames: [boundLand("near"), boundPush("near"), boundAir("near"), boundLand("far"), boundPush("far"), boundAir("far")],
   },

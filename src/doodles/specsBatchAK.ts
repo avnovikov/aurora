@@ -1,5 +1,6 @@
-import { HIP_SIDE, SHOULDER_SIDE } from "./rig";
+import { BONES, HIP_SIDE, SHOULDER_SIDE } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Prop } from "./rig";
+import { TWO_VIEWS } from "./sideways";
 import { slopedBench } from "./specsBatchAD";
 import { allFoursKey, HYDRANT_SHIN, HYDRANT_THIGH, liftedKnee, type Dir3 } from "./specsBatchAG";
 
@@ -20,8 +21,8 @@ function along(from: Point, degrees: number, length: number): Point {
 const round = (value: number): number => Math.round(value * 10) / 10;
 const angle = (from: Point, to: Point): number => (Math.atan2(to[1] - from[1], to[0] - from[0]) * 180) / Math.PI;
 
-const THIGH = 88;
-const SHIN = 86;
+const THIGH = BONES.thigh;
+const SHIN = BONES.shin;
 
 // ---------------------------------------------------------------- fire hydrant (all fours)
 
@@ -233,7 +234,7 @@ export const BATCH_AK_SPECS: DoodleSpec[] = [
     id: "ntc_fire_hydrant",
     slug: "fire-hydrant",
     title: "Fire hydrant",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     transition: 0.7,
     frames: [
       { ...allFoursKey(), hold: 0.3 },
@@ -245,7 +246,7 @@ export const BATCH_AK_SPECS: DoodleSpec[] = [
     id: "wger_1956",
     slug: "fire-hydrant-circles",
     title: "Fire Hydrant Circles",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     transition: 0.45,
     frames: HYDRANT_CIRCLE,
   },
@@ -253,7 +254,7 @@ export const BATCH_AK_SPECS: DoodleSpec[] = [
     id: "wger_1672",
     slug: "seated-hip-abduction",
     title: "Seated Hip Abduction",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     props: [SEAT_BOX],
     transition: 0.9,
     frames: [
@@ -265,7 +266,7 @@ export const BATCH_AK_SPECS: DoodleSpec[] = [
     id: "wger_1908",
     slug: "butterfly-superman",
     title: "Butterfly Superman",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     transition: 0.8,
     frames: [
       { ...butterflySuperman(0), hold: 0.3 },
@@ -276,7 +277,7 @@ export const BATCH_AK_SPECS: DoodleSpec[] = [
     id: "wger_171",
     slug: "incline-crunches",
     title: "Incline Crunches",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     props: [...slopedBench(INCLINE_LOW, INCLINE_HIGH), { kind: "bar", y: ROLLER[1], x1: ROLLER[0], x2: ROLLER[0], grips: [ROLLER[0]] }],
     transition: 1,
     frames: [

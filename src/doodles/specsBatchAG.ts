@@ -1,5 +1,6 @@
-import { HIP_SIDE, SHOULDER_SIDE, solvePose } from "./rig";
-import type { DoodleSpec, Keyframe, Point, Pose } from "./rig";
+import { HIP_SIDE, other, SHOULDER_SIDE, solvePose, zOut } from "./rig";
+import type { DoodleSpec, Keyframe, Point, Pose, Side } from "./rig";
+import { TWO_VIEWS } from "./sideways";
 import { FROG_SIDEWAYS } from "./specsBatchAF";
 import { SIDE_LYING_FLOOR } from "./specsWarmup";
 
@@ -26,8 +27,6 @@ function along(from: Point, degrees: number, length: number): Point {
 
 const round = (value: number): number => Math.round(value * 10) / 10;
 const angle = (from: Point, to: Point): number => (Math.atan2(to[1] - from[1], to[0] - from[0]) * 180) / Math.PI;
-
-type Side = "near" | "far";
 
 // ---------------------------------------------------------------- clamshell to reverse clamshell (front view, head left)
 
@@ -82,7 +81,7 @@ const AF_SHOULDER = along(AF_PELVIS, -20.5, 98);
 
 /** Bird dog: `arm` reaches forward a little below level, the opposite leg pushes straight back at hip height. */
 function birdDog(arm: Side): Pose {
-  const leg: Side = arm === "near" ? "far" : "near";
+  const leg = other(arm);
   return {
     pelvis: AF_PELVIS,
     chest: AF_CHEST,
@@ -119,8 +118,7 @@ const unit3 = (v: Dir3): Dir3 => {
  * body on that side), so the knee can swing out to the side (fire hydrant).
  */
 export function liftedKnee(side: Side, thigh: Dir3, shin: Dir3): Keyframe {
-  const other: Side = side === "near" ? "far" : "near";
-  const sign = side === "near" ? -1 : 1;
+  const sign = zOut(side);
   const hipZ = sign * HIP_SIDE;
   const [t, s] = [unit3(thigh), unit3(shin)];
   const knee: Point = [round(AF_PELVIS[0] + t[0] * 88), round(AF_PELVIS[1] + t[1] * 88)];
@@ -133,8 +131,8 @@ export function liftedKnee(side: Side, thigh: Dir3, shin: Dir3): Keyframe {
     pose: {
       ...allFours(),
       knees: { [side]: { at: knee } },
-      feet: { [side]: foot, [other]: AF_FEET[other] },
-      toes: { [side]: round(shinDeg + 90), [other]: 180 },
+      feet: { [side]: foot, [other(side)]: AF_FEET[other(side)] },
+      toes: { [side]: round(shinDeg + 90), [other(side)]: 180 },
     },
     sideways: { knees: { [side]: { at: round(kneeZ) } }, feet: { [side]: round(footZ) } },
   };
@@ -268,17 +266,16 @@ function hamstringKick(kick: Side | null): Pose {
       toes: { near: 0, far: 0 },
     };
   }
-  const other: Side = kick === "near" ? "far" : "near";
   const chest = along(HK_PELVIS, -88, 80);
   const shoulder = along(HK_PELVIS, -88, 98);
   return {
     pelvis: HK_PELVIS,
     chest,
-    hands: { [other]: along(shoulder, 2, 125.9), [kick]: along(shoulder, 120, 120) },
+    hands: { [other(kick)]: along(shoulder, 2, 125.9), [kick]: along(shoulder, 120, 120) },
     elbows: { near: { bend: 1 }, far: { bend: 1 } },
     knees: { [kick]: { at: along(HK_PELVIS, -30, 88) } },
-    feet: { [kick]: along(HK_PELVIS, -30, 173.9), [other]: [0, 0] },
-    toes: { [kick]: -80, [other]: 0 },
+    feet: { [kick]: along(HK_PELVIS, -30, 173.9), [other(kick)]: [0, 0] },
+    toes: { [kick]: -80, [other(kick)]: 0 },
   };
 }
 
@@ -305,7 +302,7 @@ export const BATCH_AG_SPECS: DoodleSpec[] = [
     id: "ntc_frog_pumps",
     slug: "frog-pumps",
     title: "Frog pumps",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     transition: 0.4,
     frames: [
       { ...frogPump(-24), hold: 0.15 },
@@ -328,7 +325,7 @@ export const BATCH_AG_SPECS: DoodleSpec[] = [
     id: "wger_1210",
     slug: "skydiver-arms-t",
     title: "Skydiver with arms in T-position",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     transition: 0.6,
     frames: [
       // Lying flat, legs apart and arms in a T; lift chest, arms and legs off the floor...
@@ -367,7 +364,7 @@ export const BATCH_AG_SPECS: DoodleSpec[] = [
     id: "fedb_hip_circles_prone",
     slug: "hip-circles-prone",
     title: "Hip Circles (prone)",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     transition: 0.6,
     // Side view: the knee sweeps forward under the chest and back and up behind;
     // front view: it swings out to the side at hip height in between.

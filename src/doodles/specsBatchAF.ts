@@ -1,5 +1,6 @@
-import { SHOULDER_SIDE, solvePose } from "./rig";
+import { BONES, dist, SHOULDER_SIDE, solvePose } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
+import { TWO_VIEWS } from "./sideways";
 import { SIDE_LYING_FLOOR } from "./specsWarmup";
 
 /**
@@ -28,7 +29,6 @@ function along(from: Point, degrees: number, length: number): Point {
 
 const round = (value: number): number => Math.round(value * 10) / 10;
 const angle = (from: Point, to: Point): number => (Math.atan2(to[1] - from[1], to[0] - from[0]) * 180) / Math.PI;
-const dist = (a: Point, b: Point): number => Math.hypot(a[0] - b[0], a[1] - b[1]);
 
 /** Where circles around `a` (radius ra) and `b` (radius rb) meet; `pick` chooses between the two points. */
 function meet(a: Point, ra: number, b: Point, rb: number, pick: (p: Point, q: Point) => boolean): Point {
@@ -45,8 +45,8 @@ function meet(a: Point, ra: number, b: Point, rb: number, pick: (p: Point, q: Po
 
 const upper = (p: Point, q: Point): boolean => p[1] < q[1];
 
-const THIGH = 88;
-const SHIN = 86;
+const THIGH = BONES.thigh;
+const SHIN = BONES.shin;
 const LEG = THIGH + SHIN;
 /** Shoulder to fingertip with the elbow (nearly) locked. */
 const REACH = 125.85;
@@ -415,7 +415,7 @@ export const BATCH_AF_SPECS: DoodleSpec[] = [
     id: "fedb_frog_sit_ups",
     slug: "frog-sit-ups",
     title: "Frog Sit-Ups",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     transition: 0.8,
     frames: [
       { ...frogSitUp(183, 2), hold: 0.4 },

@@ -55,6 +55,11 @@ describe("dual-view guards", () => {
     expect(dualViewGuards({ ...RAISE, views: undefined })).toHaveLength(1);
     expect(validateSpec({ ...RAISE, view: "front" }).ok).toBe(false);
   });
+
+  it("reject an ab wheel in two views (no front drawing of it yet)", () => {
+    expect(dualViewGuards({ ...RAISE, wheel: 30 })).toEqual([expect.stringContaining("wheel")]);
+    expect(validateSpec({ ...RAISE, wheel: 30 }).ok).toBe(false);
+  });
 });
 
 describe("3D solve", () => {

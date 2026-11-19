@@ -1,4 +1,6 @@
+import { BONES, HIP_SIDE, other } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
+import { TWO_VIEWS } from "./sideways";
 
 /**
  * Batch AI: conditioning and standing mobility (marching high knees, fast
@@ -34,10 +36,9 @@ function joint(root: Point, l1: number, end: Point, l2: number, outLeft: boolean
   return outLeft === a[0] < b[0] ? a : b;
 }
 
-const other = (side: Side): Side => (side === "near" ? "far" : "near");
 
-const THIGH = 88;
-const SHIN = 86;
+const THIGH = BONES.thigh;
+const SHIN = BONES.shin;
 /** Shoulder to fingertip, elbow locked (a hair short so the solver keeps it straight). */
 const ARM = 125.9;
 /** Hip to ankle, knee locked. */
@@ -377,10 +378,9 @@ function pancakeLeg(length: number): { at: Point; z: number } {
   const splay = (PANCAKE_SPLAY * Math.PI) / 180;
   return {
     at: [round(SEAT[0] + flat * Math.cos(splay)), round(SEAT[1] + length * Math.sin((PANCAKE_SLOPE * Math.PI) / 180))],
-    z: round(HIP_Z + flat * Math.sin(splay)),
+    z: round(HIP_SIDE + flat * Math.sin(splay)),
   };
 }
-const HIP_Z = 8;
 const PANCAKE_KNEE = pancakeLeg(THIGH);
 const PANCAKE_FOOT = pancakeLeg(PANCAKE_LEG);
 /** Height of the leg line (the floor the legs rest on) at `x`, so the hands sit level with the legs. */
@@ -445,7 +445,7 @@ export const BATCH_AI_SPECS: DoodleSpec[] = [
     id: "fedb_carioca_quick_step",
     slug: "carioca-quick-step",
     title: "Carioca Quick Step",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     transition: 0.17,
     frames: [...cariocaCycle(0, -1), ...cariocaCycle(-60, -1), ...cariocaCycle(-120, 1), ...cariocaCycle(-60, 1)],
   },
@@ -502,7 +502,7 @@ export const BATCH_AI_SPECS: DoodleSpec[] = [
     id: "wger_1396",
     slug: "standing-pancake",
     title: "Standing Pancake",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     transition: 1.1,
     frames: [pancakeStand(), pancakeHinge(4, -60, 0.3), pancakeHinge(26, -4, 1.6)],
   },
@@ -510,7 +510,7 @@ export const BATCH_AI_SPECS: DoodleSpec[] = [
     id: "hf_162",
     slug: "pancake-stretch",
     title: "Pancake Stretch",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     transition: 1.1,
     frames: [
       { ...seatedPancake(4, 36), hold: 0.6 },

@@ -1,6 +1,6 @@
-import { solvePose } from "./rig";
+import { dist, HIP_SIDE, other, solvePose, zOut } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose, Side, Sideways } from "./rig";
-import { lockedY3, reach3, spreadFeet } from "./specsBatchAA";
+import { lockedY3, reach3, spreadFeet, TWO_VIEWS } from "./sideways";
 import { LOCKED, PLANK_FOOT, lockedShoulderY, pushUp, rep, straightBody } from "./specsBatchC";
 
 /**
@@ -28,8 +28,6 @@ function along(from: Point, degrees: number, length: number): Point {
 }
 
 const round = (value: number): number => Math.round(value * 10) / 10;
-const dist = (a: Point, b: Point): number => Math.hypot(a[0] - b[0], a[1] - b[1]);
-const other = (side: Side): Side => (side === "near" ? "far" : "near");
 
 // ---------------------------------------------------------------- wide / close push-ups
 
@@ -41,7 +39,6 @@ const push = (y: number): Pose => pushUp(y, HAND_X);
 /** Close hands sit under the chest, a little behind the shoulders (as the close-grip push-up). */
 const CLOSE_X = 48;
 const SIDES: Side[] = ["near", "far"];
-const zOut = (side: Side): number => (side === "near" ? -1 : 1);
 
 /** Second view (#174): wide hands about twice shoulder width (shoulders at ±22), elbows flared. */
 const WIDE_Z = 44;
@@ -99,8 +96,6 @@ function closeAndWide(): Keyframe[] {
 
 /** Feet stay planted (hip width) while the chest shifts over one hand. */
 const FEET_Z = 10;
-/** Natural hip z (rig HIP_SIDE). */
-const HIP_Z = 8;
 
 /**
  * Chest shifted `shift` sideways over wide hands (±`handZ`), the working
@@ -276,7 +271,7 @@ function plankJackAir(z: number): Pose {
   const base = plank();
   const pelvis = base.pelvis as Point;
   const deg = (Math.atan2(PLANK_FOOT[1] - pelvis[1], PLANK_FOOT[0] - pelvis[0]) * 180) / Math.PI + 9;
-  const ankle = reach3(pelvis, deg, 173.6, z - HIP_Z);
+  const ankle = reach3(pelvis, deg, 173.6, z - HIP_SIDE);
   return { ...base, feet: { near: ankle, far: ankle }, toes: { near: 70, far: 70 } };
 }
 
@@ -302,7 +297,7 @@ function walkFrame({ pelvis, hands, feet, lift }: Walk): Keyframe {
     return {
       ...base,
       hands: { ...base.hands, [lift]: [HAND_X - 2, -12] },
-      feet: { ...base.feet, [lift]: reach3(hip, deg, 173.6, footZ - (pelvis + zOut(lift) * HIP_Z)) },
+      feet: { ...base.feet, [lift]: reach3(hip, deg, 173.6, footZ - (pelvis + zOut(lift) * HIP_SIDE)) },
       toes: { [lift]: 70, [other(lift)]: 62 },
     };
   };
@@ -320,7 +315,9 @@ function lateralWalk(): Keyframe[] {
   const wide: Walk = { pelvis: -s / 2, hands: [-22 - s, 22], feet: [-8 - s, 8] };
   const nearMoving: Walk = { pelvis: -s / 4, hands: [-22 - s / 2, 22], feet: [-8 - s / 2, 8], lift: "near" };
   const farMoving: Walk = { pelvis: (-3 * s) / 4, hands: [-22 - s, 22 - s / 2], feet: [-8 - s, 8 - s / 2], lift: "far" };
-  return [narrow(0), nearMoving, wide, farMoving, narrow(-s), farMoving, wide, nearMoving].map(walkFrame);
+  // Each stance is solved once; the walk back reuses the stances of the walk out.
+  const [home, nearStep, out, farStep, away] = [narrow(0), nearMoving, wide, farMoving, narrow(-s)].map(walkFrame);
+  return [home, nearStep, out, farStep, away, farStep, out, nearStep];
 }
 
 // ---------------------------------------------------------------- straddle planche
@@ -373,7 +370,6 @@ function tuckPlanche(): Pose {
   return { ...base, chest, head: along(chest, 25, 56) };
 }
 
-
 function planchePelvis(): Point {
   const shoulder = along(PL_HAND, -90 + PL_LEAN, LOCKED);
   return along(shoulder, 180, SPINE);
@@ -389,7 +385,7 @@ const STRADDLE: Sideways = { feet: { near: -STRADDLE_Z, far: STRADDLE_Z } };
 /** Legs opening out behind: thighs angled down and back, knees still bent. */
 function extending(): Pose {
   const pelvis = planchePelvis();
-  const knee = reach3(pelvis, 150, 88, EXT_KNEE_Z - HIP_Z);
+  const knee = reach3(pelvis, 150, 88, EXT_KNEE_Z - HIP_SIDE);
   const base: Pose = {
     pelvis,
     hands: PL_HANDS,
@@ -404,7 +400,7 @@ function extending(): Pose {
 /** Straddle planche hold: straight body level with the shoulders, legs long behind. */
 function straddlePlanche(): Pose {
   const pelvis = planchePelvis();
-  const foot = reach3(pelvis, 180, LEG, STRADDLE_Z - HIP_Z);
+  const foot = reach3(pelvis, 180, LEG, STRADDLE_Z - HIP_SIDE);
   const base: Pose = {
     pelvis,
     hands: PL_HANDS,
@@ -419,7 +415,6 @@ function straddlePlanche(): Pose {
 // ---------------------------------------------------------------- specs
 
 const wideRep = (): Keyframe[] => withSideways(rep(push, WIDE_TOP, PUSH_BOTTOM, 0.4, 0.3), WIDE);
-const TWO_VIEWS = ["side", "front"] as const;
 
 export const BATCH_AB_SPECS: DoodleSpec[] = [
   {

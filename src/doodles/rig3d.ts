@@ -11,10 +11,15 @@
  */
 import {
   BONES,
+  clamp,
+  deg,
+  ease,
+  FLOOR_CONTACT,
   HIP_SIDE,
   SHOULDER_SIDE,
   sampleTimeline,
-  solveKeyframes,
+  SWING_THRESHOLD,
+  zOut,
   type Bend,
   type DoodleSpec,
   type Pose,
@@ -36,7 +41,7 @@ export interface Limb3 {
   end: Point3;
 }
 
-export interface Pin3 {
+interface Pin3 {
   joint: string;
   target: Point3;
   actual: Point3;
@@ -69,8 +74,6 @@ const cross = (a: Point3, b: Point3): Point3 => [
 const norm = (a: Point3): number => Math.hypot(a[0], a[1], a[2]);
 export const dist3 = (a: Point3, b: Point3): number => norm(sub(a, b));
 const lerp3 = (a: Point3, b: Point3, t: number): Point3 => add(a, scale(sub(b, a), t));
-const deg = (degrees: number): number => (degrees * Math.PI) / 180;
-const clamp = (v: number, lo: number, hi: number): number => Math.min(hi, Math.max(lo, v));
 const Z: Point3 = [0, 0, 1];
 const DOWN: Point3 = [0, 1, 0];
 
@@ -97,7 +100,7 @@ function rotateAbout(v: Point3, axis: Point3, angle: number): Point3 {
 }
 
 /** Great-circle blend of two unit vectors; opposite vectors turn about z (in the side view's plane). */
-export function slerp(a: Point3, b: Point3, t: number): Point3 {
+function slerp(a: Point3, b: Point3, t: number): Point3 {
   const omega = Math.acos(clamp(dot(a, b), -1, 1));
   if (omega < 1e-6) return unit(lerp3(a, b, t), a);
   if (Math.PI - omega < 1e-3) return rotateAbout(a, perpendicular(Z, a, [1, 0, 0]), omega * t);
@@ -106,7 +109,6 @@ export function slerp(a: Point3, b: Point3, t: number): Point3 {
 }
 
 const lift = (p: readonly [number, number], z: number): Point3 => [p[0], p[1], z];
-const outward = (side: Side): number => (side === "near" ? -1 : 1);
 
 // ---------------------------------------------------------------- limb solve
 
@@ -115,13 +117,13 @@ const outward = (side: Side): number => (side === "near" ? -1 : 1);
  * bend side in the side view's plane, rolled `out` degrees about `d` towards
  * the limb's own side.
  */
-export function bendNormal(d: Point3, bend: Bend, out: number, side: Side): Point3 {
+function bendNormal(d: Point3, bend: Bend, out: number, side: Side): Point3 {
   // cross(z, d) is the 2D rig's "+90°" turn of d, so bend +1 matches solveJoint.
   const n = scale(perpendicular(cross(Z, d), d, [0, -1, 0]), bend);
   if (!out) return n;
   const a = rotateAbout(n, d, deg(out));
   const b = rotateAbout(n, d, -deg(out));
-  return a[2] * outward(side) >= b[2] * outward(side) ? a : b;
+  return a[2] * zOut(side) >= b[2] * zOut(side) ? a : b;
 }
 
 /** Two-bone solve towards `target`, the middle joint on the `normal` side. */
@@ -134,6 +136,45 @@ function twoBone(root: Point3, target: Point3, l1: number, l2: number, normal: P
   const mid = add(root, scale(add(scale(d, cos), scale(n, Math.sqrt(1 - cos * cos))), l1));
   return { mid, tip: add(mid, scale(unit(sub(target, mid), d), l2)) };
 }
+
+/** The un-angled tail of a limb: the fingertip continues the forearm, the wrist sits `l2` from the elbow. */
+const finishLimb = (root: Point3, mid: Point3, tip: Point3, l2: number): Limb3 => ({
+  root,
+  mid,
+  joint: add(mid, scale(unit(sub(tip, mid)), l2)),
+  end: tip,
+});
+
+type LimbKind = "arms" | "legs";
+const KINDS: LimbKind[] = ["arms", "legs"];
+
+/** Per-limb data: bone lengths, the pose / sideways keys it reads, its defaults. */
+const LIMBS = {
+  arms: {
+    l1: BONES.upperArm,
+    l2: BONES.forearm,
+    l3: BONES.hand,
+    rootSide: SHOULDER_SIDE,
+    contact: "hands",
+    mid: "elbows",
+    end: "wrists",
+    bend: 1,
+    /** Without a wrist angle the fingertip continues the forearm. */
+    restEnd: undefined,
+  },
+  legs: {
+    l1: BONES.thigh,
+    l2: BONES.shin,
+    l3: BONES.foot,
+    rootSide: HIP_SIDE,
+    contact: "feet",
+    mid: "knees",
+    end: "toes",
+    bend: -1,
+    /** Without a toe angle the foot sits square to the shin. */
+    restEnd: "squareToShin",
+  },
+} as const;
 
 interface LimbInput {
   side: Side;
@@ -155,7 +196,6 @@ function solveLimb3(input: LimbInput, pins: Pin3[]): Limb3 {
   const { root, l1, l2, l3, names } = input;
   const angled = input.endAngle !== undefined;
   const lower = angled ? l2 : l2 + l3;
-  const goal = input.target ?? add(root, [0, (l1 + lower) * 0.98, 0]);
   let mid: Point3;
   let tip: Point3;
   if (input.midPin) {
@@ -165,11 +205,12 @@ function solveLimb3(input: LimbInput, pins: Pin3[]): Limb3 {
       ? add(mid, scale(unit(sub(input.target, mid)), lower))
       : add(mid, scale(unit(sub(mid, root)), lower));
   } else {
+    const goal = input.target ?? add(root, [0, (l1 + lower) * 0.98, 0]);
     const d = unit(sub(goal, root));
     ({ mid, tip } = twoBone(root, goal, l1, lower, bendNormal(d, input.bend, input.out, input.side)));
   }
   if (input.target) pins.push({ joint: names[1], target: input.target, actual: tip });
-  if (!angled) return { root, mid, joint: add(mid, scale(unit(sub(tip, mid)), l2)), end: tip };
+  if (!angled) return finishLimb(root, mid, tip, l2);
   const angle =
     input.endAngle === "squareToShin"
       ? Math.atan2(tip[1] - mid[1], tip[0] - mid[0]) - Math.PI / 2
@@ -180,14 +221,12 @@ function solveLimb3(input: LimbInput, pins: Pin3[]): Limb3 {
 // ---------------------------------------------------------------- keyframe
 
 /** Shoulder and hip roots: the 2D side-view roots, set out sideways about the spine. */
-function roots(spine: Solved, z: number): { arms: Record<Side, Point3>; legs: Record<Side, Point3> } {
-  const arms = {} as Record<Side, Point3>;
-  const legs = {} as Record<Side, Point3>;
-  for (const side of SIDES) {
-    arms[side] = lift(spine.arms[side].root, z + outward(side) * SHOULDER_SIDE);
-    legs[side] = lift(spine.legs[side].root, z + outward(side) * HIP_SIDE);
-  }
-  return { arms, legs };
+function roots(spine: Solved, z: number): Record<LimbKind, Record<Side, Point3>> {
+  const root = (kind: LimbKind, side: Side): Point3 => lift(spine[kind][side].root, z + zOut(side) * LIMBS[kind].rootSide);
+  return {
+    arms: { near: root("arms", "near"), far: root("arms", "far") },
+    legs: { near: root("legs", "near"), far: root("legs", "far") },
+  };
 }
 
 function spineOf(spine: Solved, z: number): Pick<Figure3, "pelvis" | "waist" | "chest" | "neck" | "head"> {
@@ -208,71 +247,41 @@ export function solveKeyframe3(spine: Solved, pose: Pose, sideways: Sideways | u
   const z = sideways?.pelvis ?? 0;
   const root = roots(spine, z);
   const pins: Pin3[] = [];
-  const arms = {} as Record<Side, Limb3>;
-  const legs = {} as Record<Side, Limb3>;
+  const limbs = { arms: {}, legs: {} } as Record<LimbKind, Record<Side, Limb3>>;
   for (const side of SIDES) {
-    arms[side] = solveLimb3(armInput(pose, sideways, side, root.arms[side]), pins);
-    legs[side] = solveLimb3(legInput(pose, sideways, side, root.legs[side]), pins);
+    for (const kind of KINDS) limbs[kind][side] = solveLimb3(limbInput(kind, pose, sideways, side, root[kind][side]), pins);
   }
-  return { ...spineOf(spine, z), arms, legs, pins };
-}
-
-/** The keyframe's sideways positions for one limb. */
-function sideHints(sideways: Sideways | undefined, side: Side, limb: "arm" | "leg") {
-  const s = sideways ?? {};
-  const contact = limb === "arm" ? s.hands : s.feet;
-  const mid = (limb === "arm" ? s.elbows : s.knees)?.[side];
-  return { contactZ: contact?.[side], midZ: mid?.at, out: mid?.out ?? 0 };
+  return { ...spineOf(spine, z), ...limbs, pins };
 }
 
 /** A pinned 2D point lifted to its sideways position (default: the limb root's z). */
 const placed = (p: readonly [number, number] | undefined, z: number | undefined, root: Point3): Point3 | undefined =>
   p && lift(p, z ?? root[2]);
 
-function armInput(pose: Pose, sideways: Sideways | undefined, side: Side, root: Point3): LimbInput {
-  const hints = sideHints(sideways, side, "arm");
-  const elbow = pose.elbows?.[side];
-  const wrist = pose.wrists?.[side];
+/** One limb's solve input: its pose pins, lifted to the keyframe's sideways positions. */
+function limbInput(kind: LimbKind, pose: Pose, sideways: Sideways | undefined, side: Side, root: Point3): LimbInput {
+  const limb = LIMBS[kind];
+  const sw = sideways ?? {};
+  const of = <T>(record: Partial<Record<Side, T>> | undefined): T | undefined => record?.[side];
+  const midHint = of(sw[limb.mid]);
+  const midPose = of(pose[limb.mid]);
+  const endAngle = of(pose[limb.end]);
   return {
     side,
     root,
-    names: [`elbows.${side}`, `hands.${side}`],
-    l1: BONES.upperArm,
-    l2: BONES.forearm,
-    l3: BONES.hand,
-    target: placed(pose.hands?.[side], hints.contactZ, root),
-    midPin: placed(elbow?.at, hints.midZ, root),
-    bend: elbow?.bend ?? 1,
-    out: hints.out,
-    endAngle: wrist === undefined ? undefined : deg(wrist),
-  };
-}
-
-function legInput(pose: Pose, sideways: Sideways | undefined, side: Side, root: Point3): LimbInput {
-  const hints = sideHints(sideways, side, "leg");
-  const knee = pose.knees?.[side];
-  const toe = pose.toes?.[side];
-  return {
-    side,
-    root,
-    names: [`knees.${side}`, `feet.${side}`],
-    l1: BONES.thigh,
-    l2: BONES.shin,
-    l3: BONES.foot,
-    target: placed(pose.feet?.[side], hints.contactZ, root),
-    midPin: placed(knee?.at, hints.midZ, root),
-    bend: knee?.bend ?? -1,
-    out: hints.out,
-    endAngle: toe === undefined ? "squareToShin" : deg(toe),
+    names: [`${limb.mid}.${side}`, `${limb.contact}.${side}`],
+    l1: limb.l1,
+    l2: limb.l2,
+    l3: limb.l3,
+    target: placed(of(pose[limb.contact]), of(sw[limb.contact]), root),
+    midPin: placed(midPose?.at, midHint?.at, root),
+    bend: midPose?.bend ?? limb.bend,
+    out: midHint?.out ?? 0,
+    endAngle: endAngle === undefined ? limb.restEnd : deg(endAngle),
   };
 }
 
 // ---------------------------------------------------------------- timeline
-
-/** Same rules as the 2D rig: ends that move further than this swing, floor contacts slide. */
-const SWING_THRESHOLD = 24;
-const FLOOR_CONTACT = 10;
-const ease = (t: number): number => 0.5 - Math.cos(Math.PI * t) / 2;
 
 export interface Timeline3 {
   duration: number;
@@ -301,6 +310,7 @@ interface BlendLimb {
   angled: boolean;
 }
 
+/** Same rules as the 2D rig: ends that move further than SWING_THRESHOLD swing, floor contacts slide. */
 function blendLimb({ a, b, root, t, pinned, l1, l2, l3, angled }: BlendLimb): Limb3 {
   const contactA = angled ? a.joint : a.end;
   const contactB = angled ? b.joint : b.end;
@@ -318,7 +328,7 @@ function blendLimb({ a, b, root, t, pinned, l1, l2, l3, angled }: BlendLimb): Li
     mid = add(root, scale(upper, l1));
     tip = add(mid, scale(fore, lower));
   }
-  if (!angled) return { root, mid, joint: add(mid, scale(unit(sub(tip, mid)), l2)), end: tip };
+  if (!angled) return finishLimb(root, mid, tip, l2);
   const endDir = slerp(unit(sub(a.end, a.joint)), unit(sub(b.end, b.joint)), t);
   return { root, mid, joint: tip, end: add(tip, scale(endDir, l3)) };
 }
@@ -326,8 +336,7 @@ function blendLimb({ a, b, root, t, pinned, l1, l2, l3, angled }: BlendLimb): Li
 /** Sample the loop: the 2D timeline's timing and spine, limbs blended in 3D. */
 export function sampleTimeline3(spec: DoodleSpec, stepsPerTransition = 14): Timeline3 {
   const flat = sampleTimeline(spec, stepsPerTransition);
-  const keys = solveKeyframes(spec);
-  const zs = spec.frames.map((frame) => frame.sideways?.pelvis ?? 0);
+  const { keys } = flat;
   const solved = keys.map((key, i) => solveKeyframe3(key.solved, key.pose, spec.frames[i].sideways));
   const poses: Figure3[] = [];
   spec.frames.forEach((_, index) => {
@@ -339,36 +348,26 @@ export function sampleTimeline3(spec: DoodleSpec, stepsPerTransition = 14): Time
     for (let step = 1; step < stepsPerTransition; step += 1) {
       const t = ease(step / stepsPerTransition);
       const spine = flat.poses[flat.keyframeIndex[index] + 1 + step];
-      const z = zs[index] + (zs[next] - zs[index]) * t;
+      const z = a.pelvis[2] + (b.pelvis[2] - a.pelvis[2]) * t;
       const root = roots(spine, z);
-      const arms = {} as Record<Side, Limb3>;
-      const legs = {} as Record<Side, Limb3>;
+      const limbs = { arms: {}, legs: {} } as Record<LimbKind, Record<Side, Limb3>>;
       for (const side of SIDES) {
-        const wristed = pa.wrists?.[side] !== undefined || pb.wrists?.[side] !== undefined;
-        arms[side] = blendLimb({
-          a: a.arms[side],
-          b: b.arms[side],
-          root: root.arms[side],
-          t,
-          pinned: [Boolean(pa.hands?.[side]), Boolean(pb.hands?.[side])],
-          l1: BONES.upperArm,
-          l2: BONES.forearm,
-          l3: BONES.hand,
-          angled: wristed,
-        });
-        legs[side] = blendLimb({
-          a: a.legs[side],
-          b: b.legs[side],
-          root: root.legs[side],
-          t,
-          pinned: [Boolean(pa.feet?.[side]), Boolean(pb.feet?.[side])],
-          l1: BONES.thigh,
-          l2: BONES.shin,
-          l3: BONES.foot,
-          angled: true,
-        });
+        for (const kind of KINDS) {
+          const limb = LIMBS[kind];
+          limbs[kind][side] = blendLimb({
+            a: a[kind][side],
+            b: b[kind][side],
+            root: root[kind][side],
+            t,
+            pinned: [Boolean(pa[limb.contact]?.[side]), Boolean(pb[limb.contact]?.[side])],
+            l1: limb.l1,
+            l2: limb.l2,
+            l3: limb.l3,
+            angled: limb.restEnd !== undefined || pa[limb.end]?.[side] !== undefined || pb[limb.end]?.[side] !== undefined,
+          });
+        }
       }
-      poses.push({ ...spineOf(spine, z), arms, legs, pins: [] });
+      poses.push({ ...spineOf(spine, z), ...limbs, pins: [] });
     }
   });
   poses.push(solved[0]);

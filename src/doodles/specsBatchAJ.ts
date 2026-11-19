@@ -1,5 +1,6 @@
+import { BONES, HIP_SIDE, other, zOut } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose, Side, Sideways } from "./rig";
-import { lockedY3 } from "./specsBatchAA";
+import { lockedY3, TWO_VIEWS } from "./sideways";
 import { PLANK_FOOT, pushUp } from "./specsBatchC";
 
 /**
@@ -12,12 +13,9 @@ import { PLANK_FOOT, pushUp } from "./specsBatchC";
  */
 
 const round = (value: number): number => Math.round(value * 1000) / 1000;
-const zOut = (side: Side): number => (side === "near" ? -1 : 1);
-const other = (side: Side): Side => (side === "near" ? "far" : "near");
 
-const THIGH = 88;
-const SHIN = 86;
-const HIP_Z = 8;
+const THIGH = BONES.thigh;
+const SHIN = BONES.shin;
 
 // ---------------------------------------------------------------- spiderman push-up
 
@@ -54,13 +52,13 @@ function spiderman(y: number, side: Side | null, full = false): Keyframe {
   const pelvis = base.pelvis as Point;
   const chest = base.chest as Point;
   const out = zOut(side);
-  const hip: P3 = [pelvis[0], pelvis[1], out * HIP_Z];
+  const hip: P3 = [pelvis[0], pelvis[1], out * HIP_SIDE];
   // Full: just behind and outside the elbow (it sits about 50 out, level with the chest).
   // Partway: the knee swung out to the side, still a little behind the hip.
   const aim: P3 =
     full
-      ? [chest[0] - 34, pelvis[1] - 12, out * (HIP_Z + 90)]
-      : [pelvis[0] - 30, pelvis[1] + 20, out * (HIP_Z + 80)];
+      ? [chest[0] - 34, pelvis[1] - 12, out * (HIP_SIDE + 90)]
+      : [pelvis[0] - 30, pelvis[1] + 20, out * (HIP_SIDE + 80)];
   const knee = toward(hip, aim, THIGH);
   // The shin trails back and a little down, the foot clear of the floor.
   const ankle = toward(knee, [knee[0] - 80, knee[1] + 24, knee[2] - out * 10], SHIN);
@@ -102,7 +100,7 @@ export const BATCH_AJ_SPECS: DoodleSpec[] = [
     id: "hf_13",
     slug: "spiderman-push-up",
     title: "Spiderman Push-Up",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     transition: 0.5,
     frames: spidermanRep(),
   },

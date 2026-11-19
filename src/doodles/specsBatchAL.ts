@@ -1,4 +1,5 @@
-import { solveJoint, type DoodleSpec, type Keyframe, type Point, type Pose, type Sideways } from "./rig";
+import { SHOULDER_SIDE, solveJoint, type DoodleSpec, type Keyframe, type Point, type Pose, type Sideways } from "./rig";
+import { TWO_VIEWS } from "./sideways";
 
 /**
  * Batch AL (#174): moves no single view shows, drawn in two views from the
@@ -21,7 +22,6 @@ function along(from: Point, degrees: number, length: number): Point {
 
 /** Shoulder to fingertip, elbow locked (a hair short so the solver keeps it straight). */
 const ARM = 125.9;
-const SHOULDER_Z = 22;
 
 // ---------------------------------------------------------------- arm circles
 
@@ -49,7 +49,7 @@ function circlePose(theta: number): Keyframe {
     feet: { near: [2, 0], far: [0, 0] },
     toes: { near: 0, far: 0 },
   };
-  const z = round(SHOULDER_Z + wide);
+  const z = round(SHOULDER_SIDE + wide);
   return { hold: 0, pose, sideways: { hands: { near: -z, far: z }, feet: { near: -FEET_Z, far: FEET_Z } } };
 }
 
@@ -83,7 +83,7 @@ function trap3(t: number): Keyframe {
     round(shoulder[0] + ARM * Math.cos(out) * Math.cos(inPlane)),
     round(shoulder[1] + ARM * Math.cos(out) * Math.sin(inPlane)),
   ];
-  const z = round(-SHOULDER_Z - ARM * Math.sin(out));
+  const z = round(-SHOULDER_SIDE - ARM * Math.sin(out));
   const pose: Pose = {
     pelvis: T3_PELVIS,
     chest,
@@ -103,7 +103,7 @@ export const BATCH_AL_SPECS: DoodleSpec[] = [
     id: "wger_994",
     slug: "forward-arm-circles",
     title: "Forward arm circles",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     transition: 0.22,
     frames: circle(-1),
   },
@@ -112,7 +112,7 @@ export const BATCH_AL_SPECS: DoodleSpec[] = [
     id: "wger_995",
     slug: "backward-arm-circles",
     title: "Backward arm circles",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     transition: 0.22,
     frames: circle(1),
   },
@@ -120,7 +120,7 @@ export const BATCH_AL_SPECS: DoodleSpec[] = [
     id: "wger_1834",
     slug: "trap-3-raise",
     title: "Trap-3 Raise",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     transition: 0.9,
     frames: [
       { ...trap3(0), hold: 0.5 },

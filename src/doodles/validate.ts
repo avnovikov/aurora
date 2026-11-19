@@ -1,7 +1,6 @@
 import { BONES, SEGMENTS, dist, reflectSolved, sampleTimeline, type DoodleSpec, type Point, type Prop, type Side, type Solved } from "./rig";
 import { dualLayout } from "./renderDual";
 import { figurePoints, propSegments, specViewBox } from "./renderSvg";
-import { project } from "./project";
 import { dist3, sampleTimeline3, type Figure3, type Point3 } from "./rig3d";
 
 /** Validator for doodle specs (rig v2 spec, "Validator" section). JSON-serialisable output. */
@@ -46,15 +45,26 @@ const round = (value: number, digits = 3): number => Math.round(value * 10 ** di
 const roundPoint = (p: Point): Point => [round(p[0], 1), round(p[1], 1)];
 
 /** Named bones with their expected length. */
-interface Bone {
+interface Bone<P> {
   name: string;
-  a: Point;
-  b: Point;
+  a: P;
+  b: P;
   length: number;
 }
 
-function bones(pose: Solved): Bone[] {
-  const list: Bone[] = [
+/** The joints a figure is drawn through, in 2D (Solved) or 3D (Figure3). */
+interface Body<P> {
+  pelvis: P;
+  waist: P;
+  chest: P;
+  neck: P;
+  head: P;
+  arms: Record<Side, { root: P; mid: P; joint: P; end: P }>;
+  legs: Record<Side, { root: P; mid: P; joint: P; end: P }>;
+}
+
+function bones<P>(pose: Body<P>): Bone<P>[] {
+  const list: Bone<P>[] = [
     { name: "pelvis-waist", a: pose.pelvis, b: pose.waist, length: BONES.pelvisWaist },
     { name: "waist-chest", a: pose.waist, b: pose.chest, length: BONES.waistChest },
     { name: "chest-neck", a: pose.chest, b: pose.neck, length: BONES.chestNeck },
@@ -75,9 +85,10 @@ function bones(pose: Solved): Bone[] {
   return list;
 }
 
-export function boneLengthError(pose: Solved): number {
-  return Math.max(...bones(pose).map((bone) => Math.abs(dist(bone.a, bone.b) - bone.length)));
-}
+const maxBoneError = <P>(list: Bone<P>[], distance: (a: P, b: P) => number): number =>
+  Math.max(...list.map((bone) => Math.abs(distance(bone.a, bone.b) - bone.length)));
+
+export const boneLengthError = (pose: Solved): number => maxBoneError(bones(pose), dist);
 
 export const torsoLength = (pose: Solved): number => dist(pose.pelvis, pose.neck);
 
@@ -156,11 +167,14 @@ function anatomy(pose: Solved, view: "side" | "front" | undefined): string[] {
 /** An arm closer than this to the head centre is drawn through the head circle. */
 const HEAD_CLEARANCE = 20;
 
-function distanceToSegment(p: Point, a: Point, b: Point): number {
-  const ab = sub2(b, a);
-  const lengthSq = ab[0] * ab[0] + ab[1] * ab[1];
-  const t = lengthSq === 0 ? 0 : Math.max(0, Math.min(1, ((p[0] - a[0]) * ab[0] + (p[1] - a[1]) * ab[1]) / lengthSq));
-  return dist(p, [a[0] + ab[0] * t, a[1] + ab[1] * t]);
+/** Distance from `p` to segment ab, in 2D or 3D. */
+function distanceToSegment<P extends readonly number[]>(p: P, a: P, b: P): number {
+  const ab = b.map((v, i) => v - a[i]);
+  const dot = (u: readonly number[], v: readonly number[]): number => u.reduce((sum, x, i) => sum + x * v[i], 0);
+  const lengthSq = dot(ab, ab);
+  const ap = p.map((v, i) => v - a[i]);
+  const t = lengthSq === 0 ? 0 : Math.max(0, Math.min(1, dot(ap, ab) / lengthSq));
+  return Math.hypot(...p.map((v, i) => v - (a[i] + ab[i] * t)));
 }
 
 /** Joints a pin makes exempt from the floor check (contacts the move asks for). */
@@ -237,6 +251,50 @@ function headInProp(spec: DoodleSpec, pose: Solved): string[] {
   return issues;
 }
 
+/** Prop problems a sample shows: limbs crossing a prop, the head inside one. */
+const propIssues = (spec: DoodleSpec, pose: Solved): string[] => [
+  ...propCrossings(spec, pose).map((c) => `${c.segment} crosses prop ${c.prop}`),
+  ...headInProp(spec, pose),
+];
+
+/** Every keyframe problem, one error line each. */
+function keyframeErrors(keyframes: KeyframeReport[]): string[] {
+  return keyframes.flatMap((k) => [
+    ...k.unreachable.map((u) => `${u.joint} unreachable by ${u.miss}`),
+    ...k.belowFloor.map((b) => `${b.joint} below floor (y=${b.y})`),
+    ...k.outsideViewBox.map((o) => `${o.joint} outside viewBox`),
+    ...k.propCrossings.map((c) => `${c.segment} crosses prop ${c.prop}`),
+    ...k.anatomy,
+  ].map((issue) => `frame ${k.index}: ${issue}`));
+}
+
+/** The sampling a check runs over: which samples are keyframes, and when each falls. */
+interface Samples {
+  keyframeIndex: number[];
+  keyTimes: number[];
+  duration: number;
+}
+
+/** Issues seen between keyframes, stamped with the sample's time (repeats dropped). */
+function between<P>(timeline: Samples & { poses: P[] }, check: (pose: P, i: number) => string[]): string[] {
+  const keys = new Set(timeline.keyframeIndex);
+  return [
+    ...new Set(
+      timeline.poses.flatMap((pose, i) =>
+        keys.has(i)
+          ? []
+          : check(pose, i).map((issue) => `between keyframes (t=${round(timeline.keyTimes[i] * timeline.duration, 1)}s): ${issue}`),
+      ),
+    ),
+  ];
+}
+
+/** Transition samples (not keyframes) for which `test` holds. */
+function betweenCount<P>(timeline: Samples & { poses: P[] }, test: (pose: P) => boolean): number {
+  const keys = new Set(timeline.keyframeIndex);
+  return timeline.poses.filter((pose, i) => !keys.has(i) && test(pose)).length;
+}
+
 export function validateSpec(spec: DoodleSpec): SpecReport {
   const guards = dualViewGuards(spec);
   if (guards.length > 0) return failed(spec, guards);
@@ -282,28 +340,14 @@ function validateFlat(spec: DoodleSpec): SpecReport {
     Math.max(...timeline.poses.filter((_, i) => !timeline.turning[i]).map(boneLengthError)),
     4,
   );
-  const between = (check: (pose: Solved, i: number) => string[]): string[] => [
-    ...new Set(
-      timeline.poses.flatMap((pose, i) =>
-        timeline.keyframeIndex.includes(i)
-          ? []
-          : check(pose, i).map((issue) => `between keyframes (t=${round(timeline.keyTimes[i] * timeline.duration, 1)}s): ${issue}`),
-      ),
-    ),
-  ];
   // Joint ranges are judged as authored (a mirrored knee would otherwise read as bending backwards);
   // mid-turn samples are skipped.
-  const transitionAnatomy = between((pose, i) =>
+  const transitionAnatomy = between(timeline, (pose, i) =>
     timeline.turning[i] ? [] : anatomy(reflectSolved(pose, timeline.mirrors[i]), spec.view),
   );
   // A limb sweeping through a prop between keyframes is as visible as one at a keyframe.
-  const transitionPropCrossings = between((pose) => [
-    ...propCrossings(spec, pose).map((c) => `${c.segment} crosses prop ${c.prop}`),
-    ...headInProp(spec, pose),
-  ]);
-  const transitionSamplesBelowFloor = timeline.poses.filter(
-    (pose, i) => !timeline.keyframeIndex.includes(i) && belowFloor(pose).length > 0,
-  ).length;
+  const transitionPropCrossings = between(timeline, (pose) => propIssues(spec, pose));
+  const transitionSamplesBelowFloor = betweenCount(timeline, (pose) => belowFloor(pose).length > 0);
 
   // An unsolvable pin can leave NaN joints, which every distance check above silently passes.
   const nonFinite = timeline.poses.filter((pose) =>
@@ -315,14 +359,7 @@ function validateFlat(spec: DoodleSpec): SpecReport {
   if (maxBoneLengthErrorAllSamples > BONE_TOLERANCE) {
     errors.push(`bone length error ${maxBoneLengthErrorAllSamples} > ${BONE_TOLERANCE}`);
   }
-  for (const k of keyframes) {
-    for (const u of k.unreachable) errors.push(`frame ${k.index}: ${u.joint} unreachable by ${u.miss}`);
-    for (const b of k.belowFloor) errors.push(`frame ${k.index}: ${b.joint} below floor (y=${b.y})`);
-    for (const o of k.outsideViewBox) errors.push(`frame ${k.index}: ${o.joint} outside viewBox`);
-    for (const c of k.propCrossings) errors.push(`frame ${k.index}: ${c.segment} crosses prop ${c.prop}`);
-    for (const a of k.anatomy) errors.push(`frame ${k.index}: ${a}`);
-  }
-  errors.push(...transitionAnatomy, ...transitionPropCrossings);
+  errors.push(...keyframeErrors(keyframes), ...transitionAnatomy, ...transitionPropCrossings);
 
   return {
     slug: spec.slug,
@@ -352,6 +389,7 @@ export function dualViewGuards(spec: DoodleSpec): string[] {
   }
   if (spec.view === "front") errors.push("views can't be combined with view: \"front\"");
   if (spec.frames.some((frame) => frame.mirror !== undefined)) errors.push("views can't be combined with mirror (turning round)");
+  if (spec.wheel !== undefined) errors.push("views can't be combined with wheel (no front drawing of an ab wheel yet)");
   for (const prop of spec.props ?? []) {
     if (!DUAL_PROPS.has(prop.kind)) errors.push(`prop ${prop.kind} can't be drawn in two views (bar and box only)`);
   }
@@ -381,63 +419,26 @@ function angle3(u: Point3, v: Point3): number {
   return n < 1e-9 ? 0 : (Math.acos(Math.max(-1, Math.min(1, dot / n))) * 180) / Math.PI;
 }
 
-function distanceToSegment3(p: Point3, a: Point3, b: Point3): number {
-  const ab = sub3(b, a);
-  const lengthSq = ab[0] ** 2 + ab[1] ** 2 + ab[2] ** 2;
-  const ap = sub3(p, a);
-  const t = lengthSq === 0 ? 0 : Math.max(0, Math.min(1, (ap[0] * ab[0] + ap[1] * ab[1] + ap[2] * ab[2]) / lengthSq));
-  return dist3(p, [a[0] + ab[0] * t, a[1] + ab[1] * t, a[2] + ab[2] * t]);
-}
-
-function bones3(f: Figure3): { name: string; a: Point3; b: Point3; length: number }[] {
-  const list: { name: string; a: Point3; b: Point3; length: number }[] = [
-    { name: "pelvis-waist", a: f.pelvis, b: f.waist, length: BONES.pelvisWaist },
-    { name: "waist-chest", a: f.waist, b: f.chest, length: BONES.waistChest },
-    { name: "chest-neck", a: f.chest, b: f.neck, length: BONES.chestNeck },
-    { name: "neck-head", a: f.neck, b: f.head, length: BONES.neckHead },
-  ];
-  for (const side of ["near", "far"] as Side[]) {
-    const arm = f.arms[side];
-    const leg = f.legs[side];
-    list.push(
-      { name: `upperArm.${side}`, a: arm.root, b: arm.mid, length: BONES.upperArm },
-      { name: `forearm.${side}`, a: arm.mid, b: arm.joint, length: BONES.forearm },
-      { name: `hand.${side}`, a: arm.joint, b: arm.end, length: BONES.hand },
-      { name: `thigh.${side}`, a: leg.root, b: leg.mid, length: BONES.thigh },
-      { name: `shin.${side}`, a: leg.mid, b: leg.joint, length: BONES.shin },
-      { name: `foot.${side}`, a: leg.joint, b: leg.end, length: BONES.foot },
-    );
-  }
-  return list;
-}
-
-const boneLengthError3 = (f: Figure3): number => Math.max(...bones3(f).map((b) => Math.abs(dist3(b.a, b.b) - b.length)));
-
 /** Joint ranges judged in 3D: knee / elbow flexion, arms through the head; spine on the side view. */
-function anatomy3(f: Figure3): string[] {
-  const issues = spineIssues(project(f, "side"));
-  for (const side of ["near", "far"] as Side[]) {
-    const leg = f.legs[side];
-    const arm = f.arms[side];
+function anatomy3(f: Figure3, side: Solved): string[] {
+  const issues = spineIssues(side);
+  for (const s of ["near", "far"] as Side[]) {
+    const leg = f.legs[s];
+    const arm = f.arms[s];
     const knee = angle3(sub3(leg.mid, leg.root), sub3(leg.joint, leg.mid));
     const elbow = angle3(sub3(arm.mid, arm.root), sub3(arm.joint, arm.mid));
-    if (knee > LIMITS.flexion) issues.push(`knee.${side} bends ${Math.round(knee)}° (> ${LIMITS.flexion}°)`);
-    if (elbow > LIMITS.flexion) issues.push(`elbow.${side} bends ${Math.round(elbow)}° (> ${LIMITS.flexion}°)`);
+    if (knee > LIMITS.flexion) issues.push(`knee.${s} bends ${Math.round(knee)}° (> ${LIMITS.flexion}°)`);
+    if (elbow > LIMITS.flexion) issues.push(`elbow.${s} bends ${Math.round(elbow)}° (> ${LIMITS.flexion}°)`);
     const segments: [string, Point3, Point3][] = [
-      [`upperArm.${side}`, arm.root, arm.mid],
-      [`forearm.${side}`, arm.mid, arm.joint],
-      [`hand.${side}`, arm.joint, arm.end],
+      [`upperArm.${s}`, arm.root, arm.mid],
+      [`forearm.${s}`, arm.mid, arm.joint],
+      [`hand.${s}`, arm.joint, arm.end],
     ];
     for (const [name, a, b] of segments) {
-      if (distanceToSegment3(f.head, a, b) < HEAD_CLEARANCE) issues.push(`${name} passes through the head`);
+      if (distanceToSegment(f.head, a, b) < HEAD_CLEARANCE) issues.push(`${name} passes through the head`);
     }
   }
   return issues;
-}
-
-/** Side projection with the keyframe's pins, so pinned contacts may touch the floor. */
-function sideWithPins(f: Figure3): Solved {
-  return { ...project(f, "side"), pins: f.pins.map((pin) => ({ joint: pin.joint, target: [pin.target[0], pin.target[1]], actual: [pin.actual[0], pin.actual[1]] })) };
 }
 
 /** Dual-view specs: bone lengths and joint ranges in 3D, floor and props on the side view, both panels in frame. */
@@ -445,11 +446,11 @@ function validateDual(spec: DoodleSpec): SpecReport {
   const timeline = sampleTimeline3(spec);
   const layout = dualLayout(spec, timeline);
   const box = layout.view;
-  const errors: string[] = [];
   const inBox = ([x, y]: Point): boolean => x >= box.x && x <= box.x + box.w && y >= box.y && y <= box.y + box.h;
+  const boneLists = timeline.poses.map((f) => bones(f));
   const keyframes = timeline.keyframeIndex.map((sampleIndex, index): KeyframeReport => {
     const figure = timeline.poses[sampleIndex];
-    const side = sideWithPins(figure);
+    const side = layout.side[sampleIndex];
     const front = layout.front[sampleIndex];
     const outsideViewBox = [
       ...figurePoints(side).filter(({ point }) => !inBox(point)).map(({ name, point }) => ({ joint: `side ${name}`, point: roundPoint(point) })),
@@ -459,9 +460,9 @@ function validateDual(spec: DoodleSpec): SpecReport {
     ];
     return {
       index,
-      boneLengthError: round(boneLengthError3(figure), 4),
+      boneLengthError: round(maxBoneError(boneLists[sampleIndex], dist3), 4),
       torsoLength: round(dist3(figure.pelvis, figure.neck), 2),
-      anatomy: [...anatomy3(figure), ...headInProp(spec, side)],
+      anatomy: [...anatomy3(figure, side), ...headInProp(spec, side)],
       unreachable: figure.pins
         .filter((pin) => dist3(pin.target, pin.actual) > PIN_TOLERANCE)
         .map((pin) => ({
@@ -475,29 +476,14 @@ function validateDual(spec: DoodleSpec): SpecReport {
       propCrossings: propCrossings(spec, side),
     };
   });
-  const allError = round(Math.max(...timeline.poses.map(boneLengthError3)), 4);
-  const nonFinite = timeline.poses.filter((f) => bones3(f).some((b) => ![...b.a, ...b.b].every(Number.isFinite))).length;
+  const errors: string[] = [];
+  const allError = round(Math.max(...boneLists.map((list) => maxBoneError(list, dist3))), 4);
+  const nonFinite = boneLists.filter((list) => list.some((b) => ![...b.a, ...b.b].every(Number.isFinite))).length;
   if (nonFinite > 0) errors.push(`${nonFinite} sampled poses have non-finite joints`);
   if (allError > BONE_TOLERANCE) errors.push(`bone length error ${allError} > ${BONE_TOLERANCE}`);
-  for (const k of keyframes) {
-    for (const u of k.unreachable) errors.push(`frame ${k.index}: ${u.joint} unreachable by ${u.miss}`);
-    for (const b of k.belowFloor) errors.push(`frame ${k.index}: ${b.joint} below floor (y=${b.y})`);
-    for (const o of k.outsideViewBox) errors.push(`frame ${k.index}: ${o.joint} outside viewBox`);
-    for (const c of k.propCrossings) errors.push(`frame ${k.index}: ${c.segment} crosses prop ${c.prop}`);
-    for (const a of k.anatomy) errors.push(`frame ${k.index}: ${a}`);
-  }
-  const transitionAnatomy = [
-    ...new Set(
-      timeline.poses.flatMap((f, i) =>
-        timeline.keyframeIndex.includes(i)
-          ? []
-          : [...anatomy3(f), ...propCrossings(spec, project(f, "side")).map((c) => `${c.segment} crosses prop ${c.prop}`)].map(
-              (issue) => `between keyframes (t=${round(timeline.keyTimes[i] * timeline.duration, 1)}s): ${issue}`,
-            ),
-      ),
-    ),
-  ];
-  errors.push(...transitionAnatomy);
+  const transitionAnatomy = between(timeline, (f, i) => anatomy3(f, layout.side[i]));
+  const transitionPropCrossings = between(timeline, (_, i) => propIssues(spec, layout.side[i]));
+  errors.push(...keyframeErrors(keyframes), ...transitionAnatomy, ...transitionPropCrossings);
   const torsos = keyframes.map((k) => k.torsoLength);
   return {
     slug: spec.slug,
@@ -506,9 +492,7 @@ function validateDual(spec: DoodleSpec): SpecReport {
     maxBoneLengthError: Math.max(...keyframes.map((k) => k.boneLengthError)),
     maxBoneLengthErrorAllSamples: allError,
     torsoRange: [Math.min(...torsos), Math.max(...torsos)],
-    transitionSamplesBelowFloor: timeline.poses.filter(
-      (f, i) => !timeline.keyframeIndex.includes(i) && belowFloor(project(f, "side")).length > 0,
-    ).length,
+    transitionSamplesBelowFloor: betweenCount({ ...timeline, poses: layout.side }, (side) => belowFloor(side).length > 0),
     transitionAnatomy,
     keyframes,
   };

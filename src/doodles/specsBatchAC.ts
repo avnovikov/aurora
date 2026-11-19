@@ -1,6 +1,6 @@
-import { dist, solvePose } from "./rig";
-import type { DoodleSpec, Keyframe, Point, Pose, Prop, Sideways } from "./rig";
-import { lockedY3, reach3 } from "./specsBatchAA";
+import { BONES, dist, HIP_SIDE, other, solvePose, zOut } from "./rig";
+import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
+import { lockedY3, reach3, TWO_VIEWS } from "./sideways";
 import { LOCKED, lockedShoulderY, pushUp, rep, straightBody } from "./specsBatchC";
 import { plank } from "./specsBatchI";
 
@@ -23,11 +23,8 @@ function along(from: Point, degrees: number, length: number): Point {
 const round = (value: number): number => Math.round(value * 10) / 10;
 const angle = (from: Point, to: Point): number => (Math.atan2(to[1] - from[1], to[0] - from[0]) * 180) / Math.PI;
 
-type Side = "near" | "far";
-const other = (side: Side): Side => (side === "near" ? "far" : "near");
-
-const THIGH = 88;
-const SHIN = 86;
+const THIGH = BONES.thigh;
+const SHIN = BONES.shin;
 /** Hip to ankle with the knee straight. */
 const LEG = 173.98;
 
@@ -260,20 +257,19 @@ const LEG_WHEEL_FRAMES: Keyframe[] = Array.from({ length: 8 }, (_, i) => {
 
 // ---------------------------------------------------------------- climbers and crawls
 
-/** Cross-body climber: a knee drives in low under the chest, across to finish under the other shoulder. */
-const zOut = (side: Side): number => (side === "near" ? -1 : 1);
+// Cross-body climber: a knee drives in low under the chest, across to finish under the other shoulder.
+
 /** Second view: the knee crosses the midline to under the opposite shoulder (±22); the foot follows partway. */
 const CROSS_KNEE_Z = 24;
 const CROSS_ANKLE_Z = 2;
 /** The driven foot, toes pointed back. */
 const CROSS_TOE = 150;
-const HIP_Z = 8;
 
 function crossClimber(side: Side): Pose {
   const base = plank();
   const pelvis = base.pelvis as Point;
   // Across the body: the knee ends on the other side of the midline.
-  const k = reach3(pelvis, 40, THIGH, CROSS_KNEE_Z + HIP_Z);
+  const k = reach3(pelvis, 40, THIGH, CROSS_KNEE_Z + HIP_SIDE);
   const ankle = reach3(k, 170, SHIN, CROSS_KNEE_Z - CROSS_ANKLE_Z);
   return {
     ...base,
@@ -449,7 +445,7 @@ const groinSideways = (footZ: number, out: number): Sideways => ({
   feet: { near: -footZ, far: footZ },
   knees: { near: { out }, far: { out } },
 });
-const GROIN_PLANK = groinSideways(HIP_Z, 0);
+const GROIN_PLANK = groinSideways(HIP_SIDE, 0);
 const GROIN_AIR = groinSideways(34, 45);
 const GROIN_SQUAT = groinSideways(58, 60);
 
@@ -468,7 +464,7 @@ export const BATCH_AC_SPECS: DoodleSpec[] = [
     id: "fedb_incline_push_up_wide",
     slug: "incline-push-up-wide",
     title: "Incline Push-Up Wide",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     props: [INCLINE_PROP],
     transition: 0.5,
     frames: inclineWideRep(),
@@ -528,7 +524,7 @@ export const BATCH_AC_SPECS: DoodleSpec[] = [
     id: "wger_1909",
     slug: "leg-wheel",
     title: "Leg Wheel",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     transition: 0.28,
     frames: LEG_WHEEL_FRAMES,
   },
@@ -536,7 +532,7 @@ export const BATCH_AC_SPECS: DoodleSpec[] = [
     id: "ntc_cross_body_climber",
     slug: "cross-body-mountain-climber",
     title: "Cross-body mountain climber",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     transition: 0.14,
     frames: [
       // One leg at a time: drive a knee across, return that foot to plank, then the other.
@@ -582,7 +578,7 @@ export const BATCH_AC_SPECS: DoodleSpec[] = [
     id: "fedb_groiners",
     slug: "groiners",
     title: "Groiners",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     transition: 0.14,
     frames: [
       { hold: 0.3, pose: { ...plank(), chest: undefined }, sideways: GROIN_PLANK },

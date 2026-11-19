@@ -1,4 +1,4 @@
-import type { DoodleSpec, JointHint, Point, Pose, Prop } from "./rig";
+import { dist, SHOULDER_SIDE, type DoodleSpec, type JointHint, type Point, type Pose, type Prop } from "./rig";
 
 /**
  * Batch AD: bar and bench moves. Front view where the body travels between
@@ -17,7 +17,6 @@ function along(from: Point, degrees: number, length: number): Point {
 
 const round = (value: number): number => Math.round(value * 10) / 10;
 const angle = (from: Point, to: Point): number => (Math.atan2(to[1] - from[1], to[0] - from[0]) * 180) / Math.PI;
-const dist = (a: Point, b: Point): number => Math.hypot(a[0] - b[0], a[1] - b[1]);
 
 const BAR_Y = -420;
 /** Straight-arm reach from shoulder to fingertip (a hair short of locked). */
@@ -26,8 +25,6 @@ const REACH = 125.4;
 const LEG = 173.6;
 /** Pelvis to shoulder along a straight torso. */
 const SHOULDER_REACH = 98;
-/** Shoulder offset from the chest in front view. */
-const SHOULDER_SIDE = 22;
 const UPPER_ARM = 60;
 /** Forearm plus hand: elbow to fingertip with the wrist straight. */
 const LOWER_ARM = 66;

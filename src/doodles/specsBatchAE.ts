@@ -1,5 +1,6 @@
-import { solvePose } from "./rig";
+import { BONES, dist, SHOULDER_SIDE, solvePose } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose } from "./rig";
+import { TWO_VIEWS } from "./sideways";
 
 /**
  * Batch AE (#174): lying core moves — crunches and sit-ups, reverse-crunch
@@ -26,7 +27,6 @@ function along(from: Point, degrees: number, length: number): Point {
 
 const round = (value: number): number => Math.round(value * 10) / 10;
 const angle = (from: Point, to: Point): number => (Math.atan2(to[1] - from[1], to[0] - from[0]) * 180) / Math.PI;
-const dist = (a: Point, b: Point): number => Math.hypot(a[0] - b[0], a[1] - b[1]);
 
 /** Where circles around `a` (radius ra) and `b` (radius rb) meet; `pick` chooses between the two points. */
 function meet(a: Point, ra: number, b: Point, rb: number, pick: (p: Point, q: Point) => boolean): Point {
@@ -42,8 +42,8 @@ function meet(a: Point, ra: number, b: Point, rb: number, pick: (p: Point, q: Po
 
 const upper = (p: Point, q: Point): boolean => p[1] < q[1];
 
-const THIGH = 88;
-const SHIN = 86;
+const THIGH = BONES.thigh;
+const SHIN = BONES.shin;
 /** Shoulder to fingertip with the elbow just short of locked. */
 const REACH = 125.4;
 
@@ -106,8 +106,7 @@ function curl(theta: number, tuck: number, arms: Arms): Pose {
 
 /** Two views: the hands sit this far out sideways, so the straight arms pass beside the head, by the ears. */
 const OVERHEAD_HAND_Z = 32;
-/** Shoulder width (z) and the straight-arm reach, shoulder to fingertip. */
-const SHOULDER_Z = 22;
+/** The straight-arm reach, shoulder to fingertip. */
 const STRAIGHT_REACH = 125.9;
 
 /**
@@ -119,7 +118,7 @@ const STRAIGHT_REACH = 125.9;
 function overheadCrunch(theta: number, hold: number): Keyframe {
   const base = curl(theta, 0, "chest");
   const shoulder = shoulderOf({ pelvis: base.pelvis, chest: base.chest, head: base.head });
-  const dz = OVERHEAD_HAND_Z - SHOULDER_Z;
+  const dz = OVERHEAD_HAND_Z - SHOULDER_SIDE;
   const flat = Math.sqrt(STRAIGHT_REACH ** 2 - dz ** 2);
   const hand = along(shoulder, theta, flat);
   return {
@@ -361,7 +360,7 @@ export const BATCH_AE_SPECS: DoodleSpec[] = [
     id: "fedb_crunch_hands_overhead",
     slug: "crunch-hands-overhead",
     title: "Crunch - Hands Overhead",
-    views: ["side", "front"],
+    views: TWO_VIEWS,
     transition: 0.7,
     frames: [overheadCrunch(183, 0.4), overheadCrunch(210, 0.45)],
   },
