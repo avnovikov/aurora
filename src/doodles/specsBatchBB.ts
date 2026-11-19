@@ -1,7 +1,8 @@
-import { BONES, HIP_SIDE, solvePose } from "./rig";
-import type { DoodleSpec, Keyframe, Point, Pose, Prop } from "./rig";
+import { BONES, HIP_SIDE, solvePose, zOut } from "./rig";
+import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
 import { add3, scale3, solveKeyframe3, sub3, type Point3 } from "./rig3d";
-import { TWO_VIEWS } from "./sideways";
+import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
+import { ARM as ARM_BONES, chain, dirs, frame, LEG, REACH, roots, SIDES, type LimbSpec, type Spine } from "./specsBatchBA";
 import { FLOOR_PROP, along, round, supineTorso } from "./geom";
 
 /**
@@ -59,34 +60,46 @@ function oneKnee(thigh: number, flex: number, hands: "thigh" | "shin", grip = 50
   };
 }
 
-// ---------------------------------------------------------------- iron crosses (face down, seen from above)
+// ---------------------------------------------------------------- iron crosses (face down, side + top)
 
 /**
- * Lying face down, seen from above (as the prone arm raises: front view laid
- * flat, head right, near = upper side on screen). Arms straight out to the
- * sides, palms down. The near knee bends and the foot crosses behind the body
- * towards the far hand (`cross` 0 = leg straight behind, 1 = reached across).
+ * Lying face down, head at +x (the 2D spine laid flat facing the floor), arms
+ * straight out to the sides in a T with the palms on the floor. The working
+ * leg bends (the heel lifts off the floor), then the hip on that side lifts and
+ * rolls (`hipTwist`) while the bent leg swings over behind the body, the foot
+ * reaching across towards the opposite hand. The shoulders stay flat.
  */
-const IC_SHOULDER_NEAR: Point = [58, -172];
-const IC_SHOULDER_FAR: Point = [58, -128];
-const IC_HIP_NEAR: Point = [-40, -158];
-const IC_HIP_FAR: Point = [-40, -142];
+const IC_FLAT: Spine = { pelvis: [-40, -16], chest: [40, -18], head: [95.7, -24] };
+const IC_LIFT: Spine = { pelvis: [-39.1, -30], chest: [40, -18], head: [95.7, -24] };
 
-function ironCross(cross: number): Pose {
-  const thighDir = 180 - 28 * cross;
-  const knee = along(IC_HIP_NEAR, thighDir, THIGH);
-  const shinDir = 180 - 90 * cross - 6 * (1 - cross);
-  const foot = along(knee, shinDir + 0, SHIN);
-  return {
-    pelvis: [-40, -150],
-    chest: [40, -150],
-    head: [96, -150],
-    hands: { near: along(IC_SHOULDER_NEAR, -90, ARM - 0.2), far: along(IC_SHOULDER_FAR, 90, ARM - 0.2) },
-    elbows: { near: { bend: -1 }, far: { bend: 1 } },
-    knees: { near: { at: knee }, far: { bend: 1 } },
-    feet: { near: foot, far: along(IC_HIP_FAR, 174, 173.9) },
-    toes: { near: shinDir, far: 174 },
-  };
+type IronStage = "rest" | "bend" | "cross";
+
+function ironCross(working: Side, stage: IronStage, hold: number): Keyframe {
+  const spine = stage === "cross" ? IC_LIFT : IC_FLAT;
+  // The lifting hip is the working one: + rolls the far hip down, so the near hip comes up.
+  const roll = working === "near" ? 38 : -38;
+  const sideways: Sideways = { pelvis: 0, hipTwist: stage === "cross" ? roll : 0 };
+  const fig = solveKeyframe3(solvePose(spine), spine as Pose, sideways);
+  const arms = {} as Record<Side, LimbSpec>;
+  const legs = {} as Record<Side, LimbSpec>;
+  for (const side of SIDES) {
+    const s = fig.arms[side].root;
+    arms[side] = { plan: chain(s, ARM_BONES, [s[0], -5, s[2] + zOut(side) * REACH], [s[0], -60, s[2]]) };
+    const hip = fig.legs[side].root;
+    const z = zOut(side) * 10;
+    if (side !== working || stage === "rest") {
+      legs[side] = { plan: chain(hip, LEG, [hip[0] - 200, -8, z], [hip[0] - 87, -60, z]), toe: 176 };
+    } else if (stage === "bend") {
+      legs[side] = { plan: dirs(hip, LEG, [-1, (-10 - hip[1]) / LEG[0], 0], [0.12, -1, 0]), toe: -96 };
+    } else {
+      // Thigh lifted back and over the other leg, shin swinging down and forward: the foot
+      // comes down beyond the other side, towards the opposite hand.
+      const across = -zOut(side);
+      legs[side] = { plan: dirs(hip, LEG, [-0.2, -0.45, across * 0.87], [0.6, 0.6, across * 0.53]), toe: 20 };
+    }
+  }
+  const key = frame(hold, spine, { arms, legs });
+  return { ...key, sideways: { ...key.sideways, hipTwist: sideways.hipTwist }, face: { turn: 0 } };
 }
 
 // ---------------------------------------------------------------- isometric chest squeeze (two views)
@@ -144,27 +157,31 @@ function armAgainstWall(lean: number): Pose {
   };
 }
 
-// ---------------------------------------------------------------- overhead reach (side view)
+// ---------------------------------------------------------------- overhead reach (side + front)
 
 /**
- * Standing, interlaced fingers pressed overhead, arms straight. The rig draws
- * the arms through the head when they are vertical, so they reach up and a
- * little forward (`tilt` degrees from vertical); `back` leans the chest back.
+ * Standing tall, fingers interlaced. `press` 0: the hands rest on top of the
+ * head, elbows out to the sides; 1: the arms pressed straight up over the
+ * shoulders, beside the ears (just wide of the head circle in the front
+ * view). The spine and legs stay straight.
  */
-function overheadReach(tilt: number, back: number): Pose {
-  const pelvis: Point = [0, -173.6];
-  const chest = along(pelvis, -90 - back, 80);
-  const shoulder = solvePose({ pelvis, chest }).arms.near.root;
-  const t = (tilt * Math.PI) / 180;
-  const hand: Point = [round(shoulder[0] + Math.sin(t) * (ARM - 0.8)), round(shoulder[1] - Math.cos(t) * (ARM - 0.8))];
-  return {
-    pelvis,
-    chest,
-    hands: { near: hand, far: [round(hand[0] + 1), round(hand[1] + 1)] },
-    elbows: { near: { bend: 1 }, far: { bend: 1 } },
-    feet: { near: [0, 0], far: [2, 0] },
-    toes: { near: 0, far: 0 },
-  };
+const OH_SPINE: Spine = { pelvis: [0, -LEG[0] - LEG[1]], chest: [0, -LEG[0] - LEG[1] - 80], head: [2, -LEG[0] - LEG[1] - 136] };
+/** Sideways position of each hand: on the head (fingers interlaced), and overhead, wide enough to clear the ears. */
+const OH_HAND_Z = { onHead: 8, up: 30 };
+
+function overheadReach(press: 0 | 1, hold: number): Keyframe {
+  const { arm, leg } = roots(OH_SPINE);
+  const arms = {} as Record<Side, LimbSpec>;
+  const legs = {} as Record<Side, LimbSpec>;
+  for (const side of SIDES) {
+    const s = arm[side];
+    const z = zOut(side) * (press === 1 ? OH_HAND_Z.up : OH_HAND_Z.onHead);
+    const dz = z - s[2];
+    const hand: Point3 = press === 1 ? [s[0], s[1] - Math.sqrt((REACH - 0.2) ** 2 - dz * dz), z] : [8, -346, z];
+    arms[side] = { plan: chain(s, ARM_BONES, hand, [s[0], s[1] - 30, zOut(side) * 120]) };
+    legs[side] = { plan: dirs(leg[side], LEG, [0, 1, 0], [0, 1, 0]), toe: 0 };
+  }
+  return frame(hold, OH_SPINE, { arms, legs });
 }
 
 // ---------------------------------------------------------------- seated side bend from butterfly (two views)
@@ -344,11 +361,18 @@ export const BATCH_BB_SPECS: DoodleSpec[] = [
     id: "fedb_iron_crosses_stretch",
     slug: "iron-crosses-stretch",
     title: "Iron Crosses Stretch",
-    view: "front",
-    transition: 1.5,
+    views: TOP_VIEWS,
+    props: [FLOOR_PROP],
+    transition: 1,
     frames: [
-      { hold: 0.6, pose: ironCross(0) },
-      { hold: 1.4, pose: ironCross(1) },
+      ironCross("near", "rest", 0.4),
+      ironCross("near", "bend", 0.2),
+      ironCross("near", "cross", 1.4),
+      ironCross("near", "bend", 0.2),
+      ironCross("far", "rest", 0.4),
+      ironCross("far", "bend", 0.2),
+      ironCross("far", "cross", 1.4),
+      ironCross("far", "bend", 0.2),
     ],
   },
   {
@@ -401,12 +425,10 @@ export const BATCH_BB_SPECS: DoodleSpec[] = [
     id: "fedb_overhead_stretch",
     slug: "overhead-stretch",
     title: "Overhead Stretch",
+    views: TWO_VIEWS,
     props: [FLOOR_PROP],
-    transition: 1.5,
-    frames: [
-      { hold: 0.6, pose: overheadReach(34, 0) },
-      { hold: 1.4, pose: overheadReach(28, 6) },
-    ],
+    transition: 1.4,
+    frames: [overheadReach(0, 0.5), overheadReach(1, 1.6)],
   },
   {
     id: "fedb_seated_overhead_stretch",

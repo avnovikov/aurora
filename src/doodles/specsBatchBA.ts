@@ -1,4 +1,4 @@
-import { BONES, deg, HIP_SIDE, SHOULDER_SIDE, solvePose, zOut } from "./rig";
+import { BONES, deg, HIP_SIDE, SEGMENTS, SHOULDER_SIDE, solvePose, zOut } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
 import { add3, dot3, norm3, scale3, sub3, type Point3 } from "./rig3d";
 import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
@@ -7,7 +7,7 @@ import { along, chestOf, FLOOR_PROP, round, supineTorso } from "./geom";
 /**
  * Batch BA (#216): shoulder, arm and chest stretches. Floor at y = 0, up is
  * negative, the side-view figure faces +x; lying face up has the head at -x.
- * Never import ./specs (circular).
+ * Never import ./specs (circular). The 3D limb helpers are exported for batch BB.
  *
  * Where an arm or knee goes out to the side, the move is drawn in two views and
  * the limbs are placed in 3D by `chain` (exact bone lengths); `frame` turns the
@@ -26,18 +26,18 @@ import { along, chestOf, FLOOR_PROP, round, supineTorso } from "./geom";
 
 const unit3 = (a: Point3): Point3 => scale3(a, 1 / (norm3(a) || 1));
 
-interface Plan {
+export interface Plan {
   mid: Point3;
   end: Point3;
 }
 
-const ARM: [number, number] = [BONES.upperArm, BONES.forearm + BONES.hand];
-const LEG: [number, number] = [BONES.thigh, BONES.shin];
+export const ARM: [number, number] = [BONES.upperArm, BONES.forearm + BONES.hand];
+export const LEG: [number, number] = [BONES.thigh, BONES.shin];
 /** Shoulder to fingertips with the elbow locked, less a hair. */
-const REACH = BONES.upperArm + BONES.forearm + BONES.hand - 0.4;
+export const REACH = BONES.upperArm + BONES.forearm + BONES.hand - 0.4;
 
 /** A limb from `root` reaching `end` (pulled in if too far), the middle joint on the `hint` side of the line. */
-function chain(root: Point3, [l1, l2]: [number, number], end: Point3, hint: Point3): Plan {
+export function chain(root: Point3, [l1, l2]: [number, number], end: Point3, hint: Point3): Plan {
   const full = sub3(end, root);
   const d = Math.min(Math.max(norm3(full), Math.abs(l1 - l2) + 1), l1 + l2 - 0.3);
   const u = unit3(full);
@@ -51,7 +51,7 @@ function chain(root: Point3, [l1, l2]: [number, number], end: Point3, hint: Poin
 }
 
 /** A limb given as two directions. */
-function dirs(root: Point3, [l1, l2]: [number, number], d1: Point3, d2: Point3): Plan {
+export function dirs(root: Point3, [l1, l2]: [number, number], d1: Point3, d2: Point3): Plan {
   const mid = add3(root, scale3(unit3(d1), l1));
   return { mid, end: add3(mid, scale3(unit3(d2), l2)) };
 }
@@ -71,7 +71,7 @@ function foldedArm(root: Point3, e: Point3, towards: Point3, bendDeg = 154): Pla
   return { mid, end: add3(mid, scale3(add3(scale3(u, Math.cos(r)), scale3(w, Math.sin(r))), ARM[1])) };
 }
 
-interface LimbSpec {
+export interface LimbSpec {
   plan: Plan;
   toe?: number;
 }
@@ -81,12 +81,12 @@ interface Limbs {
   legs?: Partial<Record<Side, LimbSpec>>;
 }
 
-type Spine = Pick<Pose, "pelvis" | "chest" | "head" | "spine">;
+export type Spine = Pick<Pose, "pelvis" | "chest" | "head" | "spine">;
 
-const SIDES: Side[] = ["near", "far"];
+export const SIDES: Side[] = ["near", "far"];
 
 /** Where limbs root: the solved spine's shoulders and hips. */
-function roots(spine: Spine): { arm: Record<Side, Point3>; leg: Record<Side, Point3> } {
+export function roots(spine: Spine): { arm: Record<Side, Point3>; leg: Record<Side, Point3> } {
   const solved = solvePose(spine);
   const arm = {} as Record<Side, Point3>;
   const leg = {} as Record<Side, Point3>;
@@ -138,7 +138,7 @@ function addLegs(pose: Pose, sideways: Sideways, legs: NonNullable<Limbs["legs"]
 }
 
 /** A keyframe: the spine, plus limb plans that become pins and `sideways` positions. */
-function frame(hold: number, spine: Spine, limbs: Limbs): Keyframe {
+export function frame(hold: number, spine: Spine, limbs: Limbs): Keyframe {
   const pose: Pose = { ...spine };
   const sideways: Sideways = { pelvis: 0 };
   if (limbs.arms) addArms(pose, sideways, limbs.arms);
@@ -151,7 +151,7 @@ function frame(hold: number, spine: Spine, limbs: Limbs): Keyframe {
 const STAND: Spine = { pelvis: [0, -174], chest: [0, -254] };
 
 /** Straight legs, feet a hip-width apart, flat on the floor. */
-function standLegs(spine: Spine): Limbs["legs"] {
+export function standLegs(spine: Spine): Limbs["legs"] {
   const { leg } = roots(spine);
   const out = {} as Record<Side, LimbSpec>;
   for (const side of SIDES) {
@@ -172,26 +172,35 @@ const STAND_FEET: Pose["feet"] = { near: [10, -1], far: [-8, -1] };
  * elbow comes to the front of the body (a shoulder roll); the narrower, the more it
  * stays out to the side (an elbow circle at shoulder height).
  */
-function elbowDir(side: Side, phase: number, half: number): Point3 {
+function elbowDir(side: Side, phase: number, half: number, lift = 0): Point3 {
   const h = deg(half);
-  return [Math.sin(h) * Math.cos(deg(phase)), -Math.sin(h) * Math.sin(deg(phase)), zOut(side) * Math.cos(h)];
+  // Strongest over the front-up quarter, none once the elbow is behind the shoulder.
+  const up = Math.max(0, Math.sin(deg(phase))) * Math.min(1, Math.max(0, 0.5 + Math.cos(deg(phase))));
+  return [Math.sin(h) * Math.cos(deg(phase)) + lift * up, -Math.sin(h) * Math.sin(deg(phase)), zOut(side) * Math.cos(h)];
 }
 
-/** Fingertips on the shoulders, the elbows on the cone at `phase`; the forearms stay folded to the shoulders. */
-function elbowRound(phase: number, half: number): Keyframe {
+/**
+ * Fingertips on the shoulders, the elbows on the cone at `phase`; the forearms stay folded to the shoulders.
+ * `lift` tips the upper half of the circle forward, so a raised elbow passes in front of the face, not through the head.
+ */
+function elbowRound(phase: number, half: number, lift = 0): Keyframe {
   const { arm } = roots(STAND);
   const arms = {} as Record<Side, LimbSpec>;
   for (const side of SIDES) {
     const s = arm[side];
-    arms[side] = { plan: foldedArm(s, elbowDir(side, phase, half), [0.8, 0.6, zOut(side) * 0.1]) };
+    arms[side] = { plan: foldedArm(s, elbowDir(side, phase, half, lift), [0.8, 0.6, zOut(side) * 0.1]) };
   }
   return frame(0, STAND, { arms, legs: standLegs(STAND) });
 }
 
-/** Shoulder rolls: the elbows lead big circles in front of the shoulders. Forward goes back, up, forward, down (phase 180 to 270 to 360). */
+/**
+ * Shoulder rolls: the elbows lead big circles in front of the shoulders. Forward goes back, up, forward, down
+ * (phase 180 to 270 to 360). The face looks ahead (nose tick) so forward and backward read apart.
+ */
 const ROLL_HALF = 68;
+const ROLL_LIFT = 1.6;
 const rollFrames = (forward: boolean): Keyframe[] =>
-  [0, 1, 2, 3, 4, 5, 6, 7].map((i) => elbowRound(180 + (forward ? -1 : 1) * i * 45, ROLL_HALF));
+  [0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({ ...elbowRound(180 + (forward ? -1 : 1) * i * 45, ROLL_HALF, ROLL_LIFT), face: { turn: 0 } }));
 
 /** Elbow circles: out at shoulder height, one turn one way, then back the other ("reverse direction partway through"). */
 const CIRCLE_HALF = 50;
@@ -318,9 +327,21 @@ function elbowsBack(back: number, hold: number): Keyframe {
 
 // ---------------------------------------------------------------- elevated prayer stretch (side view)
 
-const PR_BENCH: Prop = { kind: "box", x: 94, y: -88, w: 120, h: 88 };
+const PR_BENCH_X = 94;
+const PR_BENCH: Prop = { kind: "box", x: PR_BENCH_X, y: -88, w: 120, h: 88 };
 const PR_PELVIS: Point = [-53, -91.8];
 const PR_KNEE: Point = [-48, -4.3];
+
+/**
+ * Neck relaxed: the head as near in line with the spine as it can be while its circle stays in
+ * front of the bench (at most touching the front face), between the upper arms, never hanging.
+ */
+function prayerHead(chest: Point, tilt: number): Point {
+  const neck = along(chest, tilt, BONES.chestNeck);
+  const maxX = PR_BENCH_X - SEGMENTS.headRadius + 2;
+  const clear = (Math.acos(Math.min(1, (maxX - neck[0]) / BONES.neckHead)) * 180) / Math.PI;
+  return along(neck, Math.max(tilt + 6, clear), BONES.neckHead);
+}
 
 /**
  * Kneeling at a bench, hips over the knees, elbows on the bench with the palms
@@ -336,7 +357,7 @@ function prayer(sink: number): Pose {
   return {
     pelvis: PR_PELVIS,
     chest: lean,
-    head: along(lean, 40 + 10 * sink, 54),
+    head: prayerHead(lean, tilt),
     hands: { near: hand, far: hand },
     elbows: { near: { at: elbow }, far: { at: elbow } },
     knees: { near: { at: PR_KNEE }, far: { at: PR_KNEE } },

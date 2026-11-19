@@ -25,8 +25,21 @@ const SHOULDER_Y = -270;
 /** Shoulder to fingertip along a straight arm (a pinned elbow plus a hand exactly this far: pins must match the bone lengths). */
 const REACH = BONES.upperArm + BONES.forearm + BONES.hand;
 
-/** Upright legs, front view: feet a hip-width apart. */
-const frontStance = { feet: { near: [-10, 0], far: [10, 0] }, toes: { near: 0, far: 0 } } as const satisfies Pick<Pose, "feet" | "toes">;
+/**
+ * Front-view stance: the pelvis a full leg length (thigh + shin) above the floor and each foot straight
+ * under its hip (±8), so the legs stay straight and symmetric (a front view bends knees sideways), the
+ * feet turned out evenly (no one-way toe ticks). Shoulders 18 above the chest.
+ */
+const FRONT_PELVIS: Point = [0, -(BONES.thigh + BONES.shin)];
+const FRONT_CHEST: Point = [0, FRONT_PELVIS[1] - 80];
+const FRONT_SHOULDER_Y = FRONT_CHEST[1] - 18;
+const frontStance = {
+  pelvis: FRONT_PELVIS,
+  chest: FRONT_CHEST,
+  feet: { near: [-8, 0], far: [8, 0] },
+  knees: { near: { at: [-8, FRONT_PELVIS[1] + BONES.thigh] }, far: { at: [8, FRONT_PELVIS[1] + BONES.thigh] } },
+  toes: { near: 180, far: 0 },
+} as const satisfies Pick<Pose, "pelvis" | "chest" | "feet" | "knees" | "toes">;
 
 // ---------------------------------------------------------------- cross-body shoulder stretch
 
@@ -35,16 +48,14 @@ const frontStance = { feet: { near: [-10, 0], far: [10, 0] }, toes: { near: 0, f
  * hand lower); the far hand holds it just above the elbow.
  */
 function crossBody(tilt: number): Pose {
-  const shoulder: Point = [-22, SHOULDER_Y];
+  const shoulder: Point = [-22, FRONT_SHOULDER_Y];
   const hand = along(shoulder, tilt, REACH);
   const elbow = along(shoulder, tilt, BONES.upperArm);
   const grip = along(shoulder, tilt, BONES.upperArm + 22);
   return {
-    pelvis: PELVIS,
-    chest: [0, -252],
+    ...frontStance,
     hands: { near: hand, far: [grip[0], round(grip[1] - 3)] },
     elbows: { near: { at: elbow }, far: { bend: 1 } },
-    ...frontStance,
   };
 }
 
@@ -52,16 +63,14 @@ function crossBody(tilt: number): Pose {
 
 /** Front view: the near arm crossed in front of the body, wrist held by the far hand; `rise` 0 = at hip level with the elbow bent, 1 = straight at shoulder height. */
 function wristPull(rise: number): Pose {
-  const shoulder: Point = [-22, SHOULDER_Y];
+  const shoulder: Point = [-22, FRONT_SHOULDER_Y];
   // The elbow swings from down-and-out to level, the forearm from across the belly to level; the far hand cups the wrist.
   const elbow = along(shoulder, lerp(104, 0, rise), BONES.upperArm);
   const wrist = along(elbow, lerp(19.8, 0, rise), BONES.forearm + BONES.hand);
   return {
-    pelvis: PELVIS,
-    chest: [0, -252],
+    ...frontStance,
     hands: { near: wrist, far: [round(wrist[0] - lerp(4, 36, rise)), round(wrist[1] + lerp(-2, 4, rise))] },
     elbows: { near: { at: elbow }, far: { bend: 1 } },
-    ...frontStance,
   };
 }
 
