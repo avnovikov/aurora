@@ -1,6 +1,6 @@
-import { BONES, HIP_SIDE, solvePose, zOut } from "./rig";
+import { BONES, HIP_SIDE, other, solvePose, zOut } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
-import { TWO_VIEWS } from "./sideways";
+import { lockedY3, TWO_VIEWS } from "./sideways";
 import { LOCKED } from "./specsBatchC";
 
 /**
@@ -364,30 +364,58 @@ function archerBarDip(): Keyframe[] {
   ];
 }
 
-// ---------------------------------------------------------------- archer dip on parallettes / dip bars (front view)
+// ---------------------------------------------------------------- archer dip on parallel bars (two views)
 
-const FD_Y = -244;
-const FD_HAND_X = 90;
+const AD_Y = -216;
+const AD_HAND_X = 6;
+/** The rails: each hand on its own rail, in the front panel. */
+const AD_RAIL = 34;
+/** How far the chest shifts towards the working rail at the bottom. */
+const AD_SHIFT = 22;
+const AD_PARALLEL_BARS: Prop = { kind: "parallelBars", y: AD_Y, x1: -190, x2: 190, frontHalf: AD_RAIL };
 
-/** Front view: the chest shifts over the near (left) hand while the far arm stays straight out to the side. */
-function frontDip(shift: number, bent: boolean): Pose {
-  const farShoulderX = shift + 22;
-  const dx = FD_HAND_X - farShoulderX;
-  const shoulderY = FD_Y - Math.sqrt(Math.max(0, LOCKED * LOCKED - dx * dx));
-  const chest: Point = [shift, round(shoulderY + 18)];
-  const pelvis: Point = [shift, round(chest[1] + 80)];
-  const footY = round(pelvis[1] + LEG + 0.05);
+/** Shoulder height of the dip at `depth` (0 top, 1 bottom) and the lean that goes with it. */
+const adDepthY = (top: number, depth: number): number => round(top + (AD_BOTTOM - top) * depth);
+const AD_BOTTOM = AD_Y - 74;
+
+/** Dip: torso leaning forward as the dip deepens, legs hanging under the hips, angled a little forward. */
+function archerDipPose(shoulderY: number, depth: number, work: Side): Pose {
+  const shoulder: Point = [round(AD_HAND_X - 12 + 22 * depth), shoulderY];
+  const lean = 8 + 30 * depth;
+  const pelvis = along(shoulder, 90 + lean, 98);
+  const chest = along(pelvis, -90 + lean, 80);
+  const legs = 8 + 22 * depth;
+  const foot = along(pelvis, 90 - legs, LEG);
   return {
     pelvis,
     chest,
-    hands: { near: [-FD_HAND_X, FD_Y], far: [FD_HAND_X, FD_Y] },
-    elbows: { near: { bend: bent ? -1 : 1 }, far: { bend: 1 } },
-    feet: { near: [shift - HIP_SIDE, footY], far: [shift + HIP_SIDE, footY] },
-    toes: { near: 90, far: 90 },
+    hands: { near: [AD_HAND_X, AD_Y], far: [AD_HAND_X, AD_Y] },
+    elbows: { [work]: { bend: 1 }, [other(work)]: { bend: 1 } } as Pose["elbows"],
+    feet: { near: foot, far: [round(foot[0] - 2), foot[1]] },
+    toes: { near: 90 - legs + 30, far: 90 - legs + 30 },
   };
 }
 
-const FRONT_DIP_BARS: Prop = { kind: "parallettes", y: FD_Y, xs: [-FD_HAND_X, FD_HAND_X] };
+function archerDipSideways(depth: number, work: Side): Sideways {
+  const shift = zOut(work) * AD_SHIFT * depth;
+  return {
+    pelvis: round(shift * 0.35),
+    chest: round(shift),
+    pivot: "pelvis",
+    hands: { near: -AD_RAIL, far: AD_RAIL },
+  };
+}
+
+function archerDip(): Keyframe[] {
+  const topY = lockedY3((y) => archerDipPose(y, 0, "near"), archerDipSideways(0, "near"), ["near", "far"], AD_Y - 150, AD_Y - 20);
+  const frames: Keyframe[] = [];
+  for (const work of ["near", "far"] as Side[]) {
+    for (const [hold, depth] of [[work === "near" ? 0.4 : 0.2, 0], [0, 0.5], [0.5, 1], [0, 0.5]] as const) {
+      frames.push({ hold, pose: archerDipPose(adDepthY(topY, depth), depth, work), sideways: archerDipSideways(depth, work) });
+    }
+  }
+  return frames;
+}
 
 // ---------------------------------------------------------------- push-up chest stretch on parallettes
 
@@ -511,15 +539,10 @@ export const BATCH_AU_SPECS: DoodleSpec[] = [
     id: "ntc_archer_dip",
     slug: "archer-dip",
     title: "Archer Dip",
-    view: "front",
-    props: [FRONT_DIP_BARS],
+    views: TWO_VIEWS,
+    props: [AD_PARALLEL_BARS],
     transition: 0.7,
-    frames: [
-      { hold: 0.4, pose: frontDip(0, false) },
-      { hold: 0, pose: frontDip(-22, true) },
-      { hold: 0.5, pose: frontDip(-45, true) },
-      { hold: 0, pose: frontDip(-22, true) },
-    ],
+    frames: archerDip(),
   },
   {
     id: "wger_1919",

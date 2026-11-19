@@ -203,13 +203,17 @@ const handsAt = (z: number): Sideways => ({ hands: { near: -z, far: z }, feet: {
 const FLY_L = 170;
 const FLY_REACH = 121;
 const FLY_NARROW = SHOULDER_SIDE;
+/** The handles hang from fixed anchors this far either side of the centre line: where the open hands are. */
+const FLY_WIDTH = 90;
 const FLY_START = along(FALL_ANKLE, -46, BODY_REACH);
-const FLY_A: Point = along(along(FLY_START, 12, FLY_REACH), -90 - 35, FLY_L);
+/** The starting (narrow) hand hangs a strap's length away in 3D: its side-view distance is shorter by the width. */
+const FLY_START_R = Math.sqrt(FLY_L ** 2 - (FLY_WIDTH - FLY_NARROW) ** 2);
+const FLY_A: Point = along(along(FLY_START, 12, FLY_REACH), -90 - 35, FLY_START_R);
 
 /** Soft elbows, body straight and leaning `lean` degrees above the floor, hands `z` out from the middle. */
 function fly(lean: number, z: number): Keyframe {
   const shoulder = along(FALL_ANKLE, -lean, BODY_REACH);
-  const hand = strapHand(shoulder, SHOULDER_SIDE, z, FLY_A, FLY_NARROW, FLY_L, FLY_REACH, 1);
+  const hand = strapHand(shoulder, SHOULDER_SIDE, z, FLY_A, FLY_WIDTH, FLY_L, FLY_REACH, 1);
   const pose: Pose = {
     ...straightBody(FALL_ANKLE, -lean),
     hands: { near: hand, far: hand },
@@ -247,13 +251,14 @@ function pullKey(deg: number, hand: Point, z: number, extra: Partial<Pose> = {},
 }
 
 // Y raise: the anchor sits ahead of and above the starting hands; the hands stay on their strap as they open out.
-const Y_A: Point = along(PULL_BOTTOM_HAND, -90 + 15, Y_L);
+const Y_WIDTH = SHOULDER_SIDE + 70;
+const Y_A: Point = along(PULL_BOTTOM_HAND, -90 + 15, Math.sqrt(Y_L ** 2 - (Y_WIDTH - SHOULDER_SIDE) ** 2));
 
 /** Arms open from straight ahead into a Y while the body rises to the hands. */
 function yRaise(t: number): Keyframe {
   const deg = PULL_BOTTOM_DEG + (PULL_TOP_DEG - PULL_BOTTOM_DEG) * t;
   const z = SHOULDER_SIDE + 70 * t;
-  const hand = strapHand(pullShoulder(deg), SHOULDER_SIDE, z, Y_A, SHOULDER_SIDE, Y_L, PULL_REACH - 2 * t, -1);
+  const hand = strapHand(pullShoulder(deg), SHOULDER_SIDE, z, Y_A, Y_WIDTH, Y_L, PULL_REACH - 2 * t, -1);
   return pullKey(deg, hand, z);
 }
 
@@ -270,7 +275,7 @@ const FACE_HAND: Point = (() => {
   const toHead = Math.hypot(FACE_HEAD[0] - FACE_ELBOW[0], FACE_HEAD[1] - FACE_ELBOW[1]);
   return [round(FACE_ELBOW[0] + ((FACE_HEAD[0] - FACE_ELBOW[0]) / toHead) * reach), round(FACE_ELBOW[1] + ((FACE_HEAD[1] - FACE_ELBOW[1]) / toHead) * reach)];
 })();
-const FACE_A: Point = meet(PULL_BOTTOM_HAND, PULL_L, FACE_HAND, Math.sqrt(PULL_L ** 2 - (FACE_Z - SHOULDER_SIDE) ** 2), 1);
+const FACE_A: Point = meet(PULL_BOTTOM_HAND, Math.sqrt(PULL_L ** 2 - (FACE_Z - SHOULDER_SIDE) ** 2), FACE_HAND, PULL_L, 1);
 
 /** `t` of the way round the strap circle from the starting hand to the temples, a hair outside it between (the arm swings the hand a little inside the circle). */
 function roundHand(t: number): Point {
@@ -343,7 +348,7 @@ export const BATCH_AQ_SPECS: DoodleSpec[] = [
     slug: "suspended-chest-fly-crossing",
     title: "Suspended Chest Fly (Crossing)",
     views: TWO_VIEWS,
-    straps: { anchor: FLY_A, end: "handle" },
+    straps: { anchor: FLY_A, end: "handle", width: FLY_WIDTH },
     transition: 0.8,
     frames: [
       { ...fly(46, FLY_NARROW), hold: 0.2 },
@@ -359,7 +364,7 @@ export const BATCH_AQ_SPECS: DoodleSpec[] = [
     slug: "suspended-y-raise",
     title: "Suspended Y Raise",
     views: TWO_VIEWS,
-    straps: { anchor: Y_A, end: "handle" },
+    straps: { anchor: Y_A, end: "handle", width: Y_WIDTH },
     transition: 0.9,
     frames: [
       { ...yRaise(0), hold: 0.4 },
@@ -373,7 +378,7 @@ export const BATCH_AQ_SPECS: DoodleSpec[] = [
     slug: "suspended-face-pull",
     title: "Suspended Face Pull",
     views: TWO_VIEWS,
-    straps: { anchor: FACE_A, end: "handle" },
+    straps: { anchor: FACE_A, end: "handle", width: FACE_Z },
     transition: 0.4,
     frames: [
       { ...facePull(0), hold: 0.4 },
@@ -393,7 +398,7 @@ export const BATCH_AQ_SPECS: DoodleSpec[] = [
     slug: "suspended-chest-fly",
     title: "Suspended Chest Fly",
     views: TWO_VIEWS,
-    straps: { anchor: FLY_A, end: "handle" },
+    straps: { anchor: FLY_A, end: "handle", width: FLY_WIDTH },
     transition: 0.8,
     frames: [
       { ...fly(46, FLY_NARROW), hold: 0.4 },
