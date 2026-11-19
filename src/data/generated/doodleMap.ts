@@ -500,7 +500,20 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "fedb_kettlebell_halo": "/doodles/doodle-kettlebell-halo.svg",
   "fedb_kettlebell_halo_with_overhead_extension": "/doodles/doodle-kettlebell-halo-with-overhead-extension.svg",
   "fedb_kettlebell_overhead_triceps_extension": "/doodles/doodle-kettlebell-overhead-triceps-extension.svg",
-  "fedb_bent_press": "/doodles/doodle-bent-press.svg"
+  "fedb_bent_press": "/doodles/doodle-bent-press.svg",
+  "fedb_one_arm_kettlebell_swings": "/doodles/doodle-one-arm-kettlebell-swings.svg",
+  "fedb_one_arm_kettlebell_row": "/doodles/doodle-one-arm-kettlebell-row.svg",
+  "fedb_one_arm_kettlebell_snatch": "/doodles/doodle-one-arm-kettlebell-snatch.svg",
+  "fedb_one_arm_kettlebell_split_snatch": "/doodles/doodle-one-arm-kettlebell-split-snatch.svg",
+  "fedb_one_arm_kettlebell_push_press": "/doodles/doodle-one-arm-kettlebell-push-press.svg",
+  "fedb_one_arm_kettlebell_split_jerk": "/doodles/doodle-one-arm-kettlebell-split-jerk.svg",
+  "fedb_one_arm_overhead_kettlebell_squats": "/doodles/doodle-one-arm-overhead-kettlebell-squats.svg",
+  "fedb_one_arm_kettlebell_para_press": "/doodles/doodle-one-arm-kettlebell-para-press.svg",
+  "fedb_two_arm_kettlebell_clean": "/doodles/doodle-two-arm-kettlebell-clean.svg",
+  "fedb_two_arm_kettlebell_jerk": "/doodles/doodle-two-arm-kettlebell-jerk.svg",
+  "fedb_two_arm_kettlebell_military_press": "/doodles/doodle-two-arm-kettlebell-military-press.svg",
+  "fedb_one_arm_open_palm_kettlebell_clean": "/doodles/doodle-one-arm-open-palm-kettlebell-clean.svg",
+  "fedb_open_palm_kettlebell_clean": "/doodles/doodle-open-palm-kettlebell-clean.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
