@@ -90,7 +90,7 @@ The Android app’s main tab bar, in order:
 | Today | Next day in the plan queue; ≈ minutes; pulse Connect; sleep check-in (required before Start); optional pain |
 | Library | Exercise catalogue; search; filters Show / Area & muscle / Level; detail with cues, standards, personal bests |
 | Progress | Level profile by movement pattern (novice→elite, within-tier %); weak-links; current readiness toward Targets |
-| History | Logged sets (exercise · set · reps or hold · when); older rows may be session summaries only |
+| History | Sessions (plan · when · assessment; exercises rolled up as reps/reps + optional avg BPM); legacy rows stay session summaries |
 | Body | Muscle load front/back map and ranked list; Week / Month / Quarter / Half year / Year |
 | Plan | Queue of upcoming days (area days and skill paths with Targets); Swap / Easier; remake area or skill; reorder; add days; plan level |
 | Settings | You / Gear / Training / App |

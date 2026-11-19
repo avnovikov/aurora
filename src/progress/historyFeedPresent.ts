@@ -1,6 +1,8 @@
 import type { HistoryPulse } from "../domain/program";
 import { escapeHtml } from "../library/present";
+import { sessionEvaluationLabel } from "../session/history";
 import type { HistoryFeedRow, HistorySessionPulse } from "./historyFeed";
+import type { HistorySessionBlock } from "./historySessionBlocks";
 
 /** Shared History / Library detail list of logged sets. */
 export function historyFeedListHtml(
@@ -59,6 +61,74 @@ export function sessionPulsesHtml(
       }),
     )
     .join("");
+}
+
+/** History tab: one block per finished session. */
+export function historySessionBlocksHtml(
+  blocks: readonly HistorySessionBlock[],
+  options: { linkTitles?: boolean; hasLegacyOnly?: boolean } = {},
+): string {
+  if (blocks.length === 0) {
+    const hint = options.hasLegacyOnly
+      ? "Older sessions only stored a summary. New sessions keep each set."
+      : "Finish a session to see it here.";
+    return `
+      <section class="progress-empty">
+        <p class="tagline">No sessions yet.</p>
+        <p class="hint">${hint}</p>
+      </section>
+    `;
+  }
+  return `<div class="history-sessions">${blocks
+    .map((block) => historySessionBlockHtml(block, options))
+    .join("")}</div>`;
+}
+
+export function historySessionBlockHtml(
+  block: HistorySessionBlock,
+  options: { linkTitles?: boolean } = {},
+): string {
+  const when = formatHistoryWhen(block.completedAt);
+  const assessment = sessionEvaluationLabel(block.evaluation);
+  const header = `${escapeHtml(block.templateName)} · ${escapeHtml(when)} · ${escapeHtml(assessment)}`;
+  const body = block.legacy
+    ? `<ol class="history-feed">${block.legacyRows
+        .map((row) => historyFeedRowHtml(row, options))
+        .join("")}</ol>`
+    : `<ol class="history-feed">${block.exercises
+        .map((exercise) => historyExerciseRollupHtml(exercise, options))
+        .join("")}</ol>`;
+  const pulse =
+    block.pulse && block.pulse.series.length > 0
+      ? `<p class="hint" data-pulse-series>${escapeHtml(
+          formatSeriesPreview(block.pulse.series.map((p) => p.bpm)),
+        )}</p>`
+      : "";
+  return `
+    <section class="history-session" data-session-id="${escapeHtml(block.sessionId)}">
+      <p class="history-session-header">${header}</p>
+      ${body}
+      ${pulse}
+    </section>
+  `;
+}
+
+function historyExerciseRollupHtml(
+  exercise: HistorySessionBlock["exercises"][number],
+  options: { linkTitles?: boolean },
+): string {
+  const title = options.linkTitles
+    ? `<button type="button" class="history-ex-link" data-open-exercise="${escapeHtml(exercise.exerciseId)}">${escapeHtml(exercise.exerciseName)}</button>`
+    : `<p class="history-ex">${escapeHtml(exercise.exerciseName)}</p>`;
+  const reps = exercise.completedRepsBySet.join(" / ");
+  const pulse =
+    exercise.averageBpm !== undefined ? ` · avg ${exercise.averageBpm}` : "";
+  return `
+    <li class="history-row">
+      ${title}
+      <p class="history-meta">${escapeHtml(reps)}${escapeHtml(pulse)}</p>
+    </li>
+  `;
 }
 
 function formatSeriesPreview(bpms: readonly number[]): string {
