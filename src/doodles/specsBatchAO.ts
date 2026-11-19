@@ -275,8 +275,8 @@ export const BATCH_AO_SPECS: DoodleSpec[] = [
     slug: "australian-pull-up-hold",
     title: "Australian pull-up hold",
     props: [ROW_BAR_PROP],
-    transition: 0.7,
-    frames: rep(barRow, ROW_HANG_Y, ROW_TOP_Y, 1.8, 0.3),
+    transition: 0.45,
+    frames: rep(barRow, ROW_HANG_Y, ROW_TOP_Y, 0.2, 3),
   },
   {
     id: "hf_41",

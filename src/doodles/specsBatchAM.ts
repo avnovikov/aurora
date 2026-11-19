@@ -313,25 +313,38 @@ function elbowKnee(raised: Side, up: boolean): Keyframe {
   const ankle: P3 = [knee[0] - 4, knee[1] - 9, knee[2]];
   const cross: LimbSpec = { plan: chain(hip, LEG, ankle, [(hip[0] + ankle[0]) / 2, ankle[1] + 20, zOut(crossed) * 120]), toe: -10 };
   const legs: Limbs["legs"] = { [raised]: support, [crossed]: cross };
-  const arms = up ? armsAcross(spine, theta, crossed, knee) : handsBehind(spine, theta);
+  const arms = handsBehind(spine, theta) as Record<Side, LimbSpec>;
+  if (up) {
+    // The elbow on the raised-knee side crosses the midline to the crossed knee, which has fallen out to the other side.
+    arms[raised] = elbowAcross(spine, raised, crossed);
+  }
   return frame(up ? 0.5 : 0.4, spine, { arms, legs });
 }
 
+/** The `side` arm with its hand by the ear and its elbow swung across the midline towards the `towards` side. */
+function elbowAcross(spine: Spine, side: Side, towards: Side, reach = 52): LimbSpec {
+  const shoulder = roots(spine, 0).arm[side];
+  const head = spine.head as Point;
+  const toward: P3 = [shoulder[0] + 26, shoulder[1] - 24, shoulder[2] + zOut(towards) * reach];
+  return { plan: chain(shoulder, ARM, [head[0] + 6, head[1] + 14, zOut(side) * 34], toward) };
+}
+
 /** The bench or chair the feet rest on. */
-const BENCH: Prop = { kind: "box", x: 60, y: -80, w: 120, h: 80, frontHalf: 34 };
+const BENCH: Prop = { kind: "box", x: 60, y: -80, w: 120, h: 80, frontHalf: 26 };
 
 /** Oblique crunch: feet on a bench, `working` hand beside the head, the other arm on the floor. */
 function oblique(working: Side, up: boolean): Keyframe {
-  const theta = up ? CRUNCH.theta : 186;
+  const theta = up ? 224 : 186;
   const spine = torso(theta, up ? CRUNCH.tuck : 2);
   const rest = other(working);
   const legs: Limbs["legs"] = {};
   for (const s of ["near", "far"] as Side[]) {
     const hip = roots(spine, 0).leg[s];
-    const foot: P3 = [96, -82, zOut(s) * 14];
+    const foot: P3 = [96, -82, zOut(s) * 18];
     legs[s] = { plan: chain(hip, LEG, foot, [(hip[0] + 96) / 2, -150, foot[2]]), toe: 0 };
   }
-  const arms = up ? (armsAcross(spine, theta, working, (legs[rest] as LimbSpec).plan.mid) as Record<Side, LimbSpec>) : (handsBehind(spine, theta) as Record<Side, LimbSpec>);
+  const arms = handsBehind(spine, theta) as Record<Side, LimbSpec>;
+  if (up) arms[working] = elbowAcross(spine, working, rest, 60);
   arms[rest] = armAlong(spine, rest, 12, zOut(rest) * 46, 0);
   return frame(up ? 0.5 : 0.4, spine, { arms, legs });
 }
@@ -494,10 +507,13 @@ function kickThrough(turn: number): Keyframe {
     near: { plan: chain(arm.near, ARM, handNear, [arm.near[0] + 20 * (1 - turn) - 10 * turn, arm.near[1] + 40, -22 - 40 * turn]) },
     far: { plan: chain(arm.far, ARM, [arm.far[0] + 2, -3, 22], [arm.far[0] + 30, -60, 22]) },
   };
-  const near: LimbSpec = { plan: chain(leg.near, LEG, [-152, -2, -8], [leg.near[0] + 30, -20, -8]), toe: 180 };
+  const near: LimbSpec = { plan: chain(leg.near, LEG, [-140, -19, -8], [leg.near[0] + 40, -25, -8]), toe: 75 };
   const through: P3 = [leg.far[0] + 108 * turn - 56 * (1 - turn), -2 - 13 * turn - 0 * (1 - turn), 8 - 98 * turn];
-  const farFoot: P3 = turn === 0 ? [-152, -2, 8] : through;
-  const far: LimbSpec = { plan: chain(leg.far, LEG, farFoot, [(leg.far[0] + farFoot[0]) / 2 + 20, -30 - 40 * (1 - turn), 8 - 50 * turn]), toe: turn > 0.5 ? -70 : 180 };
+  const farFoot: P3 = turn === 0 ? [-140, -19, 8] : through;
+  let farToe = 75;
+  if (turn > 0.5) farToe = -70;
+  else if (turn > 0) farToe = 20;
+  const far: LimbSpec = { plan: chain(leg.far, LEG, farFoot, turn === 0 ? [leg.far[0] + 40, -25, 8] : [(leg.far[0] + farFoot[0]) / 2 + 20, -30 - 40 * (1 - turn), 8 - 50 * turn]), toe: farToe };
   return frame(0.5, spine, { arms, legs: { near, far } });
 }
 

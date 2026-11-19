@@ -250,19 +250,47 @@ const SL_PILLOW_HAND: Point = along([-98, -8], 181, 125);
 
 // ---------------------------------------------------------------- side-lying quad stretch (front view, head left)
 
-/** Top thigh in line with the body (hip a little extended: up-screen is further back). */
-const SQ_KNEE: Point = along(SL_HIP_TOP, -12, THIGH);
+type P3 = readonly [number, number, number];
 
-/** Lying on the side, bottom knee bent in front; the top foot drawn back to the glute (`fold` = top shin's angle) and held by the top hand. */
-function sideQuad(fold: number): Pose {
-  const ankle = along(SQ_KNEE, fold, SHIN);
-  return sideLying({
-    knees: { near: { at: SL_KNEE_BOTTOM }, far: { at: SQ_KNEE } },
-    feet: { near: SL_FOOT_BOTTOM, far: ankle },
-    hands: { near: SL_PILLOW_HAND, far: along(ankle, 90, 3) },
-    elbows: { near: { bend: 1 }, far: { bend: 1 } },
-    toes: { near: 0, far: fold - 30 },
-  });
+/** A point `length` from `from` along the direction `d` (normalised). */
+function reach3(from: P3, d: P3, length: number): P3 {
+  const n = Math.hypot(d[0], d[1], d[2]);
+  return [round(from[0] + (d[0] / n) * length), round(from[1] + (d[1] / n) * length), round(from[2] + (d[2] / n) * length)];
+}
+
+/**
+ * Lying on the side facing the viewer (forward = -z), two views: the side panel sees the
+ * body along its length, the front panel looks along it, so the bottom knee comes forward
+ * and the top heel is drawn back behind the glute. `fold` (degrees) is the top shin's
+ * direction in the floor plane: 150 heel out behind, 172 heel at the glute.
+ */
+function sideQuad(fold: number): Keyframe {
+  const hipBottom: P3 = [0, -30, -8];
+  const hipTop: P3 = [0, -30, 8];
+  const kneeBottom = reach3(hipBottom, [0.7, 0.1, -0.7], THIGH);
+  const footBottom = reach3(kneeBottom, [0.55, 0, 0.83], SHIN);
+  const kneeTop = reach3(hipTop, [0.97, -0.1, 0.2], THIGH);
+  const r = (fold * Math.PI) / 180;
+  const ankle = reach3(kneeTop, [Math.cos(r), 0, Math.sin(r)], SHIN);
+  const hand: P3 = [round(ankle[0] + 2), round(ankle[1] + 3), ankle[2]];
+  const pillow: P3 = [-205, -12, -20];
+  const flat = (p: P3): Point => [p[0], p[1]];
+  return {
+    hold: 0,
+    pose: sideLying({
+      knees: { near: { at: flat(kneeBottom) }, far: { at: flat(kneeTop) } },
+      feet: { near: flat(footBottom), far: flat(ankle) },
+      hands: { near: flat(pillow), far: flat(hand) },
+      elbows: { near: { bend: 1 }, far: { bend: -1 } },
+      toes: { near: 0, far: 90 },
+    }),
+    sideways: {
+      pelvis: 0,
+      knees: { near: { at: kneeBottom[2] }, far: { at: kneeTop[2] } },
+      feet: { near: footBottom[2], far: ankle[2] },
+      hands: { near: pillow[2], far: hand[2] },
+    },
+  };
 }
 
 // ---------------------------------------------------------------- side-lying groin stretch (front view, head left)
@@ -372,25 +400,32 @@ function butterflyLegs(azimuth: number, kneeLift: number): { knee: Point; kneeZ:
 function butterfly(curl: number): Keyframe {
   const pelvis = SEAT_PELVIS;
   const legs = butterflyLegs(62 - 6 * curl, 36 - 14 * curl);
-  const lean = 86 - 42 * curl;
+  const lean = 86 - 50 * curl;
   const chest = along(pelvis, -lean, 79);
   const head = along(chest, -lean + 4, 58 - 4 * curl);
   const hand = along(head, -lean - 100, 16);
+  // Curled over, the elbows rest on the inner thighs just above the knees.
+  const elbow: Point = [round(legs.knee[0] - 10), round(legs.knee[1] - 24)];
+  const elbowZ = round(legs.kneeZ * 0.8);
+  // The forearms fold up from the elbows towards the face.
+  const fa = [30, -45, -25].map((v) => (v * 65.5) / Math.hypot(30, 45, 25));
+  const forearmEnd: Point = [round(elbow[0] + fa[0]), round(elbow[1] + fa[1])];
+  const handZ = round(elbowZ + fa[2]);
   return {
     hold: 0,
     pose: {
       pelvis,
       chest,
       head,
-      hands: { near: hand, far: hand },
-      elbows: { near: { bend: -1 }, far: { bend: -1 } },
+      hands: curl === 1 ? { near: forearmEnd, far: forearmEnd } : { near: hand, far: hand },
+      elbows: curl === 1 ? { near: { at: elbow }, far: { at: elbow } } : { near: { bend: -1 }, far: { bend: -1 } },
       knees: { near: { at: legs.knee }, far: { at: legs.knee } },
       feet: { near: legs.foot, far: legs.foot },
       toes: { near: 0, far: 0 },
     },
     sideways: {
-      hands: { near: -27, far: 27 },
-      elbows: { near: { out: 80 - 25 * curl }, far: { out: 80 - 25 * curl } },
+      hands: curl === 1 ? { near: -handZ, far: handZ } : { near: -27, far: 27 },
+      elbows: curl === 1 ? { near: { at: -elbowZ }, far: { at: elbowZ } } : { near: { out: 80 }, far: { out: 80 } },
       knees: { near: { at: -legs.kneeZ }, far: { at: legs.kneeZ } },
       feet: { near: -legs.footZ, far: legs.footZ },
     },
@@ -453,7 +488,7 @@ export const BATCH_AN_SPECS: DoodleSpec[] = [
     transition: 1.1,
     frames: [
       { hold: 0.6, pose: runners([-42, -84]) },
-      { hold: 1.2, pose: runners([-34, -116]) },
+      { hold: 1.2, pose: runners([-68, -128]) },
     ],
   },
   {
@@ -504,12 +539,12 @@ export const BATCH_AN_SPECS: DoodleSpec[] = [
     id: "fedb_on_your_side_quad_stretch",
     slug: "on-your-side-quad-stretch",
     title: "On Your Side Quad Stretch",
-    view: "front",
+    views: TWO_VIEWS,
     props: [SIDE_LYING_FLOOR],
     transition: 1.1,
     frames: [
-      { hold: 0.5, pose: sideQuad(-146) },
-      { hold: 1.4, pose: sideQuad(-168) },
+      { ...sideQuad(150), hold: 0.5 },
+      { ...sideQuad(172), hold: 1.4 },
     ],
   },
   {
