@@ -19,12 +19,6 @@ const REACH = 125.4;
 /** Shoulder to fingertip of a straight arm. */
 const STRAIGHT = BONES.upperArm + BONES.forearm + BONES.hand - 0.05;
 
-/** A point `length` from `from` in the direction of `to`. */
-const toward = (from: Point, to: Point, length: number): Point => {
-  const d = Math.hypot(to[0] - from[0], to[1] - from[1]);
-  return [round(from[0] + ((to[0] - from[0]) / d) * length), round(from[1] + ((to[1] - from[1]) / d) * length)];
-};
-
 const shoulderAt = (pose: Pose): Point => solvePose(pose).arms.near.root;
 
 /** Where circles around `a` (radius ra) and `b` (radius rb) meet; `pick` chooses between the two points. */
