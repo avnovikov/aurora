@@ -29,7 +29,7 @@ export function scaleStandards(
   base: ExerciseStandards,
   factor: number,
 ): ExerciseStandards {
-  if (!(factor > 0) || !Number.isFinite(factor)) {
+  if (factor <= 0 || !Number.isFinite(factor)) {
     throw new Error(`scale factor must be a positive finite number; got ${factor}`);
   }
   const scale = (value: number) => Math.max(1, Math.ceil(value * factor));
