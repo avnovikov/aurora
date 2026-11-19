@@ -22,6 +22,7 @@ import {
   zOut,
   type Bend,
   type DoodleSpec,
+  type Girdle,
   type Pose,
   type Side,
   type Sideways,
@@ -57,6 +58,12 @@ export interface Figure3 {
   arms: Record<Side, Limb3>;
   legs: Record<Side, Limb3>;
   pins: Pin3[];
+  /**
+   * The chest's sideways direction (unit, near to far) when the shoulders are
+   * rolled or moved (`sideways.twist` / `shoulders`); the face turns with it.
+   * Absent: the line from the near to the far shoulder.
+   */
+  across?: Point3;
 }
 
 const SIDES: Side[] = ["near", "far"];
@@ -271,15 +278,77 @@ function spineFrame(spine: Solved, pelvisZ: number, chestZ: number = pelvisZ, pi
   return { lower: place, upper: place, shoulders: turned, hips: level };
 }
 
-/** Shoulder and hip roots, set out sideways about the spine (see `SpineFrame`). */
-function roots(spine: Solved, frame: SpineFrame): Record<LimbKind, Record<Side, Point3>> {
-  const shoulder = (side: Side): Point3 => add(frame.upper(spine.arms[side].root), frame.shoulders(zOut(side) * SHOULDER_SIDE));
-  const hip = (side: Side): Point3 => add(frame.lower(spine.legs[side].root), frame.hips(zOut(side) * HIP_SIDE));
+/**
+ * A keyframe's spine roll and shoulder girdle (`sideways.twist`, `hipTwist`,
+ * `shoulders`), every value filled in so two can be blended.
+ */
+export interface Turn {
+  twist: number;
+  hipTwist: number;
+  shoulders: Record<Side, Required<Girdle>>;
+}
+
+const girdleOf = (g: Girdle | undefined): Required<Girdle> => ({ up: g?.up ?? 0, forward: g?.forward ?? 0 });
+
+export function turnOf(sw: Sideways | undefined): Turn {
+  return { twist: sw?.twist ?? 0, hipTwist: sw?.hipTwist ?? 0, shoulders: { near: girdleOf(sw?.shoulders?.near), far: girdleOf(sw?.shoulders?.far) } };
+}
+
+/** Linear blend of two turns (so a 90 to 270 roll sweeps through 180). */
+export function blendTurn(a: Turn, b: Turn, t: number): Turn {
+  const mix = (x: number, y: number): number => x + (y - x) * t;
+  const girdle = (side: Side): Required<Girdle> => ({ up: mix(a.shoulders[side].up, b.shoulders[side].up), forward: mix(a.shoulders[side].forward, b.shoulders[side].forward) });
+  return { twist: mix(a.twist, b.twist), hipTwist: mix(a.hipTwist, b.hipTwist), shoulders: { near: girdle("near"), far: girdle("far") } };
+}
+
+const SQUARE: Turn = turnOf(undefined);
+const moved = (g: Required<Girdle>): boolean => g.up !== 0 || g.forward !== 0;
+/** Whether the shoulder line is rolled or a shoulder moved off the chest. */
+const turnsShoulders = (turn: Turn): boolean => turn.twist !== 0 || moved(turn.shoulders.near) || moved(turn.shoulders.far);
+
+/**
+ * The chest's own frame for a roll: `u` up the upper spine, `s` towards the far
+ * side and `f` the chest's front, both turned by `twist` about `u` (+ brings
+ * the far side forward).
+ */
+function chestFrame(spine: Solved, frame: SpineFrame, twist: number): { u: Point3; s: Point3; f: Point3 } {
+  const u = unit(sub(frame.upper(spine.chest), frame.upper(spine.waist)), [0, -1, 0]);
+  const s0 = unit(frame.shoulders(1), Z);
+  // cross(s, u) is the front: +x for an upright figure.
+  const f0 = cross(s0, u);
+  const r = deg(-twist);
+  return { u, s: rotateAbout(s0, u, r), f: rotateAbout(f0, u, r) };
+}
+
+/**
+ * Shoulder and hip roots, set out sideways about the spine (see `SpineFrame`),
+ * the shoulder line rolled by `twist` about the upper spine and each shoulder
+ * moved by its girdle offset, the hip line rolled by `hipTwist` about the
+ * lower spine. Without a turn: the square roots, computed exactly as before.
+ */
+function roots(spine: Solved, frame: SpineFrame, turn: Turn = SQUARE): Record<LimbKind, Record<Side, Point3>> {
+  let shoulder = (side: Side): Point3 => add(frame.upper(spine.arms[side].root), frame.shoulders(zOut(side) * SHOULDER_SIDE));
+  let hip = (side: Side): Point3 => add(frame.lower(spine.legs[side].root), frame.hips(zOut(side) * HIP_SIDE));
+  if (turnsShoulders(turn)) {
+    const { u, s, f } = chestFrame(spine, frame, turn.twist);
+    shoulder = (side) => {
+      const g = turn.shoulders[side];
+      return add(frame.upper(spine.arms[side].root), add(scale(s, zOut(side) * SHOULDER_SIDE), add(scale(u, g.up), scale(f, g.forward))));
+    };
+  }
+  if (turn.hipTwist !== 0) {
+    const axis = unit(sub(frame.lower(spine.waist), frame.lower(spine.pelvis)), [0, -1, 0]);
+    hip = (side) => add(frame.lower(spine.legs[side].root), rotateAbout(frame.hips(zOut(side) * HIP_SIDE), axis, deg(-turn.hipTwist)));
+  }
   return {
     arms: { near: shoulder("near"), far: shoulder("far") },
     legs: { near: hip("near"), far: hip("far") },
   };
 }
+
+/** The rolled chest's sideways direction, for a figure whose shoulders turn (see `Figure3.across`). */
+const acrossOf = (spine: Solved, frame: SpineFrame, turn: Turn): Pick<Figure3, "across"> =>
+  turnsShoulders(turn) ? { across: chestFrame(spine, frame, turn.twist).s } : {};
 
 function spineOf(spine: Solved, frame: SpineFrame): Pick<Figure3, "pelvis" | "waist" | "chest" | "neck" | "head"> {
   return {
@@ -298,13 +367,14 @@ function spineOf(spine: Solved, frame: SpineFrame): Pick<Figure3, "pelvis" | "wa
 export function solveKeyframe3(spine: Solved, pose: Pose, sideways: Sideways | undefined): Figure3 {
   const z = sideways?.pelvis ?? 0;
   const frame = spineFrame(spine, z, sideways?.chest, sideways?.pivot);
-  const root = roots(spine, frame);
+  const turn = turnOf(sideways);
+  const root = roots(spine, frame, turn);
   const pins: Pin3[] = [];
   const limbs = { arms: {}, legs: {} } as Record<LimbKind, Record<Side, Limb3>>;
   for (const side of SIDES) {
     for (const kind of KINDS) limbs[kind][side] = solveLimb3(limbInput(kind, pose, sideways, side, root[kind][side]), pins);
   }
-  return { ...spineOf(spine, frame), ...limbs, pins };
+  return { ...spineOf(spine, frame), ...limbs, pins, ...acrossOf(spine, frame, turn) };
 }
 
 /** A pinned 2D point lifted to its sideways position (default: the limb root's z). */
@@ -440,6 +510,7 @@ export function sampleTimeline3(spec: DoodleSpec, stepsPerTransition = 14): Time
   const flat = sampleTimeline(spec, stepsPerTransition);
   const { keys } = flat;
   const solved = keys.map((key, i) => solveKeyframe3(key.solved, key.pose, spec.frames[i].sideways));
+  const turns = spec.frames.map((frame) => turnOf(frame.sideways));
   const poses: Figure3[] = [];
   spec.frames.forEach((_, index) => {
     const next = (index + 1) % keys.length;
@@ -451,7 +522,8 @@ export function sampleTimeline3(spec: DoodleSpec, stepsPerTransition = 14): Time
       const t = ease(step / stepsPerTransition);
       const spine = flat.poses[flat.keyframeIndex[index] + 1 + step];
       const frame = blendFrame(spec, spine, [index, next], [a, b], t);
-      const root = roots(spine, frame);
+      const turn = blendTurn(turns[index], turns[next], t);
+      const root = roots(spine, frame, turn);
       const limbs = { arms: {}, legs: {} } as Record<LimbKind, Record<Side, Limb3>>;
       for (const side of SIDES) {
         for (const kind of KINDS) {
@@ -469,7 +541,7 @@ export function sampleTimeline3(spec: DoodleSpec, stepsPerTransition = 14): Time
           });
         }
       }
-      poses.push({ ...spineOf(spine, frame), ...holdObject(spec, a, b, limbs, t), pins: [] });
+      poses.push({ ...spineOf(spine, frame), ...holdObject(spec, a, b, limbs, t), pins: [], ...acrossOf(spine, frame, turn) });
     }
   });
   poses.push(solved[0]);

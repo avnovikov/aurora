@@ -206,6 +206,21 @@ export interface SidewaysHint {
 }
 
 /**
+ * One shoulder's girdle offset from the chest, in rig units in the chest's own
+ * frame: `up` along the spine towards the head (+ shrug, - depress), `forward`
+ * towards the chest's front (+ protract, - retract). The collar line (chest to
+ * shoulder) and the whole arm move with it.
+ */
+export interface Girdle {
+  up?: number;
+  forward?: number;
+}
+
+/** Validator limits: girdle offsets (rig units); roll between hips and shoulders, and of either line (degrees). */
+export const GIRDLE_LIMITS = { up: 14, forward: 12 } as const;
+export const TWIST_LIMITS = { spine: 90, roll: 180 } as const;
+
+/**
  * Dual-view specs: absolute sideways positions (z). Near side is negative, far
  * side positive; the front panel draws near on the viewer's left. Anything not
  * given keeps its chain's natural width (shoulders ±22, hips ±8, spine at the pelvis z).
@@ -230,6 +245,18 @@ export interface Sideways {
    * chest in the side view (plank hip dips); arm pins stay valid.
    */
   pivot?: "pelvis" | "chest";
+  /**
+   * Spine roll (axial rotation, degrees): the shoulder line turns about the
+   * upper spine, + bringing the far shoulder forward (towards the chest's
+   * front, +x for an upright figure) and the near shoulder back. The arms hang
+   * from the turned shoulders, and a `face` turns with the chest. Blended over
+   * the transitions (linearly, so a keyframe step past 180 sweeps round).
+   */
+  twist?: number;
+  /** The same roll for the hip line, about the lower spine (+ far hip forward). */
+  hipTwist?: number;
+  /** Shoulder girdle: each shoulder moved relative to the chest (shrug, protraction); see `Girdle`. */
+  shoulders?: Partial<Record<Side, Girdle>>;
   hands?: Partial<Record<Side, number>>;
   feet?: Partial<Record<Side, number>>;
   elbows?: Partial<Record<Side, SidewaysHint>>;

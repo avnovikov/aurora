@@ -1,4 +1,4 @@
-import { BONES, FACE_LIMITS, SEGMENTS, dist, reflectSolved, sampleTimeline, type DoodleSpec, type Keyframe, type Point, type Prop, type Sideways, type Side, type Solved } from "./rig";
+import { BONES, FACE_LIMITS, GIRDLE_LIMITS, SEGMENTS, TWIST_LIMITS, dist, reflectSolved, sampleTimeline, type DoodleSpec, type Keyframe, type Point, type Prop, type Sideways, type Side, type Solved } from "./rig";
 import { bellHolders, bells, bellSize, byTheHorns, handsOff, heldKind, heldLine, panelOf, secondView, strapAnchor, strapAttach, strapSides } from "./gear";
 import { BODY_JOINTS, holdSlips, partner3D, partnerFlat } from "./partner";
 import type { Panel } from "./project";
@@ -664,6 +664,37 @@ function leanPivotGuards(spec: DoodleSpec): string[] {
   return clash ? [`sideways.pivot differs between frame ${keys[0].index} ("${keys[0].pivot}") and frame ${clash.index} ("${clash.pivot}"); give the same pivot on every leaning keyframe`] : [];
 }
 
+/**
+ * Spine roll and shoulder girdle limits per keyframe: girdle offsets within
+ * `GIRDLE_LIMITS`, each line's roll within `TWIST_LIMITS.roll`, and the spine
+ * twisted (shoulder line against hip line) no more than `TWIST_LIMITS.spine`.
+ */
+export function turnGuards(frames: readonly { sideways?: Sideways }[], prefix = ""): string[] {
+  return frames.flatMap((frame, k) => (frame.sideways ? turnIssues(frame.sideways, `${prefix}frame ${k}`) : []));
+}
+
+/** One keyframe's roll and girdle problems (see `turnGuards`). */
+function turnIssues(sw: Sideways, at: string): string[] {
+  const errors: string[] = [];
+  const outside = (value: number | undefined, limit: number): value is number => value !== undefined && Math.abs(value) > limit;
+  for (const key of ["twist", "hipTwist"] as const) {
+    if (outside(sw[key], TWIST_LIMITS.roll)) errors.push(`${at}: sideways.${key} ${sw[key]}° is past ${TWIST_LIMITS.roll}°`);
+  }
+  const spine = (sw.twist ?? 0) - (sw.hipTwist ?? 0);
+  if (outside(spine, TWIST_LIMITS.spine)) errors.push(`${at}: the spine twists ${round(Math.abs(spine), 1)}° between hips and shoulders (> ${TWIST_LIMITS.spine}°); roll the hips with hipTwist`);
+  return [...errors, ...girdleIssues(sw, at)];
+}
+
+/** Girdle offsets past `GIRDLE_LIMITS`. */
+function girdleIssues(sw: Sideways, at: string): string[] {
+  return (["near", "far"] as Side[]).flatMap((side) =>
+    (["up", "forward"] as const).flatMap((key) => {
+      const value = sw.shoulders?.[side]?.[key];
+      return value !== undefined && Math.abs(value) > GIRDLE_LIMITS[key] ? [`${at}: sideways.shoulders.${side}.${key} ${value} is past ${GIRDLE_LIMITS[key]}`] : [];
+    }),
+  );
+}
+
 /** Spec-level rules for `views` / `sideways` (dual-view spec, "Scope" and "Solver"). */
 export function dualViewGuards(spec: DoodleSpec): string[] {
   const errors: string[] = [];
@@ -679,7 +710,7 @@ export function dualViewGuards(spec: DoodleSpec): string[] {
   if (second === "top") errors.push(...topGearGuards(spec));
   // Every prop kind has a front and a top drawing (frontProps, topProps switch exhaustively), so a new kind
   // that lacks one fails to compile there rather than needing a guard here.
-  errors.push(...leanPivotGuards(spec));
+  errors.push(...leanPivotGuards(spec), ...turnGuards(spec.frames), ...turnGuards(spec.partner?.frames ?? [], "partner: "));
   return errors;
 }
 
