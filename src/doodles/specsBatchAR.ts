@@ -188,15 +188,9 @@ const PIRATE_PELVIS: Point = [0, -158];
 const PIRATE_SHOULDER = shoulderOf(PIRATE_PELVIS, -90);
 const FEET_Z = 42;
 
-/**
- * Both hands on the bell at sideways `z`, the arms straight and `deg` degrees
- * from +x in the side view (90 = down). The 2D reach is cut short by the more
- * stretched arm's sideways distance so neither arm is over-stretched.
- */
-function pirate(deg: number, z: number): Keyframe["pose"] {
-  const dz = Math.max(Math.abs(z + SHOULDER_SIDE), Math.abs(z - SHOULDER_SIDE));
-  const flat = Math.sqrt(REACH * REACH - dz * dz) - 1;
-  const hand = along(PIRATE_SHOULDER, deg, flat);
+/** The bell hanging at waist level, both hands on it, the arms straight and `deg` degrees from +x in the side view (90 = down). */
+function pirateLow(deg: number): Keyframe["pose"] {
+  const hand = along(PIRATE_SHOULDER, deg, REACH - 1);
   return {
     pelvis: PIRATE_PELVIS,
     chest: chestOf(PIRATE_PELVIS, -90),
@@ -206,13 +200,39 @@ function pirate(deg: number, z: number): Keyframe["pose"] {
   };
 }
 
-function pirateFrame(deg: number, z: number, hold: number, bell: BellMode): Keyframe {
+/** Head height (the head's centre) and how far out to the side the hands go at the top of each swing. */
+const PIRATE_TOP_Y = -290;
+const PIRATE_TOP_Z = 50;
+
+/**
+ * Top of a swing, the bell out to one side (`z`) at head height, both arms
+ * long and soft-elbowed from their own shoulders. The figure can't turn its
+ * shoulders towards the bell, so the arm nearer the bell reaches a little
+ * further forward than the other: the hands sit along the handle, a hand's
+ * width apart front to back, as they do when the chest turns.
+ */
+function pirateTop(z: number): Keyframe["pose"] {
+  const reach = REACH + 0.55;
+  const rise = PIRATE_TOP_Y - PIRATE_SHOULDER[1];
+  const flat = (shoulderZ: number): number => Math.sqrt(reach ** 2 - rise ** 2 - (z - shoulderZ) ** 2);
+  const hand = (shoulderZ: number): Point => [round(PIRATE_SHOULDER[0] + flat(shoulderZ)), PIRATE_TOP_Y];
+  return {
+    pelvis: PIRATE_PELVIS,
+    chest: chestOf(PIRATE_PELVIS, -90),
+    hands: { near: hand(-SHOULDER_SIDE), far: hand(SHOULDER_SIDE) },
+    elbows: { near: { bend: 1 }, far: { bend: 1 } },
+    feet: { near: [0, 0], far: [0, 0] },
+    toes: { near: 0, far: 0 },
+  };
+}
+
+function pirateFrame(pose: Keyframe["pose"], z: number, hold: number, bell: BellMode): Keyframe {
   const sideways: Sideways = {
     hands: { near: z, far: z },
     feet: { near: -FEET_Z, far: FEET_Z },
     knees: { near: { out: 18 }, far: { out: 18 } },
   };
-  return { pose: pirate(deg, z), hold, bell, sideways };
+  return { pose, hold, bell, sideways };
 }
 
 export const BATCH_AR_SPECS: DoodleSpec[] = [
@@ -302,10 +322,10 @@ export const BATCH_AR_SPECS: DoodleSpec[] = [
     kettlebell: { hands: ["near"], size: BELL },
     transition: 0.7,
     frames: [
-      pirateFrame(65, 0, 0.3, "hang"),
-      pirateFrame(-18, -88, 0.4, "swing"),
-      pirateFrame(65, 0, 0.3, "hang"),
-      pirateFrame(-18, 88, 0.4, "swing"),
+      pirateFrame(pirateLow(65), 0, 0.3, "hang"),
+      pirateFrame(pirateTop(-PIRATE_TOP_Z), -PIRATE_TOP_Z, 0.4, "swing"),
+      pirateFrame(pirateLow(65), 0, 0.3, "hang"),
+      pirateFrame(pirateTop(PIRATE_TOP_Z), PIRATE_TOP_Z, 0.4, "swing"),
     ],
   },
   {

@@ -41,25 +41,34 @@ const TALL: Stand = { pelvis: [2, -172], spine: -90 };
 const HINGE: Stand = { pelvis: [-52, -150], spine: -38 };
 /** The shallow hinge at the changeover of the double clean. */
 const DIP: Stand = { pelvis: [-26, -160], spine: -66 };
+/** Hips nearly through as the bell starts up. */
+const DRIVE: Stand = { pelvis: [-6, -170], spine: -84 };
 
-type ArmState = "hang" | "between" | "pull" | "rack";
+/**
+ * A clean keeps the bell close: `low` the elbow bends back beside the ribs and the
+ * hand floats up in front of the hips; `high` the elbow is up and back, the hand
+ * at the lower chest close to the body; `rack` the elbow drops in front of the ribs.
+ */
+type ArmState = "hang" | "between" | "low" | "high" | "rack";
 
 /** One arm in a clean: hand pin and (for a bent arm) elbow pin, from its shoulder. */
 function cleanArm(state: ArmState, shoulder: Point, side: Side): { hand: Point; elbow?: Point } {
   const slight = side === "near" ? 0 : -2;
+  const bent = (upper: number, lower: number): { hand: Point; elbow: Point } => {
+    const elbow = along(shoulder, upper + slight, 60);
+    return { hand: along(elbow, lower, 66), elbow };
+  };
   switch (state) {
     case "hang":
       return { hand: along(shoulder, 90 + slight, REACH) };
     case "between":
       return { hand: along(shoulder, (side === "near" ? 110 : 100), REACH) };
-    case "pull": {
-      const elbow = along(shoulder, 105, 60);
-      return { hand: along(elbow, -50, 66), elbow };
-    }
-    case "rack": {
-      const elbow = along(shoulder, 75, 60);
-      return { hand: along(elbow, -68, 66), elbow };
-    }
+    case "low":
+      return bent(112, 40);
+    case "high":
+      return bent(118, -16);
+    case "rack":
+      return bent(75, -68);
   }
 }
 
@@ -78,11 +87,36 @@ function cleanPose(stand: Stand, near: ArmState, far: ArmState): Pose {
 }
 
 const bells = (near: BellMode, far: BellMode): Keyframe["bell"] => ({ near, far });
-const cleanFrame = (stand: Stand, near: ArmState, far: ArmState, hold: number, bell: Keyframe["bell"]): Keyframe => ({
+const modeOf = (state: ArmState): BellMode => (state === "rack" ? "rack" : "hang");
+const cleanFrame = (stand: Stand, near: ArmState, far: ArmState, hold: number): Keyframe => ({
   pose: cleanPose(stand, near, far),
   hold,
-  bell,
+  bell: bells(modeOf(near), modeOf(far)),
 });
+
+/** One clean with `side`'s bell (the other hangs): up the body to the rack, held, back down between the legs. */
+function oneClean(side: Side): Keyframe[] {
+  const arms = (state: ArmState): [ArmState, ArmState] => (side === "near" ? [state, "hang"] : ["hang", state]);
+  const frame = (stand: Stand, state: ArmState, hold: number): Keyframe => cleanFrame(stand, ...arms(state), hold);
+  return [
+    cleanFrame(HINGE, "between", "between", 0.3),
+    frame(DRIVE, "low", 0),
+    frame(TALL, "high", 0),
+    frame(TALL, "rack", 0.45),
+    frame(TALL, "low", 0),
+  ];
+}
+
+/** Double alternating: one bell comes down while the other comes up the body. */
+function swapClean(down: Side): Keyframe[] {
+  const pair = (d: ArmState, u: ArmState): [ArmState, ArmState] => (down === "near" ? [d, u] : [u, d]);
+  return [
+    cleanFrame(TALL, ...pair("rack", "hang"), 0.4),
+    cleanFrame(DIP, ...pair("low", "between"), 0),
+    cleanFrame(DRIVE, ...pair("hang", "low"), 0),
+    cleanFrame(TALL, ...pair("hang", "high"), 0),
+  ];
+}
 
 const CLEAN_SPECS: DoodleSpec[] = [
   {
@@ -91,15 +125,8 @@ const CLEAN_SPECS: DoodleSpec[] = [
     title: "Alternating Hang Clean",
     props: FLOOR,
     kettlebell: { hands: ["near", "far"], size: BELL },
-    transition: 0.5,
-    frames: [
-      cleanFrame(HINGE, "between", "between", 0.3, bells("hang", "hang")),
-      cleanFrame(TALL, "pull", "hang", 0, bells("swing", "hang")),
-      cleanFrame(TALL, "rack", "hang", 0.45, bells("rack", "hang")),
-      cleanFrame(HINGE, "between", "between", 0.3, bells("hang", "hang")),
-      cleanFrame(TALL, "hang", "pull", 0, bells("hang", "swing")),
-      cleanFrame(TALL, "hang", "rack", 0.45, bells("hang", "rack")),
-    ],
+    transition: 0.32,
+    frames: [...oneClean("near"), ...oneClean("far")],
   },
   {
     id: "fedb_double_kettlebell_alternating_hang_clean",
@@ -107,13 +134,8 @@ const CLEAN_SPECS: DoodleSpec[] = [
     title: "Double Kettlebell Alternating Hang Clean",
     props: FLOOR,
     kettlebell: { hands: ["near", "far"], size: BELL },
-    transition: 0.5,
-    frames: [
-      cleanFrame(TALL, "rack", "hang", 0.4, bells("rack", "hang")),
-      cleanFrame(DIP, "between", "pull", 0, bells("hang", "swing")),
-      cleanFrame(TALL, "hang", "rack", 0.4, bells("hang", "rack")),
-      cleanFrame(DIP, "pull", "between", 0, bells("swing", "hang")),
-    ],
+    transition: 0.32,
+    frames: [...swapClean("near"), ...swapClean("far")],
   },
 ];
 
@@ -306,8 +328,101 @@ function tricepsFrame(stage: "lock" | "bottom", hold: number): Keyframe {
   };
 }
 
-const HALO_STEPS = 12;
-const haloFrames: Keyframe[] = Array.from({ length: HALO_STEPS }, (_, k) => haloFrame(-(360 / HALO_STEPS) * k, 0));
+type V3 = [number, number, number];
+const sub3 = (a: V3, b: V3): V3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+const dot3 = (a: V3, b: V3): number => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const unit3 = (a: V3): V3 => {
+  const n = Math.hypot(...a);
+  return [a[0] / n, a[1] / n, a[2] / n];
+};
+
+/** The elbow (upper arm 60, forearm and hand 66) from shoulder to hand tip that is nearest `want`. */
+function elbowToward(shoulder: V3, hand: V3, want: V3): V3 {
+  const d = Math.hypot(...sub3(hand, shoulder));
+  const u = unit3(sub3(hand, shoulder));
+  const a = (d * d + 60 * 60 - 66 * 66) / (2 * d);
+  const h = Math.sqrt(Math.max(0, 60 * 60 - a * a));
+  const c: V3 = [shoulder[0] + u[0] * a, shoulder[1] + u[1] * a, shoulder[2] + u[2] * a];
+  const off = sub3(want, c);
+  const along = dot3(off, u);
+  const dir = unit3([off[0] - u[0] * along, off[1] - u[1] * along, off[2] - u[2] * along]);
+  return [c[0] + dir[0] * h, c[1] + dir[1] * h, c[2] + dir[2] * h];
+}
+
+/**
+ * Where the near elbow aims as the bell goes round (degrees, 0 in front, -90 by
+ * the near ear, -180 behind, -270 by the far ear): down in front; forward at
+ * chin height by its own ear; out to the side at chin-to-forehead height while
+ * the hands are behind the head; then it sweeps under, past the chest, and
+ * crosses in front of the face at chin height as the bell passes the far ear.
+ * The far elbow mirrors it.
+ */
+const NEAR_ELBOW: [theta: number, at: V3][] = [
+  [0, [31, -223, -45]],
+  [-45, [48, -262, -40]],
+  [-90, [55, -288, -36]],
+  [-135, [25, -302, -64]],
+  [-180, [-28, -302, -63]],
+  [-225, [-51, -298, -28]],
+  [-245, [-10, -232, 5]],
+  [-270, [50, -292, 0]],
+  [-315, [50, -262, -20]],
+  [-360, [31, -223, -45]],
+];
+
+function nearElbowAim(theta: number): V3 {
+  const t = -(((-theta % 360) + 360) % 360);
+  for (let k = 0; k + 1 < NEAR_ELBOW.length; k += 1) {
+    const [a, pa] = NEAR_ELBOW[k];
+    const [b, pb] = NEAR_ELBOW[k + 1];
+    if (t <= a && t >= b) {
+      const f = (a - t) / (a - b);
+      return [0, 1, 2].map((i) => pa[i] + (pb[i] - pa[i]) * f) as V3;
+    }
+  }
+  return NEAR_ELBOW[0][1];
+}
+
+/** Shoulders of the standing figure (x, y, z). */
+const HORNS_SHOULDERS = ((): Record<Side, V3> => {
+  const pose: Pose = { ...HORNS_BASE, hands: { near: [2, -150], far: [2, -150] } };
+  const arms = solveKeyframe3(solvePose(pose), pose, {}).arms;
+  return { near: arms.near.root as V3, far: arms.far.root as V3 };
+})();
+
+/**
+ * Halo kept close: the hands on the horns circle the head `theta` degrees round
+ * (0 = in front of the chest, -90 = by the near ear, 180 = behind the head),
+ * just clear of it: at the collarbones in front, the bell standing above the
+ * hands, and at ear height round the back, so the bell passes just behind the
+ * ear and the back of the head. The elbows follow `NEAR_ELBOW`: never overhead.
+ */
+function closeHaloFrame(theta: number, hold: number): Keyframe {
+  const r = (theta * Math.PI) / 180;
+  const low = Math.max(0, Math.cos(r)) ** 1.5;
+  const radius = 36 + 2 * low;
+  const centre = 2 - 10 * (1 - low);
+  const hand: V3 = [round(centre + Math.cos(r) * radius), round(-302 + 32 * low), round(Math.sin(r) * radius)];
+  const elbows = {} as Record<Side, V3>;
+  const near = nearElbowAim(theta);
+  const far = nearElbowAim(-theta);
+  elbows.near = elbowToward(HORNS_SHOULDERS.near, hand, near).map(round) as V3;
+  elbows.far = elbowToward(HORNS_SHOULDERS.far, hand, [far[0], far[1], -far[2]]).map(round) as V3;
+  return {
+    hold,
+    bell: "horns",
+    sideways: { hands: { near: hand[2], far: hand[2] }, elbows: { near: { at: elbows.near[2] }, far: { at: elbows.far[2] } } },
+    pose: {
+      ...HORNS_BASE,
+      hands: { near: [hand[0], hand[1]], far: [hand[0], hand[1]] },
+      elbows: { near: { at: [elbows.near[0], elbows.near[1]] }, far: { at: [elbows.far[0], elbows.far[1]] } },
+    },
+  };
+}
+
+
+const HALO_KEYS = 24;
+const closeHaloFrames: Keyframe[] = Array.from({ length: HALO_KEYS }, (_, k) => closeHaloFrame(-(360 / HALO_KEYS) * k, 0));
 
 const HORN_SPECS: DoodleSpec[] = [
   {
@@ -317,8 +432,8 @@ const HORN_SPECS: DoodleSpec[] = [
     views: TWO_VIEWS,
     props: FLOOR,
     kettlebell: { hands: ["near"], size: BELL },
-    transition: 0.35,
-    frames: haloFrames,
+    transition: 0.18,
+    frames: closeHaloFrames,
   },
   {
     id: "fedb_kettlebell_halo_with_overhead_extension",
@@ -357,68 +472,71 @@ const HORN_SPECS: DoodleSpec[] = [
 // ---------------------------------------------------------------- bent press (two views, sideways torso lean)
 
 /**
- * The bell-side (far) leg stays straight and the lead (near) knee soft; the hips push back and the torso
- * leans sideways away from the bell (about the pelvis) until the free (near) hand is on the floor,
- * the bell arm locked out straight up over its shoulder. Side panel: the hip hinge; front panel: the lean.
+ * Bent press: the bell is cleaned to the rack and then barely moves. The hips
+ * push out under the bell side and the torso leans away from it (about the
+ * pelvis) and drops, so the shoulder sinks away under a bell that stays at
+ * about rack height: the elbow opens as the shoulder drops, the forearm
+ * upright under the bell, and the arm is only locked at the bottom, the free
+ * (near) hand on the floor. It stays locked while the figure stands up under
+ * it, the bell rising overhead. Side panel: the drop; front panel: the lean.
  */
-const LEAN_FAR_LEG = 173.4;
-const LEAN_NEAR_LEG = 168;
-const LEAN_FEET_Z = { near: -89, far: 81 } as const;
-const LEAN_PELVIS_Z = -10;
-const HIP_Z = 8;
+const PRESS_FEET: Record<Side, readonly [x: number, z: number]> = { near: [10, -50], far: [10, 66] };
 
-type LeanBody = Pick<LeanStage, "pelvis" | "pitch" | "lean">;
-
-interface LeanStage {
+interface PressBody {
   pelvis: Point;
+  /** Pelvis z: the hips push out towards the bell (far) side. */
+  pz: number;
   /** Spine angle in the side view (-90: upright). */
   pitch: number;
   /** Degrees the spine leans sideways, towards the near side (away from the bell). */
   lean: number;
-  /** The bell arm: racked at the shoulder, half pressed, or locked out straight up. */
-  arm: "rack" | "mid" | "lock";
-  /** The free (near) hand is on the floor (otherwise it hangs by the side). */
-  floor?: boolean;
 }
 
-function leanFrame(stage: LeanStage, hold: number, bell: BellMode): Keyframe {
-  const { pelvis, pitch, lean, arm } = stage;
+/** Where the bell hand is: in the rack, held at a point in space (elbow under it), or locked out along `dir` from the shoulder. */
+type PressArm = { kind: "rack" } | { kind: "hold"; at: V3 } | { kind: "lock"; dir: V3 };
+
+function pressSolve(body: PressBody): { base: Pose; sideways: Sideways; shoulders: Record<Side, V3> } {
+  const { pelvis, pz, pitch, lean } = body;
+  const base: Pose = {
+    pelvis,
+    chest: along(pelvis, pitch, 80),
+    knees: { near: { bend: -1 }, far: { bend: -1 } },
+    feet: { near: [PRESS_FEET.near[0], 0], far: [PRESS_FEET.far[0], 0] },
+    toes: { near: 0, far: 0 },
+  };
   const sideways: Sideways = {
-    pelvis: LEAN_PELVIS_Z,
-    chest: round(LEAN_PELVIS_Z - 80 * Math.sin((lean * Math.PI) / 180)),
+    pelvis: pz,
+    chest: round(pz - 80 * Math.sin((lean * Math.PI) / 180)),
     pivot: "pelvis",
-    feet: LEAN_FEET_Z,
+    feet: { near: PRESS_FEET.near[1], far: PRESS_FEET.far[1] },
   };
-  const footX = (leg: number, hipZ: number, footZ: number): number =>
-    round(pelvis[0] + Math.sqrt(leg ** 2 - pelvis[1] ** 2 - (footZ - hipZ) ** 2));
-  const feet: Pose["feet"] = {
-    near: [footX(LEAN_NEAR_LEG, LEAN_PELVIS_Z - HIP_Z, LEAN_FEET_Z.near), 0],
-    far: [footX(LEAN_FAR_LEG, LEAN_PELVIS_Z + HIP_Z, LEAN_FEET_Z.far), 0],
-  };
-  const base: Pose = { pelvis, chest: along(pelvis, pitch, 80), feet, toes: { near: 0, far: 0 } };
-  const figure = solveKeyframe3(solvePose(base), base, sideways);
-  const [fx, fy, fz] = figure.arms.far.root;
-  const [nx, ny, nz] = figure.arms.near.root;
-  // The bell arm.
-  let farHand: Point;
-  let farElbow: { at: Point } | { bend: 1 } = { bend: 1 };
-  let farZ = fz;
-  let farElbowZ: number | undefined;
-  if (arm === "lock") farHand = [round(fx), round(fy - LOCKED_REACH)];
-  else if (arm === "mid") {
-    farHand = [round(fx + 14), round(fy - 78)];
-    farZ = fz - 4;
+  const arms = solveKeyframe3(solvePose(base), base, sideways).arms;
+  return { base, sideways, shoulders: { near: arms.near.root as V3, far: arms.far.root as V3 } };
+}
+
+function pressFrame(body: PressBody, arm: PressArm, hold: number, floor = false): Keyframe {
+  const { base, sideways, shoulders } = pressSolve(body);
+  const fs = shoulders.far;
+  let hand: V3;
+  let elbow: V3;
+  if (arm.kind === "rack") {
+    const e = along([fs[0], fs[1]], 75, 60);
+    const h = along(e, -68, 66);
+    elbow = [e[0], e[1], fs[2]];
+    hand = [h[0], h[1], fs[2] - 8];
+  } else if (arm.kind === "hold") {
+    hand = arm.at;
+    elbow = elbowToward(fs, hand, [hand[0], hand[1] + 66, hand[2]]);
   } else {
-    const elbow = along([fx, fy], 75, 60);
-    farElbow = { at: elbow };
-    farElbowZ = fz;
-    farHand = along(elbow, -68, 66);
-    farZ = fz - 8;
+    const d = unit3(arm.dir);
+    hand = [fs[0] + d[0] * LOCKED_REACH, fs[1] + d[1] * LOCKED_REACH, fs[2] + d[2] * LOCKED_REACH];
+    elbow = [fs[0] + d[0] * 60, fs[1] + d[1] * 60, fs[2] + d[2] * 60];
   }
   // The free hand: on the floor beside the lead foot, or hanging by the side.
+  const [nx, ny, nz] = shoulders.near;
   let nearHand: Point;
   let nearZ: number;
-  if (stage.floor) {
+  if (floor) {
     nearZ = round(nz - 12);
     const dy = -4 - ny;
     nearHand = [round(nx + Math.sqrt(Math.max(0, (LOCKED_REACH - 0.6) ** 2 - dy ** 2 - 12 ** 2))), -4];
@@ -426,21 +544,35 @@ function leanFrame(stage: LeanStage, hold: number, bell: BellMode): Keyframe {
     nearZ = round(nz - 6);
     nearHand = [round(nx), round(ny + Math.sqrt((LOCKED_REACH - 4) ** 2 - 36))];
   }
+  const r3 = (p: V3): V3 => p.map(round) as V3;
+  const [hx, hy, hz] = r3(hand);
+  const [ex, ey, ez] = r3(elbow);
   return {
     hold,
-    bell,
-    pose: { ...base, hands: { near: nearHand, far: farHand }, elbows: { near: { bend: 1 }, far: farElbow } },
-    sideways: {
-      ...sideways,
-      hands: { near: nearZ, far: round(farZ) },
-      ...(farElbowZ === undefined ? {} : { elbows: { far: { at: round(farElbowZ) } } }),
-    },
+    bell: "rack",
+    pose: { ...base, hands: { near: nearHand, far: [hx, hy] }, elbows: { near: { bend: 1 }, far: { at: [ex, ey] } } },
+    sideways: { ...sideways, hands: { near: nearZ, far: hz }, elbows: { far: { at: ez } } },
   };
 }
 
-const PRESS_TALL: LeanBody = { pelvis: [0, -152], pitch: -90, lean: 0 };
-const PRESS_BEND: LeanBody = { pelvis: [-30, -146], pitch: -80, lean: 42 };
-const PRESS_DEEP: LeanBody = { pelvis: [-60, -140], pitch: -70, lean: 85 };
+const PRESS_TALL: PressBody = { pelvis: [0, -158], pz: 0, pitch: -90, lean: 0 };
+const PRESS_SINK: PressBody = { pelvis: [-4, -150], pz: 14, pitch: -84, lean: 30 };
+const PRESS_LOW: PressBody = { pelvis: [2, -135], pz: 38, pitch: -76, lean: 62 };
+const PRESS_DEEP: PressBody = { pelvis: [10, -120], pz: 60, pitch: -70, lean: 88 };
+
+/** The racked bell's hand, where it stays while the body drops away under it. */
+const PRESS_BELL: V3 = (() => {
+  const frame = pressFrame(PRESS_TALL, { kind: "rack" }, 0);
+  const hand = (frame.pose as Pose).hands!.far!;
+  return [hand[0], hand[1], frame.sideways!.hands!.far!];
+})();
+
+/** The bell drifts a little towards the middle as the body goes under it. */
+const PRESS_BELL_LOW: V3 = [PRESS_BELL[0], PRESS_BELL[1], PRESS_BELL[2] - 10];
+const PRESS_BELL_DEEP: V3 = [PRESS_BELL[0], PRESS_BELL[1] - 4, PRESS_BELL[2] - 20];
+
+/** At the bottom the arm points from the shoulder to the bell. */
+const PRESS_LOCK: V3 = sub3(PRESS_BELL_DEEP, pressSolve(PRESS_DEEP).shoulders.far);
 
 const BENT_PRESS: DoodleSpec = {
   id: "fedb_bent_press",
@@ -451,12 +583,12 @@ const BENT_PRESS: DoodleSpec = {
   kettlebell: { hands: ["far"], size: BELL },
   transition: 0.9,
   frames: [
-    leanFrame({ ...PRESS_TALL, arm: "rack" }, 0.5, "rack"),
-    leanFrame({ pelvis: [-15, -149], pitch: -85, lean: 20, arm: "mid" }, 0, "rack"),
-    leanFrame({ ...PRESS_BEND, arm: "lock" }, 0, "rack"),
-    leanFrame({ ...PRESS_DEEP, arm: "lock", floor: true }, 0.6, "rack"),
-    leanFrame({ ...PRESS_BEND, arm: "lock" }, 0, "rack"),
-    leanFrame({ ...PRESS_TALL, arm: "lock" }, 0.6, "rack"),
+    pressFrame(PRESS_TALL, { kind: "rack" }, 0.5),
+    pressFrame(PRESS_SINK, { kind: "hold", at: PRESS_BELL }, 0),
+    pressFrame(PRESS_LOW, { kind: "hold", at: PRESS_BELL_LOW }, 0),
+    pressFrame(PRESS_DEEP, { kind: "lock", dir: PRESS_LOCK }, 0.6, true),
+    pressFrame(PRESS_LOW, { kind: "lock", dir: PRESS_LOCK }, 0),
+    pressFrame(PRESS_TALL, { kind: "lock", dir: [0, -1, 0] }, 0.6),
   ],
 };
 
