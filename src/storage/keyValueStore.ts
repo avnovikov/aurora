@@ -14,6 +14,15 @@ function hasLocalStorage(): boolean {
   return typeof localStorage !== "undefined";
 }
 
+/**
+ * Plaintext browser/Vitest sink. The Android product path never reaches here
+ * (AuroraSecure via getSecureBridgeOrAllowLocal).
+ */
+function writeDevPreviewLocalStorage(key: string, value: string): void {
+  // codeql[js/clear-text-storage-of-sensitive-data] Dev/preview + Vitest only; shipped Android uses AuroraSecure.
+  localStorage.setItem(key, value);
+}
+
 export function createKeyValueStore(key: string): KeyValueStore {
   if (!key) {
     throw new Error("storage key must be non-empty");
@@ -44,7 +53,7 @@ export function createKeyValueStore(key: string): KeyValueStore {
         memory = value;
         return;
       }
-      localStorage.setItem(key, value);
+      writeDevPreviewLocalStorage(key, value);
     },
     clear(): void {
       memory = null;

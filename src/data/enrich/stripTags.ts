@@ -15,13 +15,24 @@ export function stripTags(html: string): string {
   return out;
 }
 
+/**
+ * Named entities that show up in imported exercise text.
+ * `&amp;` stays last so `&amp;lt;` becomes `&lt;`, not `<`.
+ */
+const HTML_ENTITIES: readonly [entity: string, character: string][] = [
+  ["&nbsp;", " "],
+  ["&quot;", '"'],
+  ["&#39;", "'"],
+  ["&lt;", "<"],
+  ["&gt;", ">"],
+  ["&amp;", "&"],
+];
+
 /** Decode the handful of HTML entities that occur in imported exercise text. */
 export function decodeEntities(text: string): string {
-  return text
-    .replaceAll("&nbsp;", " ")
-    .replaceAll("&amp;", "&")
-    .replaceAll("&quot;", '"')
-    .replaceAll("&#39;", "'")
-    .replaceAll("&lt;", "<")
-    .replaceAll("&gt;", ">");
+  let decoded = text;
+  for (const [entity, character] of HTML_ENTITIES) {
+    decoded = decoded.replaceAll(entity, character);
+  }
+  return decoded;
 }
