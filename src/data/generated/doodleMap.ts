@@ -385,7 +385,19 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "wger_1956": "/doodles/doodle-fire-hydrant-circles.svg",
   "wger_1672": "/doodles/doodle-seated-hip-abduction.svg",
   "wger_1908": "/doodles/doodle-butterfly-superman.svg",
-  "wger_171": "/doodles/doodle-incline-crunches.svg"
+  "wger_171": "/doodles/doodle-incline-crunches.svg",
+  "fedb_goblet_squat": "/doodles/doodle-goblet-squat.svg",
+  "fedb_front_squats_with_two_kettlebells": "/doodles/doodle-front-squats-with-two-kettlebells.svg",
+  "fedb_kettlebell_thruster": "/doodles/doodle-kettlebell-thruster.svg",
+  "fedb_kettlebell_pistol_squat": "/doodles/doodle-kettlebell-pistol-squat.svg",
+  "fedb_one_arm_kettlebell_jerk": "/doodles/doodle-one-arm-kettlebell-jerk.svg",
+  "fedb_kettlebell_windmill": "/doodles/doodle-kettlebell-windmill.svg",
+  "fedb_double_kettlebell_windmill": "/doodles/doodle-double-kettlebell-windmill.svg",
+  "fedb_one_arm_kettlebell_military_press_to_the_side": "/doodles/doodle-one-arm-kettlebell-military-press-to-the-side.svg",
+  "fedb_one_arm_kettlebell_floor_press": "/doodles/doodle-one-arm-kettlebell-floor-press.svg",
+  "fedb_leg_over_floor_press": "/doodles/doodle-leg-over-floor-press.svg",
+  "fedb_kettlebell_turkish_get_up_lunge_style": "/doodles/doodle-kettlebell-turkish-get-up-lunge-style.svg",
+  "fedb_advanced_kettlebell_windmill": "/doodles/doodle-advanced-kettlebell-windmill.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
