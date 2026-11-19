@@ -1,4 +1,5 @@
-import { BONES, SHOULDER_SIDE, resolveSideways, solvePose, zOut, type AuthoredPose, type Point, type Side, type Sideways } from "./rig";
+import { BONES, resolveSideways, solvePose, type AuthoredPose, type Point, type Side, type Sideways } from "./rig";
+import { solveKeyframe3 } from "./rig3d";
 
 /**
  * Helpers for authoring dual-view keyframes (#174): 2D pins placed so the 3D
@@ -7,6 +8,8 @@ import { BONES, SHOULDER_SIDE, resolveSideways, solvePose, zOut, type AuthoredPo
 
 /** `views` of a dual-view doodle. */
 export const TWO_VIEWS = ["side", "front"] as const;
+/** `views` of a side + top doodle (floor moves seen from above). */
+export const TOP_VIEWS = ["side", "top"] as const;
 
 const SIDES: Side[] = ["near", "far"];
 
@@ -27,16 +30,15 @@ export function lockedY3(
   hi = -30,
   reachLimit = LOCKED_REACH,
 ): number {
-  const shift = sw.pelvis ?? 0;
   // Any arm still over-stretched at this height: the shoulders must come lower (higher y).
   const overReached = (y: number): boolean => {
     const pose = resolveSideways(at(y), sw);
-    const solved = solvePose(pose);
+    // Shoulders as the 3D solve places them (a sideways lean tilts them).
+    const figure = solveKeyframe3(solvePose(pose), pose, sw);
     return sides.some((side) => {
-      const shoulder = solved.arms[side].root;
+      const shoulder = figure.arms[side].root;
       const hand = pose.hands?.[side] as Point;
-      const shoulderZ = shift + zOut(side) * SHOULDER_SIDE;
-      const dz = shoulderZ - (sw.hands?.[side] ?? shoulderZ);
+      const dz = shoulder[2] - (sw.hands?.[side] ?? shoulder[2]);
       return Math.hypot(shoulder[0] - hand[0], shoulder[1] - hand[1], dz) > reachLimit;
     });
   };

@@ -100,6 +100,75 @@ export interface Keyframe {
   mirror?: number;
   /** Dual-view specs only: sideways (z) positions for this keyframe; see `Sideways`. */
   sideways?: Sideways;
+  /**
+   * With `kettlebell`, where the bells sit this keyframe (blended over the
+   * transitions like the limbs): `hang` (default) straight below the grip;
+   * `swing` on in the line of the forearm, flung out beyond the hand (swings,
+   * snatch pulls); `rack` resting on the back of the forearm by the wrist
+   * (front rack, overhead, behind the forearm in the side view).
+   * Per hand: `{ near: "rack", far: "hang" }` (a hand left out hangs).
+   * `horns`: both hands on one bell by the horns, the bell beyond the joined
+   * hands along the forearms (halo, overhead triceps extension).
+   */
+  bell?: BellMode | "horns" | Partial<Record<Side, BellMode>>;
+  /**
+   * With one `kettlebell`, the hand holding it from this keyframe on (until
+   * another keyframe says otherwise, round the loop). The keyframe where it
+   * changes is the hand-off: both hands are together on the bell there.
+   */
+  bellIn?: Side;
+}
+
+export type BellMode = "hang" | "swing" | "rack";
+
+/**
+ * Straps hanging from one fixed anchor down to the hands (`ring`: gymnastic
+ * rings, `handle`: suspension trainer), or a band stretched from the anchor
+ * (`band`: seated band row, terminal knee extension).
+ */
+export interface Straps {
+  /** The hang point (side view). Rings and handles hang from above the hands; a band anchors anywhere. */
+  anchor: Point;
+  end: "ring" | "handle" | "band";
+  /** Which hands (knees, feet) hold one (default both). */
+  sides?: readonly Side[];
+  /**
+   * What it holds (default the hands): the upper arms just above the elbows (a
+   * band looped round the arm: single-arm band row), the knees (a band behind
+   * the knee) or the feet (ankles in the cradles: suspended push-up, pike).
+   */
+  to?: "hands" | "elbows" | "knees" | "feet";
+  /**
+   * Two views: the front panel's anchors sit this far either side of the
+   * centre line (near at z = -width, far at +width; 0: one shared anchor).
+   * Default: above where each strap's hand (knee, ankle) is in the first keyframe.
+   */
+  width?: number;
+}
+
+/** Kettlebells hanging from gripping hands (`size`: bell radius, default KETTLEBELL.size). */
+export interface Kettlebells {
+  hands: readonly Side[];
+  size?: number;
+}
+
+/** Kettlebell proportions: bell radius, and the grip's height above the bell's centre as a share of it. */
+export const KETTLEBELL = { size: 14, grip: 1.85 } as const;
+
+/**
+ * Hand height that sets a hanging kettlebell of radius `size` down on the floor
+ * (deadlift bottom, swing set-up): the bell's bottom at y = 0.
+ */
+export const kettlebellOnFloor = (size: number = KETTLEBELL.size): number => -size * (1 + KETTLEBELL.grip);
+
+/**
+ * A hand on a strap of `length` from `anchor`, swung `angle` degrees from
+ * straight down (positive towards +x). Pin hands with it so the strap keeps
+ * its length (the validator checks rings and handles don't stretch).
+ */
+export function onStrap(anchor: Point, length: number, angle = 0): Point {
+  const r = (angle * Math.PI) / 180;
+  return [Math.round((anchor[0] + Math.sin(r) * length) * 1000) / 1000, Math.round((anchor[1] + Math.cos(r) * length) * 1000) / 1000];
 }
 
 /** Sideways position of a knee or elbow pin, and how far its bend plane rolls outward. */
@@ -118,6 +187,23 @@ export interface SidewaysHint {
 export interface Sideways {
   /** Shifts the whole spine sideways. */
   pelvis?: number;
+  /**
+   * z of the chest (the shoulders' centre); default: the pelvis z. Different
+   * from `pelvis`, the spine leans sideways: the lower spine turns rigidly
+   * about `pivot` until pelvis and chest sit at their z, so it draws shorter in
+   * the side view and tilts in the front view. Give the same `pivot` on every
+   * keyframe of a move.
+   */
+  chest?: number;
+  /**
+   * The spine end that keeps its side-view (x, y) when the spine leans.
+   * "pelvis" (default): the whole spine turns about the pelvis, the chest comes
+   * down and in, the shoulders and head tilt with it, the hips stay level (a
+   * standing side bend, windmill). "chest": the chest, shoulders and head stay
+   * put and square, the pelvis swings out under them and draws closer to the
+   * chest in the side view (plank hip dips); arm pins stay valid.
+   */
+  pivot?: "pelvis" | "chest";
   hands?: Partial<Record<Side, number>>;
   feet?: Partial<Record<Side, number>>;
   elbows?: Partial<Record<Side, SidewaysHint>>;
@@ -260,7 +346,15 @@ export type Prop =
   | { kind: "floor" }
   /** A straight sloped plank from `from` to `to`; `posts` (default true) stand a little in from each end down to the floor. */
   | { kind: "board"; from: Point; to: Point; posts?: boolean }
-  | { kind: "parallelBars"; y: number; x1: number; x2: number }
+  | {
+      kind: "parallelBars";
+      y: number;
+      x1: number;
+      x2: number;
+      /** Two views: each rail's sideways distance from the centre (default 30); put the hands' z on it. */
+      frontHalf?: number;
+    }
+  /** Two views: each hand's parallette is drawn end-on at that hand's z in the first keyframe. */
   | { kind: "parallettes"; y: number; xs: number[] };
 
 export interface DoodleSpec {
@@ -285,11 +379,17 @@ export interface DoodleSpec {
    * hand that rolls with it. Pin the hands at y = -radius so it sits on the floor.
    */
   wheel?: number;
+  /** Rings, suspension-trainer handles or an anchored band (see `Straps`). */
+  straps?: Straps;
+  /** A resistance band stretched from hand to hand (band pull-apart). */
+  handBand?: boolean;
+  /** Kettlebells in these hands, hanging under gravity unless a keyframe sets `bell`. */
+  kettlebell?: Kettlebells;
   /**
    * Draw the move twice, side view and front view next to each other, from one
    * 3D-solved figure (keyframe `sideways`). Only when a reviewer asks for it (ADD VIEW).
    */
-  views?: readonly ["side", "front"];
+  views?: readonly ["side", "front"] | readonly ["side", "top"];
 }
 
 export const BONES = {

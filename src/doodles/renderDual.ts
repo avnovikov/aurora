@@ -3,7 +3,8 @@
  * side at the same scale on one clock (spec: 2026-11-18-dual-view-doodles-design).
  */
 import { FOCUS_BY_ID } from "./focus";
-import { project } from "./project";
+import { bellInFront, byTheHorns } from "./gear";
+import { project, type Panel } from "./project";
 import {
   figureExtent,
   FIGURE_PARTS,
@@ -23,44 +24,85 @@ import {
   type Mapper,
   type ViewBox,
 } from "./renderSvg";
-import type { DoodleSpec, Prop, Solved } from "./rig";
+import { SHOULDER_SIDE, type DoodleSpec, type Prop, type Side, type Solved } from "./rig";
 import { sampleTimeline3, type Figure3, type Limb3, type Point3, type Timeline3 } from "./rig3d";
 
 type Bar = Extract<Prop, { kind: "bar" }>;
 type Box = Extract<Prop, { kind: "box" }>;
 
-/** Half-width of a bar and a box seen from the front. */
-const FRONT_BAR_HALF = 90;
-const FRONT_BOX_HALF = 60;
+/**
+ * Sideways (z) half-extents of each prop, as drawn from the front and from
+ * above, and checked by the depth-aware crossings (one table for all three).
+ */
+export const PROP_HALF = {
+  bar: 90,
+  /** A box, unless it gives `frontHalf`. */
+  box: 60,
+  /** A bench board (and its legs) seen end-on. */
+  board: 36,
+  /** Parallel bars' rails each side of the centre, unless `frontHalf`. */
+  rail: 30,
+  /** A rail or handle seen end-on. */
+  railEnd: 4,
+  /** A parallette's foot on the floor, seen from the front. */
+  parallette: 12,
+} as const;
 /** View labels, in rig units (the doodle row is about half scale). */
-const LABEL_SIZE = 22;
-const LABEL_GAP = 12;
+export const LABEL_SIZE = 22;
+export const LABEL_GAP = 12;
 const LABEL_OPACITY = 0.6;
 
 /** A bar seen end-on from the front: a stroke across the panel. */
-const frontBar = (bar: Bar, shift: number): Prop => ({ kind: "bar", y: bar.y, x1: shift - FRONT_BAR_HALF, x2: shift + FRONT_BAR_HALF });
+const frontBar = (bar: Bar, shift: number): Prop => ({ kind: "bar", y: bar.y, x1: shift - PROP_HALF.bar, x2: shift + PROP_HALF.bar });
 
 /** A box seen from the front, `frontHalf` either side of the panel's centre. */
 function frontBox(box: Box, shift: number): Prop {
-  const half = box.frontHalf ?? FRONT_BOX_HALF;
+  const half = box.frontHalf ?? PROP_HALF.box;
   return { kind: "box", x: shift - half, y: box.y, w: 2 * half, h: box.h };
 }
-
-/** Half-width of a bench board (and its legs) seen end-on. */
-export const BOARD_HALF = 36;
 
 /** A board seen end-on: its outline from its highest to its lowest point, and a leg at each edge. */
 function frontBoard(board: Extract<Prop, { kind: "board" }>, shift: number): Prop[] {
   const top = Math.min(board.from[1], board.to[1]);
   const bottom = Math.max(board.from[1], board.to[1]);
-  const outline: Prop = { kind: "box", x: shift - BOARD_HALF, y: top, w: 2 * BOARD_HALF, h: bottom - top };
+  const outline: Prop = { kind: "box", x: shift - PROP_HALF.board, y: top, w: 2 * PROP_HALF.board, h: bottom - top };
   if (board.posts === false) return [outline];
-  const legs = [shift - BOARD_HALF, shift + BOARD_HALF].map((x): Prop => ({ kind: "box", x, y: bottom, w: 1, h: -bottom }));
+  const legs = [shift - PROP_HALF.board, shift + PROP_HALF.board].map((x): Prop => ({ kind: "box", x, y: bottom, w: 1, h: -bottom }));
   return [outline, ...legs];
 }
 
+/** A parallel bars' rail half-spacing: its `frontHalf`, or the default. */
+export const railHalf = (bars: Extract<Prop, { kind: "parallelBars" }>): number => bars.frontHalf ?? PROP_HALF.rail;
+
+/** Sideways position (z) of each hand in the first keyframe: where parallettes stand. */
+export type HandZ = Record<Side, number>;
+export const handZ = (first: Figure3 | undefined): HandZ => ({
+  near: first?.arms.near.end[2] ?? -SHOULDER_SIDE,
+  far: first?.arms.far.end[2] ?? SHOULDER_SIDE,
+});
+
+/** A rail or handle seen end-on: a small square centred on (z, y). */
+const endOn = (z: number, y: number): Prop => ({ kind: "box", x: z - PROP_HALF.railEnd, y: y - PROP_HALF.railEnd, w: 2 * PROP_HALF.railEnd, h: 2 * PROP_HALF.railEnd });
+/** A plain vertical line from (z, top) to the floor. */
+const upright = (z: number, top: number): Prop => ({ kind: "board", from: [z, top], to: [z, 0], posts: false });
+
+/** Parallel bars seen end-on: each rail a small square at ±frontHalf on its upright. */
+function frontParallelBars(bars: Extract<Prop, { kind: "parallelBars" }>, shift: number): Prop[] {
+  const half = railHalf(bars);
+  return [-half, half].flatMap((z) => [endOn(shift + z, bars.y), upright(shift + z, bars.y + PROP_HALF.railEnd)]);
+}
+
+/** Parallettes seen end-on: a handle at each hand's z on an upright, with a foot on the floor. */
+function frontParallettes(bars: Extract<Prop, { kind: "parallettes" }>, shift: number, hands: HandZ): Prop[] {
+  return [hands.near, hands.far].flatMap((z): Prop[] => [
+    endOn(shift + z, bars.y),
+    upright(shift + z, bars.y + PROP_HALF.railEnd),
+    { kind: "bar", y: 0, x1: shift + z - PROP_HALF.parallette, x2: shift + z + PROP_HALF.parallette },
+  ]);
+}
+
 /** All props as seen from the front (dualViewGuards admits only the kinds handled here). */
-export function frontProps(props: readonly Prop[], shift = 0): Prop[] {
+export function frontProps(props: readonly Prop[], shift = 0, hands: HandZ = handZ(undefined)): Prop[] {
   return props.flatMap((prop): Prop[] => {
     switch (prop.kind) {
       case "bar":
@@ -69,18 +111,65 @@ export function frontProps(props: readonly Prop[], shift = 0): Prop[] {
         return [frontBox(prop, shift)];
       case "board":
         return frontBoard(prop, shift);
+      case "parallelBars":
+        return frontParallelBars(prop, shift);
+      case "parallettes":
+        return frontParallettes(prop, shift, hands);
       case "floor":
         // Passed through; resolved against the front poses.
         return [prop];
-      default:
-        return [];
     }
   });
 }
 
-/** Parts drawn with another (band round the thighs, wheel in the hand), and the part they follow. */
-const ATTACHED = { band: "legNear", wheel: "armNear" } as const satisfies Partial<Record<FigurePart, FigurePart>>;
-type BodyPart = Exclude<FigurePart, keyof typeof ATTACHED>;
+/**
+ * Sideways (z) ranges a prop fills, matching its front drawing: a limb that
+ * crosses the prop in the side view only touches it if it is inside one of
+ * these at the crossing (two views; see validate's depth-aware crossings).
+ */
+export function propDepth(prop: Prop, hands: HandZ): [number, number][] {
+  const around = (z: number, half: number): [number, number] => [z - half, z + half];
+  switch (prop.kind) {
+    case "bar":
+      return [around(0, PROP_HALF.bar)];
+    case "box":
+      return [around(0, prop.frontHalf ?? PROP_HALF.box)];
+    case "board":
+      return [around(0, PROP_HALF.board)];
+    case "parallelBars": {
+      const half = railHalf(prop);
+      return [around(-half, PROP_HALF.railEnd), around(half, PROP_HALF.railEnd)];
+    }
+    case "parallettes":
+      return [around(hands.near, PROP_HALF.parallette), around(hands.far, PROP_HALF.parallette)];
+    case "floor":
+      return [];
+  }
+}
+
+/**
+ * Parts drawn with another (band round the thighs, gear in a hand), and the part
+ * they follow. Straps tied to the knees or feet (`straps.to`) follow the legs.
+ */
+const ATTACHED = {
+  band: "legNear",
+  wheel: "armNear",
+  strapFar: "armFar",
+  bellFar: "armFar",
+  strapNear: "armNear",
+  handBand: "armNear",
+  bellNear: "armNear",
+} as const satisfies Partial<Record<FigurePart, FigurePart>>;
+type Attached = keyof typeof ATTACHED;
+/** A bell handed between the hands or held by the horns: drawn just behind the torso and again over the figure. */
+const LAYERED = ["bellBack", "bellFront"] as const satisfies readonly FigurePart[];
+type Layered = (typeof LAYERED)[number];
+type BodyPart = Exclude<FigurePart, Attached | Layered>;
+
+function attachedFor(spec: DoodleSpec): Record<Attached, BodyPart> {
+  if (spec.straps?.to !== "knees" && spec.straps?.to !== "feet") return ATTACHED;
+  return { ...ATTACHED, strapFar: "legFar", strapNear: "legNear" };
+}
 
 const limbPoints = (l: Limb3): Point3[] => [l.root, l.mid, l.joint, l.end];
 const PART_POINTS: Record<BodyPart, (f: Figure3) => Point3[]> = {
@@ -92,21 +181,28 @@ const PART_POINTS: Record<BodyPart, (f: Figure3) => Point3[]> = {
   armNear: (f) => limbPoints(f.arms.near),
 };
 
-/** Mean forward position (x) of a part over the loop: larger x is nearer the front panel's viewer. */
-function depthOf(part: BodyPart, poses: Figure3[]): number {
+/** Mean of `axis` over a part's points over the loop. */
+function depthOf(part: BodyPart, poses: Figure3[], axis: (p: Point3) => number): number {
   const all = poses.flatMap(PART_POINTS[part]);
-  return all.reduce((sum, p) => sum + p[0], 0) / Math.max(1, all.length);
+  return all.reduce((sum, p) => sum + axis(p), 0) / Math.max(1, all.length);
 }
 
-const isBodyPart = (part: FigurePart): part is BodyPart => !(part in ATTACHED);
+const isBodyPart = (part: FigurePart): part is BodyPart => !(part in ATTACHED) && !(LAYERED as readonly FigurePart[]).includes(part);
 
-/** Front panel draw order: furthest from the viewer first, attached parts right after their anchor. */
-function frontOrder(poses: Figure3[]): FigurePart[] {
+/**
+ * Draw order by depth: parts with the smallest mean `axis` first (furthest from
+ * the viewer), attached parts right after their anchor, and a layered bell just
+ * behind the torso (spine or head, whichever is further) and again last of all.
+ * Front panel: x (larger x is nearer the viewer). Top panel: -y (higher parts on top).
+ */
+export function depthOrder(spec: DoodleSpec, poses: Figure3[], axis: (p: Point3) => number = (p) => p[0]): FigurePart[] {
   const parts = FIGURE_PARTS.filter(isBodyPart);
-  const depth = new Map(parts.map((part) => [part, depthOf(part, poses)]));
+  const depth = new Map(parts.map((part) => [part, depthOf(part, poses, axis)]));
   const sorted = [...parts].sort((a, b) => depth.get(a)! - depth.get(b)!);
-  const attached = Object.entries(ATTACHED) as [FigurePart, BodyPart][];
-  return sorted.flatMap((part) => [part, ...attached.filter(([, anchor]) => anchor === part).map(([extra]) => extra)]);
+  const attached = Object.entries(attachedFor(spec)) as [FigurePart, BodyPart][];
+  const torso = sorted.findIndex((part) => part === "spine" || part === "head");
+  const before = (i: number): FigurePart[] => (i === torso ? ["bellBack"] : []);
+  return [...sorted.flatMap((part, i) => [...before(i), part, ...attached.filter(([, anchor]) => anchor === part).map(([extra]) => extra)]), "bellFront"];
 }
 
 interface DualLayout {
@@ -122,8 +218,8 @@ export function dualLayout(spec: DoodleSpec, timeline: Timeline3 = sampleTimelin
   const side = timeline.poses.map((pose) => project(pose, "side"));
   const front = timeline.poses.map((pose) => project(pose, "front"));
   const props = spec.props ?? [];
-  const sideBox = figureExtent(side, resolveFloors(props, side), spec.wheel);
-  const frontBox = figureExtent(front, resolveFloors(frontProps(props), front), spec.wheel);
+  const sideBox = figureExtent(side, resolveFloors(props, side), spec, "side");
+  const frontBox = figureExtent(front, resolveFloors(frontProps(props, 0, handZ(timeline.poses[0])), front), spec, "front");
   const frontShift = sideBox.x + sideBox.w + 2 * PADDING - frontBox.x;
   const shifted: ViewBox = { ...frontBox, x: frontBox.x + frontShift };
   const figures = union(sideBox, shifted);
@@ -139,7 +235,7 @@ export function dualLayout(spec: DoodleSpec, timeline: Timeline3 = sampleTimelin
   };
 }
 
-function label(text: string, x: number, y: number): string {
+export function label(text: string, x: number, y: number): string {
   return `<text x="${fmt(x)}" y="${fmt(y)}" style="fill:${INK}" opacity="${LABEL_OPACITY}" stroke="none" font-family="system-ui, sans-serif" font-size="${LABEL_SIZE}" text-anchor="middle">${text}</text>`;
 }
 
@@ -151,14 +247,17 @@ export function renderDualSvg(spec: DoodleSpec): string {
   const focus = FOCUS_BY_ID[spec.id];
   const shift: Mapper = ([x, y]) => [x + layout.frontShift, y];
   const props = spec.props ?? [];
+  // A bell held by the horns hides behind the head when it is further from the viewer.
+  const horns = byTheHorns(spec);
+  const inFront = (panel: Panel): boolean[] | undefined => (horns ? bellInFront(spec, timeline.poses, panel) : undefined);
   return svgShell(layout.view, spec.title, [
     highlightSvg(focus, layout.side, timing, identity),
     resolveFloors(props, layout.side).map(propSvg).join(""),
-    figureSvg(spec, layout.side, timing, identity),
+    figureSvg(spec, layout.side, timing, identity, { panel: "side", bellInFront: inFront("side") }),
     highlightSvg(focus, layout.front, timing, shift),
-    resolveFloors(frontProps(props, layout.frontShift), layout.front, layout.frontShift).map(propSvg).join(""),
+    resolveFloors(frontProps(props, layout.frontShift, handZ(timeline.poses[0])), layout.front, layout.frontShift).map(propSvg).join(""),
     // Seen from the front both sides are square on: no faded far side.
-    figureSvg(spec, layout.front, timing, shift, { farOpacity: 1, order: frontOrder(timeline.poses) }),
+    figureSvg(spec, layout.front, timing, shift, { farOpacity: 1, order: depthOrder(spec, timeline.poses), panel: "front", bellInFront: inFront("front") }),
     label("side", layout.labels.side, layout.labels.y),
     label("front", layout.labels.front, layout.labels.y),
   ]);
