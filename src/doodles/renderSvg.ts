@@ -66,16 +66,22 @@ const BAND_WIDTH = 5;
 function wheelSvg(spec: DoodleSpec, poses: Solved[], timing: string, map: Mapper, scale: number): string {
   if (spec.wheel === undefined) return "";
   const centres = poses.map((pose) => map(pose.arms.near.end));
-  return `<circle cx="${fmt(centres[0][0])}" cy="${fmt(centres[0][1])}" r="${fmt(spec.wheel * scale)}" style="fill:${PAPER}">${animate(
-    "cx",
-    centres.map((p) => fmt(p[0])),
-    timing,
-  )}${animate(
-    "cy",
-    centres.map((p) => fmt(p[1])),
-    timing,
-  )}</circle>`;
+  const circle = (r: number, fill: string): string =>
+    `<circle cx="${fmt(centres[0][0])}" cy="${fmt(centres[0][1])}" r="${fmt(r)}" style="fill:${fill}">${animate(
+      "cx",
+      centres.map((p) => fmt(p[0])),
+      timing,
+    )}${animate(
+      "cy",
+      centres.map((p) => fmt(p[1])),
+      timing,
+    )}</circle>`;
+  // A filled hub inside the ring, so the wheel never reads as a second head.
+  return circle(spec.wheel * scale, PAPER) + circle(WHEEL_HUB * scale, INK);
 }
+
+/** Radius of the ab wheel's hub dot. */
+const WHEEL_HUB = 3;
 
 function bandSvg(spec: DoodleSpec, poses: Solved[], timing: string, map: Mapper): string {
   if (spec.band === undefined) return "";

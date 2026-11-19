@@ -167,8 +167,8 @@ function benchesDip(pelvisY: number, lock: boolean): Pose {
 
 const AB_KNEE: Point = [0, -6];
 const AB_ANKLE: Point = [-86, -6];
-/** Ab wheel radius (a little under a head radius, so it does not read as a second head); the hands hold its axle this high. */
-const AB_WHEEL = 22;
+/** Ab wheel radius (about half the head's, with a hub dot, so it does not read as a second head); the hands hold its axle this high. */
+const AB_WHEEL = 14;
 
 /**
  * Kneeling rollout: thigh at `thighDeg` from the knee, torso at `torsoDeg` from
@@ -291,45 +291,32 @@ function crossSideways(side: Side): Sideways {
   };
 }
 
-/** Hips lift this much as the legs switch (a quick hop), so the knee passing under the hip clears the floor. */
-const CROSS_HOP = 16;
+/** The hips pike up this much as a knee passes under them (in a plank the hip is lower than a thigh is long). */
+const CROSS_PIKE = 24;
+const CROSS_PIKE_SLIDE = 7;
 
 /**
- * The switch, between `out` driven across and the other knee driven across:
- * `out`'s thigh has swung back under the hip with the shin trailing up behind
- * (foot in the air, heading back), while the other leg has left the floor,
- * knee folding as it starts to drive in.
+ * Halfway through a swing: hips piked up a little, `side`'s thigh straight
+ * down under the hip with the shin trailing back level, the other foot planted.
  */
-function crossSwitch(out: Side): { pose: Pose; sideways: Sideways } {
+function crossPass(side: Side): Pose {
   const base = plank();
   const chest = base.chest as Point;
-  const plankPelvis = base.pelvis as Point;
-  const chord = dist(plankPelvis, chest);
-  const pelvisY = plankPelvis[1] - CROSS_HOP;
-  const pelvis: Point = [round(chest[0] - Math.sqrt(chord ** 2 - (chest[1] - pelvisY) ** 2)), pelvisY];
-  const inc = other(out);
-  const leg = (thighDeg: number, shinDeg: number): { k: Point; a: Point } => {
-    const k = reach3(pelvis, thighDeg, THIGH, 0);
-    return { k, a: reach3(k, shinDeg, SHIN, 0) };
-  };
-  const back = leg(CROSS_SWITCH.outThigh, CROSS_SWITCH.outShin);
-  const drive = leg(CROSS_SWITCH.inThigh, CROSS_SWITCH.inShin);
+  const flat = base.pelvis as Point;
+  const chord = dist(flat, chest);
+  const y = flat[1] - CROSS_PIKE;
+  const pelvis: Point = [round(chest[0] - Math.sqrt(chord ** 2 - (chest[1] - y) ** 2)), y];
+  const k = reach3(pelvis, 92, THIGH, 0);
+  const [plantX, plantY] = base.feet?.near as Point;
   return {
-    pose: {
-      ...base,
-      pelvis,
-      knees: { [out]: { at: back.k }, [inc]: { at: drive.k } },
-      feet: { [out]: back.a, [inc]: drive.a },
-      toes: { [out]: CROSS_SWITCH.outToe, [inc]: CROSS_SWITCH.inToe },
-    },
-    sideways: {
-      knees: { [out]: { at: zOut(out) * HIP_Z }, [inc]: { at: zOut(inc) * HIP_Z } },
-      feet: { [out]: zOut(out) * HIP_Z, [inc]: zOut(inc) * HIP_Z },
-    },
+    ...base,
+    pelvis,
+    knees: { [side]: { at: k } },
+    // The planted foot slides in a little as the hips pike, so that leg stays straight.
+    feet: { [side]: reach3(k, 200, SHIN, 0), [other(side)]: [plantX + CROSS_PIKE_SLIDE, plantY] },
+    toes: { [side]: 100, [other(side)]: 62 },
   };
 }
-
-const CROSS_SWITCH = { outThigh: 150, outShin: 215, outToe: 200, inThigh: 105, inShin: 220, inToe: 170 };
 
 /** Spider crawl: high plank, a knee travels out to the side towards the same elbow (as the Spiderman plank). */
 const SP_HAND_X = 62;
@@ -552,10 +539,15 @@ export const BATCH_AC_SPECS: DoodleSpec[] = [
     views: ["side", "front"],
     transition: 0.14,
     frames: [
+      // One leg at a time: drive a knee across, return that foot to plank, then the other.
       { hold: 0.12, pose: crossClimber("near"), sideways: crossSideways("near") },
-      { hold: 0, ...crossSwitch("near") },
+      { hold: 0, pose: crossPass("near") },
+      { hold: 0, pose: plank() },
+      { hold: 0, pose: crossPass("far") },
       { hold: 0.12, pose: crossClimber("far"), sideways: crossSideways("far") },
-      { hold: 0, ...crossSwitch("far") },
+      { hold: 0, pose: crossPass("far") },
+      { hold: 0, pose: plank() },
+      { hold: 0, pose: crossPass("near") },
     ],
   },
   {
