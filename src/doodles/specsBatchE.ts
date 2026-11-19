@@ -78,7 +78,6 @@ const CALF_STEP_TOP = -80;
 const CALF_STEP = { kind: "box" as const, x: 0, y: CALF_STEP_TOP, w: 100, h: -CALF_STEP_TOP };
 const CALF_WALL = { kind: "box" as const, x: 100, y: -420, w: 14, h: 420 };
 /** Floor line, so the step reads as standing on the floor rather than floating. */
-const calfFloor = (x2: number) => ({ kind: "bar" as const, y: 0, x1: -120, x2 });
 
 /**
  * Ankle and foot angle on the step edge: `raised` stands tall on the toes,
@@ -301,7 +300,7 @@ export const BATCH_E_SPECS: DoodleSpec[] = [
     slug: "calf-raise",
     title: "Calf raise",
     replaces: true,
-    props: [CALF_STEP, calfFloor(170)],
+    props: [CALF_STEP, { kind: "floor" }],
     transition: 0.9,
     frames: [
       { hold: 0.4, pose: calfRaise(false) },
@@ -313,7 +312,7 @@ export const BATCH_E_SPECS: DoodleSpec[] = [
     slug: "single-leg-calf-raise",
     title: "Single-leg calf raise",
     replaces: true,
-    props: [CALF_STEP, CALF_WALL, calfFloor(100)],
+    props: [CALF_STEP, CALF_WALL, { kind: "floor" }],
     transition: 0.9,
     frames: [
       { hold: 0.4, pose: singleCalfRaise(false) },

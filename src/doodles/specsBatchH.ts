@@ -129,7 +129,6 @@ function kneeDrive(): Pose {
 }
 
 /** Floor line, for moves that leave the floor or stand on the toes. */
-const floor = (x1: number, x2: number): Prop => ({ kind: "bar", y: 0, x1, x2 });
 
 // ---------------------------------------------------------------- squats
 
@@ -354,7 +353,7 @@ export const BATCH_H_SPECS: DoodleSpec[] = [
     id: "hf_94",
     slug: "jump-squat",
     title: "Jump Squat",
-    props: [floor(-110, 110)],
+    props: [{ kind: "floor" }],
     transition: 0.4,
     frames: [
       { hold: 0.35, pose: squatBottom([-54, -92], -60, "back") },
@@ -399,7 +398,7 @@ export const BATCH_H_SPECS: DoodleSpec[] = [
     id: "hf_73",
     slug: "sissy-squat",
     title: "Sissy Squat",
-    props: [floor(-90, 130)],
+    props: [{ kind: "floor" }],
     transition: 1.2,
     frames: [
       { hold: 0.4, pose: sissy(-78, -96) },

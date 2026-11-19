@@ -27,7 +27,6 @@ function along(from: Point, degrees: number, length: number): Point {
 const angle = (from: Point, to: Point): number => (Math.atan2(to[1] - from[1], to[0] - from[0]) * 180) / Math.PI;
 
 /** Floor line, so take-off and landing read. */
-const floor = (x1: number, x2: number): Prop => ({ kind: "bar", y: 0, x1, x2 });
 
 /** Shoulder of a straight spine (pelvis → chest is 80, shoulder 18 further). */
 const shoulderAt = (pelvis: Point, spine: number): Point => along(pelvis, spine, 98);
@@ -639,7 +638,7 @@ export const BATCH_AH_SPECS: DoodleSpec[] = [
     slug: "lateral-push-off",
     title: "Lateral Push Off",
     views: TWO_VIEWS,
-    props: [floor(-110, 110)],
+    props: [{ kind: "floor" }],
     transition: 0.3,
     frames: [pushOffLand("near", 80), hopAir(-196, 24), pushOffLand("far", 80), hopAir(-196, 24)],
   },
@@ -685,7 +684,7 @@ export const BATCH_AH_SPECS: DoodleSpec[] = [
     id: "wger_909",
     slug: "reverse-nordic-curl",
     title: "Reverse Nordic Curl",
-    props: [floor(-130, 120)],
+    props: [{ kind: "floor" }],
     transition: 0.9,
     frames: [
       { hold: 0.5, pose: reverseNordic(0) },
@@ -699,7 +698,7 @@ export const BATCH_AH_SPECS: DoodleSpec[] = [
     slug: "step-jack",
     title: "Step Jack",
     view: "front",
-    props: [floor(-150, 150)],
+    props: [{ kind: "floor" }],
     transition: 0.35,
     frames: [
       { hold: 0.12, pose: stepJackIn() },
@@ -723,7 +722,7 @@ export const BATCH_AH_SPECS: DoodleSpec[] = [
     id: "wger_1579",
     slug: "bronco",
     title: "Bronco",
-    props: [cone(-SHUTTLE_TURN - 60), cone(SHUTTLE_TURN + 60), floor(-240, 240)],
+    props: [cone(-SHUTTLE_TURN - 60), cone(SHUTTLE_TURN + 60), { kind: "floor" }],
     transition: 0.2,
     frames: [...shuttleLeg(), ...shuttleLeg(0)],
   },
@@ -731,7 +730,7 @@ export const BATCH_AH_SPECS: DoodleSpec[] = [
     id: "fedb_double_leg_butt_kick",
     slug: "double-leg-butt-kick",
     title: "Double Leg Butt Kick",
-    props: [floor(-110, 110)],
+    props: [{ kind: "floor" }],
     transition: 0.28,
     frames: [
       { hold: 0.25, pose: bent(16, -86, "sides") },
@@ -746,7 +745,7 @@ export const BATCH_AH_SPECS: DoodleSpec[] = [
     id: "wger_1318",
     slug: "high-knee-skips",
     title: "High Knee Skips",
-    props: [floor(-110, 110)],
+    props: [{ kind: "floor" }],
     transition: 0.17,
     frames: [
       { hold: 0, pose: skipKnee("near", false) },

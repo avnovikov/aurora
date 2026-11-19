@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { project } from "../../src/doodles/project";
 import { dualLayout, frontProps } from "../../src/doodles/renderDual";
-import { figurePoints, propSegments, renderDoodleSvg } from "../../src/doodles/renderSvg";
+import { figurePoints, FLOOR_MARGIN, propSegments, renderDoodleSvg, resolveFloors } from "../../src/doodles/renderSvg";
 import { BONES, solvePose, type DoodleSpec, type Pose, type Prop, type Side } from "../../src/doodles/rig";
 import { dist3, sampleTimeline3, solveKeyframe3, type Figure3 } from "../../src/doodles/rig3d";
 import { dualViewGuards, validateSpec } from "../../src/doodles/validate";
@@ -160,5 +160,38 @@ describe("board prop", () => {
   it("is allowed in two views and checked as one obstacle", () => {
     const spec: DoodleSpec = { ...RAISE, props: [{ kind: "board", from: [-150, -60], to: [-60, -60], posts: false }] };
     expect(dualViewGuards(spec)).toEqual([]);
+  });
+});
+
+describe("floor prop", () => {
+  const stand = solvePose(STAND);
+
+  it("becomes a line at y = 0 spanning the figure plus the margin", () => {
+    const xs = figurePoints(stand).map((p) => p.point[0]);
+    const [floor] = resolveFloors([{ kind: "floor" }], [stand]);
+    expect(floor).toEqual({
+      kind: "bar",
+      y: 0,
+      x1: Math.floor(Math.min(...xs) - FLOOR_MARGIN),
+      x2: Math.ceil(Math.max(...xs) + FLOOR_MARGIN),
+    });
+  });
+
+  it("reaches under props that stand on the floor", () => {
+    const [, floor] = resolveFloors([{ kind: "box", x: 200, y: -40, w: 60, h: 40 }, { kind: "floor" }], [stand]);
+    expect(floor).toMatchObject({ kind: "bar", y: 0, x2: 260 + FLOOR_MARGIN });
+  });
+
+  it("leaves other props alone and draws nothing without a floor", () => {
+    const bar: Prop = { kind: "bar", y: -200, x1: -50, x2: 50 };
+    expect(resolveFloors([bar], [stand])).toEqual([bar]);
+  });
+
+  it("sizes each panel's floor to that panel in two views", () => {
+    const spec: DoodleSpec = { ...RAISE, props: [{ kind: "floor" }] };
+    expect(dualViewGuards(spec)).toEqual([]);
+    expect(validateSpec(spec).errors).toEqual([]);
+    const svg = renderDoodleSvg(spec);
+    expect(svg.match(/<line x1="[^"]+" y1="0"/g)).toHaveLength(2);
   });
 });

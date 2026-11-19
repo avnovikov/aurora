@@ -15,6 +15,7 @@ import {
   INK,
   PADDING,
   propSvg,
+  resolveFloors,
   svgShell,
   timingAttr,
   union,
@@ -68,6 +69,9 @@ export function frontProps(props: readonly Prop[], shift = 0): Prop[] {
         return [frontBox(prop, shift)];
       case "board":
         return frontBoard(prop, shift);
+      case "floor":
+        // Passed through; resolved against the front poses.
+        return [prop];
       default:
         return [];
     }
@@ -118,8 +122,8 @@ export function dualLayout(spec: DoodleSpec, timeline: Timeline3 = sampleTimelin
   const side = timeline.poses.map((pose) => project(pose, "side"));
   const front = timeline.poses.map((pose) => project(pose, "front"));
   const props = spec.props ?? [];
-  const sideBox = figureExtent(side, props, spec.wheel);
-  const frontBox = figureExtent(front, frontProps(props), spec.wheel);
+  const sideBox = figureExtent(side, resolveFloors(props, side), spec.wheel);
+  const frontBox = figureExtent(front, resolveFloors(frontProps(props), front), spec.wheel);
   const frontShift = sideBox.x + sideBox.w + 2 * PADDING - frontBox.x;
   const shifted: ViewBox = { ...frontBox, x: frontBox.x + frontShift };
   const figures = union(sideBox, shifted);
@@ -149,10 +153,10 @@ export function renderDualSvg(spec: DoodleSpec): string {
   const props = spec.props ?? [];
   return svgShell(layout.view, spec.title, [
     highlightSvg(focus, layout.side, timing, identity),
-    props.map(propSvg).join(""),
+    resolveFloors(props, layout.side).map(propSvg).join(""),
     figureSvg(spec, layout.side, timing, identity),
     highlightSvg(focus, layout.front, timing, shift),
-    frontProps(props, layout.frontShift).map(propSvg).join(""),
+    resolveFloors(frontProps(props, layout.frontShift), layout.front, layout.frontShift).map(propSvg).join(""),
     // Seen from the front both sides are square on: no faded far side.
     figureSvg(spec, layout.front, timing, shift, { farOpacity: 1, order: frontOrder(timeline.poses) }),
     label("side", layout.labels.side, layout.labels.y),
