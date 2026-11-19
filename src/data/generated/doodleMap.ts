@@ -385,7 +385,16 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "wger_1956": "/doodles/doodle-fire-hydrant-circles.svg",
   "wger_1672": "/doodles/doodle-seated-hip-abduction.svg",
   "wger_1908": "/doodles/doodle-butterfly-superman.svg",
-  "wger_171": "/doodles/doodle-incline-crunches.svg"
+  "wger_171": "/doodles/doodle-incline-crunches.svg",
+  "fedb_alternating_floor_press": "/doodles/doodle-alternating-floor-press.svg",
+  "fedb_alternating_kettlebell_press": "/doodles/doodle-alternating-kettlebell-press.svg",
+  "fedb_kettlebell_seesaw_press": "/doodles/doodle-kettlebell-seesaw-press.svg",
+  "fedb_extended_range_one_arm_kettlebell_floor_press": "/doodles/doodle-extended-range-one-arm-kettlebell-floor-press.svg",
+  "fedb_kettlebell_seated_press": "/doodles/doodle-kettlebell-seated-press.svg",
+  "fedb_kettlebell_arnold_press": "/doodles/doodle-kettlebell-arnold-press.svg",
+  "fedb_double_kettlebell_push_press": "/doodles/doodle-double-kettlebell-push-press.svg",
+  "fedb_double_kettlebell_jerk": "/doodles/doodle-double-kettlebell-jerk.svg",
+  "fedb_double_kettlebell_snatch": "/doodles/doodle-double-kettlebell-snatch.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
