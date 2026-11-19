@@ -250,15 +250,38 @@ function snatchStand(hand: Point, extra: Partial<Pose> = {}): Pose {
   return { ...stand(both(hand), { bend: 1 }), ...extra };
 }
 
+/**
+ * The backswing (hike): hips back, knees soft, the torso about 30 degrees above
+ * level, both arms long and straight from the shoulders, the hands high between
+ * the thighs, forearms against them, the bells swung back behind the knees.
+ */
+function snatchHike(): Pose {
+  const pelvis: Point = [-50, -148];
+  const spine = -32;
+  const shoulder = along(pelvis, spine, 98);
+  return {
+    pelvis,
+    chest: along(pelvis, spine, 80),
+    hands: { near: along(shoulder, 112, 125.4), far: along(shoulder, 113, 125.4) },
+    elbows: bends(1),
+    knees: { near: { bend: -1 }, far: { bend: -1 } },
+    feet: { near: [24, 0], far: [16, 0] },
+    toes: { near: 0, far: 0 },
+  };
+}
+
+/** Bells between the legs in the backswing (inside the thighs in the front panel); otherwise in line with the shoulders. */
+const BETWEEN_THIGHS = sw(-12, 12);
+
 function snatchFrames(): Keyframe[] {
   return [
-    { hold: 0.35, bell: "hang", pose: snatchHinge(-14, FLOOR_HAND) },
-    { hold: 0, bell: "swing", pose: snatchHinge(-70, -104) },
-    { hold: 0, bell: "swing", pose: { ...snatchStand([62, -204], { pelvis: [-8, -168], chest: [-4, -248] }), toes: { near: 0, far: 0 } } },
-    { hold: 0, bell: "swing", pose: { ...stand(both([34, -318]), { bend: 1 }), feet: { near: [0, -18], far: [-8, -18] }, toes: { near: 75, far: 75 } } },
-    { hold: 0.5, bell: "rack", pose: stand(pressBoth(1)) },
-    { hold: 0, bell: "swing", pose: snatchStand([56, -196]) },
-    { hold: 0, bell: "hang", pose: snatchStand([10, -150], { elbows: bends(1) }) },
+    { hold: 0.35, bell: "hang", pose: snatchHinge(-14, FLOOR_HAND), sideways: IN_LINE },
+    { hold: 0.1, bell: "swing", pose: snatchHike(), sideways: BETWEEN_THIGHS },
+    { hold: 0, bell: "swing", pose: { ...snatchStand([62, -204], { pelvis: [-8, -168], chest: [-4, -248] }), toes: { near: 0, far: 0 } }, sideways: IN_LINE },
+    { hold: 0, bell: "swing", pose: { ...stand(both([34, -318]), { bend: 1 }), feet: { near: [0, -18], far: [-8, -18] }, toes: { near: 75, far: 75 } }, sideways: IN_LINE },
+    { hold: 0.5, bell: "rack", pose: stand(pressBoth(1)), sideways: IN_LINE },
+    { hold: 0, bell: "swing", pose: snatchStand([56, -196]), sideways: IN_LINE },
+    { hold: 0.1, bell: "swing", pose: snatchHike(), sideways: BETWEEN_THIGHS },
   ];
 }
 
@@ -370,6 +393,6 @@ export const BATCH_AS_SPECS: DoodleSpec[] = [
     props: [FLOOR],
     kettlebell: { hands: ["near", "far"] },
     transition: 0.4,
-    frames: snatchFrames().map(inLine),
+    frames: snatchFrames(),
   },
 ];
