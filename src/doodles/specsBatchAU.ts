@@ -165,10 +165,10 @@ function onCircle(pivot: Point, radius: number, y: number): Point {
 
 /** Bent-knee version: knees fixed 86 above the flat feet, the body one line from the knees to the head. */
 const BK_KNEE: Point = [190, -94];
-const BK_BAR_Y = -224;
+const BK_BAR_Y = -330;
 const BK_RADIUS = BONES.thigh + 98;
 const bkShoulder = (y: number): Point => onCircle(BK_KNEE, BK_RADIUS, y);
-const BK_TOP = BK_BAR_Y + 22;
+const BK_TOP = BK_BAR_Y + 64;
 const BK_HAND: Point = [round(bkShoulder(BK_TOP)[0] + 20), BK_BAR_Y];
 const BK_BOTTOM = lockedBelow(bkShoulder, BK_HAND);
 

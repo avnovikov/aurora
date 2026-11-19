@@ -235,7 +235,7 @@ const malteseFrame = (z: number, hold: number): Keyframe => {
 };
 
 // Victorian cross: face up under the rings, arms straight up, then wide and level.
-const VIC_HAND_X = -90;
+const VIC_HAND_X = -20;
 const VIC_STRAP = 200;
 const VIC_BODY_Y = -100;
 const VIC_ANCHOR: Point = [VIC_HAND_X, VIC_BODY_Y - armRise(4, 98 + VIC_HAND_X) - VIC_STRAP];
@@ -465,7 +465,7 @@ export const BATCH_AP_SPECS: DoodleSpec[] = [
     views: TWO_VIEWS,
     straps: { anchor: VIC_ANCHOR, end: "ring" },
     transition: 0.8,
-    frames: [victorianFrame(26, 0.4), victorianFrame(86, 0), victorianFrame(146, 1.2), victorianFrame(86, 0)],
+    frames: [victorianFrame(26, 0.4), victorianFrame(86, 0), victorianFrame(118, 1.2), victorianFrame(86, 0)],
   },
   {
     id: "hf_133",
@@ -474,7 +474,7 @@ export const BATCH_AP_SPECS: DoodleSpec[] = [
     views: TWO_VIEWS,
     straps: { anchor: SUP_ANCHOR, end: "ring" },
     transition: 0.8,
-    frames: [supportFrame(26, 0.6), supportFrame(44, 1.2)],
+    frames: [supportFrame(26, 0.6), supportFrame(26, 1.2)],
   },
   {
     id: "hf_130",

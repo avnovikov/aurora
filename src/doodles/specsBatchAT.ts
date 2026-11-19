@@ -260,11 +260,16 @@ const windmillMid = (): Pose =>
   windmill({ pelvis: [22, -166], lean: 34, feet: WIDE_FEET, reach: null, look: 28 });
 const windmillLow = (): Pose =>
   windmill({ pelvis: [32, -160], lean: 56, feet: WIDE_FEET, reach: [-44, -20], look: 40 });
-const windmillDeep = (): Pose =>
-  windmill({ pelvis: [38, -152], lean: 76, feet: WIDE_FEET, reach: [-46, -4], look: 50 });
-/** Free hand down to the floor, knees giving a little, to take the second bell. */
-const windmillFloor = (): Pose =>
-  windmill({ pelvis: [36, -136], lean: 80, feet: WIDE_FEET, reach: [-48, -2], look: 52 });
+
+/**
+ * Deep-windmill stance (double and advanced): the bell-side (far) leg is planted straight, so the hips
+ * stay over it (pelvis a leg's length from the far foot) and the lead (near) knee is only soft. The
+ * depth comes from the sideways lean, not from bending either knee.
+ */
+const DEEP_FEET = { near: [-62, 0] as Point, far: [116, 0] as Point };
+const deepTop = (): Pose => windmill({ pelvis: [19, -140], lean: 0, feet: DEEP_FEET, reach: null });
+const deepMid = (): Pose => windmill({ pelvis: [23, -143], lean: 36, feet: DEEP_FEET, reach: null, look: 28 });
+const deepBottom = (reach: Point): Pose => windmill({ pelvis: [31, -144], lean: 82, feet: DEEP_FEET, reach, look: 50 });
 
 const SIDE_FEET = { near: [-26, 0] as Point, far: [30, 0] as Point };
 /** Side press: bell racked on the shoulder, then up and out to lockout with the torso tilting away. */
@@ -305,10 +310,10 @@ const FRONT_SPECS: DoodleSpec[] = [
     kettlebell: { hands: ["near", "far"], size: 14 },
     transition: 1.2,
     frames: [
-      kf(windmillTop(), 0.5, { bell: "rack" }),
-      kf(windmillMid(), 0, { bell: "rack" }),
-      kf(windmillFloor(), 0.6, { bell: "rack" }),
-      kf(windmillMid(), 0, { bell: "rack" }),
+      kf(deepTop(), 0.5, { bell: "rack" }),
+      kf(deepMid(), 0, { bell: "rack" }),
+      kf(deepBottom([-50, -4]), 0.6, { bell: "rack" }),
+      kf(deepMid(), 0, { bell: "rack" }),
     ],
   },
   {
@@ -366,10 +371,10 @@ const FRONT_SPECS: DoodleSpec[] = [
     kettlebell: { hands: ["far"], size: 14 },
     transition: 1.2,
     frames: [
-      kf(windmillTop(), 0.5, { bell: "rack" }),
-      kf(windmillMid(), 0, { bell: "rack" }),
-      kf(windmillDeep(), 0.6, { bell: "rack" }),
-      kf(windmillMid(), 0, { bell: "rack" }),
+      kf(deepTop(), 0.5, { bell: "rack" }),
+      kf(deepMid(), 0, { bell: "rack" }),
+      kf(deepBottom([-52, -2]), 0.6, { bell: "rack" }),
+      kf(deepMid(), 0, { bell: "rack" }),
     ],
   },
 ];
@@ -422,6 +427,7 @@ export const BATCH_AT_SPECS: DoodleSpec[] = [
       kf(jerk(STAND, RACK_NEAR), 0.4, { bell: "rack" }),
       kf(jerk([-6, -138], RACK_NEAR), 0.15, { bell: "rack" }),
       kf(jerk(STAND, [62, -88]), 0, { bell: "rack" }),
+      kf(jerk([-6, -138], OVERHEAD_NEAR, { head: [-28, -266] }), 0.2, { bell: "rack" }),
       kf(jerk(STAND, OVERHEAD_NEAR, { head: WINDOW_HEAD }), 0.5, { bell: "rack" }),
     ],
   },

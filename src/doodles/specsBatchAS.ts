@@ -253,11 +253,11 @@ function snatchStand(hand: Point, extra: Partial<Pose> = {}): Pose {
 function snatchFrames(): Keyframe[] {
   return [
     { hold: 0.35, bell: "hang", pose: snatchHinge(-14, FLOOR_HAND) },
-    { hold: 0, bell: "swing", pose: snatchHinge(-62, -96) },
+    { hold: 0, bell: "swing", pose: snatchHinge(-70, -104) },
     { hold: 0, bell: "swing", pose: { ...snatchStand([62, -204], { pelvis: [-8, -168], chest: [-4, -248] }), toes: { near: 0, far: 0 } } },
-    { hold: 0, bell: "rack", pose: { ...stand(pressBoth(0.25)), feet: { near: [0, -18], far: [-8, -18] }, toes: { near: 75, far: 75 } } },
+    { hold: 0, bell: "swing", pose: { ...stand(both([34, -318]), { bend: 1 }), feet: { near: [0, -18], far: [-8, -18] }, toes: { near: 75, far: 75 } } },
     { hold: 0.5, bell: "rack", pose: stand(pressBoth(1)) },
-    { hold: 0, bell: "rack", pose: stand(pressBoth(0)) },
+    { hold: 0, bell: "swing", pose: snatchStand([56, -196]) },
     { hold: 0, bell: "hang", pose: snatchStand([10, -150], { elbows: bends(1) }) },
   ];
 }
