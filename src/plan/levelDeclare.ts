@@ -7,8 +7,8 @@ import { effectiveSkillTier } from "../rules/skillDose";
 import { emptyMemory, refreshSkillTier } from "../progress/levelEvidence";
 
 /**
- * A plan level is a dose default (#112): a floor for planned moves, never
- * evidence. Results that already earned a higher tier are kept.
+ * A plan level is a dose default (#112 / #115): never evidence. Logged
+ * performance overrides it when dosing; results already earned stay.
  */
 function isBelow(memory: ExerciseMemory, exercise: SeedExercise, level: SkillTier, now: Date): boolean {
   return tierIndex(effectiveSkillTier(memory, exercise, now)) < tierIndex(level);

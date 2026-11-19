@@ -58,9 +58,14 @@ export function liveInferredTier(memory: ExerciseMemory, now: Date): SkillTier |
   return inferred.tier;
 }
 
-/** Effective tier from evidence: max(tested, live inferred, plan default). */
+/**
+ * Effective tier from evidence: max(tested, live inferred, plan default).
+ * `planTier` is only a dose default when there is no logged evidence (#115).
+ */
 export function evidenceTier(memory: ExerciseMemory, now: Date): SkillTier | undefined {
-  return maxOf([testedTier(memory), liveInferredTier(memory, now), memory.planTier]);
+  const hasLogged = memory.loggedTier !== undefined || memory.bestReps !== undefined;
+  const planDefault = hasLogged ? undefined : memory.planTier;
+  return maxOf([testedTier(memory), liveInferredTier(memory, now), planDefault]);
 }
 
 export function needsRetest(memory: ExerciseMemory, now: Date): boolean {
