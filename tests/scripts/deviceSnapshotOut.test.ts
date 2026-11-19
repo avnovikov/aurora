@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   auroraLocalStorageFromCdp,
   defaultFixtureName,
+  isAuroraStorageKey,
   resolveFixturePath,
   sanitizeFixtureName,
 } from "../../scripts/lib/deviceSnapshotOut.mjs";
@@ -43,6 +44,15 @@ describe("defaultFixtureName", () => {
   });
 });
 
+describe("isAuroraStorageKey", () => {
+  it("accepts dotted aurora keys and rejects prototype traps", () => {
+    expect(isAuroraStorageKey("aurora.poc.profile.v1")).toBe(true);
+    expect(isAuroraStorageKey("__proto__")).toBe(false);
+    expect(isAuroraStorageKey("constructor")).toBe(false);
+    expect(isAuroraStorageKey("aurora.")).toBe(false);
+  });
+});
+
 describe("auroraLocalStorageFromCdp", () => {
   it("keeps only aurora.* keys on a plain object", () => {
     expect(auroraLocalStorageFromCdp({ "aurora.poc.profile.v1": { bodyweightKg: 80 } })).toEqual({
@@ -54,5 +64,12 @@ describe("auroraLocalStorageFromCdp", () => {
     expect(() => auroraLocalStorageFromCdp(null)).toThrow(/plain object/);
     expect(() => auroraLocalStorageFromCdp([])).toThrow(/plain object/);
     expect(() => auroraLocalStorageFromCdp({ other: 1 })).toThrow(/unexpected localStorage key/);
+    const polluted = Object.defineProperty(Object.create(null), "__proto__", {
+      value: { x: 1 },
+      enumerable: true,
+      configurable: true,
+      writable: true,
+    });
+    expect(() => auroraLocalStorageFromCdp(polluted)).toThrow(/unexpected localStorage key/);
   });
 });
