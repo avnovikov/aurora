@@ -322,11 +322,7 @@ function stationGapHtml(next: WarmupStep | undefined, state: ViewState): string 
  * Rest countdown as the hero. `lead` sits under the phase eyebrow (work rest
  * puts the next-move row there); `extra` goes after the cue.
  */
-function restHeroHtml(
-  eyebrow: string,
-  state: ViewState,
-  { lead = "", extra = "" }: { lead?: string; extra?: string } = {},
-): string {
+function restHeroHtml(eyebrow: string, state: ViewState, lead = "", extra = ""): string {
   return `
       <section class="session-hero">
         <p class="eyebrow session-phase">${eyebrow}</p>
@@ -339,14 +335,12 @@ function restHeroHtml(
 
 /** Compact doodle + next-set line for work rest; no empty frame when the move has no doodle. */
 function workRestNextHtml(item: PlannedWorkItem | null, state: ViewState): string {
-  let picture = "";
-  let line = "next set";
-  if (item) {
-    const move = displayExerciseName(item.exerciseName);
-    const doodle = doodleMarkup(item.doodlePath, move);
-    if (doodle) picture = `<div class="rest-next-doodle">${doodle}</div>`;
-    line = `next ${escapeHtml(move)} · Set ${state.setIndex} of ${item.dose.sets}`;
-  }
+  const move = item ? displayExerciseName(item.exerciseName) : "";
+  const doodle = item ? doodleMarkup(item.doodlePath, move) : "";
+  const picture = doodle ? `<div class="rest-next-doodle">${doodle}</div>` : "";
+  const line = item
+    ? `next ${escapeHtml(move)} · Set ${state.setIndex} of ${item.dose.sets}`
+    : "next set";
   return `
     <div class="rest-next">
       ${picture}
@@ -554,7 +548,7 @@ function restHtml(planned: PlannedSession, state: ViewState): string {
     : "";
   return `
     <div class="rest-stage swipe-stage" data-swipe-stage="rest">
-      ${restHeroHtml(phase, state, { lead: workRestNextHtml(item, state), extra: getReadyNote })}
+      ${restHeroHtml(phase, state, workRestNextHtml(item, state), getReadyNote)}
       <section class="session-read">
         <p class="tagline">Next set reps</p>
         ${repsStepperHtml("rest-reps-row", `<span class="reps-edit">${reps}</span>`)}

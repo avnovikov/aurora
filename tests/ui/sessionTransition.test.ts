@@ -46,8 +46,7 @@ describe("warm-up → work transition", () => {
     expect(persistPhase(planned, state)).toBe("work");
     const html = shellHtml(planned, state);
     expect(html).toMatch(/<p class="eyebrow session-phase">Get ready<\/p>/);
-    expect(html).toContain('class="rest-next"');
-    expect(html).toContain("next ");
+    expect(html).toContain('class="rest-next-line"');
   });
 
   it("goes straight to work after a warm-up with no ramp (Mobility)", () => {
@@ -66,8 +65,7 @@ describe("warm-up → work transition", () => {
     expect(isGetReadyRest(state)).toBe(false);
     const html = shellHtml(planned, state);
     expect(html).toMatch(/<p class="eyebrow session-phase">Rest<\/p>/);
-    expect(html).toContain('class="rest-next"');
-    expect(html).toContain("next ");
+    expect(html).toContain('class="rest-next-line"');
   });
 
   it("counts the Get ready rest in the planned session estimate", () => {

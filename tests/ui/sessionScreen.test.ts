@@ -83,6 +83,14 @@ function workView(planned: PlannedSession, workIndex = 0): ViewState {
   return state;
 }
 
+function restView(planned: PlannedSession, setIndex = 2, restLeft = 90): ViewState {
+  const state = workView(planned);
+  state.phase = "rest";
+  state.setIndex = setIndex;
+  state.restLeft = restLeft;
+  return state;
+}
+
 /** The text between the first `open` marker and the next `close` after it. */
 function slice(html: string, open: string, close: string): string {
   const start = html.indexOf(open);
@@ -226,11 +234,7 @@ describe("dose as hero", () => {
 
   it("shows the rest countdown as the hero in seconds", () => {
     const planned = planLegs();
-    const state = workView(planned);
-    state.phase = "rest";
-    state.setIndex = 2;
-    state.restLeft = 90;
-    const html = shellHtml(planned, state);
+    const html = shellHtml(planned, restView(planned));
     const dose = slice(html, '<p class="session-dose"', "</p>");
     expect(dose).toContain('<span class="reps" data-rest-left>90</span>');
     expect(dose).toMatch(/class="session-dose-unit" aria-hidden="true">s</);
@@ -241,11 +245,7 @@ describe("dose as hero", () => {
     const planned = planLegs();
     const item = planned.work[0]!;
     expect(item.doodlePath).toBeTruthy();
-    const state = workView(planned);
-    state.phase = "rest";
-    state.setIndex = 2;
-    state.restLeft = 90;
-    const html = shellHtml(planned, state);
+    const html = shellHtml(planned, restView(planned));
     const next = displayExerciseName(item.exerciseName);
     expect(html).toMatch(/<p class="eyebrow session-phase">Rest<\/p>/);
     expect(html).not.toContain("Rest · next");
@@ -260,11 +260,7 @@ describe("dose as hero", () => {
     const planned = planLegs();
     const item = planned.work[0]!;
     item.doodlePath = undefined;
-    const state = workView(planned);
-    state.phase = "rest";
-    state.setIndex = 2;
-    state.restLeft = 90;
-    const html = shellHtml(planned, state);
+    const html = shellHtml(planned, restView(planned));
     expect(html).toContain('class="rest-next"');
     expect(html).toContain(`next ${displayExerciseName(item.exerciseName)} · Set 2 of ${item.dose.sets}`);
     expect(html).not.toContain('class="rest-next-doodle"');
