@@ -271,32 +271,28 @@ function handsBehind(slide: number): Pose {
 // ---------------------------------------------------------------- shoulder circles (two views)
 
 /**
- * Standing, arms hanging, the shoulders rolled in a circle: `phase` (eighths of
- * a turn) 0 = forward, 2 = up, 4 = back, 6 = down. The chest carries the
- * shoulders round (the side view sees forward and back, the front view sees up
- * and down); the head sways a little.
+ * Standing, arms hanging, the shoulders rolled in a circle by the girdle:
+ * `phase` (eighths of a turn) 0 = forward, 2 = up, 4 = back, 6 = down. The
+ * chest and head stay still; each shoulder (and the hanging arm with it)
+ * traces the loop: forward and back in the side view, up and down in the front.
  */
 function shoulderCircle(phase: number): Keyframe {
   const a = (phase * Math.PI) / 4;
-  const pelvis: Point = [0, round(-170.5 - 1.6 * Math.sin(a))];
-  const chest = along(pelvis, -90 + Math.asin(0.2 * Math.cos(a)) * (180 / Math.PI), 78.4 + 1.6 * Math.sin(a));
-  const head: Point = [round(2 + 5 * Math.cos(a)), -306];
-  const solved = solvePose({ pelvis, chest, head });
-  const hand = (side: "near" | "far"): Point => [round(solved.arms[side].root[0] + 0.5), round(solved.arms[side].root[1] + ARM)];
-  const elbow = (side: "near" | "far"): Point => [round(solved.arms[side].root[0] + 0.5), round(solved.arms[side].root[1] + BONES.upperArm)];
+  const girdle = { up: round(14 * Math.sin(a)), forward: round(12 * Math.cos(a)) };
+  // The hands hang plumb under the moved shoulders (centre [0, -270]), arms all but straight.
+  const hand: Point = [round(girdle.forward + 1), round(-270 - girdle.up + ARM - 0.3)];
   return {
     hold: 0,
     pose: {
-      pelvis,
-      chest,
-      head,
-      hands: { near: hand("near"), far: hand("far") },
-      elbows: { near: { at: elbow("near") }, far: { at: elbow("far") } },
+      pelvis: [0, -172],
+      chest: [0, -252],
+      head: [2, -306],
+      hands: { near: hand, far: hand },
       knees: { near: { bend: -1 }, far: { bend: -1 } },
       feet: { near: [-1, 0], far: [3, 0] },
       toes: { near: 0, far: 0 },
     },
-    sideways: { hands: { near: -22, far: 22 }, feet: { near: -12, far: 12 } },
+    sideways: { shoulders: { near: girdle, far: girdle }, hands: { near: -23, far: 23 }, feet: { near: -12, far: 12 } },
   };
 }
 
@@ -441,7 +437,7 @@ export const BATCH_BB_SPECS: DoodleSpec[] = [
     title: "Shoulder Circles",
     views: TWO_VIEWS,
     props: [FLOOR_PROP],
-    transition: 0.3,
+    transition: 0.25,
     frames: [0, 1, 2, 3, 4, 5, 6, 7].map((phase) => shoulderCircle(phase)),
   },
   {

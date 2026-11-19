@@ -136,12 +136,21 @@ function frame(hold: number, spine: Spine, limbs: { arms?: Partial<Record<Side, 
 
 const CR_PELVIS: Point = [0, -14];
 
-/** The hands swing to the floor beside the near hip (`turn` -1), through the middle, to the far hip (+1). */
+/**
+ * The shoulder line rolls about the leaned-back spine (+ twist turns the chest to the near side) and both
+ * hands swing to the floor beside the near hip (`turn` -1), up through the middle, to the far hip (+1).
+ * The head turns with the chest.
+ */
+const CR_TWIST = 65;
+
 function coreRotation(turn: number): Keyframe {
   const pelvis = CR_PELVIS;
   const chest = along(pelvis, 247, 80);
   const spine: Spine = { pelvis, chest, head: along(chest, 247, 56) };
-  const { arm, leg } = roots(spine);
+  const { leg } = roots(spine);
+  const twist = -CR_TWIST * turn;
+  const turned: Sideways = { pelvis: 0, twist };
+  const arm = solveKeyframe3(solvePose(spine), spine, turned).arms;
   const legs: { near: LimbSpec; far: LimbSpec } = {
     near: { plan: dirs(leg.near, LEG, dir3(-50), dir3(12)), toe: 40 },
     far: { plan: dirs(leg.far, LEG, dir3(-50), dir3(12)), toe: 40 },
@@ -155,11 +164,12 @@ function coreRotation(turn: number): Keyframe {
   const arms = {} as Record<Side, LimbSpec>;
   for (const s of ["near", "far"] as Side[]) {
     const hand: Point3 = [target[0] + (s === side ? 0 : 4), target[1] - (s === side ? 0 : 2), target[2] + zOut(s) * 8];
-    const shoulder = arm[s];
+    const shoulder = arm[s].root;
     const hint: Point3 = [hand[0] - 34, hand[1] - 48, hand[2] + zOut(s) * 30];
     arms[s] = { plan: chain(shoulder, ARM, hand, hint) };
   }
-  return frame(0.35, spine, { arms, legs });
+  const k = frame(0.35, spine, { arms, legs });
+  return { ...k, face: { turn: 0 }, sideways: { ...k.sideways, twist } };
 }
 
 // ---------------------------------------------------------------- standing torso twist (hands on hips)
@@ -433,34 +443,59 @@ function halfLocust(lift: number): Pose {
 
 const LT_KNEE: Point = [-30, -3];
 
+/** Roll of the shoulder line at full open: + brings the far shoulder forward, the chest turning to the front (near) leg. */
+const LT_TWIST = 75;
+
 /**
  * Low lunge, the far leg back with its knee on the floor, the near foot forward
- * (knee over the ankle). The far hand rests on the front thigh; `open` opens the chest
- * and reaches the near arm to the ceiling.
+ * (knee over the ankle), hips square. The far hand rests on the front thigh; `open`
+ * rolls the chest `LT_TWIST` towards the front leg and sends the near arm out along
+ * the opening shoulder line (0.5) and up to the ceiling (1); the eyes follow the hand.
  */
-function lungeTwist(open: number): Pose {
+function lungeTwist(open: number): Keyframe {
   const px = -6;
   const pelvis: Point = [px, -(round(Math.sqrt(THIGH ** 2 - (px - LT_KNEE[0]) ** 2)) + 3)];
   const frontFoot: Point = [px + 92, 0];
   const frontKnee = meet(pelvis, THIGH, frontFoot, SHIN, (p, q) => p[0] > q[0]);
-  const spine = round(-74 - 12 * open);
+  const spine = -86;
   const chest = along(pelvis, spine, 80);
-  const shoulder = along(pelvis, spine, 98);
-  const thighHand = along(frontKnee, 180, 26);
-  const farHand = thighHand;
-  const reachUp = along(shoulder, -60 + 0 * (1 - open), REACH);
-  const nearHand: Point = [round(thighHand[0] + (reachUp[0] - thighHand[0]) * open), round(thighHand[1] + (reachUp[1] - thighHand[1]) * open)];
-  return {
+  const head = along(chest, spine, 56);
+  const twist = round(LT_TWIST * open);
+  const base: Pose = {
     pelvis,
     chest,
-    head: along(along(chest, spine, 20), spine - 8 * open, 36),
-    hands: { near: nearHand, far: farHand },
-    elbows: { near: { bend: 1 }, far: { bend: 1 } },
+    head,
     knees: { near: { at: frontKnee }, far: { at: LT_KNEE } },
     feet: { near: frontFoot, far: [-116, -3] },
     toes: { near: 0, far: 180 },
   };
+  const arms = solveKeyframe3(solvePose(base), base, { twist }).arms;
+  const thigh = along(frontKnee, angle2(frontKnee, pelvis), 30);
+  const farHand: Point3 = [thigh[0], thigh[1] - 4, -HIP_SIDE];
+  const nearRoot = arms.near.root;
+  const farRoot = arms.far.root;
+  // Out along the shoulder line (far to near) and up, or up, a little back and out.
+  const lineOut = unit3(add3(unit3(sub3(nearRoot, farRoot)), [0, -1, 0]));
+  const reach: Record<string, Point3> = {
+    "0": [thigh[0] - 4, thigh[1] - 8, -HIP_SIDE - 10],
+    "0.5": add3(nearRoot, scale3(lineOut, 124)),
+    "1": add3(nearRoot, scale3(unit3([-0.3, -1, -0.25]), 124.5)),
+  };
+  const nearHand = reach[String(open)];
+  return {
+    hold: 0,
+    face: { turn: round(-35 * open), nod: round(-25 * open) },
+    pose: {
+      ...base,
+      hands: { near: flat(nearHand), far: flat(farHand) },
+      elbows: { near: { bend: 1 }, far: { bend: 1 } },
+    },
+    sideways: { twist, hands: { near: round(nearHand[2]), far: round(farHand[2]) }, elbows: { far: { out: 40 } } },
+  };
 }
+
+/** Direction from `a` to `b` in degrees. */
+const angle2 = (a: Point, b: Point): number => (Math.atan2(b[1] - a[1], b[0] - a[0]) * 180) / Math.PI;
 
 const ROLL_STEPS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9];
 
@@ -601,11 +636,14 @@ export const BATCH_BG_SPECS: DoodleSpec[] = [
     id: "wger_1868",
     slug: "lunge-with-twist-stretch",
     title: "Lunge with Twist Stretch",
+    views: TWO_VIEWS,
     props: [FLOOR_PROP],
-    transition: 1.3,
+    transition: 0.8,
     frames: [
-      { hold: 0.4, pose: lungeTwist(0) },
-      { hold: 1.2, pose: lungeTwist(1) },
+      { ...lungeTwist(0), hold: 0.4 },
+      { ...lungeTwist(0.5), hold: 0 },
+      { ...lungeTwist(1), hold: 1.2 },
+      { ...lungeTwist(0.5), hold: 0 },
     ],
   },
   {

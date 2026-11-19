@@ -235,6 +235,47 @@ function rotation(turn: number, hold: number, arms: "straight" | "bent"): Keyfra
   return { pose, hold, sideways };
 }
 
+/**
+ * Standing torso twist with the arms bent in front of the chest: the hips and feet stay square while
+ * the shoulder line rolls `twist` degrees about the spine (+ brings the far shoulder forward, so the
+ * chest turns to the near side). The hands stay together `HANDS_OUT` in front of the turned chest, the
+ * elbows out to the sides of the turned shoulders, and the head turns with the chest.
+ */
+function torsoTwist(twist: number, hold: number): Keyframe {
+  const t = (twist * Math.PI) / 180;
+  // The chest's sideways (near to far) and front directions after the roll.
+  const across: Point3 = [Math.sin(t), 0, Math.cos(t)];
+  const front: Point3 = [Math.cos(t), 0, -Math.sin(t)];
+  const centre: Point3 = [0, ROT_SHOULDER_Y, 0];
+  const hands: Partial<Record<Side, Point>> = {};
+  const elbows: Partial<Record<Side, { at: Point }>> = {};
+  const swHands: Partial<Record<Side, number>> = {};
+  const swElbows: Partial<Record<Side, { at: number }>> = {};
+  for (const side of ["near", "far"] as Side[]) {
+    const root = add3(centre, scale3(across, zOut(side) * SHOULDER_SIDE));
+    const hand = add3(add3(centre, scale3(front, HANDS_OUT)), add3([0, 16 + zOut(side) * 2, 0], scale3(across, zOut(side) * 4)));
+    const elbow = elbowToward(root, hand, add3(add3(root, [0, 30, 0]), add3(scale3(across, zOut(side) * 90), scale3(front, 10))));
+    hands[side] = [round(hand[0]), round(hand[1])];
+    elbows[side] = { at: [round(elbow[0]), round(elbow[1])] };
+    swHands[side] = round(hand[2]);
+    swElbows[side] = { at: round(elbow[2]) };
+  }
+  return {
+    hold,
+    face: { turn: 0 },
+    pose: {
+      pelvis: ROT_PELVIS,
+      chest: ROT_CHEST,
+      hands,
+      elbows,
+      feet: { near: [0, 0], far: [0, 0] },
+      toes: { near: 0, far: 0 },
+      spreadFeet: true,
+    },
+    sideways: { twist, feet: { near: -ROT_FEET_Z, far: ROT_FEET_Z }, hands: swHands, elbows: swElbows },
+  };
+}
+
 // ---------------------------------------------------------------- supine twist (side + top)
 
 const ST_PELVIS: Point = [0, -22];
@@ -421,35 +462,41 @@ const SS_PELVIS: Point = [0, -90];
 const SS_CHAIR: Prop = { kind: "box", x: -60, y: -80, w: 110, h: 80, frontHalf: 34 };
 
 /**
- * Sitting on a chair, feet flat, fingers behind the head. `lean` degrees of forward fold from upright
- * (0 sits tall, elbows wide); folded, the near elbow drops towards the floor inside the far knee (`fold` 1)
- * while the far elbow opens up and out.
+ * Sitting on a chair, feet flat, fingers laced behind the head, elbows wide. `lean` degrees of forward
+ * fold from upright, `twist` the shoulder line's roll about the spine (- turns the chest to the far side,
+ * bringing the near shoulder forward). Folded and turned, the near elbow drops towards the floor inside
+ * the far knee while the far elbow opens up and back. The hands stay behind the (turned) head.
  */
-function spinalStretch(lean: number, hold: number): Keyframe {
+const cross3 = (a: Point3, b: Point3): Point3 => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+
+function spinalStretch(lean: number, twist: number, hold: number, shift = 0): Keyframe {
   const a = (lean * Math.PI) / 180;
   const chest: Point = [round(SS_PELVIS[0] + 80 * Math.sin(a)), round(SS_PELVIS[1] - 80 * Math.cos(a))];
   const head: Point = [round(chest[0] + 56 * Math.sin(a)), round(chest[1] - 56 * Math.cos(a))];
   const base: Pose = { pelvis: SS_PELVIS, chest, head };
-  const figure = solveKeyframe3(solvePose(base), base, { pelvis: 0 });
-  const fold = lean > 20;
-  const behind: Point3 = [head[0] - 27 * Math.cos(a) - 14 * Math.sin(a), head[1] - 27 * Math.sin(a) + 14 * Math.cos(a), 0];
-  const hands: Record<Side, Point3> = {
-    near: [behind[0], behind[1], -30],
-    far: [behind[0], behind[1], 30],
-  };
+  const turn: Sideways = shift ? { pelvis: 0, chest: shift, twist } : { pelvis: 0, twist };
+  const figure = solveKeyframe3(solvePose(base), base, turn);
   const root = (side: Side): Point3 => figure.arms[side].root;
-  const elbow: Record<Side, Point3> = { near: [0, 0, 0], far: [0, 0, 0] };
-  if (fold) {
-    // Folded over the thighs with the elbows at different heights: the near one drops towards the floor, the far one lifts and opens.
-    elbow.near = elbowToward(root("near"), hands.near, [root("near")[0] + 40, root("near")[1] + 140, root("near")[2] - 30]);
-    elbow.far = elbowToward(root("far"), hands.far, [root("far")[0] - 30, root("far")[1] - 80, root("far")[2] + 90]);
-  } else {
-    elbow.near = elbowToward(root("near"), hands.near, [root("near")[0] - 10, root("near")[1] - 10, root("near")[2] - 90]);
-    elbow.far = elbowToward(root("far"), hands.far, [root("far")[0] - 10, root("far")[1] - 10, root("far")[2] + 90]);
-  }
+  // The turned chest's frame: across (near to far), up the spine, front.
+  const across = unit3(sub3(root("far"), root("near")));
+  const up = unit3(sub3(figure.chest, figure.waist));
+  const front = cross3(across, up);
+  const behind = add3(figure.head, add3(scale3(front, -22), scale3(up, -4)));
+  const hands: Record<Side, Point3> = {
+    near: add3(behind, scale3(across, -6)),
+    far: add3(behind, scale3(across, 6)),
+  };
+  // Elbows wide, out along the turned shoulder line: folded and turned, that line tips, so the near
+  // elbow points down at the floor and the far one up.
+  const hint = (side: Side): Point3 => add3(root(side), add3(scale3(across, zOut(side) * 90), scale3(front, 10)));
+  const elbow: Record<Side, Point3> = {
+    near: elbowToward(root("near"), hands.near, hint("near")),
+    far: elbowToward(root("far"), hands.far, hint("far")),
+  };
   const flat = (p: Point3): Point => [round(p[0]), round(p[1])];
   return {
     hold,
+    face: { nod: 8 },
     pose: {
       ...base,
       hands: { near: flat(hands.near), far: flat(hands.far) },
@@ -459,8 +506,8 @@ function spinalStretch(lean: number, hold: number): Keyframe {
       toes: { near: 0, far: 0 },
     },
     sideways: {
-      pelvis: 0,
-      hands: { near: round(hands.near[2]), far: 30 },
+      ...turn,
+      hands: { near: round(hands.near[2]), far: round(hands.far[2]) },
       elbows: { near: { at: round(elbow.near[2]) }, far: { at: round(elbow.far[2]) } },
       knees: { near: { at: -22 }, far: { at: 22 } },
       feet: { near: -22, far: 22 },
@@ -517,7 +564,7 @@ export const BATCH_BH_SPECS: DoodleSpec[] = [
     title: "Torso Twist",
     views: TOP_VIEWS,
     transition: 0.8,
-    frames: [rotation(-70, 0.3, "bent"), rotation(0, 0, "bent"), rotation(70, 0.3, "bent"), rotation(0, 0, "bent")],
+    frames: [torsoTwist(70, 0.3), torsoTwist(0, 0), torsoTwist(-70, 0.3), torsoTwist(0, 0)],
   },
   {
     id: "ntc_supine_twist",
@@ -561,7 +608,7 @@ export const BATCH_BH_SPECS: DoodleSpec[] = [
     views: TOP_VIEWS,
     props: [SS_CHAIR, FLOOR_PROP],
     transition: 1.4,
-    frames: [spinalStretch(0, 0.5), spinalStretch(66, 1.5)],
+    frames: [spinalStretch(0, 0, 0.5), spinalStretch(0, -60, 0.4), spinalStretch(74, -80, 1.5, 22), spinalStretch(0, -60, 0.2)],
   },
   {
     id: "wger_1861",

@@ -1,6 +1,6 @@
 import { BONES, HIP_SIDE, other, solvePose, zOut } from "./rig";
 import type { AuthoredPose, DoodleSpec, Keyframe, Point, Pose, Prop, Side } from "./rig";
-import type { Point3 } from "./rig3d";
+import { solveKeyframe3, type Point3 } from "./rig3d";
 import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
 import { FLOOR_PROP, along, angle, lerp, round, supineTorso } from "./geom";
 import { plank } from "./specsBatchI";
@@ -191,8 +191,17 @@ function ankleCircle(toe: number): Pose {
 
 const HK_PELVIS: Point = [2, -85];
 
-/** Half-kneeling, arms out in front, the near arm rotated open `psi` degrees (0 = palms together, 90 = out to the side). */
-function halfKneelOpen(psi: number): Keyframe {
+/** Full roll of the shoulder line at the open end: + brings the far shoulder forward, the chest turning to the near side. */
+const HK_TWIST = 85;
+
+/**
+ * Half-kneeling (near foot forward, far knee down, hips square), arms straight out in front at shoulder
+ * height, palms together. `open` 0..1 rolls the shoulder line `HK_TWIST` about the spine: the far arm
+ * keeps reaching forward while the near arm sweeps open and back with the chest until the arms make one
+ * line fore and aft; the eyes turn with the chest and on after the hand.
+ */
+function halfKneelOpen(open: number): Keyframe {
+  const twist = round(HK_TWIST * open);
   const base: Pose = {
     pelvis: HK_PELVIS,
     chest: [HK_PELVIS[0] - 4, HK_PELVIS[1] - 80],
@@ -200,20 +209,26 @@ function halfKneelOpen(psi: number): Keyframe {
     feet: { near: [HK_PELVIS[0] + 86, 0], far: [-116, -3] },
     toes: { near: 0, far: 180 },
   };
-  const sh = shoulderOf(base);
-  // Straight arms: the near arm swings about its shoulder (z -22), starting angled in so the palms meet.
-  const r = ((psi - 10.2) * Math.PI) / 180;
+  const arms = solveKeyframe3(solvePose(base), base, { twist }).arms;
   const reach = 124;
-  const nearHand: Point = [round(sh[0] + reach * Math.cos(r)), round(sh[1])];
-  const nearZ = round(-22 - reach * Math.sin(r));
+  // Horizontal hand directions, degrees from straight ahead (+x) towards the near side (-z).
+  const toward = (root: Point3, deg: number): Point3 => {
+    const r = (deg * Math.PI) / 180;
+    return [root[0] + reach * Math.cos(r), root[1], root[2] - reach * Math.sin(r)];
+  };
+  // Palms together: each arm angled in so the hands meet on the midline.
+  const inward = (Math.asin(22 / reach) * 180) / Math.PI;
+  const near = toward(arms.near.root, -inward + (180 + inward) * open - (open === 1 ? 6 : 0));
+  const far = toward(arms.far.root, inward * (1 - open));
   return {
     hold: 0,
+    face: { turn: round(-40 * open) },
     pose: {
       ...base,
-      hands: { near: nearHand, far: [round(sh[0] + 122.4), round(sh[1])] },
+      hands: { near: [round(near[0]), round(near[1])], far: [round(far[0]), round(far[1])] },
       elbows: { near: { bend: 1 }, far: { bend: 1 } },
     },
-    sideways: { hands: { near: nearZ, far: 2 } },
+    sideways: { twist, hands: { near: round(near[2]), far: round(far[2]) } },
   };
 }
 
@@ -412,7 +427,7 @@ const arc = (steps: number[], make: (v: number) => Keyframe, holds: [number, num
     return { ...make(v), hold: i === 0 ? holds[0] : hold };
   });
 
-const OPEN = [0, 30, 60, 90, 105];
+const OPEN = [0, 0.3, 0.55, 0.8, 1];
 const CIRCLE = [0, 45, 90, 135, 180, 225, 270, 315];
 
 export const BATCH_BE_SPECS: DoodleSpec[] = [
@@ -423,7 +438,7 @@ export const BATCH_BE_SPECS: DoodleSpec[] = [
     views: TOP_VIEWS,
     props: [FLOOR_PROP],
     transition: 0.4,
-    frames: [...arc(OPEN, halfKneelOpen, [0.5, 1]), ...arc([90, 60, 30], halfKneelOpen, [0, 0])],
+    frames: [...arc(OPEN, halfKneelOpen, [0.5, 1]), ...arc([0.66, 0.33], halfKneelOpen, [0, 0])],
   },
   {
     id: "fedb_ankle_circles",
