@@ -1,5 +1,5 @@
 import { templateToStarter } from "../data/seed";
-import type { SessionEvaluation } from "../domain/program";
+import type { HistoryPulse, SessionEvaluation } from "../domain/program";
 import {
   loadPlanQueue,
   peekNextTemplate,
@@ -72,8 +72,9 @@ export function bootApp(root: HTMLElement): void {
       planned: resume.planned,
       resume,
       addWeightKg: profile.addWeightKg,
-      onDone: (log, planned, startedAtMs) =>
-        showEvaluation(root, log, planned, startedAtMs),
+      onDone: (log, planned, startedAtMs, pulse) => {
+        showEvaluation(root, log, planned, startedAtMs, pulse);
+      },
     });
     return;
   }
@@ -206,8 +207,9 @@ function showTodayHome(root: HTMLElement): void {
       renderSessionView(root, {
         planned,
         addWeightKg: profile.addWeightKg,
-        onDone: (log, livePlanned, startedAtMs) =>
-          showEvaluation(root, log, livePlanned, startedAtMs),
+        onDone: (log, livePlanned, startedAtMs, pulse) => {
+          showEvaluation(root, log, livePlanned, startedAtMs, pulse);
+        },
       });
     },
   }, `Start ${dayTitle(next)}`);
@@ -218,6 +220,7 @@ function showEvaluation(
   log: WorkoutLog,
   planned: PlannedSession,
   startedAtMs: number,
+  pulse?: HistoryPulse,
 ): void {
   renderEvaluationView(root, log.entries.length, (evaluation: SessionEvaluation) => {
     const result = commitSessionEvaluation({
@@ -225,6 +228,7 @@ function showEvaluation(
       planned,
       log,
       memories: loadMemories(),
+      pulse,
     });
     appendHistory(result.history);
     saveMemories(result.memories);

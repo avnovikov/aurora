@@ -675,6 +675,17 @@ button:disabled {
   cursor: pointer;
 }
 
+.history-sessions {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.history-session-header {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+}
+
 .history-feed {
   list-style: none;
   margin: 0;

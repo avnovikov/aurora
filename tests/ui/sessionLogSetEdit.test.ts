@@ -140,6 +140,32 @@ describe("completeSet sticky reps", () => {
     expect(h.onSlowSetArmed).toHaveBeenCalledWith(planned.work[0]!.exerciseId);
   });
 
+  it("logs averageBpm from the pulse window when samples exist", () => {
+    const planned = planLegs();
+    const state = workState(planned);
+    const started = Date.now() - 10_000;
+    state.workState = { ...state.workState!, setStartedAtMs: started };
+    const h = handlers();
+    h.pulseAverageBpmForSet = vi.fn(() => 147);
+
+    completeSet(planned, state, "completed", h);
+
+    expect(h.pulseAverageBpmForSet).toHaveBeenCalled();
+    expect(state.log.entries[0]?.averageBpm).toBe(147);
+  });
+
+  it("omits averageBpm on skip even if a pulse helper is present", () => {
+    const planned = planLegs();
+    const state = workState(planned);
+    const h = handlers();
+    h.pulseAverageBpmForSet = vi.fn(() => 147);
+
+    completeSet(planned, state, "skipped", h);
+
+    expect(h.pulseAverageBpmForSet).not.toHaveBeenCalled();
+    expect(state.log.entries[0]?.averageBpm).toBeUndefined();
+  });
+
   it("after the last set, rests before the next exercise using that slot's rest", () => {
     const planned = planLegs();
     expect(planned.work.length).toBeGreaterThan(1);

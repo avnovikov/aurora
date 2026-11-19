@@ -15,7 +15,7 @@ Screenshots: `docs/help/screenshots/`. First-time walkthrough: [../tutorial/take
 | Today | Next plan-queue day; ≈ minutes; pulse status and Connect; sleep check-in (required before Start); optional pain; Start; optional “Train something else today” | [04-today.png](../help/screenshots/04-today.png) |
 | Library | Exercise catalogue; search; filters Show / Area & muscle / Level; detail (cues, standards, personal bests, plan actions when available) | [02-library.png](../help/screenshots/02-library.png) |
 | Progress | Level profile by movement pattern (novice→elite, within-tier %); weak-links; current readiness toward Targets (rows open History for that thread) | [06-progress.png](../help/screenshots/06-progress.png) |
-| History | Logged sessions and sets (exercise · set · reps or hold · when); legacy rows may be session summaries only | [07-history.png](../help/screenshots/07-history.png) |
+| History | Session blocks (plan · when · assessment; exercise reps rolled up + optional avg BPM); legacy rows stay session summaries | [07-history.png](../help/screenshots/07-history.png) |
 | Body | Muscle load front/back map and ranked list; periods Week / Month / Quarter / Half year / Year; primaries full, secondaries half, stabilisers quarter | [08-body.png](../help/screenshots/08-body.png) |
 | Plan | Ordered queue of upcoming days (not a weekday calendar); Today is the first card; area days and skill paths with Targets; per-exercise Swap / Easier; remake area or skill; reorder; add days; plan level | [03-plan.png](../help/screenshots/03-plan.png) |
 | Settings | Sub-tabs You / Gear / Training / App: bodyweight, resting and max HR, injuries, equipment, training defaults, palette, voice | [01-settings.png](../help/screenshots/01-settings.png) |
