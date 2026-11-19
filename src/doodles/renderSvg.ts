@@ -1,5 +1,5 @@
 import { FOCUS_BY_ID, type Focus, type Segment } from "./focus";
-import { bellSize, bells, gearPoints, panelOf, RING_RADIUS, strapAnchor, strapAttach, strapLine, strapSides } from "./gear";
+import { bellSize, bells, byTheHorns, gearPoints, handsOff, panelOf, RING_RADIUS, strapAnchor, strapAttach, strapLine, strapSides } from "./gear";
 import type { Panel } from "./project";
 import { dualLayout, renderDualSvg } from "./renderDual";
 import { sampleTimeline, SEGMENTS, type DoodleSpec, type Point, type Prop, type Side, type Solved } from "./rig";
@@ -125,9 +125,11 @@ function handBandSvg(spec: DoodleSpec, poses: Solved[], timing: string, map: Map
 /** Kettlebell handle stroke (the bell itself is a solid disc: never a second head). */
 const HANDLE_WIDTH = 4;
 
-/** A kettlebell in one hand: a solid bell and a handle arc up through the grip. */
-function bellSvg(spec: DoodleSpec, side: Side, poses: Solved[], timing: string, map: Mapper, scale: number, panel: Panel, opacity: number): string {
-  if (!spec.kettlebell?.hands.includes(side)) return "";
+/** A bell that changes hands or is held by the horns is drawn in its own layers (`bellBack`, `bellFront`), not with one arm. */
+const layeredBell = (spec: DoodleSpec): boolean => byTheHorns(spec) || handsOff(spec);
+
+/** A solid bell and a handle arc up through the grip, for the bell that starts in `side`; `attrs` (and `extra` children) go on its group. */
+function bellGroup(spec: DoodleSpec, side: Side, poses: Solved[], timing: string, map: Mapper, scale: number, panel: Panel, attrs: string, extra = ""): string {
   const list = bells(spec, poses, side, panel);
   const d = list.map(({ handle: [a, c, b] }) => {
     const [p, q, r] = [a, c, b].map(map);
@@ -135,7 +137,28 @@ function bellSvg(spec: DoodleSpec, side: Side, poses: Solved[], timing: string, 
   });
   const handle = `<path d="${d[0]}" stroke-width="${fmt(HANDLE_WIDTH * scale)}">${animate("d", d, timing)}</path>`;
   const body = animatedCircle(list.map((bell) => map(bell.centre)), bellSize(spec) * scale, INK, timing, ` stroke-width="${fmt(2 * scale)}"`);
-  return `<g${fadeAttr(opacity)}>${handle}${body}</g>`;
+  return `<g${attrs}>${handle}${body}${extra}</g>`;
+}
+
+/** A kettlebell in one hand. */
+function bellSvg(spec: DoodleSpec, side: Side, poses: Solved[], timing: string, map: Mapper, scale: number, panel: Panel, opacity: number): string {
+  if (!spec.kettlebell?.hands.includes(side) || layeredBell(spec)) return "";
+  return bellGroup(spec, side, poses, timing, map, scale, panel, fadeAttr(opacity));
+}
+
+/**
+ * A bell handed between the hands or held by the horns, at full strength.
+ * `back`: a copy drawn just behind the torso (only where `inFront` is known);
+ * otherwise drawn over the figure, shown only while `inFront` (when known), so
+ * a bell behind the head is hidden by it (and by the neck).
+ */
+function layeredBellSvg(spec: DoodleSpec, back: boolean, poses: Solved[], timing: string, map: Mapper, scale: number, panel: Panel, inFront?: boolean[]): string {
+  if (!spec.kettlebell || !layeredBell(spec)) return "";
+  const side = spec.kettlebell.hands[0];
+  if (back) return inFront ? bellGroup(spec, side, poses, timing, map, scale, panel, "") : "";
+  if (!inFront) return bellGroup(spec, side, poses, timing, map, scale, panel, "");
+  const shown = inFront.map((front) => (front ? "1" : "0"));
+  return bellGroup(spec, side, poses, timing, map, scale, panel, ` opacity="${shown[0]}"`, animate("opacity", shown, timing));
 }
 
 /** A board's posts stand this far in from each end. */
@@ -383,6 +406,7 @@ export const FIGURE_PARTS = [
   "armFar",
   "strapFar",
   "bellFar",
+  "bellBack",
   "spine",
   "head",
   "legNear",
@@ -392,6 +416,7 @@ export const FIGURE_PARTS = [
   "handBand",
   "bellNear",
   "wheel",
+  "bellFront",
 ] as const;
 export type FigurePart = (typeof FIGURE_PARTS)[number];
 
@@ -404,6 +429,8 @@ interface FigureOptions {
   order?: readonly FigurePart[];
   /** Which panel the poses are (front: straps hang above each hand, racked bells sit outside the forearm). */
   panel?: Panel;
+  /** Per sample, whether a bell held by the horns is in front of the head (two views; see `bellInFront`). */
+  bellInFront?: boolean[];
 }
 
 /** The far side at full strength in a front view, faded behind the near side otherwise. */
@@ -415,7 +442,7 @@ export function figureSvg(
   poses: Solved[],
   timing: string,
   map: Mapper,
-  { headScale = 1, farOpacity = FAR_OPACITY, order = FIGURE_PARTS, panel = panelOf(spec) }: FigureOptions = {},
+  { headScale = 1, farOpacity = FAR_OPACITY, order = FIGURE_PARTS, panel = panelOf(spec), bellInFront }: FigureOptions = {},
 ): string {
   const parts: Record<FigurePart, () => string> = {
     legFar: () => animatedPolyline(legPath("far"), poses, timing, farOpacity, map),
@@ -431,6 +458,8 @@ export function figureSvg(
     handBand: () => handBandSvg(spec, poses, timing, map),
     bellFar: () => bellSvg(spec, "far", poses, timing, map, headScale, panel, farOpacity),
     bellNear: () => bellSvg(spec, "near", poses, timing, map, headScale, panel, 1),
+    bellBack: () => layeredBellSvg(spec, true, poses, timing, map, headScale, panel, bellInFront),
+    bellFront: () => layeredBellSvg(spec, false, poses, timing, map, headScale, panel, bellInFront),
   };
   return order.map((part) => parts[part]()).join("");
 }

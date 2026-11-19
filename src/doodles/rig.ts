@@ -106,8 +106,17 @@ export interface Keyframe {
    * `swing` on in the line of the forearm, flung out beyond the hand (swings,
    * snatch pulls); `rack` resting on the back of the forearm by the wrist
    * (front rack, overhead, behind the forearm in the side view).
+   * Per hand: `{ near: "rack", far: "hang" }` (a hand left out hangs).
+   * `horns`: both hands on one bell by the horns, the bell beyond the joined
+   * hands along the forearms (halo, overhead triceps extension).
    */
-  bell?: BellMode;
+  bell?: BellMode | "horns" | Partial<Record<Side, BellMode>>;
+  /**
+   * With one `kettlebell`, the hand holding it from this keyframe on (until
+   * another keyframe says otherwise, round the loop). The keyframe where it
+   * changes is the hand-off: both hands are together on the bell there.
+   */
+  bellIn?: Side;
 }
 
 export type BellMode = "hang" | "swing" | "rack";
@@ -123,8 +132,18 @@ export interface Straps {
   end: "ring" | "handle" | "band";
   /** Which hands (knees, feet) hold one (default both). */
   sides?: readonly Side[];
-  /** What it holds (default the hands): the knees (a band behind the knee) or the feet (ankles in the cradles: suspended push-up, pike). */
-  to?: "hands" | "knees" | "feet";
+  /**
+   * What it holds (default the hands): the upper arms just above the elbows (a
+   * band looped round the arm: single-arm band row), the knees (a band behind
+   * the knee) or the feet (ankles in the cradles: suspended push-up, pike).
+   */
+  to?: "hands" | "elbows" | "knees" | "feet";
+  /**
+   * Two views: the front panel's anchors sit this far either side of the
+   * centre line (near at z = -width, far at +width; 0: one shared anchor).
+   * Default: above where each strap's hand (knee, ankle) is in the first keyframe.
+   */
+  width?: number;
 }
 
 /** Kettlebells hanging from gripping hands (`size`: bell radius, default KETTLEBELL.size). */

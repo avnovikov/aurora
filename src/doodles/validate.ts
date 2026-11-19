@@ -1,5 +1,5 @@
 import { BONES, SEGMENTS, dist, reflectSolved, sampleTimeline, type DoodleSpec, type Point, type Prop, type Side, type Solved } from "./rig";
-import { bells, strapAnchor, strapAttach, strapSides } from "./gear";
+import { bellHolders, bells, bellSize, byTheHorns, ELBOW_LOOP, handsOff, strapAnchor, strapAttach, strapSides } from "./gear";
 import type { Panel } from "./project";
 import { dualLayout } from "./renderDual";
 import { figurePoints, propSegments, specViewBox } from "./renderSvg";
@@ -316,14 +316,59 @@ export const STRAP_STRETCH = 0.06;
 
 /** Spec-level rules for straps, hand bands and kettlebells. */
 export function gearGuards(spec: DoodleSpec): string[] {
+  return [...strapGuards(spec), ...bellGuards(spec)];
+}
+
+function strapGuards(spec: DoodleSpec): string[] {
   const errors: string[] = [];
-  const straps = spec.straps;
-  if (straps) {
-    if (straps.sides && straps.sides.length === 0) errors.push("straps.sides is empty");
-  }
-  if (spec.kettlebell && spec.kettlebell.hands.length === 0) errors.push("kettlebell.hands is empty");
-  if (spec.frames.some((frame) => frame.bell) && !spec.kettlebell) errors.push("keyframe bell needs a kettlebell");
+  if (spec.straps?.sides?.length === 0) errors.push("straps.sides is empty");
+  if ((spec.straps?.width ?? 0) < 0) errors.push("straps.width is negative");
   return errors;
+}
+
+/** Per-hand modes name hands that hold a bell (unless the bell changes hands). */
+function perHandIssues(spec: DoodleSpec, bells: readonly Side[]): string[] {
+  if (handsOff(spec)) return [];
+  return spec.frames.flatMap((frame, k) => {
+    if (typeof frame.bell !== "object") return [];
+    return (Object.keys(frame.bell) as Side[]).filter((side) => !bells.includes(side)).map((side) => `frame ${k}: bell.${side} but no kettlebell in that hand`);
+  });
+}
+
+function bellGuards(spec: DoodleSpec): string[] {
+  const errors: string[] = [];
+  if (!spec.kettlebell) {
+    if (spec.frames.some((frame) => frame.bell)) errors.push("keyframe bell needs a kettlebell");
+    if (handsOff(spec)) errors.push("keyframe bellIn needs one kettlebell (one hand in kettlebell.hands)");
+    return errors;
+  }
+  const bells = spec.kettlebell.hands;
+  if (bells.length === 0) errors.push("kettlebell.hands is empty");
+  if (handsOff(spec) && bells.length !== 1) errors.push("keyframe bellIn needs one kettlebell (one hand in kettlebell.hands)");
+  if (byTheHorns(spec) && bells.length !== 1) errors.push("bell horns needs one kettlebell (one hand in kettlebell.hands)");
+  return [...errors, ...perHandIssues(spec, bells)];
+}
+
+/** Hand tips at most this many bell radii apart count as both hands on one bell (a hand-off, the horns). */
+export const HANDS_ON_BELL = 1.5;
+
+/**
+ * Keyframes that need both hands on the bell: a hand-off (`bellIn` changes,
+ * round the loop) and `horns`. `gap(k)`: how far apart the hand tips are at keyframe k.
+ */
+function bellGripIssues(spec: DoodleSpec, gap: (k: number) => number): string[] {
+  const side = spec.kettlebell?.hands[0];
+  if (!side) return [];
+  const holders = bellHolders(spec, side);
+  const reach = HANDS_ON_BELL * bellSize(spec);
+  return spec.frames.flatMap((frame, k) => {
+    const handOff = handsOff(spec) && holders[k] !== holders[(k + holders.length - 1) % holders.length];
+    const horns = frame.bell === "horns";
+    if (!handOff && !horns) return [];
+    const apart = gap(k);
+    if (apart <= reach) return [];
+    return [`frame ${k}: bell ${handOff ? "hand-off" : "horns"} needs both hands on the bell (hand tips ${round(apart, 1)} apart > ${round(reach, 1)})`];
+  });
 }
 
 /** Sample time label for gear issues. */
@@ -428,6 +473,10 @@ function validateFlat(spec: DoodleSpec): SpecReport {
   }
   errors.push(...keyframeErrors(keyframes), ...transitionAnatomy, ...transitionPropCrossings);
   errors.push(...gearIssues(spec, timeline.poses, timeline, spec.view === "front" ? "front" : "side"));
+  errors.push(...bellGripIssues(spec, (k) => {
+    const pose = timeline.poses[timeline.keyframeIndex[k]];
+    return dist(pose.arms.near.end, pose.arms.far.end);
+  }));
 
   return {
     slug: spec.slug,
@@ -557,12 +606,21 @@ function validateDual(spec: DoodleSpec): SpecReport {
     const anchor = spec.straps!.anchor;
     const z = strapAnchor(spec, layout.front, side, "front")[0];
     const joint = (f: Figure3): Point3 => {
+      if (spec.straps!.to === "elbows") {
+        const { root, mid } = f.arms[side];
+        const loop = (i: number): number => root[i] + (mid[i] - root[i]) * ELBOW_LOOP;
+        return [loop(0), loop(1), loop(2)];
+      }
       if (spec.straps!.to === "knees") return f.legs[side].mid;
       return spec.straps!.to === "feet" ? f.legs[side].joint : f.arms[side].end;
     };
     return timeline.poses.map((f) => dist3([anchor[0], anchor[1], z], joint(f)));
   };
   errors.push(...gearIssues(spec, layout.side, timeline, "side", strapLengths));
+  errors.push(...bellGripIssues(spec, (k) => {
+    const figure = timeline.poses[timeline.keyframeIndex[k]];
+    return dist3(figure.arms.near.end, figure.arms.far.end);
+  }));
   const torsos = keyframes.map((k) => k.torsoLength);
   return {
     slug: spec.slug,

@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { bellAt, bells, gearPoints, HANDLE_HALF, RING_RADIUS, strapAnchor, strapLine } from "../../src/doodles/gear";
+import { bellAt, bellHolders, bells, ELBOW_LOOP, gearPoints, HANDLE_HALF, RING_RADIUS, strapAnchor, strapAttach, strapLine } from "../../src/doodles/gear";
 import { dualLayout } from "../../src/doodles/renderDual";
 import { figureExtent, fmt, renderDoodleSvg } from "../../src/doodles/renderSvg";
-import { KETTLEBELL, kettlebellOnFloor, onStrap, sampleTimeline, solvePose, type DoodleSpec, type Point, type Pose } from "../../src/doodles/rig";
+import { BONES, KETTLEBELL, kettlebellOnFloor, onStrap, sampleTimeline, solvePose, type DoodleSpec, type Point, type Pose } from "../../src/doodles/rig";
 import { dualViewGuards, gearGuards, validateSpec } from "../../src/doodles/validate";
 
 /** Standing, both hands reaching up and forward to the same point. */
@@ -195,5 +195,201 @@ describe("kettlebells", () => {
     const onFloor: DoodleSpec = { ...deep, frames: [{ pose: reach([50, kettlebellOnFloor()], { pelvis: [-40, -90], chest: [20, -140] }), hold: 0.3 }, BELLS.frames[0]] };
     expect(validateSpec(onFloor).errors.filter((e) => e.startsWith("kettlebell"))).toEqual([]);
     expect(gearGuards({ ...BELLS, kettlebell: undefined })).toEqual(["keyframe bell needs a kettlebell"]);
+  });
+});
+
+describe("per-hand bell modes", () => {
+  const r = KETTLEBELL.size;
+  /** One bell racked while the other hangs, then the other way round. */
+  const ALTERNATING: DoodleSpec = {
+    ...BELLS,
+    frames: [
+      { pose: reach([10, -150], { hands: { near: [27, -277], far: [10, -150] } }), hold: 0.3, bell: { near: "rack" } },
+      { pose: reach([10, -150], { hands: { near: [10, -150], far: [27, -277] } }), hold: 0.3, bell: { far: "rack", near: "hang" } },
+    ],
+  };
+
+  it("racks one bell while the other hangs (a hand left out hangs)", () => {
+    const pose = sampleTimeline(ALTERNATING).poses[0];
+    const [near] = bells(ALTERNATING, [pose], "near", "side");
+    const [far] = bells(ALTERNATING, [pose], "far", "side");
+    expect(near.centre[0]).toBeLessThan(pose.arms.near.joint[0]);
+    expect(far.centre).toEqual([pose.arms.far.end[0], pose.arms.far.end[1] + r * KETTLEBELL.grip]);
+    const second = sampleTimeline(ALTERNATING);
+    const k1 = second.poses[second.keyframeIndex[1]];
+    expect(bells(ALTERNATING, second.poses, "far", "side")[second.keyframeIndex[1]].centre[0]).toBeLessThan(k1.arms.far.joint[0]);
+    expect(validateSpec(ALTERNATING)).toMatchObject({ ok: true });
+  });
+
+  it("the string form still sets every bell", () => {
+    const spec: DoodleSpec = { ...BELLS, frames: [{ ...BELLS.frames[1], bell: "rack" }] };
+    const pose = sampleTimeline(spec).poses[0];
+    for (const side of ["near", "far"] as const) {
+      expect(bells(spec, [pose], side, "side")[0].centre[0]).toBeLessThan(pose.arms[side].joint[0]);
+    }
+  });
+
+  it("rejects a per-hand mode for a hand with no bell", () => {
+    const spec: DoodleSpec = { ...BELLS, kettlebell: { hands: ["near"] }, frames: [{ ...BELLS.frames[0], bell: { far: "rack" } }] };
+    expect(gearGuards(spec)).toEqual(["frame 0: bell.far but no kettlebell in that hand"]);
+  });
+});
+
+describe("bell hand-offs (bellIn)", () => {
+  const r = KETTLEBELL.size;
+  const together: Point = [40, -200];
+  /** Near hand at the thigh, both hands together in front (the hand-off), far hand at the thigh, together again. */
+  const PASS: DoodleSpec = {
+    id: "test_pass",
+    slug: "test-pass",
+    title: "Test pass",
+    kettlebell: { hands: ["near"] },
+    frames: [
+      { pose: reach([10, -150], { hands: { near: [10, -150], far: [-6, -150] } }), hold: 0.3, bellIn: "near" },
+      { pose: reach(together), hold: 0.1, bellIn: "far" },
+      { pose: reach([10, -150], { hands: { near: [-6, -150], far: [10, -150] } }), hold: 0.3 },
+      { pose: reach(together), hold: 0.1, bellIn: "near" },
+    ],
+  };
+
+  it("holds until the next bellIn, round the loop", () => {
+    expect(bellHolders(PASS, "near")).toEqual(["near", "far", "far", "near"]);
+    expect(bellHolders({ ...PASS, frames: PASS.frames.map(({ bellIn, ...frame }) => (bellIn === "near" ? frame : { ...frame, bellIn })) }, "near")).toEqual([
+      "far",
+      "far",
+      "far",
+      "far",
+    ]);
+    expect(bellHolders(BELLS, "far")).toEqual(["far", "far"]);
+  });
+
+  it("the bell rides in the old hand up to the hand-off keyframe, then in the new one", () => {
+    const timeline = sampleTimeline(PASS);
+    const list = bells(PASS, timeline.poses, "near", "side");
+    const below = (i: number, side: "near" | "far"): Point => [timeline.poses[i].arms[side].end[0], timeline.poses[i].arms[side].end[1] + r * KETTLEBELL.grip];
+    const [k0, k1, k2] = timeline.keyframeIndex;
+    expect(list[k0].centre).toEqual(below(k0, "near"));
+    expect(list[k1 - 1].centre).toEqual(below(k1 - 1, "near"));
+    expect(list[k1].centre).toEqual(below(k1, "far"));
+    expect(list[k2].centre).toEqual(below(k2, "far"));
+  });
+
+  it("draws one bell over the figure, and passes the validator with the hands together at the hand-off", () => {
+    expect(renderDoodleSvg(PASS).match(/<path d="M[^"]+ Q/g)).toHaveLength(1);
+    expect(validateSpec(PASS)).toMatchObject({ ok: true });
+    // Two views judge the hand-off in 3D: the hands must meet sideways too.
+    const dual: DoodleSpec = { ...PASS, views: TWO_VIEWS };
+    expect(validateSpec(dual).errors).toContain("frame 1: bell hand-off needs both hands on the bell (hand tips 44 apart > 21)");
+    dual.frames = PASS.frames.map((frame) => (frame.pose.hands?.near === together ? { ...frame, sideways: { hands: { near: 0, far: 0 } } } : frame));
+    expect(validateSpec(dual)).toMatchObject({ ok: true });
+    expect(renderDoodleSvg(dual).match(/<path d="M[^"]+ Q/g)).toHaveLength(2);
+  });
+
+  it("rejects a hand-off with the hands apart, and bellIn with two bells", () => {
+    const apart: DoodleSpec = { ...PASS, frames: PASS.frames.map((frame, k) => (k === 1 ? { ...frame, pose: reach(together, { hands: { near: together, far: [10, -150] } }) } : frame)) };
+    expect(validateSpec(apart).errors).toEqual(expect.arrayContaining([expect.stringMatching(/^frame 1: bell hand-off needs both hands on the bell \(hand tips [\d.]+ apart > 21\)$/)]));
+    expect(gearGuards({ ...PASS, kettlebell: { hands: ["near", "far"] } })).toEqual(["keyframe bellIn needs one kettlebell (one hand in kettlebell.hands)"]);
+  });
+});
+
+describe("bell by the horns", () => {
+  const r = KETTLEBELL.size;
+  /** Round the head: in front of the chest, past the near ear, behind the head, past the far ear. */
+  const round = (hand: Point, z: number, out: number): DoodleSpec["frames"][number] => ({
+    pose: reach(hand),
+    hold: 0.1,
+    bell: "horns",
+    sideways: { hands: { near: z, far: z }, elbows: { near: { out }, far: { out } } },
+  });
+  const HALO: DoodleSpec = {
+    id: "test_halo",
+    slug: "test-halo",
+    title: "Test halo",
+    views: TWO_VIEWS,
+    kettlebell: { hands: ["near"] },
+    transition: 0.4,
+    frames: [
+      round([62, -250], 0, 0),
+      round([44, -256], -42, 90),
+      round([2, -270], -60, 90),
+      round([-33, -284], -33, 120),
+      round([-48, -290], 0, 120),
+      round([-33, -284], 33, 120),
+      round([2, -270], 60, 90),
+      round([44, -256], 42, 90),
+    ],
+  };
+
+  it("sits beyond the joined hands along the mean forearm", () => {
+    const pose = solvePose(reach([40, -250], { hands: { near: [40, -250], far: [36, -254] } }));
+    const bell = bellAt(pose, "near", r, "side", "horns");
+    const { near, far } = pose.arms;
+    const grip: Point = [(near.end[0] + far.end[0]) / 2, (near.end[1] + far.end[1]) / 2];
+    const k = (r * KETTLEBELL.grip) / (BONES.forearm + BONES.hand) / 2;
+    expect(bell.centre[0]).toBeCloseTo(grip[0] + (near.end[0] - near.mid[0] + far.end[0] - far.mid[0]) * k, 6);
+    expect(bell.centre[1]).toBeCloseTo(grip[1] + (near.end[1] - near.mid[1] + far.end[1] - far.mid[1]) * k, 6);
+    const [a, q, b] = bell.handle;
+    expect((a[0] + 2 * q[0] + b[0]) / 4).toBeCloseTo(grip[0], 6);
+  });
+
+  it("two views: a copy behind the torso and one over the figure that shows only while in front of the head", () => {
+    expect(validateSpec(HALO)).toMatchObject({ ok: true });
+    const svg = renderDoodleSvg(HALO);
+    // Each panel: back copy plus front copy.
+    expect(svg.match(/<path d="M[^"]+ Q/g)).toHaveLength(4);
+    const shown = [...svg.matchAll(/<animate attributeName="opacity" values="([01;]+)"/g)].map((m) => m[1].split(";"));
+    expect(shown).toHaveLength(2);
+    // Front panel: in front of the face at the start, hidden behind the head halfway round.
+    const front = shown[1];
+    expect(front[0]).toBe("1");
+    expect(front[sampleTimeline(HALO).keyframeIndex[4]]).toBe("0");
+    // One view: drawn once, over the figure.
+    expect(renderDoodleSvg({ ...HALO, views: undefined, frames: HALO.frames.map(({ sideways: _sideways, ...frame }) => frame) }).match(/<path d="M[^"]+ Q/g)).toHaveLength(1);
+  });
+
+  it("rejects horns with the hands apart, and with two bells", () => {
+    const apart: DoodleSpec = { ...HALO, frames: [{ ...HALO.frames[0], sideways: { hands: { near: -40, far: 40 } } }, ...HALO.frames.slice(1)] };
+    expect(validateSpec(apart).errors).toEqual(expect.arrayContaining([expect.stringMatching(/^frame 0: bell horns needs both hands on the bell/)]));
+    expect(gearGuards({ ...HALO, kettlebell: { hands: ["near", "far"] } })).toEqual(["bell horns needs one kettlebell (one hand in kettlebell.hands)"]);
+  });
+});
+
+describe("band above the elbow (to: elbows)", () => {
+  it("runs from the anchor to the upper arm just above the elbow", () => {
+    const spec: DoodleSpec = { ...RINGS, straps: { anchor: [190, -230], end: "band", to: "elbows", sides: ["near"] } };
+    const pose = sampleTimeline(spec).poses[0];
+    const { root, mid } = pose.arms.near;
+    const loop: Point = [root[0] + (mid[0] - root[0]) * ELBOW_LOOP, root[1] + (mid[1] - root[1]) * ELBOW_LOOP];
+    expect(strapAttach(spec, pose, "near")).toEqual(loop);
+    expect(strapLine(spec, [190, -230], pose, "near")).toEqual([[190, -230], loop]);
+    expect(validateSpec(spec)).toMatchObject({ ok: true });
+    expect(validateSpec({ ...spec, views: TWO_VIEWS })).toMatchObject({ ok: true });
+  });
+});
+
+describe("strap width (front panel)", () => {
+  it("anchors each strap width either side of the centre line, fixed over the loop", () => {
+    const spec: DoodleSpec = { ...RINGS_DUAL, straps: { anchor: ANCHOR, end: "ring", width: 40 } };
+    const layout = dualLayout(spec);
+    expect(strapAnchor(spec, layout.front, "near", "front")).toEqual([-40, ANCHOR[1]]);
+    expect(strapAnchor(spec, layout.front, "far", "front")).toEqual([40, ANCHOR[1]]);
+    expect(strapAnchor(spec, layout.front.slice(5), "far", "front")).toEqual([40, ANCHOR[1]]);
+    expect(strapAnchor(spec, layout.side, "far", "side")).toEqual(ANCHOR);
+    expect(renderDoodleSvg(spec)).toContain(`points="${fmt(40 + layout.frontShift)},${fmt(ANCHOR[1])} `);
+    expect(validateSpec(spec)).toMatchObject({ ok: true });
+    // 0: one shared anchor (a single suspension anchor).
+    expect(strapAnchor({ ...spec, straps: { ...spec.straps!, width: 0 } }, layout.front, "near", "front")[0]).toBeCloseTo(0, 9);
+  });
+
+  it("the 3D strap check measures from the width anchor", () => {
+    const wide: DoodleSpec = { ...RINGS_DUAL, straps: { anchor: ANCHOR, end: "ring", width: 120 } };
+    expect(validateSpec(wide).ok).toBe(true);
+    // Hands that open from 40 to 120 out keep their length only to an anchor out wide.
+    const opening: DoodleSpec = {
+      ...RINGS_DUAL,
+      frames: [RINGS_DUAL.frames[0], { ...RINGS_DUAL.frames[1], sideways: { hands: { near: -120, far: 120 } } }],
+    };
+    expect(validateSpec(opening).errors).toEqual(expect.arrayContaining([expect.stringMatching(/^straps\.near: strap length changes by/)]));
+    expect(gearGuards({ ...RINGS, straps: { anchor: ANCHOR, end: "ring", width: -1 } })).toEqual(["straps.width is negative"]);
   });
 });
