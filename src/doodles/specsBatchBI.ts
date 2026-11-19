@@ -1,6 +1,6 @@
 import { BONES, HIP_SIDE, SHOULDER_SIDE, solvePose, zOut } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
-import { add3, dot3, norm3, scale3, sub3, type Point3 } from "./rig3d";
+import { add3, dot3, norm3, scale3, solveKeyframe3, sub3, type Point3 } from "./rig3d";
 import { FLOOR_PROP, along, angle, lerp, round } from "./geom";
 import { lockedY3, TOP_VIEWS, TWO_VIEWS } from "./sideways";
 import { pushUp, straightBody } from "./specsBatchC";
@@ -372,28 +372,36 @@ function seatedTall(): Spine {
   return { pelvis: SEAT_PELVIS, chest, head: along(chest, -88, 56) };
 }
 
+/** Shoulder line roll of the Dancer's stretch at full turn: + brings the far shoulder forward, the chest turning to the near (bent-knee) side. */
+const DANCER_TWIST = 70;
+
 /**
  * Far leg straight ahead; near leg crossed over it with the knee up and the foot flat on the far side of it.
- * `twist` 0 sits tall with the far hand resting on the knee; 1 turns towards the bent knee: the far arm
- * hooks across to the outside of that knee and the near hand moves behind on the floor.
+ * `twist` 0 sits tall, chest square, the far hand resting on the knee; 1 rolls the shoulder line
+ * `DANCER_TWIST` towards the bent knee (the head turning with the chest and a little further): the far
+ * arm, now forward, hooks across to the outside of that knee and the near hand, now back, props behind on the floor.
  */
 function dancers(twist: number): Keyframe {
   const spine = seatedTall();
-  const { arm, leg } = roots(spine);
+  const { leg } = roots(spine);
+  const roll = DANCER_TWIST * twist;
+  const turned: Sideways = { pelvis: 0, twist: roll };
+  const arm = solveKeyframe3(solvePose(spine), spine, turned).arms;
   const straight = dirs(leg.far, LEG2, p3(1, 0.045, 0.04), p3(1, 0.045, 0.04));
   const nearLeg = chain(leg.near, LEG2, p3(46, -2, 30), p3(30, -150, 2));
   const knee = nearLeg.mid;
   const farHand: Point3 =
-    twist === 0 ? [knee[0] + 4, knee[1] - 4, knee[2] + 2] : [knee[0] + 22, knee[1] + 12, knee[2] - 24];
-  const farHint: Point3 = twist === 0 ? [knee[0] - 10, knee[1] - 40, 40] : [knee[0] - 8, knee[1] - 14, knee[2] - 36];
-  const nearHand = p3(round(-30 - 24 * twist), -2, round(-30 - 12 * twist));
-  return frame3(0, spine, {
+    twist === 0 ? [knee[0] + 4, knee[1] - 4, knee[2] + 2] : [knee[0] + 10, knee[1] + 14, knee[2] - 22];
+  const farHint: Point3 = twist === 0 ? [knee[0] - 10, knee[1] - 40, 40] : [knee[0] - 20, knee[1] - 10, knee[2] - 40];
+  const nearHand = p3(round(-30 - 34 * twist), -2, round(-30 + 4 * twist));
+  const k = frame3(0, spine, {
     arms: {
-      far: { plan: chain(arm.far, ARM2, farHand, farHint) },
-      near: { plan: chain(arm.near, ARM2, nearHand, p3(-40, -60, -60)) },
+      far: { plan: chain(arm.far.root, ARM2, farHand, farHint) },
+      near: { plan: chain(arm.near.root, ARM2, nearHand, p3(-40, -60, -60)) },
     },
     legs: { far: { plan: straight, toe: -80 }, near: { plan: nearLeg, toe: 0 } },
   });
+  return { ...k, face: { turn: round(-25 * twist), nod: 6 }, sideways: { ...k.sideways, twist: roll } };
 }
 
 

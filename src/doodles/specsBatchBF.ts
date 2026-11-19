@@ -322,31 +322,38 @@ type ReachStage = "folded" | "mid" | "up";
 
 /**
  * Deep squat, feet flat, the far hand holding the near ankle between the knees.
- * `chestZ` leans the chest to the near side (the shoulders stack as the chest
- * opens), `lean` is the torso's angle from the floor; `stage` sends the free
- * near arm from folded across the chest, out to the side, to straight up.
+ * `lean` is the torso's angle from the floor and `twist` rolls the shoulder line
+ * about the spine (+ brings the far shoulder forward, down towards the ankle, and
+ * the near shoulder up and back: the chest opens to the near side). `stage` sends
+ * the free near arm from folded across the chest, out along the opening shoulder
+ * line, to straight up at the ceiling; the eyes follow the hand.
  */
-function squatReach(lean: number, chestZ: number, stage: ReachStage): Keyframe {
-  const chord = Math.sqrt(80 ** 2 - chestZ ** 2);
-  const chest = along(SQ_PELVIS, -lean, chord);
-  const sideways: Sideways = { chest: chestZ, pivot: "pelvis", feet: { near: -SQ_FEET_Z, far: SQ_FEET_Z } };
+function squatReach(lean: number, twist: number, stage: ReachStage): Keyframe {
+  const chest = along(SQ_PELVIS, -lean, 80);
+  const sideways: Sideways = { twist, feet: { near: -SQ_FEET_Z, far: SQ_FEET_Z } };
   const base: Pose = { pelvis: SQ_PELVIS, chest, feet: SQ_FEET, toes: { near: 0, far: 0 } };
   const figure = solveKeyframe3(solvePose(base), base, sideways);
   const farShoulder = figure.arms.far.root;
   const nearShoulder = figure.arms.near.root;
   const ankle: Point = [6, -13];
+  // Out along the shoulder line (far to near), half way to straight up.
+  const out = [nearShoulder[0] - farShoulder[0], nearShoulder[1] - farShoulder[1] - 44, nearShoulder[2] - farShoulder[2]];
+  const k = 118 / Math.hypot(out[0], out[1], out[2]);
   const hands: Record<ReachStage, { hand: Point; z: number; out: number | undefined }> = {
     folded: { hand: [round(farShoulder[0] + 3), round(farShoulder[1] + 8)], z: farShoulder[2], out: 70 },
-    mid: { hand: [round(nearShoulder[0] + 6), round(nearShoulder[1] - 66)], z: round(nearShoulder[2] - 100), out: 80 },
-    up: { hand: [round(nearShoulder[0]), round(nearShoulder[1] - 120)], z: nearShoulder[2], out: undefined },
+    mid: { hand: [round(nearShoulder[0] + out[0] * k), round(nearShoulder[1] + out[1] * k)], z: round(nearShoulder[2] + out[2] * k), out: undefined },
+    // Straight up, a little out to the near side so the front view sees it beside the head.
+    up: { hand: [round(nearShoulder[0] - 4), round(nearShoulder[1] - 116)], z: round(nearShoulder[2] - 45), out: undefined },
   };
   const near = hands[stage];
+  const look: Record<ReachStage, number> = { folded: 0, mid: -25, up: -50 };
   return {
     hold: 0,
+    face: { turn: look[stage] },
     pose: {
       ...base,
       hands: { near: near.hand, far: ankle },
-      elbows: { near: { bend: stage === "up" ? 1 : -1 }, far: { bend: 1 } },
+      elbows: { near: { bend: stage === "folded" ? -1 : 1 }, far: { bend: 1 } },
       knees: { near: { bend: -1 }, far: { bend: -1 } },
     },
     sideways: {
@@ -504,10 +511,10 @@ export const BATCH_BF_SPECS: DoodleSpec[] = [
     props: [FLOOR_PROP],
     transition: 1.3,
     frames: [
-      { ...squatReach(42, -10, "folded"), hold: 0.6 },
-      { ...squatReach(52, -20, "mid"), hold: 0 },
-      { ...squatReach(52, -20, "up"), hold: 1.4 },
-      { ...squatReach(52, -20, "mid"), hold: 0 },
+      { ...squatReach(44, 15, "folded"), hold: 0.6 },
+      { ...squatReach(50, 45, "mid"), hold: 0 },
+      { ...squatReach(52, 72, "up"), hold: 1.4 },
+      { ...squatReach(50, 45, "mid"), hold: 0 },
     ],
   },
 ];
