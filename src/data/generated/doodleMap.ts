@@ -500,7 +500,19 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "fedb_kettlebell_halo": "/doodles/doodle-kettlebell-halo.svg",
   "fedb_kettlebell_halo_with_overhead_extension": "/doodles/doodle-kettlebell-halo-with-overhead-extension.svg",
   "fedb_kettlebell_overhead_triceps_extension": "/doodles/doodle-kettlebell-overhead-triceps-extension.svg",
-  "fedb_bent_press": "/doodles/doodle-bent-press.svg"
+  "fedb_bent_press": "/doodles/doodle-bent-press.svg",
+  "fedb_two_arm_kettlebell_row": "/doodles/doodle-two-arm-kettlebell-row.svg",
+  "wger_1003": "/doodles/doodle-kettlebell-deadlifts.svg",
+  "wger_1612": "/doodles/doodle-kettlebell-sumo-deadlift.svg",
+  "wger_1022": "/doodles/doodle-single-arm-plank-to-row.svg",
+  "wger_1099": "/doodles/doodle-dynamic-side-hold.svg",
+  "wger_1360": "/doodles/doodle-double-kettlebell-clean-and-press.svg",
+  "wger_1361": "/doodles/doodle-double-kettlebell-front-squat.svg",
+  "wger_331": "/doodles/doodle-kettlebell-swings.svg",
+  "wger_9": "/doodles/doodle-2-handed-kettlebell-swing.svg",
+  "wger_974": "/doodles/doodle-curl-with-kettlebell-two-hands.svg",
+  "wger_975": "/doodles/doodle-one-handed-kettlebell-curls.svg",
+  "wger_2447": "/doodles/doodle-hip-airplane.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
