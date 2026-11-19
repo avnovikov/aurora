@@ -500,7 +500,20 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "fedb_kettlebell_halo": "/doodles/doodle-kettlebell-halo.svg",
   "fedb_kettlebell_halo_with_overhead_extension": "/doodles/doodle-kettlebell-halo-with-overhead-extension.svg",
   "fedb_kettlebell_overhead_triceps_extension": "/doodles/doodle-kettlebell-overhead-triceps-extension.svg",
-  "fedb_bent_press": "/doodles/doodle-bent-press.svg"
+  "fedb_bent_press": "/doodles/doodle-bent-press.svg",
+  "wger_2664": "/doodles/doodle-seated-knee-extension-with-overpressure.svg",
+  "wger_1393": "/doodles/doodle-single-leg-hamstring-stretch.svg",
+  "wger_1394": "/doodles/doodle-sit-and-reach.svg",
+  "fedb_upper_back_leg_grab": "/doodles/doodle-upper-back-leg-grab.svg",
+  "wger_2761": "/doodles/doodle-straight-leg-hamstring-stretch.svg",
+  "fedb_standing_toe_touches": "/doodles/doodle-standing-toe-touches.svg",
+  "wger_1390": "/doodles/doodle-toe-touch.svg",
+  "wger_2666": "/doodles/doodle-step-calf-stretch.svg",
+  "wger_1240": "/doodles/doodle-standing-soleus-stretch.svg",
+  "fedb_standing_soleus_and_achilles_stretch": "/doodles/doodle-standing-soleus-and-achilles-stretch.svg",
+  "wger_1876": "/doodles/doodle-supported-calf-stretch.svg",
+  "wger_1875": "/doodles/doodle-standing-it-band-stretch.svg",
+  "wger_2528": "/doodles/doodle-squat-sky-reach-stretch.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
