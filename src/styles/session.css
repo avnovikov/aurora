@@ -94,13 +94,28 @@
   flex-direction: column;
 }
 
-.session .session-phase {
+.session .session-phase,
+.rest-next-line {
   margin: 0;
   color: var(--muted);
   font-size: 12.8px;
   line-height: 20px;
   letter-spacing: 0.07em;
   text-transform: uppercase;
+  min-width: 0;
+}
+
+/* Work rest: compact doodle beside the next-set line; countdown stays the hero. */
+.rest-next {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 0;
+  min-width: 0;
+}
+
+.rest-next-doodle {
+  flex-shrink: 0;
 }
 
 .session .session-move {
@@ -542,4 +557,12 @@ html:has(.shell.session) {
 /* Centring comes from the doodle's own viewBox (fitted in renderSvg.ts). */
 .session .doodle {
   max-height: 7rem;
+}
+
+/* Work-rest preview: override `.session .doodle` so the next row stays compact. */
+.session .rest-next-doodle .doodle {
+  display: block;
+  max-height: 2.75rem;
+  width: auto;
+  margin: 0;
 }

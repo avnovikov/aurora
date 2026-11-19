@@ -46,9 +46,14 @@ export function workSwipeSurface(page: Page): Locator {
   return page.locator("[data-swipe-stage='work'] .session-frame");
 }
 
-/** The eyebrow above the hero: "Warmup", "Rest · next …", "Set 2 of 4". */
+/** The phase eyebrow above the hero: "Warmup", "Rest", "Get ready", "Set 2 of 4". */
 export function phaseLine(page: Page): Locator {
   return page.locator(".session-phase");
+}
+
+/** Work-rest next-set line (`next Name · Set n of m`), beside the compact doodle. */
+export function restNextLine(page: Page): Locator {
+  return page.locator(".rest-next-line");
 }
 
 export function moveName(page: Page): Locator {
