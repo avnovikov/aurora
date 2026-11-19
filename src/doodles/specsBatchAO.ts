@@ -93,12 +93,16 @@ const FP_TOP = (() => {
   const swing = 2 * Math.atan(-dy / dx);
   return { swing: (swing * 180) / Math.PI, length: dx / Math.sin(swing) };
 })();
+/** The rings hang from fixed anchors this far either side of the centre line: where the open hands are at the face. */
+const FP_WIDTH = 34;
 const FP_ANCHOR: Point = [FP_HANG[0], FP_HANG[1] - FP_TOP.length];
 
 /** `t` 0: leaning back, straight arms; 1: rings at the face, elbows high and wide. */
 function facePull(t: number): AuthoredPose {
   const { pelvis, chest } = straightBody(ROW_FOOT, round(lerp(FP_HANG_Y, FP_TOP_Y, t)), -1);
-  const hand = onStrap(FP_ANCHOR, FP_TOP.length, FP_TOP.swing * t);
+  // Each ring hangs from a fixed anchor at the open hands' z (FP_WIDTH); the hand's 2D strap shortens by its z offset from it.
+  const across = FP_WIDTH - (22 + 12 * t);
+  const hand = onStrap(FP_ANCHOR, Math.sqrt(FP_TOP.length ** 2 - across ** 2), FP_TOP.swing * t);
   return {
     pelvis,
     chest,
@@ -338,7 +342,7 @@ export const BATCH_AO_SPECS: DoodleSpec[] = [
     slug: "ring-face-pull",
     title: "Ring Face Pull",
     views: TWO_VIEWS,
-    straps: { anchor: FP_ANCHOR, end: "ring" },
+    straps: { anchor: FP_ANCHOR, end: "ring", width: FP_WIDTH },
     transition: 0.6,
     frames: [...STEPS.map((t) => facePullFrame(t, t === 0 ? 0.4 : 0)), ...[...STEPS].reverse().slice(1, -1).map((t) => facePullFrame(t, 0))].map((f, i) => (i === STEPS.length - 1 ? { ...f, hold: 0.5 } : f)),
   },

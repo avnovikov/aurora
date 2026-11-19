@@ -487,7 +487,11 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "ntc_archer_inverted_row": "/doodles/doodle-archer-inverted-row.svg",
   "ntc_archer_straight_bar_dip": "/doodles/doodle-archer-straight-bar-dip.svg",
   "ntc_archer_dip": "/doodles/doodle-archer-dip.svg",
-  "wger_1919": "/doodles/doodle-push-up-chest-stretch.svg"
+  "wger_1919": "/doodles/doodle-push-up-chest-stretch.svg",
+  "ntc_plank_hip_dips": "/doodles/doodle-plank-hip-dips.svg",
+  "hf_158": "/doodles/doodle-90-90-hip-switch.svg",
+  "wger_1877": "/doodles/doodle-single-arm-band-row.svg",
+  "fedb_on_your_back_quad_stretch": "/doodles/doodle-on-your-back-quad-stretch.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
