@@ -567,7 +567,20 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "fedb_standing_soleus_and_achilles_stretch": "/doodles/doodle-standing-soleus-and-achilles-stretch.svg",
   "wger_1876": "/doodles/doodle-supported-calf-stretch.svg",
   "wger_1875": "/doodles/doodle-standing-it-band-stretch.svg",
-  "wger_2528": "/doodles/doodle-squat-sky-reach-stretch.svg"
+  "wger_2528": "/doodles/doodle-squat-sky-reach-stretch.svg",
+  "wger_1828": "/doodles/doodle-abdominal-draw-in.svg",
+  "wger_2488": "/doodles/doodle-posterior-pelvic-tilt.svg",
+  "wger_1478": "/doodles/doodle-levitation-crunch.svg",
+  "fedb_dynamic_back_stretch": "/doodles/doodle-dynamic-back-stretch.svg",
+  "wger_1399": "/doodles/doodle-roll-down.svg",
+  "fedb_one_half_locust": "/doodles/doodle-one-half-locust.svg",
+  "wger_1868": "/doodles/doodle-lunge-with-twist-stretch.svg",
+  "wger_260": "/doodles/doodle-full-sit-outs.svg",
+  "wger_576": "/doodles/doodle-side-crunch.svg",
+  "fedb_lower_back_curl": "/doodles/doodle-lower-back-curl.svg",
+  "wger_1912": "/doodles/doodle-core-rotation.svg",
+  "fedb_middle_back_stretch": "/doodles/doodle-middle-back-stretch.svg",
+  "fedb_chair_lower_back_stretch": "/doodles/doodle-chair-lower-back-stretch.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
