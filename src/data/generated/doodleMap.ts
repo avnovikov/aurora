@@ -500,7 +500,20 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "fedb_kettlebell_halo": "/doodles/doodle-kettlebell-halo.svg",
   "fedb_kettlebell_halo_with_overhead_extension": "/doodles/doodle-kettlebell-halo-with-overhead-extension.svg",
   "fedb_kettlebell_overhead_triceps_extension": "/doodles/doodle-kettlebell-overhead-triceps-extension.svg",
-  "fedb_bent_press": "/doodles/doodle-bent-press.svg"
+  "fedb_bent_press": "/doodles/doodle-bent-press.svg",
+  "fedb_hamstring_stretch": "/doodles/doodle-hamstring-stretch.svg",
+  "fedb_intermediate_groin_stretch": "/doodles/doodle-lying-groin-stretch-with-towel.svg",
+  "fedb_it_band_and_glute_stretch": "/doodles/doodle-lying-it-band-stretch-with-towel.svg",
+  "fedb_seated_hamstring_and_calf_stretch": "/doodles/doodle-seated-hamstring-calf-stretch-with-towel.svg",
+  "fedb_peroneals_stretch": "/doodles/doodle-peroneals-stretch-with-towel.svg",
+  "fedb_posterior_tibialis_stretch": "/doodles/doodle-posterior-tibialis-stretch-with-towel.svg",
+  "fedb_standing_hamstring_and_calf_stretch": "/doodles/doodle-standing-hamstring-calf-stretch-with-towel.svg",
+  "fedb_intermediate_hip_flexor_and_quad_stretch": "/doodles/doodle-prone-quad-stretch-with-towel.svg",
+  "fedb_quad_stretch": "/doodles/doodle-side-lying-quad-stretch-with-towel.svg",
+  "wger_1455": "/doodles/doodle-towel-superman.svg",
+  "hf_151": "/doodles/doodle-shoulder-dislocate.svg",
+  "fedb_chest_and_front_of_shoulder_stretch": "/doodles/doodle-stick-chest-and-shoulder-stretch.svg",
+  "fedb_round_the_world_shoulder_stretch": "/doodles/doodle-round-the-world-shoulder-stretch.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
