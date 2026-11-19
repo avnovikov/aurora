@@ -22,8 +22,33 @@ describe("migrateMemoriesV1 (#112)", () => {
     expect(memories.bulgarian_split).toMatchObject({ declaredTier: "advanced", declaredAt: NOW.toISOString(), skillTier: "advanced" });
     expect(memories.hf_84).toMatchObject({ planTier: "intermediate", skillTier: "intermediate" });
     expect(memories.hf_84?.declaredTier).toBeUndefined();
+    expect(memories.hf_84?.declaredAt).toBeUndefined();
     expect(memories.calf_raise).toMatchObject({ loggedTier: "elite", skillTier: "elite" });
     expect(memories.step_up?.skillTier).not.toBe("elite");
     expect(levelsToConfirm).toEqual(["hf_84"]);
+  });
+
+  it("keeps a real declare and derives loggedTier from bestReps on the same row (#116)", () => {
+    const v1: Record<string, ExerciseMemory> = {
+      pullup: {
+        ...emptyMemory("pullup"),
+        declaredTier: "advanced",
+        bestReps: 12,
+        skillTier: "elite",
+      },
+    };
+    const standards = { novice: 1, beginner: 5, intermediate: 10, advanced: 15, elite: 20 };
+    const { memories } = migrateMemoriesV1(v1, {
+      ...ctx,
+      planLevelFor: () => undefined,
+      standardsOf: (id) => (id === "pullup" ? standards : null),
+    });
+    expect(memories.pullup).toMatchObject({
+      declaredTier: "advanced",
+      declaredAt: NOW.toISOString(),
+      loggedTier: "intermediate",
+      bestReps: 12,
+    });
+    expect(memories.pullup?.skillTier).not.toBe("elite");
   });
 });

@@ -205,7 +205,7 @@ export function settingsPageHtml(model: SettingsPageModel): string {
       <h1>Your setup</h1>
       ${tabBarHtml(model.tab)}
       ${levelsToConfirmHtml(model.levelsToConfirm)}
-      <p class="settings-status" role="status" data-settings-status></p>
+      <p class="settings-status" role="status" data-settings-status tabindex="-1"></p>
       <section class="settings-panel" id="settings-panel" role="tabpanel" aria-labelledby="settings-tab-${model.tab}">
         ${panelHtml(model)}
       </section>

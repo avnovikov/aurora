@@ -33,7 +33,8 @@ describe("level inference on the 2026-11-17 Pixel 10 snapshot (#112)", () => {
 
   it("the Bulgarian split squat pick alone does not make the lunge family elite", () => {
     for (const id of ["step_up", "reverse_lunge", "wger_2557"]) {
-      expect(memories[id]?.skillTier ?? "beginner", id).not.toBe("elite");
+      expect(memories[id], id).toBeDefined();
+      expect(memories[id]!.skillTier, id).not.toBe("elite");
     }
   });
 

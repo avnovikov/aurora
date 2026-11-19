@@ -87,6 +87,7 @@ interface ExerciseMemory {
 - Derive `loggedTier` from `bestReps` via standards (same as `inferTierFromBest`).
 - Drop the old cascaded `skillTier` values, then recompute through `inferTiers`.
 - Version the key (`aurora.poc.memory.v2`) or add a `schemaVersion` field. Keep v1 readable for one release.
+- **Older build after migration (#116):** if the athlete runs an older build that still writes v1 while v2 already exists, the next upgrade **ignores that v1 write** (`ensureMemoryMigrated` returns early when v2 is present). Do not expect a second migration pass to merge those v1 edits.
 
 ## Error handling
 
