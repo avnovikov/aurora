@@ -1,5 +1,5 @@
 import { solvePose } from "./rig";
-import type { DoodleSpec, Point, Pose } from "./rig";
+import type { DoodleSpec, Keyframe, Point, Pose } from "./rig";
 
 /**
  * Batch AE (#174): lying core moves — crunches and sit-ups, reverse-crunch
@@ -64,14 +64,13 @@ function straightLegs(pelvis: Point, near: number, far: number, toe = 0): Pick<P
 const CURL_PELVIS: Point = [-8, -20];
 const CURL_FEET: Point = [84, -2];
 
-type Arms = "temple" | "chest" | "overhead";
+type Arms = "temple" | "chest";
 
 /**
  * Torso pivots at the hips at `theta` (≈183 lying, ≈212 crunched, 270 sitting
  * upright); `tuck` tips the chin toward the chest. Knees bent, feet flat.
  * - temple: fingertips lightly beside the head, the elbow out past the face.
  * - chest: arms crossed on the chest, hands at the opposite shoulders.
- * - overhead: arms reaching past the head parallel to the torso, just clear of it.
  */
 function curl(theta: number, tuck: number, arms: Arms): Pose {
   const pelvis = CURL_PELVIS;
@@ -90,19 +89,6 @@ function curl(theta: number, tuck: number, arms: Arms): Pose {
       elbows: { near: { at: elbow }, far: { at: elbowFar } },
     };
   }
-  if (arms === "overhead") {
-    // Arms continue the torso line by the ears. Side on they would cross the
-    // head, so the upper arm rises just enough to clear it and the forearms run
-    // parallel to the torso, just above the head line.
-    const elbow = along(shoulder, theta + 33, 60);
-    const elbowFar = along(shoulder, theta + 34, 60);
-    return {
-      ...base,
-      ...legs,
-      hands: { near: along(elbow, theta, 66), far: along(elbowFar, theta + 1, 66) },
-      elbows: { near: { at: elbow }, far: { at: elbowFar } },
-    };
-  }
   // Face side of the torso is theta + 90; the elbow points that way.
   const face = ((theta + 90) * Math.PI) / 180;
   const facing = (p: Point, q: Point): boolean =>
@@ -115,6 +101,39 @@ function curl(theta: number, tuck: number, arms: Arms): Pose {
     ...legs,
     hands: { near: hand, far: handFar },
     elbows: { near: { at: meet(shoulder, 60, hand, 66, facing) }, far: { at: meet(shoulder, 60, handFar, 66, facing) } },
+  };
+}
+
+/** Two views: the hands sit this far out sideways, so the straight arms pass beside the head, by the ears. */
+const OVERHEAD_HAND_Z = 32;
+/** Shoulder width (z) and the straight-arm reach, shoulder to fingertip. */
+const SHOULDER_Z = 22;
+const STRAIGHT_REACH = 125.9;
+
+/**
+ * Crunch with the arms overhead, in two views: straight arms in line with the
+ * torso, upper arms by the ears. The side view shows the arms continuing the
+ * torso line past the head (the near arm bright in front of it); the front
+ * view shows them either side of the head. They stay in line as the torso curls.
+ */
+function overheadCrunch(theta: number, hold: number): Keyframe {
+  const base = curl(theta, 0, "chest");
+  const shoulder = shoulderOf({ pelvis: base.pelvis, chest: base.chest, head: base.head });
+  const dz = OVERHEAD_HAND_Z - SHOULDER_Z;
+  const flat = Math.sqrt(STRAIGHT_REACH ** 2 - dz ** 2);
+  const hand = along(shoulder, theta, flat);
+  return {
+    hold,
+    pose: {
+      pelvis: base.pelvis,
+      chest: base.chest,
+      head: base.head,
+      feet: base.feet,
+      toes: base.toes,
+      hands: { near: hand, far: [hand[0], hand[1] - 0.5] },
+      elbows: { near: { bend: 1 }, far: { bend: 1 } },
+    },
+    sideways: { hands: { near: -OVERHEAD_HAND_Z, far: OVERHEAD_HAND_Z } },
   };
 }
 
@@ -342,11 +361,9 @@ export const BATCH_AE_SPECS: DoodleSpec[] = [
     id: "fedb_crunch_hands_overhead",
     slug: "crunch-hands-overhead",
     title: "Crunch - Hands Overhead",
+    views: ["side", "front"],
     transition: 0.7,
-    frames: [
-      { hold: 0.4, pose: curl(183, 0, "overhead") },
-      { hold: 0.45, pose: curl(210, 0, "overhead") },
-    ],
+    frames: [overheadCrunch(183, 0.4), overheadCrunch(210, 0.45)],
   },
   {
     id: "wger_174",

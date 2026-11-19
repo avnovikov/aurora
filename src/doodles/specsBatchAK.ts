@@ -53,7 +53,8 @@ const HYDRANT_CIRCLE: Keyframe[] = [
 /** Hip joint height when seated; the feet sit flat, hip width apart, under the knees. */
 const SEAT_PELVIS: Point = [0, -88];
 const SEAT_TOP = -76;
-const SEAT_BOX: Prop = { kind: "box", x: -70, y: SEAT_TOP, w: 110, h: -SEAT_TOP };
+/** Seen from the front the seat is narrower than the feet, so the shins of the spread knees stay clear of its sides. */
+const SEAT_BOX: Prop = { kind: "box", x: -70, y: SEAT_TOP, w: 110, h: -SEAT_TOP, frontHalf: 24 };
 /** Feet flat on the floor, a little wider than the hips. */
 const SEAT_FOOT_Z = 32;
 const SEAT_ANKLE_Y = -6;

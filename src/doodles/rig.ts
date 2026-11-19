@@ -109,7 +109,15 @@ export interface Sideways {
 
 export type Prop =
   | { kind: "bar"; y: number; x1: number; x2: number; grips?: number[] }
-  | { kind: "box"; x: number; y: number; w: number; h: number }
+  | {
+      kind: "box";
+      x: number;
+      y: number;
+      w: number;
+      h: number;
+      /** Two views: half-width seen from the front (default 60), e.g. a seat narrower than spread knees. */
+      frontHalf?: number;
+    }
   | { kind: "parallelBars"; y: number; x1: number; x2: number }
   | { kind: "parallettes"; y: number; xs: number[] };
 

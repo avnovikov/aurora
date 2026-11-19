@@ -204,8 +204,11 @@ function curtsyStep(): Pose {
  * Dragon squat on the near leg: arms forward, the free (far, pale) leg sweeps
  * behind the standing leg and reaches back low as the hips sink to full depth.
  */
+/** How far the hips sink: full depth, the hip well below the standing knee. */
+const DRAGON_DROP = 112;
+
 function dragon(t: number): Pose {
-  const pelvis: Point = [round(-44 * t), round(-170 + 104 * t)];
+  const pelvis: Point = [round(-44 * t), round(-170 + DRAGON_DROP * t)];
   const spine = -88 + 30 * t;
   const s = shoulderAt(pelvis, spine);
   const free: Point = t === 0 ? [-30, -40] : [round(-30 - 166 * t), round(-40 + 26 * t)];
@@ -392,7 +395,7 @@ function curtsyKey(pose: Pose, hold: number, farZ: number, pelvisZ: number): Key
 function dragonKey(t: number, hold: number): Keyframe {
   const pose = dragon(t);
   // Leg kept within reach in 3D: the free foot is out to the side as well as behind.
-  const free: Point = t === 0 ? [-30, -40] : [round(-30 - 130 * t), round(-40 + 26 * t)];
+  const free: Point = t === 0 ? [-30, -40] : [round(-30 - 146 * t), round(-40 + 26 * t)];
   return {
     hold,
     pose: { ...pose, feet: { near: [8, 0], far: free } },

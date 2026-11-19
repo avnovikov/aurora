@@ -128,6 +128,25 @@ function lockedShift(shift: number, handZ: number): number {
 
 const held = (frame: Keyframe, hold: number): Keyframe => ({ ...frame, hold });
 
+/** A shifted keyframe: shoulder height, sideways shift of the chest, hold. */
+type Stop = [y: number, shift: number, hold: number];
+
+/**
+ * The stops in a loop with `steps - 1` in-between keyframes on each leg. The
+ * rig blends the pelvis in a straight line, a chord of the arc it swings round
+ * the planted feet, so long legs sag at the knee; short legs keep the body straight.
+ */
+function subdivide(stops: Stop[], handZ: number, steps: number): Keyframe[] {
+  return stops.flatMap(([y, shift, hold], i) => {
+    const [y2, shift2] = stops[(i + 1) % stops.length];
+    const between = Array.from({ length: steps - 1 }, (_, j) => {
+      const f = (j + 1) / steps;
+      return shifted(round(y + (y2 - y) * f), round(shift + (shift2 - shift) * f), handZ);
+    });
+    return [held(shifted(y, shift, handZ), hold), ...between];
+  });
+}
+
 // ---------------------------------------------------------------- side to side, typewriter, wipers
 
 /** Side to side: wide hands; lower over one hand (that elbow bends, the other arm nearly straight). */
@@ -135,50 +154,48 @@ const S2S_Z = 56;
 const S2S_SHIFT = 46;
 /** A few units below the straight-arm height, so the far arm is nearly (not quite) locked. */
 const NEARLY = 10;
+const S2S_STEPS = 3;
 
 function sideToSide(): Keyframe[] {
   const top = lockedShift(0, S2S_Z);
-  const low = (shift: number): Keyframe => shifted(lockedShift(shift, S2S_Z) + NEARLY, shift, S2S_Z);
-  const mid = (shift: number): Keyframe => shifted(round((top + lockedShift(shift, S2S_Z) + NEARLY) / 2), shift / 2, S2S_Z);
-  return [
-    held(shifted(top, 0, S2S_Z), 0.35),
-    mid(-S2S_SHIFT),
-    held(low(-S2S_SHIFT), 0.35),
-    mid(-S2S_SHIFT),
-    held(shifted(top, 0, S2S_Z), 0.35),
-    mid(S2S_SHIFT),
-    held(low(S2S_SHIFT), 0.35),
-    mid(S2S_SHIFT),
-  ];
+  const low = (shift: number): Stop => [lockedShift(shift, S2S_Z) + NEARLY, shift, 0.35];
+  return subdivide(
+    [[top, 0, 0.35], low(-S2S_SHIFT), [top, 0, 0.35], low(S2S_SHIFT)],
+    S2S_Z,
+    S2S_STEPS,
+  );
 }
 
 /** Typewriter: very wide hands; low over one hand, slide across low, press up from the other. */
 const TW_Z = 80;
 const TW_SHIFT = 50;
+const TW_STEPS = 3;
 
 function typewriter(): Keyframe[] {
   const top = lockedShift(0, TW_Z);
   const bottom = lockedShift(-TW_SHIFT, TW_Z);
-  const mid = round((top + bottom) / 2);
-  return [
-    held(shifted(top, 0, TW_Z), 0.4),
-    shifted(mid, -TW_SHIFT / 2, TW_Z),
-    held(shifted(bottom, -TW_SHIFT, TW_Z), 0.3),
-    // Stay low while the chest slides across from one hand to the other.
-    held(shifted(bottom, 0, TW_Z), 0),
-    held(shifted(bottom, TW_SHIFT, TW_Z), 0.3),
-    shifted(mid, TW_SHIFT / 2, TW_Z),
-  ];
+  return subdivide(
+    [
+      [top, 0, 0.4],
+      [bottom, -TW_SHIFT, 0.3],
+      // Stay low while the chest slides across from one hand to the other.
+      [bottom, 0, 0],
+      [bottom, TW_SHIFT, 0.3],
+    ],
+    TW_Z,
+    TW_STEPS,
+  );
 }
 
 /** Isometric wipers: hold low over one hand, press up through the centre, hold over the other. */
 const WIPER_Z = 54;
 const WIPER_SHIFT = 50;
+const WIPER_STEPS = 3;
 
 function wipers(): Keyframe[] {
-  const low = (shift: number): Keyframe => held(shifted(lockedShift(shift, WIPER_Z) + NEARLY, shift, WIPER_Z), 1.4);
-  const centre = held(shifted(lockedShift(0, WIPER_Z) + 22, 0, WIPER_Z), 0.1);
-  return [low(-WIPER_SHIFT), centre, low(WIPER_SHIFT), centre];
+  const low = (shift: number): Stop => [lockedShift(shift, WIPER_Z) + NEARLY, shift, 1.4];
+  const centre: Stop = [lockedShift(0, WIPER_Z) + 22, 0, 0.1];
+  return subdivide([low(-WIPER_SHIFT), centre, low(WIPER_SHIFT), centre], WIPER_Z, WIPER_STEPS);
 }
 
 // ---------------------------------------------------------------- maltese push-up
@@ -450,7 +467,7 @@ export const BATCH_AB_SPECS: DoodleSpec[] = [
     slug: "side-to-side-push-up",
     title: "Side to Side Push Ups",
     views: TWO_VIEWS,
-    transition: 0.55,
+    transition: 0.37,
     frames: sideToSide(),
   },
   {
@@ -458,7 +475,7 @@ export const BATCH_AB_SPECS: DoodleSpec[] = [
     slug: "typewriter-push-up",
     title: "Typewriter Push-Up",
     views: TWO_VIEWS,
-    transition: 0.6,
+    transition: 0.35,
     frames: typewriter(),
   },
   {
@@ -500,7 +517,7 @@ export const BATCH_AB_SPECS: DoodleSpec[] = [
     slug: "isometric-wipers",
     title: "Isometric Wipers",
     views: TWO_VIEWS,
-    transition: 0.6,
+    transition: 0.2,
     frames: wipers(),
   },
 ];

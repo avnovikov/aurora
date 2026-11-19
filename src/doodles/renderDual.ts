@@ -36,7 +36,10 @@ const LABEL_OPACITY = 0.6;
 /** A prop as seen from the front (only bar and box are allowed in two views). */
 export function frontProp(prop: Prop, shift = 0): Prop | undefined {
   if (prop.kind === "bar") return { kind: "bar", y: prop.y, x1: shift - FRONT_BAR_HALF, x2: shift + FRONT_BAR_HALF };
-  if (prop.kind === "box") return { kind: "box", x: shift - FRONT_BOX_HALF, y: prop.y, w: 2 * FRONT_BOX_HALF, h: prop.h };
+  if (prop.kind === "box") {
+    const half = prop.frontHalf ?? FRONT_BOX_HALF;
+    return { kind: "box", x: shift - half, y: prop.y, w: 2 * half, h: prop.h };
+  }
   return undefined;
 }
 

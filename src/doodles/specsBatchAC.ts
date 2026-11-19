@@ -167,8 +167,8 @@ function benchesDip(pelvisY: number, lock: boolean): Pose {
 
 const AB_KNEE: Point = [0, -6];
 const AB_ANKLE: Point = [-86, -6];
-/** Ab wheel radius (about 1.5 head radii); the hands hold its axle this high. */
-const AB_WHEEL = 34;
+/** Ab wheel radius (a little under a head radius, so it does not read as a second head); the hands hold its axle this high. */
+const AB_WHEEL = 22;
 
 /**
  * Kneeling rollout: thigh at `thighDeg` from the knee, torso at `torsoDeg` from
@@ -265,6 +265,8 @@ const zOut = (side: Side): number => (side === "near" ? -1 : 1);
 /** Second view: the knee crosses the midline to under the opposite shoulder (±22); the foot follows partway. */
 const CROSS_KNEE_Z = 24;
 const CROSS_ANKLE_Z = 2;
+/** The driven foot, toes pointed back. */
+const CROSS_TOE = 150;
 const HIP_Z = 8;
 
 function crossClimber(side: Side): Pose {
@@ -277,7 +279,7 @@ function crossClimber(side: Side): Pose {
     ...base,
     knees: { [side]: { at: k } },
     feet: { [side]: ankle, [other(side)]: base.feet?.near as Point },
-    toes: { [side]: 30, [other(side)]: 62 },
+    toes: { [side]: CROSS_TOE, [other(side)]: 62 },
   };
 }
 
@@ -288,6 +290,46 @@ function crossSideways(side: Side): Sideways {
     feet: { [side]: across * CROSS_ANKLE_Z },
   };
 }
+
+/** Hips lift this much as the legs switch (a quick hop), so the knee passing under the hip clears the floor. */
+const CROSS_HOP = 16;
+
+/**
+ * The switch, between `out` driven across and the other knee driven across:
+ * `out`'s thigh has swung back under the hip with the shin trailing up behind
+ * (foot in the air, heading back), while the other leg has left the floor,
+ * knee folding as it starts to drive in.
+ */
+function crossSwitch(out: Side): { pose: Pose; sideways: Sideways } {
+  const base = plank();
+  const chest = base.chest as Point;
+  const plankPelvis = base.pelvis as Point;
+  const chord = dist(plankPelvis, chest);
+  const pelvisY = plankPelvis[1] - CROSS_HOP;
+  const pelvis: Point = [round(chest[0] - Math.sqrt(chord ** 2 - (chest[1] - pelvisY) ** 2)), pelvisY];
+  const inc = other(out);
+  const leg = (thighDeg: number, shinDeg: number): { k: Point; a: Point } => {
+    const k = reach3(pelvis, thighDeg, THIGH, 0);
+    return { k, a: reach3(k, shinDeg, SHIN, 0) };
+  };
+  const back = leg(CROSS_SWITCH.outThigh, CROSS_SWITCH.outShin);
+  const drive = leg(CROSS_SWITCH.inThigh, CROSS_SWITCH.inShin);
+  return {
+    pose: {
+      ...base,
+      pelvis,
+      knees: { [out]: { at: back.k }, [inc]: { at: drive.k } },
+      feet: { [out]: back.a, [inc]: drive.a },
+      toes: { [out]: CROSS_SWITCH.outToe, [inc]: CROSS_SWITCH.inToe },
+    },
+    sideways: {
+      knees: { [out]: { at: zOut(out) * HIP_Z }, [inc]: { at: zOut(inc) * HIP_Z } },
+      feet: { [out]: zOut(out) * HIP_Z, [inc]: zOut(inc) * HIP_Z },
+    },
+  };
+}
+
+const CROSS_SWITCH = { outThigh: 150, outShin: 215, outToe: 200, inThigh: 105, inShin: 220, inToe: 170 };
 
 /** Spider crawl: high plank, a knee travels out to the side towards the same elbow (as the Spiderman plank). */
 const SP_HAND_X = 62;
@@ -373,14 +415,40 @@ function groinSquat(): Pose {
 
 /** Feet in the air halfway between plank and squat, knees tucked. */
 function groinAir(): Pose {
-  const pelvis: Point = [-58, -104];
-  const ankle: Point = [-70, -30];
+  const pelvis: Point = [-58, -110];
+  const ankle: Point = [-66, -44];
   return {
     pelvis,
     hands: GROIN_HANDS,
     knees: { near: { bend: -1 }, far: { bend: -1 } },
     feet: { near: ankle, far: ankle },
-    toes: { near: 40, far: 40 },
+    toes: { near: 60, far: 60 },
+  };
+}
+
+/** Push-off: the hips pop up and both feet leave the floor before the knees fold (and on the way back, before they land). */
+function groinLift(): Pose {
+  const base = plank();
+  const chest = base.chest as Point;
+  const plankPelvis = base.pelvis as Point;
+  const chord = dist(plankPelvis, chest);
+  const pelvisY = plankPelvis[1] - 14;
+  const pelvis: Point = [round(chest[0] - Math.sqrt(chord ** 2 - (chest[1] - pelvisY) ** 2)), pelvisY];
+  const ankle = reach3(pelvis, 166, LEG - 2, 0);
+  return { ...base, pelvis, feet: { near: ankle, far: ankle }, toes: { near: 70, far: 70 } };
+}
+
+/** Just before touching down in the squat: feet over their landing spot, a hand's breadth up. */
+function groinLand(): Pose {
+  const squat = groinSquat();
+  const pelvis = squat.pelvis as Point;
+  return {
+    ...squat,
+    pelvis: [pelvis[0] - 6, pelvis[1] - 14],
+    head: undefined,
+    chest: undefined,
+    feet: { near: [28, -9], far: [25, -9] },
+    toes: { near: 10, far: 10 },
   };
 }
 
@@ -437,7 +505,7 @@ export const BATCH_AC_SPECS: DoodleSpec[] = [
     transition: 0.7,
     frames: [
       { hold: 0.4, pose: chairDip([0, -128], true) },
-      { hold: 0.3, pose: chairDip([-14, -52], false) },
+      { hold: 0.3, pose: chairDip([-9, -84], false) },
     ],
   },
   {
@@ -482,10 +550,12 @@ export const BATCH_AC_SPECS: DoodleSpec[] = [
     slug: "cross-body-mountain-climber",
     title: "Cross-body mountain climber",
     views: ["side", "front"],
-    transition: 0.26,
+    transition: 0.14,
     frames: [
       { hold: 0.12, pose: crossClimber("near"), sideways: crossSideways("near") },
+      { hold: 0, ...crossSwitch("near") },
       { hold: 0.12, pose: crossClimber("far"), sideways: crossSideways("far") },
+      { hold: 0, ...crossSwitch("far") },
     ],
   },
   {
@@ -521,12 +591,16 @@ export const BATCH_AC_SPECS: DoodleSpec[] = [
     slug: "groiners",
     title: "Groiners",
     views: ["side", "front"],
-    transition: 0.24,
+    transition: 0.14,
     frames: [
       { hold: 0.3, pose: { ...plank(), chest: undefined }, sideways: GROIN_PLANK },
+      { hold: 0, pose: groinLift(), sideways: GROIN_PLANK },
       { hold: 0, pose: groinAir(), sideways: GROIN_AIR },
+      { hold: 0, pose: groinLand(), sideways: GROIN_SQUAT },
       { hold: 0.5, pose: groinSquat(), sideways: GROIN_SQUAT },
+      { hold: 0, pose: groinLand(), sideways: GROIN_SQUAT },
       { hold: 0, pose: groinAir(), sideways: GROIN_AIR },
+      { hold: 0, pose: groinLift(), sideways: GROIN_PLANK },
     ],
   },
 ];
