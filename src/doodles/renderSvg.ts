@@ -2,6 +2,7 @@ import { FOCUS_BY_ID, type Focus, type Segment } from "./focus";
 import { bellSize, bells, byTheHorns, gearPoints, handsOff, panelOf, RING_RADIUS, strapAnchor, strapAttach, strapLine, strapSides } from "./gear";
 import type { Panel } from "./project";
 import { dualLayout, renderDualSvg } from "./renderDual";
+import { renderTopSvg, topLayout } from "./renderTop";
 import { sampleTimeline, SEGMENTS, type DoodleSpec, type Point, type Prop, type Side, type Solved } from "./rig";
 
 /**
@@ -369,7 +370,7 @@ function layoutFor(spec: DoodleSpec, poses: Solved[]): Layout {
 }
 
 export function specViewBox(spec: DoodleSpec, poses?: Solved[]): ViewBox {
-  if (spec.views) return dualLayout(spec).view;
+  if (spec.views) return spec.views[1] === "top" ? topLayout(spec).view : dualLayout(spec).view;
   poses ??= sampleTimeline(spec).poses;
   return layoutFor(spec, poses).view;
 }
@@ -530,7 +531,7 @@ ${label}`;
 
 /** Animated SVG (SMIL), loops forever; plays standalone, in an <img>, or inlined (doodleMarkup). */
 export function renderDoodleSvg(spec: DoodleSpec): string {
-  if (spec.views) return renderDualSvg(spec);
+  if (spec.views) return spec.views[1] === "top" ? renderTopSvg(spec) : renderDualSvg(spec);
   const timeline = sampleTimeline(spec);
   const { poses } = timeline;
   const timing = timingAttr(timeline);

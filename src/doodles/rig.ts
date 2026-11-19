@@ -187,6 +187,23 @@ export interface SidewaysHint {
 export interface Sideways {
   /** Shifts the whole spine sideways. */
   pelvis?: number;
+  /**
+   * z of the chest (the shoulders' centre); default: the pelvis z. Different
+   * from `pelvis`, the spine leans sideways: the lower spine turns rigidly
+   * about `pivot` until pelvis and chest sit at their z, so it draws shorter in
+   * the side view and tilts in the front view. Give the same `pivot` on every
+   * keyframe of a move.
+   */
+  chest?: number;
+  /**
+   * The spine end that keeps its side-view (x, y) when the spine leans.
+   * "pelvis" (default): the whole spine turns about the pelvis, the chest comes
+   * down and in, the shoulders and head tilt with it, the hips stay level (a
+   * standing side bend, windmill). "chest": the chest, shoulders and head stay
+   * put and square, the pelvis swings out under them and draws closer to the
+   * chest in the side view (plank hip dips); arm pins stay valid.
+   */
+  pivot?: "pelvis" | "chest";
   hands?: Partial<Record<Side, number>>;
   feet?: Partial<Record<Side, number>>;
   elbows?: Partial<Record<Side, SidewaysHint>>;
@@ -329,7 +346,15 @@ export type Prop =
   | { kind: "floor" }
   /** A straight sloped plank from `from` to `to`; `posts` (default true) stand a little in from each end down to the floor. */
   | { kind: "board"; from: Point; to: Point; posts?: boolean }
-  | { kind: "parallelBars"; y: number; x1: number; x2: number }
+  | {
+      kind: "parallelBars";
+      y: number;
+      x1: number;
+      x2: number;
+      /** Two views: each rail's sideways distance from the centre (default 30); put the hands' z on it. */
+      frontHalf?: number;
+    }
+  /** Two views: each hand's parallette is drawn end-on at that hand's z in the first keyframe. */
   | { kind: "parallettes"; y: number; xs: number[] };
 
 export interface DoodleSpec {
@@ -364,7 +389,7 @@ export interface DoodleSpec {
    * Draw the move twice, side view and front view next to each other, from one
    * 3D-solved figure (keyframe `sideways`). Only when a reviewer asks for it (ADD VIEW).
    */
-  views?: readonly ["side", "front"];
+  views?: readonly ["side", "front"] | readonly ["side", "top"];
 }
 
 export const BONES = {

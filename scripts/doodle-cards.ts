@@ -46,7 +46,7 @@ function cardItems(ids: readonly string[]): CardItem[] {
       continue;
     }
     const text = (DESCRIPTIONS as Record<string, { summary?: string; steps?: string[] } | undefined>)[id];
-    items.push({ id, name: exercise?.name ?? spec?.title ?? id, file, viewLabel: spec?.views ? "side + front views" : `${spec?.view ?? "side"} view`, summary: text?.summary, steps: text?.steps });
+    items.push({ id, name: exercise?.name ?? spec?.title ?? id, file, viewLabel: spec?.views ? `side + ${spec.views[1]} views` : `${spec?.view ?? "side"} view`, summary: text?.summary, steps: text?.steps });
   }
   return items;
 }
