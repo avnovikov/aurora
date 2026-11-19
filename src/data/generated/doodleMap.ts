@@ -500,7 +500,17 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "fedb_kettlebell_halo": "/doodles/doodle-kettlebell-halo.svg",
   "fedb_kettlebell_halo_with_overhead_extension": "/doodles/doodle-kettlebell-halo-with-overhead-extension.svg",
   "fedb_kettlebell_overhead_triceps_extension": "/doodles/doodle-kettlebell-overhead-triceps-extension.svg",
-  "fedb_bent_press": "/doodles/doodle-bent-press.svg"
+  "fedb_bent_press": "/doodles/doodle-bent-press.svg",
+  "fedb_chin_to_chest_stretch": "/doodles/doodle-chin-to-chest-stretch.svg",
+  "wger_1010": "/doodles/doodle-back-neck-stretch.svg",
+  "fedb_side_neck_stretch": "/doodles/doodle-side-neck-stretch.svg",
+  "wger_1008": "/doodles/doodle-left-neck-stretch.svg",
+  "wger_1009": "/doodles/doodle-right-neck-stretch.svg",
+  "wger_1007": "/doodles/doodle-head-turns.svg",
+  "fedb_isometric_neck_exercise_front_and_back": "/doodles/doodle-isometric-neck-front-and-back.svg",
+  "fedb_isometric_neck_exercise_sides": "/doodles/doodle-isometric-neck-sides.svg",
+  "wger_1006": "/doodles/doodle-chin-tuck.svg",
+  "fedb_looking_at_ceiling": "/doodles/doodle-looking-at-ceiling.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
