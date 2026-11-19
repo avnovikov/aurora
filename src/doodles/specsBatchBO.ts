@@ -1,6 +1,6 @@
 import { HIP_SIDE, solvePose } from "./rig";
-import type { DoodleSpec, Keyframe, Pose, Point } from "./rig";
-import { sub3, type Point3 } from "./rig3d";
+import type { DoodleSpec, Keyframe, Pose, Point, Sideways } from "./rig";
+import { solveKeyframe3, sub3, type Point3 } from "./rig3d";
 import { TOP_VIEWS } from "./sideways";
 import { FLOOR_PROP, along, round, supineTorso } from "./geom";
 
@@ -40,15 +40,53 @@ function kneeling(lean: number, x = 0, y = -92): Pose {
   };
 }
 
-/** A partner standing with the knees bent and the chest hinged `lean` degrees forward (facing +x), pelvis `[x, y]`. */
-function stooping(lean: number, x: number, y: number): Pose {
+/**
+ * A partner standing behind and hinged at the hips to reach down (facing +x):
+ * pelvis `[x, y]` (-156: knees soft, not a crouch), the feet a little ahead of
+ * it under the hips, the chest `lean` degrees forward.
+ */
+function stooping(lean: number, x: number, y = -156): Pose {
   const pelvis: Point = [x, y];
   return {
     pelvis,
     chest: along(pelvis, -90 + lean, 80),
     knees: { near: { bend: -1 }, far: { bend: -1 } },
-    feet: { near: [x - 14, 0], far: [x - 22, 0] },
+    feet: { near: [x + 24, 0], far: [x + 18, 0] },
     toes: { near: 0, far: 0 },
+  };
+}
+
+/**
+ * A partner kneeling BESIDE a lying exerciser, on the far side (two views):
+ * authored facing +x, then the whole body rolled 90 (`twist`, `hipTwist`) so the
+ * chest faces the near side (-z), i.e. the exerciser. Pelvis at side-view x `x`,
+ * height `y` (-56: sitting back towards the heels) and sideways `z`; the knees
+ * towards the exerciser, the shins flat behind (+z); the spine leans `lean`
+ * (sideways units) towards the exerciser, so the head stays beside the body.
+ */
+function besideKneel(x: number, z: number, lean: number, y = -56): { pose: Pose; sideways: Sideways } {
+  const upper: Pose = { pelvis: [x, y], chest: [x, y - 80] };
+  const trunk: Sideways = { pelvis: z, chest: z - lean, twist: 90, hipTwist: 90 };
+  // The leaned, rolled hips: each knee straight down under its hip (y -4) and
+  // a little towards the exerciser, the shin flat on the floor behind it.
+  const hips = solveKeyframe3(solvePose(upper), upper, trunk).legs;
+  const knee = (side: "near" | "far"): Point3 => {
+    const [hx, hy, hz] = hips[side].root;
+    return [round(hx), -4, round(hz - Math.sqrt(THIGH ** 2 - (hy + 4) ** 2) + 0.5)];
+  };
+  const kn = knee("near");
+  const kf = knee("far");
+  return {
+    pose: {
+      ...upper,
+      knees: { near: { at: [kn[0], kn[1]] }, far: { at: [kf[0], kf[1]] } },
+      feet: { near: [kn[0], -4], far: [kf[0], -4] },
+    },
+    sideways: {
+      ...trunk,
+      knees: { near: { at: kn[2] }, far: { at: kf[2] } },
+      feet: { near: round(kn[2] + SHIN - 0.5), far: round(kf[2] + SHIN - 0.5) },
+    },
   };
 }
 
@@ -90,6 +128,40 @@ function lyingGlute(kneeY: number, kneeZ: number): Keyframe {
       toes: { near: -60, far: 0 },
     },
     sideways: { knees: { near: { at: knee[2] } }, feet: { near: ankle[2], far: 8 }, hands: { near: -28, far: 28 } },
+  };
+}
+
+// ---------------------------------------------------------------- lying crossover
+
+/**
+ * Lying crossover (side + top view): face up, the near knee bent and crossed
+ * over the body to the far side, the hips rolled after it (`roll`, the near hip
+ * up) while the shoulders stay flat. `lift`: the knee's height above the floor.
+ * The near foot rests by the straight far leg.
+ */
+function crossover(roll: number, lift: number): Keyframe {
+  const base = lyingBase();
+  const trunk: Sideways = { hipTwist: -roll, hands: { near: -28, far: 28 } };
+  const upper: Pose = { pelvis: base.pelvis, chest: base.chest, head: base.head, spine: base.spine };
+  const [hx, hy, hz] = solveKeyframe3(solvePose(upper), upper, trunk).legs.near.root;
+  const kneeY = -6 - lift;
+  // Knee across the body, `KNEE_X` ahead of the hip, at the thigh's length.
+  const KNEE_X = 40;
+  const knee: Point3 = [round(hx + KNEE_X), kneeY, round(hz + Math.sqrt(THIGH ** 2 - KNEE_X ** 2 - (kneeY - hy) ** 2))];
+  // Shin back and down towards the far leg's knee, the foot resting on the floor.
+  const ankle = toward3(knee, [round(knee[0] + 30), -8, 10], SHIN);
+  // The far leg straight along the floor from its (rolled, lower) hip.
+  const [fx, fy, fz] = solveKeyframe3(solvePose(upper), upper, trunk).legs.far.root;
+  const farFoot: Point = [round(fx + Math.sqrt((LEG - 0.4) ** 2 - (fy + 8) ** 2)), -8];
+  return {
+    hold: 0,
+    pose: {
+      ...base,
+      knees: { near: { at: [knee[0], knee[1]] }, far: { bend: -1 } },
+      feet: { near: [ankle[0], ankle[1]], far: farFoot },
+      toes: { near: 0, far: -80 },
+    },
+    sideways: { ...trunk, knees: { near: { at: knee[2] } }, feet: { near: ankle[2], far: round(fz) } },
   };
 }
 
@@ -281,16 +353,34 @@ export const BATCH_BO_SPECS: DoodleSpec[] = [
     props: [FLOOR_PROP],
     transition: 1.3,
     frames: [
-      { ...lyingGlute(-72, -64), hold: 0.6 },
-      { ...lyingGlute(-100, -44), hold: 1.4 },
+      { ...lyingGlute(-78, -36), hold: 0.6 },
+      { ...lyingGlute(-104, -26), hold: 1.4 },
     ],
     partner: {
-      mirror: 90,
       holds: [
-        { hand: "near", on: "ankle.near" },
+        { hand: "near", on: "knee.near" },
+        { hand: "far", on: "ankle.near" },
+      ],
+      frames: [besideKneel(50, 126, 48), besideKneel(48, 126, 46)],
+    },
+  },
+  {
+    id: "fedb_lying_crossover",
+    slug: "lying-crossover",
+    title: "Lying Crossover",
+    views: TOP_VIEWS,
+    props: [FLOOR_PROP],
+    transition: 1.3,
+    frames: [
+      { ...crossover(35, 44), hold: 0.6 },
+      { ...crossover(50, 22), hold: 1.4 },
+    ],
+    partner: {
+      holds: [
+        { hand: "near", on: "shoulder.near" },
         { hand: "far", on: "knee.near" },
       ],
-      frames: [{ pose: kneeling(60, 0, -55) }, { pose: kneeling(66, 0, -55) }],
+      frames: [besideKneel(-60, 136, 62, -50), besideKneel(-60, 136, 64, -50)],
     },
   },
   {
@@ -338,7 +428,7 @@ export const BATCH_BO_SPECS: DoodleSpec[] = [
     props: [FLOOR_PROP],
     transition: 1.3,
     frames: [
-      { hold: 0.6, pose: seatedBiceps(148) },
+      { hold: 0.6, pose: seatedBiceps(158) },
       { hold: 1.4, pose: seatedBiceps(172) },
     ],
     partner: {
@@ -346,7 +436,7 @@ export const BATCH_BO_SPECS: DoodleSpec[] = [
         { hand: "near", on: "wrist.near" },
         { hand: "far", on: "wrist.far" },
       ],
-      frames: [{ pose: stooping(60, -150, -100) }, { pose: stooping(46, -150, -112) }],
+      frames: [{ pose: stooping(78, -205) }, { pose: stooping(72, -212) }],
     },
   },
   {
@@ -364,7 +454,7 @@ export const BATCH_BO_SPECS: DoodleSpec[] = [
         { hand: "near", on: "elbow.near" },
         { hand: "far", on: "wrist.near" },
       ],
-      frames: [{ pose: stooping(28, -100, -125) }, { pose: stooping(32, -100, -125) }],
+      frames: [{ pose: kneeling(12, -88) }, { pose: kneeling(14, -90) }],
     },
   },
   {
@@ -382,7 +472,7 @@ export const BATCH_BO_SPECS: DoodleSpec[] = [
         { hand: "near", on: "shoulder.near" },
         { hand: "far", on: "shoulder.far" },
       ],
-      frames: [{ pose: stooping(56, -40, -120) }, { pose: stooping(64, -30, -120) }],
+      frames: [{ pose: stooping(76, -52) }, { pose: stooping(82, -50) }],
     },
   },
   {
@@ -401,7 +491,7 @@ export const BATCH_BO_SPECS: DoodleSpec[] = [
         { hand: "near", on: "shoulder.near" },
         { hand: "far", on: "shoulder.far" },
       ],
-      frames: [{ pose: stooping(40, -64, -125) }, { pose: stooping(48, -56, -125) }],
+      frames: [{ pose: stooping(56, -47, -150) }, { pose: stooping(62, -40, -150) }],
     },
   },
   {
@@ -412,15 +502,15 @@ export const BATCH_BO_SPECS: DoodleSpec[] = [
     props: [FLOOR_PROP],
     transition: 1.3,
     frames: [
-      { ...seatedDeltoid(22), hold: 0.6 },
-      { ...seatedDeltoid(48), hold: 1.4 },
+      { ...seatedDeltoid(45), hold: 0.6 },
+      { ...seatedDeltoid(65), hold: 1.4 },
     ],
     partner: {
       holds: [
         { hand: "near", on: "wrist.near" },
         { hand: "far", on: "wrist.far" },
       ],
-      frames: [{ pose: stooping(50, -84, -100) }, { pose: stooping(50, -104, -100) }],
+      frames: [{ pose: stooping(72, -179) }, { pose: stooping(70, -200) }],
     },
   },
 ];

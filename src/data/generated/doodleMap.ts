@@ -670,6 +670,7 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "fedb_looking_at_ceiling": "/doodles/doodle-looking-at-ceiling.svg",
   "fedb_lying_hamstring": "/doodles/doodle-lying-hamstring.svg",
   "fedb_lying_glute": "/doodles/doodle-lying-glute.svg",
+  "fedb_lying_crossover": "/doodles/doodle-lying-crossover.svg",
   "fedb_lying_prone_quadriceps": "/doodles/doodle-lying-prone-quadriceps.svg",
   "fedb_lying_bent_leg_groin": "/doodles/doodle-lying-bent-leg-groin.svg",
   "fedb_seated_biceps": "/doodles/doodle-seated-biceps.svg",
