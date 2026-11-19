@@ -322,7 +322,7 @@ function advancedWindmill(stage: AdvStage): Keyframe["pose"] & { sideways: Sidew
   const figure = solveKeyframe3(solvePose(base), base, sideways);
   const [fx, fy, fz] = figure.arms.far.root;
   const farHand: Point = [round(fx), round(fy - LOCKED_REACH)];
-  const { hand: nearHand, z: nearZ } = freeHand(figure.arms.near.root, stage.floor, LOCKED_REACH);
+  const { hand: nearHand, z: nearZ } = freeHand(figure.arms.near.root, stage.floor === true, LOCKED_REACH);
   return {
     ...base,
     hands: { near: nearHand, far: farHand },
