@@ -24,6 +24,23 @@ export interface JointHint {
   at?: Point;
 }
 
+/** A knee given by direction (resolved by `resolveSideways`): the thigh points `dir` degrees from the hip (0 = +x, 90 = down). */
+export interface KneeHint extends JointHint {
+  dir?: number;
+  /** Thigh length to use (default BONES.thigh). */
+  length?: number;
+}
+
+/**
+ * A foot given by direction: from the knee along `dir` (a shin, default
+ * BONES.shin) when the knee is pinned, otherwise a straight leg from the pelvis
+ * (default BONES.thigh + BONES.shin).
+ */
+export interface FootHint {
+  dir: number;
+  length?: number;
+}
+
 /** v2 authoring surface: pin only the joints the move needs. */
 export interface Pose {
   /** Root. Defaults to the previous keyframe's pelvis. */
@@ -70,7 +87,7 @@ export interface LegacyPose {
 }
 
 export interface Keyframe {
-  pose: Pose | LegacyPose;
+  pose: AuthoredPose | LegacyPose;
   /** Seconds to hold this pose. */
   hold: number;
   /**
@@ -105,6 +122,113 @@ export interface Sideways {
   feet?: Partial<Record<Side, number>>;
   elbows?: Partial<Record<Side, SidewaysHint>>;
   knees?: Partial<Record<Side, SidewaysHint>>;
+}
+
+/** What keyframes hold: a `Pose` whose knees and feet may be direction hints, resolved against the keyframe's `sideways`. */
+export type AuthoredPose = Omit<Pose, "knees" | "feet"> & {
+  knees?: Partial<Record<Side, KneeHint>>;
+  feet?: Partial<Record<Side, FootPin>>;
+  /** Planted feet (points) slide in so straight legs keep their 2D length with their sideways z. */
+  spreadFeet?: boolean;
+};
+
+/**
+ * A joint `length` from `root` (3D: x, y and z) heading along the 2D angle
+ * `degrees` (0 = +x, 90 = down) while it sits `dz` sideways from the root: the
+ * 2D point is foreshortened so the 3D bone keeps its length.
+ */
+export function reach3(root: Point, degrees: number, length: number, dz: number): Point {
+  const flat = Math.sqrt(Math.max(0, length * length - dz * dz));
+  const r = (degrees * Math.PI) / 180;
+  return [Math.round((root[0] + Math.cos(r) * flat) * 1000) / 1000, Math.round((root[1] + Math.sin(r) * flat) * 1000) / 1000];
+}
+
+type FootPin = Point | FootHint;
+
+const isPoint = (foot: FootPin | undefined): foot is Point => Array.isArray(foot);
+
+function hasHints(pose: AuthoredPose): boolean {
+  if (pose.spreadFeet) return true;
+  return (["near", "far"] as Side[]).some(
+    (side) => pose.knees?.[side]?.dir !== undefined || (pose.feet?.[side] !== undefined && !isPoint(pose.feet[side])),
+  );
+}
+
+/** Planted (point) feet slide along the floor towards the hip so the 3D leg keeps its 2D length. */
+function spreadPlanted(
+  pelvis: Point,
+  feet: Partial<Record<Side, FootPin>>,
+  sw: Sideways,
+): Partial<Record<Side, FootPin>> {
+  const out = { ...feet };
+  for (const side of ["near", "far"] as Side[]) {
+    const foot = feet[side];
+    if (!foot || !isPoint(foot)) continue;
+    const hipZ = (sw.pelvis ?? 0) + zOut(side) * HIP_SIDE;
+    const dz = (sw.feet?.[side] ?? hipZ) - hipZ;
+    const leg = Math.hypot(foot[0] - pelvis[0], foot[1] - pelvis[1]) - 0.2;
+    const flat = Math.sqrt(Math.max(0, leg * leg - dz * dz - (foot[1] - pelvis[1]) ** 2));
+    out[side] = [Math.round((pelvis[0] - flat) * 100) / 100, foot[1]];
+  }
+  return out;
+}
+
+/** A knee hint with its direction resolved to a pin. */
+function resolveKnee(pelvis: Point, hipZ: number, kneeZ: number, hint: KneeHint): JointHint {
+  const { dir, length, ...joint } = hint;
+  const at = dir === undefined ? hint.at : reach3(pelvis, dir, length ?? BONES.thigh, kneeZ - hipZ);
+  return at ? { ...joint, at } : joint;
+}
+
+/** A foot as a point: points pass through, hints resolve from the knee pin when there is one, else straight from the pelvis. */
+function resolveFoot(
+  pelvis: Point,
+  hipZ: number,
+  kneeZ: number,
+  knee: Point | undefined,
+  foot: FootPin | undefined,
+  footZ: number,
+): Point | undefined {
+  if (!foot) return undefined;
+  if (isPoint(foot)) return foot;
+  if (knee) return reach3(knee, foot.dir, foot.length ?? BONES.shin, footZ - kneeZ);
+  return reach3(pelvis, foot.dir, foot.length ?? BONES.thigh + BONES.shin, footZ - hipZ);
+}
+
+/** One leg's hints resolved: the knee pin (if any) and the foot point (if any). */
+function resolveLeg(
+  pelvis: Point,
+  side: Side,
+  sw: Sideways,
+  hint: KneeHint | undefined,
+  foot: FootPin | undefined,
+): { knee?: JointHint; foot?: Point } {
+  const hipZ = (sw.pelvis ?? 0) + zOut(side) * HIP_SIDE;
+  const kneeZ = sw.knees?.[side]?.at ?? hipZ;
+  const knee = hint && resolveKnee(pelvis, hipZ, kneeZ, hint);
+  return { knee, foot: resolveFoot(pelvis, hipZ, kneeZ, knee?.at, foot, sw.feet?.[side] ?? hipZ) };
+}
+
+/**
+ * Turns an authored pose's sideways hints into plain pins (see `AuthoredPose`),
+ * foreshortening each by its joint's z from `sideways`: hips at
+ * `pelvis +/- HIP_SIDE`, a knee or foot without its own z at its hip's z (as the
+ * 3D solve defaults). A pose without hints comes back as the same object.
+ */
+export function resolveSideways(pose: AuthoredPose, sideways: Sideways = {}): Pose {
+  if (!hasHints(pose)) return pose as Pose;
+  const pelvis = pose.pelvis;
+  if (!pelvis) throw new Error("sideways hints (knee/foot dir, spreadFeet) need an explicit pelvis");
+  const { spreadFeet: spread, knees: kneeHints, feet: footHints, ...rest } = pose;
+  const planted = spread ? spreadPlanted(pelvis, footHints ?? {}, sideways) : { ...footHints };
+  const legs = (["near", "far"] as Side[]).map((side) => [side, resolveLeg(pelvis, side, sideways, kneeHints?.[side], planted[side])] as const);
+  const pick = <T>(part: "knee" | "foot"): Partial<Record<Side, T>> =>
+    Object.fromEntries(legs.filter(([, leg]) => leg[part]).map(([side, leg]) => [side, leg[part]]));
+  return {
+    ...rest,
+    ...(kneeHints ? { knees: pick<JointHint>("knee") } : {}),
+    ...(footHints ? { feet: pick<Point>("foot") } : {}),
+  };
 }
 
 export type Prop =
@@ -283,7 +407,7 @@ export interface Solved {
 
 const SIDES: Side[] = ["near", "far"];
 
-export function isLegacyPose(pose: Pose | LegacyPose): pose is LegacyPose {
+export function isLegacyPose(pose: AuthoredPose | Pose | LegacyPose): pose is LegacyPose {
   return "hip" in pose && "shoulder" in pose;
 }
 
@@ -310,6 +434,10 @@ export function fromLegacy(pose: LegacyPose): Pose {
 }
 
 export const toPose = (pose: Pose | LegacyPose): Pose => (isLegacyPose(pose) ? fromLegacy(pose) : pose);
+
+/** A keyframe's pose as a plain `Pose`: legacy poses converted, sideways hints resolved. */
+const resolveFramePose = (pose: AuthoredPose | LegacyPose, sideways?: Sideways): Pose =>
+  isLegacyPose(pose) ? fromLegacy(pose) : resolveSideways(pose, sideways);
 
 export interface SolveContext {
   view?: "side" | "front";
@@ -658,7 +786,7 @@ export interface ResolvedKeyframe {
 
 /** Solve every keyframe in order, carrying the pelvis and spine direction forward. */
 export function solveKeyframes(spec: DoodleSpec): ResolvedKeyframe[] {
-  const poses = spec.frames.map((frame) => toPose(frame.pose));
+  const poses = spec.frames.map((frame) => resolveFramePose(frame.pose, frame.sideways));
   const firstPelvis = poses.find((p) => p.pelvis)?.pelvis;
   let pelvis = [...poses].reverse().find((p) => p.pelvis)?.pelvis ?? firstPelvis;
   let spineAngle: number | undefined;
