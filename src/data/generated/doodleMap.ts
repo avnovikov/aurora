@@ -391,6 +391,7 @@ export const GENERATED_DOODLES: Record<string, string> = {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   "ntc_australian_chin_up": "/doodles/doodle-australian-chin-up.svg",
   "ntc_australian_pull_up_hold": "/doodles/doodle-australian-pull-up-hold.svg",
   "hf_41": "/doodles/doodle-ring-row.svg",
@@ -465,6 +466,19 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "fedb_kettlebell_turkish_get_up_lunge_style": "/doodles/doodle-kettlebell-turkish-get-up-lunge-style.svg",
   "fedb_advanced_kettlebell_windmill": "/doodles/doodle-advanced-kettlebell-windmill.svg"
 >>>>>>> feature/212-doodles-at
+=======
+  "wger_1380": "/doodles/doodle-band-pull-apart.svg",
+  "wger_1826": "/doodles/doodle-band-external-rotation.svg",
+  "wger_1433": "/doodles/doodle-band-low-to-high-chop.svg",
+  "wger_2494": "/doodles/doodle-terminal-knee-extension.svg",
+  "wger_2635": "/doodles/doodle-seated-band-row.svg",
+  "ntc_bent_knee_australian_pull_up": "/doodles/doodle-bent-knee-australian-pull-up.svg",
+  "ntc_feet_elevated_australian_pull_up": "/doodles/doodle-feet-elevated-australian-pull-up.svg",
+  "ntc_archer_inverted_row": "/doodles/doodle-archer-inverted-row.svg",
+  "ntc_archer_straight_bar_dip": "/doodles/doodle-archer-straight-bar-dip.svg",
+  "ntc_archer_dip": "/doodles/doodle-archer-dip.svg",
+  "wger_1919": "/doodles/doodle-push-up-chest-stretch.svg"
+>>>>>>> feature/212-doodles-au
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
