@@ -96,44 +96,75 @@ async function devtoolsSocket() {
   throw new Error(`Chrome did not open port ${port}`);
 }
 
-/** Minimal CDP client: send(method, params) → result; once(event) → its params. */
+const PAGE_LOAD_EVENT = "Page.loadEventFired";
+
+/**
+ * Minimal CDP client over an open DevTools WebSocket.
+ * send(method, params) → command result; oncePageLoad() → Page.loadEventFired.
+ */
+function createCdpClient(socket) {
+  let nextId = 1;
+  const pendingCommands = new Map();
+  /** @type {((params: unknown) => void) | null} */
+  let pageLoadWaiter = null;
+
+  function settleCommand(message) {
+    const pending = pendingCommands.get(message.id);
+    if (!pending) return;
+    pendingCommands.delete(message.id);
+    if (message.error) {
+      pending.reject(new Error(message.error.message));
+      return;
+    }
+    pending.resolve(message.result);
+  }
+
+  function settlePageLoad(params) {
+    const waiter = pageLoadWaiter;
+    pageLoadWaiter = null;
+    waiter?.(params);
+  }
+
+  socket.onmessage = ({ data }) => {
+    const message = JSON.parse(data);
+    // Fixed event name only — never dispatch by a free-form CDP method string.
+    if (message.method === PAGE_LOAD_EVENT) {
+      settlePageLoad(message.params);
+      return;
+    }
+    if (message.method) return;
+    settleCommand(message);
+  };
+
+  const send = (method, params = {}) =>
+    new Promise((resolve, reject) => {
+      const id = nextId++;
+      pendingCommands.set(id, { resolve, reject });
+      socket.send(JSON.stringify({ id, method, params }));
+    });
+
+  const oncePageLoad = () =>
+    new Promise((resolve) => {
+      pageLoadWaiter = resolve;
+    });
+
+  return { send, oncePageLoad, close: () => socket.close() };
+}
+
 async function connect() {
   const socket = await devtoolsSocket();
   await new Promise((resolve, reject) => {
     socket.onopen = resolve;
     socket.onerror = reject;
   });
-  let nextId = 1;
-  const pending = new Map();
-  const waiting = new Map();
-  socket.onmessage = ({ data }) => {
-    const message = JSON.parse(data);
-    if (message.method) {
-      waiting.get(message.method)?.(message.params);
-      waiting.delete(message.method);
-      return;
-    }
-    const handler = pending.get(message.id);
-    if (!handler) return;
-    pending.delete(message.id);
-    if (message.error) handler.reject(new Error(message.error.message));
-    else handler.resolve(message.result);
-  };
-  const send = (method, params = {}) =>
-    new Promise((resolve, reject) => {
-      const id = nextId++;
-      pending.set(id, { resolve, reject });
-      socket.send(JSON.stringify({ id, method, params }));
-    });
-  const once = (event) => new Promise((resolve) => waiting.set(event, resolve));
-  return { send, once, close: () => socket.close() };
+  return createCdpClient(socket);
 }
 
 async function measureAll(pageFile) {
   const cdp = await connect();
   try {
     await cdp.send("Page.enable");
-    const loaded = cdp.once("Page.loadEventFired");
+    const loaded = cdp.oncePageLoad();
     await cdp.send("Page.navigate", { url: pathToFileURL(pageFile).href });
     await loaded;
     const { result, exceptionDetails } = await cdp.send("Runtime.evaluate", {
