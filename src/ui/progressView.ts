@@ -1,4 +1,8 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
+import { SKILL_TIER_LABELS } from "../domain/skillTier";
+import type { Pattern } from "../domain/types";
+import { escapeHtml } from "../library/present";
+import { loadPlanLevel, type PlanLevel } from "../plan/planLevel";
 import { listResolvedTemplates } from "../plan/templates";
 import {
   buildCurrentReadiness,
@@ -14,8 +18,6 @@ import {
   buildWeakLinkBoard,
   type WeakLinkCard,
 } from "../progress/weakLinkBoard";
-import type { Pattern } from "../domain/types";
-import { escapeHtml } from "../library/present";
 import { loadMemories } from "../session/history";
 import type { AppTab } from "./shell";
 
@@ -31,8 +33,9 @@ export function renderProgressView(
   const memories = loadMemories();
   const graph = EXERCISE_GRAPH;
   const templates = listResolvedTemplates();
+  const planLevel = loadPlanLevel();
   const profile = buildLevelProfile({ graph, memories });
-  const weak = buildWeakLinkBoard({ graph, memories });
+  const weak = buildWeakLinkBoard({ graph, memories, planLevel });
   const readiness = buildCurrentReadiness({ templates, graph, memories });
 
   root.innerHTML = `
@@ -40,7 +43,7 @@ export function renderProgressView(
       <p class="eyebrow">Progress</p>
       <h1>Where you stand</h1>
       ${profileSection(profile.rows)}
-      ${weakSection(weak.cards)}
+      ${weakSection(weak.cards, planLevel)}
       ${readinessSection(readiness.rows)}
       <p class="hint">Tap a row to open History for that thread.</p>
     </main>
@@ -147,12 +150,15 @@ function profileRowHtml(row: PatternProfileRow): string {
   `;
 }
 
-function weakSection(cards: readonly WeakLinkCard[]): string {
+function weakSection(
+  cards: readonly WeakLinkCard[],
+  planLevel: PlanLevel,
+): string {
   if (cards.length === 0) {
     return emptyProgressCard({
       eyebrow: "Weak-links",
       title: "Nothing lagging yet",
-      hint: "When some moves sit below your level average, they show here.",
+      hint: weakEmptyHint(planLevel),
     });
   }
 
@@ -160,10 +166,17 @@ function weakSection(cards: readonly WeakLinkCard[]): string {
   return `
     <section class="progress-card">
       <p class="eyebrow">Weak-links</p>
-      <h2 class="chain-title">Going worse than the rest</h2>
+      <h2 class="chain-title">Areas for improvement</h2>
       <div class="weak-list">${list}</div>
     </section>
   `;
+}
+
+function weakEmptyHint(planLevel: PlanLevel): string {
+  if (planLevel === "auto") {
+    return "When some moves sit below your level average, they show here.";
+  }
+  return `When some moves sit below your ${SKILL_TIER_LABELS[planLevel]} bar, they show here.`;
 }
 
 function weakRowHtml(card: WeakLinkCard): string {
