@@ -77,7 +77,6 @@ function bulgarian(pelvis: Point, rearKneeBend: 1 | -1): Pose {
 const CALF_STEP_TOP = -80;
 const CALF_STEP = { kind: "box" as const, x: 0, y: CALF_STEP_TOP, w: 100, h: -CALF_STEP_TOP };
 const CALF_WALL = { kind: "box" as const, x: 100, y: -420, w: 14, h: 420 };
-/** Floor line, so the step reads as standing on the floor rather than floating. */
 
 /**
  * Ankle and foot angle on the step edge: `raised` stands tall on the toes,

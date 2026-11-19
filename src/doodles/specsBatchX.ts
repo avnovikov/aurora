@@ -35,8 +35,6 @@ const angle = (from: Point, to: Point): number => (Math.atan2(to[1] - from[1], t
 /** Shoulder of a straight spine (pelvis → chest is 80, shoulder 18 further). */
 const shoulderAt = (pelvis: Point, spine: number): Point => along(pelvis, spine, 98);
 
-/** Floor line, so take-off and landing read. */
-
 const other = (side: Side): Side => (side === "near" ? "far" : "near");
 
 /** Arm reach with the elbow nearly locked (shoulder to fingertip). */

@@ -41,8 +41,6 @@ function knee(hip: Point, ankle: Point, forward: boolean): Point {
   return forward === a[0] > b[0] ? a : b;
 }
 
-/** Floor line under jumps, so take-off and landing read. */
-
 // ---------------------------------------------------------------- plank (same geometry as the floor push-up)
 
 /** Ankle to shoulder of a straight body (leg 173.9 + pelvis-to-shoulder 98). */

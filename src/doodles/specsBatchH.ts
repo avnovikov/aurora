@@ -128,8 +128,6 @@ function kneeDrive(): Pose {
   };
 }
 
-/** Floor line, for moves that leave the floor or stand on the toes. */
-
 // ---------------------------------------------------------------- squats
 
 /** Squat bottom: hips back and down, chest up; `arms` sets where the hands are. */

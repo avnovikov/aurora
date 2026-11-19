@@ -26,8 +26,6 @@ function along(from: Point, degrees: number, length: number): Point {
 
 const angle = (from: Point, to: Point): number => (Math.atan2(to[1] - from[1], to[0] - from[0]) * 180) / Math.PI;
 
-/** Floor line, so take-off and landing read. */
-
 /** Shoulder of a straight spine (pelvis → chest is 80, shoulder 18 further). */
 const shoulderAt = (pelvis: Point, spine: number): Point => along(pelvis, spine, 98);
 

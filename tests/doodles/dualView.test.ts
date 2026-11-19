@@ -187,6 +187,13 @@ describe("floor prop", () => {
     expect(resolveFloors([bar], [stand])).toEqual([bar]);
   });
 
+  it("shifts the floor with the figure by dx", () => {
+    const [plain] = resolveFloors([{ kind: "floor" }], [stand]) as Extract<Prop, { kind: "bar" }>[];
+    const [moved] = resolveFloors([{ kind: "floor" }], [stand], 100) as Extract<Prop, { kind: "bar" }>[];
+    expect(moved.x1).toBe(plain.x1 + 100);
+    expect(moved.x2).toBe(plain.x2 + 100);
+  });
+
   it("sizes each panel's floor to that panel in two views", () => {
     const spec: DoodleSpec = { ...RAISE, props: [{ kind: "floor" }] };
     expect(dualViewGuards(spec)).toEqual([]);
