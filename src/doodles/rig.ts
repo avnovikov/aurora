@@ -100,6 +100,56 @@ export interface Keyframe {
   mirror?: number;
   /** Dual-view specs only: sideways (z) positions for this keyframe; see `Sideways`. */
   sideways?: Sideways;
+  /**
+   * With `kettlebell`, where the bells sit this keyframe (blended over the
+   * transitions like the limbs): `hang` (default) straight below the grip;
+   * `swing` on in the line of the forearm, flung out beyond the hand (swings,
+   * snatch pulls); `rack` resting on the back of the forearm by the wrist
+   * (front rack, overhead, behind the forearm in the side view).
+   */
+  bell?: BellMode;
+}
+
+export type BellMode = "hang" | "swing" | "rack";
+
+/**
+ * Straps hanging from one fixed anchor down to the hands (`ring`: gymnastic
+ * rings, `handle`: suspension trainer), or a band stretched from the anchor
+ * (`band`: seated band row, terminal knee extension).
+ */
+export interface Straps {
+  /** The hang point (side view). Rings and handles hang from above the hands; a band anchors anywhere. */
+  anchor: Point;
+  end: "ring" | "handle" | "band";
+  /** Which hands (knees, feet) hold one (default both). */
+  sides?: readonly Side[];
+  /** What it holds (default the hands): the knees (a band behind the knee) or the feet (ankles in the cradles: suspended push-up, pike). */
+  to?: "hands" | "knees" | "feet";
+}
+
+/** Kettlebells hanging from gripping hands (`size`: bell radius, default KETTLEBELL.size). */
+export interface Kettlebells {
+  hands: readonly Side[];
+  size?: number;
+}
+
+/** Kettlebell proportions: bell radius, and the grip's height above the bell's centre as a share of it. */
+export const KETTLEBELL = { size: 14, grip: 1.85 } as const;
+
+/**
+ * Hand height that sets a hanging kettlebell of radius `size` down on the floor
+ * (deadlift bottom, swing set-up): the bell's bottom at y = 0.
+ */
+export const kettlebellOnFloor = (size: number = KETTLEBELL.size): number => -size * (1 + KETTLEBELL.grip);
+
+/**
+ * A hand on a strap of `length` from `anchor`, swung `angle` degrees from
+ * straight down (positive towards +x). Pin hands with it so the strap keeps
+ * its length (the validator checks rings and handles don't stretch).
+ */
+export function onStrap(anchor: Point, length: number, angle = 0): Point {
+  const r = (angle * Math.PI) / 180;
+  return [Math.round((anchor[0] + Math.sin(r) * length) * 1000) / 1000, Math.round((anchor[1] + Math.cos(r) * length) * 1000) / 1000];
 }
 
 /** Sideways position of a knee or elbow pin, and how far its bend plane rolls outward. */
@@ -285,6 +335,12 @@ export interface DoodleSpec {
    * hand that rolls with it. Pin the hands at y = -radius so it sits on the floor.
    */
   wheel?: number;
+  /** Rings, suspension-trainer handles or an anchored band (see `Straps`). */
+  straps?: Straps;
+  /** A resistance band stretched from hand to hand (band pull-apart). */
+  handBand?: boolean;
+  /** Kettlebells in these hands, hanging under gravity unless a keyframe sets `bell`. */
+  kettlebell?: Kettlebells;
   /**
    * Draw the move twice, side view and front view next to each other, from one
    * 3D-solved figure (keyframe `sideways`). Only when a reviewer asks for it (ADD VIEW).

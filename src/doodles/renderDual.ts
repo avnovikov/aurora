@@ -78,9 +78,26 @@ export function frontProps(props: readonly Prop[], shift = 0): Prop[] {
   });
 }
 
-/** Parts drawn with another (band round the thighs, wheel in the hand), and the part they follow. */
-const ATTACHED = { band: "legNear", wheel: "armNear" } as const satisfies Partial<Record<FigurePart, FigurePart>>;
-type BodyPart = Exclude<FigurePart, keyof typeof ATTACHED>;
+/**
+ * Parts drawn with another (band round the thighs, gear in a hand), and the part
+ * they follow. Straps tied to the knees or feet (`straps.to`) follow the legs.
+ */
+const ATTACHED = {
+  band: "legNear",
+  wheel: "armNear",
+  strapFar: "armFar",
+  bellFar: "armFar",
+  strapNear: "armNear",
+  handBand: "armNear",
+  bellNear: "armNear",
+} as const satisfies Partial<Record<FigurePart, FigurePart>>;
+type Attached = keyof typeof ATTACHED;
+type BodyPart = Exclude<FigurePart, Attached>;
+
+function attachedFor(spec: DoodleSpec): Record<Attached, BodyPart> {
+  if (spec.straps?.to !== "knees" && spec.straps?.to !== "feet") return ATTACHED;
+  return { ...ATTACHED, strapFar: "legFar", strapNear: "legNear" };
+}
 
 const limbPoints = (l: Limb3): Point3[] => [l.root, l.mid, l.joint, l.end];
 const PART_POINTS: Record<BodyPart, (f: Figure3) => Point3[]> = {
@@ -101,11 +118,11 @@ function depthOf(part: BodyPart, poses: Figure3[]): number {
 const isBodyPart = (part: FigurePart): part is BodyPart => !(part in ATTACHED);
 
 /** Front panel draw order: furthest from the viewer first, attached parts right after their anchor. */
-function frontOrder(poses: Figure3[]): FigurePart[] {
+function frontOrder(spec: DoodleSpec, poses: Figure3[]): FigurePart[] {
   const parts = FIGURE_PARTS.filter(isBodyPart);
   const depth = new Map(parts.map((part) => [part, depthOf(part, poses)]));
   const sorted = [...parts].sort((a, b) => depth.get(a)! - depth.get(b)!);
-  const attached = Object.entries(ATTACHED) as [FigurePart, BodyPart][];
+  const attached = Object.entries(attachedFor(spec)) as [FigurePart, BodyPart][];
   return sorted.flatMap((part) => [part, ...attached.filter(([, anchor]) => anchor === part).map(([extra]) => extra)]);
 }
 
@@ -122,8 +139,8 @@ export function dualLayout(spec: DoodleSpec, timeline: Timeline3 = sampleTimelin
   const side = timeline.poses.map((pose) => project(pose, "side"));
   const front = timeline.poses.map((pose) => project(pose, "front"));
   const props = spec.props ?? [];
-  const sideBox = figureExtent(side, resolveFloors(props, side), spec.wheel);
-  const frontBox = figureExtent(front, resolveFloors(frontProps(props), front), spec.wheel);
+  const sideBox = figureExtent(side, resolveFloors(props, side), spec, "side");
+  const frontBox = figureExtent(front, resolveFloors(frontProps(props), front), spec, "front");
   const frontShift = sideBox.x + sideBox.w + 2 * PADDING - frontBox.x;
   const shifted: ViewBox = { ...frontBox, x: frontBox.x + frontShift };
   const figures = union(sideBox, shifted);
@@ -154,11 +171,11 @@ export function renderDualSvg(spec: DoodleSpec): string {
   return svgShell(layout.view, spec.title, [
     highlightSvg(focus, layout.side, timing, identity),
     resolveFloors(props, layout.side).map(propSvg).join(""),
-    figureSvg(spec, layout.side, timing, identity),
+    figureSvg(spec, layout.side, timing, identity, { panel: "side" }),
     highlightSvg(focus, layout.front, timing, shift),
     resolveFloors(frontProps(props, layout.frontShift), layout.front, layout.frontShift).map(propSvg).join(""),
     // Seen from the front both sides are square on: no faded far side.
-    figureSvg(spec, layout.front, timing, shift, { farOpacity: 1, order: frontOrder(timeline.poses) }),
+    figureSvg(spec, layout.front, timing, shift, { farOpacity: 1, order: frontOrder(spec, timeline.poses), panel: "front" }),
     label("side", layout.labels.side, layout.labels.y),
     label("front", layout.labels.front, layout.labels.y),
   ]);

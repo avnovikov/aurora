@@ -1,4 +1,6 @@
 import { BONES, SEGMENTS, dist, reflectSolved, sampleTimeline, type DoodleSpec, type Point, type Prop, type Side, type Solved } from "./rig";
+import { bells, strapAnchor, strapAttach, strapSides } from "./gear";
+import type { Panel } from "./project";
 import { dualLayout } from "./renderDual";
 import { figurePoints, propSegments, specViewBox } from "./renderSvg";
 import { dist3, sampleTimeline3, type Figure3, type Point3 } from "./rig3d";
@@ -298,10 +300,73 @@ function betweenCount<P>(timeline: Samples & { poses: P[] }, test: (pose: P) => 
 }
 
 export function validateSpec(spec: DoodleSpec): SpecReport {
-  const guards = dualViewGuards(spec);
+  const guards = [...dualViewGuards(spec), ...gearGuards(spec)];
   if (guards.length > 0) return failed(spec, guards);
   return spec.views ? validateDual(spec) : validateFlat(spec);
 }
+
+// ---------------------------------------------------------------- gear
+
+/**
+ * A ring or handle strap may change length by at most this share of its
+ * longest over the loop (it hangs from a fixed strap; transitions swing the
+ * hand round the shoulder, not the anchor, so a little give is allowed).
+ */
+export const STRAP_STRETCH = 0.06;
+
+/** Spec-level rules for straps, hand bands and kettlebells. */
+export function gearGuards(spec: DoodleSpec): string[] {
+  const errors: string[] = [];
+  const straps = spec.straps;
+  if (straps) {
+    if (straps.sides && straps.sides.length === 0) errors.push("straps.sides is empty");
+  }
+  if (spec.kettlebell && spec.kettlebell.hands.length === 0) errors.push("kettlebell.hands is empty");
+  if (spec.frames.some((frame) => frame.bell) && !spec.kettlebell) errors.push("keyframe bell needs a kettlebell");
+  return errors;
+}
+
+/** Sample time label for gear issues. */
+const at = (timeline: Samples, i: number): string => `t=${round(timeline.keyTimes[i] * timeline.duration, 1)}s`;
+
+/** Strap lengths over the loop, one per sample. */
+type StrapLengths = (side: Side) => number[];
+
+/** Ring / handle straps: anchored above their hands, keeping their length (measured in 2D unless `strapLengths` is given). */
+function strapIssues(spec: DoodleSpec, poses: Solved[], timeline: Samples, panel: Panel, strapLengths?: StrapLengths): string[] {
+  if (!spec.straps || spec.straps.end === "band") return [];
+  const issues: string[] = [];
+  for (const side of strapSides(spec)) {
+    const anchor = strapAnchor(spec, poses, side, panel);
+    const low = poses.findIndex((pose) => strapAttach(spec, pose, side)[1] <= anchor[1]);
+    if (low >= 0) issues.push(`straps.${side}: anchor not above the hand (${at(timeline, low)})`);
+    const lengths = strapLengths?.(side) ?? poses.map((pose) => dist(anchor, strapAttach(spec, pose, side)));
+    const longest = Math.max(...lengths);
+    const stretch = longest - Math.min(...lengths);
+    if (stretch > STRAP_STRETCH * longest) {
+      issues.push(
+        `straps.${side}: strap length changes by ${round(stretch, 1)} (> ${STRAP_STRETCH * 100}% of ${round(longest, 1)}); keep the hand on a circle round the anchor (onStrap)`,
+      );
+    }
+  }
+  return issues;
+}
+
+/** Kettlebells must not go through the floor (first sample that does). */
+function bellIssues(spec: DoodleSpec, poses: Solved[], timeline: Samples, panel: Panel): string[] {
+  return (spec.kettlebell?.hands ?? []).flatMap((side) => {
+    const list = bells(spec, poses, side, panel);
+    const low = list.findIndex((bell) => bell.centre[1] + bell.radius > CONTACT_TOLERANCE);
+    if (low < 0) return [];
+    return [`kettlebell.${side} below floor (y=${round(list[low].centre[1] + list[low].radius, 1)}, ${at(timeline, low)})`];
+  });
+}
+
+/** Gear seen on one panel: straps (see `strapIssues`) and kettlebells. One line per problem, at its first sample. */
+const gearIssues = (spec: DoodleSpec, poses: Solved[], timeline: Samples, panel: Panel, strapLengths?: StrapLengths): string[] => [
+  ...strapIssues(spec, poses, timeline, panel, strapLengths),
+  ...bellIssues(spec, poses, timeline, panel),
+];
 
 /** Single-view specs (the 2D rig). */
 function validateFlat(spec: DoodleSpec): SpecReport {
@@ -362,6 +427,7 @@ function validateFlat(spec: DoodleSpec): SpecReport {
     errors.push(`bone length error ${maxBoneLengthErrorAllSamples} > ${BONE_TOLERANCE}`);
   }
   errors.push(...keyframeErrors(keyframes), ...transitionAnatomy, ...transitionPropCrossings);
+  errors.push(...gearIssues(spec, timeline.poses, timeline, spec.view === "front" ? "front" : "side"));
 
   return {
     slug: spec.slug,
@@ -486,6 +552,17 @@ function validateDual(spec: DoodleSpec): SpecReport {
   const transitionAnatomy = between(timeline, (f, i) => anatomy3(f, layout.side[i]));
   const transitionPropCrossings = between(timeline, (_, i) => propIssues(spec, layout.side[i]));
   errors.push(...keyframeErrors(keyframes), ...transitionAnatomy, ...transitionPropCrossings);
+  // Straps are judged in 3D: the side panel's anchor at the front panel's sideways position.
+  const strapLengths = (side: Side): number[] => {
+    const anchor = spec.straps!.anchor;
+    const z = strapAnchor(spec, layout.front, side, "front")[0];
+    const joint = (f: Figure3): Point3 => {
+      if (spec.straps!.to === "knees") return f.legs[side].mid;
+      return spec.straps!.to === "feet" ? f.legs[side].joint : f.arms[side].end;
+    };
+    return timeline.poses.map((f) => dist3([anchor[0], anchor[1], z], joint(f)));
+  };
+  errors.push(...gearIssues(spec, layout.side, timeline, "side", strapLengths));
   const torsos = keyframes.map((k) => k.torsoLength);
   return {
     slug: spec.slug,

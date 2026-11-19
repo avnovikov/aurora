@@ -1,4 +1,6 @@
 import { FOCUS_BY_ID, type Focus, type Segment } from "./focus";
+import { bellSize, bells, gearPoints, panelOf, RING_RADIUS, strapAnchor, strapAttach, strapLine, strapSides } from "./gear";
+import type { Panel } from "./project";
 import { dualLayout, renderDualSvg } from "./renderDual";
 import { sampleTimeline, SEGMENTS, type DoodleSpec, type Point, type Prop, type Side, type Solved } from "./rig";
 
@@ -70,10 +72,10 @@ const bandPath = (share: number): Path => (p) => [onThigh(p, "near", share), onT
 const BAND_WIDTH = 5;
 
 /** A filled circle of radius `r` moving through `centres`. */
-function animatedCircle(centres: Point[], r: number, fill: string, timing: string): string {
+function animatedCircle(centres: Point[], r: number, fill: string, timing: string, extra = ""): string {
   const cx = animate("cx", centres.map((p) => fmt(p[0])), timing);
   const cy = animate("cy", centres.map((p) => fmt(p[1])), timing);
-  return `<circle cx="${fmt(centres[0][0])}" cy="${fmt(centres[0][1])}" r="${fmt(r)}" style="fill:${fill}">${cx}${cy}</circle>`;
+  return `<circle cx="${fmt(centres[0][0])}" cy="${fmt(centres[0][1])}" r="${fmt(r)}" style="fill:${fill}"${extra}>${cx}${cy}</circle>`;
 }
 
 /** An ab wheel centred on the near hand (drawn over the near arm, like a held object). */
@@ -90,6 +92,50 @@ const WHEEL_HUB = 3;
 function bandSvg(spec: DoodleSpec, poses: Solved[], timing: string, map: Mapper): string {
   if (spec.band === undefined) return "";
   return `<g style="stroke:${FOCUS_COLOUR}" stroke-width="${BAND_WIDTH}">${animatedPolyline(bandPath(spec.band), poses, timing, 1, map)}</g>`;
+}
+
+/** Strap webbing and ring strokes: thinner than the limbs, so gear never reads as a bone. */
+const STRAP_WIDTH = 3;
+const RING_STROKE = 4;
+
+const fadeAttr = (opacity: number): string => (opacity < 1 ? ` opacity="${opacity}"` : "");
+
+/** One side's strap (rings, handles) or anchored band, from the panel's anchor to the hand, knee or ankle. */
+function strapSvg(spec: DoodleSpec, side: Side, poses: Solved[], timing: string, map: Mapper, scale: number, panel: Panel, opacity: number): string {
+  if (!strapSides(spec).includes(side)) return "";
+  const anchor = strapAnchor(spec, poses, side, panel);
+  const line = animatedPolyline((pose) => strapLine(spec, anchor, pose, side), poses, timing, 1, map);
+  if (spec.straps!.end === "band") {
+    return `<g style="stroke:${FOCUS_COLOUR}" stroke-width="${BAND_WIDTH}"${fadeAttr(opacity)}>${line}</g>`;
+  }
+  const ring =
+    spec.straps!.end === "ring"
+      ? animatedCircle(poses.map((pose) => map(strapAttach(spec, pose, side))), RING_RADIUS * scale, "none", timing, ` stroke-width="${RING_STROKE}"`)
+      : "";
+  return `<g stroke-width="${STRAP_WIDTH}"${fadeAttr(opacity)}>${line}${ring}</g>`;
+}
+
+/** A band from hand to hand (accent colour, like the thigh band). */
+function handBandSvg(spec: DoodleSpec, poses: Solved[], timing: string, map: Mapper): string {
+  if (!spec.handBand) return "";
+  const path: Path = (p) => [p.arms.near.end, p.arms.far.end];
+  return `<g style="stroke:${FOCUS_COLOUR}" stroke-width="${BAND_WIDTH}">${animatedPolyline(path, poses, timing, 1, map)}</g>`;
+}
+
+/** Kettlebell handle stroke (the bell itself is a solid disc: never a second head). */
+const HANDLE_WIDTH = 4;
+
+/** A kettlebell in one hand: a solid bell and a handle arc up through the grip. */
+function bellSvg(spec: DoodleSpec, side: Side, poses: Solved[], timing: string, map: Mapper, scale: number, panel: Panel, opacity: number): string {
+  if (!spec.kettlebell?.hands.includes(side)) return "";
+  const list = bells(spec, poses, side, panel);
+  const d = list.map(({ handle: [a, c, b] }) => {
+    const [p, q, r] = [a, c, b].map(map);
+    return `M${fmt(p[0])},${fmt(p[1])} Q${fmt(q[0])},${fmt(q[1])} ${fmt(r[0])},${fmt(r[1])}`;
+  });
+  const handle = `<path d="${d[0]}" stroke-width="${fmt(HANDLE_WIDTH * scale)}">${animate("d", d, timing)}</path>`;
+  const body = animatedCircle(list.map((bell) => map(bell.centre)), bellSize(spec) * scale, INK, timing, ` stroke-width="${fmt(2 * scale)}"`);
+  return `<g${fadeAttr(opacity)}>${handle}${body}</g>`;
 }
 
 /** A board's posts stand this far in from each end. */
@@ -271,11 +317,13 @@ export function frame(drawing: ViewBox): ViewBox {
   return { x: drawing.x + drawing.w / 2 - w / 2, y: drawing.y - PADDING, w, h };
 }
 
-/** Everything the figure, its ab wheel (radius `r`) and props touch over the loop (no inset). */
-export function figureExtent(poses: Solved[], props: readonly Prop[], r: number | undefined): ViewBox {
+/** Everything the figure, its gear and props touch over the loop on one panel (no inset). */
+export function figureExtent(poses: Solved[], props: readonly Prop[], spec: DoodleSpec, panel: Panel = panelOf(spec)): ViewBox {
+  const r = spec.wheel;
   return bounds([
     ...poses.flatMap((pose) => figurePoints(pose).map((p) => p.point)),
     ...props.flatMap(propPoints),
+    ...gearPoints(spec, poses, panel),
     // The ab wheel round the near hand.
     ...(r === undefined
       ? []
@@ -290,7 +338,7 @@ interface Layout {
 }
 
 function layoutFor(spec: DoodleSpec, poses: Solved[]): Layout {
-  const figure = figureExtent(poses, resolveFloors(spec.props ?? [], poses), spec.wheel);
+  const figure = figureExtent(poses, resolveFloors(spec.props ?? [], poses), spec);
   const focus = FOCUS_BY_ID[spec.id];
   const inset = insetFor(focus, poses, figure);
   const drawing = inset ? union(figure, insetExtent(inset, focus)) : figure;
@@ -330,7 +378,21 @@ export function highlightSvg(focus: Focus | undefined, poses: Solved[], timing: 
 }
 
 /** Drawable parts of the figure, in the side view's back-to-front order. */
-export const FIGURE_PARTS = ["legFar", "armFar", "spine", "head", "legNear", "band", "armNear", "wheel"] as const;
+export const FIGURE_PARTS = [
+  "legFar",
+  "armFar",
+  "strapFar",
+  "bellFar",
+  "spine",
+  "head",
+  "legNear",
+  "band",
+  "armNear",
+  "strapNear",
+  "handBand",
+  "bellNear",
+  "wheel",
+] as const;
 export type FigurePart = (typeof FIGURE_PARTS)[number];
 
 interface FigureOptions {
@@ -340,6 +402,8 @@ interface FigureOptions {
   farOpacity?: number;
   /** Back-to-front order (the front panel sorts by depth). */
   order?: readonly FigurePart[];
+  /** Which panel the poses are (front: straps hang above each hand, racked bells sit outside the forearm). */
+  panel?: Panel;
 }
 
 /** The far side at full strength in a front view, faded behind the near side otherwise. */
@@ -351,7 +415,7 @@ export function figureSvg(
   poses: Solved[],
   timing: string,
   map: Mapper,
-  { headScale = 1, farOpacity = FAR_OPACITY, order = FIGURE_PARTS }: FigureOptions = {},
+  { headScale = 1, farOpacity = FAR_OPACITY, order = FIGURE_PARTS, panel = panelOf(spec) }: FigureOptions = {},
 ): string {
   const parts: Record<FigurePart, () => string> = {
     legFar: () => animatedPolyline(legPath("far"), poses, timing, farOpacity, map),
@@ -362,6 +426,11 @@ export function figureSvg(
     band: () => bandSvg(spec, poses, timing, map),
     armNear: () => animatedPolyline(armPath("near"), poses, timing, 1, map),
     wheel: () => wheelSvg(spec, poses, timing, map, headScale),
+    strapFar: () => strapSvg(spec, "far", poses, timing, map, headScale, panel, farOpacity),
+    strapNear: () => strapSvg(spec, "near", poses, timing, map, headScale, panel, 1),
+    handBand: () => handBandSvg(spec, poses, timing, map),
+    bellFar: () => bellSvg(spec, "far", poses, timing, map, headScale, panel, farOpacity),
+    bellNear: () => bellSvg(spec, "near", poses, timing, map, headScale, panel, 1),
   };
   return order.map((part) => parts[part]()).join("");
 }
