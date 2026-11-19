@@ -500,7 +500,13 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "fedb_kettlebell_halo": "/doodles/doodle-kettlebell-halo.svg",
   "fedb_kettlebell_halo_with_overhead_extension": "/doodles/doodle-kettlebell-halo-with-overhead-extension.svg",
   "fedb_kettlebell_overhead_triceps_extension": "/doodles/doodle-kettlebell-overhead-triceps-extension.svg",
-  "fedb_bent_press": "/doodles/doodle-bent-press.svg"
+  "fedb_bent_press": "/doodles/doodle-bent-press.svg",
+  "fedb_shoulder_stretch": "/doodles/doodle-shoulder-stretch.svg",
+  "fedb_side_wrist_pull": "/doodles/doodle-side-wrist-pull.svg",
+  "fedb_standing_biceps_stretch": "/doodles/doodle-standing-biceps-stretch.svg",
+  "fedb_upward_stretch": "/doodles/doodle-upward-stretch.svg",
+  "hf_167": "/doodles/doodle-wrist-circles.svg",
+  "wger_1274": "/doodles/doodle-seated-calf-stretch-towel.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
