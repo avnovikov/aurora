@@ -18,7 +18,8 @@ import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side } from "./rig";
  *     with a knee drive. Front view keeps only the sideways part (the forward
  *     travel and the knee drive point at the camera), so it read as a plain
  *     sideways bound duplicating Skater Bound (hf_98); side view loses the
- *     sideways part, which is the point of the drill.
+ *     sideways part, which is the point of the drill. Now drawn in front view
+ *     in batch AH, for the judge to decide on a second view.
  */
 
 const round = (value: number): number => Math.round(value * 10) / 10;

@@ -27,7 +27,8 @@ interface CardItem {
   id: string;
   name: string;
   file: string;
-  view: string;
+  /** e.g. "side view", "side + front views". */
+  viewLabel: string;
   summary?: string;
   steps?: readonly string[];
 }
@@ -45,7 +46,7 @@ function cardItems(ids: readonly string[]): CardItem[] {
       continue;
     }
     const text = (DESCRIPTIONS as Record<string, { summary?: string; steps?: string[] } | undefined>)[id];
-    items.push({ id, name: exercise?.name ?? spec?.title ?? id, file, view: spec?.view ?? "side", summary: text?.summary, steps: text?.steps });
+    items.push({ id, name: exercise?.name ?? spec?.title ?? id, file, viewLabel: spec?.views ? "side + front views" : `${spec?.view ?? "side"} view`, summary: text?.summary, steps: text?.steps });
   }
   return items;
 }
@@ -95,7 +96,7 @@ async function main(): Promise<void> {
       )
       .join("");
     await page.setContent(`<body style="margin:0;font:15px system-ui;background:#fff;width:1300px;padding:12px">
-<h2 style="margin:0">${escapeHtml(item.name)} <small style="color:#888">${escapeHtml(item.id)} · ${escapeHtml(item.view)} view · ${escapeHtml(item.file)}</small></h2>
+<h2 style="margin:0">${escapeHtml(item.name)} <small style="color:#888">${escapeHtml(item.id)} · ${escapeHtml(item.viewLabel)} · ${escapeHtml(item.file)}</small></h2>
 <p style="margin:4px 0">${escapeHtml(item.summary)}</p><ol style="margin:4px 0">${(item.steps ?? []).map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ol>
 <div style="display:grid;grid-template-columns:repeat(4,300px);gap:8px">${cells}</div></body>`);
     await page.locator("body").screenshot({ path: path.join(outDir, `${item.id}.png`) });

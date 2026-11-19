@@ -81,11 +81,43 @@ export interface Keyframe {
    * are foreshortened on purpose and skip the bone-length and joint-range checks).
    */
   mirror?: number;
+  /** Dual-view specs only: sideways (z) positions for this keyframe; see `Sideways`. */
+  sideways?: Sideways;
+}
+
+/** Sideways position of a knee or elbow pin, and how far its bend plane rolls outward. */
+export interface SidewaysHint {
+  /** z of a pinned knee / elbow (`knees.at` / `elbows.at`); defaults to the hip / shoulder z. */
+  at?: number;
+  /** Degrees the bend plane rolls outward from the forward plane (90: the joint points out to the side). */
+  out?: number;
+}
+
+/**
+ * Dual-view specs: absolute sideways positions (z). Near side is negative, far
+ * side positive; the front panel draws near on the viewer's left. Anything not
+ * given keeps its chain's natural width (shoulders ±22, hips ±8, spine at the pelvis z).
+ */
+export interface Sideways {
+  /** Shifts the whole spine sideways. */
+  pelvis?: number;
+  hands?: Partial<Record<Side, number>>;
+  feet?: Partial<Record<Side, number>>;
+  elbows?: Partial<Record<Side, SidewaysHint>>;
+  knees?: Partial<Record<Side, SidewaysHint>>;
 }
 
 export type Prop =
   | { kind: "bar"; y: number; x1: number; x2: number; grips?: number[] }
-  | { kind: "box"; x: number; y: number; w: number; h: number }
+  | {
+      kind: "box";
+      x: number;
+      y: number;
+      w: number;
+      h: number;
+      /** Two views: half-width seen from the front (default 60), e.g. a seat narrower than spread knees. */
+      frontHalf?: number;
+    }
   | { kind: "parallelBars"; y: number; x1: number; x2: number }
   | { kind: "parallettes"; y: number; xs: number[] };
 
@@ -106,6 +138,16 @@ export interface DoodleSpec {
    * thighs at this share of the way from hip to knee (e.g. 0.8 = just above the knees).
    */
   band?: number;
+  /**
+   * An ab wheel of this radius held in the hands: a circle centred on the near
+   * hand that rolls with it. Pin the hands at y = -radius so it sits on the floor.
+   */
+  wheel?: number;
+  /**
+   * Draw the move twice, side view and front view next to each other, from one
+   * 3D-solved figure (keyframe `sideways`). Only when a reviewer asks for it (ADD VIEW).
+   */
+  views?: readonly ["side", "front"];
 }
 
 export const BONES = {
@@ -127,8 +169,12 @@ export const SEGMENTS = { ...BONES, headRadius: 24 } as const;
 
 /** Shoulder offset from the chest: along the chest segment, and sideways (front view only). */
 const SHOULDER_ALONG = 18;
-const SHOULDER_SIDE = 22;
-const HIP_SIDE = 8;
+export const SHOULDER_SIDE = 22;
+export const HIP_SIDE = 8;
+
+/** Sideways sign of a side: near is -z (the front view's left), far is +z. */
+export const zOut = (side: Side): number => (side === "near" ? -1 : 1);
+export const other = (side: Side): Side => (side === "near" ? "far" : "near");
 
 // ---------------------------------------------------------------- vectors
 
@@ -140,7 +186,8 @@ const fromAngle = (radians: number): Point => [Math.cos(radians), Math.sin(radia
 const angleOf = (a: Point, b: Point): number => Math.atan2(b[1] - a[1], b[0] - a[0]);
 const lerp = (a: number, b: number, t: number): number => a + (b - a) * t;
 const lerpPoint = (a: Point, b: Point, t: number): Point => [lerp(a[0], b[0], t), lerp(a[1], b[1], t)];
-const deg = (degrees: number): number => (degrees * Math.PI) / 180;
+export const deg = (degrees: number): number => (degrees * Math.PI) / 180;
+export const clamp = (v: number, lo: number, hi: number): number => Math.min(hi, Math.max(lo, v));
 const cross = (a: Point, b: Point): number => a[0] * b[1] - a[1] * b[0];
 
 function unit(v: Point, fallback: Point = [0, -1]): Point {
@@ -438,9 +485,9 @@ export function solvePose(input: Pose | LegacyPose, ctx: SolveContext = {}): Sol
 // ---------------------------------------------------------------- interpolation
 
 /** Ends that move further than this between keyframes swing in an arc (joint-angle blend). */
-const SWING_THRESHOLD = 24;
+export const SWING_THRESHOLD = 24;
 /** Ends this close to the floor at both keyframes slide rather than swing. */
-const FLOOR_CONTACT = 10;
+export const FLOOR_CONTACT = 10;
 
 function bendOf(limb: SolvedLimb): Bend | undefined {
   const c = cross(sub(limb.mid, limb.root), sub(limb.joint, limb.mid));
@@ -598,7 +645,7 @@ export function blendPose(a: Solved, b: Solved, pa: Pose, pb: Pose, t: number, v
 
 // ---------------------------------------------------------------- timeline
 
-const ease = (t: number): number => 0.5 - Math.cos(Math.PI * t) / 2;
+export const ease = (t: number): number => 0.5 - Math.cos(Math.PI * t) / 2;
 
 export interface ResolvedKeyframe {
   pose: Pose;
@@ -629,6 +676,8 @@ export interface Timeline {
   turning: boolean[];
   /** Mirror axis each sample is drawn about (undefined: as authored); reflect back to check joint ranges. */
   mirrors: (number | undefined)[];
+  /** The solved keyframes the samples were blended from (as authored, not mirrored). */
+  keys: ResolvedKeyframe[];
 }
 
 function mapSolved(s: Solved, f: (p: Point) => Point): Solved {
@@ -701,5 +750,5 @@ export function sampleTimeline(spec: DoodleSpec, stepsPerTransition = 14): Timel
   poses.push(shown(0));
   turning.push(false);
   mirrors.push(spec.frames[0].mirror);
-  return { duration: clock, keyTimes: times.map((value) => value / clock), poses, keyframeIndex, turning, mirrors };
+  return { duration: clock, keyTimes: times.map((value) => value / clock), poses, keyframeIndex, turning, mirrors, keys };
 }

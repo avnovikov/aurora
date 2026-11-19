@@ -22,6 +22,18 @@ import { BATCH_W_SPECS } from "./specsBatchW";
 import { BATCH_X_SPECS } from "./specsBatchX";
 import { BATCH_Y_SPECS } from "./specsBatchY";
 import { BATCH_Z_SPECS } from "./specsBatchZ";
+import { BATCH_AA_SPECS } from "./specsBatchAA";
+import { BATCH_AB_SPECS } from "./specsBatchAB";
+import { BATCH_AC_SPECS } from "./specsBatchAC";
+import { BATCH_AE_SPECS } from "./specsBatchAE";
+import { BATCH_AF_SPECS } from "./specsBatchAF";
+import { BATCH_AG_SPECS } from "./specsBatchAG";
+import { BATCH_AH_SPECS } from "./specsBatchAH";
+import { BATCH_AI_SPECS } from "./specsBatchAI";
+import { BATCH_AD_SPECS } from "./specsBatchAD";
+import { BATCH_AJ_SPECS } from "./specsBatchAJ";
+import { BATCH_AL_SPECS } from "./specsBatchAL";
+import { BATCH_AK_SPECS } from "./specsBatchAK";
 import { STRETCH_SPECS } from "./specsStretch";
 import { proneFromAbove, WARMUP_DRILL_SPECS } from "./specsWarmup";
 import { solvePose } from "./rig";
@@ -741,7 +753,7 @@ const SESSION_MOVE_SPECS: DoodleSpec[] = [
 ];
 
 /** Session moves, then warm-up drills, then cool-down stretches. */
-export const DOODLE_SPECS: DoodleSpec[] = [...SESSION_MOVE_SPECS, ...WARMUP_DRILL_SPECS, ...STRETCH_SPECS, ...BATCH_A_SPECS, ...BATCH_B_SPECS, ...BATCH_C_SPECS, ...BATCH_D_SPECS, ...BATCH_E_SPECS, ...BATCH_F_SPECS, ...BATCH_G_SPECS, ...BATCH_H_SPECS, ...BATCH_I_SPECS, ...BATCH_J_SPECS, ...BATCH_M_SPECS, ...BATCH_N_SPECS, ...BATCH_O_SPECS, ...BATCH_P_SPECS, ...BATCH_Q_SPECS, ...BATCH_R_SPECS, ...BATCH_S_SPECS, ...BATCH_T_SPECS, ...BATCH_U_SPECS, ...BATCH_V_SPECS, ...BATCH_W_SPECS, ...BATCH_X_SPECS, ...BATCH_Y_SPECS, ...BATCH_Z_SPECS];
+export const DOODLE_SPECS: DoodleSpec[] = [...SESSION_MOVE_SPECS, ...WARMUP_DRILL_SPECS, ...STRETCH_SPECS, ...BATCH_A_SPECS, ...BATCH_B_SPECS, ...BATCH_C_SPECS, ...BATCH_D_SPECS, ...BATCH_E_SPECS, ...BATCH_F_SPECS, ...BATCH_G_SPECS, ...BATCH_H_SPECS, ...BATCH_I_SPECS, ...BATCH_J_SPECS, ...BATCH_M_SPECS, ...BATCH_N_SPECS, ...BATCH_O_SPECS, ...BATCH_P_SPECS, ...BATCH_Q_SPECS, ...BATCH_R_SPECS, ...BATCH_S_SPECS, ...BATCH_T_SPECS, ...BATCH_U_SPECS, ...BATCH_V_SPECS, ...BATCH_W_SPECS, ...BATCH_X_SPECS, ...BATCH_Y_SPECS, ...BATCH_Z_SPECS, ...BATCH_AA_SPECS, ...BATCH_AB_SPECS, ...BATCH_AC_SPECS, ...BATCH_AE_SPECS, ...BATCH_AF_SPECS, ...BATCH_AG_SPECS, ...BATCH_AH_SPECS, ...BATCH_AI_SPECS, ...BATCH_AD_SPECS, ...BATCH_AJ_SPECS, ...BATCH_AL_SPECS, ...BATCH_AK_SPECS];
 
 /** Lying on the back, straight legs pivoting at the hips; `deg` is the leg angle (-88 up, -6 near the floor). */
 function lyingLegs(deg: number): Pose {

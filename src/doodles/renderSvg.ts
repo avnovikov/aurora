@@ -1,11 +1,12 @@
 import { FOCUS_BY_ID, type Focus, type Segment } from "./focus";
+import { dualLayout, renderDualSvg } from "./renderDual";
 import { sampleTimeline, SEGMENTS, type DoodleSpec, type Point, type Prop, type Side, type Solved } from "./rig";
 
 /**
  * Colours are CSS custom properties so an inlined doodle follows the active
  * palette; the fallbacks are the standalone look (light ink on black).
  */
-const INK = "var(--doodle-ink, #f4f1ea)";
+export const INK = "var(--doodle-ink, #f4f1ea)";
 /** Fills that hide lines behind them (head, grips, inset): whatever the doodle sits on. */
 const PAPER = "var(--doodle-paper, #000)";
 const BACKDROP = "var(--doodle-backdrop, #000)";
@@ -20,18 +21,25 @@ const INSET_SHARE = 0.62;
 
 type Path = (pose: Solved) => Point[];
 
-const fmt = (value: number): string => (Math.round(value * 10) / 10).toString();
+export const fmt = (value: number): string => (Math.round(value * 10) / 10).toString();
 const pointsAttr = (points: Point[]): string => points.map((p) => `${fmt(p[0])},${fmt(p[1])}`).join(" ");
+
+/** SMIL timing for one loop over the sampled poses (shared by every animated element). */
+export function timingAttr(timeline: { duration: number; keyTimes: number[] }): string {
+  return `dur="${fmt(timeline.duration)}s" repeatCount="indefinite" calcMode="linear" keyTimes="${timeline.keyTimes
+    .map((value) => value.toFixed(4))
+    .join(";")}"`;
+}
 
 function animate(attribute: string, values: string[], timing: string): string {
   return `<animate attributeName="${attribute}" values="${values.join(";")}" ${timing}/>`;
 }
 
-/** A polyline through joints, its `points` animated over the sampled poses. */
 /** Maps rig coordinates into the drawing (identity for the main figure, zoom for the inset). */
-type Mapper = (point: Point) => Point;
-const identity: Mapper = (point) => point;
+export type Mapper = (point: Point) => Point;
+export const identity: Mapper = (point) => point;
 
+/** A polyline through joints, its `points` animated over the sampled poses. */
 function animatedPolyline(path: Path, poses: Solved[], timing: string, opacity = 1, map: Mapper = identity): string {
   const frames = poses.map((pose) => pointsAttr(path(pose).map(map)));
   const fade = opacity < 1 ? ` opacity="${opacity}"` : "";
@@ -60,6 +68,24 @@ const bandPath = (share: number): Path => (p) => [onThigh(p, "near", share), onT
 
 /** Band stroke: thinner than the limbs, in the accent colour so it reads as gear, not a bone. */
 const BAND_WIDTH = 5;
+
+/** A filled circle of radius `r` moving through `centres`. */
+function animatedCircle(centres: Point[], r: number, fill: string, timing: string): string {
+  const cx = animate("cx", centres.map((p) => fmt(p[0])), timing);
+  const cy = animate("cy", centres.map((p) => fmt(p[1])), timing);
+  return `<circle cx="${fmt(centres[0][0])}" cy="${fmt(centres[0][1])}" r="${fmt(r)}" style="fill:${fill}">${cx}${cy}</circle>`;
+}
+
+/** An ab wheel centred on the near hand (drawn over the near arm, like a held object). */
+function wheelSvg(spec: DoodleSpec, poses: Solved[], timing: string, map: Mapper, scale: number): string {
+  if (spec.wheel === undefined) return "";
+  const centres = poses.map((pose) => map(pose.arms.near.end));
+  // A filled hub inside the ring, so the wheel never reads as a second head.
+  return animatedCircle(centres, spec.wheel * scale, PAPER, timing) + animatedCircle(centres, WHEEL_HUB * scale, INK, timing);
+}
+
+/** Radius of the ab wheel's hub dot. */
+const WHEEL_HUB = 3;
 
 function bandSvg(spec: DoodleSpec, poses: Solved[], timing: string, map: Mapper): string {
   if (spec.band === undefined) return "";
@@ -99,7 +125,7 @@ export function propSegments(prop: Prop): [Point, Point][] {
 const GRIP_RX = 8;
 const GRIP_RY = 11;
 
-function propSvg(prop: Prop): string {
+export function propSvg(prop: Prop): string {
   if (prop.kind === "box") {
     return `<rect x="${prop.x}" y="${prop.y}" width="${prop.w}" height="${prop.h}" fill="none"/>`;
   }
@@ -114,9 +140,9 @@ function propSvg(prop: Prop): string {
 }
 
 /** Even margin between the drawing (strokes included) and the viewBox edge. */
-const PADDING = 24;
+export const PADDING = 24;
 /** Widest half-stroke drawn (the focus highlight), so caps and joins stay inside. */
-const STROKE_REACH = HIGHLIGHT_WIDTH / 2;
+export const STROKE_REACH = HIGHLIGHT_WIDTH / 2;
 /** Tall drawings are widened (centred) to at least square, so they are not slivers. */
 const MIN_ASPECT = 1;
 /** The inset is sized against the figure framed at this aspect. */
@@ -131,7 +157,7 @@ const LABEL_GAP = 1.2;
 const LABEL_DESCENT = 0.3;
 
 /** Every point a prop is drawn through, grips' top and bottom included. */
-function propPoints(prop: Prop): Point[] {
+export function propPoints(prop: Prop): Point[] {
   const grips =
     prop.kind === "bar"
       ? (prop.grips ?? []).flatMap((x): Point[] => [
@@ -180,7 +206,7 @@ export interface ViewBox {
 }
 
 /** The box around `points`, grown by `grow` on every side. */
-function bounds(points: Point[], grow = 0): ViewBox {
+export function bounds(points: Point[], grow = 0): ViewBox {
   let [minX, minY, maxX, maxY] = [Infinity, Infinity, -Infinity, -Infinity];
   for (const [x, y] of points) {
     minX = Math.min(minX, x);
@@ -191,24 +217,28 @@ function bounds(points: Point[], grow = 0): ViewBox {
   return { x: minX - grow, y: minY - grow, w: maxX - minX + 2 * grow, h: maxY - minY + 2 * grow };
 }
 
-function union(a: ViewBox, b: ViewBox): ViewBox {
+export function union(a: ViewBox, b: ViewBox): ViewBox {
   const x = Math.min(a.x, b.x);
   const y = Math.min(a.y, b.y);
   return { x, y, w: Math.max(a.x + a.w, b.x + b.w) - x, h: Math.max(a.y + a.h, b.y + b.h) - y };
 }
 
 /** The drawing centred with an even PADDING, widened to MIN_ASPECT when tall. */
-function frame(drawing: ViewBox): ViewBox {
+export function frame(drawing: ViewBox): ViewBox {
   const h = drawing.h + 2 * PADDING;
   const w = Math.max(drawing.w + 2 * PADDING, h * MIN_ASPECT);
   return { x: drawing.x + drawing.w / 2 - w / 2, y: drawing.y - PADDING, w, h };
 }
 
-/** Everything the figure and props touch over the loop (no inset). */
-function figureExtent(spec: DoodleSpec, poses: Solved[]): ViewBox {
+/** Everything the figure, its ab wheel (radius `r`) and props touch over the loop (no inset). */
+export function figureExtent(poses: Solved[], props: readonly Prop[], r: number | undefined): ViewBox {
   return bounds([
     ...poses.flatMap((pose) => figurePoints(pose).map((p) => p.point)),
-    ...(spec.props ?? []).flatMap(propPoints),
+    ...props.flatMap(propPoints),
+    // The ab wheel round the near hand.
+    ...(r === undefined
+      ? []
+      : poses.flatMap(({ arms: { near: { end: [x, y] } } }): Point[] => [[x - r, y - r], [x + r, y + r]])),
   ], STROKE_REACH);
 }
 
@@ -219,14 +249,16 @@ interface Layout {
 }
 
 function layoutFor(spec: DoodleSpec, poses: Solved[]): Layout {
-  const figure = figureExtent(spec, poses);
+  const figure = figureExtent(poses, spec.props ?? [], spec.wheel);
   const focus = FOCUS_BY_ID[spec.id];
   const inset = insetFor(focus, poses, figure);
   const drawing = inset ? union(figure, insetExtent(inset, focus)) : figure;
   return { view: frame(drawing), focus, inset };
 }
 
-export function specViewBox(spec: DoodleSpec, poses: Solved[] = sampleTimeline(spec).poses): ViewBox {
+export function specViewBox(spec: DoodleSpec, poses?: Solved[]): ViewBox {
+  if (spec.views) return dualLayout(spec).view;
+  poses ??= sampleTimeline(spec).poses;
   return layoutFor(spec, poses).view;
 }
 
@@ -250,33 +282,47 @@ function segmentPath(segment: Segment): Path {
   return paths[part];
 }
 
-function highlightSvg(focus: Focus | undefined, poses: Solved[], timing: string, map: Mapper): string {
+export function highlightSvg(focus: Focus | undefined, poses: Solved[], timing: string, map: Mapper): string {
   if (!focus || focus.highlight.length === 0) return "";
   const lines = focus.highlight.map((segment) => animatedPolyline(segmentPath(segment), poses, timing, 1, map)).join("");
   return `<g style="stroke:${FOCUS_COLOUR}" stroke-width="${HIGHLIGHT_WIDTH}" opacity="${HIGHLIGHT_OPACITY}">${lines}</g>`;
 }
 
-/** The figure (far side first), drawn through `map`; `headScale` keeps the head in proportion. */
-function figureSvg(spec: DoodleSpec, poses: Solved[], timing: string, map: Mapper, headScale: number): string {
-  const farOpacity = spec.view === "front" ? 1 : FAR_OPACITY;
-  const head = poses.map((pose) => map(pose.head));
-  return [
-    animatedPolyline(legPath("far"), poses, timing, farOpacity, map),
-    animatedPolyline(armPath("far"), poses, timing, farOpacity, map),
-    animatedPolyline(spinePath, poses, timing, 1, map),
-    `<circle cx="${fmt(head[0][0])}" cy="${fmt(head[0][1])}" r="${fmt(SEGMENTS.headRadius * headScale)}" style="fill:${PAPER}">${animate(
-      "cx",
-      head.map((p) => fmt(p[0])),
-      timing,
-    )}${animate(
-      "cy",
-      head.map((p) => fmt(p[1])),
-      timing,
-    )}</circle>`,
-    animatedPolyline(legPath("near"), poses, timing, 1, map),
-    bandSvg(spec, poses, timing, map),
-    animatedPolyline(armPath("near"), poses, timing, 1, map),
-  ].join("");
+/** Drawable parts of the figure, in the side view's back-to-front order. */
+export const FIGURE_PARTS = ["legFar", "armFar", "spine", "head", "legNear", "band", "armNear", "wheel"] as const;
+export type FigurePart = (typeof FIGURE_PARTS)[number];
+
+interface FigureOptions {
+  /** Keeps the head (and wheel) in proportion under a zoom. */
+  headScale?: number;
+  /** Opacity of the far arm and leg (1 when both sides are seen square on). */
+  farOpacity?: number;
+  /** Back-to-front order (the front panel sorts by depth). */
+  order?: readonly FigurePart[];
+}
+
+/** The far side at full strength in a front view, faded behind the near side otherwise. */
+const farOpacityOf = (spec: DoodleSpec): number => (spec.view === "front" ? 1 : FAR_OPACITY);
+
+/** The figure (far side first by default), drawn through `map`. */
+export function figureSvg(
+  spec: DoodleSpec,
+  poses: Solved[],
+  timing: string,
+  map: Mapper,
+  { headScale = 1, farOpacity = FAR_OPACITY, order = FIGURE_PARTS }: FigureOptions = {},
+): string {
+  const parts: Record<FigurePart, () => string> = {
+    legFar: () => animatedPolyline(legPath("far"), poses, timing, farOpacity, map),
+    armFar: () => animatedPolyline(armPath("far"), poses, timing, farOpacity, map),
+    spine: () => animatedPolyline(spinePath, poses, timing, 1, map),
+    head: () => animatedCircle(poses.map((pose) => map(pose.head)), SEGMENTS.headRadius * headScale, PAPER, timing),
+    legNear: () => animatedPolyline(legPath("near"), poses, timing, 1, map),
+    band: () => bandSvg(spec, poses, timing, map),
+    armNear: () => animatedPolyline(armPath("near"), poses, timing, 1, map),
+    wheel: () => wheelSvg(spec, poses, timing, map, headScale),
+  };
+  return order.map((part) => parts[part]()).join("");
 }
 
 interface Inset {
@@ -337,7 +383,7 @@ function insetSvg(spec: DoodleSpec, focus: Focus, inset: Inset, poses: Solved[],
 <g clip-path="url(#${clipId})">
 <circle cx="${fmt(cx)}" cy="${fmt(cy)}" r="${fmt(r)}" style="fill:${PAPER}" stroke="none"/>
 ${floor}${highlightSvg(focus, poses, timing, map)}
-${figureSvg(spec, poses, timing, map, zoom)}
+${figureSvg(spec, poses, timing, map, { headScale: zoom, farOpacity: farOpacityOf(spec) })}
 </g>
 <circle cx="${fmt(cx)}" cy="${fmt(cy)}" r="${fmt(r)}" style="stroke:${FOCUS_COLOUR}" stroke-width="${RING_WIDTH}"/>
 ${label}`;
@@ -345,26 +391,27 @@ ${label}`;
 
 /** Animated SVG (SMIL), loops forever; plays standalone, in an <img>, or inlined (doodleMarkup). */
 export function renderDoodleSvg(spec: DoodleSpec): string {
+  if (spec.views) return renderDualSvg(spec);
   const timeline = sampleTimeline(spec);
   const { poses } = timeline;
-  const timing = `dur="${fmt(timeline.duration)}s" repeatCount="indefinite" calcMode="linear" keyTimes="${timeline.keyTimes
-    .map((value) => value.toFixed(4))
-    .join(";")}"`;
-  const { view: box, focus, inset } = layoutFor(spec, poses);
-  const view = [box.x, box.y, box.w, box.h].map(fmt).join(" ");
+  const timing = timingAttr(timeline);
+  const { view, focus, inset } = layoutFor(spec, poses);
   const props = (spec.props ?? []).map(propSvg).join("");
-  const layers = [
+  return svgShell(view, spec.title, [
     highlightSvg(focus, poses, timing, identity),
-    `${props}\n${figureSvg(spec, poses, timing, identity, 1)}`,
+    `${props}\n${figureSvg(spec, poses, timing, identity, { farOpacity: farOpacityOf(spec) })}`,
     focus && inset ? insetSvg(spec, focus, inset, poses, timing) : "",
-  ]
-    .filter(Boolean)
-    .join("\n");
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${view}" role="img" aria-label="${spec.title}">
-<title>${spec.title}</title>
+  ]);
+}
+
+/** The standalone SVG document: backdrop, then the non-empty `layers` in the shared stroke style. */
+export function svgShell(box: ViewBox, title: string, layers: string[]): string {
+  const view = [box.x, box.y, box.w, box.h].map(fmt).join(" ");
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${view}" role="img" aria-label="${title}">
+<title>${title}</title>
 <rect x="${fmt(box.x)}" y="${fmt(box.y)}" width="${fmt(box.w)}" height="${fmt(box.h)}" style="fill:${BACKDROP}"/>
 <g fill="none" style="stroke:${INK}" stroke-width="${STROKE_WIDTH}" stroke-linecap="round" stroke-linejoin="round">
-${layers}
+${layers.filter(Boolean).join("\n")}
 </g>
 </svg>
 `;
