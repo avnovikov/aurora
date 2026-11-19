@@ -85,8 +85,8 @@ function faceFrame(waist: Point3, chest: Point3, side: Point3, a: Angles, nodOnl
   return { u: u2, f: rotate(f1, u2, a.turn), s: rotate(s2, u2, a.turn) };
 }
 
-/** The shoulders' sideways direction of a 3D figure (near to far). */
-const shoulderAxis = (figure: Figure3): Point3 => sub(figure.arms.far.root, figure.arms.near.root);
+/** The chest's sideways direction of a 3D figure (near to far): rolled with a twist, unmoved by a shrug. */
+const shoulderAxis = (figure: Figure3): Point3 => figure.across ?? sub(figure.arms.far.root, figure.arms.near.root);
 
 /**
  * A 3D figure with its head swung sideways about the neck by the tilt (the
