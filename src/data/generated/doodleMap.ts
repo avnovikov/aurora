@@ -491,7 +491,16 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "ntc_plank_hip_dips": "/doodles/doodle-plank-hip-dips.svg",
   "hf_158": "/doodles/doodle-90-90-hip-switch.svg",
   "wger_1877": "/doodles/doodle-single-arm-band-row.svg",
-  "fedb_on_your_back_quad_stretch": "/doodles/doodle-on-your-back-quad-stretch.svg"
+  "fedb_on_your_back_quad_stretch": "/doodles/doodle-on-your-back-quad-stretch.svg",
+  "fedb_alternating_hang_clean": "/doodles/doodle-alternating-hang-clean.svg",
+  "fedb_double_kettlebell_alternating_hang_clean": "/doodles/doodle-double-kettlebell-alternating-hang-clean.svg",
+  "fedb_kettlebell_figure_8": "/doodles/doodle-kettlebell-figure-8.svg",
+  "fedb_kettlebell_pass_between_the_legs": "/doodles/doodle-kettlebell-pass-between-the-legs.svg",
+  "fedb_lunge_pass_through": "/doodles/doodle-lunge-pass-through.svg",
+  "fedb_kettlebell_halo": "/doodles/doodle-kettlebell-halo.svg",
+  "fedb_kettlebell_halo_with_overhead_extension": "/doodles/doodle-kettlebell-halo-with-overhead-extension.svg",
+  "fedb_kettlebell_overhead_triceps_extension": "/doodles/doodle-kettlebell-overhead-triceps-extension.svg",
+  "fedb_bent_press": "/doodles/doodle-bent-press.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */

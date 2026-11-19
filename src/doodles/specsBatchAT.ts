@@ -1,4 +1,6 @@
-import { BONES, solvePose, type DoodleSpec, type Keyframe, type Point, type Pose } from "./rig";
+import { BONES, solvePose, type DoodleSpec, type Keyframe, type Point, type Pose, type Sideways } from "./rig";
+import { LOCKED_REACH, TWO_VIEWS } from "./sideways";
+import { solveKeyframe3 } from "./rig3d";
 
 /**
  * Batch AT (#212): kettlebell squats, presses, windmills, floor presses and the
@@ -287,6 +289,78 @@ const sidePress = (stage: 0 | 1 | 2 | 3): Pose =>
     bellElbow: PRESS_ELBOW[stage],
   });
 
+
+// ---------------------------------------------------------------- advanced windmill (two views, sideways torso lean)
+
+/**
+ * Advanced windmill: the bell-side (far) leg is planted straight and the lead (near) knee only soft, the
+ * hips hinge back and the torso leans sideways over the lead leg until the free (near) hand is on the
+ * floor, the bell arm locked out straight up. Side panel: the hip hinge; front panel: the lean.
+ */
+const ADV_FAR_LEG = 173.4;
+const ADV_NEAR_LEG = 168;
+const ADV_FEET_Z = { near: -89, far: 81 } as const;
+const ADV_HIP_Z = 8;
+
+interface AdvStage {
+  pelvis: Point;
+  /** Spine angle in the side view (-90: upright). */
+  pitch: number;
+  /** Degrees the spine leans sideways, towards the near side. */
+  lean: number;
+  /** Pelvis z. */
+  pz: number;
+  /** Free (near) hand on the floor (default: hangs by the side). */
+  floor?: boolean;
+}
+
+function advancedWindmill(stage: AdvStage): Keyframe["pose"] & { sideways: Sideways } {
+  const { pelvis, pitch, lean, pz } = stage;
+  const chest = along(pelvis, pitch, 80);
+  const sideways: Sideways = {
+    pelvis: pz,
+    chest: round(pz - 80 * Math.sin((lean * Math.PI) / 180)),
+    feet: ADV_FEET_Z,
+  };
+  // Feet planted at the floor, x set so each leg keeps its length in 3D.
+  const footX = (leg: number, hipZ: number, footZ: number): number =>
+    round(pelvis[0] + Math.sqrt(leg ** 2 - pelvis[1] ** 2 - (footZ - hipZ) ** 2));
+  const feet: Pose["feet"] = {
+    near: [footX(ADV_NEAR_LEG, pz - ADV_HIP_Z, ADV_FEET_Z.near), 0],
+    far: [footX(ADV_FAR_LEG, pz + ADV_HIP_Z, ADV_FEET_Z.far), 0],
+  };
+  const base: Pose = { pelvis, chest, feet, toes: { near: 0, far: 0 } };
+  const figure = solveKeyframe3(solvePose(base), base, sideways);
+  const [fx, fy, fz] = figure.arms.far.root;
+  const [nx, ny, nz] = figure.arms.near.root;
+  const farHand: Point = [round(fx), round(fy - LOCKED_REACH)];
+  let nearHand: Point;
+  let nearZ: number;
+  if (stage.floor) {
+    nearZ = round(nz - 12);
+    const dy = -4 - ny;
+    nearHand = [round(nx + Math.sqrt(Math.max(0, (LOCKED_REACH - 0.6) ** 2 - dy ** 2 - 12 ** 2))), -4];
+  } else {
+    nearZ = round(nz - 6);
+    nearHand = [round(nx), round(ny + Math.sqrt((LOCKED_REACH - 4) ** 2 - 36))];
+  }
+  return {
+    ...base,
+    hands: { near: nearHand, far: farHand },
+    elbows: { near: { bend: 1 }, far: { bend: 1 } },
+    sideways: { ...sideways, hands: { near: nearZ, far: round(fz) } },
+  };
+}
+
+const advKeyframe = (stage: AdvStage, hold: number): Keyframe => {
+  const { sideways, ...pose } = advancedWindmill(stage);
+  return { pose, hold, bell: "rack", sideways: { ...sideways, pivot: "pelvis" } };
+};
+
+const ADV_TOP: AdvStage = { pelvis: [0, -152], pitch: -90, lean: 0, pz: -10 };
+const ADV_MID: AdvStage = { pelvis: [-30, -146], pitch: -80, lean: 42, pz: -10 };
+const ADV_LOW: AdvStage = { pelvis: [-60, -140], pitch: -70, lean: 85, pz: -10, floor: true };
+
 const FRONT_SPECS: DoodleSpec[] = [
   {
     id: "fedb_kettlebell_windmill",
@@ -367,15 +441,11 @@ const FRONT_SPECS: DoodleSpec[] = [
     id: "fedb_advanced_kettlebell_windmill",
     slug: "advanced-kettlebell-windmill",
     title: "Advanced Kettlebell Windmill",
-    ...FRONT,
+    views: TWO_VIEWS,
+    props: [{ kind: "floor" }],
     kettlebell: { hands: ["far"], size: 14 },
     transition: 1.2,
-    frames: [
-      kf(deepTop(), 0.5, { bell: "rack" }),
-      kf(deepMid(), 0, { bell: "rack" }),
-      kf(deepBottom([-52, -2]), 0.6, { bell: "rack" }),
-      kf(deepMid(), 0, { bell: "rack" }),
-    ],
+    frames: [advKeyframe(ADV_TOP, 0.5), advKeyframe(ADV_MID, 0), advKeyframe(ADV_LOW, 0.6), advKeyframe(ADV_MID, 0)],
   },
 ];
 
