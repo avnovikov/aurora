@@ -667,7 +667,16 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "fedb_isometric_neck_exercise_front_and_back": "/doodles/doodle-isometric-neck-front-and-back.svg",
   "fedb_isometric_neck_exercise_sides": "/doodles/doodle-isometric-neck-sides.svg",
   "wger_1006": "/doodles/doodle-chin-tuck.svg",
-  "fedb_looking_at_ceiling": "/doodles/doodle-looking-at-ceiling.svg"
+  "fedb_looking_at_ceiling": "/doodles/doodle-looking-at-ceiling.svg",
+  "fedb_lying_hamstring": "/doodles/doodle-lying-hamstring.svg",
+  "fedb_lying_glute": "/doodles/doodle-lying-glute.svg",
+  "fedb_lying_prone_quadriceps": "/doodles/doodle-lying-prone-quadriceps.svg",
+  "fedb_lying_bent_leg_groin": "/doodles/doodle-lying-bent-leg-groin.svg",
+  "fedb_seated_biceps": "/doodles/doodle-seated-biceps.svg",
+  "fedb_overhead_triceps": "/doodles/doodle-overhead-triceps.svg",
+  "fedb_seated_hamstring": "/doodles/doodle-seated-hamstring.svg",
+  "fedb_seated_glute": "/doodles/doodle-seated-glute.svg",
+  "fedb_seated_front_deltoid": "/doodles/doodle-seated-front-deltoid.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
