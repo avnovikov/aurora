@@ -529,33 +529,53 @@ export const SEED_EXERCISES: SeedExercise[] = [
   }),
 ];
 
-/** Literature-inspired max clean reps / hold seconds by tier (seed work moves). */
+/**
+ * Tier floors for seed work moves (#189).
+ * Endura men 20–29 where a twin exists; otherwise coaching composite.
+ */
 const SEED_STANDARDS: Record<string, ExerciseStandards> = {
-  scap_pushup: std(5, 10, 15, 25, 40),
-  bodyweight_squat: std(8, 15, 25, 40, 60),
-  bulgarian_split: std(3, 6, 10, 15, 20),
-  pistol_squat: std(1, 3, 8, 12, 15),
+  /** Coaching composite (PT scap push 3×10–15). */
+  scap_pushup: std(5, 10, 15, 20, 30),
+  /** Endura bodyweight squat men 20–29. */
+  bodyweight_squat: std(17, 25, 50, 85, 130),
+  /** Endura BW Bulgarian split squat men 20–29. */
+  bulgarian_split: std(5, 7, 18, 34, 55),
+  /** Endura pistol squat men 20–29. */
+  pistol_squat: std(1, 2, 5, 9, 15),
   shrimp_squat: std(2, 4, 8, 12, 15),
   cossack_squat: std(5, 8, 12, 16, 20),
   step_up: std(6, 10, 15, 20, 25),
   reverse_lunge: std(6, 10, 15, 20, 25),
-  hip_hinge: std(8, 12, 20, 30, 40),
-  nordic_curl: std(1, 2, 4, 6, 10),
-  calf_raise: std(10, 15, 25, 40, 50),
+  /** Coaching composite (hip hinge patterning). */
+  hip_hinge: std(5, 10, 15, 20, 30),
+  /** Endura BW Nordic curl men 20–29. */
+  nordic_curl: std(1, 1, 3, 7, 12),
+  /** Endura BW calf raise men 20–29. */
+  calf_raise: std(17, 25, 60, 100, 150),
   /** Hébert-Losier 2017 PMID 28886865: healthy median ≈ 21–24 reps. */
   single_leg_calf_raise: std(8, 15, 25, 35, 45),
-  wall_handstand: std(10, 20, 40, 60, 90),
-  elevated_pike: std(3, 5, 8, 12, 15),
-  freestanding_hs: std(5, 10, 20, 40, 60),
-  glute_bridge: std(8, 12, 20, 30, 40),
-  dead_bug: std(5, 8, 12, 16, 20),
-  hollow_hold: std(10, 20, 40, 60, 90),
-  hanging_knee_raise: std(3, 6, 10, 15, 20),
-  pullup_dead_hang: std(10, 20, 40, 60, 90),
+  /** Coaching composite (30s wall entry; 60s extended). */
+  wall_handstand: std(10, 20, 30, 60, 90),
+  /** Endura pike ÷ 1.2 (elevated harder; ceil per tier). */
+  elevated_pike: std(5, 6, 15, 30, 49),
+  /** Coaching composite (FIG 2s; freestanding 10→30s). */
+  freestanding_hs: std(2, 5, 10, 30, 60),
+  /** Endura glute bridge men 20–29. */
+  glute_bridge: std(11, 17, 33, 55, 83),
+  /** Coaching composite (dead bug programming 8–12/side). */
+  dead_bug: std(4, 8, 12, 16, 20),
+  /** Coaching composite (hollow; Gravity + hollow tables). */
+  hollow_hold: std(10, 20, 45, 60, 90),
+  /** Coaching composite (hanging knee raise entry ~10). */
+  hanging_knee_raise: std(3, 8, 12, 15, 20),
+  /** Coaching composite (dead hang; no adult norms). */
+  pullup_dead_hang: std(15, 30, 60, 90, 120),
+  /** Coaching composite (scapular pull-up activation). */
   scapular_pull: std(3, 6, 10, 15, 20),
-  /** USMC PFT (men 21–25): 5 reps minimum, 23 maximum. */
-  pullup: std(1, 5, 10, 18, 25),
-  muscle_up: std(1, 2, 3, 5, 8),
+  /** Endura pull-up men 20–29. */
+  pullup: std(3, 4, 8, 13, 18),
+  /** Endura muscle-up men 20–29. */
+  muscle_up: std(1, 2, 6, 12, 20),
 };
 
 function withSeedStandards(exercise: SeedExercise): SeedExercise {

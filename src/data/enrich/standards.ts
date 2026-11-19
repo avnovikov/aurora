@@ -1,4 +1,5 @@
 import type { Difficulty, EffortKind, ExerciseStandards } from "../../domain/types";
+import { enduraStandardsFor } from "./enduraStandards";
 import { hasKeyword } from "./keywords";
 import type { LadderPlacement } from "./ladder";
 
@@ -12,12 +13,9 @@ const std = (n: number, b: number, i: number, a: number, e: number): ExerciseSta
 
 /**
  * Generic five-tier standards by exercise difficulty (max clean reps / hold s).
- * Anchors: CSEP push-up norms (Payne 2000 doi:10.1139/h00-028), Yang 2019
- * JAMA Netw Open PMID 30768197 (>40 push-ups), USMC PFT pull-ups (5–23),
- * US Army AFT 2025 plank (1:30–3:40) and hand-release push-ups, Strand 2014
- * J Hum Kinet doi:10.2478/hukin-2014-0011 (plank 83–124 s), McGill 1999
- * PMID 10453772 (side bridge ≈70 ± 23 s). Elite-skill rows are extrapolated
- * from coaching sources — no population norms exist.
+ * Prefer Endura / coaching composites via `enduraStandardsFor` and SPECIFIC first.
+ * Anchors for leftovers: CSEP push-up norms (Payne 2000), Yang 2019, USMC PFT,
+ * US Army AFT 2025, Strand 2014, McGill 1999. Elite-skill rows are extrapolated.
  */
 const REPS: Record<Difficulty, ExerciseStandards> = {
   beginner: std(10, 20, 35, 50, 75),
@@ -41,17 +39,86 @@ interface SpecificStandard {
   source: string;
 }
 
-/** Exercise-specific overrides where a test norm exists. Matched in order. */
+/**
+ * Coaching composites and leftover literature when Endura has no twin.
+ * Plan work moves without Endura: #189 design § plan coaching composite.
+ */
 const SPECIFIC: readonly SpecificStandard[] = [
-  { family: "pull", effort: "hold", keywords: ["dead hang", "deadhang", "active hang", " hang "], standards: std(15, 30, 60, 90, 120), source: "coaching benchmarks (no adult norms)" },
-  { family: "anti_extension", effort: "hold", keywords: ["hollow"], standards: std(10, 20, 40, 60, 90), source: "coaching benchmarks" },
-  { family: "anti_extension", effort: "hold", keywords: ["plank"], standards: std(30, 60, 90, 150, 220), source: "Strand 2014; US Army AFT 2025" },
+  {
+    family: "pull",
+    effort: "hold",
+    keywords: ["dead hang", "deadhang", "active hang", " hang "],
+    standards: std(15, 30, 60, 90, 120),
+    source: "coaching composite (dead hang; no adult norms)",
+  },
+  {
+    family: "anti_extension",
+    effort: "hold",
+    keywords: ["hollow"],
+    standards: std(10, 20, 45, 60, 90),
+    source: "coaching composite (hollow; Gravity + hollow tables)",
+  },
+  // Forearm plank → Endura via enduraStandardsFor; side plank stays McGill.
   { family: "side_plank", effort: "hold", standards: std(15, 30, 60, 90, 120), source: "McGill 1999" },
   { family: "squat", effort: "hold", standards: std(20, 45, 75, 120, 180), source: "by analogy with plank norms" },
-  { family: "squat", effort: "reps", standards: std(15, 30, 50, 75, 100), source: "sit-to-stand medians (Lein 2022)" },
-  { family: "calf", effort: "reps", keywords: ["single leg", "one legged"], standards: std(8, 15, 25, 35, 45), source: "Hébert-Losier 2017 PMID 28886865" },
-  { family: "glute", effort: "reps", keywords: ["single leg"], standards: std(10, 20, 25, 30, 40), source: "Freckleton 2014 BJSM" },
-  { family: "hamstring", effort: "reps", keywords: ["nordic", "glute ham"], standards: std(1, 2, 4, 6, 10), source: "seed Nordic curl standard" },
+  // Bilateral BW squat → Endura; other squat-family reps without Endura keep Lein-ish floor.
+  { family: "squat", effort: "reps", standards: std(15, 30, 50, 75, 100), source: "sit-to-stand medians (Lein 2022); Endura wins for BW squat names" },
+  {
+    family: "calf",
+    effort: "reps",
+    keywords: ["single leg", "one legged"],
+    standards: std(8, 15, 25, 35, 45),
+    source: "Hébert-Losier 2017 PMID 28886865 (Endura twin also applied by name)",
+  },
+  {
+    family: "compression",
+    effort: "reps",
+    keywords: ["knee raise", "knee raises"],
+    standards: std(3, 8, 12, 15, 20),
+    source: "coaching composite (hanging knee raise entry ~10)",
+  },
+  {
+    family: "anti_extension",
+    effort: "reps",
+    keywords: ["dead bug"],
+    standards: std(4, 8, 12, 16, 20),
+    source: "coaching composite (dead bug programming 8–12/side)",
+  },
+  {
+    family: "balance",
+    effort: "hold",
+    keywords: ["freestanding", "free standing"],
+    standards: std(2, 5, 10, 30, 60),
+    source: "coaching composite (FIG 2s; freestanding 10→30s)",
+  },
+  {
+    family: "balance",
+    effort: "hold",
+    keywords: ["wall handstand", "chest to wall", "chest-to-wall", "wall walk"],
+    standards: std(10, 20, 30, 60, 90),
+    source: "coaching composite (30s wall entry; 60s extended)",
+  },
+  {
+    family: "hamstring",
+    effort: "reps",
+    keywords: ["hip hinge", "good morning"],
+    standards: std(5, 10, 15, 20, 30),
+    source: "coaching composite (hip hinge patterning)",
+  },
+  {
+    family: "scapular",
+    effort: "reps",
+    keywords: ["scapular push", "scap push", "push up plus", "push-up plus"],
+    standards: std(5, 10, 15, 20, 30),
+    source: "coaching composite (PT scap push 3×10–15)",
+  },
+  {
+    family: "pull",
+    effort: "reps",
+    keywords: ["scapular pull", "scap pull"],
+    standards: std(3, 6, 10, 15, 20),
+    source: "coaching composite (scapular pull-up activation)",
+  },
 ];
 
 export function standardsFor(
@@ -60,6 +127,11 @@ export function standardsFor(
   difficulty: Difficulty,
   placement: LadderPlacement | undefined,
 ): ExerciseStandards {
+  const endura = enduraStandardsFor(name, effort);
+  if (endura) {
+    return endura;
+  }
+
   const specific = SPECIFIC.find(
     (item) =>
       placement?.family.id === item.family &&
