@@ -27,6 +27,7 @@ import {
   type Sideways,
   type Solved,
 } from "./rig";
+import { tiltHeads } from "./face";
 
 export type Point3 = readonly [number, number, number];
 
@@ -130,7 +131,7 @@ function bendNormal(d: Point3, bend: Bend, out: number, side: Side): Point3 {
 }
 
 /** Two-bone solve towards `target`, the middle joint on the `normal` side. */
-function twoBone(root: Point3, target: Point3, l1: number, l2: number, normal: Point3): { mid: Point3; tip: Point3 } {
+export function twoBone(root: Point3, target: Point3, l1: number, l2: number, normal: Point3): { mid: Point3; tip: Point3 } {
   const delta = sub(target, root);
   const d = unit(delta);
   const reach = clamp(norm(delta), Math.abs(l1 - l2) + 1e-6, l1 + l2 - 1e-6);
@@ -349,6 +350,12 @@ function normalOf(limb: Limb3, contact: Point3): Point3 {
   return perpendicular(sub(limb.mid, limb.root), d, [0, -1, 0]);
 }
 
+/** An arm re-solved so its hand tip reaches `target` (a partner's hold), keeping its bend plane; short of it when out of reach. */
+export function reachArm3(arm: Limb3, target: Point3): Limb3 {
+  const { mid, tip } = twoBone(arm.root, target, BONES.upperArm, BONES.forearm + BONES.hand, normalOf(arm, arm.end));
+  return finishLimb(arm.root, mid, tip, BONES.forearm);
+}
+
 interface BlendLimb {
   a: Limb3;
   b: Limb3;
@@ -383,6 +390,35 @@ function blendLimb({ a, b, root, t, pinned, l1, l2, l3, angled }: BlendLimb): Li
   if (!angled) return finishLimb(root, mid, tip, l2);
   const endDir = slerp(unit(sub(a.end, a.joint)), unit(sub(b.end, b.joint)), t);
   return { root, mid, joint: tip, end: add(tip, scale(endDir, l3)) };
+}
+
+/**
+ * Held stick or towel (two hands on one object): between keyframes each hand
+ * keeps to a plane of constant sideways offset from its shoulder (blended
+ * linearly), turning round the shoulder in the side view's plane at a blended
+ * distance, so the hands stay the object's width apart instead of bulging
+ * outwards along a great circle. The arm is re-solved onto that hand.
+ */
+function heldArm(a: Limb3, b: Limb3, blended: Limb3, t: number): Limb3 {
+  const va = sub(a.end, a.root);
+  const vb = sub(b.end, b.root);
+  const lerp = (x: number, y: number): number => x + (y - x) * t;
+  const [ta, tb] = [Math.atan2(va[1], va[0]), Math.atan2(vb[1], vb[0])];
+  let turn = tb - ta;
+  while (turn > Math.PI) turn -= 2 * Math.PI;
+  while (turn < -Math.PI) turn += 2 * Math.PI;
+  const angle = ta + turn * t;
+  const z = lerp(va[2], vb[2]);
+  const reach = lerp(norm(va), norm(vb));
+  const flat = Math.sqrt(Math.max(0, reach * reach - z * z));
+  return reachArm3(blended, add(blended.root, [Math.cos(angle) * flat, Math.sin(angle) * flat, z]));
+}
+
+/** The blended limbs, with the arms kept on a held stick or towel (see `heldArm`). */
+function holdObject(spec: DoodleSpec, a: Figure3, b: Figure3, limbs: Record<LimbKind, Record<Side, Limb3>>, t: number): Record<LimbKind, Record<Side, Limb3>> {
+  if (!spec.stick && !spec.towel) return limbs;
+  const arms = { near: heldArm(a.arms.near, b.arms.near, limbs.arms.near, t), far: heldArm(a.arms.far, b.arms.far, limbs.arms.far, t) };
+  return { ...limbs, arms };
 }
 
 /** A keyframe's chest z (default: its pelvis z). */
@@ -433,9 +469,9 @@ export function sampleTimeline3(spec: DoodleSpec, stepsPerTransition = 14): Time
           });
         }
       }
-      poses.push({ ...spineOf(spine, frame), ...limbs, pins: [] });
+      poses.push({ ...spineOf(spine, frame), ...holdObject(spec, a, b, limbs, t), pins: [] });
     }
   });
   poses.push(solved[0]);
-  return { duration: flat.duration, keyTimes: flat.keyTimes, poses, keyframeIndex: flat.keyframeIndex };
+  return { duration: flat.duration, keyTimes: flat.keyTimes, poses: tiltHeads(spec, poses), keyframeIndex: flat.keyframeIndex };
 }

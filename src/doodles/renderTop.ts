@@ -6,24 +6,28 @@
  */
 import { FOCUS_BY_ID } from "./focus";
 import { project } from "./project";
-import { depthOrder, handZ, label, LABEL_GAP, LABEL_SIZE, propDepth, railHalf, type HandZ } from "./renderDual";
+import { depthOrder, handZ, label, LABEL_GAP, LABEL_SIZE, panelExtras3, propDepth, railHalf, type HandZ } from "./renderDual";
 import {
+  extraPoints,
   figureExtent,
   figureSvg,
   frame,
   highlightSvg,
   identity,
   PADDING,
+  partnerSvg,
   propSvg,
   resolveFloors,
   svgShell,
   timingAttr,
   union,
   type Mapper,
+  type PanelExtras,
   type ViewBox,
 } from "./renderSvg";
 import type { DoodleSpec, Prop, Solved } from "./rig";
 import { sampleTimeline3, type Timeline3 } from "./rig3d";
+import { partner3D } from "./partner";
 
 /** Half-length of a parallette handle (as in the side view). */
 const PARALLETTE_HALF = 22;
@@ -72,6 +76,7 @@ interface TopLayout {
   topShift: number;
   side: Solved[];
   top: Solved[];
+  extras: { side: PanelExtras; top: PanelExtras };
   labels: { side: [number, number]; top: [number, number] };
 }
 
@@ -79,8 +84,11 @@ export function topLayout(spec: DoodleSpec, timeline: Timeline3 = sampleTimeline
   const side = timeline.poses.map((pose) => project(pose, "side"));
   const top = timeline.poses.map((pose) => project(pose, "top"));
   const props = spec.props ?? [];
-  const sideBox = figureExtent(side, resolveFloors(props, side), spec, "side");
-  const topBox = figureExtent(top, topProps(props, handZ(timeline.poses[0])), spec, "top");
+  const partner = partner3D(spec, timeline);
+  const extras = { side: panelExtras3(spec, timeline, "side", partner), top: panelExtras3(spec, timeline, "top", partner) };
+  const sideFloor = extras.side.partner ? [...side, ...extras.side.partner.poses] : side;
+  const sideBox = figureExtent(side, resolveFloors(props, sideFloor), spec, "side", extraPoints(extras.side));
+  const topBox = figureExtent(top, topProps(props, handZ(timeline.poses[0])), spec, "top", extraPoints(extras.top));
   const sideLabel = sideBox.y + sideBox.h + LABEL_GAP + LABEL_SIZE;
   // Under the side panel's label, with the usual padding between the panels.
   const topShift = sideLabel + LABEL_SIZE * 0.3 + PADDING - topBox.y;
@@ -93,6 +101,7 @@ export function topLayout(spec: DoodleSpec, timeline: Timeline3 = sampleTimeline
     topShift,
     side,
     top,
+    extras,
     labels: { side: [sideBox.x + sideBox.w / 2, sideLabel], top: [shifted.x + shifted.w / 2, topLabel] },
   };
 }
@@ -105,14 +114,18 @@ export function renderTopSvg(spec: DoodleSpec): string {
   const focus = FOCUS_BY_ID[spec.id];
   const shift: Mapper = ([x, y]) => [x, y + layout.topShift];
   const props = spec.props ?? [];
+  const { side, top } = layout.extras;
+  const own = (e: PanelExtras) => ({ faces: e.faces, held: e.held });
   return svgShell(layout.view, spec.title, [
     highlightSvg(focus, layout.side, timing, identity),
-    resolveFloors(props, layout.side).map(propSvg).join(""),
-    figureSvg(spec, layout.side, timing, identity, { panel: "side" }),
+    resolveFloors(props, side.partner ? [...layout.side, ...side.partner.poses] : layout.side).map(propSvg).join(""),
+    partnerSvg(side, timing, identity, { panel: "side" }),
+    figureSvg(spec, layout.side, timing, identity, { panel: "side", ...own(side) }),
     highlightSvg(focus, layout.top, timing, shift),
     topProps(props, handZ(timeline.poses[0]), layout.topShift).map(propSvg).join(""),
+    partnerSvg(top, timing, shift, { farOpacity: 1, panel: "top" }),
     // Seen from above both sides are square on; higher parts are drawn over lower ones.
-    figureSvg(spec, layout.top, timing, shift, { farOpacity: 1, order: depthOrder(spec, timeline.poses, (p) => -p[1]), panel: "top" }),
+    figureSvg(spec, layout.top, timing, shift, { farOpacity: 1, order: depthOrder(spec, timeline.poses, (p) => -p[1]), panel: "top", ...own(top) }),
     label("side", ...layout.labels.side),
     label("top", ...layout.labels.top),
   ]);

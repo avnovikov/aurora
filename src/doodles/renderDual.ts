@@ -2,10 +2,13 @@
  * Dual-view doodles: the side and front views of one 3D-solved figure, side by
  * side at the same scale on one clock (spec: 2026-11-18-dual-view-doodles-design).
  */
+import { faceMarks3 } from "./face";
 import { FOCUS_BY_ID } from "./focus";
-import { bellInFront, byTheHorns } from "./gear";
-import { project, type Panel } from "./project";
+import { bellInFront, byTheHorns, heldKind, heldLine, heldLines } from "./gear";
+import { partner3D } from "./partner";
+import { project, type Panel, type View } from "./project";
 import {
+  extraPoints,
   figureExtent,
   FIGURE_PARTS,
   figureSvg,
@@ -15,6 +18,7 @@ import {
   identity,
   INK,
   PADDING,
+  partnerSvg,
   propSvg,
   resolveFloors,
   svgShell,
@@ -22,10 +26,11 @@ import {
   union,
   type FigurePart,
   type Mapper,
+  type PanelExtras,
   type ViewBox,
 } from "./renderSvg";
 import { SHOULDER_SIDE, type DoodleSpec, type Prop, type Side, type Solved } from "./rig";
-import { sampleTimeline3, type Figure3, type Limb3, type Point3, type Timeline3 } from "./rig3d";
+import { dist3, sampleTimeline3, type Figure3, type Limb3, type Point3, type Timeline3 } from "./rig3d";
 
 type Bar = Extract<Prop, { kind: "bar" }>;
 type Box = Extract<Prop, { kind: "box" }>;
@@ -158,11 +163,12 @@ const ATTACHED = {
   bellFar: "armFar",
   strapNear: "armNear",
   handBand: "armNear",
+  held: "armNear",
   bellNear: "armNear",
 } as const satisfies Partial<Record<FigurePart, FigurePart>>;
 type Attached = keyof typeof ATTACHED;
 /** A bell handed between the hands or held by the horns: drawn just behind the torso and again over the figure. */
-const LAYERED = ["bellBack", "bellFront"] as const satisfies readonly FigurePart[];
+const LAYERED = ["bellBack", "bellFront", "heldBack", "heldFront"] as const satisfies readonly FigurePart[];
 type Layered = (typeof LAYERED)[number];
 type BodyPart = Exclude<FigurePart, Attached | Layered>;
 
@@ -201,8 +207,38 @@ export function depthOrder(spec: DoodleSpec, poses: Figure3[], axis: (p: Point3)
   const sorted = [...parts].sort((a, b) => depth.get(a)! - depth.get(b)!);
   const attached = Object.entries(attachedFor(spec)) as [FigurePart, BodyPart][];
   const torso = sorted.findIndex((part) => part === "spine" || part === "head");
-  const before = (i: number): FigurePart[] => (i === torso ? ["bellBack"] : []);
-  return [...sorted.flatMap((part, i) => [...before(i), part, ...attached.filter(([, anchor]) => anchor === part).map(([extra]) => extra)]), "bellFront"];
+  const before = (i: number): FigurePart[] => (i === torso ? ["bellBack", "heldBack"] : []);
+  return [...sorted.flatMap((part, i) => [...before(i), part, ...attached.filter(([, anchor]) => anchor === part).map(([extra]) => extra)]), "bellFront", "heldFront"];
+}
+
+/**
+ * Extras of one panel of a two-view spec (see `PanelExtras`): nose ticks, the
+ * stick (its overhang foreshortened by the hands' true distance) or towel, in
+ * the front panel layered in front of or behind the torso, and the partner.
+ */
+export function panelExtras3(spec: DoodleSpec, timeline: Timeline3, panel: View, partner = partner3D(spec, timeline)): PanelExtras {
+  const figures = timeline.poses;
+  const flat = figures.map((figure) => project(figure, panel));
+  const gaps = figures.map((f) => dist3(f.arms.near.end, f.arms.far.end));
+  const heldInFront =
+    panel === "front" && heldKind(spec)
+      ? figures.map((f, i) => {
+          const line = heldLine(spec, f, gaps[i]);
+          return line.reduce((sum, p) => sum + p[0], 0) / line.length >= (f.chest[0] + f.neck[0]) / 2;
+        })
+      : undefined;
+  const axis = panel === "top" ? (p: Point3) => -p[1] : (p: Point3) => p[0];
+  return {
+    faces: faceMarks3(spec, figures, panel),
+    held: heldLines(spec, flat, gaps),
+    heldInFront,
+    partner: partner && {
+      spec: partner.spec,
+      poses: partner.figures.map((figure) => project(figure, panel)),
+      faces: partner.faces(panel),
+      order: panel === "side" ? undefined : depthOrder(partner.spec, partner.figures, axis),
+    },
+  };
 }
 
 interface DualLayout {
@@ -211,6 +247,7 @@ interface DualLayout {
   frontShift: number;
   side: Solved[];
   front: Solved[];
+  extras: { side: PanelExtras; front: PanelExtras };
   labels: { side: number; front: number; y: number };
 }
 
@@ -218,8 +255,11 @@ export function dualLayout(spec: DoodleSpec, timeline: Timeline3 = sampleTimelin
   const side = timeline.poses.map((pose) => project(pose, "side"));
   const front = timeline.poses.map((pose) => project(pose, "front"));
   const props = spec.props ?? [];
-  const sideBox = figureExtent(side, resolveFloors(props, side), spec, "side");
-  const frontBox = figureExtent(front, resolveFloors(frontProps(props, 0, handZ(timeline.poses[0])), front), spec, "front");
+  const partner = partner3D(spec, timeline);
+  const extras = { side: panelExtras3(spec, timeline, "side", partner), front: panelExtras3(spec, timeline, "front", partner) };
+  const floorOf = (poses: Solved[], e: PanelExtras): Solved[] => (e.partner ? [...poses, ...e.partner.poses] : poses);
+  const sideBox = figureExtent(side, resolveFloors(props, floorOf(side, extras.side)), spec, "side", extraPoints(extras.side));
+  const frontBox = figureExtent(front, resolveFloors(frontProps(props, 0, handZ(timeline.poses[0])), floorOf(front, extras.front)), spec, "front", extraPoints(extras.front));
   const frontShift = sideBox.x + sideBox.w + 2 * PADDING - frontBox.x;
   const shifted: ViewBox = { ...frontBox, x: frontBox.x + frontShift };
   const figures = union(sideBox, shifted);
@@ -231,6 +271,7 @@ export function dualLayout(spec: DoodleSpec, timeline: Timeline3 = sampleTimelin
     frontShift,
     side,
     front,
+    extras,
     labels: { side: sideBox.x + sideBox.w / 2, front: shifted.x + shifted.w / 2, y },
   };
 }
@@ -250,14 +291,19 @@ export function renderDualSvg(spec: DoodleSpec): string {
   // A bell held by the horns hides behind the head when it is further from the viewer.
   const horns = byTheHorns(spec);
   const inFront = (panel: Panel): boolean[] | undefined => (horns ? bellInFront(spec, timeline.poses, panel) : undefined);
+  const { side, front } = layout.extras;
+  const floorOf = (poses: Solved[], e: PanelExtras): Solved[] => (e.partner ? [...poses, ...e.partner.poses] : poses);
+  const own = (e: PanelExtras) => ({ faces: e.faces, held: e.held, heldInFront: e.heldInFront });
   return svgShell(layout.view, spec.title, [
     highlightSvg(focus, layout.side, timing, identity),
-    resolveFloors(props, layout.side).map(propSvg).join(""),
-    figureSvg(spec, layout.side, timing, identity, { panel: "side", bellInFront: inFront("side") }),
+    resolveFloors(props, floorOf(layout.side, side)).map(propSvg).join(""),
+    partnerSvg(side, timing, identity, { panel: "side" }),
+    figureSvg(spec, layout.side, timing, identity, { panel: "side", bellInFront: inFront("side"), ...own(side) }),
     highlightSvg(focus, layout.front, timing, shift),
-    resolveFloors(frontProps(props, layout.frontShift, handZ(timeline.poses[0])), layout.front, layout.frontShift).map(propSvg).join(""),
+    resolveFloors(frontProps(props, layout.frontShift, handZ(timeline.poses[0])), floorOf(layout.front, front), layout.frontShift).map(propSvg).join(""),
+    partnerSvg(front, timing, shift, { farOpacity: 1, panel: "front" }),
     // Seen from the front both sides are square on: no faded far side.
-    figureSvg(spec, layout.front, timing, shift, { farOpacity: 1, order: depthOrder(spec, timeline.poses), panel: "front", bellInFront: inFront("front") }),
+    figureSvg(spec, layout.front, timing, shift, { farOpacity: 1, order: depthOrder(spec, timeline.poses), panel: "front", bellInFront: inFront("front"), ...own(front) }),
     label("side", layout.labels.side, layout.labels.y),
     label("front", layout.labels.front, layout.labels.y),
   ]);
