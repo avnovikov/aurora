@@ -500,7 +500,20 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "fedb_kettlebell_halo": "/doodles/doodle-kettlebell-halo.svg",
   "fedb_kettlebell_halo_with_overhead_extension": "/doodles/doodle-kettlebell-halo-with-overhead-extension.svg",
   "fedb_kettlebell_overhead_triceps_extension": "/doodles/doodle-kettlebell-overhead-triceps-extension.svg",
-  "fedb_bent_press": "/doodles/doodle-bent-press.svg"
+  "fedb_bent_press": "/doodles/doodle-bent-press.svg",
+  "wger_1867": "/doodles/doodle-hip-flexor-stretch.svg",
+  "wger_1839": "/doodles/doodle-solo-hip-flexor-stretch.svg",
+  "wger_1960": "/doodles/doodle-rear-foot-elevated-hip-flexor-stretch.svg",
+  "wger_1589": "/doodles/doodle-leg-and-hip-stretch.svg",
+  "wger_1869": "/doodles/doodle-lying-figure-four-stretch.svg",
+  "wger_2656": "/doodles/doodle-happy-baby.svg",
+  "wger_1884": "/doodles/doodle-shinbox-ir-stretch.svg",
+  "wger_1959": "/doodles/doodle-seated-piriformis-stretch.svg",
+  "wger_1863": "/doodles/doodle-hip-crossover.svg",
+  "wger_1680": "/doodles/doodle-seated-figure-four.svg",
+  "wger_1872": "/doodles/doodle-pigeon-stretch.svg",
+  "wger_2614": "/doodles/doodle-adductor-rock-backs.svg",
+  "wger_1476": "/doodles/doodle-butterfly-sit-up.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
