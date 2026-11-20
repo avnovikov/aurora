@@ -1,6 +1,5 @@
 import { BONES, SHOULDER_SIDE, solvePose, zOut } from "./rig";
 import type { AuthoredPose, DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
-import { SIDE_LYING_FLOOR, SL_FOOT_BOTTOM, SL_HIP_TOP, SL_KNEE_BOTTOM, SL_SHOULDER_BOTTOM, SL_SHOULDER_TOP, sideLying } from "./specsWarmup";
 import { add3, dot3, norm3, scale3, solveKeyframe3, sub3, type Point3 } from "./rig3d";
 import { TOP_VIEWS } from "./sideways";
 import { FLOOR_PROP, along, angle, round, supineTorso } from "./geom";
@@ -113,32 +112,48 @@ function pelvicTilt(tuck: 0 | 1): Pose {
   };
 }
 
-/** Stomach vacuum: standing tall, hands on the hips; breathed out the waist is drawn in and back (`vacuum` 1). */
+/**
+ * Stomach vacuum: standing tall, hands on the hips, the spine dead straight (chest pinned the full 80
+ * above the pelvis, so it never bows). The only motion is the breath: breathed in the chest lifts a
+ * touch back and up (`vacuum` 0); breathed out and drawn in it settles straight over the hips (`vacuum` 1).
+ */
 function stomachVacuum(vacuum: 0 | 1): Pose {
   const pelvis: Point = [0, -173.9];
   return {
     pelvis,
-    chest: vacuum ? [-1, -173.9 - 76.4] : [1, -173.9 - 77.4],
-    spine: { bend: vacuum ? -1 : 1 },
+    chest: along(pelvis, vacuum ? -90 : -92.5, 80),
+    head: along(pelvis, vacuum ? -90 : -92, 136),
     ...handsOnHips(pelvis),
     feet: { near: [2, 0], far: [-2, 0] },
     toes: { near: 0, far: 0 },
   };
 }
 
-/** Clasped hands reaching forward at shoulder height; `round` 1 rounds the upper back, the shoulder blades spreading and the head dropping between the arms. */
+/**
+ * Clasped hands reaching forward at shoulder height; `round1` 1 rounds the upper back: the curve sits
+ * high (the low back only eases forward, the bend is between the shoulder blades), so the shoulders
+ * roll forward, the hands reach further out and dip a touch, and the head drops forward over the arms
+ * (the side view can't draw it between them: it would cross the arm line).
+ * Angles are each segment's lean forward of vertical: pelvis→waist, waist→chest, chest→neck, neck→head.
+ */
 function upperBackReach(round1: 0 | 1): Pose {
-  const pelvis: Point = round1 ? [5, -173.9] : [0, -173.9];
-  const chest: Point = round1 ? [-6, -249.5] : [0, -253.9];
-  const base: Pose = { pelvis, chest, spine: { bend: -1 } };
-  const shoulder = solvePose(base).arms.near.root;
-  const hand: Point = [round(shoulder[0] + ARM), round(shoulder[1] + (round1 ? 3 : 0))];
+  const lean = round1 ? [6, 24, 58, 58] : [0, 0, 0, 0];
+  const pelvis: Point = round1 ? [-6, -173.9] : [0, -173.9];
+  const up = (deg: number): number => -90 + deg;
+  const waist = along(pelvis, up(lean[0]), BONES.pelvisWaist);
+  const chest = along(waist, up(lean[1]), BONES.waistChest);
+  const neck = along(chest, up(lean[2]), BONES.chestNeck);
+  const head = along(neck, up(lean[3]), BONES.neckHead);
+  const shoulder = along(chest, up(lean[1]), 18);
+  const hand = along(shoulder, round1 ? 8 : 0, ARM);
   return {
-    ...base,
-    head: round1 ? [5, -299] : [4, -308],
+    pelvis,
+    chest,
+    spine: { bend: -1 },
+    head,
     hands: { near: hand, far: [hand[0], hand[1]] },
     elbows: { near: { bend: 1 }, far: { bend: 1 } },
-    feet: { near: [round(pelvis[0] + 2), 0], far: [round(pelvis[0] - 2), 0] },
+    feet: { near: [2, 0], far: [-2, 0] },
     toes: { near: 0, far: 0 },
   };
 }
@@ -384,22 +399,64 @@ function threadNeedle(open: 0 | 1, hold: number): Keyframe {
   };
 }
 
-// ---------------------------------------------------------------- side-lying floor stretch (front view, head left)
+// ---------------------------------------------------------------- side-lying floor stretch (side + top)
+
+const SLF_BASE: Pose = { pelvis: [0, -24], chest: [-80, -24], head: [-136, -24] };
+/** Lying on the left (far) side, back to the camera, right (near) side on top: the whole spine rolled -90. */
+const SLF_ROLL: Sideways = { twist: -90, hipTwist: -90 };
 
 /**
- * Lying on the near side, the near knee bent in front and the top leg straight behind it; both arms
- * reach overhead, the head resting between them on the bottom arm (the near hand lies along the
- * floor under the head, the top arm reaches `reach` degrees from its shoulder, 180 level, more is up).
+ * Lying on the left (far) side, back to the camera: the bottom knee bent about 90 in front (its thigh
+ * forward, so short in the side view), the top leg straight with its foot on the floor behind the bottom
+ * leg. The bottom arm reaches overhead along the floor under the head; the top arm sweeps from along
+ * the top side (`sweep` 0) up over the shoulder (90) to overhead (180), where the bottom hand holds its
+ * wrist and the two reach long together, a little in front of the face.
  */
-function sideLyingReach(reach: number): Pose {
-  return sideLying({
-    head: [-130, -34],
-    hands: { near: along(SL_SHOULDER_BOTTOM, 181, ARM), far: along(SL_SHOULDER_TOP, reach, ARM) },
-    elbows: { near: { bend: 1 }, far: { bend: -1 } },
-    knees: { near: { at: SL_KNEE_BOTTOM } },
-    feet: { near: SL_FOOT_BOTTOM, far: along(SL_HIP_TOP, 5, LEG_REACH) },
-    toes: { near: 0, far: 5 },
-  });
+function sideLyingReach(sweep: number, hold: number): Keyframe {
+  const figure = solveKeyframe3(solvePose(SLF_BASE), SLF_BASE, SLF_ROLL);
+  const top = figure.arms.near.root;
+  const bottom = figure.arms.far.root;
+  const hipTop = figure.legs.near.root;
+  const hipBottom = figure.legs.far.root;
+  // Overhead: both arms long, the hands meeting beyond the head, level with it and a little in front of
+  // the face (clear of the head); the bottom hand closes round the top wrist.
+  const overheadTop: Point3 = [top[0] - 107, -26, 60];
+  const overheadBottom: Point3 = [top[0] - 106, -21, 60];
+  const toward = (root: Point3, to: Point3, reach: number): Point3 => add3(root, scale3(unit3(sub3(to, root)), reach));
+  let topHand: Point3;
+  if (sweep >= 180) topHand = toward(top, overheadTop, Math.min(ARM, norm3(sub3(overheadTop, top))));
+  else {
+    // A straight arm on a circle in the x-y plane (0 along the body to the feet, 90 straight up), drifting forward as it goes over.
+    const phi = (sweep * Math.PI) / 180;
+    topHand = add3(top, scale3(unit3([Math.cos(phi), -Math.sin(phi) - 0.05, 0.4 * Math.sin(phi / 2) + 0.05]), ARM));
+  }
+  const bottomHand = sweep >= 180 ? overheadBottom : toward(bottom, [bottom[0] - 108, -4, 60], ARM - 0.5);
+  // Bottom leg: thigh 60 forward of the trunk line, knee bent 90 with the shin back towards the feet.
+  const thigh = unit3([0.5, 0.06, 0.86]);
+  const knee = add3(hipBottom, scale3(thigh, BONES.thigh));
+  const foot = add3(knee, scale3(unit3([0.86, 0.04, -0.5]), BONES.shin));
+  // Top leg straight, foot on the floor behind the bottom leg.
+  const footTopZ = -10;
+  const dy = -4 - hipTop[1];
+  const footTop: Point3 = [hipTop[0] + Math.sqrt(LEG_REACH ** 2 - dy ** 2 - (footTopZ - hipTop[2]) ** 2), -4, footTopZ];
+  const p2 = (q: Point3): Point => [round(q[0]), round(q[1])];
+  return {
+    hold,
+    pose: {
+      ...SLF_BASE,
+      hands: { near: p2(topHand), far: p2(bottomHand) },
+      elbows: { near: { bend: 1 }, far: { bend: 1 } },
+      knees: { far: { at: p2(knee) } },
+      feet: { near: p2(footTop), far: p2(foot) },
+      toes: { near: 0, far: 0 },
+    },
+    sideways: {
+      ...SLF_ROLL,
+      hands: { near: round(topHand[2]), far: round(bottomHand[2]) },
+      knees: { far: { at: round(knee[2]) } },
+      feet: { near: footTopZ, far: round(foot[2]) },
+    },
+  };
 }
 
 // ---------------------------------------------------------------- side-lying open book (side + top)
@@ -540,7 +597,7 @@ export const BATCH_BH_SPECS: DoodleSpec[] = [
     title: "Upper Back Stretch",
     props: [FLOOR_PROP],
     transition: 1.2,
-    frames: [kf(upperBackReach(0), 0.5), kf(upperBackReach(1), 1.4)],
+    frames: [{ ...kf(upperBackReach(0), 0.5), face: { nod: 0 } }, { ...kf(upperBackReach(1), 1.4), face: { nod: 25 } }],
   },
   {
     id: "wger_1810",
@@ -587,10 +644,10 @@ export const BATCH_BH_SPECS: DoodleSpec[] = [
     id: "fedb_side_lying_floor_stretch",
     slug: "side-lying-floor-stretch",
     title: "Side Lying Floor Stretch",
-    view: "front",
-    props: [SIDE_LYING_FLOOR],
-    transition: 1.3,
-    frames: [kf(sideLyingReach(204), 0.5), kf(sideLyingReach(192), 1.5)],
+    views: TOP_VIEWS,
+    props: [FLOOR_PROP],
+    transition: 0.5,
+    frames: [sideLyingReach(0, 0.8), sideLyingReach(60, 0), sideLyingReach(120, 0), sideLyingReach(180, 1.8), sideLyingReach(120, 0), sideLyingReach(60, 0)],
   },
   {
     id: "hf_170",
