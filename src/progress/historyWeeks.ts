@@ -233,12 +233,19 @@ function personalBestsFor(
     }
   }
 
-  for (const [exerciseId, memory] of Object.entries(memories)) {
-    if (memory.bestReps !== undefined) {
-      personalBests.set(exerciseId, Math.max(memory.bestReps, personalBests.get(exerciseId) ?? memory.bestReps));
+  raiseToStoredBests(personalBests, memories);
+  return { personalBests, newPersonalBests };
+}
+
+function raiseToStoredBests(
+  personalBests: Map<string, number>,
+  memories: Readonly<Record<string, { bestReps?: number }>>,
+): void {
+  for (const [exerciseId, { bestReps }] of Object.entries(memories)) {
+    if (bestReps !== undefined) {
+      personalBests.set(exerciseId, Math.max(bestReps, personalBests.get(exerciseId) ?? bestReps));
     }
   }
-  return { personalBests, newPersonalBests };
 }
 
 function addToSet(sets: Map<string, Set<string>>, key: string, value: string): void {
