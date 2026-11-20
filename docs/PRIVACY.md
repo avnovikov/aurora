@@ -28,8 +28,12 @@ These signals are health-adjacent coaching inputs, not a medical record. Process
 - No sale or sharing of personal information for advertising  
 - No ads or third-party analytics SDK in the app  
 - No upload of the heart-rate stream to a remote health platform  
+- No `INTERNET` permission in the release APK (coaching stays on-device)  
+- No location permission — optional Bluetooth heart-rate scan uses Nearby Devices (`BLUETOOTH_SCAN` with `neverForLocation`) and does not derive physical location  
 
 Uninstalling Aurora or clearing app storage deletes local data. There is no cloud backup or account recovery.
+
+**Note:** Cronos / store scanners may still list `BLUETOOTH_SCAN` as a dangerous permission. That is intentional for the optional Pulse strap; Bluetooth LE hardware is not required to install or use Aurora.
 
 ## 4. GDPR (EU / UK framing)
 
