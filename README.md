@@ -4,13 +4,13 @@
 [![CI](https://github.com/avnovikov/aurora/actions/workflows/ci.yml/badge.svg)](https://github.com/avnovikov/aurora/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/avnovikov/aurora?include_prereleases&style=flat)](https://github.com/avnovikov/aurora/releases)
 
-**v0.1.1 — from the `mvp` release line.** Day-to-day development targets **`dev`**; `mvp` is for releases. App id `com.aurora.alvorada` (registered in Android Developer Console).
+**v0.1.2 — from the `mvp` release line.** Day-to-day development targets **`dev`**; `mvp` is for releases. This README and its screenshots describe `dev`: the History weeks, the balance-first Body tab and the full doodle set arrive in the next release. App id `com.aurora.alvorada` (registered in Android Developer Console).
 
 **Aurora** is private, local-first calisthenics training for Android. **Rassvet** (Рассвет, “dawn”) is the soul mark shown in the app. The UI and spoken voice are British English (`en-GB`).
 
 You pick a **Target** — a skill goal such as freestanding handstand or muscle-up. Aurora keeps programming the **current step** on that path (not the end skill every session) and **Progress** shows how close you are. Area days (upper body, legs, core, …) sit in the same **plan queue** and still adapt when sleep, joints, or stalls say so.
 
-The Library has **700+ exercises** (strength progressions, holds, mobility, and kettlebell work). Major calisthenics apps advertise roughly **350+** (Madbarz), **700+** (Calisteniapp), and **1,000+** (Thenx) — Aurora sits on the upper side of that range on catalogue size, without a subscription.
+The Library has **nearly 700 exercises** (strength progressions, holds, mobility, and kettlebell work), and 690 of them have an animated doodle that shows the movement. Major calisthenics apps advertise roughly **350+** (Madbarz), **700+** (Calisteniapp), and **1,000+** (Thenx) — Aurora sits in the upper half of that range on catalogue size, without a subscription.
 
 Aurora is for people who train calisthenics at home and want each session aimed at a real skill, then adjusted for recovery, equipment, and recent performance. Training apps usually give you a weekday calendar and a static template. Sleep, joints, and pulse change what you should do before you start. Aurora keeps a plan queue instead of a fixed Monday–Sunday grid, and adjusts the **dose** from sleep, optional pain, recent load, missed reps, stalls, and (on Android) a Bluetooth heart-rate strap.
 
@@ -25,7 +25,7 @@ Four gaps in the apps I used are why I wrote Aurora.
 
 ## Download
 
-**[Download Aurora v0.1.1 for Android](https://github.com/avnovikov/aurora/releases/latest)**
+**[Download Aurora v0.1.2 for Android](https://github.com/avnovikov/aurora/releases/latest)**
 
 Install the APK by allowing installation from your browser or file manager when Android asks.
 
@@ -79,6 +79,16 @@ Swipe left to complete the current set or station. During **Rest** and **Get rea
 
 On **Progress**, **current readiness** shows how close you are to your **Targets** and the next steps on those paths (for example how near you are to the handstand or muscle-up you set on Plan). The level profile and weak-links sit beside that. Separately, the morning check-in (sleep and optional pain) feeds how light today’s dose is — recovery for this session, not a substitute for Target distance.
 
+### Look back: History and Body
+
+**History** groups finished sessions by week, Monday to Sunday. Each week has an **effort strip**: one bar per training day, filled in one to four steps from the rating you gave at the end of the session (Easy · On target · Difficult · Wiped). Below the strip, each session is a card. Its exercise rows show the reps of every set, the average heart rate when a strap was worn, and your **personal best** (PB, the most reps or seconds you have logged on that move). A row says **new PB** when that session beat every earlier logged set.
+
+**Body** answers one question: is your training balanced? It compares five pairs — Push v Pull, Upper v Lower, Front v Back, Squat v Hinge, and Abs v Lower back — and calls each one **Even** (within 2:1, a coaching convention rather than a medical norm), **Mostly** one side, or **No** work on one side. A front-and-back figure shows the same thing by shape: areas you trained heavily look fuller, light ones thinner, and untrained ones are dashed outlines. **Consider adding** lists up to three Library moves for the light side, using only gear you own. Body never changes your plan.
+
+### Back returns you
+
+Opening an exercise from History or Body shows its Library page with a **Back to History** or **Back to Body** button. That button, a swipe to the right, or the phone’s own Back takes you to where you were, at the same scroll position and Body window. Tapping a tab in the bottom bar starts that tab afresh.
+
 ---
 
 ## The main tabs
@@ -88,10 +98,10 @@ The Android app’s main tab bar, in order:
 | Tab | What it shows |
 |-----|----------------|
 | Today | Next day in the plan queue; ≈ minutes; pulse Connect; sleep check-in (required before Start); optional pain |
-| Library | Exercise catalogue; search; filters Show / Area & muscle / Level; detail with cues, standards, personal bests |
+| Library | Exercise catalogue; search; filters Show / Area & muscle / Level; detail with an animated doodle, cues, standards, personal best |
 | Progress | Level profile by movement pattern (novice→elite, within-tier %); weak-links; current readiness toward Targets |
-| History | Sessions (plan · when · assessment; exercises rolled up as reps/reps + optional avg BPM); legacy rows stay session summaries |
-| Body | Muscle load map; default Overall (2-week full credit then fade); Month / 3 months / Half year / Year as exercise counts |
+| History | Weeks (Monday start) with a Mon–Sun effort strip; session cards with reps per set, avg bpm, PB or new PB; older summary-only sessions show “N sets logged” |
+| Body | Balance headline and caricature; Overall / Month / 3 months / Half year / Year; front/back figure by level; five balance pairs; Consider adding |
 | Plan | Queue of upcoming days (area days and skill paths with Targets); Swap / Easier; remake area or skill; reorder; add days; plan level |
 | Settings | You / Gear / Training / App |
 
@@ -107,7 +117,15 @@ The Android app’s main tab bar, in order:
 
 *Progress: level by movement pattern, then how close you are to your Targets (for example handstand or muscle-up).*
 
-Screenshots for every surface live under `docs/help/screenshots/`.
+<img src="docs/help/screenshots/07-history.png" width="280" alt="History — this week">
+
+*History: this week’s sessions, the effort strip, and the newest session open with reps per set, average heart rate and personal bests.*
+
+<img src="docs/help/screenshots/08-body.png" width="280" alt="Body — balance">
+
+*Body: here the sample has no pulling, so the headline says so and the figure’s upper back is a dashed outline.*
+
+Screenshots for every surface live under `docs/help/screenshots/`. They are taken from invented sample data, not from anyone’s training log, by `node scripts/help-screenshots.mjs` (see the [Development guide](docs/development.md#help-screenshots)).
 
 ---
 
@@ -184,7 +202,7 @@ For local development, Android development, testing, quality checks, branch poli
 
 ## Catalogue
 
-The Library has **700+ exercises** (strength progressions, holds, mobility, and kettlebell work) you can browse and filter. Major calisthenics apps advertise roughly **350+** (Madbarz), **700+** (Calisteniapp), and **1,000+** (Thenx) — Aurora sits on the upper side of that range on catalogue size, without a subscription. Catalogue size is not the product story; Targets, dose, and local-first planning are.
+The Library has **nearly 700 exercises** (strength progressions, holds, mobility, and kettlebell work) you can browse and filter; 690 of them have an animated doodle. Major calisthenics apps advertise roughly **350+** (Madbarz), **700+** (Calisteniapp), and **1,000+** (Thenx) — Aurora sits in the upper half of that range on catalogue size, without a subscription. Catalogue size is not the product story; Targets, dose, and local-first planning are.
 
 Exercise catalogue imports follow each source’s licence: wger (CC), MuscleWiki (non-profit notice), free-exercise-db, Hugging Face calisthenics imports, and in-house NTC-style cues. Using the catalogue does not transfer those upstream rights beyond what those licences allow.
 
@@ -196,6 +214,6 @@ Exercise catalogue imports follow each source’s licence: wger (CC), MuscleWiki
 
 ---
 
-## Known limitations in v0.1.1
+## Known limitations
 
-Older history entries created before set-level logging may appear only as session summaries rather than individual sets. Heart-rate-strap connection is available only in the Android app. There is no cloud sync and no account recovery if you lose the phone.
+Older history entries created before set-level logging appear only as session summaries (“N sets logged”) rather than individual sets, and they carry no personal-best marks. Body cannot compare left and right, because history does not store a side. Consider adding ranks moves by how many light areas they cover, not by difficulty, so check the level on the exercise page before you add one. Heart-rate-strap connection is available only in the Android app. There is no cloud sync and no account recovery if you lose the phone.
