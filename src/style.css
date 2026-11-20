@@ -693,11 +693,20 @@ button:disabled {
   line-height: 28px;
 }
 
-.history-lede {
-  margin: 4px 0 0;
+/* Muted 13/20 captions shared across the History tab. */
+.history-lede,
+.effort-key,
+.history-wk-label,
+.history-wk-count .u,
+.history-card .s-what,
+.history-ex-row .m {
   font-size: 13px;
   line-height: 20px;
   color: var(--muted);
+}
+
+.history-lede {
+  margin: 4px 0 0;
 }
 
 .effort-key {
@@ -705,9 +714,6 @@ button:disabled {
   flex-wrap: wrap;
   gap: 4px 16px;
   margin: 16px 0 0;
-  font-size: 13px;
-  line-height: 20px;
-  color: var(--muted);
 }
 
 .effort-key span {
@@ -760,9 +766,6 @@ button:disabled {
 
 .history-wk-label {
   margin: 0;
-  font-size: 13px;
-  line-height: 20px;
-  color: var(--muted);
 }
 
 .history-wk-count {
@@ -784,15 +787,9 @@ button:disabled {
   color: var(--accent);
 }
 
-.history-wk-count .u {
-  font-size: 13px;
-  line-height: 20px;
-  color: var(--muted);
-}
-
 .history-strip {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   margin-top: 8px;
 }
 
@@ -825,7 +822,6 @@ button:disabled {
 .history-day-btn {
   appearance: none;
   width: 100%;
-  min-width: 44px;
   height: 44px;
   padding: 0;
   margin: 0;
@@ -881,21 +877,22 @@ button:disabled {
   margin: 0;
 }
 
-.history-card .s-when {
+.history-card .s-when,
+.history-card .s-eff,
+.history-sets,
+.history-ex-row .n,
+.history-ex-row .r {
   font-size: 16px;
   line-height: 24px;
+}
+
+.history-card .s-when,
+.history-ex-row .r {
   font-weight: 600;
 }
 
-.history-card .s-what {
-  font-size: 13px;
-  line-height: 20px;
-  color: var(--muted);
-}
-
-.history-card .s-eff {
-  font-size: 16px;
-  line-height: 24px;
+.history-card .s-eff,
+.history-ex-row .r {
   text-align: right;
 }
 
@@ -925,8 +922,6 @@ button:disabled {
 .history-sets {
   margin: 0;
   padding: 12px 0 4px;
-  font-size: 16px;
-  line-height: 24px;
 }
 
 .history-sets b {
@@ -966,23 +961,8 @@ div.history-ex-row {
   border-top: 0;
 }
 
-.history-ex-row .n {
-  font-size: 16px;
-  line-height: 24px;
-}
-
-.history-ex-row .r {
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 600;
-  text-align: right;
-}
-
 .history-ex-row .m {
   grid-column: 1 / 3;
-  font-size: 13px;
-  line-height: 20px;
-  color: var(--muted);
 }
 
 .history-ex-row .history-new-pb {
@@ -1013,23 +993,9 @@ div.history-ex-row {
   padding-bottom: 0.5rem;
 }
 
-.history-ex,
-.history-ex-link {
+.history-ex {
   margin: 0;
   font-weight: 600;
-}
-
-.history-ex-link {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--brass);
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 3px;
 }
 
 .ex-logged-sets {

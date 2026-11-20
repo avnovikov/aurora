@@ -7,7 +7,6 @@ import { buildHistoryWeeks } from "../progress/historyWeeks";
 import {
   HISTORY_EMPTY_COPY,
   HISTORY_NO_MATCH_COPY,
-  historyCardId,
   historyLede,
   historyWeeksHtml,
 } from "../progress/historyWeeksPresent";
@@ -57,7 +56,7 @@ export function renderHistoryView(
         return;
       }
       const card = [...root.querySelectorAll<HTMLDetailsElement>("details[data-session-id]")].find(
-        (details) => details.id === historyCardId(sessionId),
+        (details) => details.dataset.sessionId === sessionId,
       );
       if (!card) {
         return;

@@ -19,11 +19,6 @@ const KEY_STEPS: readonly { level: Exclude<EffortLevel, 0>; label: string }[] = 
   { level: 4, label: "Wiped" },
 ];
 
-/** DOM id of a session card, so a strip day can open and scroll to it. */
-export function historyCardId(sessionId: string): string {
-  return `history-s-${sessionId}`;
-}
-
 /** "6 sessions in 3 weeks". */
 export function historyLede(model: HistoryWeeksModel): string {
   const sessions = model.sessionCount;
@@ -39,12 +34,7 @@ export function historyWeeksHtml(
   if (model.sessionCount === 0) {
     return "";
   }
-  let first = true;
-  const weeks = model.weeks.map((week) => {
-    const html = historyWeekHtml(week, { ...options, openFirst: first });
-    first = false;
-    return html;
-  });
+  const weeks = model.weeks.map((week, i) => historyWeekHtml(week, { ...options, openFirst: i === 0 }));
   return `${effortKeyHtml()}${weeks.join("")}`;
 }
 
@@ -104,7 +94,7 @@ function sessionCardHtml(
     what.push("strap worn");
   }
   return `
-    <details class="history-card" id="${escapeHtml(historyCardId(card.sessionId))}" data-session-id="${escapeHtml(card.sessionId)}"${options.open ? " open" : ""}>
+    <details class="history-card" data-session-id="${escapeHtml(card.sessionId)}"${options.open ? " open" : ""}>
       <summary>
         <div><p class="s-when">${escapeHtml(card.title)}</p><p class="s-what">${escapeHtml(what.join(" · "))}</p></div>
         <span class="s-eff">${escapeHtml(card.effortLabel)}</span><i class="chev" aria-hidden="true"></i>

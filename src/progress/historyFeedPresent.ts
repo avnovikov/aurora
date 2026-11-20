@@ -2,10 +2,7 @@ import { escapeHtml } from "../library/present";
 import type { HistoryFeedRow } from "./historyFeed";
 
 /** Shared History / Library detail list of logged sets. */
-export function historyFeedListHtml(
-  rows: readonly HistoryFeedRow[],
-  options: { linkTitles?: boolean } = {},
-): string {
+export function historyFeedListHtml(rows: readonly HistoryFeedRow[]): string {
   if (rows.length === 0) {
     return `
       <section class="progress-empty">
@@ -14,19 +11,13 @@ export function historyFeedListHtml(
       </section>
     `;
   }
-  return `<ol class="history-feed">${rows.map((row) => historyFeedRowHtml(row, options)).join("")}</ol>`;
+  return `<ol class="history-feed">${rows.map(historyFeedRowHtml).join("")}</ol>`;
 }
 
-export function historyFeedRowHtml(
-  row: HistoryFeedRow,
-  options: { linkTitles?: boolean } = {},
-): string {
-  const title = options.linkTitles
-    ? `<button type="button" class="history-ex-link" data-open-exercise="${escapeHtml(row.exerciseId)}">${escapeHtml(row.exerciseName)}</button>`
-    : `<p class="history-ex">${escapeHtml(row.exerciseName)}</p>`;
+function historyFeedRowHtml(row: HistoryFeedRow): string {
   return `
     <li class="history-row">
-      ${title}
+      <p class="history-ex">${escapeHtml(row.exerciseName)}</p>
       <p class="history-meta">${escapeHtml(historyFeedRowMeta(row))}</p>
     </li>
   `;
@@ -49,7 +40,7 @@ export function averageBpmLabel(bpm: number): string {
   return `avg ${bpm} bpm`;
 }
 
-export function formatHistoryWhen(iso: string): string {
+function formatHistoryWhen(iso: string): string {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) {
     return iso;

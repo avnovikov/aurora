@@ -141,4 +141,23 @@ describe("History view (#228)", () => {
     chip.click();
     expect(onClearFilter).toHaveBeenCalled();
   });
+
+  it("a filtered view keeps PB and 'new PB' from the exercise's full history", () => {
+    seed(local(12), "easy", [10]);
+    seed(local(18), "easy", [8]);
+    seed(local(19), "easy", [11]);
+    renderHistoryView(root, { now: NOW, filter: { kind: "exercise", exerciseId: "pullup" } });
+    const metas = cards().map((card) => card.querySelector(".history-ex-row .m")?.textContent);
+    expect(metas).toEqual(["new PB", "PB 11", "PB 11"]);
+  });
+
+  it("a day bar opens its card again after a re-render", () => {
+    seed(local(12), "wiped", [5]);
+    seed(local(19), "easy", [6]);
+    renderHistoryView(root, { now: NOW });
+    renderHistoryView(root, { now: NOW });
+    const older = cards()[1]!;
+    root.querySelector<HTMLButtonElement>(`[data-open-session="${older.dataset.sessionId}"]`)!.click();
+    expect(older.open).toBe(true);
+  });
 });
