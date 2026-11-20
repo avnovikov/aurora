@@ -1,29 +1,43 @@
 import { escapeHtml } from "../library/present";
+import { SESSION_EVALUATION_CHOICES, sessionEvaluationLabel } from "../session/history";
 import { averageBpmLabel } from "./historyFeedPresent";
-import type {
-  EffortLevel,
-  HistoryCardExercise,
-  HistorySessionCard,
-  HistoryWeek,
-  HistoryWeekDay,
-  HistoryWeeksModel,
+import {
+  effortLevel,
+  type EffortLevel,
+  type HistoryCardExercise,
+  type HistorySessionCard,
+  type HistoryWeek,
+  type HistoryWeekDay,
+  type HistoryWeeksModel,
 } from "./historyWeeks";
 
 export const HISTORY_EMPTY_COPY = "History is empty until the first finished session.";
 export const HISTORY_NO_MATCH_COPY = "No finished sessions match this filter.";
 
-const KEY_STEPS: readonly { level: Exclude<EffortLevel, 0>; label: string }[] = [
-  { level: 1, label: "Easy" },
-  { level: 2, label: "On target" },
-  { level: 3, label: "Difficult" },
-  { level: 4, label: "Wiped" },
-];
+const EFFORT_STEPS = SESSION_EVALUATION_CHOICES.map((evaluation) => ({
+  level: effortLevel(evaluation),
+  label: sessionEvaluationLabel(evaluation),
+}));
+
+const EFFORT_KEY_HTML = `<p class="effort-key" aria-label="Effort key">${EFFORT_STEPS.map(
+  (step) => `<span>${effortMarkHtml(step.level, "b")}${step.label}</span>`,
+).join("")}</p>`;
+
+function plural(n: number, word: string): string {
+  return `${n} ${word}${n === 1 ? "" : "s"}`;
+}
+
+function effortMarkHtml(level: EffortLevel, tag: "b" | "span"): string {
+  return `<${tag} class="effort-mark l${level}" aria-hidden="true"><i></i><i></i><i></i><i></i></${tag}>`;
+}
 
 /** "6 sessions in 3 weeks". */
 export function historyLede(model: HistoryWeeksModel): string {
-  const sessions = model.sessionCount;
-  const weeks = model.weeks.length;
-  return `${sessions} ${sessions === 1 ? "session" : "sessions"} in ${weeks} ${weeks === 1 ? "week" : "weeks"}`;
+  return `${plural(sessionCount(model), "session")} in ${plural(model.weeks.length, "week")}`;
+}
+
+function sessionCount(model: HistoryWeeksModel): number {
+  return model.weeks.reduce((total, week) => total + week.sessions.length, 0);
 }
 
 /** History tab body under the filter chip: key, weeks and session cards. */
@@ -31,22 +45,11 @@ export function historyWeeksHtml(
   model: HistoryWeeksModel,
   options: { linkExercises?: boolean } = {},
 ): string {
-  if (model.sessionCount === 0) {
+  if (model.weeks.length === 0) {
     return "";
   }
   const weeks = model.weeks.map((week, i) => historyWeekHtml(week, { ...options, openFirst: i === 0 }));
-  return `${effortKeyHtml()}${weeks.join("")}`;
-}
-
-function effortKeyHtml(): string {
-  const steps = KEY_STEPS.map(
-    (step) => `<span><b class="effort-mark l${step.level}" aria-hidden="true">${markSteps()}</b>${step.label}</span>`,
-  ).join("");
-  return `<p class="effort-key" aria-label="Effort key">${steps}</p>`;
-}
-
-function markSteps(): string {
-  return "<i></i><i></i><i></i><i></i>";
+  return `${EFFORT_KEY_HTML}${weeks.join("")}`;
 }
 
 function historyWeekHtml(
@@ -54,7 +57,6 @@ function historyWeekHtml(
   options: { linkExercises?: boolean; openFirst: boolean },
 ): string {
   const label = `${week.label}${week.current ? " · this week" : ""}`;
-  const noun = week.count === 1 ? "session" : "sessions";
   const cards = week.sessions
     .map((card, i) =>
       sessionCardHtml(card, {
@@ -66,7 +68,7 @@ function historyWeekHtml(
   return `
     <section class="history-week"${week.current ? " data-current" : ""} aria-label="${escapeHtml(week.longLabel)}">
       <p class="history-wk-label">${escapeHtml(label)}</p>
-      <p class="history-wk-count"><span class="n">${week.count}</span><span class="u">${noun}</span></p>
+      <p class="history-wk-count"><span class="n">${week.sessions.length}</span><span class="u">${week.sessions.length === 1 ? "session" : "sessions"}</span></p>
       <div class="history-strip">${week.days.map(dayHtml).join("")}</div>
       <div class="history-cards">${cards}</div>
     </section>
@@ -75,9 +77,9 @@ function historyWeekHtml(
 
 function dayHtml(day: HistoryWeekDay): string {
   const trained = day.level > 0 && day.sessionId !== undefined;
-  const ariaLabel = escapeHtml(day.longLabel + ": " + (day.effortLabel ?? ""));
+  const ariaLabel = escapeHtml(day.longLabel + ": " + (EFFORT_STEPS.find((step) => step.level === day.level)?.label ?? ""));
   const slot = trained
-    ? `<button type="button" class="history-day-btn" data-open-session="${escapeHtml(day.sessionId!)}" aria-label="${ariaLabel}"><span class="effort-mark l${day.level}" aria-hidden="true">${markSteps()}</span></button>`
+    ? `<button type="button" class="history-day-btn" data-open-session="${escapeHtml(day.sessionId!)}" aria-label="${ariaLabel}">${effortMarkHtml(day.level, "span")}</button>`
     : "";
   return `<div class="history-day${trained ? " trained" : ""}"><span class="dl">${escapeHtml(day.label)}</span><span class="slot">${slot}</span></div>`;
 }
@@ -87,7 +89,7 @@ function sessionCardHtml(
   options: { linkExercises: boolean; open: boolean },
 ): string {
   const what = [card.templateName];
-  if (card.legacy && card.setsLogged !== undefined) {
+  if (card.setsLogged !== undefined && card.setsLogged > 0) {
     what.push(setsLoggedLabel(card.setsLogged));
   }
   if (card.strapWorn) {
@@ -97,7 +99,7 @@ function sessionCardHtml(
     <details class="history-card" data-session-id="${escapeHtml(card.sessionId)}"${options.open ? " open" : ""}>
       <summary>
         <div><p class="s-when">${escapeHtml(card.title)}</p><p class="s-what">${escapeHtml(what.join(" · "))}</p></div>
-        <span class="s-eff">${escapeHtml(card.effortLabel)}</span><i class="chev" aria-hidden="true"></i>
+        <span class="s-eff">${escapeHtml(sessionEvaluationLabel(card.evaluation))}</span><i class="chev" aria-hidden="true"></i>
       </summary>
       <div class="history-exs">
         ${cardIntroHtml(card)}
@@ -108,15 +110,15 @@ function sessionCardHtml(
 }
 
 function cardIntroHtml(card: HistorySessionCard): string {
-  if (card.legacy) {
-    const count = card.setsLogged !== undefined ? `<b>${escapeHtml(setsLoggedLabel(card.setsLogged))}</b> · ` : "";
+  if (card.setsLogged !== undefined) {
+    const count = card.setsLogged > 0 ? `<b>${escapeHtml(setsLoggedLabel(card.setsLogged))}</b> · ` : "";
     return `<p class="history-sets">${count}<span>per-set reps were not stored for this session</span></p>`;
   }
   return "";
 }
 
 function setsLoggedLabel(count: number): string {
-  return `${count} ${count === 1 ? "set" : "sets"} logged`;
+  return `${plural(count, "set")} logged`;
 }
 
 function exerciseRowHtml(exercise: HistoryCardExercise, link: boolean): string {

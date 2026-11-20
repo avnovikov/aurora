@@ -3,15 +3,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { HistoryEntry, SessionEvaluation } from "../../src/domain/program";
 import { appendHistory, emptyMemory, saveMemories } from "../../src/session/history";
 import { renderHistoryView } from "../../src/ui/historyView";
+import { local } from "../helpers/dates";
 import { useMemoryStorage } from "../helpers/storage";
 
 useMemoryStorage();
 
 const NOW = new Date(2025, 10, 20, 12, 0);
-
-function local(d: number, h = 9, min = 0): string {
-  return new Date(2025, 10, d, h, min).toISOString();
-}
 
 function seed(
   completedAt: string,
@@ -59,9 +56,9 @@ describe("History view (#228)", () => {
   });
 
   it("renders the lede, key, current-week flag and only the newest card open", () => {
-    seed(local(12), "wiped", [5]);
-    seed(local(18), "easy", [6]);
-    seed(local(19, 18, 10), "on_target", [7, 6]);
+    seed(local(2025, 11, 12), "wiped", [5]);
+    seed(local(2025, 11, 18), "easy", [6]);
+    seed(local(2025, 11, 19, 18, 10), "on_target", [7, 6]);
     renderHistoryView(root, { now: NOW });
     expect(root.querySelector("[data-history-lede]")?.textContent).toBe("3 sessions in 2 weeks");
     expect(root.querySelector(".effort-key")?.textContent).toContain("On target");
@@ -76,8 +73,8 @@ describe("History view (#228)", () => {
   });
 
   it("a day bar opens its session card", () => {
-    seed(local(12), "wiped", [5]);
-    seed(local(19), "easy", [6]);
+    seed(local(2025, 11, 12), "wiped", [5]);
+    seed(local(2025, 11, 19), "easy", [6]);
     renderHistoryView(root, { now: NOW });
     const older = cards()[1]!;
     expect(older.open).toBe(false);
@@ -88,7 +85,7 @@ describe("History view (#228)", () => {
   });
 
   it("an exercise row calls onOpenExercise", () => {
-    seed(local(19), "easy", [6]);
+    seed(local(2025, 11, 19), "easy", [6]);
     const onOpenExercise = vi.fn();
     renderHistoryView(root, { now: NOW, onOpenExercise });
     root.querySelector<HTMLButtonElement>('[data-open-exercise="pullup"]')!.click();
@@ -97,8 +94,8 @@ describe("History view (#228)", () => {
 
   it("shows bpm and PB, 'new PB' only when beating earlier stored sets, nothing extra on a first session", () => {
     saveMemories({ pullup: { ...emptyMemory("pullup"), bestReps: 9 } });
-    seed(local(18), "easy", [6]);
-    seed(local(19), "easy", [9, 8], {
+    seed(local(2025, 11, 18), "easy", [6]);
+    seed(local(2025, 11, 19), "easy", [9, 8], {
       pulse: { series: [{ t: 1, bpm: 130 }], byExercise: [{ exerciseId: "pullup", averageBpm: 134, sampleCount: 3 }] },
     });
     renderHistoryView(root, { now: NOW, onOpenExercise: () => {} });
@@ -113,7 +110,7 @@ describe("History view (#228)", () => {
   it("legacy sessions show the set count and names without reps or PB", () => {
     saveMemories({ pullup: { ...emptyMemory("pullup"), bestReps: 9 } });
     appendHistory({
-      completedAt: local(17),
+      completedAt: local(2025, 11, 17),
       templateId: "day_a",
       templateName: "Lower body · A",
       evaluation: "difficult",
@@ -129,7 +126,7 @@ describe("History view (#228)", () => {
   });
 
   it("keeps the filter chip", () => {
-    seed(local(19), "easy", [6]);
+    seed(local(2025, 11, 19), "easy", [6]);
     const onClearFilter = vi.fn();
     renderHistoryView(root, {
       now: NOW,
@@ -143,17 +140,17 @@ describe("History view (#228)", () => {
   });
 
   it("a filtered view keeps PB and 'new PB' from the exercise's full history", () => {
-    seed(local(12), "easy", [10]);
-    seed(local(18), "easy", [8]);
-    seed(local(19), "easy", [11]);
+    seed(local(2025, 11, 12), "easy", [10]);
+    seed(local(2025, 11, 18), "easy", [8]);
+    seed(local(2025, 11, 19), "easy", [11]);
     renderHistoryView(root, { now: NOW, filter: { kind: "exercise", exerciseId: "pullup" } });
     const metas = cards().map((card) => card.querySelector(".history-ex-row .m")?.textContent);
     expect(metas).toEqual(["new PB", "PB 11", "PB 11"]);
   });
 
   it("a day bar opens its card again after a re-render", () => {
-    seed(local(12), "wiped", [5]);
-    seed(local(19), "easy", [6]);
+    seed(local(2025, 11, 12), "wiped", [5]);
+    seed(local(2025, 11, 19), "easy", [6]);
     renderHistoryView(root, { now: NOW });
     renderHistoryView(root, { now: NOW });
     const older = cards()[1]!;

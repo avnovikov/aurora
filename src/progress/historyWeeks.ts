@@ -1,5 +1,4 @@
 import type { SessionEvaluation } from "../domain/program";
-import { sessionEvaluationLabel } from "../session/history";
 import type { HistorySessionBlock } from "./historySessionBlocks";
 
 /** Effort bar height: easy 1, on target 2, difficult 3, wiped 4; 0 is a rest day. */
@@ -23,8 +22,6 @@ export interface HistoryWeekDay {
   longLabel: string;
   /** Hardest session that day; 0 when no session. */
   level: EffortLevel;
-  /** Effort word of the hardest session; absent on rest days. */
-  effortLabel?: string;
   /** Newest session that day; absent on rest days. */
   sessionId?: string;
 }
@@ -47,10 +44,8 @@ export interface HistorySessionCard {
   title: string;
   templateName: string;
   evaluation: SessionEvaluation;
-  effortLabel: string;
   strapWorn: boolean;
-  legacy: boolean;
-  /** Summary-only sessions: total sets stored on the session. */
+  /** Summary-only (legacy) sessions only: total sets stored on the session, 0 when unknown. */
   setsLogged?: number;
   exercises: HistoryCardExercise[];
 }
@@ -61,13 +56,11 @@ export interface HistoryWeek {
   /** Long form for screen readers, e.g. "Week commencing 17 November". */
   longLabel: string;
   current: boolean;
-  count: number;
   days: HistoryWeekDay[];
   sessions: HistorySessionCard[];
 }
 
 export interface HistoryWeeksModel {
-  sessionCount: number;
   weeks: HistoryWeek[];
 }
 
@@ -89,21 +82,26 @@ const MONTH_LONG = [
 export function buildHistoryWeeks(input: {
   blocks: readonly HistorySessionBlock[];
   now?: Date;
-  /** Stored personal best per exercise id (ExerciseMemory.bestReps); may lag history. */
-  personalBests?: Readonly<Record<string, number | undefined>>;
+  /** Stored memory per exercise id (loadMemories shape); bestReps may lag history. */
+  memories?: Readonly<Record<string, { bestReps?: number }>>;
 }): HistoryWeeksModel {
   const now = input.now ?? new Date();
   const dated = input.blocks
     .map((block) => ({ block, at: new Date(block.completedAt) }))
     .filter((row) => !Number.isNaN(row.at.getTime()))
     .sort((a, b) => b.at.getTime() - a.at.getTime());
-  const { personalBests, newPersonalBests } = personalBestsFor(dated, input.personalBests ?? {});
+  const { personalBests, newPersonalBests } = personalBestsFor(dated, input.memories ?? {});
 
   // Rows are newest first, so Map insertion order keeps weeks newest first.
   const groups = new Map<number, typeof dated>();
   for (const row of dated) {
     const start = weekStart(row.at).getTime();
-    groups.set(start, [...(groups.get(start) ?? []), row]);
+    const group = groups.get(start);
+    if (group) {
+      group.push(row);
+    } else {
+      groups.set(start, [row]);
+    }
   }
 
   const currentWeekStart = weekStart(now).getTime();
@@ -113,13 +111,12 @@ export function buildHistoryWeeks(input: {
       label: `w/c ${start.getDate()} ${MONTH_SHORT[start.getMonth()]}`,
       longLabel: `Week commencing ${start.getDate()} ${MONTH_LONG[start.getMonth()]}`,
       current: startMs === currentWeekStart,
-      count: rows.length,
       days: weekDays(start, rows),
       sessions: rows.map((row) => sessionCard(row.block, row.at, personalBests, newPersonalBests)),
     };
   });
 
-  return { sessionCount: dated.length, weeks };
+  return { weeks };
 }
 
 /** Monday 00:00 local time of the week containing `date`. */
@@ -134,52 +131,53 @@ function weekDays(
   start: Date,
   rows: readonly { block: HistorySessionBlock; at: Date }[],
 ): HistoryWeekDay[] {
-  const days: HistoryWeekDay[] = [];
-  for (let offset = 0; offset < 7; offset += 1) {
-    const day = new Date(start.getFullYear(), start.getMonth(), start.getDate() + offset);
-    const onDay = rows.filter((row) => sameLocalDay(row.at, day));
-    const longLabel = `${DAY_SHORT[day.getDay()]} ${day.getDate()} ${MONTH_SHORT[day.getMonth()]}`;
-    const label = `${DAY_SHORT[day.getDay()]!.charAt(0)} ${day.getDate()}`;
-    if (onDay.length === 0) {
-      days.push({ label, longLabel, level: 0 });
-      continue;
+  // Rows are newest first: the first row seen for a day is its newest session,
+  // and only a strictly harder one displaces the hardest.
+  const newest: ({ block: HistorySessionBlock } | undefined)[] = Array(7).fill(undefined);
+  const hardest: ({ block: HistorySessionBlock } | undefined)[] = Array(7).fill(undefined);
+  for (const row of rows) {
+    const i = (row.at.getDay() + 6) % 7;
+    newest[i] ??= row;
+    const best = hardest[i];
+    if (!best || effortLevel(row.block.evaluation) > effortLevel(best.block.evaluation)) {
+      hardest[i] = row;
     }
-    // Rows are newest first, so the first one is the newest that day.
-    const hardest = onDay.reduce((best, row) =>
-      effortLevel(row.block.evaluation) > effortLevel(best.block.evaluation) ? row : best,
-    );
-    days.push({
+  }
+
+  return newest.map((row, i): HistoryWeekDay => {
+    const day = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+    const label = `${DAY_SHORT[day.getDay()]!.charAt(0)} ${day.getDate()}`;
+    const longLabel = dateLabel(day);
+    if (!row) {
+      return { label, longLabel, level: 0 };
+    }
+    return {
       label,
       longLabel,
-      level: effortLevel(hardest.block.evaluation),
-      effortLabel: sessionEvaluationLabel(hardest.block.evaluation),
-      sessionId: onDay[0]!.block.sessionId,
-    });
-  }
-  return days;
+      level: effortLevel(hardest[i]!.block.evaluation),
+      sessionId: row.block.sessionId,
+    };
+  });
 }
 
 function sessionCard(
   block: HistorySessionBlock,
   at: Date,
   personalBests: ReadonlyMap<string, number>,
-  newPersonalBests: ReadonlySet<string>,
+  newPersonalBests: ReadonlyMap<string, ReadonlySet<string>>,
 ): HistorySessionCard {
   const base = {
     sessionId: block.sessionId,
     title: `${dateLabel(at)} · ${pad2(at.getHours())}:${pad2(at.getMinutes())}`,
     templateName: block.templateName,
     evaluation: block.evaluation,
-    effortLabel: sessionEvaluationLabel(block.evaluation),
     strapWorn: Boolean(block.pulse && block.pulse.series.length > 0),
-    legacy: block.legacy,
   };
 
   if (block.legacy) {
-    const setsLogged = block.legacyRows[0]?.sessionSetCount ?? 0;
     return {
       ...base,
-      ...(setsLogged > 0 ? { setsLogged } : {}),
+      setsLogged: block.legacyRows[0]?.sessionSetCount ?? 0,
       exercises: block.legacyRows.map((row) => ({
         exerciseId: row.exerciseId,
         name: row.exerciseName,
@@ -197,7 +195,7 @@ function sessionCard(
         reps: exercise.completedRepsBySet,
         ...(exercise.averageBpm !== undefined ? { averageBpm: exercise.averageBpm } : {}),
         ...(personalBest !== undefined ? { personalBest } : {}),
-        ...(newPersonalBests.has(newPbKey(block.sessionId, exercise.exerciseId))
+        ...(newPersonalBests.get(block.sessionId)?.has(exercise.exerciseId)
           ? { newPersonalBest: true }
           : {}),
       };
@@ -213,11 +211,12 @@ function sessionCard(
  */
 function personalBestsFor(
   newestFirst: readonly { block: HistorySessionBlock }[],
-  stored: Readonly<Record<string, number | undefined>>,
-): { personalBests: Map<string, number>; newPersonalBests: Set<string> } {
-  const bestStoredSet = new Map<string, number>();
-  const newPersonalBests = new Set<string>();
-  for (const { block } of [...newestFirst].reverse()) {
+  memories: Readonly<Record<string, { bestReps?: number }>>,
+): { personalBests: Map<string, number>; newPersonalBests: Map<string, Set<string>> } {
+  const personalBests = new Map<string, number>();
+  const newPersonalBests = new Map<string, Set<string>>();
+  for (let i = newestFirst.length - 1; i >= 0; i -= 1) {
+    const { block } = newestFirst[i]!;
     if (block.legacy) {
       continue;
     }
@@ -226,44 +225,30 @@ function personalBestsFor(
         continue;
       }
       const top = Math.max(...exercise.completedRepsBySet);
-      const earlier = bestStoredSet.get(exercise.exerciseId);
+      const earlier = personalBests.get(exercise.exerciseId);
       if (earlier !== undefined && top > earlier) {
-        newPersonalBests.add(newPbKey(block.sessionId, exercise.exerciseId));
+        addToSet(newPersonalBests, block.sessionId, exercise.exerciseId);
       }
-      bestStoredSet.set(exercise.exerciseId, Math.max(earlier ?? top, top));
+      personalBests.set(exercise.exerciseId, Math.max(earlier ?? top, top));
     }
   }
 
-  return { personalBests: withStoredBests(bestStoredSet, stored), newPersonalBests };
-}
-
-function withStoredBests(
-  bestStoredSet: ReadonlyMap<string, number>,
-  stored: Readonly<Record<string, number | undefined>>,
-): Map<string, number> {
-  const merged = new Map(bestStoredSet);
-  for (const [exerciseId, bestReps] of Object.entries(stored)) {
-    if (bestReps !== undefined) {
-      merged.set(exerciseId, Math.max(bestReps, merged.get(exerciseId) ?? bestReps));
+  for (const [exerciseId, memory] of Object.entries(memories)) {
+    if (memory.bestReps !== undefined) {
+      personalBests.set(exerciseId, Math.max(memory.bestReps, personalBests.get(exerciseId) ?? memory.bestReps));
     }
   }
-  return merged;
+  return { personalBests, newPersonalBests };
 }
 
-function newPbKey(sessionId: string, exerciseId: string): string {
-  return `${sessionId}\u0000${exerciseId}`;
+function addToSet(sets: Map<string, Set<string>>, key: string, value: string): void {
+  const set = sets.get(key) ?? new Set<string>();
+  set.add(value);
+  sets.set(key, set);
 }
 
 function dateLabel(date: Date): string {
   return `${DAY_SHORT[date.getDay()]} ${date.getDate()} ${MONTH_SHORT[date.getMonth()]}`;
-}
-
-function sameLocalDay(a: Date, b: Date): boolean {
-  return (
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
-  );
 }
 
 function pad2(n: number): string {

@@ -886,13 +886,16 @@ button:disabled {
   line-height: 24px;
 }
 
-.history-card .s-when,
-.history-ex-row .r {
+.history-card .s-when {
   font-weight: 600;
 }
 
-.history-card .s-eff,
+.history-card .s-eff {
+  text-align: right;
+}
+
 .history-ex-row .r {
+  font-weight: 600;
   text-align: right;
 }
 

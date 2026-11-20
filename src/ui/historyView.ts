@@ -34,11 +34,11 @@ export function renderHistoryView(
 
   const weeks = buildHistoryWeeks({
     blocks: model.blocks,
-    personalBests: personalBestsFrom(loadMemories()),
+    memories: loadMemories(),
     ...(options.now ? { now: options.now } : {}),
   });
   const emptyCopy = filter.kind === "all" ? HISTORY_EMPTY_COPY : HISTORY_NO_MATCH_COPY;
-  const lede = weeks.sessionCount > 0 ? historyLede(weeks) : emptyCopy;
+  const lede = weeks.weeks.length > 0 ? historyLede(weeks) : emptyCopy;
 
   root.innerHTML = `
     <main class="shell history-shell">
@@ -55,8 +55,8 @@ export function renderHistoryView(
       if (!sessionId) {
         return;
       }
-      const card = [...root.querySelectorAll<HTMLDetailsElement>("details[data-session-id]")].find(
-        (details) => details.dataset.sessionId === sessionId,
+      const card = root.querySelector<HTMLDetailsElement>(
+        `details[data-session-id="${CSS.escape(sessionId)}"]`,
       );
       if (!card) {
         return;
@@ -98,12 +98,4 @@ function filterLabel(filter: Exclude<HistoryFilter, { kind: "all" }>): string {
     return `Exercise · ${displayNameOf(filter.exerciseId, EXERCISE_GRAPH)}`;
   }
   return `Pattern · ${patternLabel(filter.pattern)}`;
-}
-
-function personalBestsFrom(
-  memories: Record<string, { bestReps?: number }>,
-): Record<string, number | undefined> {
-  return Object.fromEntries(
-    Object.entries(memories).map(([exerciseId, memory]) => [exerciseId, memory.bestReps]),
-  );
 }
