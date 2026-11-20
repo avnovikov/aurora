@@ -1,5 +1,5 @@
 import { BONES, HIP_SIDE, SHOULDER_SIDE, solvePose, zOut } from "./rig";
-import type { Point, Pose, Side } from "./rig";
+import type { Point, Pose, Side, Solved } from "./rig";
 import { add3, dot3, norm3, scale3, sub3, type Point3 } from "./rig3d";
 import { round } from "./geom";
 
@@ -51,9 +51,8 @@ export function dirs(root: Point3, [l1, l2]: [number, number], d1: Point3, d2: P
   return { mid, end: add3(mid, scale3(unit3(d2), l2)) };
 }
 
-/** Where limbs root: the solved spine's shoulders and hips, set out sideways about the spine at z = `pz`. */
-export function roots(spine: Spine, pz = 0): { arm: Record<Side, Point3>; leg: Record<Side, Point3> } {
-  const solved = solvePose(spine);
+/** Where limbs root in an already solved pose: its shoulders and hips, set out sideways about the spine at z = `pz`. */
+export function rootsOf(solved: Solved, pz = 0): { arm: Record<Side, Point3>; leg: Record<Side, Point3> } {
   const arm = {} as Record<Side, Point3>;
   const leg = {} as Record<Side, Point3>;
   for (const side of SIDES) {
@@ -62,6 +61,9 @@ export function roots(spine: Spine, pz = 0): { arm: Record<Side, Point3>; leg: R
   }
   return { arm, leg };
 }
+
+/** Where limbs root: the solved spine's shoulders and hips. */
+export const roots = (spine: Spine, pz = 0): ReturnType<typeof rootsOf> => rootsOf(solvePose(spine), pz);
 
 /** A 3D point as a rounded side-view point. */
 export const flat = (p: Point3): Point => [round(p[0]), round(p[1])];

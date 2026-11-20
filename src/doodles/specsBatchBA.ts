@@ -1,7 +1,7 @@
 import { BONES, deg, SEGMENTS, solvePose, zOut } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
 import { add3, dot3, scale3, sub3, type Point3 } from "./rig3d";
-import { ARM, chain, dirs, flat, LEG, type LimbSpec, type Plan, REACH, roots, SIDES, type Spine, unit3 } from "./limbs3";
+import { ARM, chain, dirs, flat, LEG, type LimbSpec, type Plan, REACH, roots, rootsOf, SIDES, type Spine, unit3 } from "./limbs3";
 import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
 import { along, chestOf, FLOOR_PROP, round, supineTorso } from "./geom";
 
@@ -95,9 +95,10 @@ export function frame(hold: number, spine: Spine, limbs: Limbs): Keyframe {
 // ---------------------------------------------------------------- standing base
 
 const STAND: Spine = { pelvis: [0, -174], chest: [0, -254] };
+const STAND_ROOTS = roots(STAND);
 
 /** Straight legs, feet a hip-width apart, flat on the floor. */
-export function standLegs(spine: Spine): Limbs["legs"] {
+function standLegs(spine: Spine): Limbs["legs"] {
   const { leg } = roots(spine);
   const out = {} as Record<Side, LimbSpec>;
   for (const side of SIDES) {
@@ -130,7 +131,7 @@ function elbowDir(side: Side, phase: number, half: number, lift = 0): Point3 {
  * `lift` tips the upper half of the circle forward, so a raised elbow passes in front of the face, not through the head.
  */
 function elbowRound(phase: number, half: number, lift = 0): Keyframe {
-  const { arm } = roots(STAND);
+  const { arm } = STAND_ROOTS;
   const arms = {} as Record<Side, LimbSpec>;
   for (const side of SIDES) {
     const s = arm[side];
@@ -156,10 +157,11 @@ const CIRCLE_PHASES = [0, 45, 90, 135, 180, 225, 270, 315, 360, 315, 270, 225, 1
 
 const SEAT_PELVIS: Point = [0, -12];
 const SEAT: Spine = { pelvis: SEAT_PELVIS, chest: chestOf(SEAT_PELVIS, -90) };
+const SEAT_ROOTS = roots(SEAT);
 
 /** Seated tall, knees a little bent, feet on the floor out front. */
 function seatLegs(): Limbs["legs"] {
-  const { leg } = roots(SEAT);
+  const { leg } = SEAT_ROOTS;
   const out = {} as Record<Side, LimbSpec>;
   for (const side of SIDES) {
     const hip = leg[side];
@@ -172,7 +174,7 @@ function seatLegs(): Limbs["legs"] {
 function behindHead(back: number, hold: number): Keyframe {
   const spine: Spine = { ...SEAT, chest: [round(-4 * back), SEAT.chest ? SEAT.chest[1] : -92] };
   const solved = solvePose(spine);
-  const { arm } = roots(spine);
+  const { arm } = rootsOf(solved);
   const arms = {} as Record<Side, LimbSpec>;
   for (const side of SIDES) {
     const s = arm[side];
@@ -243,7 +245,7 @@ function claspBehind(lift: number, chestBack: number): Pose {
  * 1: swung out to the sides and a little back as far as is comfortable.
  */
 function chestOpen(open: number, hold: number): Keyframe {
-  const { arm } = roots(STAND);
+  const { arm } = STAND_ROOTS;
   const swing = deg(open * 100);
   const arms = {} as Record<Side, LimbSpec>;
   for (const side of SIDES) {
