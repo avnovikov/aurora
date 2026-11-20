@@ -65,7 +65,7 @@ describe("historySessionBlocksHtml", () => {
     expect(html).toContain("On target");
     expect(html).toContain("Pull-up");
     expect(html).toContain("20 / 25 / 30");
-    expect(html).toContain("avg 148");
+    expect(html).toContain("20 / 25 / 30 · avg 148 bpm");
     expect(html).toContain("Row");
     expect(html).toContain("9");
     expect(html).not.toMatch(/Row[\s\S]*avg/);

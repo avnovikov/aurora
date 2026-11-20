@@ -92,7 +92,9 @@ function historyExerciseRollupHtml(
     : `<p class="history-ex">${escapeHtml(exercise.exerciseName)}</p>`;
   const reps = exercise.completedRepsBySet.join(" / ");
   const pulse =
-    exercise.averageBpm !== undefined ? ` · avg ${exercise.averageBpm}` : "";
+    exercise.averageBpm !== undefined
+      ? ` · ${averageBpmLabel(exercise.averageBpm)}`
+      : "";
   return `
     <li class="history-row">
       ${title}
@@ -150,8 +152,13 @@ export function historyFeedRowMeta(row: HistoryFeedRow): string {
     return `${sets} ${noun} that session (summary) · ${when}`;
   }
   const pulse =
-    row.averageBpm !== undefined ? ` · Avg pulse ${row.averageBpm}` : "";
+    row.averageBpm !== undefined ? ` · ${averageBpmLabel(row.averageBpm)}` : "";
   return `Set ${row.setIndex} · ${row.completedReps} / ${row.prescribedReps}${pulse} · ${when}`;
+}
+
+/** Average heart rate on a history row, with its unit (#219). */
+export function averageBpmLabel(bpm: number): string {
+  return `avg ${bpm} bpm`;
 }
 
 export function formatHistoryWhen(iso: string): string {
