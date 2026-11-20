@@ -37,7 +37,7 @@ import {
   type ViewBox,
 } from "./renderSvg";
 import { SEGMENTS, SHOULDER_SIDE, type DoodleSpec, type Prop, type Side, type Solved } from "./rig";
-import { dist3, sampleTimeline3, type Figure3, type Limb3, type Point3, type Timeline3 } from "./rig3d";
+import { add3, dist3, lerp3, sampleTimeline3, scale3, type Figure3, type Limb3, type Point3, type Timeline3 } from "./rig3d";
 
 type Bar = Extract<Prop, { kind: "bar" }>;
 type Box = Extract<Prop, { kind: "box" }>;
@@ -276,8 +276,8 @@ function bodyAt(f: Figure3, y: number): { at: Point3; width: number } | undefine
   for (let i = 0; i + 1 < spine.length; i += 1) {
     const [a, b] = [spine[i], spine[i + 1]];
     if (a[1] !== b[1] && (y - a[1]) * (y - b[1]) <= 0) {
-      const t = (y - a[1]) / (b[1] - a[1]);
-      return { at: [a[0] + (b[0] - a[0]) * t, y, a[2] + (b[2] - a[2]) * t], width: BEHIND_WIDTH };
+      const [x, , z] = lerp3(a, b, (y - a[1]) / (b[1] - a[1]));
+      return { at: [x, y, z], width: BEHIND_WIDTH };
     }
   }
   const nearest = spine.reduce((best, p) => (Math.abs(p[1] - y) < Math.abs(best[1] - y) ? p : best), spine[0]);
@@ -300,7 +300,7 @@ export function isBehind(f: Figure3, p: Point3, panel: Panel): boolean {
  */
 export function behindOf(spec: DoodleSpec, figures: Figure3[], panel: Panel): Behind | undefined {
   if (!spec.fadeBehind) return undefined;
-  const middle = (l: Limb3): Point3 => [(l.mid[0] + l.end[0]) / 2, (l.mid[1] + l.end[1]) / 2, (l.mid[2] + l.end[2]) / 2];
+  const middle = (l: Limb3): Point3 => scale3(add3(l.mid, l.end), 0.5);
   const forearms =
     panel === "front" ? { near: figures.map((f) => isBehind(f, middle(f.arms.near), panel)), far: figures.map((f) => isBehind(f, middle(f.arms.far), panel)) } : undefined;
   let bell: boolean[] | undefined;

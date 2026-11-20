@@ -6,7 +6,7 @@ import type { Panel } from "./project";
 import { dualLayout, handZ, propDepth } from "./renderDual";
 import { topLayout } from "./renderTop";
 import { figurePoints, propSegments, specViewBox, type ViewBox } from "./renderSvg";
-import { dist3, sampleTimeline3, type Figure3, type Point3, type Timeline3 } from "./rig3d";
+import { dist3, dot3, norm3, sampleTimeline3, sub3, type Figure3, type Point3, type Timeline3 } from "./rig3d";
 
 /** Validator for doodle specs (rig v2 spec, "Validator" section). JSON-serialisable output. */
 
@@ -783,13 +783,10 @@ function failed(spec: DoodleSpec, errors: string[]): SpecReport {
   };
 }
 
-const sub3 = (a: Point3, b: Point3): Point3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
-
 /** Angle (degrees) between two 3D directions. */
 function angle3(u: Point3, v: Point3): number {
-  const dot = u[0] * v[0] + u[1] * v[1] + u[2] * v[2];
-  const n = Math.hypot(...u) * Math.hypot(...v);
-  return n < 1e-9 ? 0 : (Math.acos(Math.max(-1, Math.min(1, dot / n))) * 180) / Math.PI;
+  const n = norm3(u) * norm3(v);
+  return n < 1e-9 ? 0 : (Math.acos(Math.max(-1, Math.min(1, dot3(u, v) / n))) * 180) / Math.PI;
 }
 
 /** Spine bends in 3D (a sideways lean turns the spine rigidly, so it bends as much as in the side view's plane). */

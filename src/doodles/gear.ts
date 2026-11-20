@@ -9,7 +9,7 @@
  */
 import type { Panel, View } from "./project";
 import { BONES, ease, KETTLEBELL, zOut, type BellMode, type DoodleSpec, type Keyframe, type Point, type Side, type Solved } from "./rig";
-import type { Figure3, Point3 } from "./rig3d";
+import { lerp3, type Figure3, type Point3 } from "./rig3d";
 
 /** Ring radius (round the hand) and suspension handle half-width / loop height. */
 export const RING_RADIUS = 10;
@@ -247,8 +247,6 @@ export function bells(spec: DoodleSpec, poses: Solved[], side: Side, panel: Pane
   const blends = bellBlends(spec, poses.length, side);
   return poses.map((pose, i) => bellBetween(pose, bellSize(spec), panel, blends[i].from, blends[i].to, blends[i].t));
 }
-
-const lerp3 = (a: Point3, b: Point3, t: number): Point3 => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
 
 /** Roughly where the bell is in 3D (enough to tell which side of the head it is): horns as `placed`, else the gripping hand. */
 function bellNear3(figure: Figure3, key: BellKey, radius: number): Point3 {

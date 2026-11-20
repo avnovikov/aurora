@@ -85,7 +85,7 @@ export const dist3 = (a: Point3, b: Point3): number => norm(sub(a, b));
 
 /** Vector helpers for the batch files (same arithmetic as the solver). */
 export { add as add3, sub as sub3, scale as scale3, dot as dot3, cross as cross3, norm as norm3, unit as unit3 };
-const lerp3 = (a: Point3, b: Point3, t: number): Point3 => add(a, scale(sub(b, a), t));
+export const lerp3 = (a: Point3, b: Point3, t: number): Point3 => add(a, scale(sub(b, a), t));
 const Z: Point3 = [0, 0, 1];
 const DOWN: Point3 = [0, 1, 0];
 
