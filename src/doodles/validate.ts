@@ -1,10 +1,12 @@
-import { BONES, SEGMENTS, dist, reflectSolved, sampleTimeline, type DoodleSpec, type Keyframe, type Point, type Prop, type Sideways, type Side, type Solved } from "./rig";
-import { bellHolders, bells, bellSize, byTheHorns, handsOff, panelOf, secondView, strapAnchor, strapAttach, strapSides } from "./gear";
+import { BONES, END_TURN_LIMIT, FACE_LIMITS, GIRDLE_LIMITS, SEGMENTS, TWIST_LIMITS, dist, reflectSolved, sampleTimeline, type DoodleSpec, type Keyframe, type Point, type Prop, type Sideways, type Side, type Solved } from "./rig";
+import { bellHolders, bells, bellSize, byTheHorns, handsOff, heldKind, heldLine, panelOf, secondView, strapAnchor, strapAttach, strapSides } from "./gear";
+import { FOCUS_BY_ID } from "./focus";
+import { BODY_JOINTS, holdSlips, partner3D, partnerFlat } from "./partner";
 import type { Panel } from "./project";
 import { dualLayout, handZ, propDepth } from "./renderDual";
 import { topLayout } from "./renderTop";
 import { figurePoints, propSegments, specViewBox, type ViewBox } from "./renderSvg";
-import { dist3, sampleTimeline3, type Figure3, type Point3, type Timeline3 } from "./rig3d";
+import { dist3, dot3, norm3, sampleTimeline3, sub3, type Figure3, type Point3, type Timeline3 } from "./rig3d";
 
 /** Validator for doodle specs (rig v2 spec, "Validator" section). JSON-serialisable output. */
 
@@ -325,9 +327,139 @@ function betweenCount<P>(timeline: Samples & { poses: P[] }, test: (pose: P) => 
 }
 
 export function validateSpec(spec: DoodleSpec): SpecReport {
-  const guards = [...dualViewGuards(spec), ...gearGuards(spec)];
+  const guards = [...dualViewGuards(spec), ...gearGuards(spec), ...faceGuards(spec), ...heldGuards(spec), ...partnerGuards(spec)];
   if (guards.length > 0) return failed(spec, guards);
   return spec.views ? validateDual(spec) : validateFlat(spec);
+}
+
+// ---------------------------------------------------------------- face
+
+/** Keyframe `face` rules: within the neck's range, no turning round, a tilt only where it can be seen. */
+export function faceGuards(spec: { frames: readonly Pick<Keyframe, "face" | "mirror">[]; views?: DoodleSpec["views"]; view?: DoodleSpec["view"] }): string[] {
+  const faces = spec.frames.map((frame) => frame.face);
+  if (!faces.some(Boolean)) return [];
+  const errors: string[] = [];
+  if (spec.frames.some((frame) => frame.mirror !== undefined)) errors.push("face can't be combined with mirror (turning round)");
+  faces.forEach((face, k) => {
+    for (const key of ["turn", "tilt", "nod"] as const) {
+      const value = face?.[key];
+      if (value !== undefined && Math.abs(value) > FACE_LIMITS[key]) errors.push(`frame ${k}: face.${key} ${value}° is past ${FACE_LIMITS[key]}°`);
+    }
+  });
+  if (faces.some((face) => face?.tilt) && !spec.views && spec.view !== "front") {
+    errors.push('face.tilt swings the head sideways, which a side view can\'t show: add views ["side", "front"] (or view: "front")');
+  }
+  return errors;
+}
+
+// ---------------------------------------------------------------- stick and towel
+
+/** A stick's grip width may change by at most this share of its widest over the loop (it is rigid). */
+export const STICK_GIVE = 0.05;
+/** A towel's length (hand to hand, or hand to foot to hand) may change by at most this share of its longest (taut-ish). */
+export const TOWEL_SLACK = 0.12;
+/** Two views: a stick's hands at least this far apart at every keyframe (otherwise it has no direction). */
+export const STICK_MIN_GRIP = 20;
+
+export function heldGuards(spec: DoodleSpec): string[] {
+  const errors: string[] = [];
+  const joined = [spec.stick && "stick", spec.towel && "towel", spec.handBand && "handBand"].filter(Boolean);
+  if (joined.length > 1) errors.push(`only one of stick, towel and handBand (got ${joined.join(", ")})`);
+  if ((spec.stick?.overhang ?? 0) < 0) errors.push("stick.overhang is negative");
+  const kind = heldKind(spec);
+  // Two views re-solve both arms onto the object between keyframes (rig3d `heldArm`), straight to the hand tip.
+  if (kind && spec.views) errors.push(...wristGuards(spec.frames, ["near", "far"], `${kind} re-solves the arms between keyframes with a straight wrist`));
+  return errors;
+}
+
+/**
+ * Hands whose arm is re-solved between keyframes (a held stick or towel in two
+ * views, a partner's hold) run straight from elbow to hand tip, so a wrist
+ * angle at a keyframe would snap straight in the transition.
+ */
+export function wristGuards(frames: readonly Pick<Keyframe, "pose" | "sideways">[], hands: readonly Side[], why: string, prefix = ""): string[] {
+  return frames.flatMap((frame, k) =>
+    hands.flatMap((side) =>
+      [
+        "wrists" in frame.pose && frame.pose.wrists?.[side] !== undefined ? `pose.wrists.${side}` : undefined,
+        frame.sideways?.wrists?.[side] !== undefined ? `sideways.wrists.${side}` : undefined,
+      ]
+        .filter((key): key is string => key !== undefined)
+        .map((key) => `${prefix}frame ${k}: ${why}; drop ${key}`),
+    ),
+  );
+}
+
+/** Polyline length in 2D or 3D. */
+const pathLength = (line: readonly (readonly number[])[]): number =>
+  line.slice(1).reduce((sum, p, i) => sum + Math.hypot(...p.map((v, j) => v - line[i][j])), 0);
+
+/**
+ * The stick keeps its grip width (it is rigid), the towel keeps its length
+ * (taut), and neither passes through the head. `poses`: 2D (one view) or 3D
+ * figures (two views), so lengths are true.
+ */
+function heldIssues<P extends readonly number[]>(spec: DoodleSpec, poses: { head: P; arms: Record<Side, { end: P }>; legs: Record<Side, { joint: P; end: P }> }[], timeline: Samples): string[] {
+  const kind = heldKind(spec);
+  if (!kind) return [];
+  const issues: string[] = [];
+  const spread = (values: number[], share: number, what: string, fix: string): void => {
+    const most = Math.max(...values);
+    const change = most - Math.min(...values);
+    if (change > share * most && change > 1) issues.push(`${kind}: ${what} changes by ${round(change, 1)} (> ${share * 100}% of ${round(most, 1)}); ${fix}`);
+  };
+  if (kind === "stick") {
+    spread(poses.map((pose) => Math.hypot(...pose.arms.far.end.map((v, i) => v - pose.arms.near.end[i]))), STICK_GIVE, "grip width", "keep the hands the same distance apart");
+  } else {
+    spread(poses.map((pose) => pathLength(heldLine(spec, pose))), TOWEL_SLACK, "length", "keep it taut");
+  }
+  const through = poses.findIndex((pose) => {
+    const line = heldLine(spec, pose);
+    return line.slice(1).some((p, i) => distanceToSegment(pose.head, line[i], p) < SEGMENTS.headRadius - TOUCH);
+  });
+  if (through >= 0) issues.push(`${kind} passes through the head (${at(timeline, through)})`);
+  return issues;
+}
+
+// ---------------------------------------------------------------- partner
+
+/** Spec-level partner rules: a keyframe for every exerciser keyframe, valid holds, no turning round. */
+export function partnerGuards(spec: DoodleSpec): string[] {
+  const partner = spec.partner;
+  if (!partner) return [];
+  const errors: string[] = [];
+  if (partner.frames.length !== spec.frames.length) errors.push(`partner has ${partner.frames.length} keyframes, the exerciser ${spec.frames.length}: give one per keyframe`);
+  if (spec.frames.some((frame) => frame.mirror !== undefined)) errors.push("partner can't be combined with mirror keyframes (turning round)");
+  if (!spec.views && partner.frames.some((frame) => frame.sideways)) errors.push('partner sideways needs views: ["side", "front"] or ["side", "top"]');
+  return [...errors, ...holdGuards(partner)];
+}
+
+/** Holds name a known joint, a hand once, and a hand the pose doesn't pin. */
+function holdGuards(partner: NonNullable<DoodleSpec["partner"]>): string[] {
+  const holds = partner.holds ?? [];
+  const errors = holds.flatMap((hold) => [
+    ...(BODY_JOINTS.includes(hold.on) ? [] : [`partner hold on unknown joint "${hold.on}"`]),
+    ...(partner.frames.some((frame) => frame.pose.hands?.[hold.hand]) ? [`partner hands.${hold.hand} is held on ${hold.on}: don't pin it in the pose too`] : []),
+  ]);
+  if (new Set(holds.map((hold) => hold.hand)).size !== holds.length) errors.push("partner holds name one hand twice");
+  errors.push(...wristGuards(partner.frames, holds.map((hold) => hold.hand), "a held hand's arm is re-solved onto its joint with a straight wrist", "partner: "));
+  return errors;
+}
+
+/** The partner's own checks (its spec on the exerciser's clock), then its held hands: on their joints, the arm in range. */
+function partnerIssues<P>(
+  spec: DoodleSpec,
+  partner: { spec: DoodleSpec; poses: P[] } | undefined,
+  slips: { hold: string; slip: number; sample: number }[],
+  heldAnatomy: (pose: P) => string[],
+  timeline: Samples,
+): string[] {
+  if (!partner) return [];
+  const own = validateSpec(partner.spec).errors.map((error) => `partner: ${error}`);
+  const seen = new Set<string>();
+  const slipped = slips.filter((s) => !seen.has(s.hold) && seen.add(s.hold)).map((s) => `partner ${s.hold} slips off by ${round(s.slip, 1)} (${at(timeline, s.sample)}): out of reach`);
+  const anatomy = spec.partner?.holds?.length ? between({ ...timeline, keyframeIndex: [], poses: partner.poses }, heldAnatomy).map((issue) => `partner (held): ${issue}`) : [];
+  return [...own, ...slipped, ...new Set(anatomy)];
 }
 
 // ---------------------------------------------------------------- gear
@@ -449,7 +581,7 @@ const gearIssues = (spec: DoodleSpec, poses: Solved[], timeline: Samples, panel:
 /** Single-view specs (the 2D rig). */
 function validateFlat(spec: DoodleSpec): SpecReport {
   const timeline = sampleTimeline(spec);
-  const box = specViewBox(spec, timeline.poses);
+  const box = specViewBox(spec, timeline);
   const errors: string[] = [];
   const keyframes = timeline.keyframeIndex.map((sampleIndex, index): KeyframeReport => {
     const pose = timeline.poses[sampleIndex];
@@ -510,6 +642,12 @@ function validateFlat(spec: DoodleSpec): SpecReport {
     const pose = timeline.poses[timeline.keyframeIndex[k]];
     return dist(pose.arms.near.end, pose.arms.far.end);
   }));
+  errors.push(...heldIssues(spec, timeline.poses, timeline));
+  const partner = partnerFlat(spec, timeline.poses, timeline.keyframeIndex);
+  const mirror = spec.partner?.mirror;
+  errors.push(
+    ...partnerIssues(spec, partner, partner ? holdSlips(spec, partner.poses, timeline.poses) : [], (pose) => anatomy(reflectSolved(pose, mirror), spec.view), timeline),
+  );
 
   return {
     slug: spec.slug,
@@ -549,10 +687,71 @@ function leanPivotGuards(spec: DoodleSpec): string[] {
   return clash ? [`sideways.pivot differs between frame ${keys[0].index} ("${keys[0].pivot}") and frame ${clash.index} ("${clash.pivot}"); give the same pivot on every leaning keyframe`] : [];
 }
 
+/**
+ * Spine roll and shoulder girdle limits per keyframe: girdle offsets within
+ * `GIRDLE_LIMITS`, each line's roll within `TWIST_LIMITS.roll`, and the spine
+ * twisted (shoulder line against hip line) no more than `TWIST_LIMITS.spine`.
+ */
+export function turnGuards(frames: readonly { sideways?: Sideways }[], prefix = ""): string[] {
+  return frames.flatMap((frame, k) => (frame.sideways ? turnIssues(frame.sideways, `${prefix}frame ${k}`) : []));
+}
+
+/** One keyframe's roll and girdle problems (see `turnGuards`). */
+function turnIssues(sw: Sideways, at: string): string[] {
+  const errors: string[] = [];
+  const outside = (value: number | undefined, limit: number): value is number => value !== undefined && Math.abs(value) > limit;
+  for (const key of ["twist", "hipTwist"] as const) {
+    if (outside(sw[key], TWIST_LIMITS.roll)) errors.push(`${at}: sideways.${key} ${sw[key]}° is past ${TWIST_LIMITS.roll}°`);
+  }
+  const spine = (sw.twist ?? 0) - (sw.hipTwist ?? 0);
+  if (outside(spine, TWIST_LIMITS.spine)) errors.push(`${at}: the spine twists ${round(Math.abs(spine), 1)}° between hips and shoulders (> ${TWIST_LIMITS.spine}°); roll the hips with hipTwist`);
+  return [...errors, ...girdleIssues(sw, at)];
+}
+
+/** Girdle offsets past `GIRDLE_LIMITS`. */
+function girdleIssues(sw: Sideways, at: string): string[] {
+  return (["near", "far"] as Side[]).flatMap((side) =>
+    (["up", "forward"] as const).flatMap((key) => {
+      const value = sw.shoulders?.[side]?.[key];
+      return value !== undefined && Math.abs(value) > GIRDLE_LIMITS[key] ? [`${at}: sideways.shoulders.${side}.${key} ${value} is past ${GIRDLE_LIMITS[key]}`] : [];
+    }),
+  );
+}
+
+/**
+ * Sideways toe and wrist angles (`sideways.toes`, `wrists`): within
+ * `END_TURN_LIMIT`, and a wrist angle only on a hand whose pose bends the
+ * wrist (`pose.wrists`), since a straight hand tip is pinned.
+ */
+export function endTurnGuards(frames: readonly Pick<Keyframe, "pose" | "sideways">[], prefix = ""): string[] {
+  return frames.flatMap((frame, k) =>
+    (["toes", "wrists"] as const).flatMap((key) =>
+      (["near", "far"] as Side[]).flatMap((side) => {
+        const turn = frame.sideways?.[key]?.[side];
+        if (turn === undefined) return [];
+        const errors = Math.abs(turn) > END_TURN_LIMIT ? [`${prefix}frame ${k}: sideways.${key}.${side} ${turn}° is past ${END_TURN_LIMIT}°`] : [];
+        const bent = "wrists" in frame.pose && frame.pose.wrists?.[side] !== undefined;
+        if (key === "wrists" && !bent) errors.push(`${prefix}frame ${k}: sideways.wrists.${side} needs pose.wrists.${side} (the hand's side-view angle)`);
+        return errors;
+      }),
+    ),
+  );
+}
+
+/** `fadeBehind` draws depth that only two views have (side + top: the side panel's bell; kettlebells are barred there for now). */
+const fadeGuards = (spec: DoodleSpec): string[] => (spec.fadeBehind && !spec.views ? ['fadeBehind needs views: ["side", "front"] or ["side", "top"]'] : []);
+
+/** A two-view focus zooms on `focus.panel`; a panel the spec doesn't draw would drop the inset silently. */
+function focusPanelGuards(spec: DoodleSpec, views: NonNullable<DoodleSpec["views"]>): string[] {
+  const panel = FOCUS_BY_ID[spec.id]?.panel;
+  return panel && !(views as readonly string[]).includes(panel) ? [`focus.panel "${panel}" isn't one of views ${JSON.stringify(views)}: the inset would be dropped`] : [];
+}
+
 /** Spec-level rules for `views` / `sideways` (dual-view spec, "Scope" and "Solver"). */
 export function dualViewGuards(spec: DoodleSpec): string[] {
   const errors: string[] = [];
   const sideways = spec.frames.some((frame) => frame.sideways);
+  errors.push(...fadeGuards(spec));
   if (!spec.views) {
     if (sideways) errors.push("keyframe sideways needs views: [\"side\", \"front\"] or [\"side\", \"top\"]");
     return errors;
@@ -564,7 +763,9 @@ export function dualViewGuards(spec: DoodleSpec): string[] {
   if (second === "top") errors.push(...topGearGuards(spec));
   // Every prop kind has a front and a top drawing (frontProps, topProps switch exhaustively), so a new kind
   // that lacks one fails to compile there rather than needing a guard here.
-  errors.push(...leanPivotGuards(spec));
+  errors.push(...leanPivotGuards(spec), ...turnGuards(spec.frames), ...endTurnGuards(spec.frames));
+  const partnerFrames = spec.partner?.frames ?? [];
+  errors.push(...turnGuards(partnerFrames, "partner: "), ...endTurnGuards(partnerFrames, "partner: "), ...focusPanelGuards(spec, spec.views));
   return errors;
 }
 
@@ -582,13 +783,10 @@ function failed(spec: DoodleSpec, errors: string[]): SpecReport {
   };
 }
 
-const sub3 = (a: Point3, b: Point3): Point3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
-
 /** Angle (degrees) between two 3D directions. */
 function angle3(u: Point3, v: Point3): number {
-  const dot = u[0] * v[0] + u[1] * v[1] + u[2] * v[2];
-  const n = Math.hypot(...u) * Math.hypot(...v);
-  return n < 1e-9 ? 0 : (Math.acos(Math.max(-1, Math.min(1, dot / n))) * 180) / Math.PI;
+  const n = norm3(u) * norm3(v);
+  return n < 1e-9 ? 0 : (Math.acos(Math.max(-1, Math.min(1, dot3(u, v) / n))) * 180) / Math.PI;
 }
 
 /** Spine bends in 3D (a sideways lean turns the spine rigidly, so it bends as much as in the side view's plane). */
@@ -717,6 +915,17 @@ function validateDual(spec: DoodleSpec): SpecReport {
     const figure = timeline.poses[timeline.keyframeIndex[k]];
     return dist3(figure.arms.near.end, figure.arms.far.end);
   }));
+  errors.push(...heldIssues(spec, timeline.poses, timeline));
+  if (spec.stick) {
+    errors.push(
+      ...timeline.keyframeIndex.flatMap((i, k) => {
+        const grip = dist3(timeline.poses[i].arms.near.end, timeline.poses[i].arms.far.end);
+        return grip < STICK_MIN_GRIP ? [`frame ${k}: stick needs the hands at least ${STICK_MIN_GRIP} apart (${round(grip, 1)}); give them their sideways z`] : [];
+      }),
+    );
+  }
+  const partner = partner3D(spec, timeline);
+  errors.push(...partnerIssues(spec, partner && { spec: partner.spec, poses: partner.figures }, partner ? holdSlips(spec, partner.figures, timeline.poses) : [], anatomy3, timeline));
   const torsos = keyframes.map((k) => k.torsoLength);
   return {
     slug: spec.slug,

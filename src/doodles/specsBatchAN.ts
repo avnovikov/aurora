@@ -373,7 +373,7 @@ function seatedHamstring(lean: number, reach: boolean): Keyframe {
 // ---------------------------------------------------------------- groin and back stretch (seated butterfly, two views)
 
 /** Butterfly legs: knees out to the sides (thighs `azimuth` degrees out from straight ahead), soles together in the middle. */
-function butterflyLegs(azimuth: number, kneeLift: number): { knee: Point; kneeZ: number; foot: Point; footZ: number } {
+export function butterflyLegs(azimuth: number, kneeLift: number): { knee: Point; kneeZ: number; foot: Point; footZ: number } {
   const r = (azimuth * Math.PI) / 180;
   const flat = Math.sqrt(THIGH ** 2 - kneeLift ** 2);
   const knee: Point = [round(flat * Math.cos(r)), round(SEAT_PELVIS[1] - kneeLift)];

@@ -9,7 +9,7 @@
  */
 import type { Panel, View } from "./project";
 import { BONES, ease, KETTLEBELL, zOut, type BellMode, type DoodleSpec, type Keyframe, type Point, type Side, type Solved } from "./rig";
-import type { Figure3, Point3 } from "./rig3d";
+import { lerp3, type Figure3, type Point3 } from "./rig3d";
 
 /** Ring radius (round the hand) and suspension handle half-width / loop height. */
 export const RING_RADIUS = 10;
@@ -248,8 +248,6 @@ export function bells(spec: DoodleSpec, poses: Solved[], side: Side, panel: Pane
   return poses.map((pose, i) => bellBetween(pose, bellSize(spec), panel, blends[i].from, blends[i].to, blends[i].t));
 }
 
-const lerp3 = (a: Point3, b: Point3, t: number): Point3 => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
-
 /** Roughly where the bell is in 3D (enough to tell which side of the head it is): horns as `placed`, else the gripping hand. */
 function bellNear3(figure: Figure3, key: BellKey, radius: number): Point3 {
   if (key.place !== "horns") return figure.arms[key.holder].end;
@@ -266,14 +264,72 @@ function bellNear3(figure: Figure3, key: BellKey, radius: number): Point3 {
  * front of the head or behind it.
  */
 export function bellInFront(spec: DoodleSpec, figures: Figure3[], panel: Panel): boolean[] {
+  return bellPoints3(spec, figures).map((bell, i) => (panel === "side" ? bell[2] < figures[i].head[2] : bell[0] > figures[i].head[0]));
+}
+
+/** Per sample, roughly where the first bell is in 3D (see `bellNear3`), blended like the drawing. */
+export function bellPoints3(spec: DoodleSpec, figures: Figure3[]): Point3[] {
   const side = spec.kettlebell!.hands[0];
   const blends = bellBlends(spec, figures.length, side);
   const radius = bellSize(spec);
   return figures.map((figure, i) => {
     const { from, to, t } = blends[i];
-    const bell = lerp3(bellNear3(figure, from, radius), bellNear3(figure, to, radius), t);
-    return panel === "side" ? bell[2] < figure.head[2] : bell[0] > figure.head[0];
+    return lerp3(bellNear3(figure, from, radius), bellNear3(figure, to, radius), t);
   });
+}
+
+// ---------------------------------------------------------------- stick and towel
+
+/** How far a held stick runs past each hand, unless `stick.overhang` says. */
+export const STICK_OVERHANG = 24;
+/** A towel round a foot crosses the sole this share of the way from ankle to toe (the ball of the foot). */
+export const TOWEL_WRAP = 0.55;
+
+/** Whether a spec holds a stick or a towel. */
+export function heldKind(spec: DoodleSpec): "stick" | "towel" | undefined {
+  if (spec.stick) return "stick";
+  return spec.towel ? "towel" : undefined;
+}
+
+/** Arms and legs of a figure in 2D or 3D (only what the stick and towel need). */
+interface Gripping<P> {
+  arms: Record<Side, { end: P }>;
+  legs: Record<Side, { joint: P; end: P }>;
+}
+
+const mix = <P extends readonly number[]>(a: P, b: P, t: number): P => a.map((v, i) => v + (b[i] - v) * t) as unknown as P;
+
+/**
+ * The stick: the line through both hand tips, `overhang` past each. `gap` is
+ * the hands' true distance (3D in two views, where a stick pointing at the
+ * viewer draws short); default their distance as drawn. Hands together: a dot.
+ */
+export function stickLine<P extends readonly number[]>(spec: DoodleSpec, pose: Gripping<P>, gap?: number): P[] {
+  const a = pose.arms.near.end;
+  const b = pose.arms.far.end;
+  const width = gap ?? Math.hypot(...b.map((v, i) => v - a[i]));
+  if (width < 1e-6) return [a, a];
+  const k = (spec.stick?.overhang ?? STICK_OVERHANG) / width;
+  return [mix(a, b, -k), mix(a, b, 1 + k)];
+}
+
+/** The towel: hand to hand, or hand to the sole of the `around` foot and back to the other hand. */
+export function towelLine<P extends readonly number[]>(spec: DoodleSpec, pose: Gripping<P>): P[] {
+  const { near, far } = pose.arms;
+  const around = spec.towel?.around;
+  if (!around) return [near.end, far.end];
+  const foot = pose.legs[around === "near-foot" ? "near" : "far"];
+  return [near.end, mix(foot.joint, foot.end, TOWEL_WRAP), far.end];
+}
+
+/** The stick or towel's line for one pose (see `stickLine`, `towelLine`). */
+export const heldLine = <P extends readonly number[]>(spec: DoodleSpec, pose: Gripping<P>, gap?: number): P[] =>
+  spec.stick ? stickLine(spec, pose, gap) : towelLine(spec, pose);
+
+/** Every sample's stick or towel on a panel; `gaps`: the hands' true distances (two views). */
+export function heldLines(spec: DoodleSpec, poses: Solved[], gaps?: number[]): Point[][] | undefined {
+  if (!heldKind(spec)) return undefined;
+  return poses.map((pose, i) => heldLine(spec, pose, gaps?.[i]));
 }
 
 /** Every point the gear is drawn through over the loop (for the drawing's bounds). */

@@ -117,7 +117,33 @@ export interface Keyframe {
    * changes is the hand-off: both hands are together on the bell there.
    */
   bellIn?: Side;
+  /**
+   * Which way the head faces (blended over the transitions); draws a small
+   * nose tick on the head. Leave it out and no tick is drawn. See `Face`.
+   */
+  face?: Face;
 }
+
+/**
+ * Head orientation in degrees, relative to the torso (waist to chest): all
+ * zero faces square ahead of the chest (+x for a standing figure).
+ * - `turn` (yaw, about the neck): + towards the far side (+z, the figure's
+ *   left), - towards the near side (the side view's camera). Up to 90.
+ * - `tilt` (ear to shoulder): + towards the far shoulder (+z). It swings the
+ *   head sideways on the neck, so it shows only from the front (`views` or
+ *   `view: "front"`). Up to 45.
+ * - `nod`: + chin down to the chest, - looking up. It turns the head forward
+ *   or back about the neck joint unless the pose pins `head` (then only the
+ *   face turns: a chin tuck pins the head back and keeps `nod` near 0). Up to 60.
+ */
+export interface Face {
+  turn?: number;
+  tilt?: number;
+  nod?: number;
+}
+
+/** Turn / tilt / nod limits (degrees) the validator enforces. */
+export const FACE_LIMITS = { turn: 90, tilt: 45, nod: 60 } as const;
 
 export type BellMode = "hang" | "swing" | "rack";
 
@@ -180,6 +206,21 @@ export interface SidewaysHint {
 }
 
 /**
+ * One shoulder's girdle offset from the chest, in rig units in the chest's own
+ * frame: `up` along the spine towards the head (+ shrug, - depress), `forward`
+ * towards the chest's front (+ protract, - retract). The collar line (chest to
+ * shoulder) and the whole arm move with it.
+ */
+export interface Girdle {
+  up?: number;
+  forward?: number;
+}
+
+/** Validator limits: girdle offsets (rig units); roll between hips and shoulders, and of either line (degrees). */
+export const GIRDLE_LIMITS = { up: 14, forward: 12 } as const;
+export const TWIST_LIMITS = { spine: 90, roll: 180 } as const;
+
+/**
  * Dual-view specs: absolute sideways positions (z). Near side is negative, far
  * side positive; the front panel draws near on the viewer's left. Anything not
  * given keeps its chain's natural width (shoulders ±22, hips ±8, spine at the pelvis z).
@@ -204,11 +245,40 @@ export interface Sideways {
    * chest in the side view (plank hip dips); arm pins stay valid.
    */
   pivot?: "pelvis" | "chest";
+  /**
+   * Spine roll (axial rotation, degrees): the shoulder line turns about the
+   * upper spine, + bringing the far shoulder forward (towards the chest's
+   * front, +x for an upright figure) and the near shoulder back. The arms hang
+   * from the turned shoulders, and a `face` turns with the chest. Blended over
+   * the transitions (linearly, so a keyframe step past 180 sweeps round).
+   */
+  twist?: number;
+  /** The same roll for the hip line, about the lower spine (+ far hip forward). */
+  hipTwist?: number;
+  /** Shoulder girdle: each shoulder moved relative to the chest (shrug, protraction); see `Girdle`. */
+  shoulders?: Partial<Record<Side, Girdle>>;
   hands?: Partial<Record<Side, number>>;
   feet?: Partial<Record<Side, number>>;
   elbows?: Partial<Record<Side, SidewaysHint>>;
   knees?: Partial<Record<Side, SidewaysHint>>;
+  /**
+   * Sideways toe angle (degrees): the foot turns out of the side view's plane,
+   * + towards +z (the far side), keeping its side-view direction (`pose.toes`,
+   * or square to the shin). Turns the near foot's toe in, the far foot's out
+   * (ankle circles, inversion / eversion). Blended over the transitions; the
+   * side view sees the foot shorter. Up to `END_TURN_LIMIT`.
+   */
+  toes?: Partial<Record<Side, number>>;
+  /**
+   * Sideways wrist angle (degrees, radial / ulnar deviation): the hand turns
+   * out of the side view's plane, + towards +z, keeping its side-view direction
+   * (`pose.wrists`, which this needs). Blended; up to `END_TURN_LIMIT`.
+   */
+  wrists?: Partial<Record<Side, number>>;
 }
+
+/** Largest sideways toe or wrist angle (degrees) the validator allows. */
+export const END_TURN_LIMIT = 60;
 
 /** What keyframes hold: a `Pose` whose knees and feet may be direction hints, resolved against the keyframe's `sideways`. */
 export type AuthoredPose = Omit<Pose, "knees" | "feet"> & {
@@ -357,6 +427,56 @@ export type Prop =
   /** Two views: each hand's parallette is drawn end-on at that hand's z in the first keyframe. */
   | { kind: "parallettes"; y: number; xs: number[] };
 
+/** A rigid stick held in both hands (shoulder dislocates): the line through both hand tips, `overhang` past each (default STICK_OVERHANG). */
+export interface HeldStick {
+  overhang?: number;
+}
+
+/**
+ * A towel or strap held in both hands: taut from hand to hand, or (`around`)
+ * looped round one foot's sole and back, hands to foot to hands (lying
+ * hamstring stretch with a strap).
+ */
+export interface Towel {
+  around?: "near-foot" | "far-foot";
+}
+
+/** A partner keyframe: a pose (and two-view `sideways`, `face`) on the exerciser's clock. */
+export interface PartnerFrame {
+  pose: AuthoredPose;
+  sideways?: Sideways;
+  face?: Face;
+}
+
+/** Exerciser joints a partner can hold: joints as drawn, or the middle of a bone (`thigh.near`). */
+export type BodyJoint =
+  | "pelvis"
+  | "waist"
+  | "chest"
+  | "neck"
+  | "head"
+  | `${"shoulder" | "elbow" | "wrist" | "hand" | "hip" | "knee" | "ankle" | "toe" | "upperArm" | "forearm" | "thigh" | "shin"}.${Side}`;
+
+/** A partner's hand kept on an exerciser's joint at every sample (`offset`: side-view nudge off the joint). */
+export interface PartnerHold {
+  hand: Side;
+  on: BodyJoint;
+  offset?: Point;
+}
+
+/**
+ * A second figure (partner-assisted stretches), drawn paler and thinner
+ * behind the exerciser. One keyframe per exerciser keyframe, same holds and
+ * transitions. Author it facing +x like any pose; `mirror` draws it reflected
+ * about x = mirror (facing -x, towards the exerciser). `holds` pin its hands to
+ * the exerciser's joints on every sample (don't pin those hands yourself).
+ */
+export interface Partner {
+  frames: PartnerFrame[];
+  mirror?: number;
+  holds?: PartnerHold[];
+}
+
 export interface DoodleSpec {
   id: string;
   slug: string;
@@ -385,6 +505,19 @@ export interface DoodleSpec {
   handBand?: boolean;
   /** Kettlebells in these hands, hanging under gravity unless a keyframe sets `bell`. */
   kettlebell?: Kettlebells;
+  /** A stick held in both hands (see `HeldStick`). */
+  stick?: HeldStick;
+  /** A towel or strap held in both hands, optionally round a foot (see `Towel`). */
+  towel?: Towel;
+  /** A partner figure (see `Partner`). */
+  partner?: Partner;
+  /**
+   * Two views: a forearm whose middle is behind the torso or head (as the
+   * panel looks), and a hand-off or horns bell behind it, is drawn pale behind
+   * the body instead of bright over it (front panel: forearms and bell; side
+   * panel: the bell when it is on the far side of the body). Opt-in.
+   */
+  fadeBehind?: boolean;
   /**
    * Draw the move twice, side view and front view next to each other, from one
    * 3D-solved figure (keyframe `sideways`). Only when a reviewer asks for it (ADD VIEW).
@@ -893,9 +1026,37 @@ export function blendPose(a: Solved, b: Solved, pa: Pose, pb: Pose, t: number, v
 
 export const ease = (t: number): number => 0.5 - Math.cos(Math.PI * t) / 2;
 
+/**
+ * For each of `count` timeline samples (keyframe, then its transition steps,
+ * round the loop, as `sampleTimeline` lays them out): the keyframe it leaves,
+ * the one it heads for, and how far (eased; 0 at the keyframe).
+ */
+export function sampleKeys(frames: number, count: number): { from: number; to: number; t: number }[] {
+  const perFrame = (count - 1) / frames;
+  const steps = perFrame - 1;
+  return Array.from({ length: count }, (_, i) => {
+    if (i === count - 1) return { from: 0, to: 0, t: 0 };
+    const from = Math.floor(i / perFrame);
+    const s = i % perFrame;
+    return { from, to: (from + 1) % frames, t: s === 0 ? 0 : ease((s - 1) / steps) };
+  });
+}
+
 export interface ResolvedKeyframe {
   pose: Pose;
   solved: Solved;
+}
+
+/**
+ * The head turned about the neck by a keyframe's `face`, in the drawing's
+ * plane: `nod` in a side view (+ towards the face: chin down), `tilt` in a
+ * front view (+ towards the far side, +x). A pinned head stays put.
+ */
+export function faceHead(solved: Solved, pose: Pose, face: Face | undefined, view: "side" | "front" | undefined): Solved {
+  const degrees = view === "front" ? face?.tilt : face?.nod;
+  if (!degrees || pose.head) return solved;
+  const head = add(solved.neck, scale(fromAngle(angleOf(solved.neck, solved.head) + deg(degrees)), BONES.neckHead));
+  return { ...solved, head };
 }
 
 /** Solve every keyframe in order, carrying the pelvis and spine direction forward. */
@@ -904,8 +1065,8 @@ export function solveKeyframes(spec: DoodleSpec): ResolvedKeyframe[] {
   const firstPelvis = poses.find((p) => p.pelvis)?.pelvis;
   let pelvis = [...poses].reverse().find((p) => p.pelvis)?.pelvis ?? firstPelvis;
   let spineAngle: number | undefined;
-  return poses.map((pose) => {
-    const solved = solvePose(pose, { view: spec.view, pelvis, spineAngle });
+  return poses.map((pose, k) => {
+    const solved = faceHead(solvePose(pose, { view: spec.view, pelvis, spineAngle }), pose, spec.frames[k].face, spec.view);
     pelvis = solved.pelvis;
     spineAngle = angleOf(solved.pelvis, solved.chest);
     return { pose: { ...pose, pelvis: solved.pelvis }, solved };
