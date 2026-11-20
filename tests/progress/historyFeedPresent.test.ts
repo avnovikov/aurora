@@ -46,10 +46,10 @@ describe("historyFeedPresent", () => {
     );
   });
 
-  it("can render titles as Library links", () => {
-    const html = historyFeedListHtml([setRow], { linkTitles: true });
-    expect(html).toContain('data-open-exercise="hf_71"');
+  it("renders the exercise name as plain text", () => {
+    const html = historyFeedListHtml([setRow]);
     expect(html).toContain("Pistol squat");
+    expect(html).not.toContain("data-open-exercise");
   });
 
 });

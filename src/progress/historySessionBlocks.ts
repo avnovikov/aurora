@@ -38,7 +38,6 @@ export interface HistorySessionBlock {
 export interface HistorySessionBlocksModel {
   filter: HistoryFilter;
   blocks: HistorySessionBlock[];
-  hasLegacyOnly: boolean;
 }
 
 /**
@@ -52,12 +51,8 @@ export function buildHistorySessionBlocks(input: {
 }): HistorySessionBlocksModel {
   const filter = input.filter ?? { kind: "all" };
   const blocks: HistorySessionBlock[] = [];
-  let hasLegacyOnly = false;
 
   for (const session of input.history) {
-    if (isLegacyHistorySession(session)) {
-      hasLegacyOnly = true;
-    }
     const built = blockForSession(session, input.graph, filter);
     if (built) {
       blocks.push(built);
@@ -65,7 +60,7 @@ export function buildHistorySessionBlocks(input: {
   }
 
   blocks.sort(compareCompletedAtDesc);
-  return { filter, blocks, hasLegacyOnly };
+  return { filter, blocks };
 }
 
 function blockForSession(

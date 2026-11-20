@@ -56,7 +56,9 @@ beforeEach(() => {
 describe("History rows (#219)", () => {
   it("show the average heart rate in bpm and no developer subtitle", () => {
     click('[data-tab="history"]');
-    expect(root.textContent).toContain("6 / 6 · avg 134 bpm");
+    const row = root.querySelector('[data-open-exercise="pullup"]');
+    expect(row?.querySelector(".r")?.textContent).toBe("6 / 6");
+    expect(row?.querySelector(".m")?.textContent).toContain("avg 134 bpm");
     expect(root.textContent).not.toContain("exercises rolled up");
   });
 });

@@ -2,18 +2,23 @@ import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import { displayNameOf } from "../library/displayName";
 import { escapeHtml } from "../library/present";
 import type { HistoryFilter } from "../progress/historyFeed";
-import {
-  historySessionBlocksHtml,
-  legacyHistoryBannerHtml,
-} from "../progress/historyFeedPresent";
 import { buildHistorySessionBlocks } from "../progress/historySessionBlocks";
+import { buildHistoryWeeks } from "../progress/historyWeeks";
+import {
+  HISTORY_EMPTY_COPY,
+  HISTORY_NO_MATCH_COPY,
+  historyLede,
+  historyWeeksHtml,
+} from "../progress/historyWeeksPresent";
 import { patternLabel } from "../progress/patternLabels";
-import { loadHistory } from "../session/history";
+import { loadHistory, loadMemories } from "../session/history";
 
 export interface HistoryViewOptions {
   filter?: HistoryFilter;
   onClearFilter?: () => void;
   onOpenExercise?: (exerciseId: string) => void;
+  /** Injected for tests; decides which week is "this week". */
+  now?: Date;
 }
 
 export function renderHistoryView(
@@ -27,18 +32,40 @@ export function renderHistoryView(
     filter,
   });
 
+  const weeks = buildHistoryWeeks({
+    blocks: model.blocks,
+    memories: loadMemories(),
+    ...(options.now ? { now: options.now } : {}),
+  });
+  const emptyCopy = filter.kind === "all" ? HISTORY_EMPTY_COPY : HISTORY_NO_MATCH_COPY;
+  const lede = weeks.weeks.length > 0 ? historyLede(weeks) : emptyCopy;
+
   root.innerHTML = `
     <main class="shell history-shell">
-      <p class="eyebrow">History</p>
-      <h1>Sessions</h1>
+      <h1 class="history-title">History</h1>
+      <p class="history-lede" data-history-lede>${escapeHtml(lede)}</p>
       ${filterChipHtml(filter, Boolean(options.onClearFilter))}
-      ${legacyHistoryBannerHtml(model.hasLegacyOnly, model.blocks.length)}
-      ${historySessionBlocksHtml(model.blocks, {
-        linkTitles: Boolean(options.onOpenExercise),
-        hasLegacyOnly: model.hasLegacyOnly,
-      })}
+      ${historyWeeksHtml(weeks, { linkExercises: Boolean(options.onOpenExercise) })}
     </main>
   `;
+
+  root.querySelectorAll<HTMLButtonElement>("[data-open-session]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const sessionId = button.dataset.openSession;
+      if (!sessionId) {
+        return;
+      }
+      const card = root.querySelector<HTMLDetailsElement>(
+        `details[data-session-id="${CSS.escape(sessionId)}"]`,
+      );
+      if (!card) {
+        return;
+      }
+      card.open = true;
+      const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      card.scrollIntoView?.({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+    });
+  });
 
   root.querySelector("[data-clear-filter]")?.addEventListener("click", () => {
     options.onClearFilter?.();
