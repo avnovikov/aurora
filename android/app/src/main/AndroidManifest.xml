@@ -20,6 +20,7 @@
     <uses-permission
         android:name="android.permission.BLUETOOTH_SCAN"
         android:usesPermissionFlags="neverForLocation"
+        tools:replace="android:usesPermissionFlags"
         tools:targetApi="s" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <!-- Optional Pulse strap — do not filter out non-BLE devices. -->
