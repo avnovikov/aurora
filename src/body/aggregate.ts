@@ -74,14 +74,10 @@ export function aggregateOverallMuscleLoad(
 ): MuscleLoadMap {
   const loads: MuscleLoadMap = {};
   for (const entry of history) {
-    if (!hasUsableSets(entry)) {
-      continue;
+    const weight = windowWeight(entry, "overall", nowMs);
+    if (hasUsableSets(entry) && weight > 0) {
+      creditWeightedSets(loads, entry, entry.setCount * weight);
     }
-    const ageDays = entryAgeDays(entry, nowMs);
-    if (ageDays === undefined) {
-      continue;
-    }
-    creditWeightedSets(loads, entry, entry.setCount * sessionAgeWeight(ageDays));
   }
   return loads;
 }
@@ -95,15 +91,13 @@ export function aggregateMuscleExercises(
   period: BodyPeriod,
   nowMs: number = Date.now(),
 ): MuscleLoadMap {
-  const periodDays = PERIOD_DAYS[period];
-  if (periodDays === undefined) {
+  if (PERIOD_DAYS[period] === undefined) {
     throw new Error(`Unknown body period: ${String(period)}`);
   }
-  const cutoff = nowMs - periodDays * MS_PER_DAY;
   const loads: MuscleLoadMap = {};
 
   for (const entry of history) {
-    if (!isInWindow(entry, cutoff)) {
+    if (windowWeight(entry, period, nowMs) <= 0) {
       continue;
     }
     for (const exercise of knownExercises(entry)) {
@@ -113,6 +107,21 @@ export function aggregateMuscleExercises(
     }
   }
   return loads;
+}
+
+/**
+ * Weight of one session in a Body window: Overall decays with age, a period
+ * counts 1 inside it and 0 outside; an undated session weighs 0.
+ */
+export function windowWeight(entry: HistoryEntry, mode: BodyViewMode, nowMs: number): number {
+  const completedAt = entryCompletedAtMs(entry);
+  if (completedAt === undefined) {
+    return 0;
+  }
+  if (mode === "overall") {
+    return sessionAgeWeight(Math.max(0, (nowMs - completedAt) / MS_PER_DAY));
+  }
+  return completedAt >= nowMs - PERIOD_DAYS[mode] * MS_PER_DAY ? 1 : 0;
 }
 
 /** Resolve Body page scores for the selected chip. */
@@ -125,17 +134,6 @@ export function aggregateBodyView(
     return aggregateOverallMuscleLoad(history, nowMs);
   }
   return aggregateMuscleExercises(history, mode, nowMs);
-}
-
-export function topMuscles(loads: MuscleLoadMap, limit = 5): Array<[MuscleGroup, number]> {
-  return (Object.entries(loads) as Array<[MuscleGroup, number]>)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, limit);
-}
-
-/** Largest single-group score, or 0 for an empty map. */
-export function maxLoad(loads: MuscleLoadMap): number {
-  return Math.max(0, ...Object.values(loads));
 }
 
 /**
@@ -180,22 +178,10 @@ function addLoad(loads: MuscleLoadMap, group: MuscleGroup, amount: number): void
   loads[group] = (loads[group] ?? 0) + amount;
 }
 
-function entryCompletedAtMs(entry: HistoryEntry): number | undefined {
+/** Completion time in ms, or undefined when the stored date does not parse. */
+export function entryCompletedAtMs(entry: HistoryEntry): number | undefined {
   const completedAt = Date.parse(entry.completedAt);
   return Number.isFinite(completedAt) ? completedAt : undefined;
-}
-
-function entryAgeDays(entry: HistoryEntry, nowMs: number): number | undefined {
-  const completedAt = entryCompletedAtMs(entry);
-  if (completedAt === undefined) {
-    return undefined;
-  }
-  return Math.max(0, (nowMs - completedAt) / MS_PER_DAY);
-}
-
-function isInWindow(entry: HistoryEntry, cutoffMs: number): boolean {
-  const completedAt = entryCompletedAtMs(entry);
-  return completedAt !== undefined && completedAt >= cutoffMs;
 }
 
 function hasUsableSets(entry: HistoryEntry): boolean {

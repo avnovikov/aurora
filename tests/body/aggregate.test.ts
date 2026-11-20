@@ -7,31 +7,27 @@ import {
   aggregateMuscleExercises,
   aggregateOverallMuscleLoad,
   isBodyViewMode,
-  maxLoad,
   muscleGroupsOf,
   sessionAgeWeight,
   strongestWeightPerGroup,
-  topMuscles,
   type BodyPeriod,
 } from "../../src/body/aggregate";
 import type { HistoryEntry } from "../../src/domain/program";
 import type { Exercise } from "../../src/domain/types";
+import { entry as baseEntry } from "../helpers/history";
 
 const NOW = Date.parse("2026-11-14T08:00:00.000Z");
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-function entry(overrides: Partial<HistoryEntry> = {}): HistoryEntry {
-  return {
+const entry = (overrides: Partial<HistoryEntry> = {}): HistoryEntry =>
+  baseEntry({
     id: "1",
     completedAt: "2026-11-13T08:00:00.000Z",
     templateId: "tmpl_test",
     templateName: "Test",
-    evaluation: "on_target",
-    setCount: 4,
     exerciseIds: ["hollow_hold"],
     ...overrides,
-  };
-}
+  });
 
 function daysAgo(days: number): string {
   return new Date(NOW - days * DAY_MS).toISOString();
@@ -184,21 +180,5 @@ describe("isBodyViewMode", () => {
     expect(isBodyViewMode("month")).toBe(true);
     expect(isBodyViewMode("week")).toBe(false);
     expect(isBodyViewMode("decade")).toBe(false);
-  });
-});
-
-describe("topMuscles and maxLoad", () => {
-  const loads = { chest: 2, lats: 8, glutes: 5 };
-
-  it("orders by score and honours the limit", () => {
-    expect(topMuscles(loads, 2)).toEqual([
-      ["lats", 8],
-      ["glutes", 5],
-    ]);
-  });
-
-  it("reports the largest score, or 0 when empty", () => {
-    expect(maxLoad(loads)).toBe(8);
-    expect(maxLoad({})).toBe(0);
   });
 });

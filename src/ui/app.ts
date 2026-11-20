@@ -1,3 +1,4 @@
+import type { BodyViewMode } from "../body/aggregate";
 import { templateToStarter } from "../data/seed";
 import type { HistoryPulse, SessionEvaluation } from "../domain/program";
 import { readScrollY, restoreScrollY } from "../library/detailScroll";
@@ -48,16 +49,18 @@ import { wireTodayPulse } from "./todayPulse";
 const PANEL_RENDERERS: Partial<
   Record<
     Exclude<AppTab, "today" | "progress" | "history" | "library">,
-    (panel: HTMLElement) => void
+    (panel: HTMLElement, root: HTMLElement) => void
   >
 > = {
-  body: renderBodyView,
+  body: showBody,
   plan: renderPlanView,
-  settings: renderSettingsView,
+  settings: (panel) => renderSettingsView(panel),
 };
 
 let disposeTodayPulse: (() => void) | null = null;
 let historyFilter: HistoryFilter = { kind: "all" };
+/** Body window to reopen on Back from an exercise; reset by a tab tap. */
+let bodyMode: BodyViewMode = "overall";
 /** Set when History opens an exercise; consumed on the next Library paint. */
 let libraryFocusId: string | null = null;
 /** Drill-down Back history (#219); replaced on each boot. */
@@ -117,7 +120,7 @@ function showTab(
     renderProgressView(panel, {
       onJumpTab: (next) => tapTab(root, next),
       onOpenHistory: (filter) => {
-        nav.push(screenEntry(root, "progress"));
+        nav.push(backEntry("Progress", () => showTab(root, "progress")));
         openHistory(root, filter);
       },
     });
@@ -128,7 +131,8 @@ function showTab(
       filter: historyFilter,
       onClearFilter: () => openHistory(root, { kind: "all" }),
       onOpenExercise: (exerciseId) => {
-        nav.push(screenEntry(root, "history"));
+        const filter = historyFilter;
+        nav.push(backEntry("History", () => openHistory(root, filter)));
         openLibraryExercise(root, exerciseId);
       },
     });
@@ -144,27 +148,38 @@ function showTab(
   if (!renderPanel) {
     throw new Error(`No panel renderer for tab: ${tab}`);
   }
-  renderPanel(panel);
+  renderPanel(panel, root);
+}
+
+function showBody(panel: HTMLElement, root: HTMLElement): void {
+  renderBodyView(panel, {
+    mode: bodyMode,
+    onOpenExercise: (exerciseId, mode) => {
+      nav.push(
+        backEntry("Body", () => {
+          bodyMode = mode;
+          showTab(root, "body");
+        }),
+      );
+      openLibraryExercise(root, exerciseId);
+    },
+  });
 }
 
 /** Bottom-bar tab (or a jump to one): a fresh start, no drill-down history. */
 function tapTab(root: HTMLElement, tab: AppTab): void {
   nav.clear();
+  bodyMode = "overall";
   showTab(root, tab);
 }
 
-/** Back entry that re-shows Progress or History (with its filter) at its scroll. */
-function screenEntry(root: HTMLElement, tab: "progress" | "history"): NavEntry {
+/** Back entry that runs `apply` to re-show a screen, then puts its scroll back. */
+function backEntry(label: string, apply: () => void): NavEntry {
   const scrollY = readScrollY();
-  const filter = historyFilter;
   return {
-    label: tab === "history" ? "History" : "Progress",
+    label,
     restore: () => {
-      if (tab === "history") {
-        openHistory(root, filter);
-      } else {
-        showTab(root, "progress");
-      }
+      apply();
       restoreScrollY(scrollY);
     },
   };

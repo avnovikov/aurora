@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en-GB" data-variant="rough-a-scales">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Body · Aurora · Rough A, Scales</title>
+<!-- ROUGH A, SCALES: report page. Muscles only, no joint care. -->
+<style>
+/*@FONT@*/
+
+:root { --background:#070708; --surface:#121214; --foreground:#e8e8ea; --muted:#9a9a9e; --accent:#c4a574; --onAccent:#070708; --alert:#e15a4a; --edge:#2a2a2e; --controlEdge:#636369; }
+[data-palette="alvorada"] { --background:#f4f1ea; --surface:#ffffff; --foreground:#161514; --muted:#5f5b55; --accent:#8a6420; --onAccent:#ffffff; --alert:#b3261e; --edge:#dcd6ca; --controlEdge:#8a847a; }
+
+* { box-sizing:border-box; margin:0; padding:0; }
+html { background:var(--background); }
+body { background:var(--background); color:var(--foreground); font-family:"IBM Plex Sans",sans-serif; font-weight:400; font-size:16px; line-height:1.5; font-variant-numeric:tabular-nums; -webkit-text-size-adjust:100%; }
+a { color:inherit; text-decoration:none; }
+.cond { font-family:"IBM Plex Sans Condensed","IBM Plex Sans",sans-serif; font-weight:600; }
+main[data-artboard] { width:100%; max-width:28rem; min-height:100vh; margin:0 auto; display:flex; flex-direction:column; background:var(--background); }
+.body { flex:1; padding:16px 16px 24px; display:flex; flex-direction:column; }
+h1 { font-size:13px; line-height:20px; color:var(--muted); font-weight:400; }
+.verdict { font-size:25px; line-height:28px; margin-top:4px; }
+.sub { font-size:16px; line-height:24px; color:var(--muted); margin-top:8px; }
+
+.win { margin-top:16px; display:grid; grid-template-columns:repeat(5,1fr); }
+.win a { min-height:48px; display:flex; align-items:center; justify-content:center; text-align:center; padding:0 2px; background:var(--surface); border:1px solid var(--controlEdge); margin-left:-1px; font-family:"IBM Plex Sans Condensed","IBM Plex Sans",sans-serif; font-weight:600; font-size:13px; line-height:16px; }
+.win a:first-child { margin-left:0; border-radius:4px 0 0 4px; }
+.win a:last-child { border-radius:0 4px 4px 0; }
+.win a[aria-current="true"] { background:var(--foreground); color:var(--background); border-color:var(--foreground); position:relative; }
+.note { font-size:13px; line-height:20px; color:var(--muted); margin-top:8px; }
+
+.bal { margin-top:16px; }
+.brow { border-top:1px solid var(--edge); padding:8px 0; }
+.b-top { display:grid; grid-template-columns:96px 1fr auto; align-items:baseline; gap:8px; }
+.b-lab { font-size:13px; line-height:20px; color:var(--muted); font-weight:400; }
+.b-word { font-size:20px; line-height:24px; }
+.b-word[data-hot] { color:var(--accent); }
+.b-sh { margin-left:0; font-size:13px; line-height:20px; color:var(--muted); }
+.bar { display:flex; height:4px; margin-top:4px; gap:2px; }
+.bar i { display:block; background:var(--foreground); border-radius:1px; }
+.bar i + i { background:var(--controlEdge); }
+.caps { margin-top:4px; display:grid; grid-template-columns:1fr 1fr; padding:0; text-align:center; font-size:13px; line-height:20px; color:var(--muted); }
+.fig { margin-top:16px; }
+.fig svg.hero { display:block; width:100%; height:auto; max-width:358px; margin:0 auto; overflow:visible; }
+.contour { fill:var(--surface); stroke:var(--controlEdge); stroke-width:1px; vector-effect:non-scaling-stroke; stroke-linejoin:round; }
+.r { --s:1; fill:var(--foreground); stroke:var(--surface); stroke-width:1.5px; vector-effect:non-scaling-stroke;
+  transform:translate(calc(var(--cx)*1px), calc(var(--cy)*1px)) scale(var(--s)) translate(calc(var(--cx)*-1px), calc(var(--cy)*-1px));
+  transition:transform .3s ease-out; }
+.r[data-l="h"] { --s:1.12; fill-opacity:.9; }
+.r[data-l="m"] { --s:1; fill-opacity:.6; }
+.r[data-l="l"] { --s:.85; fill-opacity:.4; }
+.r[data-l="n"] { --s:.85; fill:var(--background); fill-opacity:1; stroke:var(--controlEdge); stroke-width:1px; stroke-dasharray:3 2; }
+@media (prefers-reduced-motion:reduce) { .r { transition:none; } }
+.vl { font-size:13px; fill:var(--muted); font-family:"IBM Plex Sans",sans-serif; text-anchor:middle; }
+.key { list-style:none; display:grid; grid-template-columns:repeat(4,1fr); margin-top:16px; text-align:center; }
+.key li { display:flex; flex-direction:column; align-items:center; font-size:13px; line-height:20px; }
+.key li b { font-weight:600; color:var(--foreground); }
+.key li span { color:var(--muted); }
+.key svg { display:block; width:32px; height:32px; }
+.sw { fill:var(--foreground); stroke:var(--surface); stroke-width:1.5px; }
+.sw.h { fill-opacity:.9; }
+.sw.m { fill-opacity:.6; }
+.sw.l { fill-opacity:.4; }
+.sw.n { fill:var(--background); fill-opacity:1; stroke:var(--controlEdge); stroke-width:1px; stroke-dasharray:3 2; }
+.lines { margin-top:16px; font-size:13px; line-height:20px; }
+.lines p + p { margin-top:4px; }
+.lines b { font-weight:600; }
+.notes { margin-top:12px; font-size:13px; line-height:20px; color:var(--muted); }
+.notes p + p { margin-top:8px; }
+
+.add { margin-top:16px; }
+.add .foot { font-size:13px; line-height:20px; color:var(--muted); margin-top:8px; }
+.add h2 { font-size:20px; line-height:24px; }
+.add ul { list-style:none; margin-top:8px; background:var(--surface); border:1px solid var(--edge); border-radius:4px; }
+.add li + li { border-top:1px solid var(--edge); }
+.arow { min-height:44px; padding:0 16px; display:grid; grid-template-columns:1fr auto 12px; align-items:center; column-gap:12px; }
+.arow .nm { font-size:16px; line-height:24px; }
+.arow .ar { font-size:13px; line-height:20px; color:var(--muted); text-align:right; }
+.chev { width:8px; height:8px; border-right:2px solid var(--muted); border-bottom:2px solid var(--muted); transform:rotate(-45deg); justify-self:end; }
+.arow:focus-visible, .win a:focus-visible, .tabs a:focus-visible { outline:2px solid var(--foreground); outline-offset:-2px; }
+
+.empty { display:none; font-size:16px; line-height:24px; color:var(--muted); margin-top:16px; }
+[data-state="empty"] .ready { display:none; }
+[data-state="empty"] .empty { display:block; }
+[data-state="empty"] .win { opacity:.4; pointer-events:none; }
+[data-state="empty"] .r { --s:.85; fill:var(--background); fill-opacity:1; stroke:var(--controlEdge); stroke-width:1px; stroke-dasharray:3 2; }
+
+.tabs { display:flex; border-top:1px solid var(--edge); background:var(--background); }
+.tabs a { flex:1 1 auto; min-width:0; min-height:56px; padding:0 2px; display:flex; align-items:center; justify-content:center; font-size:13px; line-height:16px; color:var(--muted); border-top:2px solid transparent; margin-top:-1px; }
+.tabs a[aria-current="page"] { color:var(--foreground); font-weight:600; border-top-color:var(--foreground); }
+:root { --doodle-ink:var(--foreground); --doodle-backdrop:transparent; --doodle-paper:var(--background); }
+.head { display:grid; grid-template-columns:1fr 120px; column-gap:16px; align-items:center; }
+.cari { display:block; width:120px; height:120px; }
+</style>
+</head>
+<body>
+<main data-artboard>
+  <div class="body">
+    <header class="head">
+      <div>
+      <h1>Body</h1>
+      <p class="verdict cond ready" data-sample>Squat and hinge are even. Pushing has no pulling to match.</p>
+      <p class="sub ready" data-sample>Lats, middle back and traps had none in this window.</p>
+    </div>
+      <svg class="cari" xmlns="http://www.w3.org/2000/svg" viewBox="-185 -355 370 370" role="img" aria-label="Figure with a barrel chest out front, shoulders rolled forward and a flat, straight back">
+<title>Figure with a barrel chest out front, shoulders rolled forward and a flat, straight back</title>
+<style>.cv-mostly-push-s{display:none}@media (prefers-reduced-motion: reduce){.cv-mostly-push-m{display:none}.cv-mostly-push-s{display:inline}}</style>
+<rect x="-185" y="-355" width="370" height="370" style="fill:var(--doodle-backdrop, #000)"/>
+<g fill="none" style="stroke:var(--doodle-ink, #f4f1ea)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+<line x1="-120" y1="10" x2="130" y2="10" opacity="0.5"/>
+<g>
+<g class="cv-mostly-push-m">
+<polyline points="13,-238 19,-190 23,-142" opacity="0.5"><animate attributeName="points" values="13,-238 19,-190 23,-142;17,-240 25,-191 29,-142;13,-238 19,-190 23,-142" dur="2.6s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1"/></polyline>
+<path d="M-8.2,-175.2C-1.1,-175.7 8.4,-170 11.9,-161.5C15.5,-153.1 13.4,-137 12.9,-124.4C12.5,-111.8 10.4,-97.6 9,-86.1C7.6,-74.5 6.1,-67.2 4.5,-55.1C2.8,-43 1,-21.2 -1,-13.5C-3,-5.8 -5.5,-8.5 -7.4,-8.6C-9.4,-8.8 -11.3,-6.4 -13,-14.5C-14.6,-22.5 -17.8,-45 -17.5,-56.9C-17.1,-68.8 -10.8,-75.1 -11,-85.9C-11.2,-96.7 -15.6,-109.8 -19,-121.8C-22.3,-133.8 -32.7,-149.2 -30.9,-158.1C-29.1,-167 -15.4,-174.6 -8.2,-175.2Z" opacity="0.5" style="fill:var(--doodle-paper, #000)"></path>
+<polyline points="-7,-14 -16,-3 7,-3 18,-3" opacity="0.5"></polyline>
+<path d="M-1.2,-175.2C5.9,-175.7 15.4,-170 18.9,-161.5C22.5,-153.1 20.4,-137 19.9,-124.4C19.5,-111.8 17.4,-97.6 16,-86.1C14.6,-74.5 13.1,-67.2 11.5,-55.1C9.8,-43 8,-21.2 6,-13.5C4,-5.8 1.5,-8.5 -0.4,-8.6C-2.4,-8.8 -4.3,-6.4 -6,-14.5C-7.6,-22.5 -10.8,-45 -10.5,-56.9C-10.1,-68.8 -3.8,-75.1 -4,-85.9C-4.2,-96.7 -8.6,-109.8 -12,-121.8C-15.3,-133.8 -25.7,-149.2 -23.9,-158.1C-22.1,-167 -8.4,-174.6 -1.2,-175.2Z" style="fill:var(--doodle-paper, #000)"></path>
+<polyline points="0,-14 -9,-3 14,-3 25,-3"></polyline>
+<path d="M16.8,-270.7C18.9,-270.4 16,-270.2 22.9,-264.8C29.8,-259.5 46.9,-249.5 58,-238.4C69.2,-227.3 88.9,-208.6 89.9,-198.2C90.8,-187.8 75.7,-182.1 63.8,-175.8C52,-169.6 28.6,-165.9 18.7,-160.7C8.9,-155.5 8.9,-148.3 4.9,-144.5C0.9,-140.7 -2.2,-137.5 -5.3,-138C-8.5,-138.5 -12.3,-142.9 -13.9,-147.6C-15.4,-152.4 -16.6,-159.7 -14.8,-166.3C-13,-172.9 -5.9,-179.2 -3.3,-187C-0.6,-194.8 -0.6,-203 1.1,-213C2.7,-223 5.2,-238 6.7,-247C8.2,-256 8.4,-263 10.1,-267C11.8,-270.9 14.7,-271.1 16.8,-270.7Z" style="fill:var(--doodle-paper, #000)"><animate attributeName="d" values="M16.8,-270.7C18.9,-270.4 16,-270.2 22.9,-264.8C29.8,-259.5 46.9,-249.5 58,-238.4C69.2,-227.3 88.9,-208.6 89.9,-198.2C90.8,-187.8 75.7,-182.1 63.8,-175.8C52,-169.6 28.6,-165.9 18.7,-160.7C8.9,-155.5 8.9,-148.3 4.9,-144.5C0.9,-140.7 -2.2,-137.5 -5.3,-138C-8.5,-138.5 -12.3,-142.9 -13.9,-147.6C-15.4,-152.4 -16.6,-159.7 -14.8,-166.3C-13,-172.9 -5.9,-179.2 -3.3,-187C-0.6,-194.8 -0.6,-203 1.1,-213C2.7,-223 5.2,-238 6.7,-247C8.2,-256 8.4,-263 10.1,-267C11.8,-270.9 14.7,-271.1 16.8,-270.7Z;M17.9,-272.7C20.1,-272.3 16.2,-272.7 23.9,-266.6C31.5,-260.6 50.4,-247.3 63.7,-236.2C77,-225.1 102.6,-210 103.7,-199.9C104.7,-189.8 84,-182.2 69.9,-175.7C55.7,-169.1 29.6,-165.9 18.7,-160.7C7.9,-155.5 8.9,-148.3 4.9,-144.5C0.9,-140.7 -2.2,-137.5 -5.3,-138C-8.5,-138.5 -12.3,-142.9 -13.9,-147.6C-15.4,-152.4 -16.6,-159.8 -14.8,-166.3C-13,-172.8 -5.9,-178.5 -3.3,-186.9C-0.6,-195.4 -0.6,-206.9 1.1,-217C2.8,-227 5.1,-238.4 6.8,-247.1C8.4,-255.8 9.3,-264.9 11.1,-269.2C13,-273.4 15.8,-273.1 17.9,-272.7Z;M16.8,-270.7C18.9,-270.4 16,-270.2 22.9,-264.8C29.8,-259.5 46.9,-249.5 58,-238.4C69.2,-227.3 88.9,-208.6 89.9,-198.2C90.8,-187.8 75.7,-182.1 63.8,-175.8C52,-169.6 28.6,-165.9 18.7,-160.7C8.9,-155.5 8.9,-148.3 4.9,-144.5C0.9,-140.7 -2.2,-137.5 -5.3,-138C-8.5,-138.5 -12.3,-142.9 -13.9,-147.6C-15.4,-152.4 -16.6,-159.7 -14.8,-166.3C-13,-172.9 -5.9,-179.2 -3.3,-187C-0.6,-194.8 -0.6,-203 1.1,-213C2.7,-223 5.2,-238 6.7,-247C8.2,-256 8.4,-263 10.1,-267C11.8,-270.9 14.7,-271.1 16.8,-270.7Z" dur="2.6s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1"/></path>
+<polyline points="20,-238 26,-190 30,-142"><animate attributeName="points" values="20,-238 26,-190 30,-142;24,-240 32,-191 36,-142;20,-238 26,-190 30,-142" dur="2.6s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1"/></polyline>
+<circle cx="32" cy="-290" r="24" style="fill:var(--doodle-paper, #000)"><animate attributeName="cx" values="32;34;32" dur="2.6s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1"/><animate attributeName="cy" values="-290;-293;-290" dur="2.6s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1"/></circle>
+<polyline points="55,-294 63,-287 56,-284"><animate attributeName="points" values="55,-294 63,-287 56,-284;57,-297 65,-290 58,-287;55,-294 63,-287 56,-284" dur="2.6s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1"/></polyline>
+</g>
+<g class="cv-mostly-push-s">
+<polyline points="13,-238 19,-190 23,-142" opacity="0.5"></polyline>
+<path d="M-8.2,-175.2C-1.1,-175.7 8.4,-170 11.9,-161.5C15.5,-153.1 13.4,-137 12.9,-124.4C12.5,-111.8 10.4,-97.6 9,-86.1C7.6,-74.5 6.1,-67.2 4.5,-55.1C2.8,-43 1,-21.2 -1,-13.5C-3,-5.8 -5.5,-8.5 -7.4,-8.6C-9.4,-8.8 -11.3,-6.4 -13,-14.5C-14.6,-22.5 -17.8,-45 -17.5,-56.9C-17.1,-68.8 -10.8,-75.1 -11,-85.9C-11.2,-96.7 -15.6,-109.8 -19,-121.8C-22.3,-133.8 -32.7,-149.2 -30.9,-158.1C-29.1,-167 -15.4,-174.6 -8.2,-175.2Z" opacity="0.5" style="fill:var(--doodle-paper, #000)"></path>
+<polyline points="-7,-14 -16,-3 7,-3 18,-3" opacity="0.5"></polyline>
+<path d="M-1.2,-175.2C5.9,-175.7 15.4,-170 18.9,-161.5C22.5,-153.1 20.4,-137 19.9,-124.4C19.5,-111.8 17.4,-97.6 16,-86.1C14.6,-74.5 13.1,-67.2 11.5,-55.1C9.8,-43 8,-21.2 6,-13.5C4,-5.8 1.5,-8.5 -0.4,-8.6C-2.4,-8.8 -4.3,-6.4 -6,-14.5C-7.6,-22.5 -10.8,-45 -10.5,-56.9C-10.1,-68.8 -3.8,-75.1 -4,-85.9C-4.2,-96.7 -8.6,-109.8 -12,-121.8C-15.3,-133.8 -25.7,-149.2 -23.9,-158.1C-22.1,-167 -8.4,-174.6 -1.2,-175.2Z" style="fill:var(--doodle-paper, #000)"></path>
+<polyline points="0,-14 -9,-3 14,-3 25,-3"></polyline>
+<path d="M16.8,-270.7C18.9,-270.4 16,-270.2 22.9,-264.8C29.8,-259.5 46.9,-249.5 58,-238.4C69.2,-227.3 88.9,-208.6 89.9,-198.2C90.8,-187.8 75.7,-182.1 63.8,-175.8C52,-169.6 28.6,-165.9 18.7,-160.7C8.9,-155.5 8.9,-148.3 4.9,-144.5C0.9,-140.7 -2.2,-137.5 -5.3,-138C-8.5,-138.5 -12.3,-142.9 -13.9,-147.6C-15.4,-152.4 -16.6,-159.7 -14.8,-166.3C-13,-172.9 -5.9,-179.2 -3.3,-187C-0.6,-194.8 -0.6,-203 1.1,-213C2.7,-223 5.2,-238 6.7,-247C8.2,-256 8.4,-263 10.1,-267C11.8,-270.9 14.7,-271.1 16.8,-270.7Z" style="fill:var(--doodle-paper, #000)"></path>
+<polyline points="20,-238 26,-190 30,-142"></polyline>
+<circle cx="32" cy="-290" r="24" style="fill:var(--doodle-paper, #000)"></circle>
+<polyline points="55,-294 63,-287 56,-284"></polyline>
+</g>
+</g>
+</g>
+</svg>
+    </header>
+
+    <nav class="win" aria-label="Time window">
+      <a href="#overall" aria-current="true">Overall</a>
+      <a href="#month">Month</a>
+      <a href="#3-months">3 months</a>
+      <a href="#half-year">Half year</a>
+      <a href="#year">Year</a>
+    </nav>
+    <p class="note ready">Recent training, older sessions fade</p>
+    <p class="empty">Body fills in after your first finished session.</p>
+
+
+    <section class="fig" aria-label="Body, front and back, sized by level" data-sample>
+      <svg class="hero" viewBox="0 0 358 292" role="img" aria-label="Front and back of the body. Regions swell past the fixed contour when heavy and shrink inside it when light or not trained.">
+    <defs>
+      <path id="body" d="M46,21 L46,29 C42,32 33,33 27,35 C21,37 19,41 19,48 L20,70 L21,93 Q21,99 25,99 Q29,99 29,93 L30,72 L31,54 Q32,50 33,52 L34,72 Q32,84 32,96 L34,148 L36,186 L36,191 L46,191 L45,152 L46,134 Q50,128 54,134 L55,152 L54,191 L64,191 L64,186 L66,148 L68,96 Q68,84 66,72 L67,52 Q68,50 69,54 L70,72 L71,93 Q71,99 75,99 Q79,99 79,93 L80,70 L81,48 C81,41 79,37 73,35 C67,33 58,32 54,29 L54,21 Z"/><circle id="head" cx="50" cy="12" r="9"/>
+      <mask id="inside" maskUnits="userSpaceOnUse" x="-10" y="-10" width="120" height="230"><use href="#body" fill="#fff" stroke="#fff" stroke-width="4" stroke-linejoin="round"/><use href="#head" fill="#fff"/></mask>
+    </defs>
+    <svg x="14" y="1" width="150" height="315" viewBox="0 0 100 210" overflow="visible" aria-label="Front">
+      <use class="contour" href="#body"/><use class="contour" href="#head"/>
+      <g mask="url(#inside)">
+        <polygon class="r" data-l="n" data-a="Neck" style="--cx:50;--cy:27.61" points="45,24 55,24 56,31 44,31"/>
+        <polygon class="r" data-l="n" data-a="Traps" style="--cx:42.59;--cy:36.21" points="44,31 34,37 41,39 50,40"/>
+        <polygon class="r" data-l="n" data-a="Traps" style="--cx:57.41;--cy:36.21" points="56,31 66,37 59,39 50,40"/>
+        <polygon class="r" data-l="n" data-a="Abductors" style="--cx:36.7;--cy:97.62" points="33,92 41,93 40,103 33,103"/>
+        <polygon class="r" data-l="n" data-a="Abductors" style="--cx:63.3;--cy:97.62" points="67,92 59,93 60,103 67,103"/>
+        <polygon class="r" data-l="l" data-a="Biceps" style="--cx:26.45;--cy:61.37" points="22,53 30,54 30,70 24,70"/>
+        <polygon class="r" data-l="l" data-a="Biceps" style="--cx:73.55;--cy:61.37" points="78,53 70,54 70,70 76,70"/>
+        <polygon class="r" data-l="l" data-a="Forearms" style="--cx:26;--cy:82.5" points="24,71 30,71 28,94 22,94"/>
+        <polygon class="r" data-l="l" data-a="Forearms" style="--cx:74;--cy:82.5" points="76,71 70,71 72,94 78,94"/>
+        <polygon class="r" data-l="l" data-a="Adductors" style="--cx:47.84;--cy:116.36" points="50,100 45,108 46,130 50,130"/>
+        <polygon class="r" data-l="l" data-a="Adductors" style="--cx:52.16;--cy:116.36" points="50,100 55,108 54,130 50,130"/>
+        <polygon class="r" data-l="l" data-a="Calves" style="--cx:40.23;--cy:167.23" points="36,152 44,152 43,185 38,185"/>
+        <polygon class="r" data-l="l" data-a="Calves" style="--cx:59.77;--cy:167.23" points="64,152 56,152 57,185 62,185"/>
+        <polygon class="r" data-l="m" data-a="Abdominals" style="--cx:50;--cy:75.18" points="41,59 59,59 58,92 42,92"/>
+        <polygon class="r" data-l="m" data-a="Quadriceps" style="--cx:38.9;--cy:126.27" points="33,104 43,108 44,148 36,148"/>
+        <polygon class="r" data-l="m" data-a="Quadriceps" style="--cx:61.1;--cy:126.27" points="67,104 57,108 56,148 64,148"/>
+        <polygon class="r" data-l="h" data-a="Shoulders" style="--cx:28.37;--cy:45.25" points="34,37 25,40 22,52 29,53 34,44"/>
+        <polygon class="r" data-l="h" data-a="Shoulders" style="--cx:71.63;--cy:45.25" points="66,37 75,40 78,52 71,53 66,44"/>
+        <polygon class="r" data-l="h" data-a="Chest" style="--cx:42.65;--cy:48.53" points="50,40 41,39 34,44 35,56 50,58"/>
+        <polygon class="r" data-l="h" data-a="Chest" style="--cx:57.35;--cy:48.53" points="50,40 59,39 66,44 65,56 50,58"/>
+      </g>
+    </svg>
+    <svg x="194" y="1" width="150" height="315" viewBox="0 0 100 210" overflow="visible" aria-label="Back">
+      <use class="contour" href="#body"/><use class="contour" href="#head"/>
+      <g mask="url(#inside)">
+        <polygon class="r" data-l="n" data-a="Neck" style="--cx:50;--cy:27.61" points="45,24 55,24 56,31 44,31"/>
+        <polygon class="r" data-l="n" data-a="Traps" style="--cx:50;--cy:40.5" points="44,31 34,37 39,44 50,52 61,44 66,37 56,31"/>
+        <polygon class="r" data-l="n" data-a="Middle back" style="--cx:50;--cy:60.5" points="43,50 50,54 57,50 56,70 44,70"/>
+        <polygon class="r" data-l="n" data-a="Lats" style="--cx:37.45;--cy:60.28" points="33,47 41,50 42,72 36,74 33,60"/>
+        <polygon class="r" data-l="n" data-a="Lats" style="--cx:62.55;--cy:60.28" points="67,47 59,50 58,72 64,74 67,60"/>
+        <polygon class="r" data-l="n" data-a="Lower back" style="--cx:50;--cy:80.77" points="43,72 57,72 56,90 44,90"/>
+        <polygon class="r" data-l="n" data-a="Abductors" style="--cx:34.08;--cy:98.28" points="32,92 37,93 35,106 32,104"/>
+        <polygon class="r" data-l="n" data-a="Abductors" style="--cx:65.92;--cy:98.28" points="68,92 63,93 65,106 68,104"/>
+        <polygon class="r" data-l="l" data-a="Forearms" style="--cx:26;--cy:82.5" points="24,71 30,71 28,94 22,94"/>
+        <polygon class="r" data-l="l" data-a="Forearms" style="--cx:74;--cy:82.5" points="76,71 70,71 72,94 78,94"/>
+        <polygon class="r" data-l="l" data-a="Calves" style="--cx:40.23;--cy:167.23" points="36,152 44,152 43,185 38,185"/>
+        <polygon class="r" data-l="l" data-a="Calves" style="--cx:59.77;--cy:167.23" points="64,152 56,152 57,185 62,185"/>
+        <polygon class="r" data-l="m" data-a="Triceps" style="--cx:26.45;--cy:61.37" points="22,53 30,54 30,70 24,70"/>
+        <polygon class="r" data-l="m" data-a="Triceps" style="--cx:73.55;--cy:61.37" points="78,53 70,54 70,70 76,70"/>
+        <polygon class="r" data-l="m" data-a="Hamstrings" style="--cx:39.47;--cy:130.43" points="33,114 44,114 45,148 36,148"/>
+        <polygon class="r" data-l="m" data-a="Hamstrings" style="--cx:60.53;--cy:130.43" points="67,114 56,114 55,148 64,148"/>
+        <polygon class="r" data-l="h" data-a="Shoulders" style="--cx:28.37;--cy:45.25" points="34,37 25,40 22,52 29,53 34,44"/>
+        <polygon class="r" data-l="h" data-a="Shoulders" style="--cx:71.63;--cy:45.25" points="66,37 75,40 78,52 71,53 66,44"/>
+        <polygon class="r" data-l="h" data-a="Glutes" style="--cx:43.54;--cy:101.36" points="50,92 38,93 36,106 42,112 50,108"/>
+        <polygon class="r" data-l="h" data-a="Glutes" style="--cx:56.46;--cy:101.36" points="50,92 62,93 64,106 58,112 50,108"/>
+      </g>
+    </svg>
+      </svg>
+      <div class="caps" aria-hidden="true"><span>Front</span><span>Back</span></div>
+      <ul class="key ready" aria-label="Level key">
+        <li><svg viewBox="0 0 32 32" aria-hidden="true"><rect class="sw h" x="2.6" y="2.6" width="26.8" height="26.8" rx="2"/></svg><b>Heavy</b><span>fuller</span></li>
+        <li><svg viewBox="0 0 32 32" aria-hidden="true"><rect class="sw m" x="4" y="4" width="24" height="24" rx="2"/></svg><b>Moderate</b><span>as drawn</span></li>
+        <li><svg viewBox="0 0 32 32" aria-hidden="true"><rect class="sw l" x="5.8" y="5.8" width="20.4" height="20.4" rx="2"/></svg><b>Light</b><span>thinner</span></li>
+        <li><svg viewBox="0 0 32 32" aria-hidden="true"><rect class="sw n" x="5.8" y="5.8" width="20.4" height="20.4" rx="2"/></svg><b>Not trained</b><span>hollow</span></li>
+      </ul>
+      <div class="lines ready">
+        <p><b>Not trained:</b> Lats, Middle back, Traps, Lower back, Neck, Abductors</p>
+        <p><b>Lighter than the rest:</b> Adductors, Calves, Forearms, Biceps</p>
+      </div>
+    </section>
+
+    <section class="bal ready" aria-label="Balance" data-sample>
+      <div class="brow"><div class="b-top"><span class="b-lab cond">Push v Pull</span><span class="b-word cond" data-hot>No pulling</span><span class="b-sh">100 / 0</span></div><div class="bar"><i style="flex:100"></i><i style="flex:0"></i></div></div>
+      <div class="brow"><div class="b-top"><span class="b-lab cond">Upper v Lower</span><span class="b-word cond">Even</span><span class="b-sh">52 / 48</span></div><div class="bar"><i style="flex:52"></i><i style="flex:48"></i></div></div>
+      <div class="brow"><div class="b-top"><span class="b-lab cond">Front v Back</span><span class="b-word cond">Even</span><span class="b-sh">58 / 42</span></div><div class="bar"><i style="flex:58"></i><i style="flex:42"></i></div></div>
+      <div class="brow"><div class="b-top"><span class="b-lab cond">Squat v Hinge</span><span class="b-word cond">Even</span><span class="b-sh">45 / 55</span></div><div class="bar"><i style="flex:45"></i><i style="flex:55"></i></div></div>
+    </section>
+
+    <section class="add ready" aria-label="Consider adding" data-sample>
+      <h2 class="cond">Consider adding</h2>
+      <ul>
+        <li><a class="arow" href="#exercise-inverted-row"><span class="nm">Inverted row</span><span class="ar">Lats, Middle back</span><i class="chev"></i></a></li>
+        <li><a class="arow" href="#exercise-band-pull-aparts"><span class="nm">Band pull-aparts</span><span class="ar">Traps, Middle back</span><i class="chev"></i></a></li>
+        <li><a class="arow" href="#exercise-kneeling-superman"><span class="nm">Kneeling Superman</span><span class="ar">Lower back</span><i class="chev"></i></a></li>
+      </ul>
+      <p class="foot">Your plan is not changed.</p>
+    </section>
+    <div class="notes ready">
+      <p>Compared with your other trained areas in this window.</p>
+      <p>Even means within 2:1. A coaching convention, not a medical norm.</p>
+      <p>Shares count sets per session. Core, conditioning and mobility sit outside the movement pairs.</p>
+      <p>Front v Back leaves out shoulders, forearms, neck, adductors and abductors.</p>
+    </div>
+  </div>
+
+  <nav class="tabs" aria-label="Main">
+    <a href="#today">Today</a><a href="#library">Library</a><a href="#progress">Progress</a><a href="#history">History</a><a href="#body" aria-current="page">Body</a><a href="#plan">Plan</a><a href="#settings">Settings</a>
+  </nav>
+</main>
+</body>
+</html>
