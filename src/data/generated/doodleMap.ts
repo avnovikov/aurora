@@ -568,7 +568,6 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "wger_1876": "/doodles/doodle-supported-calf-stretch.svg",
   "wger_1875": "/doodles/doodle-standing-it-band-stretch.svg",
   "wger_2528": "/doodles/doodle-squat-sky-reach-stretch.svg",
-  "wger_1828": "/doodles/doodle-abdominal-draw-in.svg",
   "wger_2488": "/doodles/doodle-posterior-pelvic-tilt.svg",
   "wger_1478": "/doodles/doodle-levitation-crunch.svg",
   "fedb_dynamic_back_stretch": "/doodles/doodle-dynamic-back-stretch.svg",
