@@ -1,3 +1,6 @@
+import { prefersReducedMotion } from "./motion";
+
+
 /** Minimum horizontal travel, as a share of stage width, before a commit. */
 export const SWIPE_MIN_TRAVEL_RATIO = 1 / 4;
 /** The finger must be let go inside this far edge share of the stage. */
@@ -93,10 +96,6 @@ function assertPositiveWidth(width: number): void {
   if (width <= 0) {
     throw new Error(`swipe width must be positive; got ${width}`);
   }
-}
-
-function prefersReducedMotion(): boolean {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
 function isInteractiveTarget(target: EventTarget | null): boolean {

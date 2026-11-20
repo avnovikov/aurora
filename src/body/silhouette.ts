@@ -91,3 +91,31 @@ export function mappedGroups(): Set<MuscleGroup> {
 export function toSvgPoints(points: readonly Point[]): string {
   return points.map(([x, y]) => `${x},${y}`).join(" ");
 }
+
+/**
+ * Fixed body contour for the balance figure (#234): head, torso and limbs on
+ * the same 100×210 canvas. It never scales, so regions visibly swell past it
+ * or shrink inside it.
+ */
+export const BODY_CONTOUR_PATH =
+  "M46,21 L46,29 C42,32 33,33 27,35 C21,37 19,41 19,48 L20,70 L21,93 Q21,99 25,99 Q29,99 29,93 L30,72 L31,54 Q32,50 33,52 L34,72 Q32,84 32,96 L34,148 L36,186 L36,191 L46,191 L45,152 L46,134 Q50,128 54,134 L55,152 L54,191 L64,191 L64,186 L66,148 L68,96 Q68,84 66,72 L67,52 Q68,50 69,54 L70,72 L71,93 Q71,99 75,99 Q79,99 79,93 L80,70 L81,48 C81,41 79,37 73,35 C67,33 58,32 54,29 L54,21 Z";
+export const CONTOUR_HEAD = { cx: 50, cy: 12, r: 9 } as const;
+
+/** Area centroid of a simple polygon; regions scale about it. */
+export function polygonCentroid(points: readonly Point[]): Point {
+  let area = 0;
+  let cx = 0;
+  let cy = 0;
+  points.forEach(([x0, y0], index) => {
+    const [x1, y1] = points[(index + 1) % points.length]!;
+    const cross = x0 * y1 - x1 * y0;
+    area += cross;
+    cx += (x0 + x1) * cross;
+    cy += (y0 + y1) * cross;
+  });
+  if (area === 0) {
+    const n = points.length;
+    return [points.reduce((s, p) => s + p[0], 0) / n, points.reduce((s, p) => s + p[1], 0) / n];
+  }
+  return [cx / (3 * area), cy / (3 * area)];
+}

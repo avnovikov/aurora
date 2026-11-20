@@ -1,6 +1,6 @@
 import { BONES, dist, HIP_SIDE, other, solvePose, zOut } from "./rig";
-import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
-import { lockedY3, reach3, TWO_VIEWS } from "./sideways";
+import type { AuthoredPose, DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
+import { lockedY3, TWO_VIEWS } from "./sideways";
 import { LOCKED, lockedShoulderY, pushUp, rep, straightBody } from "./specsBatchC";
 import { plank } from "./specsBatchI";
 
@@ -265,16 +265,13 @@ const CROSS_ANKLE_Z = 2;
 /** The driven foot, toes pointed back. */
 const CROSS_TOE = 150;
 
-function crossClimber(side: Side): Pose {
+function crossClimber(side: Side): AuthoredPose {
   const base = plank();
-  const pelvis = base.pelvis as Point;
   // Across the body: the knee ends on the other side of the midline.
-  const k = reach3(pelvis, 40, THIGH, CROSS_KNEE_Z + HIP_SIDE);
-  const ankle = reach3(k, 170, SHIN, CROSS_KNEE_Z - CROSS_ANKLE_Z);
   return {
     ...base,
-    knees: { [side]: { at: k } },
-    feet: { [side]: ankle, [other(side)]: base.feet?.near as Point },
+    knees: { [side]: { dir: 40 } },
+    feet: { [side]: { dir: 170 }, [other(side)]: base.feet?.near as Point },
     toes: { [side]: CROSS_TOE, [other(side)]: 62 },
   };
 }
@@ -295,21 +292,20 @@ const CROSS_PIKE_SLIDE = 7;
  * Halfway through a swing: hips piked up a little, `side`'s thigh straight
  * down under the hip with the shin trailing back level, the other foot planted.
  */
-function crossPass(side: Side): Pose {
+function crossPass(side: Side): AuthoredPose {
   const base = plank();
   const chest = base.chest as Point;
   const flat = base.pelvis as Point;
   const chord = dist(flat, chest);
   const y = flat[1] - CROSS_PIKE;
   const pelvis: Point = [round(chest[0] - Math.sqrt(chord ** 2 - (chest[1] - y) ** 2)), y];
-  const k = reach3(pelvis, 92, THIGH, 0);
   const [plantX, plantY] = base.feet?.near as Point;
   return {
     ...base,
     pelvis,
-    knees: { [side]: { at: k } },
+    knees: { [side]: { dir: 92 } },
     // The planted foot slides in a little as the hips pike, so that leg stays straight.
-    feet: { [side]: reach3(k, 200, SHIN, 0), [other(side)]: [plantX + CROSS_PIKE_SLIDE, plantY] },
+    feet: { [side]: { dir: 200 }, [other(side)]: [plantX + CROSS_PIKE_SLIDE, plantY] },
     toes: { [side]: 100, [other(side)]: 62 },
   };
 }
@@ -410,15 +406,15 @@ function groinAir(): Pose {
 }
 
 /** Push-off: the hips pop up and both feet leave the floor before the knees fold (and on the way back, before they land). */
-function groinLift(): Pose {
+function groinLift(): AuthoredPose {
   const base = plank();
   const chest = base.chest as Point;
   const plankPelvis = base.pelvis as Point;
   const chord = dist(plankPelvis, chest);
   const pelvisY = plankPelvis[1] - 14;
   const pelvis: Point = [round(chest[0] - Math.sqrt(chord ** 2 - (chest[1] - pelvisY) ** 2)), pelvisY];
-  const ankle = reach3(pelvis, 166, LEG - 2, 0);
-  return { ...base, pelvis, feet: { near: ankle, far: ankle }, toes: { near: 70, far: 70 } };
+  const leg = { dir: 166, length: LEG - 2 };
+  return { ...base, pelvis, feet: { near: leg, far: leg }, toes: { near: 70, far: 70 } };
 }
 
 /** Just before touching down in the squat: feet over their landing spot, a hand's breadth up. */

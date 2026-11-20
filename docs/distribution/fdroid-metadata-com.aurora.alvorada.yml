@@ -1,0 +1,58 @@
+# Draft for gitlab.com/fdroid/fdroiddata → metadata/com.aurora.alvorada.yml
+# Maintainer: copy into an fdroiddata fork, then MR using docs/distribution/fdroid-mr-app-inclusion.md
+# (GitLab Default template). Do not treat this path as live F-Droid metadata until merged.
+#
+# Signing: F-Droid rebuilds and signs (no AllowedAPKSigningKeys in v1).
+# Stack: Capacitor + Vite + npm → Gradle (see docs/distribution/fdroid.md).
+#
+# Permission posture (from v0.1.3 / #232): merged APK must not grant LOCATION or
+# INTERNET. Verify with: scripts/verify-android-permissions.sh
+#
+# IMPORTANT: replace COMMIT_FULL_HASH_OF_V0_1_3 with the full 40-char hash of tag
+# v0.1.3 (fdroiddata forbids tag/branch names in `commit:`).
+
+Categories:
+  - Sports & Health
+
+License: MIT
+
+AuthorName: Alexei Novikov
+AuthorEmail: alexei.128.946@gmail.com
+
+SourceCode: https://github.com/avnovikov/aurora
+IssueTracker: https://github.com/avnovikov/aurora/issues
+Changelog: https://github.com/avnovikov/aurora/releases
+
+AutoName: Aurora
+
+RepoType: git
+Repo: https://github.com/avnovikov/aurora.git
+
+Builds:
+  - versionName: 0.1.3
+    versionCode: 4
+    commit: COMMIT_FULL_HASH_OF_V0_1_3
+    subdir: android/app
+    sudo:
+      - apt-get update
+      - apt-get install -y npm
+      # Prefer Node 22 if the buildserver image is older; adjust to current fdroidserver practice
+      # (e.g. NodeSource or Debian forky npm) when CI fails on engine version.
+    gradle:
+      - yes
+    prebuild:
+      - cd ../..
+      - npm ci
+    scanignore:
+      - node_modules/@capacitor/cli/assets/capacitor-cordova-android-plugins.tar.gz
+    scandelete:
+      - node_modules
+    build:
+      - cd ../..
+      - npm run build
+      - npx cap sync android
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: 0.1.3
+CurrentVersionCode: 4

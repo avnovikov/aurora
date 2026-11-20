@@ -1,0 +1,136 @@
+/**
+ * Side + top doodles (`views: ["side", "top"]`): floor moves seen from the side
+ * and from above, one 3D-solved figure on one clock. The top panel sits under
+ * the side panel with the same x, so the head, hands and feet line up; its
+ * vertical is z with the near side (the side view's camera) at the bottom.
+ */
+import { FOCUS_BY_ID } from "./focus";
+import { project } from "./project";
+import { depthOrder, handZ, label, LABEL_GAP, LABEL_SIZE, multiInset, panelExtras3, panelLayers, propDepth, railHalf, sideOptions, sidePanel, type HandZ } from "./renderDual";
+import {
+  extraPoints,
+  figureExtent,
+  frame,
+  identity,
+  insetSvg,
+  PADDING,
+  partnerFloor,
+  propSvg,
+  resolveFloors,
+  svgShell,
+  timingAttr,
+  union,
+  type FigureOptions,
+  type Inset,
+  type Mapper,
+  type PanelExtras,
+  type ViewBox,
+} from "./renderSvg";
+import type { DoodleSpec, Prop, Solved } from "./rig";
+import { sampleTimeline3, type Timeline3 } from "./rig3d";
+import { partner3D } from "./partner";
+
+/** Half-length of a parallette handle (as in the side view). */
+const PARALLETTE_HALF = 22;
+
+/** A footprint from x1 to x2 across a sideways extent (screen y = -z), `shift` down. */
+const footprint = (x1: number, x2: number, [low, high]: [number, number], shift: number): Prop => ({
+  kind: "box",
+  x: Math.min(x1, x2),
+  y: -high + shift,
+  w: Math.abs(x2 - x1),
+  h: high - low,
+});
+
+/** A line along x at sideways position z, `shift` down. */
+const alongX = (x1: number, x2: number, z: number, shift: number): Prop => ({ kind: "bar", y: -z + shift, x1, x2 });
+
+/**
+ * Props seen from above, `shift` down: box, bench board and bar as their
+ * footprints, the rails of parallel bars and parallette handles as lines along
+ * x at their z. The floor is the panel itself and isn't drawn.
+ */
+export function topProps(props: readonly Prop[], hands: HandZ = handZ(undefined), shift = 0): Prop[] {
+  return props.flatMap((prop): Prop[] => {
+    switch (prop.kind) {
+      case "floor":
+        return [];
+      case "bar":
+        return [footprint(prop.x1, prop.x2, propDepth(prop, hands)[0], shift)];
+      case "box":
+        return [footprint(prop.x, prop.x + prop.w, propDepth(prop, hands)[0], shift)];
+      case "board":
+        return [footprint(prop.from[0], prop.to[0], propDepth(prop, hands)[0], shift)];
+      case "parallelBars": {
+        const half = railHalf(prop);
+        return [alongX(prop.x1, prop.x2, -half, shift), alongX(prop.x1, prop.x2, half, shift)];
+      }
+      case "parallettes":
+        return prop.xs.flatMap((x) => [hands.near, hands.far].map((z) => alongX(x - PARALLETTE_HALF, x + PARALLETTE_HALF, z, shift)));
+    }
+  });
+}
+
+interface TopLayout {
+  view: ViewBox;
+  /** The zoom inset on one panel (`focus.panel`), if any. */
+  inset?: Inset;
+  /** Added to top-panel y so it sits under the side panel (x is shared). */
+  topShift: number;
+  side: Solved[];
+  top: Solved[];
+  extras: { side: PanelExtras; top: PanelExtras };
+  labels: { side: [number, number]; top: [number, number] };
+}
+
+/** The side and top panels of a side + top spec. */
+export function topLayout(spec: DoodleSpec, timeline: Timeline3 = sampleTimeline3(spec)): TopLayout {
+  const partner = partner3D(spec, timeline);
+  const { poses: side, extras: sideExtras, box: sideBox } = sidePanel(spec, timeline, partner);
+  const top = timeline.poses.map((pose) => project(pose, "top"));
+  const topExtras = panelExtras3(spec, timeline, "top", partner);
+  const topBox = figureExtent(top, topProps(spec.props ?? [], handZ(timeline.poses[0])), spec, "top", extraPoints(topExtras));
+  const sideLabel = sideBox.y + sideBox.h + LABEL_GAP + LABEL_SIZE;
+  // Under the side panel's label, with the usual padding between the panels.
+  const topShift = sideLabel + LABEL_SIZE * 0.3 + PADDING - topBox.y;
+  const shifted: ViewBox = { ...topBox, y: topBox.y + topShift };
+  const topLabel = shifted.y + shifted.h + LABEL_GAP + LABEL_SIZE;
+  const figures = union(sideBox, shifted);
+  const zoom = multiInset(spec, { side, top }, figures, { ...figures, h: topLabel + LABEL_SIZE * 0.3 - figures.y });
+  return {
+    view: frame(zoom.drawing),
+    inset: zoom.inset,
+    topShift,
+    side,
+    top,
+    extras: { side: sideExtras, top: topExtras },
+    labels: { side: [sideBox.x + sideBox.w / 2, sideLabel], top: [shifted.x + shifted.w / 2, topLabel] },
+  };
+}
+
+/** Animated SVG with the side panel over the top panel, and a zoom inset on one of them when `focus.panel` asks. */
+export function renderTopSvg(spec: DoodleSpec): string {
+  const timeline = sampleTimeline3(spec);
+  const timing = timingAttr(timeline);
+  const layout = topLayout(spec, timeline);
+  const focus = FOCUS_BY_ID[spec.id];
+  const shift: Mapper = ([x, y]) => [x, y + layout.topShift];
+  const props = spec.props ?? [];
+  const { side, top } = layout.extras;
+  const options: Record<"side" | "top", FigureOptions> = {
+    // As the dual view's side panel; kettlebells are barred from top views until they have a top drawing.
+    side: sideOptions(spec, timeline, side),
+    // Seen from above both sides are square on; higher parts are drawn over lower ones.
+    top: { farOpacity: 1, order: depthOrder(spec, timeline.poses, (p) => -p[1]), panel: "top", faces: top.faces, held: top.held },
+  };
+  const zoomed = focus?.panel === "top" ? "top" : "side";
+  const sideProps = resolveFloors(props, partnerFloor(layout.side, side)).map(propSvg).join("");
+  const topPropsSvg = topProps(props, handZ(timeline.poses[0]), layout.topShift).map(propSvg).join("");
+  return svgShell(layout.view, spec.title, [
+    ...panelLayers(spec, timing, { poses: layout.side, extras: side, props: sideProps, map: identity, options: options.side }),
+    ...panelLayers(spec, timing, { poses: layout.top, extras: top, props: topPropsSvg, map: shift, options: options.top }),
+    label("side", ...layout.labels.side),
+    label("top", ...layout.labels.top),
+    focus && layout.inset ? insetSvg(spec, focus, layout.inset, layout[zoomed], timing, layout.extras[zoomed], options[zoomed]) : "",
+  ]);
+}

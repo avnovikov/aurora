@@ -1,6 +1,6 @@
-import { dist, HIP_SIDE, other, solvePose, zOut } from "./rig";
-import type { DoodleSpec, Keyframe, Point, Pose, Side, Sideways } from "./rig";
-import { lockedY3, reach3, spreadFeet, TWO_VIEWS } from "./sideways";
+import { dist, other, solvePose } from "./rig";
+import type { AuthoredPose, DoodleSpec, Keyframe, Point, Pose, Side, Sideways } from "./rig";
+import { lockedY3, TWO_VIEWS } from "./sideways";
 import { LOCKED, PLANK_FOOT, lockedShoulderY, pushUp, rep, straightBody } from "./specsBatchC";
 
 /**
@@ -109,7 +109,7 @@ function shifted(y: number, shift: number, handZ: number): Keyframe {
     feet: { near: -FEET_Z, far: FEET_Z },
     ...(shift ? { elbows: { [working]: { out: 35 } } } : {}),
   };
-  return { hold: 0, pose: spreadFeet(push(y), sideways), sideways };
+  return { hold: 0, pose: { ...push(y), spreadFeet: true }, sideways };
 }
 
 /** Shoulder height where the arm away from the shift (or both, centred) is locked. */
@@ -118,7 +118,7 @@ function lockedShift(shift: number, handZ: number): number {
   if (shift < 0) straight = ["far"];
   if (shift > 0) straight = ["near"];
   const s = shifted(0, shift, handZ).sideways as Sideways;
-  return lockedY3((y) => spreadFeet(push(y), s), s, straight);
+  return lockedY3((y) => ({ ...push(y), spreadFeet: true }), s, straight);
 }
 
 const held = (frame: Keyframe, hold: number): Keyframe => ({ ...frame, hold });
@@ -230,9 +230,9 @@ function clockSideways(shift: number): Sideways {
   };
 }
 
-const clockAt = (hold: number, pose: Pose, shift: number): Keyframe => ({
+const clockAt = (hold: number, pose: AuthoredPose, shift: number): Keyframe => ({
   hold,
-  pose: spreadFeet(pose, clockSideways(shift)),
+  pose: { ...pose, spreadFeet: true },
   sideways: clockSideways(shift),
 });
 
@@ -263,16 +263,16 @@ const JACK_IN = 4;
 const JACK_OUT = 62;
 const feetAt = (z: number): Sideways => ({ feet: { near: -z, far: z } });
 
-/** Planted plank with the feet at ±`z`. */
-const jackPlank = (z: number): Pose => spreadFeet(plank(), feetAt(z));
+/** Planted plank with the feet spread to the width of the keyframe's `sideways`. */
+const jackPlank = (): AuthoredPose => ({ ...plank(), spreadFeet: true });
 
-/** Both feet off the floor mid-jump at ±`z`: straight legs swing up a little, hands planted. */
-function plankJackAir(z: number): Pose {
+/** Both feet off the floor mid-jump, as wide as the keyframe's `sideways` puts them: straight legs swing up a little, hands planted. */
+function plankJackAir(): AuthoredPose {
   const base = plank();
   const pelvis = base.pelvis as Point;
   const deg = (Math.atan2(PLANK_FOOT[1] - pelvis[1], PLANK_FOOT[0] - pelvis[0]) * 180) / Math.PI + 9;
-  const ankle = reach3(pelvis, deg, 173.6, z - HIP_SIDE);
-  return { ...base, feet: { near: ankle, far: ankle }, toes: { near: 70, far: 70 } };
+  const leg = { dir: deg, length: 173.6 };
+  return { ...base, feet: { near: leg, far: leg }, toes: { near: 70, far: 70 } };
 }
 
 /**
@@ -288,16 +288,15 @@ interface Walk {
 
 function walkFrame({ pelvis, hands, feet, lift }: Walk): Keyframe {
   const sideways: Sideways = { pelvis, hands: { near: hands[0], far: hands[1] }, feet: { near: feet[0], far: feet[1] } };
-  const at = (y: number): Pose => {
-    const base = spreadFeet(pushUp(y, HAND_X), sideways);
+  const at = (y: number): AuthoredPose => {
+    const base: AuthoredPose = { ...pushUp(y, HAND_X), spreadFeet: true };
     if (!lift) return base;
     const hip = base.pelvis as Point;
     const deg = (Math.atan2(PLANK_FOOT[1] - hip[1], PLANK_FOOT[0] - hip[0]) * 180) / Math.PI + 8;
-    const footZ = feet[lift === "near" ? 0 : 1];
     return {
       ...base,
       hands: { ...base.hands, [lift]: [HAND_X - 2, -12] },
-      feet: { ...base.feet, [lift]: reach3(hip, deg, 173.6, footZ - (pelvis + zOut(lift) * HIP_SIDE)) },
+      feet: { ...base.feet, [lift]: { dir: deg, length: 173.6 } },
       toes: { [lift]: 70, [other(lift)]: 62 },
     };
   };
@@ -333,7 +332,7 @@ const LEG = 173.6;
  * Chest for `pose` (pelvis pinned) at `chord` from the pelvis, turned between
  * `lo` and `hi` degrees until the near shoulder is a locked arm from `hand`.
  */
-function lockChest(pose: Pose, chord: number, hand: Point, lo: number, hi: number): Point {
+function lockChest(pose: Pick<Pose, "pelvis" | "hands">, chord: number, hand: Point, lo: number, hi: number): Point {
   const pelvis = pose.pelvis as Point;
   const at = (deg: number): Point => {
     const r = (deg * Math.PI) / 180;
@@ -383,31 +382,30 @@ const EXTENDING: Sideways = { knees: { near: { at: -EXT_KNEE_Z }, far: { at: EXT
 const STRADDLE: Sideways = { feet: { near: -STRADDLE_Z, far: STRADDLE_Z } };
 
 /** Legs opening out behind: thighs angled down and back, knees still bent. */
-function extending(): Pose {
+function extending(): AuthoredPose {
   const pelvis = planchePelvis();
-  const knee = reach3(pelvis, 150, 88, EXT_KNEE_Z - HIP_SIDE);
-  const base: Pose = {
+  const base: AuthoredPose = {
     pelvis,
     hands: PL_HANDS,
-    knees: { near: { at: knee }, far: { at: knee } },
-    feet: { near: reach3(knee, 195, 86, EXT_FOOT_Z - EXT_KNEE_Z), far: reach3(knee, 195, 86, EXT_FOOT_Z - EXT_KNEE_Z) },
+    knees: { near: { dir: 150 }, far: { dir: 150 } },
+    feet: { near: { dir: 195 }, far: { dir: 195 } },
     toes: { near: 195, far: 195 },
   };
-  const chest = lockChest(base, 80, PL_HAND, -20, 20);
+  const chest = lockChest({ pelvis, hands: PL_HANDS }, 80, PL_HAND, -20, 20);
   return { ...base, chest, head: along(chest, 30, 56) };
 }
 
 /** Straddle planche hold: straight body level with the shoulders, legs long behind. */
-function straddlePlanche(): Pose {
+function straddlePlanche(): AuthoredPose {
   const pelvis = planchePelvis();
-  const foot = reach3(pelvis, 180, LEG, STRADDLE_Z - HIP_SIDE);
-  const base: Pose = {
+  const leg = { dir: 180, length: LEG };
+  const base: AuthoredPose = {
     pelvis,
     hands: PL_HANDS,
-    feet: { near: foot, far: foot },
+    feet: { near: leg, far: leg },
     toes: { near: 180, far: 180 },
   };
-  const chest = lockChest(base, 80, PL_HAND, -20, 20);
+  const chest = lockChest({ pelvis, hands: PL_HANDS }, 80, PL_HAND, -20, 20);
   // Eyes to the floor a little ahead of the hands.
   return { ...base, chest, head: along(along(chest, 0, 20), 30, 36) };
 }
@@ -480,10 +478,10 @@ export const BATCH_AB_SPECS: DoodleSpec[] = [
     views: TWO_VIEWS,
     transition: 0.2,
     frames: [
-      { hold: 0.15, pose: jackPlank(JACK_IN), sideways: feetAt(JACK_IN) },
-      { hold: 0, pose: plankJackAir((JACK_IN + JACK_OUT) / 2), sideways: feetAt((JACK_IN + JACK_OUT) / 2) },
-      { hold: 0.15, pose: jackPlank(JACK_OUT), sideways: feetAt(JACK_OUT) },
-      { hold: 0, pose: plankJackAir((JACK_IN + JACK_OUT) / 2), sideways: feetAt((JACK_IN + JACK_OUT) / 2) },
+      { hold: 0.15, pose: jackPlank(), sideways: feetAt(JACK_IN) },
+      { hold: 0, pose: plankJackAir(), sideways: feetAt((JACK_IN + JACK_OUT) / 2) },
+      { hold: 0.15, pose: jackPlank(), sideways: feetAt(JACK_OUT) },
+      { hold: 0, pose: plankJackAir(), sideways: feetAt((JACK_IN + JACK_OUT) / 2) },
     ],
   },
   {

@@ -1,5 +1,7 @@
+import type { BodyViewMode } from "../body/aggregate";
 import { templateToStarter } from "../data/seed";
 import type { HistoryPulse, SessionEvaluation } from "../domain/program";
+import { readScrollY, restoreScrollY } from "../library/detailScroll";
 import {
   loadPlanQueue,
   peekNextTemplate,
@@ -25,6 +27,7 @@ import { renderBodyView } from "./bodyView";
 import { renderCheckIn } from "./checkIn";
 import { renderEvaluationView } from "./evaluationView";
 import { renderLibraryView } from "./libraryView";
+import { createNavigation, type NavEntry, type Navigation } from "./navigation";
 import { overrideControlsHtml, wireOverrideControls } from "./overrideControls";
 import { advancePlanAfterSession, renderPlanView } from "./planView";
 import { renderProgressView } from "./progressView";
@@ -46,18 +49,29 @@ import { wireTodayPulse } from "./todayPulse";
 const PANEL_RENDERERS: Partial<
   Record<
     Exclude<AppTab, "today" | "progress" | "history" | "library">,
-    (panel: HTMLElement) => void
+    (panel: HTMLElement, root: HTMLElement) => void
   >
 > = {
-  body: renderBodyView,
+  body: showBody,
   plan: renderPlanView,
-  settings: renderSettingsView,
+  settings: (panel) => renderSettingsView(panel),
 };
 
 let disposeTodayPulse: (() => void) | null = null;
 let historyFilter: HistoryFilter = { kind: "all" };
+/** Body window to reopen on Back from an exercise; reset by a tab tap. */
+let bodyMode: BodyViewMode = "overall";
 /** Set when History opens an exercise; consumed on the next Library paint. */
 let libraryFocusId: string | null = null;
+/** Drill-down Back history (#219); replaced on each boot. */
+let nav: Navigation = createNavigation();
+let detachNav: (() => void) | null = null;
+
+function startNavigation(): void {
+  detachNav?.();
+  nav = createNavigation(window.history);
+  detachNav = nav.listen(window);
+}
 
 function clearTodayPulse(): void {
   disposeTodayPulse?.();
@@ -65,6 +79,7 @@ function clearTodayPulse(): void {
 }
 
 export function bootApp(root: HTMLElement): void {
+  startNavigation();
   const profile = loadProfile();
   const resume = loadSession();
   if (resume) {
@@ -99,12 +114,15 @@ function showTab(
   if (tab === "history" && !options.preserveHistoryFilter) {
     historyFilter = { kind: "all" };
   }
-  renderShell(root, tab, `<div data-panel></div>`, (next) => showTab(root, next));
+  renderShell(root, tab, `<div data-panel></div>`, (next) => tapTab(root, next));
   const panel = requirePanel(root);
   if (tab === "progress") {
     renderProgressView(panel, {
-      onJumpTab: (next) => showTab(root, next),
-      onOpenHistory: (filter) => openHistory(root, filter),
+      onJumpTab: (next) => tapTab(root, next),
+      onOpenHistory: (filter) => {
+        nav.push(backEntry("Progress", () => showTab(root, "progress")));
+        openHistory(root, filter);
+      },
     });
     return;
   }
@@ -112,21 +130,59 @@ function showTab(
     renderHistoryView(panel, {
       filter: historyFilter,
       onClearFilter: () => openHistory(root, { kind: "all" }),
-      onOpenExercise: (exerciseId) => openLibraryExercise(root, exerciseId),
+      onOpenExercise: (exerciseId) => {
+        const filter = historyFilter;
+        nav.push(backEntry("History", () => openHistory(root, filter)));
+        openLibraryExercise(root, exerciseId);
+      },
     });
     return;
   }
   if (tab === "library") {
     const initialExerciseId = libraryFocusId ?? undefined;
     libraryFocusId = null;
-    renderLibraryView(panel, { initialExerciseId });
+    renderLibraryView(panel, { initialExerciseId, nav });
     return;
   }
   const renderPanel = PANEL_RENDERERS[tab];
   if (!renderPanel) {
     throw new Error(`No panel renderer for tab: ${tab}`);
   }
-  renderPanel(panel);
+  renderPanel(panel, root);
+}
+
+function showBody(panel: HTMLElement, root: HTMLElement): void {
+  renderBodyView(panel, {
+    mode: bodyMode,
+    onOpenExercise: (exerciseId, mode) => {
+      nav.push(
+        backEntry("Body", () => {
+          bodyMode = mode;
+          showTab(root, "body");
+        }),
+      );
+      openLibraryExercise(root, exerciseId);
+    },
+  });
+}
+
+/** Bottom-bar tab (or a jump to one): a fresh start, no drill-down history. */
+function tapTab(root: HTMLElement, tab: AppTab): void {
+  nav.clear();
+  bodyMode = "overall";
+  showTab(root, tab);
+}
+
+/** Back entry that runs `apply` to re-show a screen, then puts its scroll back. */
+function backEntry(label: string, apply: () => void): NavEntry {
+  const scrollY = readScrollY();
+  return {
+    label,
+    restore: () => {
+      apply();
+      restoreScrollY(scrollY);
+    },
+  };
 }
 
 function openLibraryExercise(root: HTMLElement, exerciseId: string): void {
@@ -167,12 +223,12 @@ function showTodayHome(root: HTMLElement): void {
         ? warmupLevelFor({ targetExerciseIds: next.targetExerciseIds, memories: loadMemories() })
         : undefined,
     })}</div>`,
-    (tab) => showTab(root, tab),
+    (tab) => tapTab(root, tab),
   );
 
   clearTodayPulse();
   if (!next) {
-    root.querySelector("[data-open-plan]")?.addEventListener("click", () => showTab(root, "plan"));
+    root.querySelector("[data-open-plan]")?.addEventListener("click", () => tapTab(root, "plan"));
     return;
   }
 
@@ -234,6 +290,6 @@ function showEvaluation(
     saveMemories(result.memories);
     reinforceFromSessionEvaluation(evaluation, startedAtMs);
     advancePlanAfterSession();
-    showTab(root, "today");
+    tapTab(root, "today");
   });
 }

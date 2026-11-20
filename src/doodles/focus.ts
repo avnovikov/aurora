@@ -33,6 +33,11 @@ export interface Focus {
   floor?: boolean;
   /** Multiplies the inset label size (default 1). */
   labelScale?: number;
+  /**
+   * Two-view doodles: the panel the inset zooms on (`joints` as drawn there),
+   * placed right of both panels. Without it a two-view doodle has no inset.
+   */
+  panel?: "side" | "front" | "top";
 }
 
 const BOTH_WRISTS: Focus = {
@@ -59,6 +64,8 @@ export const FOCUS_BY_ID: Readonly<Record<string, Focus>> = {
   wrist_load: BOTH_WRISTS,
   wger_2680: BOTH_WRISTS, // Wrist rocks
   fedb_kneeling_forearm_stretch: BOTH_WRISTS,
+  fedb_ankle_circles: { joints: ["ankle.near", "toe.near"], highlight: ["foot.near"], zoom: 5, margin: 8, label: "ankle", panel: "front" }, // Ankle circles: the toe circles round the ankle, seen from the front
+  hf_167: { joints: ["wrist.near", "hand.near"], highlight: ["forearm.near", "hand.near", "forearm.far", "hand.far"], zoom: 8, margin: 6, label: "wrists", panel: "front" }, // Wrist circles: the hand tip circles round the wrist, seen down the forearm
   wger_2686: { joints: ["wrist.near", "hand.near"], highlight: ["forearm.near", "hand.near"], zoom: 3, label: "wrist" }, // Wrist stretch
   // Ankles and calves (pistol depth)
   ankle_rocks: {

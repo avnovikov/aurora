@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-185 -355 370 370" role="img" aria-label="Figure with a big forward chest and broad shoulders on very thin, knobbly-kneed legs, chest puffing as the knees wobble">
+<title>Figure with a big forward chest and broad shoulders on very thin, knobbly-kneed legs, chest puffing as the knees wobble</title>
+<style>.cv-push-upper-s{display:none}@media (prefers-reduced-motion: reduce){.cv-push-upper-m{display:none}.cv-push-upper-s{display:inline}}</style>
+<rect x="-185" y="-355" width="370" height="370" style="fill:var(--doodle-backdrop, #000)"/>
+<g fill="none" style="stroke:var(--doodle-ink, #f4f1ea)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+<line x1="-120" y1="10" x2="130" y2="10" opacity="0.5"/>
+<g>
+<g class="cv-push-upper-m">
+<polyline points="-10,-160 -4,-86 -10,-14" opacity="0.5"><animate attributeName="points" values="-10,-160 -4,-86 -10,-14;-10,-160 3,-86 -10,-14;-10,-160 -4,-86 -10,-14;-10,-160 -11,-86 -10,-14;-10,-160 -4,-86 -10,-14" dur="2.6s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.25;0.5;0.75;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1"/></polyline>
+<polyline points="-8,-14 -17,-3 6,-3 17,-3" opacity="0.5"></polyline>
+<polyline points="0,-160 6,-86 0,-14"><animate attributeName="points" values="0,-160 6,-86 0,-14;0,-160 13,-86 0,-14;0,-160 6,-86 0,-14;0,-160 -1,-86 0,-14;0,-160 6,-86 0,-14" dur="2.6s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.25;0.5;0.75;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1"/></polyline>
+<circle cx="6" cy="-86" r="10" style="fill:var(--doodle-paper, #000)"><animate attributeName="cx" values="6;13;6;-1;6" dur="2.6s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.25;0.5;0.75;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1"/><animate attributeName="cy" values="-86;-86;-86;-86;-86" dur="2.6s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.25;0.5;0.75;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1"/></circle>
+<polyline points="0,-14 -9,-3 14,-3 25,-3"></polyline>
+<polyline points="-4,-252 -34,-214 -40,-166"><animate attributeName="points" values="-4,-252 -34,-214 -40,-166;-4,-252 -34,-214 -41.8,-166;-4,-252 -34,-214 -43,-166;-4,-252 -34,-214 -41.8,-166;-4,-252 -34,-214 -40,-166" dur="2.6s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.25;0.5;0.75;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1"/></polyline>
+<path d="M22,-270C52,-272 86,-256 82,-232C72,-208 46,-198 26,-192L14,-176C16,-162 14,-150 4,-146C-10,-144 -16,-154 -12,-168L-13,-254C-12,-276 10,-284 22,-270Z" style="fill:var(--doodle-paper, #000)"><animate attributeName="d" values="M22,-270C52,-272 86,-256 82,-232C72,-208 46,-198 26,-192L14,-176C16,-162 14,-150 4,-146C-10,-144 -16,-154 -12,-168L-13,-254C-12,-276 10,-284 22,-270Z;M22,-270C52,-272 90.8,-256 86.8,-232C76.8,-208 48.4,-198 26,-192L14,-176C16,-162 14,-150 4,-146C-10,-144 -16,-154 -12,-168L-13,-254C-12,-276 10,-284 22,-270Z;M22,-270C52,-272 94,-256 90,-232C80,-208 50,-198 26,-192L14,-176C16,-162 14,-150 4,-146C-10,-144 -16,-154 -12,-168L-13,-254C-12,-276 10,-284 22,-270Z;M22,-270C52,-272 90.8,-256 86.8,-232C76.8,-208 48.4,-198 26,-192L14,-176C16,-162 14,-150 4,-146C-10,-144 -16,-154 -12,-168L-13,-254C-12,-276 10,-284 22,-270Z;M22,-270C52,-272 86,-256 82,-232C72,-208 46,-198 26,-192L14,-176C16,-162 14,-150 4,-146C-10,-144 -16,-154 -12,-168L-13,-254C-12,-276 10,-284 22,-270Z" dur="2.6s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.25;0.5;0.75;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1"/></path>
+<circle cx="18" cy="-298" r="24" style="fill:var(--doodle-paper, #000)"><animate attributeName="cx" values="18;19.8;21;19.8;18" dur="2.6s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.25;0.5;0.75;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1"/><animate attributeName="cy" values="-298;-298.6;-299;-298.6;-298" dur="2.6s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.25;0.5;0.75;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1"/></circle>
+<polyline points="41,-302 49,-295 42,-292"><animate attributeName="points" values="41,-302 49,-295 42,-292;42.8,-302.6 50.8,-295.6 43.8,-292.6;44,-303 52,-296 45,-293;42.8,-302.6 50.8,-295.6 43.8,-292.6;41,-302 49,-295 42,-292" dur="2.6s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.25;0.5;0.75;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1"/></polyline>
+</g>
+<g class="cv-push-upper-s">
+<polyline points="-10,-160 -4,-86 -10,-14" opacity="0.5"></polyline>
+<polyline points="-8,-14 -17,-3 6,-3 17,-3" opacity="0.5"></polyline>
+<polyline points="0,-160 6,-86 0,-14"></polyline>
+<circle cx="6" cy="-86" r="10" style="fill:var(--doodle-paper, #000)"></circle>
+<polyline points="0,-14 -9,-3 14,-3 25,-3"></polyline>
+<polyline points="-4,-252 -34,-214 -40,-166"></polyline>
+<path d="M22,-270C52,-272 86,-256 82,-232C72,-208 46,-198 26,-192L14,-176C16,-162 14,-150 4,-146C-10,-144 -16,-154 -12,-168L-13,-254C-12,-276 10,-284 22,-270Z" style="fill:var(--doodle-paper, #000)"></path>
+<circle cx="18" cy="-298" r="24" style="fill:var(--doodle-paper, #000)"></circle>
+<polyline points="41,-302 49,-295 42,-292"></polyline>
+</g>
+</g>
+</g>
+</svg>
