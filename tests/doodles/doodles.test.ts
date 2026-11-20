@@ -39,7 +39,7 @@ describe("animated doodles", () => {
       const file = new URL(`../../public${GENERATED_DOODLES[spec.id]}`, import.meta.url);
       expect(existsSync(file) && sameDrawing(readFileSync(file, "utf8"), renderDoodleSvg(spec)), spec.slug).toBe(true);
     }
-  });
+  }, 30_000); // renders all 690 specs; ~6 s on CI runners
 
   it("belong to Library exercises and show on them", () => {
     for (const spec of DOODLE_SPECS) {
