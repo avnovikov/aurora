@@ -56,7 +56,7 @@ export function renderHistoryView(
 
 function filterChipHtml(filter: HistoryFilter, canClear: boolean): string {
   if (filter.kind === "all") {
-    return `<p class="hint">All sessions · exercises rolled up · when</p>`;
+    return "";
   }
 
   const label = filterLabel(filter);

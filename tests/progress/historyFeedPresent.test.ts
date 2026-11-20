@@ -40,9 +40,9 @@ describe("historyFeedPresent", () => {
     );
   });
 
-  it("includes Avg pulse when the set has averageBpm", () => {
+  it("includes the average heart rate in bpm when the set has averageBpm (#219)", () => {
     expect(historyFeedRowMeta({ ...setRow, averageBpm: 142 })).toMatch(
-      /Avg pulse 142/,
+      / · avg 142 bpm · /,
     );
   });
 
