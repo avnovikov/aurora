@@ -161,13 +161,16 @@ function armAgainstWall(lean: number): Pose {
 
 /**
  * Standing tall, fingers interlaced. `press` 0: the hands rest on top of the
- * head, elbows out to the sides; 1: the arms pressed straight up over the
- * shoulders, beside the ears (just wide of the head circle in the front
- * view). The spine and legs stay straight.
+ * head, elbows out to the sides; 1: the arms pressed up overhead, hands still
+ * together above the head, the elbows a hair short of locked and just wide of
+ * the head, so from the front the arms make a narrow inverted V beside the
+ * ears. The spine and legs stay straight.
  */
 const OH_SPINE: Spine = { pelvis: [0, -LEG[0] - LEG[1]], chest: [0, -LEG[0] - LEG[1] - 80], head: [2, -LEG[0] - LEG[1] - 136] };
-/** Sideways position of each hand: on the head (fingers interlaced), and overhead, wide enough to clear the ears. */
-const OH_HAND_Z = { onHead: 8, up: 30 };
+/** Sideways position of each hand (fingers interlaced): on the head, and together overhead. */
+const OH_HAND_Z = { onHead: 8, up: 3 };
+/** Shoulder to joined hands overhead: a little short of the locked reach, so the elbows clear the ears. */
+const OH_REACH = 123;
 
 function overheadReach(press: 0 | 1, hold: number): Keyframe {
   const { arm, leg } = roots(OH_SPINE);
@@ -177,7 +180,7 @@ function overheadReach(press: 0 | 1, hold: number): Keyframe {
     const s = arm[side];
     const z = zOut(side) * (press === 1 ? OH_HAND_Z.up : OH_HAND_Z.onHead);
     const dz = z - s[2];
-    const hand: Point3 = press === 1 ? [s[0], s[1] - Math.sqrt((REACH - 0.2) ** 2 - dz * dz), z] : [8, -346, z];
+    const hand: Point3 = press === 1 ? [s[0], s[1] - Math.sqrt(OH_REACH ** 2 - dz * dz), z] : [8, -346, z];
     arms[side] = { plan: chain(s, ARM_BONES, hand, [s[0], s[1] - 30, zOut(side) * 120]) };
     legs[side] = { plan: dirs(leg[side], LEG, [0, 1, 0], [0, 1, 0]), toe: 0 };
   }

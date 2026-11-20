@@ -1,5 +1,6 @@
 import { BONES, solvePose } from "./rig";
-import type { DoodleSpec, Point, Pose } from "./rig";
+import type { DoodleSpec, Keyframe, Point, Pose } from "./rig";
+import { TWO_VIEWS } from "./sideways";
 import { FLOOR_PROP, along, lerp, round } from "./geom";
 
 /**
@@ -113,20 +114,45 @@ function upwardStretch(back: number, lean: number, tuck: number): Pose {
   };
 }
 
-// ---------------------------------------------------------------- wrist circles
+// ---------------------------------------------------------------- wrist circles (side + front, zoomed on the front)
 
-/** Side view: elbows bent, forearms held out in front, the hand turned `turn` degrees round the wrist (0 = straight on, 90 = down). */
-function wristCircle(turn: number): Pose {
-  const elbow: Point = [3, -210];
-  const wrist: Point = [61, -211];
+/**
+ * Elbows bent a little out from the sides, forearms held straight out in front (end-on from
+ * the front), so the upper arm slants and a hand tipped straight up doesn't run along it.
+ */
+const WC_ELBOW: Point = [3, -214];
+const WC_Z = 42;
+const WC_WRIST: Point = [round(WC_ELBOW[0] + Math.sqrt(BONES.forearm ** 2 - 1)), -215];
+/** How far the hand tips up, down and to each side round the wrist (degrees). */
+const WC_REACH = 55;
+
+/**
+ * Elbows bent, forearms held still out in front, loose fists rolling round the wrists: `phi`
+ * 0 tips the hands down, 90 turns each to its own outside, 180 up, 270 in (the two hands
+ * mirror each other). Seen from the front the forearms point at the viewer, so each hand
+ * tip traces a circle round its wrist; the side view sees it tip up and down.
+ */
+function wristCircle(phi: number): Keyframe {
+  const r = (phi * Math.PI) / 180;
+  const pitch = round(WC_REACH * Math.cos(r));
+  const out = round(WC_REACH * Math.sin(r));
   return {
-    pelvis: PELVIS,
-    chest: [0, -252],
-    hands: { near: wrist, far: wrist },
-    elbows: { near: { at: elbow }, far: { at: elbow } },
-    wrists: { near: turn, far: turn },
-    feet: { near: [0, 0], far: [-4, 0] },
-    toes: { near: 0, far: 0 },
+    hold: 0,
+    pose: {
+      pelvis: PELVIS,
+      chest: [0, -252],
+      hands: { near: WC_WRIST, far: WC_WRIST },
+      elbows: { near: { at: WC_ELBOW }, far: { at: WC_ELBOW } },
+      wrists: { near: pitch, far: pitch },
+      feet: { near: [0, 0], far: [-4, 0] },
+      toes: { near: 0, far: 0 },
+    },
+    sideways: {
+      hands: { near: -WC_Z, far: WC_Z },
+      elbows: { near: { at: -WC_Z }, far: { at: WC_Z } },
+      wrists: { near: -out, far: out },
+      feet: { near: -8, far: 8 },
+    },
   };
 }
 
@@ -209,8 +235,9 @@ export const BATCH_BC_SPECS: DoodleSpec[] = [
     id: "hf_167",
     slug: "wrist-circles",
     title: "Wrist Circles",
+    views: TWO_VIEWS,
     transition: 0.22,
-    frames: WRIST_TURNS.map((turn) => ({ hold: 0, pose: wristCircle(turn) })),
+    frames: WRIST_TURNS.map(wristCircle),
   },
   {
     id: "wger_1274",

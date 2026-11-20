@@ -147,22 +147,22 @@ function standingQuad(pull: number): Pose {
   };
 }
 
-// ---------------------------------------------------------------- ankle circles (side view, the toe circles in front of the ankle)
+// ---------------------------------------------------------------- ankle circles (side + front)
 
-const SUPPORT: Prop = { kind: "box", x: 112, y: -230, w: 26, h: 230 };
+/** A counter to hold for balance in front of the figure (from the front its outline frames the legs). */
+const SUPPORT: Prop = { kind: "box", x: 112, y: -230, w: 26, h: 230, frontHalf: 44 };
+/** How far the toe swings in and out (degrees out of the side plane) at the sides of the circle. */
+const ANKLE_SWING = 40;
 
 /**
- * Standing tall, hands on a support; the near (bright) foot lifted a little off the floor, knee forward.
- * The big toe circles round the ankle, always in front of it: `phi` 0 pointed (toe down and forward),
- * 90 in, 180 flexed (toe up and forward), 270 out. The rig's foot can't turn sideways (its toe stays
- * in the side plane even in two views, and from the front the support hides the legs), so in and out
- * show only as the toe passing level, half way between pointed and flexed.
+ * Standing tall, hands on a support; the near (bright) foot lifted off the floor, knee a little
+ * forward, the ankle still. The big toe circles round the ankle: `phi` 0 pointed (toe down and
+ * forward), 90 in (towards the standing leg), 180 flexed (toe up), 270 out. The side view sees
+ * the toe dip and rise; the front view sees it swing in and out as well, so it traces the circle.
  */
 function ankleCircle(phi: number): Keyframe {
+  const r = (phi * Math.PI) / 180;
   const pelvis: Point = [0, -173.9];
-  const knee = along(pelvis, 50, THIGH);
-  const ankle = along(knee, 100, SHIN);
-  const toe = round(24 + 46 * Math.cos((phi * Math.PI) / 180));
   return {
     hold: 0,
     pose: {
@@ -170,9 +170,15 @@ function ankleCircle(phi: number): Keyframe {
       chest: [0, -253.9],
       hands: { near: [108, -232], far: [104, -232] },
       elbows: { near: { bend: 1 }, far: { bend: 1 } },
-      knees: { near: { at: knee } },
-      feet: { near: ankle, far: [0, 0] },
-      toes: { near: toe, far: 0 },
+      knees: { near: { dir: 38 } },
+      feet: { near: { dir: 96 }, far: [0, 0] },
+      toes: { near: round(24 + 46 * Math.cos(r)), far: 0 },
+    },
+    sideways: {
+      hands: { near: -16, far: 16 },
+      knees: { near: { at: -16 } },
+      feet: { near: -42, far: 8 },
+      toes: { near: round(ANKLE_SWING * Math.sin(r)) },
     },
   };
 }
@@ -453,6 +459,7 @@ export const BATCH_BE_SPECS: DoodleSpec[] = [
     id: "fedb_ankle_circles",
     slug: "ankle-circles",
     title: "Ankle Circles",
+    views: TWO_VIEWS,
     props: [SUPPORT, FLOOR_PROP],
     transition: 0.35,
     frames: CIRCLE.map(ankleCircle),

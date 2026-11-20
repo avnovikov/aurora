@@ -190,6 +190,9 @@ function elbowHold(o: ElbowHold, hold: number, work: Side = WORK): Keyframe {
   return key(hold, pose, sw, face ?? { nod: 0 });
 }
 
+/** Arm and neck stretch: the pressing hand out wide of the head on its way up to the elbow and back down. */
+const NECK_WIDE = P3(0, -312, -100);
+
 /** The working arm straight up beside the head (before it folds), the other arm low and a little forward. */
 function armUp(hold: number, work: Side = WORK, face?: Face): Keyframe {
   const help: Side = work === "far" ? "near" : "far";
@@ -230,7 +233,7 @@ const SIDE_WALL: Prop = { kind: "box", x: -110, y: -400, w: 170, h: 400, frontHa
 /** The far palm flat on the wall at shoulder height, a little behind the shoulder. */
 const WALL_HAND: Point3 = [-34, -272, -5];
 
-/** Standing beside the wall, far hand on it; the chest turned `twist` (+ away from the wall), hips half that. */
+/** Standing beside the wall, far hand on it, near hand on the hip; the chest turned `twist` (+ away from the wall), hips 0.4 of that. */
 function wallTurn(hold: number, twist: number, retract: number): Keyframe {
   const pose = stand();
   const sw: Sideways = {
@@ -240,9 +243,15 @@ function wallTurn(hold: number, twist: number, retract: number): Keyframe {
     shoulders: { far: { forward: -retract, up: -2 } },
     feet: { near: WALL_FIGURE_Z - 10, far: WALL_FIGURE_Z + 10 },
   };
-  const { arm } = roots3(pose, sw);
+  const { arm, leg } = roots3(pose, sw);
   const reach = chain(arm.far, ARM2, WALL_HAND, add3(arm.far, [-10, 40, 60]));
-  pin(pose, sw, { arms: { far: reach } });
+  // The other hand on the hip, elbow out along the shoulder line, so from above the turning
+  // shoulder line shows past the head.
+  const pelvis: Point3 = [PELVIS[0], PELVIS[1], WALL_FIGURE_Z];
+  const hip = add3(pelvis, add3(scale3(sub3(leg.near, pelvis), 2.4), [0, -6, 0]));
+  const centre = scale3(add3(arm.near, arm.far), 0.5);
+  const akimbo = chain(arm.near, ARM2, hip, add3(arm.near, add3(scale3(sub3(arm.near, centre), 3), [-6, 40, 0])));
+  pin(pose, sw, { arms: { far: reach, near: akimbo } });
   return key(hold, pose, sw, { nod: 0 });
 }
 
@@ -525,11 +534,16 @@ export const BATCH_BP_SPECS: DoodleSpec[] = [
     slug: "arm-and-neck-stretch",
     title: "Arm and neck stretch",
     views: TWO_VIEWS,
-    transition: 1.1,
+    // The folded arm's forearm behind the head is drawn pale, behind it.
+    fadeBehind: true,
+    transition: 1,
     frames: [
       armUp(0.4),
-      elbowHold({ elbow: P3(0, -345, 45), hand: P3(-34, -290, 6), grip: P3(2, -344, 30), gripElbow: P3(30, -322, -20), lift: 8 }, 0.4),
-      elbowHold({ elbow: P3(-10, -345, 40), hand: P3(-40, -288, 0), grip: P3(-8, -344, 26), gripElbow: P3(34, -322, -34), lift: 6, forward: -4, face: { tilt: -18 } }, 1.6),
+      // The pressing hand goes up the outside, wide of the head, then over the top to the elbow.
+      elbowHold({ elbow: P3(0, -345, 45), hand: P3(-34, -290, 6), grip: NECK_WIDE, gripElbow: P3(0, -300, -90), lift: 8 }, 0),
+      elbowHold({ elbow: P3(0, -345, 45), hand: P3(-34, -290, 6), grip: P3(-4, -352, 26), gripElbow: P3(-4, -330, -90), lift: 8, face: { tilt: -10 } }, 0.3),
+      elbowHold({ elbow: P3(-12, -350, 14), hand: P3(-40, -288, 0), grip: P3(-12, -356, 8), gripElbow: P3(-6, -326, -90), lift: 6, forward: -4, face: { tilt: -28 } }, 1.6),
+      elbowHold({ elbow: P3(0, -345, 45), hand: P3(-34, -290, 6), grip: NECK_WIDE, gripElbow: P3(0, -300, -90), lift: 8, face: { tilt: -10 } }, 0),
     ],
   },
   {
@@ -548,7 +562,7 @@ export const BATCH_BP_SPECS: DoodleSpec[] = [
     id: "wger_1712",
     slug: "horizontal-shoulder-flexion-stretch",
     title: "Horizontal Shoulder Flexion Stretch",
-    views: TWO_VIEWS,
+    views: TOP_VIEWS,
     props: [SIDE_WALL, FLOOR_PROP],
     transition: 1.4,
     frames: [wallTurn(0.6, -12, 0), wallTurn(1.6, 42, 12)],
@@ -619,6 +633,8 @@ export const BATCH_BP_SPECS: DoodleSpec[] = [
     views: TWO_VIEWS,
     props: [FLOOR_PROP],
     kettlebell: { hands: ["near"], size: 13 },
+    // Behind the back the bell and the reaching forearms are drawn pale, behind the body.
+    fadeBehind: true,
     transition: 0.5,
     frames: [bellRound("front", "front", "far"), bellRound("back", "far"), bellRound("back", "back", "near"), bellRound("near", "front")],
   },
