@@ -12,7 +12,7 @@ function readManifest(): string {
 }
 
 function permissionBlocks(manifest: string, name: string): string[] {
-  const escaped = name.replace(/\./g, "\\.");
+  const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const re = new RegExp(`<uses-permission\\b[^>]*android:name="${escaped}"[^>]*?/?>`, "g");
   return manifest.match(re) ?? [];
 }
