@@ -92,6 +92,14 @@ In under five seconds the user can see, for the chosen window:
 - Sample, Overall: Front v Back 58 / 42, "Even". Its tile also notes "Upper back not trained", because lats, middle back and traps are all Not trained.
 - On the figure, the front view vs the back view is this pair made visible.
 
+**USER OVERRIDE (2026-11-20, during build): Abs v Lower back.** A fifth row, placed last after Squat v Hinge.
+- From muscle areas, like Front v Back: Abs = the abdominals score, Lower back = the lower back score, from the same window scores (and Overall decay) as the levels.
+- Same ⅓ rule: "Even" / "Mostly abs" / "Mostly lower back" / "No lower back work" / "No ab work"; both 0 → muted "Neither in this window". No comment line.
+- It takes part in picking the most uneven pair (accent, headline: e.g. "Abs have no lower-back work to match.").
+- Caricature: it reuses the front/back figures. Mostly abs / No lower back work → front-heavy; Mostly lower back / No ab work → back-heavy. It counts as its own pair in the selection. When it and Front v Back are uneven the same way, the single front-heavy or back-heavy figure shows (no combination). It combines wherever a "front" combination exists (push-front, upper-front), with abs as front; otherwise the normal rule applies.
+- Footnote: core is outside the movement pairs and has its own row.
+- The issue's "no comment lines under the rows" wins over the "Untrained area inside an Even pair" tile line above.
+
 ## Level rule (drives the words, the shading and the size)
 - Not trained = 0 in the window.
 - m = the median score of the trained areas.
