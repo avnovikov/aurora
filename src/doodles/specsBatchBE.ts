@@ -434,7 +434,12 @@ function crossKnee(side: Side, mid: boolean): Keyframe {
 // ---------------------------------------------------------------- specs
 
 const arc = (steps: number[], make: (v: number) => Keyframe, holds: [number, number]): Keyframe[] =>
-  steps.map((v, i) => ({ ...make(v), hold: i === 0 ? holds[0] : i === steps.length - 1 ? holds[1] : 0 }));
+  steps.map((v, i) => {
+    let hold = 0;
+    if (i === steps.length - 1) hold = holds[1];
+    if (i === 0) hold = holds[0];
+    return { ...make(v), hold };
+  });
 
 const OPEN = [0, 0.3, 0.55, 0.8, 1];
 const CIRCLE = [0, 45, 90, 135, 180, 225, 270, 315];

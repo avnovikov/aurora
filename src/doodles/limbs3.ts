@@ -67,3 +67,6 @@ export const roots = (spine: Spine, pz = 0): ReturnType<typeof rootsOf> => roots
 
 /** A 3D point as a rounded side-view point. */
 export const flat = (p: Point3): Point => [round(p[0]), round(p[1])];
+
+/** Phase angles (degrees) of one full circle out and back the other way, for the elbow, wrist and similar circles. */
+export const CIRCLE_PHASES = [0, 45, 90, 135, 180, 225, 270, 315, 360, 315, 270, 225, 180, 135, 90, 45];

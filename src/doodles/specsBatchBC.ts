@@ -1,5 +1,6 @@
 import { BONES, solvePose } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose } from "./rig";
+import { CIRCLE_PHASES } from "./limbs3";
 import { TWO_VIEWS } from "./sideways";
 import { FLOOR_PROP, along, lerp, round } from "./geom";
 
@@ -184,8 +185,6 @@ function seatedCalf(lean: number, toes: number): Pose {
   };
 }
 
-const WRIST_TURNS = [0, 45, 90, 135, 180, 225, 270, 315, 360, 315, 270, 225, 180, 135, 90, 45];
-
 export const BATCH_BC_SPECS: DoodleSpec[] = [
   {
     id: "fedb_shoulder_stretch",
@@ -237,7 +236,7 @@ export const BATCH_BC_SPECS: DoodleSpec[] = [
     title: "Wrist Circles",
     views: TWO_VIEWS,
     transition: 0.22,
-    frames: WRIST_TURNS.map(wristCircle),
+    frames: CIRCLE_PHASES.map(wristCircle),
   },
   {
     id: "wger_1274",

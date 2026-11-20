@@ -1,7 +1,8 @@
-import { BONES, HIP_SIDE, solvePose, zOut } from "./rig";
+import { BONES, solvePose, zOut } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
 import { add3, scale3, solveKeyframe3, sub3, type Point3 } from "./rig3d";
 import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
+import { butterflyLegs } from "./specsBatchAN";
 import { frame } from "./specsBatchBA";
 import { ARM as ARM_BONES, chain, dirs, flat, LEG, type LimbSpec, REACH, roots, SIDES, type Spine } from "./limbs3";
 import { FLOOR_PROP, along, round, supineTorso } from "./geom";
@@ -191,19 +192,6 @@ function overheadReach(press: 0 | 1, hold: number): Keyframe {
 // ---------------------------------------------------------------- seated side bend from butterfly (two views)
 
 const SB_PELVIS: Point = [0, -10];
-
-/** Butterfly legs: knees out to the sides (thighs `azimuth` degrees out from straight ahead), soles together in the middle. */
-function butterflyLegs(azimuth: number, kneeLift: number): { knee: Point; kneeZ: number; foot: Point; footZ: number } {
-  const r = (azimuth * Math.PI) / 180;
-  const flat = Math.sqrt(THIGH ** 2 - kneeLift ** 2);
-  const knee: Point = [round(flat * Math.cos(r)), round(SB_PELVIS[1] - kneeLift)];
-  const kneeZ = HIP_SIDE + flat * Math.sin(r);
-  const footZ = 3;
-  const footY = -7;
-  const dy = footY - knee[1];
-  const dz = kneeZ - footZ;
-  return { knee, kneeZ: round(kneeZ), foot: [round(knee[0] + Math.sqrt(SHIN ** 2 - dy * dy - dz * dz)), footY], footZ };
-}
 
 const unit3 = (v: Point3): Point3 => scale3(v, 1 / Math.hypot(v[0], v[1], v[2]));
 

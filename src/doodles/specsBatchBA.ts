@@ -1,7 +1,7 @@
 import { BONES, deg, SEGMENTS, solvePose, zOut } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
 import { add3, dot3, scale3, sub3, type Point3 } from "./rig3d";
-import { ARM, chain, dirs, flat, LEG, type LimbSpec, type Plan, REACH, roots, rootsOf, SIDES, type Spine, unit3 } from "./limbs3";
+import { ARM, chain, CIRCLE_PHASES, dirs, flat, LEG, type LimbSpec, type Plan, REACH, roots, rootsOf, SIDES, type Spine, unit3 } from "./limbs3";
 import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
 import { along, chestOf, FLOOR_PROP, round, supineTorso } from "./geom";
 
@@ -151,7 +151,6 @@ const rollFrames = (forward: boolean): Keyframe[] =>
 
 /** Elbow circles: out at shoulder height, one turn one way, then back the other ("reverse direction partway through"). */
 const CIRCLE_HALF = 50;
-const CIRCLE_PHASES = [0, 45, 90, 135, 180, 225, 270, 315, 360, 315, 270, 225, 180, 135, 90, 45];
 
 // ---------------------------------------------------------------- behind head chest stretch (seated, side + front)
 

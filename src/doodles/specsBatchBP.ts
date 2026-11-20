@@ -1,6 +1,6 @@
 import { solvePose } from "./rig";
 import type { DoodleSpec, Face, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
-import { add3, dot3, norm3, scale3, solveKeyframe3, sub3, type Point3 } from "./rig3d";
+import { add3, norm3, rotateAbout, scale3, solveKeyframe3, sub3, type Point3 } from "./rig3d";
 import { ARM as ARM_BONES, chain, dirs, flat, LEG as LEG_BONES, type Plan, SIDES, unit3 } from "./limbs3";
 import { FLOOR_PROP, round } from "./geom";
 import { PLANK_FOOT, straightBody } from "./specsBatchC";
@@ -226,14 +226,6 @@ function wallTurn(hold: number, twist: number, retract: number): Keyframe {
 
 // ---------------------------------------------------------------- sit-up elbow thrust (side + top)
 
-/** Rodrigues: `v` turned by `degrees` about unit `axis`. */
-function turnAbout(v: Point3, axis: Point3, degrees: number): Point3 {
-  const r = (degrees * Math.PI) / 180;
-  const [c, sn] = [Math.cos(r), Math.sin(r)];
-  const cr: Point3 = [axis[1] * v[2] - axis[2] * v[1], axis[2] * v[0] - axis[0] * v[2], axis[0] * v[1] - axis[1] * v[0]];
-  return add3(add3(scale3(v, c), scale3(cr, sn)), scale3(axis, dot3(axis, v) * (1 - c)));
-}
-
 const SU_PELVIS: Point = [-8, -20];
 
 /**
@@ -271,8 +263,8 @@ function sitUpThrust(hold: number, theta: number, twist = 0, tuck = 4): Keyframe
     let forward = twist === 0 ? 6 : 40;
     if (across) forward = 70;
     const wide = add3(add3(c3, scale3(u, 18)), add3(hint, scale3(f, forward)));
-    const turn = (p: Point3): Point3 => add3(c3, turnAbout(sub3(p, c3), u, -twist));
-    const turnHead = (p: Point3): Point3 => add3(h3, turnAbout(sub3(p, h3), u, -twist));
+    const turn = (p: Point3): Point3 => add3(c3, rotateAbout(sub3(p, c3), u, (-twist * Math.PI) / 180));
+    const turnHead = (p: Point3): Point3 => add3(h3, rotateAbout(sub3(p, h3), u, (-twist * Math.PI) / 180));
     arms[side] = chain(arm[side], ARM_BONES, turnHead(ear), turn(wide));
   }
   pin(pose, sw, { arms });
