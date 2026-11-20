@@ -89,10 +89,10 @@ const MONTH_LONG = [
 export function buildHistoryWeeks(input: {
   blocks: readonly HistorySessionBlock[];
   now?: Date;
-  /** Personal best per exercise id (ExerciseMemory.bestReps). */
+  /** Stored personal best per exercise id (ExerciseMemory.bestReps); may lag history. */
   personalBests?: Readonly<Record<string, number | undefined>>;
 }): HistoryWeeksModel {
-  const personalBests = input.personalBests ?? {};
+  const personalBests = mergedPersonalBests(input.blocks, input.personalBests ?? {});
   const now = input.now ?? new Date();
   const dated = input.blocks
     .map((block) => ({ block, at: new Date(block.completedAt) }))
@@ -216,6 +216,31 @@ function sessionCard(
       };
     }),
   };
+}
+
+/**
+ * PB shown on a row: the higher of the stored bestReps and the best stored set
+ * in history, since bestReps can lag behind or be missing for seeded/old data.
+ */
+function mergedPersonalBests(
+  blocks: readonly HistorySessionBlock[],
+  stored: Readonly<Record<string, number | undefined>>,
+): Record<string, number | undefined> {
+  const merged: Record<string, number | undefined> = { ...stored };
+  for (const block of blocks) {
+    if (block.legacy) {
+      continue;
+    }
+    for (const exercise of block.exercises) {
+      if (exercise.completedRepsBySet.length === 0) {
+        continue;
+      }
+      const top = Math.max(...exercise.completedRepsBySet);
+      const current = merged[exercise.exerciseId];
+      merged[exercise.exerciseId] = current === undefined ? top : Math.max(current, top);
+    }
+  }
+  return merged;
 }
 
 /** True only when earlier stored sets exist and this session's top set beats them all. */

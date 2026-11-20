@@ -153,7 +153,31 @@ describe("buildHistoryWeeks: cards and personal bests", () => {
       now: NOW,
     }).weeks[0]!.sessions[0]!;
     expect(card.exercises[0]).toMatchObject({ exerciseId: "pullup", personalBest: 15 });
-    expect(card.exercises[1]!.personalBest).toBeUndefined();
+    expect(card.exercises[1]).toMatchObject({ exerciseId: "row", personalBest: 9 }); // from history
+  });
+
+  it("PB is the higher of memory and stored history sets", () => {
+    const model = buildHistoryWeeks({
+      blocks: [
+        block("new", local(2025, 11, 19), "easy", { pullup: [20, 20, 20], row: [8] }),
+        block("old", local(2025, 11, 14), "easy", { row: [12] }),
+      ],
+      personalBests: { pullup: 10 }, // memory lags behind history; row has no memory
+      now: NOW,
+    });
+    const [newest, old] = model.weeks.flatMap((w) => w.sessions);
+    expect(newest!.exercises.map((e) => e.personalBest)).toEqual([20, 12]);
+    expect(old!.exercises[0]!.personalBest).toBe(12);
+  });
+
+  it("memory wins when it is higher, and no PB without either source", () => {
+    const card = buildHistoryWeeks({
+      blocks: [legacy("leg", local(2025, 11, 17), 4), block("a", local(2025, 11, 19), "easy", { pullup: [6] })],
+      personalBests: { pullup: 15 },
+      now: NOW,
+    }).weeks[0]!.sessions;
+    expect(card[0]!.exercises[0]!.personalBest).toBe(15);
+    expect(card[1]!.exercises.every((e) => e.personalBest === undefined)).toBe(true);
   });
 
   it("claims a new PB only when the top set beats every earlier stored set", () => {
