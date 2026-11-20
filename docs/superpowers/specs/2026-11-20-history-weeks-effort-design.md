@@ -12,9 +12,9 @@ Redesign the History tab around **weeks and effort**, from the signed-off Desk S
   - A Mon–Sun strip: each training day shows its effort as a 4-step bar. Tapping it opens and scrolls to that session. Day labels of training days are bright and rest days muted.
 - **Sessions as cards** (`<details>`), newest open by default:
   - Title "Wed 19 Nov · 18:10", sub-line "Upper body · B" (+ " · strap worn" when a strap was used), effort word on the right.
-  - Exercise rows: name, reps per set "6 / 6 / 6", meta "avg 134 bpm · was 6 / 6 / 5", chevron.
+  - Exercise rows: name, reps per set "6 / 6 / 6", meta "avg 134 bpm · PB 15" ("PB 15" alone without a strap), chevron.
   - A row opens the exercise page; Back returns to History.
-- **"Compared with Fri 14 Nov, Upper body · B."** "was" values come only from the previous session of the same template that stored reps for that exercise. Nothing is invented.
+- **Personal best, not a comparison** (user change, 2026-11-20; replaces the mock's "was a / b / c" and "Compared with …" line): each row shows the app's existing personal best, `ExerciseMemory.bestReps`, as "PB n", omitted when there is none. When this session's highest set beats every set stored for that exercise in earlier sessions, the meta shows **"new PB"** instead (font-weight 600, foreground, not accent). No earlier stored sets means no "new PB" claim. Nothing is invented.
 - **Older summary-only sessions** show "15 sets logged" in the sub-line and the exercise names without reps. The "Some rows are session summaries" banner goes.
 - **Empty state:** "History is empty until the first finished session."
 
@@ -33,8 +33,8 @@ Redesign the History tab around **weeks and effort**, from the signed-off Desk S
 - [ ] Sessions grouped by Monday-start week, newest week first, with count + Mon–Sun effort strip (local time).
 - [ ] Effort bar level: easy 1, on_target 2, difficult 3, wiped 4; several sessions on one day show the hardest.
 - [ ] Accent colour used only on the current week's count.
-- [ ] "was" comparisons only from real stored sets of the previous same-template session; absent otherwise.
-- [ ] Legacy sessions show "N sets logged" and no reps.
+- [ ] Rows show "PB n" from `bestReps` (absent when none); "new PB" only when the session's top set beats every earlier stored set for that exercise, never on a first-ever session.
+- [ ] Legacy sessions show "N sets logged", no reps and no PB marks.
 - [ ] Exercise rows open the exercise page; Back returns to History (#219 behaviour intact).
 - [ ] Targets ≥ 44px; works in all six palettes (role tokens only).
 - [ ] Focused Vitest for the week/effort/comparison model and the view; tsc, smell and the suite pass.
@@ -44,5 +44,5 @@ Redesign the History tab around **weeks and effort**, from the signed-off Desk S
 - Week = Monday 00:00 local to Sunday; label `w/c <d MMM>`; ` · this week` when it contains today.
 - Lede: `<n> session(s) in <w> week(s)`, w = number of week groups shown.
 - Effort level: easy 1, on_target 2, difficult 3, wiped 4. A day with several sessions shows the highest level; tapping opens the newest session that day.
-- Comparison: for each exercise in a session, the nearest older non-legacy session with the same templateName that has sets for that exercise; `was a / b / c` from its completedReps. The `Compared with <Ddd d MMM>, <template>.` line uses the most recent such session among the rows and appears only if at least one row has a `was`.
+- PB: `personalBests` (exercise id → `bestReps`) is injected into the model; the view loads it with `loadMemories()`. "new PB" = max(this session's sets) > max(all sets for that exercise in older non-legacy sessions), and only when such sets exist. Legacy sessions get no PB marks. No previous-session comparison is built.
 - Newest session card open on first render; the rest closed.
