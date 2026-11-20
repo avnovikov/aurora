@@ -1,6 +1,7 @@
 import { BONES, SHOULDER_SIDE, solvePose, zOut } from "./rig";
 import type { AuthoredPose, DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
 import { add3, dot3, norm3, scale3, solveKeyframe3, sub3, type Point3 } from "./rig3d";
+import { flat, unit3 } from "./limbs3";
 import { TOP_VIEWS } from "./sideways";
 import { FLOOR_PROP, along, angle, round, supineTorso } from "./geom";
 
@@ -189,8 +190,6 @@ const ROT_SHOULDER_Y = -271.9;
 /** Shoulders of the upright figure: 22 either side of the spine, `ROT_SHOULDER_Y` high. */
 const rotShoulder = (side: Side): Point3 => [0, ROT_SHOULDER_Y, zOut(side) * SHOULDER_SIDE];
 
-const unit3 = (a: Point3): Point3 => scale3(a, 1 / (norm3(a) || 1));
-
 /** Elbow of an arm from `root` to `end` (forearm 66 long), on the `hint` side of the line between them. */
 function elbowToward(root: Point3, end: Point3, hint: Point3): Point3 {
   const [l1, l2] = [BONES.upperArm, BONES.forearm + BONES.hand];
@@ -378,7 +377,6 @@ function threadNeedle(open: 0 | 1, hold: number): Keyframe {
   const farHand: Point3 = [round(far[0] + 6), -2, far[2]];
   const nearElbow = elbowToward(near, nearHand, open ? [near[0] - 40, near[1] - 20, near[2] - 70] : [near[0] + 10, near[1] + 40, near[2] + 30]);
   const farElbow = elbowToward(far, farHand, [far[0] - 30, far[1] + 10, far[2] + 60]);
-  const flat = (p: Point3): Point => [round(p[0]), round(p[1])];
   return {
     hold,
     pose: {
@@ -550,7 +548,6 @@ function spinalStretch(lean: number, twist: number, hold: number, shift = 0): Ke
     near: elbowToward(root("near"), hands.near, hint("near")),
     far: elbowToward(root("far"), hands.far, hint("far")),
   };
-  const flat = (p: Point3): Point => [round(p[0]), round(p[1])];
   return {
     hold,
     face: { nod: 8 },

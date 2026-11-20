@@ -1,6 +1,7 @@
 import { BONES, HIP_SIDE, SHOULDER_SIDE, solvePose, zOut } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
-import { add3, dot3, norm3, scale3, solveKeyframe3, sub3, type Point3 } from "./rig3d";
+import { add3, scale3, solveKeyframe3, type Point3 } from "./rig3d";
+import { ARM as ARM_BONES, chain, dirs, flat, LEG as LEG_BONES, type LimbSpec, roots, SIDES, type Spine, unit3 } from "./limbs3";
 import { FLOOR_PROP, along, angle, lerp, round } from "./geom";
 import { lockedY3, TOP_VIEWS, TWO_VIEWS } from "./sideways";
 import { pushUp, straightBody } from "./specsBatchC";
@@ -262,59 +263,7 @@ function inclineArcher(): Keyframe[] {
 
 // ---------------------------------------------------------------- 3D limb placement (as in batch AM)
 
-const unit3 = (a: Point3): Point3 => scale3(a, 1 / (norm3(a) || 1));
 const p3 = (x: number, y: number, z: number): Point3 => [x, y, z];
-
-interface Plan {
-  mid: Point3;
-  end: Point3;
-}
-const ARM2: [number, number] = [BONES.upperArm, BONES.forearm + BONES.hand];
-const LEG2: [number, number] = [BONES.thigh, BONES.shin];
-
-/** A limb from `root` to `end` (pulled in if too far) with the middle joint towards `hint`. */
-function chain(root: Point3, [l1, l2]: [number, number], end: Point3, hint: Point3): Plan {
-  const full = sub3(end, root);
-  const d = Math.min(Math.max(norm3(full), Math.abs(l1 - l2) + 1), l1 + l2 - 0.3);
-  const u = unit3(full);
-  const a = (l1 * l1 - l2 * l2 + d * d) / (2 * d);
-  const h = Math.sqrt(Math.max(0, l1 * l1 - a * a));
-  const centre = add3(root, scale3(u, a));
-  const toHint = sub3(hint, centre);
-  let n = sub3(toHint, scale3(u, dot3(toHint, u)));
-  if (norm3(n) < 1e-6) n = [0, -1, 0];
-  return { mid: add3(centre, scale3(unit3(n), h)), end: add3(root, scale3(u, d)) };
-}
-
-/** A limb as two directions: the upper bone, then the lower. */
-function dirs(root: Point3, [l1, l2]: [number, number], d1: Point3, d2: Point3): Plan {
-  const mid = add3(root, scale3(unit3(d1), l1));
-  return { mid, end: add3(mid, scale3(unit3(d2), l2)) };
-}
-
-interface LimbSpec {
-  plan: Plan;
-  toe?: number;
-}
-
-type Spine = Pick<Pose, "pelvis" | "chest" | "head" | "spine">;
-const SIDES: Side[] = ["near", "far"];
-
-/** Where limbs root: the solved spine's shoulders and hips, set out sideways about the spine at z = `pz`. */
-function roots(spine: Spine, pz = 0): { arm: Record<Side, Point3>; leg: Record<Side, Point3> } {
-  const solved = solvePose(spine);
-  const arm = {} as Record<Side, Point3>;
-  const leg = {} as Record<Side, Point3>;
-  for (const side of SIDES) {
-    const a = solved.arms[side].root;
-    const l = solved.legs[side].root;
-    arm[side] = [a[0], a[1], pz + zOut(side) * SHOULDER_SIDE];
-    leg[side] = [l[0], l[1], pz + zOut(side) * HIP_SIDE];
-  }
-  return { arm, leg };
-}
-
-const flat = (a: Point3): Point => [round(a[0]), round(a[1])];
 
 /** Arms of a keyframe as hand and elbow pins with their sideways z. */
 function armPins(arms: Partial<Record<Side, LimbSpec>>, pose: Pose, sideways: Sideways): void {
@@ -388,8 +337,8 @@ function dancers(twist: number): Keyframe {
   const roll = DANCER_TWIST * twist;
   const turned: Sideways = { pelvis: 0, twist: roll };
   const arm = solveKeyframe3(solvePose(spine), spine, turned).arms;
-  const straight = dirs(leg.far, LEG2, p3(1, 0.045, 0.04), p3(1, 0.045, 0.04));
-  const nearLeg = chain(leg.near, LEG2, p3(46, -2, 30), p3(30, -150, 2));
+  const straight = dirs(leg.far, LEG_BONES, p3(1, 0.045, 0.04), p3(1, 0.045, 0.04));
+  const nearLeg = chain(leg.near, LEG_BONES, p3(46, -2, 30), p3(30, -150, 2));
   const knee = nearLeg.mid;
   const farHand: Point3 =
     twist === 0 ? [knee[0] + 4, knee[1] - 4, knee[2] + 2] : [knee[0] + 10, knee[1] + 14, knee[2] - 22];
@@ -397,8 +346,8 @@ function dancers(twist: number): Keyframe {
   const nearHand = p3(round(-30 - 34 * twist), -2, round(-30 + 4 * twist));
   const k = frame3(0, spine, {
     arms: {
-      far: { plan: chain(arm.far.root, ARM2, farHand, farHint) },
-      near: { plan: chain(arm.near.root, ARM2, nearHand, p3(-40, -60, -60)) },
+      far: { plan: chain(arm.far.root, ARM_BONES, farHand, farHint) },
+      near: { plan: chain(arm.near.root, ARM_BONES, nearHand, p3(-40, -60, -60)) },
     },
     legs: { far: { plan: straight, toe: -80 }, near: { plan: nearLeg, toe: 0 } },
   });
@@ -419,8 +368,8 @@ function scorpionKick(phase: 0 | 1 | 2): Keyframe {
   const hip = roots(spine).leg.near;
   const plan =
     phase === 1
-      ? dirs(hip, LEG2, p3(-0.97, -0.2, 0), p3(0.1, -1, 0))
-      : dirs(hip, LEG2, p3(-0.9, -0.05, 0.43), p3(0.1, 0.7, 0.7));
+      ? dirs(hip, LEG_BONES, p3(-0.97, -0.2, 0), p3(0.1, -1, 0))
+      : dirs(hip, LEG_BONES, p3(-0.9, -0.05, 0.43), p3(0.1, 0.7, 0.7));
   const k = frame3(0, spine, { legs: { near: { plan, toe: phase === 1 ? -40 : 60 } } });
   const kp = k.pose as Pose;
   const pose: Pose = {
@@ -445,13 +394,13 @@ function proneScorpion(across: number): Keyframe {
   const { arm, leg } = roots(spine);
   const reachZ = SHOULDER_SIDE + 123;
   const arms = {
-    near: { plan: chain(arm.near, ARM2, p3(arm.near[0], -7, -reachZ), p3(arm.near[0] - 20, -20, -80)) },
-    far: { plan: chain(arm.far, ARM2, p3(arm.far[0], -7, reachZ), p3(arm.far[0] - 20, -20, 80)) },
+    near: { plan: chain(arm.near, ARM_BONES, p3(arm.near[0], -7, -reachZ), p3(arm.near[0] - 20, -20, -80)) },
+    far: { plan: chain(arm.far, ARM_BONES, p3(arm.far[0], -7, reachZ), p3(arm.far[0] - 20, -20, 80)) },
   };
-  const straight = dirs(leg.far, LEG2, p3(-1, 0.03, 0), p3(-1, 0.03, 0));
+  const straight = dirs(leg.far, LEG_BONES, p3(-1, 0.03, 0), p3(-1, 0.03, 0));
   const thigh = unit3(p3(-0.96, -0.03, lerp(0, 0.28, across)));
   const shin = unit3(p3(lerp(0.1, 0.45, across), lerp(-1, -0.25, across), lerp(0, 0.85, across)));
-  return frame3(0, spine, { arms, legs: { far: { plan: straight, toe: 170 }, near: { plan: dirs(leg.near, LEG2, thigh, shin), toe: 150 } } });
+  return frame3(0, spine, { arms, legs: { far: { plan: straight, toe: 170 }, near: { plan: dirs(leg.near, LEG_BONES, thigh, shin), toe: 150 } } });
 }
 
 // ---------------------------------------------------------------- prone W-raise (wger_1474; side + top)
@@ -465,9 +414,9 @@ function wRaise(lift: number): Keyframe {
     const s = zOut(side);
     const d1 = p3(-0.72, lerp(0.15, -0.55, lift), 0.66 * -s);
     const d2 = p3(0.75, lerp(0.05, -0.5, lift), 0.66 * -s);
-    arms[side] = { plan: dirs(arm[side], ARM2, d1, d2) };
+    arms[side] = { plan: dirs(arm[side], ARM_BONES, d1, d2) };
   }
-  const straight = (side: Side): LimbSpec => ({ plan: dirs(leg[side], LEG2, p3(-1, 0.03, 0), p3(-1, 0.03, 0)), toe: 170 });
+  const straight = (side: Side): LimbSpec => ({ plan: dirs(leg[side], LEG_BONES, p3(-1, 0.03, 0), p3(-1, 0.03, 0)), toe: 170 });
   return frame3(0, spine, { arms, legs: { near: straight("near"), far: straight("far") } });
 }
 
@@ -480,17 +429,17 @@ function corkscrew(tuck: Side | null): Keyframe {
   const spine: Spine = { pelvis, chest, head: along(chest, -112, 56) };
   const { arm, leg } = roots(spine);
   const arms = {
-    near: { plan: chain(arm.near, ARM2, p3(-112, -2, -34), p3(-80, -40, -50)) },
-    far: { plan: chain(arm.far, ARM2, p3(-112, -2, 34), p3(-80, -40, 50)) },
+    near: { plan: chain(arm.near, ARM_BONES, p3(-112, -2, -34), p3(-80, -40, -50)) },
+    far: { plan: chain(arm.far, ARM_BONES, p3(-112, -2, 34), p3(-80, -40, 50)) },
   };
   const legs = {} as Record<Side, LimbSpec>;
   for (const side of SIDES) {
     if (!tuck) {
-      legs[side] = { plan: dirs(leg[side], LEG2, p3(0.95, -0.31, 0), p3(0.95, -0.31, 0)), toe: -20 };
+      legs[side] = { plan: dirs(leg[side], LEG_BONES, p3(0.95, -0.31, 0), p3(0.95, -0.31, 0)), toe: -20 };
     } else {
       const z = zOut(tuck) * 56 + (side === tuck ? 0 : zOut(tuck) * -10);
       const foot = p3(74, -46, z * 1.25);
-      legs[side] = { plan: chain(leg[side], LEG2, foot, p3(34, -118, z)), toe: 40 };
+      legs[side] = { plan: chain(leg[side], LEG_BONES, foot, p3(34, -118, z)), toe: 40 };
     }
   }
   return frame3(0, spine, { arms, legs });
@@ -510,15 +459,15 @@ function sleeper(turn: number): Keyframe {
   const hipB = p3(0, -30, -HIP_SIDE);
   const hipT = p3(0, -30, HIP_SIDE);
   // Both knees bent forwards (towards the camera), stacked; shins back along the body.
-  const legB = dirs(hipB, LEG2, p3(0.04, 0.18, -1), p3(1, 0.02, 0.06));
-  const legT = dirs(hipT, LEG2, p3(0.06, -0.1, -1), p3(1, 0.05, 0.06));
+  const legB = dirs(hipB, LEG_BONES, p3(0.04, 0.18, -1), p3(1, 0.02, 0.06));
+  const legT = dirs(hipT, LEG_BONES, p3(0.06, -0.1, -1), p3(1, 0.05, 0.06));
   const shoulder = arm.near;
   const elbow = add3(shoulder, p3(0, 0, -BONES.upperArm));
   const fore = (-90 + 104 * turn) * (Math.PI / 180);
   const forearmDir = p3(Math.cos(fore), Math.sin(fore), 0);
   const hand = add3(elbow, scale3(forearmDir, 66));
   const wrist = add3(elbow, add3(scale3(forearmDir, 50), p3(0, 0, 5)));
-  const topArm = chain(arm.far, ARM2, wrist, p3(-100, -100, -30));
+  const topArm = chain(arm.far, ARM_BONES, wrist, p3(-100, -100, -30));
   const frame = frame3(0, spine, {
     arms: { near: { plan: { mid: elbow, end: hand } }, far: { plan: topArm } },
     legs: { near: { plan: legB, toe: 0 }, far: { plan: legT, toe: 0 } },

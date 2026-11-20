@@ -1,6 +1,7 @@
-import { BONES, HIP_SIDE, SHOULDER_SIDE, solvePose, zOut } from "./rig";
+import { BONES, HIP_SIDE, solvePose, zOut } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
-import { add3, dot3, norm3, scale3, solveKeyframe3, sub3, type Point3 } from "./rig3d";
+import { add3, scale3, solveKeyframe3, sub3, type Point3 } from "./rig3d";
+import { ARM, chain, dirs, flat, LEG, type LimbSpec, type Plan, roots, type Spine, unit3 } from "./limbs3";
 import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
 import { FLOOR_PROP, along, round } from "./geom";
 import { plank } from "./specsBatchI";
@@ -14,6 +15,7 @@ import { plank } from "./specsBatchI";
 
 const THIGH = BONES.thigh;
 const SHIN = BONES.shin;
+/** Shoulder to fingertip of the straight arm in the roll and twist poses (a hair shorter than limbs3 REACH). */
 const REACH = 125.4;
 /** Shoulder to fingertip of a straight arm. */
 const STRAIGHT = BONES.upperArm + BONES.forearm + BONES.hand - 0.05;
@@ -32,63 +34,9 @@ function meet(a: Point, ra: number, b: Point, rb: number, pick: (p: Point, q: Po
   return pick(p, q) ? p : q;
 }
 
-
 // ---------------------------------------------------------------- 3D limb placement (twists, side bends)
 
-/** Unit vector; a zero vector stays zero. */
-const unit3 = (a: Point3): Point3 => scale3(a, 1 / (norm3(a) || 1));
 const dir3 = (degrees: number, z = 0): Point3 => [Math.cos((degrees * Math.PI) / 180), Math.sin((degrees * Math.PI) / 180), z];
-
-interface Plan {
-  mid: Point3;
-  end: Point3;
-}
-
-const ARM: [number, number] = [BONES.upperArm, BONES.forearm + BONES.hand];
-const LEG: [number, number] = [BONES.thigh, BONES.shin];
-
-/** A limb from `root` reaching `end` (pulled in if too far), the middle joint on the `hint` side of the line. */
-function chain(root: Point3, [l1, l2]: [number, number], end: Point3, hint: Point3): Plan {
-  const full = sub3(end, root);
-  const d = Math.min(Math.max(norm3(full), Math.abs(l1 - l2) + 1), l1 + l2 - 0.3);
-  const u = unit3(full);
-  const a = (l1 * l1 - l2 * l2 + d * d) / (2 * d);
-  const h = Math.sqrt(Math.max(0, l1 * l1 - a * a));
-  const centre = add3(root, scale3(u, a));
-  const toHint = sub3(hint, centre);
-  let n = sub3(toHint, scale3(u, dot3(toHint, u)));
-  if (norm3(n) < 1e-6) n = sub3([0, -1, 0], scale3(u, u[1] * -1));
-  return { mid: add3(centre, scale3(unit3(n), h)), end: add3(root, scale3(u, d)) };
-}
-
-/** A limb given as two directions: the upper bone, then the lower. */
-function dirs(root: Point3, [l1, l2]: [number, number], d1: Point3, d2: Point3): Plan {
-  const mid = add3(root, scale3(unit3(d1), l1));
-  return { mid, end: add3(mid, scale3(unit3(d2), l2)) };
-}
-
-interface LimbSpec {
-  plan: Plan;
-  toe?: number;
-}
-
-type Spine = Pick<Pose, "pelvis" | "chest" | "head" | "spine">;
-
-/** Where limbs root: the solved spine's shoulders and hips, set out sideways about the spine at z = `pz`. */
-function roots(spine: Spine, pz = 0): { arm: Record<Side, Point3>; leg: Record<Side, Point3> } {
-  const solved = solvePose(spine);
-  const arm = {} as Record<Side, Point3>;
-  const leg = {} as Record<Side, Point3>;
-  for (const side of ["near", "far"] as Side[]) {
-    const a = solved.arms[side].root;
-    const l = solved.legs[side].root;
-    arm[side] = [a[0], a[1], pz + zOut(side) * SHOULDER_SIDE];
-    leg[side] = [l[0], l[1], pz + zOut(side) * HIP_SIDE];
-  }
-  return { arm, leg };
-}
-
-const flat = (p: Point3): Point => [round(p[0]), round(p[1])];
 
 /** A keyframe: the spine, plus 3D limb plans that become pins and `sideways` positions. */
 function frame(hold: number, spine: Spine, limbs: { arms?: Partial<Record<Side, LimbSpec>>; legs?: Partial<Record<Side, LimbSpec>> }): Keyframe {

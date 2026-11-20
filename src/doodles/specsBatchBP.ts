@@ -1,6 +1,7 @@
-import { BONES, solvePose } from "./rig";
+import { solvePose } from "./rig";
 import type { DoodleSpec, Face, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
 import { add3, dot3, norm3, scale3, solveKeyframe3, sub3, type Point3 } from "./rig3d";
+import { ARM as ARM_BONES, chain, dirs, flat, LEG as LEG_BONES, type Plan, SIDES, unit3 } from "./limbs3";
 import { FLOOR_PROP, round } from "./geom";
 import { PLANK_FOOT, straightBody } from "./specsBatchC";
 import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
@@ -15,39 +16,7 @@ import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
  * footplate moves with the foot; props are static and no gear rides on the feet.
  */
 
-const SIDES: Side[] = ["near", "far"];
-
 // ---------------------------------------------------------------- 3D limb planning
-
-const unit3 = (a: Point3): Point3 => scale3(a, 1 / (norm3(a) || 1));
-const flat = (a: Point3): Point => [round(a[0]), round(a[1])];
-const ARM2: [number, number] = [BONES.upperArm, BONES.forearm + BONES.hand];
-const LEG2: [number, number] = [BONES.thigh, BONES.shin];
-
-interface Plan {
-  mid: Point3;
-  end: Point3;
-}
-
-/** A limb from `root` to `end` (pulled in if too far) with the middle joint towards `hint`. */
-function chain(root: Point3, [l1, l2]: [number, number], end: Point3, hint: Point3): Plan {
-  const full = sub3(end, root);
-  const d = Math.min(Math.max(norm3(full), Math.abs(l1 - l2) + 1), l1 + l2 - 0.3);
-  const u = unit3(full);
-  const a = (l1 * l1 - l2 * l2 + d * d) / (2 * d);
-  const h = Math.sqrt(Math.max(0, l1 * l1 - a * a));
-  const centre = add3(root, scale3(u, a));
-  const toHint = sub3(hint, centre);
-  let n = sub3(toHint, scale3(u, dot3(toHint, u)));
-  if (norm3(n) < 1e-6) n = [0, -1, 0];
-  return { mid: add3(centre, scale3(unit3(n), h)), end: add3(root, scale3(u, d)) };
-}
-
-/** A limb as two directions: the upper bone, then the lower. */
-function dirs(root: Point3, [l1, l2]: [number, number], d1: Point3, d2: Point3): Plan {
-  const mid = add3(root, scale3(unit3(d1), l1));
-  return { mid, end: add3(mid, scale3(unit3(d2), l2)) };
-}
 
 /** Shoulder and hip roots as the 3D solve places them for this spine and `sideways` (twist, girdle, lean). */
 function roots3(pose: Pose, sw: Sideways): { arm: Record<Side, Point3>; leg: Record<Side, Point3> } {
@@ -183,8 +152,8 @@ function elbowHold(o: ElbowHold, hold: number, work: Side = WORK): Keyframe {
   const pose = stand();
   const sw: Sideways = { shoulders: { [work]: { up: o.lift ?? 0, forward: o.forward ?? 0 } } };
   const { arm } = roots3(pose, sw);
-  const working = chain(arm[work], ARM2, m(o.hand), m(o.elbow));
-  const helper = chain(arm[help], ARM2, m(o.grip), m(o.gripElbow));
+  const working = chain(arm[work], ARM_BONES, m(o.hand), m(o.elbow));
+  const helper = chain(arm[help], ARM_BONES, m(o.grip), m(o.gripElbow));
   pin(pose, sw, { arms: { [work]: working, [help]: helper } });
   const face = o.face && work === "near" ? { ...o.face, tilt: -(o.face.tilt ?? 0), turn: -(o.face.turn ?? 0) } : o.face;
   return key(hold, pose, sw, face ?? { nod: 0 });
@@ -200,8 +169,8 @@ function armUp(hold: number, work: Side = WORK, face?: Face): Keyframe {
   const pose = stand();
   const sw: Sideways = { shoulders: { [work]: { up: 8 } } };
   const { arm } = roots3(pose, sw);
-  const reach = dirs(arm[work], ARM2, [-0.05, -1, 0.16 * out], [-0.05, -1, 0.16 * out]);
-  const low = chain(arm[help], ARM2, [16, -150, -24 * out], [-10, -210, -30 * out]);
+  const reach = dirs(arm[work], ARM_BONES, [-0.05, -1, 0.16 * out], [-0.05, -1, 0.16 * out]);
+  const low = chain(arm[help], ARM_BONES, [16, -150, -24 * out], [-10, -210, -30 * out]);
   pin(pose, sw, { arms: { [work]: reach, [help]: low } });
   return key(hold, pose, sw, face ?? { nod: 0 });
 }
@@ -214,9 +183,9 @@ function across(hold: number, hand: Point3, elbow: Point3): Keyframe {
   const pose = stand();
   const sw: Sideways = {};
   const { arm } = roots3(pose, sw);
-  const working = chain(arm.near, ARM2, hand, elbow);
+  const working = chain(arm.near, ARM_BONES, hand, elbow);
   const grip = add3(working.mid, [6, -2, 2]);
-  const helper = chain(arm.far, ARM2, grip, [20, -210, 60]);
+  const helper = chain(arm.far, ARM_BONES, grip, [20, -210, 60]);
   pin(pose, sw, { arms: { near: working, far: helper } });
   return key(hold, pose, sw, { nod: 0 });
 }
@@ -244,13 +213,13 @@ function wallTurn(hold: number, twist: number, retract: number): Keyframe {
     feet: { near: WALL_FIGURE_Z - 10, far: WALL_FIGURE_Z + 10 },
   };
   const { arm, leg } = roots3(pose, sw);
-  const reach = chain(arm.far, ARM2, WALL_HAND, add3(arm.far, [-10, 40, 60]));
+  const reach = chain(arm.far, ARM_BONES, WALL_HAND, add3(arm.far, [-10, 40, 60]));
   // The other hand on the hip, elbow out along the shoulder line, so from above the turning
   // shoulder line shows past the head.
   const pelvis: Point3 = [PELVIS[0], PELVIS[1], WALL_FIGURE_Z];
   const hip = add3(pelvis, add3(scale3(sub3(leg.near, pelvis), 2.4), [0, -6, 0]));
   const centre = scale3(add3(arm.near, arm.far), 0.5);
-  const akimbo = chain(arm.near, ARM2, hip, add3(arm.near, add3(scale3(sub3(arm.near, centre), 3), [-6, 40, 0])));
+  const akimbo = chain(arm.near, ARM_BONES, hip, add3(arm.near, add3(scale3(sub3(arm.near, centre), 3), [-6, 40, 0])));
   pin(pose, sw, { arms: { far: reach, near: akimbo } });
   return key(hold, pose, sw, { nod: 0 });
 }
@@ -304,7 +273,7 @@ function sitUpThrust(hold: number, theta: number, twist = 0, tuck = 4): Keyframe
     const wide = add3(add3(c3, scale3(u, 18)), add3(hint, scale3(f, forward)));
     const turn = (p: Point3): Point3 => add3(c3, turnAbout(sub3(p, c3), u, -twist));
     const turnHead = (p: Point3): Point3 => add3(h3, turnAbout(sub3(p, h3), u, -twist));
-    arms[side] = chain(arm[side], ARM2, turnHead(ear), turn(wide));
+    arms[side] = chain(arm[side], ARM_BONES, turnHead(ear), turn(wide));
   }
   pin(pose, sw, { arms });
   return key(hold, pose, sw, { nod: tuck });
@@ -322,7 +291,7 @@ function lying(): Pose {
 const armAt = (root: Point3, phi: number, x = 0): Plan => {
   const r = (phi * Math.PI) / 180;
   const d = unit3([x, -Math.sin(r), Math.cos(r)]);
-  return dirs(root, ARM2, d, d);
+  return dirs(root, ARM_BONES, d, d);
 };
 
 /**
@@ -336,10 +305,10 @@ function openBook(hold: number, twist: number, phi: number, turn: number): Keyfr
   const { arm, leg } = roots3(pose, sw);
   // The bottom arm lies straight out in front along the floor (it bends a little as the chest opens).
   const bottomHand: Point3 = [-98, -4, round(arm.far[2] + Math.sqrt(124.5 ** 2 - (arm.far[1] + 4) ** 2))];
-  const bottom = chain(arm.far, ARM2, bottomHand, [-110, -30, 60]);
+  const bottom = chain(arm.far, ARM_BONES, bottomHand, [-110, -30, 60]);
   const top = armAt(arm.near, phi);
   const legAt = (side: Side, y: number): Plan & { toe: number } => {
-    const plan = dirs(leg[side], LEG2, [6, y - leg[side][1], 87], [86, 2, -6]);
+    const plan = dirs(leg[side], LEG_BONES, [6, y - leg[side][1], 87], [86, 2, -6]);
     return { ...plan, toe: 0 };
   };
   pin(pose, sw, { arms: { far: bottom, near: top }, legs: { near: legAt("near", -26), far: legAt("far", -10) } });
@@ -355,15 +324,15 @@ function bretzel(hold: number, twist: number, turn: number, reaching = false): K
   const pose = lying();
   const sw: Sideways = { twist, hipTwist: -90 };
   const { arm, leg } = roots3(pose, sw);
-  const topLeg = dirs(leg.near, LEG2, [0, -12 - leg.near[1], 86], [86, 0, -8]);
-  const bottomLeg = dirs(leg.far, LEG2, [86, -10 - leg.far[1], -20], [-0.86, 0, -0.51]);
+  const topLeg = dirs(leg.near, LEG_BONES, [0, -12 - leg.near[1], 86], [86, 0, -8]);
+  const bottomLeg = dirs(leg.far, LEG_BONES, [86, -10 - leg.far[1], -20], [-0.86, 0, -0.51]);
   const knee = topLeg.mid;
   const foot = bottomLeg.end;
-  const holdKnee = chain(arm.far, ARM2, add3(knee, [-2, 2, 2]), [arm.far[0] + 40, -40, 60]);
+  const holdKnee = chain(arm.far, ARM_BONES, add3(knee, [-2, 2, 2]), [arm.far[0] + 40, -40, 60]);
   // Before it takes the foot the top hand rests on the top hip.
   const holdFoot = reaching
-    ? chain(arm.near, ARM2, [22, -44, -8], [arm.near[0] + 50, -60, -10])
-    : chain(arm.near, ARM2, add3(foot, [4, -6, -4]), [arm.near[0] + 50, -40, -60]);
+    ? chain(arm.near, ARM_BONES, [22, -44, -8], [arm.near[0] + 50, -60, -10])
+    : chain(arm.near, ARM_BONES, add3(foot, [4, -6, -4]), [arm.near[0] + 50, -40, -60]);
   pin(pose, sw, {
     arms: { far: holdKnee, near: holdFoot },
     legs: { near: { ...topLeg, toe: 0 }, far: { ...bottomLeg, toe: 180 } },
@@ -441,14 +410,14 @@ function wristTurn(hold: number, bell: "hang" | "rack"): Keyframe {
   const sw: Sideways = {};
   const { arm, leg } = roots3(pose, sw);
   const legs = {
-    near: { ...dirs(leg.near, LEG2, [1, 0.03, -0.17], [0.05, 1, 0]), toe: 0 },
-    far: { ...dirs(leg.far, LEG2, [1, 0.03, 0.17], [0.05, 1, 0]), toe: 0 },
+    near: { ...dirs(leg.near, LEG_BONES, [1, 0.03, -0.17], [0.05, 1, 0]), toe: 0 },
+    far: { ...dirs(leg.far, LEG_BONES, [1, 0.03, 0.17], [0.05, 1, 0]), toe: 0 },
   };
   const knee = legs.near.mid;
   // Elbow on the thigh a forearm back from the hand; the forearm level over the knee.
   const hand: Point3 = [knee[0] + 34, knee[1] - 10, knee[2]];
-  const working = chain(arm.near, ARM2, hand, [hand[0] - 66, hand[1] + 20, hand[2] - 4]);
-  const resting = chain(arm.far, ARM2, add3(legs.far.mid, [8, -8, 0]), [arm.far[0], arm.far[1] + 40, 60]);
+  const working = chain(arm.near, ARM_BONES, hand, [hand[0] - 66, hand[1] + 20, hand[2] - 4]);
+  const resting = chain(arm.far, ARM_BONES, add3(legs.far.mid, [8, -8, 0]), [arm.far[0], arm.far[1] + 40, 60]);
   pin(pose, sw, { arms: { near: working, far: resting }, legs });
   return { ...key(hold, pose, sw), bell };
 }
@@ -471,11 +440,11 @@ function bellRound(near: keyof typeof ROUND, far: keyof typeof ROUND, bellIn?: S
   const pose: Pose = { pelvis: [0, -172], chest: [2, -252] };
   const sw: Sideways = {};
   const { arm, leg } = roots3(pose, sw);
-  const stance = { ...dirs(leg.near, LEG2, [0.02, 1, 0], [0, 1, 0]), toe: 0 };
-  const lifted = { ...dirs(leg.far, LEG2, [0.12, 1, 0], [-0.85, 0.53, 0]), toe: 60 };
+  const stance = { ...dirs(leg.near, LEG_BONES, [0.02, 1, 0], [0, 1, 0]), toe: 0 };
+  const lifted = { ...dirs(leg.far, LEG_BONES, [0.12, 1, 0], [-0.85, 0.53, 0]), toe: 60 };
   const hint = (side: Side): Point3 => [arm[side][0] - 10, arm[side][1] + 50, arm[side][2] * 3];
   pin(pose, sw, {
-    arms: { near: chain(arm.near, ARM2, ROUND[near], hint("near")), far: chain(arm.far, ARM2, ROUND[far], hint("far")) },
+    arms: { near: chain(arm.near, ARM_BONES, ROUND[near], hint("near")), far: chain(arm.far, ARM_BONES, ROUND[far], hint("far")) },
     legs: { near: stance, far: lifted },
   });
   return { ...key(0, pose, sw, { nod: 10 }), ...(bellIn ? { bellIn } : {}) };

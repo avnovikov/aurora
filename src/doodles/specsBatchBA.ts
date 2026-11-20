@@ -1,13 +1,14 @@
-import { BONES, deg, HIP_SIDE, SEGMENTS, SHOULDER_SIDE, solvePose, zOut } from "./rig";
+import { BONES, deg, SEGMENTS, solvePose, zOut } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
-import { add3, dot3, norm3, scale3, sub3, type Point3 } from "./rig3d";
+import { add3, dot3, scale3, sub3, type Point3 } from "./rig3d";
+import { ARM, chain, dirs, flat, LEG, type LimbSpec, type Plan, REACH, roots, SIDES, type Spine, unit3 } from "./limbs3";
 import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
 import { along, chestOf, FLOOR_PROP, round, supineTorso } from "./geom";
 
 /**
  * Batch BA (#216): shoulder, arm and chest stretches. Floor at y = 0, up is
  * negative, the side-view figure faces +x; lying face up has the head at -x.
- * Never import ./specs (circular). The 3D limb helpers are exported for batch BB.
+ * Never import ./specs (circular).
  *
  * Where an arm or knee goes out to the side, the move is drawn in two views and
  * the limbs are placed in 3D by `chain` (exact bone lengths); `frame` turns the
@@ -24,38 +25,6 @@ import { along, chestOf, FLOOR_PROP, round, supineTorso } from "./geom";
 
 // ---------------------------------------------------------------- 3D limb placement
 
-const unit3 = (a: Point3): Point3 => scale3(a, 1 / (norm3(a) || 1));
-
-export interface Plan {
-  mid: Point3;
-  end: Point3;
-}
-
-export const ARM: [number, number] = [BONES.upperArm, BONES.forearm + BONES.hand];
-export const LEG: [number, number] = [BONES.thigh, BONES.shin];
-/** Shoulder to fingertips with the elbow locked, less a hair. */
-export const REACH = BONES.upperArm + BONES.forearm + BONES.hand - 0.4;
-
-/** A limb from `root` reaching `end` (pulled in if too far), the middle joint on the `hint` side of the line. */
-export function chain(root: Point3, [l1, l2]: [number, number], end: Point3, hint: Point3): Plan {
-  const full = sub3(end, root);
-  const d = Math.min(Math.max(norm3(full), Math.abs(l1 - l2) + 1), l1 + l2 - 0.3);
-  const u = unit3(full);
-  const a = (l1 * l1 - l2 * l2 + d * d) / (2 * d);
-  const h = Math.sqrt(Math.max(0, l1 * l1 - a * a));
-  const centre = add3(root, scale3(u, a));
-  const toHint = sub3(hint, centre);
-  let n = sub3(toHint, scale3(u, dot3(toHint, u)));
-  if (norm3(n) < 1e-6) n = sub3([0, -1, 0], scale3(u, u[1] * -1));
-  return { mid: add3(centre, scale3(unit3(n), h)), end: add3(root, scale3(u, d)) };
-}
-
-/** A limb given as two directions. */
-export function dirs(root: Point3, [l1, l2]: [number, number], d1: Point3, d2: Point3): Plan {
-  const mid = add3(root, scale3(unit3(d1), l1));
-  return { mid, end: add3(mid, scale3(unit3(d2), l2)) };
-}
-
 /** A straight arm from `root` along `d`. */
 const straightArm = (root: Point3, d: Point3): Plan => dirs(root, ARM, d, d);
 
@@ -71,33 +40,10 @@ function foldedArm(root: Point3, e: Point3, towards: Point3, bendDeg = 154): Pla
   return { mid, end: add3(mid, scale3(add3(scale3(u, Math.cos(r)), scale3(w, Math.sin(r))), ARM[1])) };
 }
 
-export interface LimbSpec {
-  plan: Plan;
-  toe?: number;
-}
-
 interface Limbs {
   arms?: Partial<Record<Side, LimbSpec>>;
   legs?: Partial<Record<Side, LimbSpec>>;
 }
-
-export type Spine = Pick<Pose, "pelvis" | "chest" | "head" | "spine">;
-
-export const SIDES: Side[] = ["near", "far"];
-
-/** Where limbs root: the solved spine's shoulders and hips. */
-export function roots(spine: Spine): { arm: Record<Side, Point3>; leg: Record<Side, Point3> } {
-  const solved = solvePose(spine);
-  const arm = {} as Record<Side, Point3>;
-  const leg = {} as Record<Side, Point3>;
-  for (const side of SIDES) {
-    arm[side] = [solved.arms[side].root[0], solved.arms[side].root[1], zOut(side) * SHOULDER_SIDE];
-    leg[side] = [solved.legs[side].root[0], solved.legs[side].root[1], zOut(side) * HIP_SIDE];
-  }
-  return { arm, leg };
-}
-
-const flat = (p: Point3): Point => [round(p[0]), round(p[1])];
 
 /** Arms of a keyframe as hand and elbow pins, with their sideways positions. */
 function addArms(pose: Pose, sideways: Sideways, arms: NonNullable<Limbs["arms"]>): void {

@@ -2,7 +2,8 @@ import { BONES, HIP_SIDE, solvePose, zOut } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
 import { add3, scale3, solveKeyframe3, sub3, type Point3 } from "./rig3d";
 import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
-import { ARM as ARM_BONES, chain, dirs, frame, LEG, REACH, roots, SIDES, type LimbSpec, type Spine } from "./specsBatchBA";
+import { frame } from "./specsBatchBA";
+import { ARM as ARM_BONES, chain, dirs, flat, LEG, type LimbSpec, REACH, roots, SIDES, type Spine } from "./limbs3";
 import { FLOOR_PROP, along, round, supineTorso } from "./geom";
 
 /**
@@ -205,7 +206,6 @@ function butterflyLegs(azimuth: number, kneeLift: number): { knee: Point; kneeZ:
 }
 
 const unit3 = (v: Point3): Point3 => scale3(v, 1 / Math.hypot(v[0], v[1], v[2]));
-const flat3 = (p: Point3): Point => [round(p[0]), round(p[1])];
 
 /**
  * Sitting with the soles together, knees open. The far hand is on the floor
@@ -240,8 +240,8 @@ function seatedSideBend(lean: number): Keyframe {
     hold: 0,
     pose: {
       ...base,
-      hands: { near: flat3(hand), far: flat3(floorHand) },
-      elbows: { near: { at: flat3(elbow) }, far: { bend: 1 } },
+      hands: { near: flat(hand), far: flat(floorHand) },
+      elbows: { near: { at: flat(elbow) }, far: { bend: 1 } },
     },
     sideways: {
       ...sw,
