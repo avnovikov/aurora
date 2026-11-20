@@ -4,7 +4,6 @@ import { add3, dot3, norm3, scale3, solveKeyframe3, sub3, type Point3 } from "./
 import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
 import { FLOOR_PROP, along, round } from "./geom";
 import { plank } from "./specsBatchI";
-import { SL_FOOT_BOTTOM, SL_FOOT_TOP, SL_HIP_BOTTOM, SL_HIP_TOP, SL_KNEE_BOTTOM, SL_KNEE_TOP } from "./specsWarmup";
 
 /**
  * Batch BG (#216): spine, back and core mobility. Floor at y = 0, up is
@@ -233,16 +232,20 @@ function chairBend(lean: number): Keyframe {
 
 // ---------------------------------------------------------------- lying face up (head at -x)
 
+/** Where the chest rests on the floor in the pelvic tilt (head at -x). */
+const PT_CHEST: Point = [-72, -18];
+
 /**
  * Upper back and head on the floor, knees bent and feet flat, arms long by the
- * sides. `chord` is the run of the spine from the pelvis to the chest on the
- * floor: shorter than the 80 spine, so the lower back bows up off the floor;
- * longer, the back flattens.
+ * sides. `chord` is the run of the spine from the chest on the floor to the
+ * pelvis, `pelvisY` the pelvis's height (it stays on the floor). Shorter than
+ * the 80 spine with `bend` +1, the lower back arches up off the floor (a gap
+ * under it); 79.6 with the back flat, it is pressed into the floor.
  */
-function supineBent(pelvis: Point, chord: number): Pose {
-  const dy = -18 - pelvis[1];
-  const chest: Point = [round(pelvis[0] - Math.sqrt(chord ** 2 - dy * dy)), -18];
-  const base: Pose = { pelvis, chest, head: [round(chest[0] - 55), -24], spine: { bend: -1 } };
+function supineBent(chord: number, pelvisY: number, bend: 1 | -1): Pose {
+  const dy = pelvisY - PT_CHEST[1];
+  const pelvis: Point = [round(PT_CHEST[0] + Math.sqrt(chord ** 2 - dy * dy)), pelvisY];
+  const base: Pose = { pelvis, chest: PT_CHEST, head: [round(PT_CHEST[0] - 55), -24], spine: { bend } };
   const shoulder = shoulderAt(base);
   const handY = -6;
   const handX = round(shoulder[0] + Math.sqrt(REACH ** 2 - (shoulder[1] - handY) ** 2));
@@ -251,29 +254,33 @@ function supineBent(pelvis: Point, chord: number): Pose {
     hands: { near: [handX, handY], far: [handX, handY - 1] },
     elbows: { near: { bend: 1 }, far: { bend: 1 } },
     knees: { near: { bend: -1 }, far: { bend: -1 } },
-    feet: { near: [60, 0], far: [56, 0] },
+    feet: { near: [68, 0], far: [64, 0] },
     toes: { near: 0, far: 0 },
   };
 }
 
-/** Pelvis resting; the lower back arches a little off the floor. */
-const neutralSpine = (): Pose => supineBent([0, -20], 76.5);
-/** Belly drawn in: the lower back settles towards the floor, hips and ribs unmoved. */
-const drawnIn = (): Pose => supineBent([0, -20], 79.4);
-/** Pelvis tilted: the tail curls up and the lower back presses down. */
-const tilted = (): Pose => supineBent([4, -28], 79.4);
+/** Neutral: the lower back arches up off the floor, a gap under it. */
+const neutralSpine = (): Pose => supineBent(76.6, -20, 1);
+/** Pelvis tilted back: the lumbar presses flat into the floor; the pelvis rocks on the floor (it slides a little towards the feet, staying down). */
+const tilted = (): Pose => supineBent(79.6, -21, -1);
 
 // ---------------------------------------------------------------- crunch hold
 
 const CRUNCH_PELVIS: Point = [-8, -20];
 const CRUNCH_FEET: Point = [84, -2];
 
-/** Torso at `theta` (183 lying, about 212 curled up) with the chin tucked by `tuck`; hands lightly behind the head, elbows wide. */
-function crunch(theta: number, tuck: number): Pose {
+/**
+ * Crunch hold: the pelvis and lower back stay on the floor; only the upper spine
+ * curls up, `curl` degrees from the floor (0 lying, 25-30 shoulder blades off),
+ * the chin tucked by `tuck`. Hands lightly behind the head, elbows wide.
+ */
+function crunch(curl: number, tuck: number): Pose {
   const pelvis = CRUNCH_PELVIS;
-  const chest = along(pelvis, theta, 80);
+  const waist = along(pelvis, 180, BONES.pelvisWaist);
+  const theta = 180 + curl;
+  const chest = along(waist, theta, BONES.waistChest);
   const head = along(chest, theta + tuck, 56);
-  const base: Pose = { pelvis, chest, head };
+  const base: Pose = { pelvis, chest, head, spine: { bend: -1 } };
   const shoulder = shoulderAt(base);
   const face = ((theta + 90) * Math.PI) / 180;
   const facing = (p: Point, q: Point): boolean =>
@@ -502,75 +509,109 @@ const ROLL_STEPS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9];
 
 // ---------------------------------------------------------------- full sit outs (plank, thread one leg under, reach up)
 
-/**
- * High plank; `lifted` is the side that opens: its arm reaches to the ceiling while the other hand
- * stays planted, and its leg bends under the body to tap the foot down (`t` 0 plank, 1 open).
- */
-function sitOut(lifted: Side | null, stage: 1 | 2 = 2): Pose {
-  const base = plank();
-  if (!lifted) return base;
-  const planted: Side = lifted === "near" ? "far" : "near";
-  const shoulder = solvePose(base).arms.near.root;
-  const hip = base.pelvis as Point;
-  const foot: Point = stage === 2 ? [round(hip[0] - 46), -3] : [round(hip[0] - 96), -30];
-  const knee = meet(hip, THIGH, foot, SHIN, (p, q) => p[0] > q[0]);
-  // Opening arm: folded up behind the shoulder on the way, then straight up.
-  const elbow = along(shoulder, stage === 2 ? -78 : -140, BONES.upperArm);
-  const hand = stage === 2 ? along(shoulder, -78, STRAIGHT) : along(elbow, -205, 66);
-  return {
-    ...base,
-    hands: { [planted]: [62, 0], [lifted]: hand } as Record<Side, Point>,
-    elbows: { [planted]: { bend: 1 }, [lifted]: { at: elbow } } as Record<Side, { bend: 1 } | { at: Point }>,
-    knees: { [lifted]: { at: knee } },
-    feet: { [lifted]: foot, [planted]: [-190, -18] } as Record<Side, Point>,
-    toes: { [lifted]: 0, [planted]: 62 } as Record<Side, number>,
-  };
+const PLANK = plank();
+const PLANK_PELVIS = PLANK.pelvis as Point;
+const PLANK_CHEST = PLANK.chest as Point;
+
+type SitStage = "plank" | "turn" | "open";
+const SIT_OPEN: Record<SitStage, number> = { plank: 0, turn: 0.5, open: 1 };
+const SIT_HOLD: Record<SitStage, number> = { plank: 0.3, turn: 0, open: 0.7 };
+const SIT_PIVOT_TOE: Record<SitStage, number> = { plank: 62, turn: 30, open: 20 };
+const SIT_THREAD_TOE: Record<SitStage, number> = { plank: 62, turn: 62, open: 0 };
+
+/** The free hand (`z` flips sides): planted in the plank, out to the side on the way, straight up when open. */
+function sitFreeArm(stage: SitStage, fs: Point3, z: (v: number) => number): Plan {
+  if (stage === "plank") return chain(fs, ARM, [62, 0, z(-22)], [fs[0] - 30, -60, z(-40)]);
+  if (stage === "turn") return chain(fs, ARM, [fs[0] + 10, fs[1] - 30, z(-110)], [fs[0] - 10, fs[1] + 30, z(-60)]);
+  return dirs(fs, ARM, [0.05, -1, z(-0.12)], [0.05, -1, z(-0.12)]);
 }
 
-// ---------------------------------------------------------------- side crunch (side-lying, seen from the front, head left)
+/** The threading leg: back in the plank, tucked under the body on the way, foot tapped down beyond the pivot foot when open. */
+function sitThread(stage: SitStage, hip: Point3, z: (v: number) => number): Plan {
+  if (stage === "plank") return chain(hip, LEG, [-190, -18, z(10)], [hip[0] - 60, hip[1] - 20, z(10)]);
+  if (stage === "turn") return chain(hip, LEG, [-104, -30, z(-20)], [hip[0] - 30, hip[1] + 40, z(-30)]);
+  return chain(hip, LEG, [-118, -3, z(-104)], [hip[0] - 20, hip[1] + 10, z(-80)]);
+}
 
-const SC_PELVIS: Point = [0, -30];
-
-/** Lying on the side, knees bent and stacked; `lift` raises the head and shoulders towards the top hip (the spine bends sideways). */
-function sideCrunch(lift: number): Pose {
-  const theta = 180 + 26 * lift;
-  const chest = along(SC_PELVIS, theta, 80);
-  const head = along(along(chest, theta, 20), theta + 6, 36);
-  const base: Pose = { pelvis: SC_PELVIS, chest, head, spine: { bend: -1 } };
-  const solved = solvePose(base, { view: "front" });
-  const shoulderFar = solved.arms.far.root;
-  const shoulderNear = solved.arms.near.root;
-  // Top hand lightly behind the head, elbow pointing up; bottom arm across the stomach.
-  const hand: Point = [round(head[0] + 8), round(head[1] - 20)];
-  const elbow = meet(shoulderFar, 60, hand, 66, (p, q) => p[1] < q[1]);
-  const nearHand: Point = [round(shoulderNear[0] + 112), -4];
-  const nearElbow = meet(shoulderNear, 60, nearHand, 66, (p, q) => p[1] < q[1]);
-  // The hips turn with the lower spine: keep each knee and foot at the same offset from its hip.
-  const hipB = solved.legs.near.root;
-  const hipT = solved.legs.far.root;
-  const off = (p: Point, from: Point, to: Point): Point => [round(p[0] - from[0] + to[0]), round(p[1] - from[1] + to[1])];
-  return {
-    ...base,
-    hands: { near: nearHand, far: hand },
-    elbows: { near: { at: nearElbow }, far: { at: elbow } },
-    knees: { near: { at: off(SL_KNEE_BOTTOM, SL_HIP_BOTTOM, hipB) }, far: { at: off(SL_KNEE_TOP, SL_HIP_TOP, hipT) } },
-    feet: { near: off(SL_FOOT_BOTTOM, SL_HIP_BOTTOM, hipB), far: off(SL_FOOT_TOP, SL_HIP_TOP, hipT) },
-    toes: { near: 0, far: 0 },
+/**
+ * Full sit out (a kick-through), seen from the side and from above. `free` is the
+ * side whose hand lifts; `stage` plank, turn (on the way) or open: the
+ * weight on the other hand, the shoulder and hip lines rolled 90° so the chest
+ * faces the free side, the free arm straight up, the support-hand side's leg
+ * threaded under the body to the free side with its foot tapping down beyond
+ * the support (free-side) foot, which pivots.
+ */
+function sitOut(free: Side | null, stage: SitStage): Keyframe {
+  const open = SIT_OPEN[stage];
+  const sgn = free === "far" ? -1 : 1;
+  const freeSide: Side = free ?? "near";
+  const other: Side = freeSide === "near" ? "far" : "near";
+  const roll = 90 * open * sgn;
+  const spine: Spine = {
+    pelvis: [round(PLANK_PELVIS[0] + 14 * open), round(PLANK_PELVIS[1] + 16 * open)],
+    chest: [round(PLANK_CHEST[0] + 4 * open), round(PLANK_CHEST[1] - 14 * open)],
   };
+  const turned: Sideways = { pelvis: 0, twist: roll, hipTwist: roll };
+  const fig = solveKeyframe3(solvePose(spine), spine, turned);
+  const z = (v: number): number => v * sgn;
+  const support = fig.arms[other].root;
+  // The support hand stays planted where it was in the plank.
+  const arms = {
+    [other]: { plan: chain(support, ARM, [60, 0, z(22)], [support[0] - 30, -60, z(40)]) },
+    [freeSide]: { plan: sitFreeArm(stage, fig.arms[freeSide].root, z) },
+  } as Record<Side, LimbSpec>;
+  // The free-side foot pivots and stays down; the other leg threads under the body.
+  const hipF = fig.legs[freeSide].root;
+  const pivot: Point3 = [round(-190 + 18 * open), round(-18 + 14 * open), z(-10 - 24 * open)];
+  const legs = {
+    [freeSide]: { plan: chain(hipF, LEG, pivot, [hipF[0] - 60, hipF[1] - 20, z(-20)]), toe: SIT_PIVOT_TOE[stage] },
+    [other]: { plan: sitThread(stage, fig.legs[other].root, z), toe: SIT_THREAD_TOE[stage] },
+  } as Record<Side, LimbSpec>;
+  const k = frame(SIT_HOLD[stage], spine, { arms, legs });
+  return { ...k, sideways: { ...k.sideways, twist: roll, hipTwist: roll } };
+}
+
+// ---------------------------------------------------------------- side crunch (side-lying, rolled spine; side + top)
+
+const SC_PELVIS: Point = [0, -24];
+/** Lying on the far side, back to the camera: shoulders and hips stacked, near on top. */
+const SC_ROLL = -90;
+
+/**
+ * Lying on the side (spine rolled -90: the back faces the side camera, the belly
+ * +z), head at -x. Knees bent about 90° forward (towards +z) and stacked; the top
+ * (near) hand lightly behind the head with the elbow pointing up, the bottom hand
+ * on the floor in front of the chest. `lift` raises the head and shoulders off
+ * the floor towards the top hip: the side view sees the spine bend upwards, the
+ * top view the bent, stacked knees.
+ */
+function sideCrunch(lift: number): Keyframe {
+  const theta = 180 + 24 * lift;
+  const chest = along(SC_PELVIS, theta, 80);
+  const head = along(chest, theta + 4 * lift, 56);
+  const spine: Spine = { pelvis: SC_PELVIS, chest, head };
+  const turned: Sideways = { pelvis: 0, twist: SC_ROLL, hipTwist: SC_ROLL };
+  const fig = solveKeyframe3(solvePose(spine), spine, turned);
+  const top = fig.arms.near.root;
+  const bottom = fig.arms.far.root;
+  const behindHead: Point3 = [round(head[0] + 6), round(head[1] - 12), -18];
+  const arms: Record<Side, LimbSpec> = {
+    near: { plan: chain(top, ARM, behindHead, [top[0] + 10, top[1] - 70, -10]) },
+    far: { plan: chain(bottom, ARM, [round(bottom[0] + 60), -4, round(bottom[2] + 108)], [bottom[0] + 30, bottom[1] - 6, bottom[2] + 54]) },
+  };
+  // Hips flexed 60° (thighs towards the belly), knees bent 90° (shins back towards +x), stacked.
+  const legs = {} as Record<Side, LimbSpec>;
+  for (const side of ["near", "far"] as Side[]) {
+    const hip = fig.legs[side].root;
+    const knee: Point3 = [hip[0] + THIGH * 0.5, hip[1], hip[2] + THIGH * 0.866];
+    const foot: Point3 = [knee[0] + SHIN * 0.866, knee[1], knee[2] - SHIN * 0.5];
+    legs[side] = { plan: { mid: knee, end: foot }, toe: 0 };
+  }
+  const out = frame(lift === 0 ? 0.4 : 0.9, spine, { arms, legs });
+  return { ...out, sideways: { ...out.sideways, twist: SC_ROLL, hipTwist: SC_ROLL } };
 }
 
 export const BATCH_BG_SPECS: DoodleSpec[] = [
-  {
-    id: "wger_1828",
-    slug: "abdominal-draw-in",
-    title: "Abdominal Draw-In",
-    props: [FLOOR_PROP],
-    transition: 1.1,
-    frames: [
-      { hold: 0.5, pose: neutralSpine() },
-      { hold: 1, pose: drawnIn() },
-    ],
-  },
   {
     id: "wger_2488",
     slug: "posterior-pelvic-tilt",
@@ -589,8 +630,8 @@ export const BATCH_BG_SPECS: DoodleSpec[] = [
     props: [FLOOR_PROP],
     transition: 0.7,
     frames: [
-      { hold: 0.4, pose: crunch(183, 2) },
-      { hold: 1.1, pose: crunch(212, 12) },
+      { hold: 0.4, pose: crunch(2, 2) },
+      { hold: 1.1, pose: crunch(28, 12) },
     ],
   },
   {
@@ -650,30 +691,28 @@ export const BATCH_BG_SPECS: DoodleSpec[] = [
     id: "wger_260",
     slug: "full-sit-outs",
     title: "Full Sit Outs",
+    views: TOP_VIEWS,
     props: [FLOOR_PROP],
     transition: 0.45,
     frames: [
-      { hold: 0.3, pose: sitOut(null) },
-      { hold: 0, pose: sitOut("near", 1) },
-      { hold: 0.7, pose: sitOut("near", 2) },
-      { hold: 0, pose: sitOut("near", 1) },
-      { hold: 0.3, pose: sitOut(null) },
-      { hold: 0, pose: sitOut("far", 1) },
-      { hold: 0.7, pose: sitOut("far", 2) },
-      { hold: 0, pose: sitOut("far", 1) },
+      sitOut(null, "plank"),
+      sitOut("near", "turn"),
+      sitOut("near", "open"),
+      sitOut("near", "turn"),
+      sitOut(null, "plank"),
+      sitOut("far", "turn"),
+      sitOut("far", "open"),
+      sitOut("far", "turn"),
     ],
   },
   {
     id: "wger_576",
     slug: "side-crunch",
     title: "Side Crunch",
-    view: "front",
+    views: TOP_VIEWS,
     props: [FLOOR_PROP],
     transition: 0.8,
-    frames: [
-      { hold: 0.4, pose: sideCrunch(0) },
-      { hold: 0.9, pose: sideCrunch(1) },
-    ],
+    frames: [sideCrunch(0), sideCrunch(1)],
   },
   {
     id: "fedb_lower_back_curl",

@@ -183,6 +183,13 @@ function standFold(spine: number, back: number, hands: (shoulder: Point) => Poin
   };
 }
 
+/** Arms hanging nearly straight from the shoulder, fingertips just on the floor in front of the toes. */
+const hangToFloor = (shoulder: Point): Point => {
+  const y = Math.min(-4, shoulder[1] + 125.4);
+  const dy = y - shoulder[1];
+  return [round(shoulder[0] + Math.sqrt(Math.max(0, 125.4 ** 2 - dy * dy))), round(y)];
+};
+
 /** Standing tall, arms hanging. */
 const standTall = (): Pose =>
   standFold(-90, 0, (shoulder) => [round(shoulder[0] + 2), round(shoulder[1] + 124)]);
@@ -192,21 +199,29 @@ const standTall = (): Pose =>
 const STEP_EDGE: Prop = { kind: "box", x: 6, y: -40, w: 100, h: 40 };
 const RAIL: Prop = { kind: "box", x: 126, y: -330, w: 10, h: 330 };
 
-/** Balls of the feet on the step's edge, legs straight, a hand on the wall; `drop` lowers the heels below the step. */
-function stepCalf(drop: number): Pose {
-  const ankleY = -48 + drop;
-  const toeDeg = (Math.asin((-48 - ankleY) / 20) * 180) / Math.PI;
-  const ankle: Point = [-4, ankleY];
-  const pelvis: Point = [round(ankle[0] + 6), round(ankleY - Math.sqrt(LEG ** 2 - 36))];
+/** The ball of the foot, on the step's back edge (x = 6); the heel hangs off behind it. */
+const STEP_BALL: Point = [6, -43];
+/** How much of the foot is behind the ball (the rest rests on the step). */
+const HEEL_PART = 15;
+
+/**
+ * Balls of the feet on the step's edge, legs straight, hands on the rail. `foot`
+ * is the foot's angle (+ toes down), pivoting on the ball: up on the toes at +20,
+ * the heel dropped clearly below the step at -45, the whole body lowering with it.
+ */
+function stepCalf(foot: number): Pose {
+  const r = (foot * Math.PI) / 180;
+  const ankle: Point = [round(STEP_BALL[0] - HEEL_PART * Math.cos(r)), round(STEP_BALL[1] - HEEL_PART * Math.sin(r))];
+  const pelvis: Point = [round(ankle[0] + 6), round(ankle[1] - Math.sqrt(LEG ** 2 - 36))];
   const chest = along(pelvis, -86, 80);
   return {
     pelvis,
     chest,
-    hands: { near: [118, -262], far: [116, -258] },
+    hands: { near: [116, -276], far: [114, -272] },
     elbows: { near: { bend: 1 }, far: { bend: 1 } },
     knees: { near: { bend: -1 }, far: { bend: -1 } },
-    feet: { near: ankle, far: [ankle[0] + 3, ankleY] },
-    toes: { near: toeDeg, far: toeDeg },
+    feet: { near: ankle, far: [ankle[0] - 2, ankle[1]] },
+    toes: { near: foot, far: foot },
   };
 }
 
@@ -216,12 +231,33 @@ const WALL: Prop = { kind: "box", x: 156, y: -340, w: 14, h: 340 };
 const CHAIR_BACK: Prop = { kind: "box", x: 148, y: -192, w: 10, h: 192 };
 const CHAIR_SEAT: Prop = { kind: "box", x: 148, y: -92, w: 76, h: 92 };
 
-/** Staggered stance facing a wall: both knees bent, back heel down; the pelvis sinks (`hip`). */
-function wallSoleus(hipY: number, pelvisX: number): Pose {
-  const front: Point = [48, 0];
-  const back: Point = [-40, 0];
-  const pelvis: Point = [pelvisX, hipY];
-  const lean = 66;
+/** Ankle height above the floor; the foot runs down from it to the toes on the floor. */
+const ANKLE_Y = -7;
+/** Foot angle that puts the toes on the floor from an ankle at ANKLE_Y: a flat foot (heel down). */
+const FLAT_FOOT = round((Math.asin(-ANKLE_Y / BONES.foot) * 180) / Math.PI);
+/** Short stagger for the bent-knee calf stretches: the back foot half a stride behind. */
+const SOLEUS_BACK: Point = [-30, ANKLE_Y];
+const SOLEUS_FRONT: Point = [14, ANKLE_Y];
+const SOLEUS_PELVIS_X = -22;
+/** How far the wall version stands forward of the free-standing one, so the hands reach the wall. */
+const WALL_STEP_IN = 24;
+
+/**
+ * Pelvis of a bent-knee calf stretch: straight above `SOLEUS_PELVIS_X` at the
+ * height that puts the back shin at `shinDeg` from the floor (heel down), so a
+ * smaller angle sinks the hips straight down as the back knee travels forward.
+ */
+function overBackShin(shinDeg: number): Point {
+  const knee = along(SOLEUS_BACK, -shinDeg, SHIN);
+  const dx = SOLEUS_PELVIS_X - knee[0];
+  return [SOLEUS_PELVIS_X, round(knee[1] - Math.sqrt(THIGH ** 2 - dx * dx))];
+}
+
+/** Staggered stance facing a wall, hands on it: both knees bent, back heel down; `shinDeg` is the back shin's angle from the floor. */
+function wallSoleus(shinDeg: number): Pose {
+  const shift = (p: Point): Point => [p[0] + WALL_STEP_IN, p[1]];
+  const pelvis = shift(overBackShin(shinDeg));
+  const lean = 64;
   const shoulder = along(pelvis, -lean, 98);
   const hand: Point = [150, round(Math.max(shoulder[1] - 6, -250))];
   return {
@@ -230,46 +266,44 @@ function wallSoleus(hipY: number, pelvisX: number): Pose {
     hands: { near: hand, far: [hand[0] - 3, hand[1] + 6] },
     elbows: { near: { bend: 1 }, far: { bend: 1 } },
     knees: { near: { bend: -1 }, far: { bend: -1 } },
-    feet: { near: front, far: back },
-    toes: { near: 0, far: 0 },
+    feet: { near: shift(SOLEUS_FRONT), far: shift(SOLEUS_BACK) },
+    toes: { near: FLAT_FOOT, far: FLAT_FOOT },
   };
 }
 
-/** Free-standing bent-knee calf stretch: feet hip-width, one a little behind, both knees bent, hands resting on the front thigh. */
-function freeSoleus(hipY: number, pelvisX: number): Pose {
-  const front: Point = [52, 0];
-  const back: Point = [-30, 0];
-  const pelvis: Point = [pelvisX, hipY];
-  const knee = solvePose({ pelvis, feet: { near: front }, knees: { near: { bend: -1 } } }).legs.near.mid;
-  const shoulder = along(pelvis, -62, 98);
-  const spot: Point = [round(pelvis[0] + (knee[0] - pelvis[0]) * 0.7 + 6), round(pelvis[1] + (knee[1] - pelvis[1]) * 0.7 - 6)];
+/** Free-standing bent-knee calf stretch: feet hip-width, one slightly behind, both knees bent, hands resting on the front thigh. */
+function freeSoleus(shinDeg: number): Pose {
+  const pelvis = overBackShin(shinDeg);
+  const knee = solvePose({ pelvis, feet: { near: SOLEUS_FRONT }, knees: { near: { bend: -1 } } }).legs.near.mid;
+  const shoulder = along(pelvis, -66, 98);
+  const spot: Point = [round(pelvis[0] + (knee[0] - pelvis[0]) * 0.75 + 6), round(pelvis[1] + (knee[1] - pelvis[1]) * 0.75 - 6)];
   const reach = Math.hypot(spot[0] - shoulder[0], spot[1] - shoulder[1]);
   const k = Math.min(1, 114 / reach);
   const onThigh: Point = [round(shoulder[0] + (spot[0] - shoulder[0]) * k), round(shoulder[1] + (spot[1] - shoulder[1]) * k)];
   return {
     pelvis,
-    chest: along(pelvis, -62, 80),
+    chest: along(pelvis, -66, 80),
     hands: { near: onThigh, far: [onThigh[0] - 5, onThigh[1] + 3] },
     elbows: { near: { bend: 1 }, far: { bend: 1 } },
     knees: { near: { bend: -1 }, far: { bend: -1 } },
-    feet: { near: front, far: back },
-    toes: { near: 0, far: 0 },
+    feet: { near: SOLEUS_FRONT, far: SOLEUS_BACK },
+    toes: { near: FLAT_FOOT, far: FLAT_FOOT },
   };
 }
 
 /** Back leg straight, heel down, body in one line leaning on a chair back; `lean` is the body line's angle from the floor. */
 function chairCalf(lean: number): Pose {
-  const backAnkle: Point = [-116, 0];
-  const pelvis = along(backAnkle, -lean, 172);
+  const backAnkle: Point = [-50, ANKLE_Y];
+  const pelvis = along(backAnkle, -lean, 173.8);
   const shoulder = along(pelvis, -lean, 98);
   return {
     pelvis,
     chest: along(pelvis, -lean, 80),
-    hands: { near: [146, round(shoulder[1] + 10)], far: [144, round(shoulder[1] + 14)] },
+    hands: { near: [146, round(Math.max(shoulder[1] + 10, -200))], far: [144, round(Math.max(shoulder[1] + 14, -196))] },
     elbows: { near: { bend: 1 }, far: { bend: 1 } },
     knees: { near: { bend: -1 }, far: { bend: -1 } },
-    feet: { near: [32, 0], far: backAnkle },
-    toes: { near: 0, far: 0 },
+    feet: { near: [54, ANKLE_Y], far: backAnkle },
+    toes: { near: FLAT_FOOT, far: FLAT_FOOT },
   };
 }
 
@@ -279,7 +313,7 @@ function chairCalf(lean: number): Pose {
  * Front view, near on the viewer's left. Legs crossed with the far leg behind
  * and its foot out past the near foot; the far arm overhead; `t` pushes the hips
  * out to the far side (the back leg's side) and leans the chest the other way,
- * the arm arching over with it.
+ * the arm arching over with it; the near arm hangs at its own side.
  */
 function itBand(t: number): Pose {
   const phi = (28 * t * Math.PI) / 180;
@@ -299,13 +333,15 @@ function itBand(t: number): Pose {
   }
   const pelvis: Point = [px, py];
   const chest: Point = [round(px - 80 * Math.sin(phi)), round(py - 80 * Math.cos(phi))];
-  const far = solvePose({ pelvis, chest, feet }, { view: "front" }).arms.far.root;
-  const over = along(far, -90 - 16 * t, 125.4);
+  const arms = solvePose({ pelvis, chest, feet }, { view: "front" }).arms;
+  const over = along(arms.far.root, -90 - 16 * t, 125.4);
+  // The free (near) arm hangs at its own side, just outside the leaning shoulder.
+  const hang = along(arms.near.root, 94, 125.6);
   return {
     pelvis,
     chest,
-    hands: { near: [round(px - 14 + 6 * t), round(py - 8)], far: over },
-    elbows: { near: { bend: -1 }, far: { bend: 1 } },
+    hands: { near: hang, far: over },
+    elbows: { near: { bend: 1 }, far: { bend: 1 } },
     knees: { near: { bend: 1 }, far: { bend: -1 } },
     feet,
     toes: { near: 0, far: 180 },
@@ -432,8 +468,9 @@ export const BATCH_BF_SPECS: DoodleSpec[] = [
     transition: 1.5,
     frames: [
       { hold: 0.5, pose: standTall() },
-      { hold: 1.2, pose: standFold(48, 34, (s) => [round(s[0] + 22), -5], "hang") },
-      { hold: 1.2, pose: standFold(56, 36, (s) => [round(s[0] + 14), -5], "hang") },
+      // Arms hang straight from the shoulders to the floor in front of the toes; the head drops a little (it can't hang between the arms in a side view).
+      { hold: 1.2, pose: standFold(25, 32, hangToFloor), face: { nod: 14 } },
+      { hold: 1.2, pose: standFold(28, 34, hangToFloor), face: { nod: 14 } },
     ],
   },
   {
@@ -454,8 +491,8 @@ export const BATCH_BF_SPECS: DoodleSpec[] = [
     props: [STEP_EDGE, RAIL, FLOOR_PROP],
     transition: 1.4,
     frames: [
-      { hold: 0.5, pose: stepCalf(0) },
-      { hold: 1.4, pose: stepCalf(14) },
+      { hold: 0.5, pose: stepCalf(20) },
+      { hold: 1.4, pose: stepCalf(-45) },
     ],
   },
   {
@@ -465,8 +502,8 @@ export const BATCH_BF_SPECS: DoodleSpec[] = [
     props: [WALL, FLOOR_PROP],
     transition: 1.3,
     frames: [
-      { hold: 0.5, pose: wallSoleus(-150, 0) },
-      { hold: 1.4, pose: wallSoleus(-118, 4) },
+      { hold: 0.5, pose: wallSoleus(74) },
+      { hold: 1.4, pose: wallSoleus(60) },
     ],
   },
   {
@@ -476,8 +513,8 @@ export const BATCH_BF_SPECS: DoodleSpec[] = [
     props: [FLOOR_PROP],
     transition: 1.3,
     frames: [
-      { hold: 0.5, pose: freeSoleus(-152, 8) },
-      { hold: 1.4, pose: freeSoleus(-124, 18) },
+      { hold: 0.5, pose: freeSoleus(74) },
+      { hold: 1.4, pose: freeSoleus(60) },
     ],
   },
   {
@@ -487,8 +524,8 @@ export const BATCH_BF_SPECS: DoodleSpec[] = [
     props: [CHAIR_SEAT, CHAIR_BACK, FLOOR_PROP],
     transition: 1.3,
     frames: [
-      { hold: 0.5, pose: chairCalf(58) },
-      { hold: 1.4, pose: chairCalf(48) },
+      { hold: 0.5, pose: chairCalf(70) },
+      { hold: 1.4, pose: chairCalf(62) },
     ],
   },
   {
