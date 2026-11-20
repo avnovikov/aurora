@@ -1,9 +1,9 @@
 # Official F-Droid inclusion (Aurora · Rassvet)
 
-> **Status:** Prep in this repo. Do **not** reopen an `fdroiddata` MR yet — packagers closed [!58331](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/58331) as too early (&lt;3 months public maintenance + use the [request template](https://gitlab.com/fdroid/fdroiddata/-/blob/master/.gitlab/issue_templates/Application.md)).  
+> **Status:** Prep in this repo. Do **not** reopen an `fdroiddata` MR yet — packagers closed [!58331](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/58331) for (1) **MR template not followed** and (2) &lt;3 months public maintenance.  
 > **Package:** `com.aurora.alvorada`  
-> **Related:** [#229](https://github.com/avnovikov/aurora/issues/229), [#232](https://github.com/avnovikov/aurora/issues/232)
-
+> **Related:** [#229](https://github.com/avnovikov/aurora/issues/229), [#232](https://github.com/avnovikov/aurora/issues/232)  
+> **Next MR body:** filled [Default / App inclusion checklist](fdroid-mr-app-inclusion.md) — paste into GitLab’s **Default** MR template.
 ## Why F-Droid (not IzzyOnDroid)
 
 [IzzyOnDroid](https://izzyondroid.org/docs/general/AppInclusionPolicy/) rejects apps whose **code** is substantially LLM-assisted. Aurora disclosed that assistance and was rejected.
@@ -55,18 +55,19 @@ Similar upstream Capacitor examples in fdroiddata: `com.gurkenwerfer.calyx`, and
 
 ## Maintainer checklist (outside this repo)
 
-1. Fork https://gitlab.com/fdroid/fdroiddata  
-2. Copy draft YAML → `metadata/com.aurora.alvorada.yml` (adjust `commit` / Node `sudo` if CI requires)  
-3. Push branch; let GitLab CI run `fdroid build` / lint  
-4. Open MR titled `New App: com.aurora.alvorada`  
-5. Reply promptly to packager questions  
-6. After merge, wait for a build cycle (~1–2 days typical before it appears in the client)
+1. Wait until ~3 months of public tagged releases / maintenance.  
+2. Fork https://gitlab.com/fdroid/fdroiddata (fork **public**, branch **unprotected**).  
+3. Copy draft YAML → `metadata/com.aurora.alvorada.yml` only — set `commit:` to the **full git hash** of the release tag (never the tag name / branch). Adjust Node `sudo` if CI requires.  
+4. Push branch; let GitLab CI run `fdroid build` / lint; fix Reports (or explain Info-level BLE).  
+5. Open MR with title **`New app: Aurora`**, select the **Default** MR template, and paste the filled body from [`fdroid-mr-app-inclusion.md`](fdroid-mr-app-inclusion.md) (keep the checklist; tick Pipeline items after CI is green).  
+6. Reply promptly to packager questions.  
+7. After merge, wait for a build cycle (~1–2 days typical before it appears in the client).
 
-Optional before MR:
+Before MR:
 
-- Add `fastlane/metadata/android/en-US/changelogs/<versionCode>.txt` (≤500 chars) for each release  
-- Confirm `npm ci && npm run build && npx cap sync android && cd android && ./gradlew assembleRelease` succeeds **without** `keystore.properties`
-
+- Fastlane `changelogs/<versionCode>.txt` (≤500 chars) for the target release  
+- Confirm `npm ci && npm run build && npx cap sync android && cd android && ./gradlew assembleRelease` succeeds **without** `keystore.properties`  
+- Run `scripts/verify-android-permissions.sh` on that APK
 ## Code-quality notes (from !58331)
 
 F-Droid CI flagged **Minor** `ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION`, and `INTERNET` on tag **`v0.1.2`** (that tag still granted location via the BLE plugin merge and INTERNET via Capacitor). From **`v0.1.3` / #232** onward the app manifest strips those with `tools:node="remove"`. Re-verify after each release:
@@ -83,11 +84,13 @@ cd android && ./gradlew assembleRelease
 - **Bluetooth HR strap** is optional; BLE is FOSS (`@capacitor-community/bluetooth-le`).  
 - **Catalogue** content follows upstream licences (wger CC, etc.) — already documented in README.  
 - No NonFreeNet requirement for core coach flows (no `INTERNET` permission).  
-- Disclose AI-assisted development briefly in the MR description; name `@avnovikov` as maintainer.  
-- Wait until the Inclusion Policy’s maintenance window (~3 months) and use the Application request template when resubmitting.
+- Disclose AI-assisted development in the MR abstract (already in the draft body).  
+- Wait until the Inclusion Policy’s maintenance window (~3 months); resubmit only with the Default checklist template filled.
 
 ## References
 
+- [fdroiddata Default MR template](https://gitlab.com/fdroid/fdroiddata/-/blob/master/.gitlab/merge_request_templates/Default.md)  
+- Filled Aurora draft: [`fdroid-mr-app-inclusion.md`](fdroid-mr-app-inclusion.md)  
 - [Submitting to F-Droid Quick Start Guide](https://f-droid.org/docs/Submitting_to_F-Droid_Quick_Start_Guide/)  
 - [Inclusion Policy](https://f-droid.org/docs/Inclusion_Policy/)  
 - [RFP tracker](https://gitlab.com/fdroid/rfp) (prefer a working `fdroiddata` MR over RFP-only)  

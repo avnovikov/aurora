@@ -1,12 +1,15 @@
 # Draft for gitlab.com/fdroid/fdroiddata → metadata/com.aurora.alvorada.yml
-# Maintainer: copy into an fdroiddata fork, adjust commit/sudo if CI requires, then MR.
-# Do not treat this path as live F-Droid metadata until merged upstream.
+# Maintainer: copy into an fdroiddata fork, then MR using docs/distribution/fdroid-mr-app-inclusion.md
+# (GitLab Default template). Do not treat this path as live F-Droid metadata until merged.
 #
 # Signing: F-Droid rebuilds and signs (no AllowedAPKSigningKeys in v1).
 # Stack: Capacitor + Vite + npm → Gradle (see docs/distribution/fdroid.md).
 #
 # Permission posture (from v0.1.3 / #232): merged APK must not grant LOCATION or
 # INTERNET. Verify with: scripts/verify-android-permissions.sh
+#
+# IMPORTANT: replace COMMIT_FULL_HASH_OF_V0_1_3 with the full 40-char hash of tag
+# v0.1.3 (fdroiddata forbids tag/branch names in `commit:`).
 
 Categories:
   - Sports & Health
@@ -28,7 +31,7 @@ Repo: https://github.com/avnovikov/aurora.git
 Builds:
   - versionName: 0.1.3
     versionCode: 4
-    commit: v0.1.3
+    commit: COMMIT_FULL_HASH_OF_V0_1_3
     subdir: android/app
     sudo:
       - apt-get update
