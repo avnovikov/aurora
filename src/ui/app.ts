@@ -1,5 +1,6 @@
 import { templateToStarter } from "../data/seed";
 import type { HistoryPulse, SessionEvaluation } from "../domain/program";
+import { readScrollY, restoreScrollY } from "../library/detailScroll";
 import {
   loadPlanQueue,
   peekNextTemplate,
@@ -24,7 +25,6 @@ import { speakCoachLine, unlockCoachAudio } from "../voice/coachVoice";
 import { renderBodyView } from "./bodyView";
 import { renderCheckIn } from "./checkIn";
 import { renderEvaluationView } from "./evaluationView";
-import { readScrollY, restoreScrollY } from "../library/detailScroll";
 import { renderLibraryView } from "./libraryView";
 import { createNavigation, type NavEntry, type Navigation } from "./navigation";
 import { overrideControlsHtml, wireOverrideControls } from "./overrideControls";
