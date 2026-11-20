@@ -201,6 +201,15 @@ interface LimbInput {
   out: number;
   /** End bone direction (radians, xy plane); undefined: fingertip continues the forearm. */
   endAngle?: number | "squareToShin";
+  /** Degrees the end bone turns out of the xy plane towards +z (`sideways.toes` / `wrists`); angled ends only. */
+  endTurn?: number;
+}
+
+/** A unit direction at 2D angle `angle` (radians), turned `turn` degrees out of the xy plane towards +z. */
+function endDirection(angle: number, turn: number | undefined): Point3 {
+  if (!turn) return [Math.cos(angle), Math.sin(angle), 0];
+  const [c, s] = [Math.cos(deg(turn)), Math.sin(deg(turn))];
+  return [Math.cos(angle) * c, Math.sin(angle) * c, s];
 }
 
 function solveLimb3(input: LimbInput, pins: Pin3[]): Limb3 {
@@ -226,7 +235,7 @@ function solveLimb3(input: LimbInput, pins: Pin3[]): Limb3 {
     input.endAngle === "squareToShin"
       ? Math.atan2(tip[1] - mid[1], tip[0] - mid[0]) - Math.PI / 2
       : (input.endAngle as number);
-  return { root, mid, joint: tip, end: add(tip, [Math.cos(angle) * l3, Math.sin(angle) * l3, 0]) };
+  return { root, mid, joint: tip, end: add(tip, scale(endDirection(angle, input.endTurn), l3)) };
 }
 
 // ---------------------------------------------------------------- keyframe
@@ -401,6 +410,7 @@ function limbInput(kind: LimbKind, pose: Pose, sideways: Sideways | undefined, s
     bend: midPose?.bend ?? limb.bend,
     out: midHint?.out ?? 0,
     endAngle: endAngle === undefined ? limb.restEnd : deg(endAngle),
+    endTurn: of(sw[limb.end]),
   };
 }
 

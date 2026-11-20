@@ -261,7 +261,24 @@ export interface Sideways {
   feet?: Partial<Record<Side, number>>;
   elbows?: Partial<Record<Side, SidewaysHint>>;
   knees?: Partial<Record<Side, SidewaysHint>>;
+  /**
+   * Sideways toe angle (degrees): the foot turns out of the side view's plane,
+   * + towards +z (the far side), keeping its side-view direction (`pose.toes`,
+   * or square to the shin). Turns the near foot's toe in, the far foot's out
+   * (ankle circles, inversion / eversion). Blended over the transitions; the
+   * side view sees the foot shorter. Up to `END_TURN_LIMIT`.
+   */
+  toes?: Partial<Record<Side, number>>;
+  /**
+   * Sideways wrist angle (degrees, radial / ulnar deviation): the hand turns
+   * out of the side view's plane, + towards +z, keeping its side-view direction
+   * (`pose.wrists`, which this needs). Blended; up to `END_TURN_LIMIT`.
+   */
+  wrists?: Partial<Record<Side, number>>;
 }
+
+/** Largest sideways toe or wrist angle (degrees) the validator allows. */
+export const END_TURN_LIMIT = 60;
 
 /** What keyframes hold: a `Pose` whose knees and feet may be direction hints, resolved against the keyframe's `sideways`. */
 export type AuthoredPose = Omit<Pose, "knees" | "feet"> & {
@@ -494,6 +511,13 @@ export interface DoodleSpec {
   towel?: Towel;
   /** A partner figure (see `Partner`). */
   partner?: Partner;
+  /**
+   * Two views: a forearm whose middle is behind the torso or head (as the
+   * panel looks), and a hand-off or horns bell behind it, is drawn pale behind
+   * the body instead of bright over it (front panel: forearms and bell; side
+   * panel: the bell when it is on the far side of the body). Opt-in.
+   */
+  fadeBehind?: boolean;
   /**
    * Draw the move twice, side view and front view next to each other, from one
    * 3D-solved figure (keyframe `sideways`). Only when a reviewer asks for it (ADD VIEW).

@@ -1,4 +1,4 @@
-import { BONES, FACE_LIMITS, GIRDLE_LIMITS, SEGMENTS, TWIST_LIMITS, dist, reflectSolved, sampleTimeline, type DoodleSpec, type Keyframe, type Point, type Prop, type Sideways, type Side, type Solved } from "./rig";
+import { BONES, END_TURN_LIMIT, FACE_LIMITS, GIRDLE_LIMITS, SEGMENTS, TWIST_LIMITS, dist, reflectSolved, sampleTimeline, type DoodleSpec, type Keyframe, type Point, type Prop, type Sideways, type Side, type Solved } from "./rig";
 import { bellHolders, bells, bellSize, byTheHorns, handsOff, heldKind, heldLine, panelOf, secondView, strapAnchor, strapAttach, strapSides } from "./gear";
 import { BODY_JOINTS, holdSlips, partner3D, partnerFlat } from "./partner";
 import type { Panel } from "./project";
@@ -695,10 +695,34 @@ function girdleIssues(sw: Sideways, at: string): string[] {
   );
 }
 
+/**
+ * Sideways toe and wrist angles (`sideways.toes`, `wrists`): within
+ * `END_TURN_LIMIT`, and a wrist angle only on a hand whose pose bends the
+ * wrist (`pose.wrists`), since a straight hand tip is pinned.
+ */
+export function endTurnGuards(frames: readonly Pick<Keyframe, "pose" | "sideways">[]): string[] {
+  return frames.flatMap((frame, k) =>
+    (["toes", "wrists"] as const).flatMap((key) =>
+      (["near", "far"] as Side[]).flatMap((side) => {
+        const turn = frame.sideways?.[key]?.[side];
+        if (turn === undefined) return [];
+        const errors = Math.abs(turn) > END_TURN_LIMIT ? [`frame ${k}: sideways.${key}.${side} ${turn}° is past ${END_TURN_LIMIT}°`] : [];
+        const bent = "wrists" in frame.pose && frame.pose.wrists?.[side] !== undefined;
+        if (key === "wrists" && !bent) errors.push(`frame ${k}: sideways.wrists.${side} needs pose.wrists.${side} (the hand's side-view angle)`);
+        return errors;
+      }),
+    ),
+  );
+}
+
+/** `fadeBehind` draws depth that only two views have. */
+const fadeGuards = (spec: DoodleSpec): string[] => (spec.fadeBehind && !spec.views ? ['fadeBehind needs views: ["side", "front"] or ["side", "top"]'] : []);
+
 /** Spec-level rules for `views` / `sideways` (dual-view spec, "Scope" and "Solver"). */
 export function dualViewGuards(spec: DoodleSpec): string[] {
   const errors: string[] = [];
   const sideways = spec.frames.some((frame) => frame.sideways);
+  errors.push(...fadeGuards(spec));
   if (!spec.views) {
     if (sideways) errors.push("keyframe sideways needs views: [\"side\", \"front\"] or [\"side\", \"top\"]");
     return errors;
@@ -710,7 +734,7 @@ export function dualViewGuards(spec: DoodleSpec): string[] {
   if (second === "top") errors.push(...topGearGuards(spec));
   // Every prop kind has a front and a top drawing (frontProps, topProps switch exhaustively), so a new kind
   // that lacks one fails to compile there rather than needing a guard here.
-  errors.push(...leanPivotGuards(spec), ...turnGuards(spec.frames), ...turnGuards(spec.partner?.frames ?? [], "partner: "));
+  errors.push(...leanPivotGuards(spec), ...turnGuards(spec.frames), ...endTurnGuards(spec.frames), ...turnGuards(spec.partner?.frames ?? [], "partner: "));
   return errors;
 }
 

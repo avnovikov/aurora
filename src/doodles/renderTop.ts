@@ -6,7 +6,7 @@
  */
 import { FOCUS_BY_ID } from "./focus";
 import { project } from "./project";
-import { depthOrder, handZ, label, LABEL_GAP, LABEL_SIZE, panelExtras3, propDepth, railHalf, type HandZ } from "./renderDual";
+import { depthOrder, handZ, label, LABEL_GAP, LABEL_SIZE, multiInset, panelExtras3, propDepth, railHalf, type HandZ } from "./renderDual";
 import {
   extraPoints,
   figureExtent,
@@ -14,6 +14,7 @@ import {
   frame,
   highlightSvg,
   identity,
+  insetSvg,
   PADDING,
   partnerSvg,
   propSvg,
@@ -21,6 +22,8 @@ import {
   svgShell,
   timingAttr,
   union,
+  type FigureOptions,
+  type Inset,
   type Mapper,
   type PanelExtras,
   type ViewBox,
@@ -72,6 +75,8 @@ export function topProps(props: readonly Prop[], hands: HandZ = handZ(undefined)
 
 interface TopLayout {
   view: ViewBox;
+  /** The zoom inset on one panel (`focus.panel`), if any. */
+  inset?: Inset;
   /** Added to top-panel y so it sits under the side panel (x is shared). */
   topShift: number;
   side: Solved[];
@@ -95,9 +100,10 @@ export function topLayout(spec: DoodleSpec, timeline: Timeline3 = sampleTimeline
   const shifted: ViewBox = { ...topBox, y: topBox.y + topShift };
   const topLabel = shifted.y + shifted.h + LABEL_GAP + LABEL_SIZE;
   const figures = union(sideBox, shifted);
-  const drawing = { ...figures, h: topLabel + LABEL_SIZE * 0.3 - figures.y };
+  const zoom = multiInset(spec, { side, top }, figures, { ...figures, h: topLabel + LABEL_SIZE * 0.3 - figures.y });
   return {
-    view: frame(drawing),
+    view: frame(zoom.drawing),
+    inset: zoom.inset,
     topShift,
     side,
     top,
@@ -106,7 +112,7 @@ export function topLayout(spec: DoodleSpec, timeline: Timeline3 = sampleTimeline
   };
 }
 
-/** Animated SVG with the side panel over the top panel; no zoom inset. */
+/** Animated SVG with the side panel over the top panel, and a zoom inset on one of them when `focus.panel` asks. */
 export function renderTopSvg(spec: DoodleSpec): string {
   const timeline = sampleTimeline3(spec);
   const timing = timingAttr(timeline);
@@ -116,17 +122,23 @@ export function renderTopSvg(spec: DoodleSpec): string {
   const props = spec.props ?? [];
   const { side, top } = layout.extras;
   const own = (e: PanelExtras) => ({ faces: e.faces, held: e.held });
+  const options: Record<"side" | "top", FigureOptions> = {
+    side: { panel: "side", ...own(side) },
+    // Seen from above both sides are square on; higher parts are drawn over lower ones.
+    top: { farOpacity: 1, order: depthOrder(spec, timeline.poses, (p) => -p[1]), panel: "top", ...own(top) },
+  };
+  const zoomed = focus?.panel === "top" ? "top" : "side";
   return svgShell(layout.view, spec.title, [
     highlightSvg(focus, layout.side, timing, identity),
     resolveFloors(props, side.partner ? [...layout.side, ...side.partner.poses] : layout.side).map(propSvg).join(""),
     partnerSvg(side, timing, identity, { panel: "side" }),
-    figureSvg(spec, layout.side, timing, identity, { panel: "side", ...own(side) }),
+    figureSvg(spec, layout.side, timing, identity, options.side),
     highlightSvg(focus, layout.top, timing, shift),
     topProps(props, handZ(timeline.poses[0]), layout.topShift).map(propSvg).join(""),
     partnerSvg(top, timing, shift, { farOpacity: 1, panel: "top" }),
-    // Seen from above both sides are square on; higher parts are drawn over lower ones.
-    figureSvg(spec, layout.top, timing, shift, { farOpacity: 1, order: depthOrder(spec, timeline.poses, (p) => -p[1]), panel: "top", ...own(top) }),
+    figureSvg(spec, layout.top, timing, shift, options.top),
     label("side", ...layout.labels.side),
     label("top", ...layout.labels.top),
+    focus && layout.inset ? insetSvg(spec, focus, layout.inset, layout[zoomed], timing, layout.extras[zoomed], options[zoomed]) : "",
   ]);
 }

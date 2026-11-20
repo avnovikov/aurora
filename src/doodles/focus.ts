@@ -33,6 +33,11 @@ export interface Focus {
   floor?: boolean;
   /** Multiplies the inset label size (default 1). */
   labelScale?: number;
+  /**
+   * Two-view doodles: the panel the inset zooms on (`joints` as drawn there),
+   * placed right of both panels. Without it a two-view doodle has no inset.
+   */
+  panel?: "side" | "front" | "top";
 }
 
 const BOTH_WRISTS: Focus = {

@@ -266,13 +266,17 @@ function bellNear3(figure: Figure3, key: BellKey, radius: number): Point3 {
  * front of the head or behind it.
  */
 export function bellInFront(spec: DoodleSpec, figures: Figure3[], panel: Panel): boolean[] {
+  return bellPoints3(spec, figures).map((bell, i) => (panel === "side" ? bell[2] < figures[i].head[2] : bell[0] > figures[i].head[0]));
+}
+
+/** Per sample, roughly where the first bell is in 3D (see `bellNear3`), blended like the drawing. */
+export function bellPoints3(spec: DoodleSpec, figures: Figure3[]): Point3[] {
   const side = spec.kettlebell!.hands[0];
   const blends = bellBlends(spec, figures.length, side);
   const radius = bellSize(spec);
   return figures.map((figure, i) => {
     const { from, to, t } = blends[i];
-    const bell = lerp3(bellNear3(figure, from, radius), bellNear3(figure, to, radius), t);
-    return panel === "side" ? bell[2] < figure.head[2] : bell[0] > figure.head[0];
+    return lerp3(bellNear3(figure, from, radius), bellNear3(figure, to, radius), t);
   });
 }
 

@@ -193,9 +193,15 @@ function bellSvg(spec: DoodleSpec, side: Side, poses: Solved[], timing: string, 
  * otherwise drawn over the figure, shown only while `inFront` (when known), so
  * a bell behind the head is hidden by it (and by the neck).
  */
-function layeredBellSvg(spec: DoodleSpec, back: boolean, poses: Solved[], timing: string, map: Mapper, scale: number, panel: Panel, inFront?: boolean[]): string {
+function layeredBellSvg(spec: DoodleSpec, back: boolean, poses: Solved[], timing: string, map: Mapper, scale: number, panel: Panel, inFront?: boolean[], behind?: boolean[]): string {
   if (!spec.kettlebell || !layeredBell(spec)) return "";
   const side = spec.kettlebell.hands[0];
+  if (behind?.some(Boolean)) {
+    // `fadeBehind`: pale behind the body while it is behind, bright over the figure otherwise.
+    const [whenBehind, otherwise] = back ? [`${FAR_OPACITY}`, "0"] : ["0", "1"];
+    const values = behind.map((b) => (b ? whenBehind : otherwise));
+    return bellGroup(spec, side, poses, timing, map, scale, panel, ` opacity="${values[0]}"`, animate("opacity", values, timing));
+  }
   if (back) return inFront ? bellGroup(spec, side, poses, timing, map, scale, panel, "") : "";
   if (!inFront) return bellGroup(spec, side, poses, timing, map, scale, panel, "");
   const shown = inFront.map((front) => (front ? "1" : "0"));
@@ -493,6 +499,7 @@ export const FIGURE_PARTS = [
   "armFar",
   "strapFar",
   "bellFar",
+  "forearmsBack",
   "bellBack",
   "spine",
   "head",
@@ -510,7 +517,7 @@ export const FIGURE_PARTS = [
 ] as const;
 export type FigurePart = (typeof FIGURE_PARTS)[number];
 
-interface FigureOptions {
+export interface FigureOptions {
   /** Keeps the head (and wheel) in proportion under a zoom. */
   headScale?: number;
   /** Opacity of the far arm and leg (1 when both sides are seen square on). */
@@ -527,6 +534,36 @@ interface FigureOptions {
   held?: Point[][];
   /** Front panel: per sample, whether the stick or towel is in front of the torso (drawn behind it and again over the figure). */
   heldInFront?: boolean[];
+  /** `fadeBehind`: per sample, whether each forearm and the layered bell is behind the body (drawn pale, behind it). */
+  behind?: Behind;
+}
+
+/** Per sample, what is behind the body on a panel (see `DoodleSpec.fadeBehind`). */
+export interface Behind {
+  forearms?: Partial<Record<Side, boolean[]>>;
+  bell?: boolean[];
+}
+
+const forearmPath = (side: Side): Path => (p) => [p.arms[side].mid, p.arms[side].joint, p.arms[side].end];
+const upperArmPath = (side: Side): Path => (p) => [p.chest, p.arms[side].root, p.arms[side].mid];
+
+/**
+ * An arm. With `behind` samples (see `Behind`) its forearm is split off and
+ * shown here only while it is in front; `forearmsBackSvg` draws it pale behind the body.
+ */
+function armSvg(side: Side, poses: Solved[], timing: string, map: Mapper, opacity: number, behind: boolean[] | undefined): string {
+  if (!behind?.some(Boolean)) return animatedPolyline(armPath(side), poses, timing, opacity, map);
+  const fore = animatedLine(poses.map(forearmPath(side)), timing, map, "", behind.map((b) => !b));
+  return animatedPolyline(upperArmPath(side), poses, timing, opacity, map) + (opacity < 1 ? `<g${fadeAttr(opacity)}>${fore}</g>` : fore);
+}
+
+/** The forearms while they are behind the body, pale (drawn just behind the torso). */
+function forearmsBackSvg(poses: Solved[], timing: string, map: Mapper, behind: Behind | undefined): string {
+  const lines = (["far", "near"] as Side[])
+    .filter((side) => behind?.forearms?.[side]?.some(Boolean))
+    .map((side) => animatedLine(poses.map(forearmPath(side)), timing, map, "", behind!.forearms![side]))
+    .join("");
+  return lines ? `<g${fadeAttr(FAR_OPACITY)}>${lines}</g>` : "";
 }
 
 /** The far side at full strength in a front view, faded behind the near side otherwise. */
@@ -538,12 +575,12 @@ export function figureSvg(
   poses: Solved[],
   timing: string,
   map: Mapper,
-  { headScale = 1, farOpacity = FAR_OPACITY, order = FIGURE_PARTS, panel: view = panelOf(spec), bellInFront, faces, held, heldInFront }: FigureOptions = {},
+  { headScale = 1, farOpacity = FAR_OPACITY, order = FIGURE_PARTS, panel: view = panelOf(spec), bellInFront, faces, held, heldInFront, behind }: FigureOptions = {},
 ): string {
   const panel = gearPanel(view);
   const parts: Record<FigurePart, () => string> = {
     legFar: () => animatedPolyline(legPath("far"), poses, timing, farOpacity, map),
-    armFar: () => animatedPolyline(armPath("far"), poses, timing, farOpacity, map),
+    armFar: () => armSvg("far", poses, timing, map, farOpacity, behind?.forearms?.far),
     spine: () => animatedPolyline(spinePath, poses, timing, 1, map),
     head: () =>
       faceSvg(faces, timing, map, true) +
@@ -551,15 +588,16 @@ export function figureSvg(
       faceSvg(faces, timing, map, false),
     legNear: () => animatedPolyline(legPath("near"), poses, timing, 1, map),
     band: () => bandSvg(spec, poses, timing, map),
-    armNear: () => animatedPolyline(armPath("near"), poses, timing, 1, map),
+    armNear: () => armSvg("near", poses, timing, map, 1, behind?.forearms?.near),
+    forearmsBack: () => forearmsBackSvg(poses, timing, map, behind),
     wheel: () => wheelSvg(spec, poses, timing, map, headScale),
     strapFar: () => strapSvg(spec, "far", poses, timing, map, headScale, panel, farOpacity),
     strapNear: () => strapSvg(spec, "near", poses, timing, map, headScale, panel, 1),
     handBand: () => handBandSvg(spec, poses, timing, map),
     bellFar: () => bellSvg(spec, "far", poses, timing, map, headScale, panel, farOpacity),
     bellNear: () => bellSvg(spec, "near", poses, timing, map, headScale, panel, 1),
-    bellBack: () => layeredBellSvg(spec, true, poses, timing, map, headScale, panel, bellInFront),
-    bellFront: () => layeredBellSvg(spec, false, poses, timing, map, headScale, panel, bellInFront),
+    bellBack: () => layeredBellSvg(spec, true, poses, timing, map, headScale, panel, bellInFront, behind?.bell),
+    bellFront: () => layeredBellSvg(spec, false, poses, timing, map, headScale, panel, bellInFront, behind?.bell),
     held: () => (heldInFront ? "" : heldSvg(spec, held, timing, map)),
     heldBack: () => (heldInFront ? heldSvg(spec, held, timing, map) : ""),
     heldFront: () => (heldInFront?.some(Boolean) ? heldSvg(spec, held, timing, map, heldInFront) : ""),
@@ -567,7 +605,7 @@ export function figureSvg(
   return order.map((part) => parts[part]()).join("");
 }
 
-interface Inset {
+export interface Inset {
   cx: number;
   cy: number;
   r: number;
@@ -576,7 +614,7 @@ interface Inset {
 }
 
 /** Inset to the right of the figure, zoomed on the focus joints' range over the loop. */
-function insetFor(focus: Focus | undefined, poses: Solved[], figure: ViewBox): Inset | undefined {
+export function insetFor(focus: Focus | undefined, poses: Solved[], figure: ViewBox): Inset | undefined {
   if (!focus?.zoom) return undefined;
   const points = poses.flatMap((pose) =>
     figurePoints(pose)
@@ -601,7 +639,7 @@ const labelBaseline = (inset: Inset, focus?: Focus): number =>
   inset.cy + inset.r + labelSize(inset.r, focus) * LABEL_GAP;
 
 /** The inset ring plus, below it, its label (descenders included). */
-function insetExtent(inset: Inset, focus: Focus | undefined): ViewBox {
+export function insetExtent(inset: Inset, focus: Focus | undefined): ViewBox {
   const reach = inset.r + RING_WIDTH / 2;
   const bottom = focus?.label
     ? labelBaseline(inset, focus) + labelSize(inset.r, focus) * LABEL_DESCENT
@@ -609,7 +647,7 @@ function insetExtent(inset: Inset, focus: Focus | undefined): ViewBox {
   return { x: inset.cx - reach, y: inset.cy - reach, w: 2 * reach, h: bottom - (inset.cy - reach) };
 }
 
-function insetSvg(spec: DoodleSpec, focus: Focus, inset: Inset, poses: Solved[], timing: string, extras: PanelExtras): string {
+export function insetSvg(spec: DoodleSpec, focus: Focus, inset: Inset, poses: Solved[], timing: string, extras: PanelExtras, options: FigureOptions = {}): string {
   const { cx, cy, r, zoom, map } = inset;
   // Unique per doodle: several SVGs inlined on one page must not share a clip.
   const clipId = `focus-${spec.slug}`;
@@ -625,7 +663,7 @@ function insetSvg(spec: DoodleSpec, focus: Focus, inset: Inset, poses: Solved[],
 <g clip-path="url(#${clipId})">
 <circle cx="${fmt(cx)}" cy="${fmt(cy)}" r="${fmt(r)}" style="fill:${PAPER}" stroke="none"/>
 ${floor}${highlightSvg(focus, poses, timing, map)}
-${figureSvg(spec, poses, timing, map, { headScale: zoom, farOpacity: farOpacityOf(spec), faces: extras.faces, held: extras.held })}
+${figureSvg(spec, poses, timing, map, { headScale: zoom, farOpacity: farOpacityOf(spec), faces: extras.faces, held: extras.held, ...options })}
 </g>
 <circle cx="${fmt(cx)}" cy="${fmt(cy)}" r="${fmt(r)}" style="stroke:${FOCUS_COLOUR}" stroke-width="${RING_WIDTH}"/>
 ${label}`;
