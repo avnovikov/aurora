@@ -3,6 +3,7 @@ import type { AuthoredPose, DoodleSpec, Keyframe, Point, Pose, Prop, Side } from
 import { solveKeyframe3, type Point3 } from "./rig3d";
 import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
 import { FLOOR_PROP, along, angle, lerp, round, supineTorso } from "./geom";
+import { lyingFigureFour } from "./specsBatchBD";
 import { plank } from "./specsBatchI";
 
 /**
@@ -66,27 +67,6 @@ function heldHamstring(thigh: number, extend: number): Pose {
     knees: { near: { at: knee }, far: { bend: -1 } },
     feet: { near: ankle, far: FLAT_ANKLE },
     toes: { far: -80 },
-  };
-}
-
-/** Figure four on the back: the far leg bottom, the near ankle crossed over its knee; `pull` draws both legs to the chest. */
-function figureFour(thigh: number, pull: boolean): Pose {
-  const base = supine();
-  const farKnee = along(SP_PELVIS, thigh, THIGH);
-  const farAnkle: Point = pull
-    ? along(farKnee, thigh + 115, SHIN)
-    : [round(farKnee[0] + Math.sqrt(SHIN ** 2 - (farKnee[1] + 5) ** 2)), -5];
-  const nearAnkle = along(farKnee, thigh + 90, 8);
-  const hands: Pose["hands"] = pull
-    ? behindThigh(thigh, 58)
-    : { near: along(shoulderOf({ ...base, hands: {} }), 4, 124.5), far: along(shoulderOf({ ...base, hands: {} }), 5, 124) };
-  return {
-    ...base,
-    hands,
-    elbows: { near: { bend: 1 }, far: { bend: 1 } },
-    knees: { far: { at: farKnee }, near: { bend: -1 } },
-    feet: { near: nearAnkle, far: farAnkle },
-    toes: { near: thigh + 90, far: pull ? thigh + 205 : 0 },
   };
 }
 
@@ -167,23 +147,33 @@ function standingQuad(pull: number): Pose {
   };
 }
 
-// ---------------------------------------------------------------- ankle circles (side view, toe draws the circle)
+// ---------------------------------------------------------------- ankle circles (side view, the toe circles in front of the ankle)
 
 const SUPPORT: Prop = { kind: "box", x: 112, y: -230, w: 26, h: 230 };
 
-/** One foot lifted a little off the floor, knee forward; the toe sweeps round the ankle (`toe` in degrees). */
-function ankleCircle(toe: number): Pose {
-  const pelvis: Point = [0, -172];
-  const knee = along(pelvis, 48, THIGH);
-  const ankle = along(knee, 103, SHIN);
+/**
+ * Standing tall, hands on a support; the near (bright) foot lifted a little off the floor, knee forward.
+ * The big toe circles round the ankle, always in front of it: `phi` 0 pointed (toe down and forward),
+ * 90 in, 180 flexed (toe up and forward), 270 out. The rig's foot can't turn sideways (its toe stays
+ * in the side plane even in two views, and from the front the support hides the legs), so in and out
+ * show only as the toe passing level, half way between pointed and flexed.
+ */
+function ankleCircle(phi: number): Keyframe {
+  const pelvis: Point = [0, -173.9];
+  const knee = along(pelvis, 50, THIGH);
+  const ankle = along(knee, 100, SHIN);
+  const toe = round(24 + 46 * Math.cos((phi * Math.PI) / 180));
   return {
-    pelvis,
-    chest: [0, -252],
-    hands: { near: [108, -226], far: [8, -148] },
-    elbows: { near: { bend: 1 }, far: { bend: 1 } },
-    knees: { near: { bend: -1 }, far: { at: knee } },
-    feet: { near: [-4, 0], far: ankle },
-    toes: { near: 0, far: toe },
+    hold: 0,
+    pose: {
+      pelvis,
+      chest: [0, -253.9],
+      hands: { near: [108, -232], far: [104, -232] },
+      elbows: { near: { bend: 1 }, far: { bend: 1 } },
+      knees: { near: { at: knee } },
+      feet: { near: ankle, far: [0, 0] },
+      toes: { near: toe, far: 0 },
+    },
   };
 }
 
@@ -234,51 +224,70 @@ function halfKneelOpen(open: number): Keyframe {
 
 // ---------------------------------------------------------------- knee circles (standing, side + top)
 
-const KC_PELVIS: Point = [0, -146];
-
 const vsub = (a: Point3, b: Point3): Point3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
 const vlen = (a: Point3): number => Math.hypot(a[0], a[1], a[2]);
 
-/** The knee of a leg from `hip` to `ankle` (3D), bent towards the horizontal direction `phi` (degrees from forward, towards +z). */
-function kneeToward(hip: Point3, ankle: Point3, phi: number): Point3 {
+/** The knee of a leg from `hip` to `ankle` (3D), bent towards `aim`. */
+function kneeAt(hip: Point3, ankle: Point3, aim: Point3): Point3 {
   const d = vsub(ankle, hip);
   const len = vlen(d);
   const axis: Point3 = [d[0] / len, d[1] / len, d[2] / len];
-  const r = (phi * Math.PI) / 180;
-  const want: Point3 = [Math.cos(r), 0, Math.sin(r)];
-  const dot = want[0] * axis[0] + want[1] * axis[1] + want[2] * axis[2];
-  const n: Point3 = [want[0] - dot * axis[0], want[1] - dot * axis[1], want[2] - dot * axis[2]];
+  const w = vsub(aim, hip);
+  const dot = w[0] * axis[0] + w[1] * axis[1] + w[2] * axis[2];
+  const n: Point3 = [w[0] - dot * axis[0], w[1] - dot * axis[1], w[2] - dot * axis[2]];
   const nl = vlen(n);
   const a = (THIGH ** 2 - SHIN ** 2 + len ** 2) / (2 * len);
   const h = Math.sqrt(Math.max(0, THIGH ** 2 - a * a));
-  return [
-    round(hip[0] + axis[0] * a + (n[0] / nl) * h),
-    round(hip[1] + axis[1] * a + (n[1] / nl) * h),
-    round(hip[2] + axis[2] * a + (n[2] / nl) * h),
-  ];
+  return [hip[0] + axis[0] * a + (n[0] / nl) * h, hip[1] + axis[1] * a + (n[1] / nl) * h, hip[2] + axis[2] * a + (n[2] / nl) * h];
 }
 
-/** Standing with the feet together and the knees soft; the knees draw a circle, `phi` round it. Hands rest on the waist. */
+/** Knee circle in shin lean (degrees): forward `KC_FORWARD` ± `KC_ROUND`, sideways ± `KC_ROUND`, so the knees stay bent and in front of the ankles. */
+const KC_FORWARD = 28;
+const KC_ROUND = 16;
+
+/**
+ * Standing with the feet together and the knees soft; both knees draw a small circle in front of the
+ * ankles, `phi` round it (0 forward, 90 out to the far side, 180 back towards straight, never past,
+ * 270 to the near side). The feet stay flat, the shins tilt and the hips ride up and down over them.
+ * Hands rest on the waist.
+ */
 function kneeCircle(phi: number): Keyframe {
-  const pelvis = KC_PELVIS;
-  const ankleOf = (side: Side): Point3 => [side === "near" ? 8 : 4, 0, zOut(side) * 4];
-  const hipOf = (side: Side): Point3 => [pelvis[0], pelvis[1], zOut(side) * HIP_SIDE];
-  const knees = { near: kneeToward(hipOf("near"), ankleOf("near"), phi), far: kneeToward(hipOf("far"), ankleOf("far"), phi) };
+  const r = (phi * Math.PI) / 180;
+  const forward = ((KC_FORWARD + KC_ROUND * Math.cos(r)) * Math.PI) / 180;
+  const side = ((KC_ROUND * Math.sin(r)) * Math.PI) / 180;
+  const ankleOf = (s: Side): Point3 => [6, 0, zOut(s) * 4];
+  const kneeOf = (s: Side): Point3 => {
+    const a = ankleOf(s);
+    return [a[0] + SHIN * Math.sin(forward) * Math.cos(side), a[1] - SHIN * Math.cos(forward) * Math.cos(side), a[2] + SHIN * Math.sin(side)];
+  };
+  const knees = { near: kneeOf("near"), far: kneeOf("far") };
+  // The pelvis sits over the heels, as high as both thighs reach (the lower of the two).
+  const hipY = (s: Side): number => {
+    const k = knees[s];
+    return k[1] - Math.sqrt(THIGH ** 2 - k[0] ** 2 - (zOut(s) * HIP_SIDE - k[2]) ** 2);
+  };
+  const pelvis: Point = [0, round(Math.max(hipY("near"), hipY("far")) + 0.05)];
+  // The other leg then has a little slack: bend its knee towards where it was aimed.
+  for (const s of ["near", "far"] as Side[]) {
+    const hip: Point3 = [pelvis[0], pelvis[1], zOut(s) * HIP_SIDE];
+    knees[s] = kneeAt(hip, ankleOf(s), knees[s]);
+  }
+  const k2 = (s: Side): Point => [round(knees[s][0]), round(knees[s][1])];
   return {
     hold: 0,
     pose: {
       pelvis,
-      chest: [0, -226],
-      hands: { near: [8, -178], far: [4, -178] },
+      chest: [0, round(pelvis[1] - 80)],
+      hands: { near: [8, round(pelvis[1] - 32)], far: [4, round(pelvis[1] - 32)] },
       elbows: { near: { bend: 1 }, far: { bend: 1 } },
-      knees: { near: { at: [knees.near[0], knees.near[1]] }, far: { at: [knees.far[0], knees.far[1]] } },
+      knees: { near: { at: k2("near") }, far: { at: k2("far") } },
       feet: { near: [ankleOf("near")[0], 0], far: [ankleOf("far")[0], 0] },
       toes: { near: 0, far: 0 },
     },
     sideways: {
       hands: { near: -40, far: 40 },
       elbows: { near: { out: 80 }, far: { out: 80 } },
-      knees: { near: { at: knees.near[2] }, far: { at: knees.far[2] } },
+      knees: { near: { at: round(knees.near[2]) }, far: { at: round(knees.far[2]) } },
       feet: { near: ankleOf("near")[2], far: ankleOf("far")[2] },
     },
   };
@@ -446,18 +455,17 @@ export const BATCH_BE_SPECS: DoodleSpec[] = [
     title: "Ankle Circles",
     props: [SUPPORT, FLOOR_PROP],
     transition: 0.35,
-    frames: CIRCLE.map((toe) => ({ hold: 0, pose: ankleCircle(toe - 90) })),
+    frames: CIRCLE.map(ankleCircle),
   },
   {
     id: "fedb_ankle_on_the_knee",
     slug: "ankle-on-the-knee",
     title: "Ankle On The Knee",
+    views: TOP_VIEWS,
     props: [FLOOR_PROP],
     transition: 1.3,
-    frames: [
-      { hold: 0.5, pose: figureFour(-50, false) },
-      { hold: 1.4, pose: figureFour(-104, true) },
-    ],
+    // The same move as the Lying Figure Four Stretch (wger_1869).
+    frames: [lyingFigureFour(0, 0.5), lyingFigureFour(1, 1.4)],
   },
   {
     id: "wger_1840",

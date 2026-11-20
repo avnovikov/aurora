@@ -194,15 +194,16 @@ function chairStretch(lean: boolean): Pose {
 // ---------------------------------------------------------------- cross-body shoulder stretch (wger_2685, front view)
 
 function crossBody(pull: number): Pose {
-  const shoulder: Point = [-22, -271.3];
+  // Legs dead straight under the hips (thigh + shin = 174): a front-view knee bend would kink sideways.
+  const shoulder: Point = [-22, -272];
   const hand = along(shoulder, lerp(10, -2, pull), ARM - 0.4);
   const elbow = along(shoulder, lerp(10, -2, pull), 60);
   return {
-    pelvis: [0, -173.3],
-    chest: [0, -253.3],
+    pelvis: [0, -174],
+    chest: [0, -254],
     hands: { near: hand, far: [round(elbow[0] + 12), round(elbow[1] + 2)] },
     elbows: { near: { bend: 1 }, far: { bend: 1 } },
-    feet: { near: [-9, 0], far: [9, 0] },
+    feet: { near: [-8, 0], far: [8, 0] },
     toes: { near: 180, far: 0 },
   };
 }

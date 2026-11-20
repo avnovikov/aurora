@@ -99,43 +99,6 @@ function lungeFold(lean: number): Pose {
 const SUPINE_PELVIS: Point = [-12, -20];
 const SUPINE = (): Pose => supineTorso(SUPINE_PELVIS, 77);
 
-/** Lying figure four: the near ankle crossed over the far knee, the far thigh drawn in, both hands behind the far thigh. */
-function figureFour(thigh: number, crossed: boolean, pull: boolean): Pose {
-  const base = SUPINE();
-  const farKnee = along(SUPINE_PELVIS, thigh, THIGH);
-  const farAnkle: Point = pull ? along(farKnee, thigh + 115, SHIN) : [round(farKnee[0] + Math.sqrt(SHIN * SHIN - (farKnee[1] + 5) ** 2)), -5];
-  const nearAnkle: Point = crossed ? along(farKnee, thigh + 90, 8) : [farAnkle[0] - 4, -5];
-  const behindThigh = along(SUPINE_PELVIS, thigh, 58);
-  const hands: Pose["hands"] = pull
-    ? { near: behindThigh, far: [behindThigh[0] - 2, behindThigh[1]] }
-    : { near: [round(base.chest![0] - 17 + 124), -20], far: [round(base.chest![0] - 17 + 124), -21] };
-  return {
-    ...base,
-    hands,
-    elbows: { near: { bend: 1 }, far: { bend: 1 } },
-    knees: { far: { at: farKnee }, near: { bend: -1 } },
-    feet: { near: nearAnkle, far: farAnkle },
-    toes: { near: crossed ? thigh + 90 : 0, far: pull ? thigh + 115 + 90 : 0 },
-  };
-}
-
-/** Happy baby: thighs drawn towards the armpits, shins vertical, both hands holding the outsides of the feet. */
-function happyBaby(thigh: number): Pose {
-  const base = SUPINE();
-  const kneeNear = along(SUPINE_PELVIS, thigh, THIGH);
-  const kneeFar = along(SUPINE_PELVIS, thigh - 4, THIGH);
-  const ankleNear: Point = [kneeNear[0], round(kneeNear[1] - SHIN)];
-  const ankleFar: Point = [kneeFar[0] - 2, round(kneeFar[1] - SHIN)];
-  return {
-    ...base,
-    hands: { near: [ankleNear[0] - 6, round(ankleNear[1] + 36)], far: [ankleFar[0] - 6, round(ankleFar[1] + 36)] },
-    elbows: { near: { bend: 1 }, far: { bend: 1 } },
-    knees: { near: { at: kneeNear }, far: { at: kneeFar } },
-    feet: { near: ankleNear, far: ankleFar },
-    toes: { near: 180, far: 180 },
-  };
-}
-
 // ---------------------------------------------------------------- 3D helpers (top view)
 
 /**
@@ -180,6 +143,91 @@ function legsKeyframe(pose: AuthoredPose, legs: Record<Side, Leg3>, toes: Record
       feet: { near: legs.near.ankle[2], far: legs.far.ankle[2] },
     },
   };
+}
+
+// ---------------------------------------------------------------- lying on the back (side + top)
+
+const v3 = {
+  add: (a: Point3, b: Point3): Point3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]],
+  scale: (a: Point3, k: number): Point3 => [a[0] * k, a[1] * k, a[2] * k],
+  unit: (a: Point3): Point3 => {
+    const l = Math.hypot(a[0], a[1], a[2]) || 1;
+    return [a[0] / l, a[1] / l, a[2] / l];
+  },
+};
+const r3 = (p: Point3): Point3 => [round(p[0]), round(p[1]), round(p[2])];
+
+/**
+ * Lying figure four (side + top): the far leg bent, the near ankle crossed over it just below the
+ * far knee, the near knee opened out to the near side. `pull` 0: the far foot flat on the floor,
+ * hands down by the sides; 1: the far thigh drawn in towards the chest, both hands behind it (the
+ * near hand reaching through between the legs). Exported for the duplicate in batch BE.
+ */
+export function lyingFigureFour(pull: 0 | 1, hold: number): Keyframe {
+  const base = SUPINE();
+  const hipFar = hipOf(SUPINE_PELVIS, "far");
+  const hipNear = hipOf(SUPINE_PELVIS, "near");
+  // Far leg: thigh 45 up from the floor with the foot planted, or drawn in just past vertical.
+  const thighDeg = pull ? -100 : -45;
+  const farKnee = r3(v3.add(hipFar, [THIGH * Math.cos((thighDeg * Math.PI) / 180), THIGH * Math.sin((thighDeg * Math.PI) / 180), 0]));
+  const farAnkle: Point3 = pull
+    ? r3(v3.add(farKnee, [SHIN * Math.cos(((thighDeg + 115) * Math.PI) / 180), SHIN * Math.sin(((thighDeg + 115) * Math.PI) / 180), 0]))
+    : [round(farKnee[0] + Math.sqrt(SHIN * SHIN - (farKnee[1] + 5) ** 2)), -5, HIP_SIDE];
+  // Near ankle on the front of the far thigh, just below the knee, a touch to the near side.
+  const thighDir = v3.unit([farKnee[0] - hipFar[0], farKnee[1] - hipFar[1], 0]);
+  const front: Point3 = [-thighDir[1], thighDir[0], 0];
+  const onThigh = v3.add(hipFar, v3.scale(thighDir, THIGH - 14));
+  const nearAnkle = r3(v3.add(onThigh, [front[0] * -7, front[1] * -7, -6]));
+  // Near knee opened out to the near side, about level with the crossing.
+  const nearKnee = kneeBetween(hipNear, nearAnkle, [nearAnkle[0] - 30, nearAnkle[1] + 20, -90]);
+  // Hands: by the sides on the floor (arms long), or behind the far thigh (its back is away from `front`).
+  const shoulderAt = (side: Side): Point3 => [base.chest![0] - 18, base.chest![1], zOut(side) * 22];
+  const palmDown = (side: Side): Point3 => r3(v3.add(shoulderAt(side), v3.scale(v3.unit([1, 0.1, zOut(side) * 0.1]), 125.4)));
+  const grip = v3.add(hipFar, v3.scale(thighDir, 56));
+  const hands: Record<Side, Point3> = pull
+    ? { near: r3(v3.add(grip, [-front[0] * 8, -front[1] * 8, -4])), far: r3(v3.add(grip, [-front[0] * 8, -front[1] * 8, 16])) }
+    : { near: palmDown("near"), far: palmDown("far") };
+  return legsKeyframe(
+    {
+      ...base,
+      hands: { near: flat(hands.near), far: flat(hands.far) },
+      elbows: { near: { bend: 1 }, far: { bend: 1 } },
+    },
+    { near: { knee: nearKnee, ankle: nearAnkle }, far: { knee: farKnee, ankle: farAnkle } },
+    { near: round(thighDeg + 90 + 180), far: pull ? thighDeg + 115 + 90 : 0 },
+    { hands: { near: hands.near[2], far: hands.far[2] } },
+    hold,
+  );
+}
+
+/**
+ * Happy baby (side + top): knees wide, outside the torso towards the armpits, shins vertical with
+ * the soles to the ceiling, hands holding the outsides of the shins by the ankles. `down` 0 to 1
+ * pulls the knees down beside the ribs.
+ */
+function happyBaby(down: number, hold: number): Keyframe {
+  const base = SUPINE();
+  const legs = {} as Record<Side, Leg3>;
+  const hands = {} as Record<Side, Point3>;
+  for (const side of ["near", "far"] as Side[]) {
+    const hip = hipOf(SUPINE_PELVIS, side);
+    const dir = v3.unit([lerp(-48, -62, down), lerp(-52, -26, down), zOut(side) * lerp(52, 58, down)]);
+    const knee = r3(v3.add(hip, v3.scale(dir, THIGH)));
+    const ankle: Point3 = [knee[0], round(knee[1] - SHIN), knee[2]];
+    legs[side] = { knee, ankle };
+    hands[side] = [knee[0], round(ankle[1] + lerp(30, 14, down)), round(knee[2] + zOut(side) * 8)];
+  }
+  return legsKeyframe(
+    {
+      ...base,
+      hands: { near: flat(hands.near), far: flat(hands.far) },
+      elbows: { near: { bend: 1 }, far: { bend: 1 } },
+    },
+    legs,
+    { near: 180, far: 180 },
+    { hands: { near: hands.near[2], far: hands.far[2] } },
+    hold,
+  );
 }
 
 // ---------------------------------------------------------------- shinbox (90/90 sit, side + top)
@@ -310,28 +358,36 @@ function chairFigureFour(drop: number): Keyframe {
 // ---------------------------------------------------------------- pigeon (side + top)
 
 /**
- * Hands and one knee down: the near knee forward behind the hands with its shin angled across
- * to the far side, the far leg long behind with the top of the foot on the floor. `y` is the
- * pelvis height (lower = leaning into it).
+ * Pigeon: the near knee forward just behind the near wrist with its shin angled across to the far
+ * side, the far leg long behind with the top of the foot on the floor, hips low and square. `fold` 0
+ * props tall on straight arms, hands just ahead of the knee; 1 hinges forward over the front shin,
+ * the chest lowering and the hands walking out.
  */
-function pigeonAcross(y: number, handX: number): Keyframe {
+function pigeonAcross(fold: 0 | 1): Keyframe {
+  const y = fold ? -34 : -38;
   const pelvis: Point = [-6, y];
   const hipNear = hipOf(pelvis, "near");
   const hipFar = hipOf(pelvis, "far");
-  const frontFoot: Point3 = [30, -6, 38];
-  const frontKnee = kneeBetween(hipNear, frontFoot, [84, -6, -34]);
+  const frontFoot: Point3 = [6, -6, 34];
+  const frontKnee = kneeBetween(hipNear, frontFoot, [72, -14, -30]);
   const backDx = Math.sqrt((LEG - 0.5) ** 2 - (-5 - y) ** 2 - 10 ** 2);
   const backFoot: Point3 = [round(pelvis[0] - backDx), -5, 18];
   const backKnee = kneeBetween(hipFar, backFoot, [round(pelvis[0] - 86), y + 14, 14]);
+  // Torso angle from the floor; hands on the floor at nearly straight arms from the shoulders (z ±22 to ±26).
+  const lean = fold ? 24 : 56;
+  const chest = along(pelvis, -lean, 80);
+  const shoulder = along(pelvis, -lean, 98);
+  const handX = round(shoulder[0] + Math.sqrt(124.5 ** 2 - shoulder[1] ** 2 - 4 ** 2));
   return legsKeyframe(
     {
       pelvis,
-      hands: { near: [handX, 0], far: [handX + 2, 0] },
+      chest,
+      hands: { near: [handX, 0], far: [handX, 0] },
       elbows: { near: { bend: 1 }, far: { bend: 1 } },
     },
     { near: { knee: frontKnee, ankle: frontFoot }, far: { knee: backKnee, ankle: backFoot } },
     { near: 180, far: 180 },
-    { hands: { near: -26, far: 22 } },
+    { hands: { near: -26, far: 26 } },
     0,
   );
 }
@@ -459,23 +515,19 @@ export const BATCH_BD_SPECS: DoodleSpec[] = [
     id: "wger_1869",
     slug: "lying-figure-four-stretch",
     title: "Lying Figure Four Stretch",
+    views: TOP_VIEWS,
     props: [FLOOR_PROP],
     transition: 1.3,
-    frames: [
-      { hold: 0.5, pose: figureFour(-45, true, false) },
-      { hold: 1.4, pose: figureFour(-100, true, true) },
-    ],
+    frames: [lyingFigureFour(0, 0.5), lyingFigureFour(1, 1.4)],
   },
   {
     id: "wger_2656",
     slug: "happy-baby",
     title: "Happy Baby",
+    views: TOP_VIEWS,
     props: [FLOOR_PROP],
     transition: 1.4,
-    frames: [
-      { hold: 0.6, pose: happyBaby(-132) },
-      { hold: 1.4, pose: happyBaby(-148) },
-    ],
+    frames: [happyBaby(0, 0.6), happyBaby(1, 1.4)],
   },
   {
     id: "wger_1884",
@@ -520,7 +572,7 @@ export const BATCH_BD_SPECS: DoodleSpec[] = [
     views: TOP_VIEWS,
     props: [FLOOR_PROP],
     transition: 1.4,
-    frames: [{ ...pigeonAcross(-52, 18), hold: 0.6 }, { ...pigeonAcross(-34, 74), hold: 1.4 }],
+    frames: [{ ...pigeonAcross(0), hold: 0.6 }, { ...pigeonAcross(1), hold: 1.4 }],
   },
   {
     id: "wger_2614",
