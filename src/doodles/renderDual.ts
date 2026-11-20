@@ -5,7 +5,7 @@
 import { faceMarks3 } from "./face";
 import { FOCUS_BY_ID, type Focus } from "./focus";
 import { bellBlends, bellInFront, bellPoints3, byTheHorns, handsOff, heldKind, heldLine, heldLines } from "./gear";
-import { partner3D } from "./partner";
+import { partner3D, type Partner3D } from "./partner";
 import { project, type Panel, type View } from "./project";
 import {
   extraPoints,
@@ -313,6 +313,39 @@ export function behindOf(spec: DoodleSpec, figures: Figure3[], panel: Panel): Be
   return { forearms, bell };
 }
 
+/** The side panel both two-view layouts start from: its poses, extras and extent. */
+export function sidePanel(spec: DoodleSpec, timeline: Timeline3, partner: Partner3D | undefined): { poses: Solved[]; extras: PanelExtras; box: ViewBox } {
+  const poses = timeline.poses.map((pose) => project(pose, "side"));
+  const extras = panelExtras3(spec, timeline, "side", partner);
+  const box = figureExtent(poses, resolveFloors(spec.props ?? [], partnerFloor(poses, extras)), spec, "side", extraPoints(extras));
+  return { poses, extras, box };
+}
+
+/**
+ * One panel's drawing layers: its focus highlight, `props` (already resolved and
+ * placed), the partner, and the figure. The partner shares the figure's view and
+ * far-side opacity.
+ */
+export function panelLayers(
+  spec: DoodleSpec,
+  timing: string,
+  panel: { poses: Solved[]; extras: PanelExtras; props: string; map: Mapper; options: FigureOptions },
+): string[] {
+  const { poses, extras, props, map, options } = panel;
+  return [
+    highlightSvg(FOCUS_BY_ID[spec.id], poses, timing, map),
+    props,
+    partnerSvg(extras, timing, map, { panel: options.panel, farOpacity: options.farOpacity }),
+    figureSvg(spec, poses, timing, map, options),
+  ];
+}
+
+/** The side panel's figure options (a bell by the horns, `fadeBehind`); the same in every two-view doodle. */
+export function sideOptions(spec: DoodleSpec, timeline: Timeline3, extras: PanelExtras): FigureOptions {
+  const { faces, held, heldInFront } = extras;
+  return { panel: "side", bellInFront: byTheHorns(spec) ? bellInFront(spec, timeline.poses, "side") : undefined, faces, held, heldInFront, behind: behindOf(spec, timeline.poses, "side") };
+}
+
 interface DualLayout {
   view: ViewBox;
   /** The zoom inset on one panel (`focus.panel`), if any. */
@@ -325,14 +358,13 @@ interface DualLayout {
   labels: { side: number; front: number; y: number };
 }
 
+/** The side and front panels of a two-view spec. */
 export function dualLayout(spec: DoodleSpec, timeline: Timeline3 = sampleTimeline3(spec)): DualLayout {
-  const side = timeline.poses.map((pose) => project(pose, "side"));
-  const front = timeline.poses.map((pose) => project(pose, "front"));
-  const props = spec.props ?? [];
   const partner = partner3D(spec, timeline);
-  const extras = { side: panelExtras3(spec, timeline, "side", partner), front: panelExtras3(spec, timeline, "front", partner) };
-  const sideBox = figureExtent(side, resolveFloors(props, partnerFloor(side, extras.side)), spec, "side", extraPoints(extras.side));
-  const frontBox = figureExtent(front, resolveFloors(frontProps(props, 0, handZ(timeline.poses[0])), partnerFloor(front, extras.front)), spec, "front", extraPoints(extras.front));
+  const { poses: side, extras: sideExtras, box: sideBox } = sidePanel(spec, timeline, partner);
+  const front = timeline.poses.map((pose) => project(pose, "front"));
+  const frontExtras = panelExtras3(spec, timeline, "front", partner);
+  const frontBox = figureExtent(front, resolveFloors(frontProps(spec.props ?? [], 0, handZ(timeline.poses[0])), partnerFloor(front, frontExtras)), spec, "front", extraPoints(frontExtras));
   const frontShift = sideBox.x + sideBox.w + 2 * PADDING - frontBox.x;
   const shifted: ViewBox = { ...frontBox, x: frontBox.x + frontShift };
   const figures = union(sideBox, shifted);
@@ -345,7 +377,7 @@ export function dualLayout(spec: DoodleSpec, timeline: Timeline3 = sampleTimelin
     frontShift,
     side,
     front,
-    extras,
+    extras: { side: sideExtras, front: frontExtras },
     labels: { side: sideBox.x + sideBox.w / 2, front: shifted.x + shifted.w / 2, y },
   };
 }
@@ -362,26 +394,27 @@ export function renderDualSvg(spec: DoodleSpec): string {
   const focus = FOCUS_BY_ID[spec.id];
   const shift: Mapper = ([x, y]) => [x + layout.frontShift, y];
   const props = spec.props ?? [];
-  // A bell held by the horns hides behind the head when it is further from the viewer.
-  const horns = byTheHorns(spec);
-  const inFront = (panel: Panel): boolean[] | undefined => (horns ? bellInFront(spec, timeline.poses, panel) : undefined);
   const { side, front } = layout.extras;
-  const own = (e: PanelExtras) => ({ faces: e.faces, held: e.held, heldInFront: e.heldInFront });
   const options: Record<Panel, FigureOptions> = {
-    side: { panel: "side", bellInFront: inFront("side"), ...own(side), behind: behindOf(spec, timeline.poses, "side") },
+    side: sideOptions(spec, timeline, side),
     // Seen from the front both sides are square on: no faded far side.
-    front: { farOpacity: 1, order: depthOrder(spec, timeline.poses), panel: "front", bellInFront: inFront("front"), ...own(front), behind: behindOf(spec, timeline.poses, "front") },
+    front: {
+      farOpacity: 1,
+      order: depthOrder(spec, timeline.poses),
+      panel: "front",
+      bellInFront: byTheHorns(spec) ? bellInFront(spec, timeline.poses, "front") : undefined,
+      faces: front.faces,
+      held: front.held,
+      heldInFront: front.heldInFront,
+      behind: behindOf(spec, timeline.poses, "front"),
+    },
   };
   const zoomed = focus?.panel === "front" ? "front" : "side";
+  const sideProps = resolveFloors(props, partnerFloor(layout.side, side)).map(propSvg).join("");
+  const frontPropsSvg = resolveFloors(frontProps(props, layout.frontShift, handZ(timeline.poses[0])), partnerFloor(layout.front, front), layout.frontShift).map(propSvg).join("");
   return svgShell(layout.view, spec.title, [
-    highlightSvg(focus, layout.side, timing, identity),
-    resolveFloors(props, partnerFloor(layout.side, side)).map(propSvg).join(""),
-    partnerSvg(side, timing, identity, { panel: "side" }),
-    figureSvg(spec, layout.side, timing, identity, options.side),
-    highlightSvg(focus, layout.front, timing, shift),
-    resolveFloors(frontProps(props, layout.frontShift, handZ(timeline.poses[0])), partnerFloor(layout.front, front), layout.frontShift).map(propSvg).join(""),
-    partnerSvg(front, timing, shift, { farOpacity: 1, panel: "front" }),
-    figureSvg(spec, layout.front, timing, shift, options.front),
+    ...panelLayers(spec, timing, { poses: layout.side, extras: side, props: sideProps, map: identity, options: options.side }),
+    ...panelLayers(spec, timing, { poses: layout.front, extras: front, props: frontPropsSvg, map: shift, options: options.front }),
     label("side", layout.labels.side, layout.labels.y),
     label("front", layout.labels.front, layout.labels.y),
     focus && layout.inset ? insetSvg(spec, focus, layout.inset, layout[zoomed], timing, layout.extras[zoomed], options[zoomed]) : "",

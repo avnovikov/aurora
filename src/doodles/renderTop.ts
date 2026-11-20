@@ -6,19 +6,15 @@
  */
 import { FOCUS_BY_ID } from "./focus";
 import { project } from "./project";
-import { bellInFront, byTheHorns } from "./gear";
-import { behindOf, depthOrder, handZ, label, LABEL_GAP, LABEL_SIZE, multiInset, panelExtras3, propDepth, railHalf, type HandZ } from "./renderDual";
+import { depthOrder, handZ, label, LABEL_GAP, LABEL_SIZE, multiInset, panelExtras3, panelLayers, propDepth, railHalf, sideOptions, sidePanel, type HandZ } from "./renderDual";
 import {
   extraPoints,
   figureExtent,
-  figureSvg,
   frame,
-  highlightSvg,
   identity,
   insetSvg,
   PADDING,
   partnerFloor,
-  partnerSvg,
   propSvg,
   resolveFloors,
   svgShell,
@@ -87,14 +83,13 @@ interface TopLayout {
   labels: { side: [number, number]; top: [number, number] };
 }
 
+/** The side and top panels of a side + top spec. */
 export function topLayout(spec: DoodleSpec, timeline: Timeline3 = sampleTimeline3(spec)): TopLayout {
-  const side = timeline.poses.map((pose) => project(pose, "side"));
-  const top = timeline.poses.map((pose) => project(pose, "top"));
-  const props = spec.props ?? [];
   const partner = partner3D(spec, timeline);
-  const extras = { side: panelExtras3(spec, timeline, "side", partner), top: panelExtras3(spec, timeline, "top", partner) };
-  const sideBox = figureExtent(side, resolveFloors(props, partnerFloor(side, extras.side)), spec, "side", extraPoints(extras.side));
-  const topBox = figureExtent(top, topProps(props, handZ(timeline.poses[0])), spec, "top", extraPoints(extras.top));
+  const { poses: side, extras: sideExtras, box: sideBox } = sidePanel(spec, timeline, partner);
+  const top = timeline.poses.map((pose) => project(pose, "top"));
+  const topExtras = panelExtras3(spec, timeline, "top", partner);
+  const topBox = figureExtent(top, topProps(spec.props ?? [], handZ(timeline.poses[0])), spec, "top", extraPoints(topExtras));
   const sideLabel = sideBox.y + sideBox.h + LABEL_GAP + LABEL_SIZE;
   // Under the side panel's label, with the usual padding between the panels.
   const topShift = sideLabel + LABEL_SIZE * 0.3 + PADDING - topBox.y;
@@ -108,7 +103,7 @@ export function topLayout(spec: DoodleSpec, timeline: Timeline3 = sampleTimeline
     topShift,
     side,
     top,
-    extras,
+    extras: { side: sideExtras, top: topExtras },
     labels: { side: [sideBox.x + sideBox.w / 2, sideLabel], top: [shifted.x + shifted.w / 2, topLabel] },
   };
 }
@@ -122,23 +117,18 @@ export function renderTopSvg(spec: DoodleSpec): string {
   const shift: Mapper = ([x, y]) => [x, y + layout.topShift];
   const props = spec.props ?? [];
   const { side, top } = layout.extras;
-  const own = (e: PanelExtras) => ({ faces: e.faces, held: e.held });
   const options: Record<"side" | "top", FigureOptions> = {
-    // As the dual view's side panel (`fadeBehind`, a bell by the horns); kettlebells are barred from top views until they have a top drawing.
-    side: { panel: "side", bellInFront: byTheHorns(spec) ? bellInFront(spec, timeline.poses, "side") : undefined, ...own(side), behind: behindOf(spec, timeline.poses, "side") },
+    // As the dual view's side panel; kettlebells are barred from top views until they have a top drawing.
+    side: sideOptions(spec, timeline, side),
     // Seen from above both sides are square on; higher parts are drawn over lower ones.
-    top: { farOpacity: 1, order: depthOrder(spec, timeline.poses, (p) => -p[1]), panel: "top", ...own(top) },
+    top: { farOpacity: 1, order: depthOrder(spec, timeline.poses, (p) => -p[1]), panel: "top", faces: top.faces, held: top.held },
   };
   const zoomed = focus?.panel === "top" ? "top" : "side";
+  const sideProps = resolveFloors(props, partnerFloor(layout.side, side)).map(propSvg).join("");
+  const topPropsSvg = topProps(props, handZ(timeline.poses[0]), layout.topShift).map(propSvg).join("");
   return svgShell(layout.view, spec.title, [
-    highlightSvg(focus, layout.side, timing, identity),
-    resolveFloors(props, partnerFloor(layout.side, side)).map(propSvg).join(""),
-    partnerSvg(side, timing, identity, { panel: "side" }),
-    figureSvg(spec, layout.side, timing, identity, options.side),
-    highlightSvg(focus, layout.top, timing, shift),
-    topProps(props, handZ(timeline.poses[0]), layout.topShift).map(propSvg).join(""),
-    partnerSvg(top, timing, shift, { farOpacity: 1, panel: "top" }),
-    figureSvg(spec, layout.top, timing, shift, options.top),
+    ...panelLayers(spec, timing, { poses: layout.side, extras: side, props: sideProps, map: identity, options: options.side }),
+    ...panelLayers(spec, timing, { poses: layout.top, extras: top, props: topPropsSvg, map: shift, options: options.top }),
     label("side", ...layout.labels.side),
     label("top", ...layout.labels.top),
     focus && layout.inset ? insetSvg(spec, focus, layout.inset, layout[zoomed], timing, layout.extras[zoomed], options[zoomed]) : "",
