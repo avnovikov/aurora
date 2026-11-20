@@ -73,6 +73,8 @@ export interface DetailView {
   loggedSets?: readonly HistoryFeedRow[];
   /** True when any of those rows are legacy session summaries. */
   loggedSetsHaveLegacy?: boolean;
+  /** Where Back goes ("History", a move name); default "list" (#219). */
+  backLabel?: string;
 }
 
 export interface MountLibraryDetailOptions extends DetailView {
@@ -88,7 +90,7 @@ function wireExcludeToggle(root: HTMLElement, actions: DetailActions, excluded: 
   });
 }
 
-/** Left-to-right swipe returns to the list; any steeper drag is left to scroll. */
+/** Left-to-right swipe goes Back; any steeper drag is left to scroll. */
 function wireBackSwipe(root: HTMLElement, onBack: () => void): void {
   const stage = root.querySelector<HTMLElement>("[data-back-swipe]");
   if (!stage) {
@@ -153,7 +155,7 @@ export function detailHtml(exercise: SeedExercise, view: DetailView = {}): strin
 
   return `
     <main class="shell lib-detail" data-back-swipe>
-      <button type="button" class="lib-back" data-lib-back>← Back to list</button>
+      <button type="button" class="lib-back" data-lib-back>← Back to ${escapeHtml(view.backLabel ?? "list")}</button>
       ${targetBadge}
       <p class="eyebrow">Exercise</p>
       <h1>${escapeHtml(displayExerciseName(exercise.name))}</h1>

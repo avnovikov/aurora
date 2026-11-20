@@ -24,7 +24,9 @@ import { speakCoachLine, unlockCoachAudio } from "../voice/coachVoice";
 import { renderBodyView } from "./bodyView";
 import { renderCheckIn } from "./checkIn";
 import { renderEvaluationView } from "./evaluationView";
+import { readScrollY, restoreScrollY } from "../library/detailScroll";
 import { renderLibraryView } from "./libraryView";
+import { createNavigation, type NavEntry, type Navigation } from "./navigation";
 import { overrideControlsHtml, wireOverrideControls } from "./overrideControls";
 import { advancePlanAfterSession, renderPlanView } from "./planView";
 import { renderProgressView } from "./progressView";
@@ -58,6 +60,15 @@ let disposeTodayPulse: (() => void) | null = null;
 let historyFilter: HistoryFilter = { kind: "all" };
 /** Set when History opens an exercise; consumed on the next Library paint. */
 let libraryFocusId: string | null = null;
+/** Drill-down Back history (#219); replaced on each boot. */
+let nav: Navigation = createNavigation();
+let detachNav: (() => void) | null = null;
+
+function startNavigation(): void {
+  detachNav?.();
+  nav = createNavigation(window.history);
+  detachNav = nav.listen(window);
+}
 
 function clearTodayPulse(): void {
   disposeTodayPulse?.();
@@ -65,6 +76,7 @@ function clearTodayPulse(): void {
 }
 
 export function bootApp(root: HTMLElement): void {
+  startNavigation();
   const profile = loadProfile();
   const resume = loadSession();
   if (resume) {
@@ -99,12 +111,15 @@ function showTab(
   if (tab === "history" && !options.preserveHistoryFilter) {
     historyFilter = { kind: "all" };
   }
-  renderShell(root, tab, `<div data-panel></div>`, (next) => showTab(root, next));
+  renderShell(root, tab, `<div data-panel></div>`, (next) => tapTab(root, next));
   const panel = requirePanel(root);
   if (tab === "progress") {
     renderProgressView(panel, {
-      onJumpTab: (next) => showTab(root, next),
-      onOpenHistory: (filter) => openHistory(root, filter),
+      onJumpTab: (next) => tapTab(root, next),
+      onOpenHistory: (filter) => {
+        nav.push(screenEntry(root, "progress"));
+        openHistory(root, filter);
+      },
     });
     return;
   }
@@ -112,14 +127,17 @@ function showTab(
     renderHistoryView(panel, {
       filter: historyFilter,
       onClearFilter: () => openHistory(root, { kind: "all" }),
-      onOpenExercise: (exerciseId) => openLibraryExercise(root, exerciseId),
+      onOpenExercise: (exerciseId) => {
+        nav.push(screenEntry(root, "history"));
+        openLibraryExercise(root, exerciseId);
+      },
     });
     return;
   }
   if (tab === "library") {
     const initialExerciseId = libraryFocusId ?? undefined;
     libraryFocusId = null;
-    renderLibraryView(panel, { initialExerciseId });
+    renderLibraryView(panel, { initialExerciseId, nav });
     return;
   }
   const renderPanel = PANEL_RENDERERS[tab];
@@ -127,6 +145,29 @@ function showTab(
     throw new Error(`No panel renderer for tab: ${tab}`);
   }
   renderPanel(panel);
+}
+
+/** Bottom-bar tab (or a jump to one): a fresh start, no drill-down history. */
+function tapTab(root: HTMLElement, tab: AppTab): void {
+  nav.clear();
+  showTab(root, tab);
+}
+
+/** Back entry that re-shows Progress or History (with its filter) at its scroll. */
+function screenEntry(root: HTMLElement, tab: "progress" | "history"): NavEntry {
+  const scrollY = readScrollY();
+  const filter = historyFilter;
+  return {
+    label: tab === "history" ? "History" : "Progress",
+    restore: () => {
+      if (tab === "history") {
+        openHistory(root, filter);
+      } else {
+        showTab(root, "progress");
+      }
+      restoreScrollY(scrollY);
+    },
+  };
 }
 
 function openLibraryExercise(root: HTMLElement, exerciseId: string): void {
@@ -167,12 +208,12 @@ function showTodayHome(root: HTMLElement): void {
         ? warmupLevelFor({ targetExerciseIds: next.targetExerciseIds, memories: loadMemories() })
         : undefined,
     })}</div>`,
-    (tab) => showTab(root, tab),
+    (tab) => tapTab(root, tab),
   );
 
   clearTodayPulse();
   if (!next) {
-    root.querySelector("[data-open-plan]")?.addEventListener("click", () => showTab(root, "plan"));
+    root.querySelector("[data-open-plan]")?.addEventListener("click", () => tapTab(root, "plan"));
     return;
   }
 
@@ -234,6 +275,6 @@ function showEvaluation(
     saveMemories(result.memories);
     reinforceFromSessionEvaluation(evaluation, startedAtMs);
     advancePlanAfterSession();
-    showTab(root, "today");
+    tapTab(root, "today");
   });
 }
