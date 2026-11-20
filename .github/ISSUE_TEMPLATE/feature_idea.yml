@@ -1,0 +1,50 @@
+name: Feature / idea
+description: Propose a use-case, reason, or idea for Aurora
+title: "feat: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A **named person** must own the use-case / reason / idea. Agents may help implement later; a person states *why*. See [CONTRIBUTING.md](https://github.com/avnovikov/aurora/blob/dev/CONTRIBUTING.md).
+  - type: input
+    id: named_contributor
+    attributes:
+      label: Named contributor
+      description: Person who owns this use-case / reason / idea.
+      placeholder: "@handle or name"
+    validations:
+      required: true
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use-case / reason / idea
+      description: What should change and why it matters for someone training with Aurora.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: How we will know this is done.
+      placeholder: |
+        - [ ] …
+        - [ ] …
+    validations:
+      required: true
+  - type: textarea
+    id: out_of_scope
+    attributes:
+      label: Out of scope
+      description: What this issue deliberately does not include.
+    validations:
+      required: false
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy / scope check
+      options:
+        - label: This idea keeps training/health data local (no new off-device sync or telemetry).
+          required: true
+        - label: This idea does not require installing or shipping unrelated apps or services.
+          required: true

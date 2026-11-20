@@ -176,6 +176,8 @@ Full policy: [docs/PRIVACY.md](docs/PRIVACY.md). Terms of use: [docs/TERMS.md](d
 
 Aurora is a TypeScript, Vite, Vitest, and Capacitor Android project. The planning, dose, and progression logic is pure TypeScript with no browser DOM or Bluetooth dependencies, so it is easier to test and reuse.
 
+How to contribute (issues, worktrees, quality gates, sign-off): [CONTRIBUTING.md](CONTRIBUTING.md). Conduct: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+
 For local development, Android development, testing, quality checks, branch policy, and device snapshots, see the [Development guide](docs/development.md).
 
 ---
