@@ -4,6 +4,7 @@ import type { AuthoredPose, DoodleSpec, Keyframe, Point, Side, Sideways } from "
 import { solveKeyframe3, sub3, type Point3 } from "./rig3d";
 import { SIDE_LYING_FLOOR, sideLying } from "./specsWarmup";
 import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
+import { FLAT_ANKLE, LEG_LEN, SEAT_ANKLE } from "./limbs3";
 
 /**
  * Batch BN: towel and stick moves. Floor at y = 0, up is negative, the figure
@@ -16,8 +17,6 @@ import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
  * Import only from ./rig and other batch files, never from ./specs.
  */
 
-/** Hip to ankle, the knee a hair short of straight. */
-const LEG = 173.4;
 /** The ball of the foot, where the towel crosses the sole (see TOWEL_WRAP). */
 const WRAP = 0.55;
 
@@ -64,7 +63,6 @@ function towelled(pose: AuthoredPose, foot: Side, slack: number, sideways?: Side
 
 const SUPINE_PELVIS: Point = [0, -22];
 /** The other leg flat on the floor: ankle just above it, toes up. */
-const FLAT_ANKLE: Point = [173.2, -8];
 
 /** Face up, the near leg straight at `deg` (-90 = up, beyond that towards the head), the towel round its foot. */
 function supineHamstring(deg: number): Keyframe {
@@ -73,7 +71,7 @@ function supineHamstring(deg: number): Keyframe {
       ...supineTorso(SUPINE_PELVIS, 79.6),
       elbows: { near: { bend: 1 }, far: { bend: 1 } },
       knees: { near: { bend: -1 }, far: { bend: -1 } },
-      feet: { near: along(SUPINE_PELVIS, deg, LEG), far: FLAT_ANKLE },
+      feet: { near: along(SUPINE_PELVIS, deg, LEG_LEN), far: FLAT_ANKLE },
       toes: { near: deg - 80, far: -85 },
     },
     "near",
@@ -86,8 +84,8 @@ function supineSide(abd: number, across: boolean): Keyframe {
   const r = (abd * Math.PI) / 180;
   const dir = [-0.08, -Math.cos(r), (across ? 1 : -1) * Math.sin(r)];
   const n = Math.hypot(...dir);
-  const foot: Point = [round(SUPINE_PELVIS[0] + (LEG * dir[0]) / n), round(SUPINE_PELVIS[1] + (LEG * dir[1]) / n)];
-  const footZ = round(-8 + (LEG * dir[2]) / n);
+  const foot: Point = [round(SUPINE_PELVIS[0] + (LEG_LEN * dir[0]) / n), round(SUPINE_PELVIS[1] + (LEG_LEN * dir[1]) / n)];
+  const footZ = round(-8 + (LEG_LEN * dir[2]) / n);
   return towelled(
     {
       ...supineTorso(SUPINE_PELVIS, 79.6),
@@ -105,7 +103,6 @@ function supineSide(abd: number, across: boolean): Keyframe {
 // ---------------------------------------------------------------- seated (floor, facing +x)
 
 const SEAT_PELVIS: Point = [0, -10];
-const SEAT_ANKLE: Point = [173.6, -8];
 
 /** Sitting with both legs out, the near foot in the towel; `lean` is the torso's angle from the floor, `toes` the foot's (-90 upright). */
 function seatedHamstringCalf(lean: number, toes: number): Keyframe {
@@ -135,7 +132,7 @@ function seatedFoot(heel: number, pullZ: number): Keyframe {
       chest: along(SEAT_PELVIS, -66, 80),
       elbows: { near: { bend: 1 }, far: { bend: 1 } },
       knees: { near: { bend: -1 }, far: { bend: -1 } },
-      feet: { near: along(SEAT_PELVIS, -heel, LEG), far: [74, -4] },
+      feet: { near: along(SEAT_PELVIS, -heel, LEG_LEN), far: [74, -4] },
       toes: { near: -70 - heel, far: 0 },
     },
     "near",
@@ -150,7 +147,7 @@ function seatedFoot(heel: number, pullZ: number): Keyframe {
 /** Front foot forward, heel down, toes up and the leg straight; the back knee bent under the hips; the torso hinged `lean` degrees above the horizontal. */
 function standingStretch(lean: number): Keyframe {
   const front: Point = [118, -8];
-  const pelvis = along(front, -118, LEG);
+  const pelvis = along(front, -118, LEG_LEN);
   return towelled(
     {
       pelvis,

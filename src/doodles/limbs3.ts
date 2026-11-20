@@ -70,3 +70,10 @@ export const flat = (p: Point3): Point => [round(p[0]), round(p[1])];
 
 /** Phase angles (degrees) of one full circle out and back the other way, for the elbow, wrist and similar circles. */
 export const CIRCLE_PHASES = [0, 45, 90, 135, 180, 225, 270, 315, 360, 315, 270, 225, 180, 135, 90, 45];
+
+/** Hip to ankle with the knee a hair short of straight (hand-tuned, not derived from the bones). */
+export const LEG_LEN = 173.4;
+/** The resting ankle of a straight leg lying on the floor, as a side-view point. */
+export const FLAT_ANKLE: Point = [173.2, -8];
+/** The ankle of a seated leg stretched along the floor. */
+export const SEAT_ANKLE: Point = [173.6, -8];

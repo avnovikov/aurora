@@ -3,6 +3,7 @@ import type { DoodleSpec, Keyframe, Point, Pose, Prop, Sideways } from "./rig";
 import { solveKeyframe3 } from "./rig3d";
 import { TWO_VIEWS } from "./sideways";
 import { FLOOR_PROP, along, round, supineTorso } from "./geom";
+import { FLAT_ANKLE, LEG_LEN, SEAT_ANKLE } from "./limbs3";
 
 /**
  * Batch BF: hamstring, calf, quad and leg stretches. Floor at y = 0, up is
@@ -23,8 +24,6 @@ import { FLOOR_PROP, along, round, supineTorso } from "./geom";
 
 const THIGH = BONES.thigh;
 const SHIN = BONES.shin;
-/** Hip to ankle with the knee a hair short of straight. */
-const LEG = 173.4;
 
 // ---------------------------------------------------------------- seated, heel propped (wger_2664)
 
@@ -55,7 +54,6 @@ function heelProp(ankleX: number, lean: number, press: number): Pose {
 // ---------------------------------------------------------------- seated, both legs straight
 
 const SEAT_PELVIS: Point = [0, -10];
-const SEAT_ANKLE: Point = [173.6, -8];
 
 /** Both legs straight ahead, toes up; both arms reach forward and the torso hinges from the hips (`lean` from the floor), the back kept long. */
 function seatedReach(lean: number, hand: Point): Pose {
@@ -142,7 +140,6 @@ function oneLegFold(lean: number, reach: boolean): Keyframe {
 // ---------------------------------------------------------------- lying, straight leg drawn in
 
 const LY_PELVIS: Point = [0, -22];
-const LY_FLAT_ANKLE: Point = [173.2, -8];
 
 /** Lying face up, the other leg flat; one straight leg raised (`deg` from +x, -90 vertical, beyond -90 towards the head), held behind the thigh. */
 function legDraw(deg: number): Pose {
@@ -153,7 +150,7 @@ function legDraw(deg: number): Pose {
     hands: { near: hold, far: along(hold, deg, 4) },
     elbows: { near: { bend: 1 }, far: { bend: 1 } },
     knees: { near: { bend: -1 }, far: { bend: -1 } },
-    feet: { near: along(hip, deg, LEG), far: LY_FLAT_ANKLE },
+    feet: { near: along(hip, deg, LEG_LEN), far: FLAT_ANKLE },
     toes: { far: -80 },
   };
 }
@@ -167,7 +164,7 @@ function legDraw(deg: number): Pose {
  */
 function standFold(spine: number, back: number, hands: (shoulder: Point) => Point, head: "hang" | "line" = "line"): Pose {
   const ankle: Point = [0, 0];
-  const pelvis: Point = [-back, -round(Math.sqrt(LEG ** 2 - back ** 2))];
+  const pelvis: Point = [-back, -round(Math.sqrt(LEG_LEN ** 2 - back ** 2))];
   const chest = along(pelvis, spine, 80);
   const shoulder = along(pelvis, spine, 98);
   const hand = hands(shoulder);
@@ -212,7 +209,7 @@ const HEEL_PART = 15;
 function stepCalf(foot: number): Pose {
   const r = (foot * Math.PI) / 180;
   const ankle: Point = [round(STEP_BALL[0] - HEEL_PART * Math.cos(r)), round(STEP_BALL[1] - HEEL_PART * Math.sin(r))];
-  const pelvis: Point = [round(ankle[0] + 6), round(ankle[1] - Math.sqrt(LEG ** 2 - 36))];
+  const pelvis: Point = [round(ankle[0] + 6), round(ankle[1] - Math.sqrt(LEG_LEN ** 2 - 36))];
   const chest = along(pelvis, -86, 80);
   return {
     pelvis,

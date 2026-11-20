@@ -4,7 +4,7 @@ import { add3, scale3, solveKeyframe3, sub3, type Point3 } from "./rig3d";
 import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
 import { butterflyLegs } from "./specsBatchAN";
 import { frame } from "./specsBatchBA";
-import { ARM as ARM_BONES, chain, dirs, flat, LEG, type LimbSpec, REACH, roots, SIDES, type Spine } from "./limbs3";
+import { ARM as ARM_BONES, chain, dirs, FLAT_ANKLE, flat, LEG, type LimbSpec, REACH, roots, SIDES, type Spine } from "./limbs3";
 import { FLOOR_PROP, along, round, supineTorso } from "./geom";
 
 /**
@@ -21,7 +21,6 @@ const ARM = BONES.upperArm + BONES.forearm + BONES.hand;
 // ---------------------------------------------------------------- lying on the back, knees to the chest
 
 const SUPINE_PELVIS: Point = [0, -22];
-const FLAT_ANKLE: Point = [173.2, -8];
 
 function supine(): Pose {
   return supineTorso(SUPINE_PELVIS, 79.6);

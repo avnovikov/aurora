@@ -3,6 +3,7 @@ import type { AuthoredPose, DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sidew
 import { add3, scale3, type Point3 } from "./rig3d";
 import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
 import { FLOOR_PROP, along, lerp, round, supineTorso } from "./geom";
+import { LEG_LEN } from "./limbs3";
 
 /**
  * Batch BD (#216): hip and glute stretches. Floor at y = 0, up is negative, the
@@ -12,7 +13,6 @@ import { FLOOR_PROP, along, lerp, round, supineTorso } from "./geom";
 
 const THIGH = BONES.thigh;
 const SHIN = BONES.shin;
-const LEG = 173.4;
 
 // ---------------------------------------------------------------- half-kneeling (hip flexor stretches)
 
@@ -73,12 +73,12 @@ function rearElevated(pelvisX: number): Pose {
 function lungeFold(lean: number): Pose {
   const pelvis: Point = [-34, -(THIGH + 3)];
   const heelY = -8;
-  const frontAnkle: Point = [round(pelvis[0] + Math.sqrt(LEG * LEG - (pelvis[1] - heelY) ** 2)), heelY];
+  const frontAnkle: Point = [round(pelvis[0] + Math.sqrt(LEG_LEN * LEG_LEN - (pelvis[1] - heelY) ** 2)), heelY];
   const chest = along(pelvis, -lean, 80);
   const shoulder = along(pelvis, -lean, 98);
   // Hands rest on the straight leg, as far along it as the arms reach.
   const onLeg = (f: number, dy: number): Point => {
-    const p = along(pelvis, Math.atan2(frontAnkle[1] - pelvis[1], frontAnkle[0] - pelvis[0]) * (180 / Math.PI), f * LEG);
+    const p = along(pelvis, Math.atan2(frontAnkle[1] - pelvis[1], frontAnkle[0] - pelvis[0]) * (180 / Math.PI), f * LEG_LEN);
     return [p[0], round(p[1] - dy)];
   };
   let f = 0.2;
@@ -284,7 +284,7 @@ function piriformis(pull: number): Keyframe {
       hands: { near: flat(grip), far: [-40, -4] },
       elbows: { near: { bend: 1 }, far: { bend: 1 } },
     },
-    { near: { knee: [88, -10, -12], ankle: [LEG, -8, -12] }, far: { knee: farKnee, ankle: planted } },
+    { near: { knee: [88, -10, -12], ankle: [LEG_LEN, -8, -12] }, far: { knee: farKnee, ankle: planted } },
     { near: -84, far: 0 },
     { hands: { near: grip[2], far: 40 } },
     0,
@@ -368,7 +368,7 @@ function pigeonAcross(fold: 0 | 1): Keyframe {
   const hipFar = hipOf(pelvis, "far");
   const frontFoot: Point3 = [6, -6, 34];
   const frontKnee = kneeBetween(hipNear, frontFoot, [72, -14, -30]);
-  const backDx = Math.sqrt((LEG - 0.5) ** 2 - (-5 - y) ** 2 - 10 ** 2);
+  const backDx = Math.sqrt((LEG_LEN - 0.5) ** 2 - (-5 - y) ** 2 - 10 ** 2);
   const backFoot: Point3 = [round(pelvis[0] - backDx), -5, 18];
   const backKnee = kneeBetween(hipFar, backFoot, [round(pelvis[0] - 86), y + 14, 14]);
   // Torso angle from the floor; hands on the floor at nearly straight arms from the shoulders (z ±22 to ±26).

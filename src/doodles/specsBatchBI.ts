@@ -1,7 +1,7 @@
 import { BONES, HIP_SIDE, SHOULDER_SIDE, solvePose, zOut } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
 import { add3, scale3, solveKeyframe3, type Point3 } from "./rig3d";
-import { ARM as ARM_BONES, chain, dirs, flat, LEG as LEG_BONES, type LimbSpec, roots, SIDES, type Spine, unit3 } from "./limbs3";
+import { ARM as ARM_BONES, chain, dirs, flat, LEG as LEG_BONES, LEG_LEN, type LimbSpec, roots, SIDES, type Spine, unit3 } from "./limbs3";
 import { FLOOR_PROP, along, angle, lerp, round } from "./geom";
 import { lockedY3, TOP_VIEWS, TWO_VIEWS } from "./sideways";
 import { pushUp, straightBody } from "./specsBatchC";
@@ -13,8 +13,6 @@ import { sideLying } from "./specsWarmup";
  * ./specs (circular).
  */
 
-/** Hip to ankle with the knee a hair short of straight. */
-const LEG = 173.4;
 const ARM = BONES.upperArm + BONES.forearm + BONES.hand - 0.4;
 
 /** The point `r1` from `c1` and `r2` from `c2`; `upper` picks the one with the smaller y (higher on screen). */
@@ -44,7 +42,7 @@ function fold(bent: Side): Pose {
   const farFoot: Point = [-20, 0];
   const x = bent === "near" ? 26 : -26;
   const straightFoot = bent === "near" ? farFoot : nearFoot;
-  const pelvis: Point = [x, round(-Math.sqrt((LEG - 0.6) ** 2 - (x - straightFoot[0]) ** 2))];
+  const pelvis: Point = [x, round(-Math.sqrt((LEG_LEN - 0.6) ** 2 - (x - straightFoot[0]) ** 2))];
   const shoulder = along(pelvis, 48, 98);
   const chest = along(pelvis, 48, 80);
   return {
@@ -129,7 +127,7 @@ function lowLunge(sink: number): Pose {
   const backFoot: Point =
     sink > 0.5
       ? [round(backKnee[0] - Math.sqrt(86 ** 2 - 16)), -8]
-      : [round(pelvis[0] - Math.sqrt((LEG - 0.4) ** 2 - (pelvis[1] + 16) ** 2)), -16];
+      : [round(pelvis[0] - Math.sqrt((LEG_LEN - 0.4) ** 2 - (pelvis[1] + 16) ** 2)), -16];
   return {
     pelvis,
     chest: chestTo(pelvis, s),
@@ -223,7 +221,7 @@ function iaFoot(shift: number, side: Side): Point {
   const hipZ = shift + zOut(side) * HIP_SIDE;
   const across = Math.abs(hipZ - zOut(side) * IA_FOOT_Z);
   const square = Math.abs(HIP_SIDE - IA_FOOT_Z);
-  const closer = Math.sqrt(LEG ** 2 - square ** 2) - Math.sqrt(LEG ** 2 - across ** 2);
+  const closer = Math.sqrt(LEG_LEN ** 2 - square ** 2) - Math.sqrt(LEG_LEN ** 2 - across ** 2);
   return [round(IA_FOOT[0] + closer), IA_FOOT[1]];
 }
 
@@ -478,7 +476,7 @@ function sleeper(turn: number): Keyframe {
 // ---------------------------------------------------------------- pancake good mornings, the straddle
 
 const PANCAKE_FEET_Z = 84;
-const pancakeY = (x: number): number => -round(Math.sqrt(LEG ** 2 - x * x - (PANCAKE_FEET_Z - 8) ** 2));
+const pancakeY = (x: number): number => -round(Math.sqrt(LEG_LEN ** 2 - x * x - (PANCAKE_FEET_Z - 8) ** 2));
 
 /** Wide stance, hands behind the head, elbows out; `hinge` 0 stands tall, 1 hips back with a flat back. */
 function standingGoodMorning(hinge: number): Keyframe {

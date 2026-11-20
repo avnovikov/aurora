@@ -5,6 +5,7 @@ import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
 import { FLOOR_PROP, along, angle, lerp, round, supineTorso } from "./geom";
 import { lyingFigureFour } from "./specsBatchBD";
 import { plank } from "./specsBatchI";
+import { FLAT_ANKLE, LEG_LEN } from "./limbs3";
 
 /**
  * Batch BE (#216): hamstring, calf, quad and leg stretches, knee and ankle
@@ -15,8 +16,6 @@ import { plank } from "./specsBatchI";
 
 const THIGH = BONES.thigh;
 const SHIN = BONES.shin;
-/** Hip to ankle with the knee a hair short of straight. */
-const LEG = 173.4;
 
 /** The solved near shoulder of a pose. */
 const shoulderOf = (pose: Pose): Point => solvePose(pose).arms.near.root;
@@ -27,7 +26,6 @@ const SP_PELVIS: Point = [0, -22];
 /** Face up: upper back and head on the floor, the pelvis a hand's width up. Arms and legs are left to the caller. */
 const supine = (): Pose => supineTorso(SP_PELVIS, 79.6);
 /** The straight leg flat on the floor: ankle just above it, toes up. */
-const FLAT_ANKLE: Point = [173.2, -8];
 
 /** Hands behind the (near) thigh `deg` from the hip, `reach` along it. */
 function behindThigh(deg: number, reach: number): Pose["hands"] {
@@ -109,7 +107,7 @@ const HEEL_BOX: Prop = { kind: "box", x: 150, y: BOX_TOP, w: 110, h: -BOX_TOP };
 function heelOnBox(lean: number): Pose {
   const heel: Point = [158, BOX_TOP - 6];
   const dy = heel[1] + 173.6;
-  const pelvis: Point = [round(heel[0] - Math.sqrt(LEG ** 2 - dy ** 2)), -173.6];
+  const pelvis: Point = [round(heel[0] - Math.sqrt(LEG_LEN ** 2 - dy ** 2)), -173.6];
   const chest = along(pelvis, -lean, 80);
   const onLeg = (reach: number, lift: number): Point => {
     const p = along(pelvis, angle(pelvis, heel), reach);
@@ -310,7 +308,7 @@ function chairLeg(out: number): Keyframe {
   const pelvis: Point = [0, SEAT_TOP - 8];
   const hipZ = -HIP_SIDE;
   const dz = -out - hipZ;
-  const flat = Math.sqrt(LEG ** 2 - dz ** 2);
+  const flat = Math.sqrt(LEG_LEN ** 2 - dz ** 2);
   const dir = (Math.asin((-8 - pelvis[1]) / flat) * 180) / Math.PI;
   const kneeFar: Point = [round(Math.sqrt(THIGH ** 2 - 12 ** 2)), pelvis[1]];
   return {
@@ -321,7 +319,7 @@ function chairLeg(out: number): Keyframe {
       hands: { near: [10, SEAT_TOP - 2], far: [8, SEAT_TOP - 2] },
       elbows: { near: { bend: 1 }, far: { bend: 1 } },
       knees: { near: { bend: -1 }, far: { at: kneeFar } },
-      feet: { near: { dir, length: LEG }, far: [round(kneeFar[0] + 4), SEAT_TOP + 90 - 12] },
+      feet: { near: { dir, length: LEG_LEN }, far: [round(kneeFar[0] + 4), SEAT_TOP + 90 - 12] },
       toes: { near: -78, far: 0 },
     },
     sideways: { hands: { near: -56, far: 56 }, elbows: { near: { out: 40 }, far: { out: 40 } }, feet: { near: -out, far: 14 }, knees: { far: { at: 20 } } },

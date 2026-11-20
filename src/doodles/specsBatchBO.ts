@@ -3,6 +3,7 @@ import type { DoodleSpec, Keyframe, Pose, Point, Sideways } from "./rig";
 import { solveKeyframe3, sub3, type Point3 } from "./rig3d";
 import { TOP_VIEWS } from "./sideways";
 import { FLOOR_PROP, along, round, supineTorso } from "./geom";
+import { FLAT_ANKLE, LEG_LEN, SEAT_ANKLE } from "./limbs3";
 
 /**
  * Batch BO (#216): partner-assisted contract-relax stretches. The exerciser is
@@ -15,8 +16,6 @@ import { FLOOR_PROP, along, round, supineTorso } from "./geom";
 const THIGH = 88;
 const SHIN = 86;
 const HIP: Point = [0, -22];
-const LEG = 173.4;
-const FLAT_FOOT: Point = [173.2, -8];
 
 /** Lying face up, arms resting by the hips. */
 function lyingBase(): Pose {
@@ -95,7 +94,7 @@ function besideKneel(x: number, z: number, lean: number, y = -56): { pose: Pose;
 function lyingHamstring(deg: number): Pose {
   return {
     ...lyingBase(),
-    feet: { near: along(HIP, deg, LEG), far: FLAT_FOOT },
+    feet: { near: along(HIP, deg, LEG_LEN), far: FLAT_ANKLE },
     knees: { near: { bend: -1 }, far: { bend: -1 } },
     toes: { far: -80 },
   };
@@ -152,7 +151,7 @@ function crossover(roll: number, lift: number): Keyframe {
   const ankle = toward3(knee, [round(knee[0] + 30), -8, 10], SHIN);
   // The far leg straight along the floor from its (rolled, lower) hip.
   const [fx, fy, fz] = solveKeyframe3(solvePose(upper), upper, trunk).legs.far.root;
-  const farFoot: Point = [round(fx + Math.sqrt((LEG - 0.4) ** 2 - (fy + 8) ** 2)), -8];
+  const farFoot: Point = [round(fx + Math.sqrt((LEG_LEN - 0.4) ** 2 - (fy + 8) ** 2)), -8];
   return {
     hold: 0,
     pose: {
@@ -210,7 +209,6 @@ function lyingGroin(az: number, lift: number): Keyframe {
 // ---------------------------------------------------------------- seated on the floor, a partner standing behind
 
 const SEAT: Point = [0, -10];
-const SEAT_LEG: Point = [173.6, -8];
 /** Shoulder of the seated figure, `lean` degrees up from the floor. */
 const seatedShoulder = (lean: number): Point => along(SEAT, -lean, 98);
 
@@ -244,7 +242,7 @@ function overheadTriceps(elbowDeg: number, forearmDeg: number): Pose {
     hands: { near: along(elbow, forearmDeg, 66), far: [34, -32] },
     elbows: { near: { at: elbow }, far: { bend: 1 } },
     knees: { near: { bend: -1 }, far: { bend: -1 } },
-    feet: { near: SEAT_LEG, far: [SEAT_LEG[0] - 2, -8] },
+    feet: { near: SEAT_ANKLE, far: [SEAT_ANKLE[0] - 2, -8] },
     toes: { near: -84, far: -84 },
   };
 }
@@ -258,7 +256,7 @@ function seatedHamstring(lean: number, reach: number): Pose {
     hands: { near: [reach, -26], far: [reach - 3, -28] },
     elbows: { near: { bend: 1 }, far: { bend: 1 } },
     knees: { near: { bend: -1 }, far: { bend: -1 } },
-    feet: { near: SEAT_LEG, far: [SEAT_LEG[0] - 2, -8] },
+    feet: { near: SEAT_ANKLE, far: [SEAT_ANKLE[0] - 2, -8] },
     toes: { near: -84, far: -84 },
   };
 }
