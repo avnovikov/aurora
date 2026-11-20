@@ -1,31 +1,42 @@
-import { aggregateMuscleLoad, maxLoad, topMuscles, type BodyPeriod, type MuscleLoadMap } from "../body/aggregate";
+import {
+  aggregateBodyView,
+  isBodyViewMode,
+  maxLoad,
+  topMuscles,
+  type BodyViewMode,
+  type MuscleLoadMap,
+} from "../body/aggregate";
 import { formatLoadScore } from "../body/heat";
 import { loadHistory } from "../session/history";
 import { renderBodyMap } from "./bodyMap";
 
-const PERIODS: BodyPeriod[] = ["week", "month", "quarter", "half_year", "year"];
+const MODES: BodyViewMode[] = ["overall", "month", "quarter", "half_year", "year"];
 const LIST_LIMIT = 8;
 
 export function renderBodyView(root: HTMLElement): void {
-  let period: BodyPeriod = "week";
+  let mode: BodyViewMode = "overall";
 
   const paint = (): void => {
-    const loads = aggregateMuscleLoad(loadHistory(), period);
+    const loads = aggregateBodyView(loadHistory(), mode);
 
     root.innerHTML = `
       <main class="shell">
         <p class="eyebrow">Body</p>
         <h1>Muscle load</h1>
-        <p class="tagline">Sets per area — primaries count in full, secondaries half, stabilisers a quarter.</p>
-        <div class="row wrap">${renderPeriodButtons(period)}</div>
+        <p class="tagline">${taglineFor(mode)}</p>
+        <div class="row wrap">${renderModeButtons(mode)}</div>
         ${renderBodyMap(loads)}
-        ${renderLoadList(loads)}
+        ${renderLoadList(loads, mode)}
       </main>
     `;
 
-    root.querySelectorAll<HTMLButtonElement>("[data-period]").forEach((button) => {
+    root.querySelectorAll<HTMLButtonElement>("[data-body-mode]").forEach((button) => {
       button.addEventListener("click", () => {
-        period = button.dataset.period as BodyPeriod;
+        const next = button.dataset.bodyMode;
+        if (!next || !isBodyViewMode(next)) {
+          return;
+        }
+        mode = next;
         paint();
       });
     });
@@ -34,42 +45,54 @@ export function renderBodyView(root: HTMLElement): void {
   paint();
 }
 
-function renderPeriodButtons(selected: BodyPeriod): string {
-  return PERIODS.map(
+function taglineFor(mode: BodyViewMode): string {
+  if (mode === "overall") {
+    return "Overall — full credit for two weeks, then older sets fade (~85% by seven weeks). Primaries full, secondaries half, stabilisers a quarter.";
+  }
+  return "Exercise counts per area in this window — each logged move adds one to every muscle it trains.";
+}
+
+function renderModeButtons(selected: BodyViewMode): string {
+  return MODES.map(
     (item) =>
-      `<button type="button" data-period="${item}" class="${item === selected ? "selected" : ""}">${labelPeriod(item)}</button>`,
+      `<button type="button" data-body-mode="${item}" class="${item === selected ? "selected" : ""}">${labelMode(item)}</button>`,
   ).join("");
 }
 
-function renderLoadList(loads: MuscleLoadMap): string {
+function renderLoadList(loads: MuscleLoadMap, mode: BodyViewMode): string {
   const top = topMuscles(loads, LIST_LIMIT);
   if (top.length === 0) {
-    return `<p class="tagline body-empty">No history in this period yet, mate.</p>`;
+    return `<p class="tagline body-empty">No history in this view yet, mate.</p>`;
   }
-  const max = maxLoad(loads);
-  const rows = top.map(([group, score]) => renderLoadRow(group, score, max)).join("");
+  const peak = maxLoad(loads);
+  const rows = top.map(([group, score]) => renderLoadRow(group, score, peak, mode)).join("");
   return `<div class="body-bars">${rows}</div>`;
 }
 
-function renderLoadRow(group: string, score: number, max: number): string {
-  const width = Math.round((score / max) * 100);
-  const core = group === "abdominals" || group === "lower back";
+function renderLoadRow(group: string, score: number, peak: number, mode: BodyViewMode): string {
+  const width = peak > 0 ? Math.round((score / peak) * 100) : 0;
+  const label = mode === "overall" ? formatLoadScore(score) : String(Math.round(score));
+  const coreClass = isCoreMuscle(group) ? "core-spark" : "";
   return `
-    <div class="body-row ${core ? "core-spark" : ""}">
+    <div class="body-row ${coreClass}">
       <span>${group}</span>
       <div class="bar"><i style="width:${width}%"></i></div>
-      <span>${formatLoadScore(score)}</span>
+      <span>${label}</span>
     </div>`;
 }
 
-function labelPeriod(period: BodyPeriod): string {
-  switch (period) {
-    case "week":
-      return "Week";
+function isCoreMuscle(group: string): boolean {
+  return group === "abdominals" || group === "lower back";
+}
+
+function labelMode(mode: BodyViewMode): string {
+  switch (mode) {
+    case "overall":
+      return "Overall";
     case "month":
       return "Month";
     case "quarter":
-      return "Quarter";
+      return "3 months";
     case "half_year":
       return "Half year";
     case "year":
