@@ -1,6 +1,6 @@
 import { BONES, HIP_SIDE, other, solvePose, zOut } from "./rig";
 import type { AuthoredPose, DoodleSpec, Keyframe, Point, Pose, Prop, Side } from "./rig";
-import { solveKeyframe3, type Point3 } from "./rig3d";
+import { norm3, solveKeyframe3, sub3, type Point3 } from "./rig3d";
 import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
 import { FLOOR_PROP, along, angle, lerp, round, supineTorso } from "./geom";
 import { lyingFigureFour } from "./specsBatchBD";
@@ -95,7 +95,7 @@ function quadSet(press: boolean): Pose {
     hands: { near: along(sh, 4, 124.5), far: along(sh, 6, 124) },
     elbows: { near: { bend: 1 }, far: { bend: 1 } },
     knees: { near: { bend: -1 }, far: { bend: -1 } },
-    feet: { near: ankle, far: [173.2, -8] },
+    feet: { near: ankle, far: FLAT_ANKLE },
     toes: { near: press ? -88 : -64, far: -80 },
   };
 }
@@ -230,18 +230,15 @@ function halfKneelOpen(open: number): Keyframe {
 
 // ---------------------------------------------------------------- knee circles (standing, side + top)
 
-const vsub = (a: Point3, b: Point3): Point3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
-const vlen = (a: Point3): number => Math.hypot(a[0], a[1], a[2]);
-
 /** The knee of a leg from `hip` to `ankle` (3D), bent towards `aim`. */
 function kneeAt(hip: Point3, ankle: Point3, aim: Point3): Point3 {
-  const d = vsub(ankle, hip);
-  const len = vlen(d);
+  const d = sub3(ankle, hip);
+  const len = norm3(d);
   const axis: Point3 = [d[0] / len, d[1] / len, d[2] / len];
-  const w = vsub(aim, hip);
+  const w = sub3(aim, hip);
   const dot = w[0] * axis[0] + w[1] * axis[1] + w[2] * axis[2];
   const n: Point3 = [w[0] - dot * axis[0], w[1] - dot * axis[1], w[2] - dot * axis[2]];
-  const nl = vlen(n);
+  const nl = norm3(n);
   const a = (THIGH ** 2 - SHIN ** 2 + len ** 2) / (2 * len);
   const h = Math.sqrt(Math.max(0, THIGH ** 2 - a * a));
   return [hip[0] + axis[0] * a + (n[0] / nl) * h, hip[1] + axis[1] * a + (n[1] / nl) * h, hip[2] + axis[2] * a + (n[2] / nl) * h];
@@ -361,8 +358,8 @@ type Vec3 = Point3;
 
 /** A point `length` from `from` heading to `to` (straight at it). */
 function toward(from: Vec3, to: Vec3, length: number): Vec3 {
-  const d = vsub(to, from);
-  const l = vlen(d);
+  const d = sub3(to, from);
+  const l = norm3(d);
   return [round(from[0] + (d[0] / l) * length), round(from[1] + (d[1] / l) * length), round(from[2] + (d[2] / l) * length)];
 }
 
@@ -437,10 +434,7 @@ function crossKnee(side: Side, mid: boolean): Keyframe {
 // ---------------------------------------------------------------- specs
 
 const arc = (steps: number[], make: (v: number) => Keyframe, holds: [number, number]): Keyframe[] =>
-  steps.map((v, i) => {
-    const hold = i === steps.length - 1 ? holds[1] : 0;
-    return { ...make(v), hold: i === 0 ? holds[0] : hold };
-  });
+  steps.map((v, i) => ({ ...make(v), hold: i === 0 ? holds[0] : i === steps.length - 1 ? holds[1] : 0 }));
 
 const OPEN = [0, 0.3, 0.55, 0.8, 1];
 const CIRCLE = [0, 45, 90, 135, 180, 225, 270, 315];

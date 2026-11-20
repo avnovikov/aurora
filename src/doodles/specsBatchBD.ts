@@ -1,6 +1,6 @@
 import { BONES, HIP_SIDE, solvePose, zOut } from "./rig";
 import type { AuthoredPose, DoodleSpec, Keyframe, Point, Pose, Prop, Side, Sideways } from "./rig";
-import type { Point3 } from "./rig3d";
+import { add3, scale3, type Point3 } from "./rig3d";
 import { TOP_VIEWS, TWO_VIEWS } from "./sideways";
 import { FLOOR_PROP, along, lerp, round, supineTorso } from "./geom";
 
@@ -148,8 +148,6 @@ function legsKeyframe(pose: AuthoredPose, legs: Record<Side, Leg3>, toes: Record
 // ---------------------------------------------------------------- lying on the back (side + top)
 
 const v3 = {
-  add: (a: Point3, b: Point3): Point3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]],
-  scale: (a: Point3, k: number): Point3 => [a[0] * k, a[1] * k, a[2] * k],
   unit: (a: Point3): Point3 => {
     const l = Math.hypot(a[0], a[1], a[2]) || 1;
     return [a[0] / l, a[1] / l, a[2] / l];
@@ -169,23 +167,23 @@ export function lyingFigureFour(pull: 0 | 1, hold: number): Keyframe {
   const hipNear = hipOf(SUPINE_PELVIS, "near");
   // Far leg: thigh 45 up from the floor with the foot planted, or drawn in just past vertical.
   const thighDeg = pull ? -100 : -45;
-  const farKnee = r3(v3.add(hipFar, [THIGH * Math.cos((thighDeg * Math.PI) / 180), THIGH * Math.sin((thighDeg * Math.PI) / 180), 0]));
+  const farKnee = r3(add3(hipFar, [THIGH * Math.cos((thighDeg * Math.PI) / 180), THIGH * Math.sin((thighDeg * Math.PI) / 180), 0]));
   const farAnkle: Point3 = pull
-    ? r3(v3.add(farKnee, [SHIN * Math.cos(((thighDeg + 115) * Math.PI) / 180), SHIN * Math.sin(((thighDeg + 115) * Math.PI) / 180), 0]))
+    ? r3(add3(farKnee, [SHIN * Math.cos(((thighDeg + 115) * Math.PI) / 180), SHIN * Math.sin(((thighDeg + 115) * Math.PI) / 180), 0]))
     : [round(farKnee[0] + Math.sqrt(SHIN * SHIN - (farKnee[1] + 5) ** 2)), -5, HIP_SIDE];
   // Near ankle on the front of the far thigh, just below the knee, a touch to the near side.
   const thighDir = v3.unit([farKnee[0] - hipFar[0], farKnee[1] - hipFar[1], 0]);
   const front: Point3 = [-thighDir[1], thighDir[0], 0];
-  const onThigh = v3.add(hipFar, v3.scale(thighDir, THIGH - 14));
-  const nearAnkle = r3(v3.add(onThigh, [front[0] * -7, front[1] * -7, -6]));
+  const onThigh = add3(hipFar, scale3(thighDir, THIGH - 14));
+  const nearAnkle = r3(add3(onThigh, [front[0] * -7, front[1] * -7, -6]));
   // Near knee opened out to the near side, about level with the crossing.
   const nearKnee = kneeBetween(hipNear, nearAnkle, [nearAnkle[0] - 30, nearAnkle[1] + 20, -90]);
   // Hands: by the sides on the floor (arms long), or behind the far thigh (its back is away from `front`).
   const shoulderAt = (side: Side): Point3 => [base.chest![0] - 18, base.chest![1], zOut(side) * 22];
-  const palmDown = (side: Side): Point3 => r3(v3.add(shoulderAt(side), v3.scale(v3.unit([1, 0.1, zOut(side) * 0.1]), 125.4)));
-  const grip = v3.add(hipFar, v3.scale(thighDir, 56));
+  const palmDown = (side: Side): Point3 => r3(add3(shoulderAt(side), scale3(v3.unit([1, 0.1, zOut(side) * 0.1]), 125.4)));
+  const grip = add3(hipFar, scale3(thighDir, 56));
   const hands: Record<Side, Point3> = pull
-    ? { near: r3(v3.add(grip, [-front[0] * 8, -front[1] * 8, -4])), far: r3(v3.add(grip, [-front[0] * 8, -front[1] * 8, 16])) }
+    ? { near: r3(add3(grip, [-front[0] * 8, -front[1] * 8, -4])), far: r3(add3(grip, [-front[0] * 8, -front[1] * 8, 16])) }
     : { near: palmDown("near"), far: palmDown("far") };
   return legsKeyframe(
     {
@@ -212,7 +210,7 @@ function happyBaby(down: number, hold: number): Keyframe {
   for (const side of ["near", "far"] as Side[]) {
     const hip = hipOf(SUPINE_PELVIS, side);
     const dir = v3.unit([lerp(-48, -62, down), lerp(-52, -26, down), zOut(side) * lerp(52, 58, down)]);
-    const knee = r3(v3.add(hip, v3.scale(dir, THIGH)));
+    const knee = r3(add3(hip, scale3(dir, THIGH)));
     const ankle: Point3 = [knee[0], round(knee[1] - SHIN), knee[2]];
     legs[side] = { knee, ankle };
     hands[side] = [knee[0], round(ankle[1] + lerp(30, 14, down)), round(knee[2] + zOut(side) * 8)];
@@ -286,7 +284,7 @@ function piriformis(pull: number): Keyframe {
       hands: { near: flat(grip), far: [-40, -4] },
       elbows: { near: { bend: 1 }, far: { bend: 1 } },
     },
-    { near: { knee: [88, -10, -12], ankle: [173.4, -8, -12] }, far: { knee: farKnee, ankle: planted } },
+    { near: { knee: [88, -10, -12], ankle: [LEG, -8, -12] }, far: { knee: farKnee, ankle: planted } },
     { near: -84, far: 0 },
     { hands: { near: grip[2], far: 40 } },
     0,
