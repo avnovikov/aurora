@@ -676,7 +676,20 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "fedb_overhead_triceps": "/doodles/doodle-overhead-triceps.svg",
   "fedb_seated_hamstring": "/doodles/doodle-seated-hamstring.svg",
   "fedb_seated_glute": "/doodles/doodle-seated-glute.svg",
-  "fedb_seated_front_deltoid": "/doodles/doodle-seated-front-deltoid.svg"
+  "fedb_seated_front_deltoid": "/doodles/doodle-seated-front-deltoid.svg",
+  "fedb_shoulder_raise": "/doodles/doodle-shoulder-raise.svg",
+  "wger_570": "/doodles/doodle-shoulder-shrug.svg",
+  "hf_112": "/doodles/doodle-human-flag.svg",
+  "fedb_triceps_stretch": "/doodles/doodle-triceps-stretch.svg",
+  "wger_1590": "/doodles/doodle-arm-and-neck-stretch.svg",
+  "fedb_tricep_side_stretch": "/doodles/doodle-tricep-side-stretch.svg",
+  "wger_1712": "/doodles/doodle-horizontal-shoulder-flexion-stretch.svg",
+  "wger_1479": "/doodles/doodle-sit-up-elbow-thrust.svg",
+  "wger_1822": "/doodles/doodle-open-book.svg",
+  "wger_1577": "/doodles/doodle-bretzel-stretch.svg",
+  "fedb_plyo_kettlebell_pushups": "/doodles/doodle-plyo-kettlebell-pushups.svg",
+  "wger_2727": "/doodles/doodle-kettlebell-wrist-turnover.svg",
+  "wger_2668": "/doodles/doodle-single-leg-balance-kettlebell-circles.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
