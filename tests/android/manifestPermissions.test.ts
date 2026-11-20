@@ -46,6 +46,7 @@ describe("AndroidManifest privacy posture (Cronos / Codeberg)", () => {
     const blocks = permissionBlocks(manifest, "android.permission.BLUETOOTH_SCAN");
     expect(blocks).toHaveLength(1);
     expect(blocks[0]).toMatch(/android:usesPermissionFlags="neverForLocation"/);
+    expect(blocks[0]).toMatch(/tools:replace="android:usesPermissionFlags"/);
     expect(blocks[0]).not.toMatch(/tools:node="remove"/);
   });
 
