@@ -24,6 +24,7 @@ import {
   type FigureOptions,
   type Inset,
   PADDING,
+  partnerFloor,
   partnerSvg,
   propSvg,
   resolveFloors,
@@ -330,9 +331,8 @@ export function dualLayout(spec: DoodleSpec, timeline: Timeline3 = sampleTimelin
   const props = spec.props ?? [];
   const partner = partner3D(spec, timeline);
   const extras = { side: panelExtras3(spec, timeline, "side", partner), front: panelExtras3(spec, timeline, "front", partner) };
-  const floorOf = (poses: Solved[], e: PanelExtras): Solved[] => (e.partner ? [...poses, ...e.partner.poses] : poses);
-  const sideBox = figureExtent(side, resolveFloors(props, floorOf(side, extras.side)), spec, "side", extraPoints(extras.side));
-  const frontBox = figureExtent(front, resolveFloors(frontProps(props, 0, handZ(timeline.poses[0])), floorOf(front, extras.front)), spec, "front", extraPoints(extras.front));
+  const sideBox = figureExtent(side, resolveFloors(props, partnerFloor(side, extras.side)), spec, "side", extraPoints(extras.side));
+  const frontBox = figureExtent(front, resolveFloors(frontProps(props, 0, handZ(timeline.poses[0])), partnerFloor(front, extras.front)), spec, "front", extraPoints(extras.front));
   const frontShift = sideBox.x + sideBox.w + 2 * PADDING - frontBox.x;
   const shifted: ViewBox = { ...frontBox, x: frontBox.x + frontShift };
   const figures = union(sideBox, shifted);
@@ -366,7 +366,6 @@ export function renderDualSvg(spec: DoodleSpec): string {
   const horns = byTheHorns(spec);
   const inFront = (panel: Panel): boolean[] | undefined => (horns ? bellInFront(spec, timeline.poses, panel) : undefined);
   const { side, front } = layout.extras;
-  const floorOf = (poses: Solved[], e: PanelExtras): Solved[] => (e.partner ? [...poses, ...e.partner.poses] : poses);
   const own = (e: PanelExtras) => ({ faces: e.faces, held: e.held, heldInFront: e.heldInFront });
   const options: Record<Panel, FigureOptions> = {
     side: { panel: "side", bellInFront: inFront("side"), ...own(side), behind: behindOf(spec, timeline.poses, "side") },
@@ -376,11 +375,11 @@ export function renderDualSvg(spec: DoodleSpec): string {
   const zoomed = focus?.panel === "front" ? "front" : "side";
   return svgShell(layout.view, spec.title, [
     highlightSvg(focus, layout.side, timing, identity),
-    resolveFloors(props, floorOf(layout.side, side)).map(propSvg).join(""),
+    resolveFloors(props, partnerFloor(layout.side, side)).map(propSvg).join(""),
     partnerSvg(side, timing, identity, { panel: "side" }),
     figureSvg(spec, layout.side, timing, identity, options.side),
     highlightSvg(focus, layout.front, timing, shift),
-    resolveFloors(frontProps(props, layout.frontShift, handZ(timeline.poses[0])), floorOf(layout.front, front), layout.frontShift).map(propSvg).join(""),
+    resolveFloors(frontProps(props, layout.frontShift, handZ(timeline.poses[0])), partnerFloor(layout.front, front), layout.frontShift).map(propSvg).join(""),
     partnerSvg(front, timing, shift, { farOpacity: 1, panel: "front" }),
     figureSvg(spec, layout.front, timing, shift, options.front),
     label("side", layout.labels.side, layout.labels.y),

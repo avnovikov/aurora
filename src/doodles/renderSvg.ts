@@ -5,7 +5,7 @@ import { partnerFlat, PARTNER_OPACITY, PARTNER_WIDTH } from "./partner";
 import type { Panel, View } from "./project";
 import { dualLayout, renderDualSvg } from "./renderDual";
 import { renderTopSvg, topLayout } from "./renderTop";
-import { sampleTimeline, SEGMENTS, type DoodleSpec, type Point, type Prop, type Side, type Solved } from "./rig";
+import { sampleTimeline, SEGMENTS, type DoodleSpec, type Point, type Prop, type Side, type Solved, type Timeline } from "./rig";
 
 /**
  * Colours are CSS custom properties so an inlined doodle follows the active
@@ -409,10 +409,12 @@ export function extraPoints(extras: PanelExtras): Point[] {
   ];
 }
 
+/** A single-view spec's samples and where its keyframes are among them. */
+type FlatSamples = Pick<Timeline, "poses" | "keyframeIndex">;
+
 /** Extras of a single-view spec, from its 2D samples. */
-export function flatExtras(spec: DoodleSpec, poses: Solved[]): PanelExtras {
-  const perFrame = (poses.length - 1) / spec.frames.length;
-  const partner = partnerFlat(spec, poses, spec.frames.map((_, k) => k * perFrame));
+export function flatExtras(spec: DoodleSpec, { poses, keyframeIndex }: FlatSamples): PanelExtras {
+  const partner = partnerFlat(spec, poses, keyframeIndex);
   return {
     faces: faceMarks2D(spec, poses),
     held: heldLines(spec, poses),
@@ -450,21 +452,21 @@ interface Layout {
   inset?: Inset;
 }
 
-/** Floors run under the partner as well as the exerciser. */
-const floorPoses = (poses: Solved[], extras: PanelExtras): Solved[] => (extras.partner ? [...poses, ...extras.partner.poses] : poses);
+/** Floors run under the partner as well as the exerciser: the poses a panel's floors resolve against. */
+export const partnerFloor = (poses: Solved[], extras: PanelExtras): Solved[] => (extras.partner ? [...poses, ...extras.partner.poses] : poses);
 
-function layoutFor(spec: DoodleSpec, poses: Solved[], extras: PanelExtras = flatExtras(spec, poses)): Layout {
-  const figure = figureExtent(poses, resolveFloors(spec.props ?? [], floorPoses(poses, extras)), spec, panelOf(spec), extraPoints(extras));
+function layoutFor(spec: DoodleSpec, timeline: FlatSamples, extras: PanelExtras = flatExtras(spec, timeline)): Layout {
+  const { poses } = timeline;
+  const figure = figureExtent(poses, resolveFloors(spec.props ?? [], partnerFloor(poses, extras)), spec, panelOf(spec), extraPoints(extras));
   const focus = FOCUS_BY_ID[spec.id];
   const inset = insetFor(focus, poses, figure);
   const drawing = inset ? union(figure, insetExtent(inset, focus)) : figure;
   return { view: frame(drawing), focus, inset };
 }
 
-export function specViewBox(spec: DoodleSpec, poses?: Solved[]): ViewBox {
+export function specViewBox(spec: DoodleSpec, timeline?: FlatSamples): ViewBox {
   if (spec.views) return secondView(spec) === "top" ? topLayout(spec).view : dualLayout(spec).view;
-  poses ??= sampleTimeline(spec).poses;
-  return layoutFor(spec, poses).view;
+  return layoutFor(spec, timeline ?? sampleTimeline(spec)).view;
 }
 
 /** Joints a highlighted segment runs through. */
@@ -675,9 +677,9 @@ export function renderDoodleSvg(spec: DoodleSpec): string {
   const timeline = sampleTimeline(spec);
   const { poses } = timeline;
   const timing = timingAttr(timeline);
-  const extras = flatExtras(spec, poses);
-  const { view, focus, inset } = layoutFor(spec, poses, extras);
-  const props = resolveFloors(spec.props ?? [], floorPoses(poses, extras)).map(propSvg).join("");
+  const extras = flatExtras(spec, timeline);
+  const { view, focus, inset } = layoutFor(spec, timeline, extras);
+  const props = resolveFloors(spec.props ?? [], partnerFloor(poses, extras)).map(propSvg).join("");
   const options: FigureOptions = { farOpacity: farOpacityOf(spec) };
   return svgShell(view, spec.title, [
     highlightSvg(focus, poses, timing, identity),

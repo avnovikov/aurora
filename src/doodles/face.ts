@@ -11,7 +11,7 @@
  */
 import type { View } from "./project";
 import { deg, SEGMENTS, sampleKeys, type DoodleSpec, type Face, type Point, type Solved } from "./rig";
-import type { Figure3, Point3 } from "./rig3d";
+import { add3 as add, cross3 as cross, dot3 as dot, rotateAbout, scale3 as scale, sub3 as sub, unit3 as unit, type Figure3, type Point3 } from "./rig3d";
 
 /** The nose tick runs from this share of the head radius out to this share (past the circle). */
 export const NOSE_FROM = 0.55;
@@ -41,20 +41,8 @@ export function faceBlends(spec: { frames: readonly { face?: Face }[] }, count: 
 
 // ---------------------------------------------------------------- vectors
 
-const add = (a: Point3, b: Point3): Point3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
-const sub = (a: Point3, b: Point3): Point3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
-const scale = (a: Point3, k: number): Point3 => [a[0] * k, a[1] * k, a[2] * k];
-const dot = (a: Point3, b: Point3): number => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-const cross = (a: Point3, b: Point3): Point3 => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
-function unit(v: Point3, fallback: Point3): Point3 {
-  const n = Math.hypot(v[0], v[1], v[2]);
-  return n < 1e-9 ? fallback : scale(v, 1 / n);
-}
-/** Rodrigues: `v` turned by `degrees` about unit `axis`. */
-function rotate(v: Point3, axis: Point3, degrees: number): Point3 {
-  const [c, s] = [Math.cos(deg(degrees)), Math.sin(deg(degrees))];
-  return add(add(scale(v, c), scale(cross(axis, v), s)), scale(axis, dot(axis, v) * (1 - c)));
-}
+/** `v` turned by `degrees` about unit `axis`. */
+const rotate = (v: Point3, axis: Point3, degrees: number): Point3 => rotateAbout(v, axis, deg(degrees));
 
 /** The face's frame: `u` up the head, `f` where the face points, `s` towards the far side. */
 interface Frame {

@@ -29,6 +29,7 @@ import {
   type Solved,
 } from "./rig";
 import { tiltHeads } from "./face";
+import { heldKind } from "./gear";
 
 export type Point3 = readonly [number, number, number];
 
@@ -83,7 +84,7 @@ const norm = (a: Point3): number => Math.hypot(a[0], a[1], a[2]);
 export const dist3 = (a: Point3, b: Point3): number => norm(sub(a, b));
 
 /** Vector helpers for the batch files (same arithmetic as the solver). */
-export { add as add3, sub as sub3, scale as scale3, dot as dot3, norm as norm3 };
+export { add as add3, sub as sub3, scale as scale3, dot as dot3, cross as cross3, norm as norm3, unit as unit3 };
 const lerp3 = (a: Point3, b: Point3, t: number): Point3 => add(a, scale(sub(b, a), t));
 const Z: Point3 = [0, 0, 1];
 const DOWN: Point3 = [0, 1, 0];
@@ -103,8 +104,8 @@ function perpendicular(v: Point3, d: Point3, fallback: Point3): Point3 {
   return unit(cross(d, axis));
 }
 
-/** Rodrigues: `v` turned by `angle` about unit `axis`. */
-function rotateAbout(v: Point3, axis: Point3, angle: number): Point3 {
+/** Rodrigues: `v` turned by `angle` (radians) about unit `axis`. */
+export function rotateAbout(v: Point3, axis: Point3, angle: number): Point3 {
   const c = Math.cos(angle);
   const s = Math.sin(angle);
   return add(add(scale(v, c), scale(cross(axis, v), s)), scale(axis, dot(axis, v) * (1 - c)));
@@ -496,7 +497,7 @@ function heldArm(a: Limb3, b: Limb3, blended: Limb3, t: number): Limb3 {
 
 /** The blended limbs, with the arms kept on a held stick or towel (see `heldArm`). */
 function holdObject(spec: DoodleSpec, a: Figure3, b: Figure3, limbs: Record<LimbKind, Record<Side, Limb3>>, t: number): Record<LimbKind, Record<Side, Limb3>> {
-  if (!spec.stick && !spec.towel) return limbs;
+  if (!heldKind(spec)) return limbs;
   const arms = { near: heldArm(a.arms.near, b.arms.near, limbs.arms.near, t), far: heldArm(a.arms.far, b.arms.far, limbs.arms.far, t) };
   return { ...limbs, arms };
 }

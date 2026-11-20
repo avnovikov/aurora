@@ -1,5 +1,6 @@
 import { BONES, END_TURN_LIMIT, FACE_LIMITS, GIRDLE_LIMITS, SEGMENTS, TWIST_LIMITS, dist, reflectSolved, sampleTimeline, type DoodleSpec, type Keyframe, type Point, type Prop, type Sideways, type Side, type Solved } from "./rig";
 import { bellHolders, bells, bellSize, byTheHorns, handsOff, heldKind, heldLine, panelOf, secondView, strapAnchor, strapAttach, strapSides } from "./gear";
+import { FOCUS_BY_ID } from "./focus";
 import { BODY_JOINTS, holdSlips, partner3D, partnerFlat } from "./partner";
 import type { Panel } from "./project";
 import { dualLayout, handZ, propDepth } from "./renderDual";
@@ -365,7 +366,28 @@ export function heldGuards(spec: DoodleSpec): string[] {
   const joined = [spec.stick && "stick", spec.towel && "towel", spec.handBand && "handBand"].filter(Boolean);
   if (joined.length > 1) errors.push(`only one of stick, towel and handBand (got ${joined.join(", ")})`);
   if ((spec.stick?.overhang ?? 0) < 0) errors.push("stick.overhang is negative");
+  const kind = heldKind(spec);
+  // Two views re-solve both arms onto the object between keyframes (rig3d `heldArm`), straight to the hand tip.
+  if (kind && spec.views) errors.push(...wristGuards(spec.frames, ["near", "far"], `${kind} re-solves the arms between keyframes with a straight wrist`));
   return errors;
+}
+
+/**
+ * Hands whose arm is re-solved between keyframes (a held stick or towel in two
+ * views, a partner's hold) run straight from elbow to hand tip, so a wrist
+ * angle at a keyframe would snap straight in the transition.
+ */
+export function wristGuards(frames: readonly Pick<Keyframe, "pose" | "sideways">[], hands: readonly Side[], why: string, prefix = ""): string[] {
+  return frames.flatMap((frame, k) =>
+    hands.flatMap((side) =>
+      [
+        "wrists" in frame.pose && frame.pose.wrists?.[side] !== undefined ? `pose.wrists.${side}` : undefined,
+        frame.sideways?.wrists?.[side] !== undefined ? `sideways.wrists.${side}` : undefined,
+      ]
+        .filter((key): key is string => key !== undefined)
+        .map((key) => `${prefix}frame ${k}: ${why}; drop ${key}`),
+    ),
+  );
 }
 
 /** Polyline length in 2D or 3D. */
@@ -420,6 +442,7 @@ function holdGuards(partner: NonNullable<DoodleSpec["partner"]>): string[] {
     ...(partner.frames.some((frame) => frame.pose.hands?.[hold.hand]) ? [`partner hands.${hold.hand} is held on ${hold.on}: don't pin it in the pose too`] : []),
   ]);
   if (new Set(holds.map((hold) => hold.hand)).size !== holds.length) errors.push("partner holds name one hand twice");
+  errors.push(...wristGuards(partner.frames, holds.map((hold) => hold.hand), "a held hand's arm is re-solved onto its joint with a straight wrist", "partner: "));
   return errors;
 }
 
@@ -558,7 +581,7 @@ const gearIssues = (spec: DoodleSpec, poses: Solved[], timeline: Samples, panel:
 /** Single-view specs (the 2D rig). */
 function validateFlat(spec: DoodleSpec): SpecReport {
   const timeline = sampleTimeline(spec);
-  const box = specViewBox(spec, timeline.poses);
+  const box = specViewBox(spec, timeline);
   const errors: string[] = [];
   const keyframes = timeline.keyframeIndex.map((sampleIndex, index): KeyframeReport => {
     const pose = timeline.poses[sampleIndex];
@@ -700,23 +723,29 @@ function girdleIssues(sw: Sideways, at: string): string[] {
  * `END_TURN_LIMIT`, and a wrist angle only on a hand whose pose bends the
  * wrist (`pose.wrists`), since a straight hand tip is pinned.
  */
-export function endTurnGuards(frames: readonly Pick<Keyframe, "pose" | "sideways">[]): string[] {
+export function endTurnGuards(frames: readonly Pick<Keyframe, "pose" | "sideways">[], prefix = ""): string[] {
   return frames.flatMap((frame, k) =>
     (["toes", "wrists"] as const).flatMap((key) =>
       (["near", "far"] as Side[]).flatMap((side) => {
         const turn = frame.sideways?.[key]?.[side];
         if (turn === undefined) return [];
-        const errors = Math.abs(turn) > END_TURN_LIMIT ? [`frame ${k}: sideways.${key}.${side} ${turn}° is past ${END_TURN_LIMIT}°`] : [];
+        const errors = Math.abs(turn) > END_TURN_LIMIT ? [`${prefix}frame ${k}: sideways.${key}.${side} ${turn}° is past ${END_TURN_LIMIT}°`] : [];
         const bent = "wrists" in frame.pose && frame.pose.wrists?.[side] !== undefined;
-        if (key === "wrists" && !bent) errors.push(`frame ${k}: sideways.wrists.${side} needs pose.wrists.${side} (the hand's side-view angle)`);
+        if (key === "wrists" && !bent) errors.push(`${prefix}frame ${k}: sideways.wrists.${side} needs pose.wrists.${side} (the hand's side-view angle)`);
         return errors;
       }),
     ),
   );
 }
 
-/** `fadeBehind` draws depth that only two views have. */
+/** `fadeBehind` draws depth that only two views have (side + top: the side panel's bell; kettlebells are barred there for now). */
 const fadeGuards = (spec: DoodleSpec): string[] => (spec.fadeBehind && !spec.views ? ['fadeBehind needs views: ["side", "front"] or ["side", "top"]'] : []);
+
+/** A two-view focus zooms on `focus.panel`; a panel the spec doesn't draw would drop the inset silently. */
+function focusPanelGuards(spec: DoodleSpec, views: NonNullable<DoodleSpec["views"]>): string[] {
+  const panel = FOCUS_BY_ID[spec.id]?.panel;
+  return panel && !(views as readonly string[]).includes(panel) ? [`focus.panel "${panel}" isn't one of views ${JSON.stringify(views)}: the inset would be dropped`] : [];
+}
 
 /** Spec-level rules for `views` / `sideways` (dual-view spec, "Scope" and "Solver"). */
 export function dualViewGuards(spec: DoodleSpec): string[] {
@@ -734,7 +763,9 @@ export function dualViewGuards(spec: DoodleSpec): string[] {
   if (second === "top") errors.push(...topGearGuards(spec));
   // Every prop kind has a front and a top drawing (frontProps, topProps switch exhaustively), so a new kind
   // that lacks one fails to compile there rather than needing a guard here.
-  errors.push(...leanPivotGuards(spec), ...turnGuards(spec.frames), ...endTurnGuards(spec.frames), ...turnGuards(spec.partner?.frames ?? [], "partner: "));
+  errors.push(...leanPivotGuards(spec), ...turnGuards(spec.frames), ...endTurnGuards(spec.frames));
+  const partnerFrames = spec.partner?.frames ?? [];
+  errors.push(...turnGuards(partnerFrames, "partner: "), ...endTurnGuards(partnerFrames, "partner: "), ...focusPanelGuards(spec, spec.views));
   return errors;
 }
 

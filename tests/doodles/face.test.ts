@@ -119,8 +119,9 @@ describe("head facing: the nose tick", () => {
   });
 
   it("the drawing's bounds take in the nose", () => {
-    const poses = sampleTimeline(TURN).poses;
-    const extras = flatExtras(TURN, poses);
+    const timeline = sampleTimeline(TURN);
+    const { poses } = timeline;
+    const extras = flatExtras(TURN, timeline);
     const box = figureExtent(poses, [], TURN, "side", extraPoints(extras));
     const nose = Math.max(...faceMarks2D(TURN, poses)!.map((m) => m.to[0]));
     expect(box.x + box.w).toBeGreaterThan(nose);
