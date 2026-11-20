@@ -1,3 +1,5 @@
+> **Historical:** Draft for IzzyOnDroid. Inclusion was **rejected** under their AI policy (LLM-assisted code). Prefer official F-Droid — see [`fdroid.md`](fdroid.md).
+
 Title: [AppRequest] Aurora · Rassvet
 
 Guidelines:

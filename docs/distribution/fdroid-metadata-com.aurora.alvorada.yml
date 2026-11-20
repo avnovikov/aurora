@@ -1,0 +1,52 @@
+# Draft for gitlab.com/fdroid/fdroiddata → metadata/com.aurora.alvorada.yml
+# Maintainer: copy into an fdroiddata fork, adjust commit/sudo if CI requires, then MR.
+# Do not treat this path as live F-Droid metadata until merged upstream.
+#
+# Signing: F-Droid rebuilds and signs (no AllowedAPKSigningKeys in v1).
+# Stack: Capacitor + Vite + npm → Gradle (see docs/distribution/fdroid.md).
+
+Categories:
+  - Sports & Health
+
+License: MIT
+
+AuthorName: Alexei Novikov
+AuthorEmail: alexei.128.946@gmail.com
+
+SourceCode: https://github.com/avnovikov/aurora
+IssueTracker: https://github.com/avnovikov/aurora/issues
+Changelog: https://github.com/avnovikov/aurora/releases
+
+AutoName: Aurora
+
+RepoType: git
+Repo: https://github.com/avnovikov/aurora.git
+
+Builds:
+  - versionName: 0.1.2
+    versionCode: 3
+    commit: v0.1.2
+    subdir: android/app
+    sudo:
+      - apt-get update
+      - apt-get install -y npm
+      # Prefer Node 22 if the buildserver image is older; adjust to current fdroidserver practice
+      # (e.g. NodeSource or Debian forky npm) when CI fails on engine version.
+    gradle:
+      - yes
+    prebuild:
+      - cd ../..
+      - npm ci
+    scanignore:
+      - node_modules/@capacitor/cli/assets/capacitor-cordova-android-plugins.tar.gz
+    scandelete:
+      - node_modules
+    build:
+      - cd ../..
+      - npm run build
+      - npx cap sync android
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: 0.1.2
+CurrentVersionCode: 3
