@@ -1,3 +1,4 @@
+import type { BodyViewMode } from "../body/aggregate";
 import { templateToStarter } from "../data/seed";
 import type { HistoryPulse, SessionEvaluation } from "../domain/program";
 import { readScrollY, restoreScrollY } from "../library/detailScroll";
@@ -48,16 +49,18 @@ import { wireTodayPulse } from "./todayPulse";
 const PANEL_RENDERERS: Partial<
   Record<
     Exclude<AppTab, "today" | "progress" | "history" | "library">,
-    (panel: HTMLElement) => void
+    (panel: HTMLElement, root: HTMLElement) => void
   >
 > = {
-  body: renderBodyView,
+  body: showBody,
   plan: renderPlanView,
-  settings: renderSettingsView,
+  settings: (panel) => renderSettingsView(panel),
 };
 
 let disposeTodayPulse: (() => void) | null = null;
 let historyFilter: HistoryFilter = { kind: "all" };
+/** Body window to reopen on Back from an exercise; reset by a tab tap. */
+let bodyMode: BodyViewMode = "overall";
 /** Set when History opens an exercise; consumed on the next Library paint. */
 let libraryFocusId: string | null = null;
 /** Drill-down Back history (#219); replaced on each boot. */
@@ -144,12 +147,23 @@ function showTab(
   if (!renderPanel) {
     throw new Error(`No panel renderer for tab: ${tab}`);
   }
-  renderPanel(panel);
+  renderPanel(panel, root);
+}
+
+function showBody(panel: HTMLElement, root: HTMLElement): void {
+  renderBodyView(panel, {
+    mode: bodyMode,
+    onOpenExercise: (exerciseId, mode) => {
+      nav.push(bodyEntry(root, mode));
+      openLibraryExercise(root, exerciseId);
+    },
+  });
 }
 
 /** Bottom-bar tab (or a jump to one): a fresh start, no drill-down history. */
 function tapTab(root: HTMLElement, tab: AppTab): void {
   nav.clear();
+  bodyMode = "overall";
   showTab(root, tab);
 }
 
@@ -165,6 +179,19 @@ function screenEntry(root: HTMLElement, tab: "progress" | "history"): NavEntry {
       } else {
         showTab(root, "progress");
       }
+      restoreScrollY(scrollY);
+    },
+  };
+}
+
+/** Back entry that re-shows Body on the window that was left, at its scroll. */
+function bodyEntry(root: HTMLElement, mode: BodyViewMode): NavEntry {
+  const scrollY = readScrollY();
+  return {
+    label: "Body",
+    restore: () => {
+      bodyMode = mode;
+      showTab(root, "body");
       restoreScrollY(scrollY);
     },
   };

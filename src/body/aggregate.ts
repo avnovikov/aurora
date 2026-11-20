@@ -136,17 +136,6 @@ export function aggregateBodyView(
   return aggregateMuscleExercises(history, mode, nowMs);
 }
 
-export function topMuscles(loads: MuscleLoadMap, limit = 5): Array<[MuscleGroup, number]> {
-  return (Object.entries(loads) as Array<[MuscleGroup, number]>)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, limit);
-}
-
-/** Largest single-group score, or 0 for an empty map. */
-export function maxLoad(loads: MuscleLoadMap): number {
-  return Math.max(0, ...Object.values(loads));
-}
-
 /**
  * An exercise may list one group more than once (e.g. two heads of the same
  * muscle). Credit the group once, at its strongest role, so it is not

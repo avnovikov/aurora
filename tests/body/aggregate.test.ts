@@ -7,11 +7,9 @@ import {
   aggregateMuscleExercises,
   aggregateOverallMuscleLoad,
   isBodyViewMode,
-  maxLoad,
   muscleGroupsOf,
   sessionAgeWeight,
   strongestWeightPerGroup,
-  topMuscles,
   type BodyPeriod,
 } from "../../src/body/aggregate";
 import type { HistoryEntry } from "../../src/domain/program";
@@ -184,21 +182,5 @@ describe("isBodyViewMode", () => {
     expect(isBodyViewMode("month")).toBe(true);
     expect(isBodyViewMode("week")).toBe(false);
     expect(isBodyViewMode("decade")).toBe(false);
-  });
-});
-
-describe("topMuscles and maxLoad", () => {
-  const loads = { chest: 2, lats: 8, glutes: 5 };
-
-  it("orders by score and honours the limit", () => {
-    expect(topMuscles(loads, 2)).toEqual([
-      ["lats", 8],
-      ["glutes", 5],
-    ]);
-  });
-
-  it("reports the largest score, or 0 when empty", () => {
-    expect(maxLoad(loads)).toBe(8);
-    expect(maxLoad({})).toBe(0);
   });
 });
