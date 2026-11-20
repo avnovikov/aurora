@@ -33,10 +33,13 @@ import {
 } from "../session/history";
 import { buildHistoryFeed } from "../progress/historyFeed";
 import { loadProfile } from "../settings/profile";
+import type { Navigation } from "./navigation";
 
 export interface LibraryViewOptions {
   /** Open this exercise's detail immediately (e.g. from History). */
   initialExerciseId?: string;
+  /** Drill-down Back history (#219); without it Back returns to the list. */
+  nav?: Navigation;
 }
 
 /** Every list filter with a value; "hiddenStretches" is computed, not chosen. */
@@ -69,6 +72,7 @@ export function renderLibraryView(
   let planStatus: string | null = null;
   let inferenceHint: string | null = null;
   const { jointHistory, equipment } = loadProfile();
+  const { nav } = options;
   const targetIds = collectTemplateTargetIds(listAllTemplates());
 
   const paint = (): void => {
@@ -145,9 +149,24 @@ export function renderLibraryView(
       scrollToTop,
       loggedSets: logged.rows,
       loggedSetsHaveLegacy: logged.hasLegacyOnly,
+      backLabel: nav?.peek()?.label ?? "list",
       actions: {
-        onBack: () => clearPlanStatusAndSelect(null),
-        onOpenExercise: clearPlanStatusAndSelect,
+        onBack: () => {
+          if (!nav?.back()) {
+            clearPlanStatusAndSelect(null);
+          }
+        },
+        onOpenExercise: (nextId) => {
+          const scrollY = readScrollY();
+          nav?.push({
+            label: displayExerciseName(exercise.name),
+            restore: () => {
+              clearPlanStatusAndSelect(exerciseId);
+              restoreScrollY(scrollY);
+            },
+          });
+          clearPlanStatusAndSelect(nextId);
+        },
         onDeclareTier: (id, tier) => {
           const result = declareSkillTier(loadMemories(), id, tier);
           saveMemories(result.memories);
@@ -230,6 +249,7 @@ export function renderLibraryView(
           openPanels = withPanelState(openPanels, panel, open);
         },
         onSelect: (id) => {
+          nav?.push({ label: "list", restore: () => clearPlanStatusAndSelect(null) });
           selectedId = id;
           planStatus = null;
           inferenceHint = null;

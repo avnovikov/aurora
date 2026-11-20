@@ -40,16 +40,16 @@ describe("historyFeedPresent", () => {
     );
   });
 
-  it("includes Avg pulse when the set has averageBpm", () => {
+  it("includes the average heart rate in bpm when the set has averageBpm (#219)", () => {
     expect(historyFeedRowMeta({ ...setRow, averageBpm: 142 })).toMatch(
-      /Avg pulse 142/,
+      / · avg 142 bpm · /,
     );
   });
 
-  it("can render titles as Library links", () => {
-    const html = historyFeedListHtml([setRow], { linkTitles: true });
-    expect(html).toContain('data-open-exercise="hf_71"');
+  it("renders the exercise name as plain text", () => {
+    const html = historyFeedListHtml([setRow]);
     expect(html).toContain("Pistol squat");
+    expect(html).not.toContain("data-open-exercise");
   });
 
 });

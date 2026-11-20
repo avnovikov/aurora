@@ -1,6 +1,11 @@
+import { facePoints, faceMarks2D, type FaceMark } from "./face";
 import { FOCUS_BY_ID, type Focus, type Segment } from "./focus";
+import { bellSize, bells, byTheHorns, gearPanel, gearPoints, handsOff, heldLines, panelOf, RING_RADIUS, secondView, strapAnchor, strapAttach, strapLine, strapSides } from "./gear";
+import { partnerFlat, PARTNER_OPACITY, PARTNER_WIDTH } from "./partner";
+import type { Panel, View } from "./project";
 import { dualLayout, renderDualSvg } from "./renderDual";
-import { sampleTimeline, SEGMENTS, type DoodleSpec, type Point, type Prop, type Side, type Solved } from "./rig";
+import { renderTopSvg, topLayout } from "./renderTop";
+import { sampleTimeline, SEGMENTS, type DoodleSpec, type Point, type Prop, type Side, type Solved, type Timeline } from "./rig";
 
 /**
  * Colours are CSS custom properties so an inlined doodle follows the active
@@ -70,10 +75,10 @@ const bandPath = (share: number): Path => (p) => [onThigh(p, "near", share), onT
 const BAND_WIDTH = 5;
 
 /** A filled circle of radius `r` moving through `centres`. */
-function animatedCircle(centres: Point[], r: number, fill: string, timing: string): string {
+function animatedCircle(centres: Point[], r: number, fill: string, timing: string, extra = ""): string {
   const cx = animate("cx", centres.map((p) => fmt(p[0])), timing);
   const cy = animate("cy", centres.map((p) => fmt(p[1])), timing);
-  return `<circle cx="${fmt(centres[0][0])}" cy="${fmt(centres[0][1])}" r="${fmt(r)}" style="fill:${fill}">${cx}${cy}</circle>`;
+  return `<circle cx="${fmt(centres[0][0])}" cy="${fmt(centres[0][1])}" r="${fmt(r)}" style="fill:${fill}"${extra}>${cx}${cy}</circle>`;
 }
 
 /** An ab wheel centred on the near hand (drawn over the near arm, like a held object). */
@@ -90,6 +95,117 @@ const WHEEL_HUB = 3;
 function bandSvg(spec: DoodleSpec, poses: Solved[], timing: string, map: Mapper): string {
   if (spec.band === undefined) return "";
   return `<g style="stroke:${FOCUS_COLOUR}" stroke-width="${BAND_WIDTH}">${animatedPolyline(bandPath(spec.band), poses, timing, 1, map)}</g>`;
+}
+
+/** Strap webbing and ring strokes: thinner than the limbs, so gear never reads as a bone. */
+const STRAP_WIDTH = 3;
+const RING_STROKE = 4;
+
+const fadeAttr = (opacity: number): string => (opacity < 1 ? ` opacity="${opacity}"` : "");
+
+/** One side's strap (rings, handles) or anchored band, from the panel's anchor to the hand, knee or ankle. */
+function strapSvg(spec: DoodleSpec, side: Side, poses: Solved[], timing: string, map: Mapper, scale: number, panel: Panel, opacity: number): string {
+  if (!strapSides(spec).includes(side)) return "";
+  const anchor = strapAnchor(spec, poses, side, panel);
+  const line = animatedPolyline((pose) => strapLine(spec, anchor, pose, side), poses, timing, 1, map);
+  if (spec.straps!.end === "band") {
+    return `<g style="stroke:${FOCUS_COLOUR}" stroke-width="${BAND_WIDTH}"${fadeAttr(opacity)}>${line}</g>`;
+  }
+  const ring =
+    spec.straps!.end === "ring"
+      ? animatedCircle(poses.map((pose) => map(strapAttach(spec, pose, side))), RING_RADIUS * scale, "none", timing, ` stroke-width="${RING_STROKE}"`)
+      : "";
+  return `<g stroke-width="${STRAP_WIDTH}"${fadeAttr(opacity)}>${line}${ring}</g>`;
+}
+
+/** Nose tick and held stick strokes: thinner than the limbs. */
+const FACE_WIDTH = 5;
+const STICK_WIDTH = 5;
+
+/** A 0/1 opacity per sample, animated (`shown[i]`: visible at sample i). */
+function shownAttrs(shown: boolean[], timing: string): { attr: string; child: string } {
+  const values = shown.map((on) => (on ? "1" : "0"));
+  return { attr: ` opacity="${values[0]}"`, child: animate("opacity", values, timing) };
+}
+
+/** A two-point (or longer) line moving through `frames`, with `attrs`; shown only while `shown` (when given). */
+function animatedLine(frames: Point[][], timing: string, map: Mapper, attrs: string, shown?: boolean[]): string {
+  const points = frames.map((line) => pointsAttr(line.map(map)));
+  const fade = shown ? shownAttrs(shown, timing) : { attr: "", child: "" };
+  return `<polyline points="${points[0]}"${attrs}${fade.attr}>${animate("points", points, timing)}${fade.child}</polyline>`;
+}
+
+/**
+ * The nose tick: `back` is drawn under the head circle (only its tip past the
+ * circle shows), the front copy over it while the face is towards the viewer.
+ */
+function faceSvg(marks: FaceMark[] | undefined, timing: string, map: Mapper, back: boolean): string {
+  if (!marks) return "";
+  const frames = marks.map((mark) => [mark.from, mark.to]);
+  const attrs = ` stroke-width="${FACE_WIDTH}"`;
+  const always = marks.every((mark) => mark.front);
+  if (back) return always ? "" : animatedLine(frames, timing, map, attrs);
+  if (always) return animatedLine(frames, timing, map, attrs);
+  return marks.some((mark) => mark.front) ? animatedLine(frames, timing, map, attrs, marks.map((mark) => mark.front)) : "";
+}
+
+/** A stick (ink, past the hands) or towel (accent, like a band); shown only while `shown` (when given). */
+function heldSvg(spec: DoodleSpec, lines: Point[][] | undefined, timing: string, map: Mapper, shown?: boolean[]): string {
+  if (!lines) return "";
+  const attrs = spec.stick ? ` stroke-width="${STICK_WIDTH}"` : ` style="stroke:${FOCUS_COLOUR}" stroke-width="${BAND_WIDTH}"`;
+  return animatedLine(lines, timing, map, attrs, shown);
+}
+
+/** A band from hand to hand (accent colour, like the thigh band). */
+function handBandSvg(spec: DoodleSpec, poses: Solved[], timing: string, map: Mapper): string {
+  if (!spec.handBand) return "";
+  const path: Path = (p) => [p.arms.near.end, p.arms.far.end];
+  return `<g style="stroke:${FOCUS_COLOUR}" stroke-width="${BAND_WIDTH}">${animatedPolyline(path, poses, timing, 1, map)}</g>`;
+}
+
+/** Kettlebell handle stroke (the bell itself is a solid disc: never a second head). */
+const HANDLE_WIDTH = 4;
+
+/** A bell that changes hands or is held by the horns is drawn in its own layers (`bellBack`, `bellFront`), not with one arm. */
+const layeredBell = (spec: DoodleSpec): boolean => byTheHorns(spec) || handsOff(spec);
+
+/** A solid bell and a handle arc up through the grip, for the bell that starts in `side`; `attrs` (and `extra` children) go on its group. */
+function bellGroup(spec: DoodleSpec, side: Side, poses: Solved[], timing: string, map: Mapper, scale: number, panel: Panel, attrs: string, extra = ""): string {
+  const list = bells(spec, poses, side, panel);
+  const d = list.map(({ handle: [a, c, b] }) => {
+    const [p, q, r] = [a, c, b].map(map);
+    return `M${fmt(p[0])},${fmt(p[1])} Q${fmt(q[0])},${fmt(q[1])} ${fmt(r[0])},${fmt(r[1])}`;
+  });
+  const handle = `<path d="${d[0]}" stroke-width="${fmt(HANDLE_WIDTH * scale)}">${animate("d", d, timing)}</path>`;
+  const body = animatedCircle(list.map((bell) => map(bell.centre)), bellSize(spec) * scale, INK, timing, ` stroke-width="${fmt(2 * scale)}"`);
+  return `<g${attrs}>${handle}${body}${extra}</g>`;
+}
+
+/** A kettlebell in one hand. */
+function bellSvg(spec: DoodleSpec, side: Side, poses: Solved[], timing: string, map: Mapper, scale: number, panel: Panel, opacity: number): string {
+  if (!spec.kettlebell?.hands.includes(side) || layeredBell(spec)) return "";
+  return bellGroup(spec, side, poses, timing, map, scale, panel, fadeAttr(opacity));
+}
+
+/**
+ * A bell handed between the hands or held by the horns, at full strength.
+ * `back`: a copy drawn just behind the torso (only where `inFront` is known);
+ * otherwise drawn over the figure, shown only while `inFront` (when known), so
+ * a bell behind the head is hidden by it (and by the neck).
+ */
+function layeredBellSvg(spec: DoodleSpec, back: boolean, poses: Solved[], timing: string, map: Mapper, scale: number, panel: Panel, inFront?: boolean[], behind?: boolean[]): string {
+  if (!spec.kettlebell || !layeredBell(spec)) return "";
+  const side = spec.kettlebell.hands[0];
+  if (behind?.some(Boolean)) {
+    // `fadeBehind`: pale behind the body while it is behind, bright over the figure otherwise.
+    const [whenBehind, otherwise] = back ? [`${FAR_OPACITY}`, "0"] : ["0", "1"];
+    const values = behind.map((b) => (b ? whenBehind : otherwise));
+    return bellGroup(spec, side, poses, timing, map, scale, panel, ` opacity="${values[0]}"`, animate("opacity", values, timing));
+  }
+  if (back) return inFront ? bellGroup(spec, side, poses, timing, map, scale, panel, "") : "";
+  if (!inFront) return bellGroup(spec, side, poses, timing, map, scale, panel, "");
+  const shown = inFront.map((front) => (front ? "1" : "0"));
+  return bellGroup(spec, side, poses, timing, map, scale, panel, ` opacity="${shown[0]}"`, animate("opacity", shown, timing));
 }
 
 /** A board's posts stand this far in from each end. */
@@ -271,15 +387,62 @@ export function frame(drawing: ViewBox): ViewBox {
   return { x: drawing.x + drawing.w / 2 - w / 2, y: drawing.y - PADDING, w, h };
 }
 
-/** Everything the figure, its ab wheel (radius `r`) and props touch over the loop (no inset). */
-export function figureExtent(poses: Solved[], props: readonly Prop[], r: number | undefined): ViewBox {
+/**
+ * What a panel draws beside the figure and its spec-level gear: nose ticks,
+ * the held stick or towel (in front of the torso or behind it, front panel),
+ * and the partner (its own spec, poses as drawn, ticks, draw order).
+ */
+export interface PanelExtras {
+  faces?: FaceMark[];
+  held?: Point[][];
+  heldInFront?: boolean[];
+  partner?: { spec: DoodleSpec; poses: Solved[]; faces?: FaceMark[]; order?: readonly FigurePart[] };
+}
+
+/** Every point the extras are drawn through (for the bounds). */
+export function extraPoints(extras: PanelExtras): Point[] {
+  const partner = extras.partner;
+  return [
+    ...facePoints(extras.faces),
+    ...(extras.held ?? []).flat(),
+    ...(partner ? [...partner.poses.flatMap((pose) => figurePoints(pose).map((p) => p.point)), ...facePoints(partner.faces)] : []),
+  ];
+}
+
+/** A single-view spec's samples and where its keyframes are among them. */
+type FlatSamples = Pick<Timeline, "poses" | "keyframeIndex">;
+
+/** Extras of a single-view spec, from its 2D samples. */
+export function flatExtras(spec: DoodleSpec, { poses, keyframeIndex }: FlatSamples): PanelExtras {
+  const partner = partnerFlat(spec, poses, keyframeIndex);
+  return {
+    faces: faceMarks2D(spec, poses),
+    held: heldLines(spec, poses),
+    partner: partner && { spec: partner.spec, poses: partner.poses, faces: partner.faces },
+  };
+}
+
+/** The partner, paler and thinner, drawn before (behind) the exerciser. */
+export function partnerSvg(extras: PanelExtras, timing: string, map: Mapper, options: FigureOptions): string {
+  const partner = extras.partner;
+  if (!partner) return "";
+  const figure = figureSvg(partner.spec, partner.poses, timing, map, { ...options, faces: partner.faces, order: partner.order ?? options.order });
+  return `<g opacity="${PARTNER_OPACITY}" stroke-width="${PARTNER_WIDTH}">${figure}</g>`;
+}
+
+/** Everything the figure, its gear and props touch over the loop on one panel (no inset); `extra`: more points drawn (see `extraPoints`). */
+export function figureExtent(poses: Solved[], props: readonly Prop[], spec: DoodleSpec, view: View = panelOf(spec), extra: Point[] = []): ViewBox {
+  const panel = gearPanel(view);
+  const r = spec.wheel;
   return bounds([
     ...poses.flatMap((pose) => figurePoints(pose).map((p) => p.point)),
     ...props.flatMap(propPoints),
+    ...gearPoints(spec, poses, panel),
     // The ab wheel round the near hand.
     ...(r === undefined
       ? []
       : poses.flatMap(({ arms: { near: { end: [x, y] } } }): Point[] => [[x - r, y - r], [x + r, y + r]])),
+    ...extra,
   ], STROKE_REACH);
 }
 
@@ -289,18 +452,21 @@ interface Layout {
   inset?: Inset;
 }
 
-function layoutFor(spec: DoodleSpec, poses: Solved[]): Layout {
-  const figure = figureExtent(poses, resolveFloors(spec.props ?? [], poses), spec.wheel);
+/** Floors run under the partner as well as the exerciser: the poses a panel's floors resolve against. */
+export const partnerFloor = (poses: Solved[], extras: PanelExtras): Solved[] => (extras.partner ? [...poses, ...extras.partner.poses] : poses);
+
+function layoutFor(spec: DoodleSpec, timeline: FlatSamples, extras: PanelExtras = flatExtras(spec, timeline)): Layout {
+  const { poses } = timeline;
+  const figure = figureExtent(poses, resolveFloors(spec.props ?? [], partnerFloor(poses, extras)), spec, panelOf(spec), extraPoints(extras));
   const focus = FOCUS_BY_ID[spec.id];
   const inset = insetFor(focus, poses, figure);
   const drawing = inset ? union(figure, insetExtent(inset, focus)) : figure;
   return { view: frame(drawing), focus, inset };
 }
 
-export function specViewBox(spec: DoodleSpec, poses?: Solved[]): ViewBox {
-  if (spec.views) return dualLayout(spec).view;
-  poses ??= sampleTimeline(spec).poses;
-  return layoutFor(spec, poses).view;
+export function specViewBox(spec: DoodleSpec, timeline?: FlatSamples): ViewBox {
+  if (spec.views) return secondView(spec) === "top" ? topLayout(spec).view : dualLayout(spec).view;
+  return layoutFor(spec, timeline ?? sampleTimeline(spec)).view;
 }
 
 /** Joints a highlighted segment runs through. */
@@ -330,16 +496,76 @@ export function highlightSvg(focus: Focus | undefined, poses: Solved[], timing: 
 }
 
 /** Drawable parts of the figure, in the side view's back-to-front order. */
-export const FIGURE_PARTS = ["legFar", "armFar", "spine", "head", "legNear", "band", "armNear", "wheel"] as const;
+export const FIGURE_PARTS = [
+  "legFar",
+  "armFar",
+  "strapFar",
+  "bellFar",
+  "forearmsBack",
+  "bellBack",
+  "spine",
+  "head",
+  "legNear",
+  "band",
+  "armNear",
+  "strapNear",
+  "handBand",
+  "held",
+  "bellNear",
+  "wheel",
+  "bellFront",
+  "heldBack",
+  "heldFront",
+] as const;
 export type FigurePart = (typeof FIGURE_PARTS)[number];
 
-interface FigureOptions {
+export interface FigureOptions {
   /** Keeps the head (and wheel) in proportion under a zoom. */
   headScale?: number;
   /** Opacity of the far arm and leg (1 when both sides are seen square on). */
   farOpacity?: number;
   /** Back-to-front order (the front panel sorts by depth). */
   order?: readonly FigurePart[];
+  /** Which panel the poses are (front: straps hang above each hand, racked bells sit outside the forearm; top: no gear, as side). */
+  panel?: View;
+  /** Per sample, whether a bell held by the horns is in front of the head (two views; see `bellInFront`). */
+  bellInFront?: boolean[];
+  /** Per sample nose ticks (see `FaceMark`). */
+  faces?: FaceMark[];
+  /** Per sample stick or towel line. */
+  held?: Point[][];
+  /** Front panel: per sample, whether the stick or towel is in front of the torso (drawn behind it and again over the figure). */
+  heldInFront?: boolean[];
+  /** `fadeBehind`: per sample, whether each forearm and the layered bell is behind the body (drawn pale, behind it). */
+  behind?: Behind;
+}
+
+/** Per sample, what is behind the body on a panel (see `DoodleSpec.fadeBehind`). */
+export interface Behind {
+  forearms?: Partial<Record<Side, boolean[]>>;
+  bell?: boolean[];
+}
+
+const forearmPath = (side: Side): Path => (p) => [p.arms[side].mid, p.arms[side].joint, p.arms[side].end];
+const upperArmPath = (side: Side): Path => (p) => [p.chest, p.arms[side].root, p.arms[side].mid];
+
+/**
+ * An arm. With `behind` samples (see `Behind`) its forearm is split off and
+ * shown here only while it is in front; `forearmsBackSvg` draws it pale behind the body.
+ */
+function armSvg(side: Side, poses: Solved[], timing: string, map: Mapper, opacity: number, behind: boolean[] | undefined): string {
+  if (!behind?.some(Boolean)) return animatedPolyline(armPath(side), poses, timing, opacity, map);
+  const fore = animatedLine(poses.map(forearmPath(side)), timing, map, "", behind.map((b) => !b));
+  return animatedPolyline(upperArmPath(side), poses, timing, opacity, map) + (opacity < 1 ? `<g${fadeAttr(opacity)}>${fore}</g>` : fore);
+}
+
+/** The forearms while they are behind the body, pale (drawn just behind the torso). */
+function forearmsBackSvg(poses: Solved[], timing: string, map: Mapper, behind: Behind | undefined): string {
+  const lines = (["far", "near"] as Side[])
+    .filter((side) => behind?.forearms?.[side]?.some(Boolean))
+    .map((side) => animatedLine(poses.map(forearmPath(side)), timing, map, "", behind!.forearms![side]))
+    .join("");
+  return lines ? `<g${fadeAttr(FAR_OPACITY)}>${lines}</g>` : "";
 }
 
 /** The far side at full strength in a front view, faded behind the near side otherwise. */
@@ -351,22 +577,37 @@ export function figureSvg(
   poses: Solved[],
   timing: string,
   map: Mapper,
-  { headScale = 1, farOpacity = FAR_OPACITY, order = FIGURE_PARTS }: FigureOptions = {},
+  { headScale = 1, farOpacity = FAR_OPACITY, order = FIGURE_PARTS, panel: view = panelOf(spec), bellInFront, faces, held, heldInFront, behind }: FigureOptions = {},
 ): string {
+  const panel = gearPanel(view);
   const parts: Record<FigurePart, () => string> = {
     legFar: () => animatedPolyline(legPath("far"), poses, timing, farOpacity, map),
-    armFar: () => animatedPolyline(armPath("far"), poses, timing, farOpacity, map),
+    armFar: () => armSvg("far", poses, timing, map, farOpacity, behind?.forearms?.far),
     spine: () => animatedPolyline(spinePath, poses, timing, 1, map),
-    head: () => animatedCircle(poses.map((pose) => map(pose.head)), SEGMENTS.headRadius * headScale, PAPER, timing),
+    head: () =>
+      faceSvg(faces, timing, map, true) +
+      animatedCircle(poses.map((pose) => map(pose.head)), SEGMENTS.headRadius * headScale, PAPER, timing) +
+      faceSvg(faces, timing, map, false),
     legNear: () => animatedPolyline(legPath("near"), poses, timing, 1, map),
     band: () => bandSvg(spec, poses, timing, map),
-    armNear: () => animatedPolyline(armPath("near"), poses, timing, 1, map),
+    armNear: () => armSvg("near", poses, timing, map, 1, behind?.forearms?.near),
+    forearmsBack: () => forearmsBackSvg(poses, timing, map, behind),
     wheel: () => wheelSvg(spec, poses, timing, map, headScale),
+    strapFar: () => strapSvg(spec, "far", poses, timing, map, headScale, panel, farOpacity),
+    strapNear: () => strapSvg(spec, "near", poses, timing, map, headScale, panel, 1),
+    handBand: () => handBandSvg(spec, poses, timing, map),
+    bellFar: () => bellSvg(spec, "far", poses, timing, map, headScale, panel, farOpacity),
+    bellNear: () => bellSvg(spec, "near", poses, timing, map, headScale, panel, 1),
+    bellBack: () => layeredBellSvg(spec, true, poses, timing, map, headScale, panel, bellInFront, behind?.bell),
+    bellFront: () => layeredBellSvg(spec, false, poses, timing, map, headScale, panel, bellInFront, behind?.bell),
+    held: () => (heldInFront ? "" : heldSvg(spec, held, timing, map)),
+    heldBack: () => (heldInFront ? heldSvg(spec, held, timing, map) : ""),
+    heldFront: () => (heldInFront?.some(Boolean) ? heldSvg(spec, held, timing, map, heldInFront) : ""),
   };
   return order.map((part) => parts[part]()).join("");
 }
 
-interface Inset {
+export interface Inset {
   cx: number;
   cy: number;
   r: number;
@@ -375,7 +616,7 @@ interface Inset {
 }
 
 /** Inset to the right of the figure, zoomed on the focus joints' range over the loop. */
-function insetFor(focus: Focus | undefined, poses: Solved[], figure: ViewBox): Inset | undefined {
+export function insetFor(focus: Focus | undefined, poses: Solved[], figure: ViewBox): Inset | undefined {
   if (!focus?.zoom) return undefined;
   const points = poses.flatMap((pose) =>
     figurePoints(pose)
@@ -400,7 +641,7 @@ const labelBaseline = (inset: Inset, focus?: Focus): number =>
   inset.cy + inset.r + labelSize(inset.r, focus) * LABEL_GAP;
 
 /** The inset ring plus, below it, its label (descenders included). */
-function insetExtent(inset: Inset, focus: Focus | undefined): ViewBox {
+export function insetExtent(inset: Inset, focus: Focus | undefined): ViewBox {
   const reach = inset.r + RING_WIDTH / 2;
   const bottom = focus?.label
     ? labelBaseline(inset, focus) + labelSize(inset.r, focus) * LABEL_DESCENT
@@ -408,7 +649,7 @@ function insetExtent(inset: Inset, focus: Focus | undefined): ViewBox {
   return { x: inset.cx - reach, y: inset.cy - reach, w: 2 * reach, h: bottom - (inset.cy - reach) };
 }
 
-function insetSvg(spec: DoodleSpec, focus: Focus, inset: Inset, poses: Solved[], timing: string): string {
+export function insetSvg(spec: DoodleSpec, focus: Focus, inset: Inset, poses: Solved[], timing: string, extras: PanelExtras, options: FigureOptions = {}): string {
   const { cx, cy, r, zoom, map } = inset;
   // Unique per doodle: several SVGs inlined on one page must not share a clip.
   const clipId = `focus-${spec.slug}`;
@@ -424,7 +665,7 @@ function insetSvg(spec: DoodleSpec, focus: Focus, inset: Inset, poses: Solved[],
 <g clip-path="url(#${clipId})">
 <circle cx="${fmt(cx)}" cy="${fmt(cy)}" r="${fmt(r)}" style="fill:${PAPER}" stroke="none"/>
 ${floor}${highlightSvg(focus, poses, timing, map)}
-${figureSvg(spec, poses, timing, map, { headScale: zoom, farOpacity: farOpacityOf(spec) })}
+${figureSvg(spec, poses, timing, map, { headScale: zoom, farOpacity: farOpacityOf(spec), faces: extras.faces, held: extras.held, ...options })}
 </g>
 <circle cx="${fmt(cx)}" cy="${fmt(cy)}" r="${fmt(r)}" style="stroke:${FOCUS_COLOUR}" stroke-width="${RING_WIDTH}"/>
 ${label}`;
@@ -432,16 +673,18 @@ ${label}`;
 
 /** Animated SVG (SMIL), loops forever; plays standalone, in an <img>, or inlined (doodleMarkup). */
 export function renderDoodleSvg(spec: DoodleSpec): string {
-  if (spec.views) return renderDualSvg(spec);
+  if (spec.views) return secondView(spec) === "top" ? renderTopSvg(spec) : renderDualSvg(spec);
   const timeline = sampleTimeline(spec);
   const { poses } = timeline;
   const timing = timingAttr(timeline);
-  const { view, focus, inset } = layoutFor(spec, poses);
-  const props = resolveFloors(spec.props ?? [], poses).map(propSvg).join("");
+  const extras = flatExtras(spec, timeline);
+  const { view, focus, inset } = layoutFor(spec, timeline, extras);
+  const props = resolveFloors(spec.props ?? [], partnerFloor(poses, extras)).map(propSvg).join("");
+  const options: FigureOptions = { farOpacity: farOpacityOf(spec) };
   return svgShell(view, spec.title, [
     highlightSvg(focus, poses, timing, identity),
-    `${props}\n${figureSvg(spec, poses, timing, identity, { farOpacity: farOpacityOf(spec) })}`,
-    focus && inset ? insetSvg(spec, focus, inset, poses, timing) : "",
+    `${props}\n${partnerSvg(extras, timing, identity, options)}${figureSvg(spec, poses, timing, identity, { ...options, faces: extras.faces, held: extras.held })}`,
+    focus && inset ? insetSvg(spec, focus, inset, poses, timing, extras) : "",
   ]);
 }
 

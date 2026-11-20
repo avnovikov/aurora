@@ -1,107 +1,121 @@
 import { describe, expect, it } from "vitest";
 import {
-  aggregateMuscleLoad,
-  maxLoad,
+  OVERALL_ANCHOR_DAYS,
+  OVERALL_ANCHOR_WEIGHT,
+  OVERALL_FULL_DAYS,
+  aggregateBodyView,
+  aggregateMuscleExercises,
+  aggregateOverallMuscleLoad,
+  isBodyViewMode,
+  muscleGroupsOf,
+  sessionAgeWeight,
   strongestWeightPerGroup,
-  topMuscles,
   type BodyPeriod,
 } from "../../src/body/aggregate";
 import type { HistoryEntry } from "../../src/domain/program";
 import type { Exercise } from "../../src/domain/types";
+import { entry as baseEntry } from "../helpers/history";
 
 const NOW = Date.parse("2026-11-14T08:00:00.000Z");
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-function entry(overrides: Partial<HistoryEntry> = {}): HistoryEntry {
-  return {
+const entry = (overrides: Partial<HistoryEntry> = {}): HistoryEntry =>
+  baseEntry({
     id: "1",
     completedAt: "2026-11-13T08:00:00.000Z",
     templateId: "tmpl_test",
     templateName: "Test",
-    evaluation: "on_target",
-    setCount: 4,
     exerciseIds: ["hollow_hold"],
     ...overrides,
-  };
-}
+  });
 
 function daysAgo(days: number): string {
   return new Date(NOW - days * DAY_MS).toISOString();
 }
 
-describe("aggregateMuscleLoad", () => {
-  it("scores primary muscles from recent history", () => {
-    const loads = aggregateMuscleLoad([entry()], "week", NOW);
+describe("sessionAgeWeight", () => {
+  it("is full credit through the two-week plateau", () => {
+    expect(sessionAgeWeight(0)).toBe(1);
+    expect(sessionAgeWeight(OVERALL_FULL_DAYS)).toBe(1);
+  });
+
+  it("hits the McMaster anchor at seven weeks", () => {
+    expect(sessionAgeWeight(OVERALL_ANCHOR_DAYS)).toBeCloseTo(OVERALL_ANCHOR_WEIGHT, 10);
+  });
+
+  it("keeps fading after the anchor", () => {
+    expect(sessionAgeWeight(OVERALL_ANCHOR_DAYS * 2)).toBeLessThan(OVERALL_ANCHOR_WEIGHT);
+  });
+
+  it("rejects non-finite ages", () => {
+    expect(() => sessionAgeWeight(Number.NaN)).toThrow(/finite/);
+  });
+});
+
+describe("aggregateOverallMuscleLoad", () => {
+  it("scores recent sessions at full set × role weight", () => {
+    const loads = aggregateOverallMuscleLoad([entry()], NOW);
     expect(loads.abdominals).toBe(4);
   });
 
-  it("returns an empty map when there is no history", () => {
-    expect(aggregateMuscleLoad([], "year", NOW)).toEqual({});
+  it("applies decay after the plateau", () => {
+    const loads = aggregateOverallMuscleLoad(
+      [entry({ completedAt: daysAgo(OVERALL_ANCHOR_DAYS), setCount: 4 })],
+      NOW,
+    );
+    expect(loads.abdominals).toBeCloseTo(4 * OVERALL_ANCHOR_WEIGHT, 10);
   });
 
   it("weights primary 1.0 and secondary 0.5 of setCount", () => {
-    const loads = aggregateMuscleLoad(
+    const loads = aggregateOverallMuscleLoad(
       [entry({ setCount: 4, exerciseIds: ["bodyweight_squat"] })],
-      "week",
       NOW,
     );
     expect(loads.quadriceps).toBe(4);
     expect(loads.glutes).toBe(2);
   });
 
-  it("weights stabilizers at 0.25 of setCount", () => {
-    const loads = aggregateMuscleLoad(
-      [entry({ setCount: 4, exerciseIds: ["scap_pushup"] })],
-      "week",
-      NOW,
-    );
-    expect(loads.chest).toBe(4);
-    expect(loads.shoulders).toBe(1);
-  });
-
-  it("sums the same muscle across exercises and sessions", () => {
-    const loads = aggregateMuscleLoad(
-      [
-        entry({ id: "a", setCount: 3, exerciseIds: ["bodyweight_squat"] }),
-        entry({ id: "b", setCount: 2, exerciseIds: ["bodyweight_squat"] }),
-      ],
-      "week",
-      NOW,
-    );
-    expect(loads.quadriceps).toBe(5);
-    expect(loads.glutes).toBe(2.5);
-  });
-
-  it("ignores unknown exercise ids without dropping known ones", () => {
-    const loads = aggregateMuscleLoad(
-      [entry({ exerciseIds: ["not_a_real_exercise", "hollow_hold"] })],
-      "week",
-      NOW,
-    );
-    expect(loads).toEqual({ abdominals: 4 });
-  });
-
-  it.each([0, -3, Number.NaN, Number.POSITIVE_INFINITY])(
-    "skips entries with unusable setCount %s",
-    (setCount) => {
-      expect(aggregateMuscleLoad([entry({ setCount })], "week", NOW)).toEqual({});
-    },
-  );
-
-  it("skips entries with an unparseable completedAt", () => {
-    expect(aggregateMuscleLoad([entry({ completedAt: "yesterday-ish" })], "year", NOW)).toEqual({});
-  });
-
-  it("throws on an unknown period instead of silently returning nothing", () => {
-    expect(() => aggregateMuscleLoad([entry()], "decade" as BodyPeriod, NOW)).toThrow(
-      /Unknown body period/,
-    );
+  it("skips bad setCount and bad dates", () => {
+    expect(aggregateOverallMuscleLoad([entry({ setCount: 0 })], NOW)).toEqual({});
+    expect(aggregateOverallMuscleLoad([entry({ completedAt: "nope" })], NOW)).toEqual({});
   });
 });
 
-describe("aggregateMuscleLoad period cutoffs", () => {
+describe("aggregateMuscleExercises", () => {
+  it("counts each exercise once per muscle group", () => {
+    const loads = aggregateMuscleExercises(
+      [entry({ setCount: 99, exerciseIds: ["bodyweight_squat"] })],
+      "month",
+      NOW,
+    );
+    expect(loads.quadriceps).toBe(1);
+    expect(loads.glutes).toBe(1);
+  });
+
+  it("sums appearances across sessions", () => {
+    const loads = aggregateMuscleExercises(
+      [
+        entry({ id: "a", exerciseIds: ["hollow_hold"] }),
+        entry({ id: "b", exerciseIds: ["hollow_hold"] }),
+      ],
+      "month",
+      NOW,
+    );
+    expect(loads.abdominals).toBe(2);
+  });
+
+  it("ignores unknown exercise ids without dropping known ones", () => {
+    const loads = aggregateMuscleExercises(
+      [entry({ exerciseIds: ["not_a_real_exercise", "hollow_hold"] })],
+      "year",
+      NOW,
+    );
+    expect(loads).toEqual({ abdominals: 1 });
+  });
+});
+
+describe("aggregateMuscleExercises period cutoffs", () => {
   const cases: Array<[BodyPeriod, number]> = [
-    ["week", 7],
     ["month", 30],
     ["quarter", 91],
     ["half_year", 182],
@@ -109,61 +123,62 @@ describe("aggregateMuscleLoad period cutoffs", () => {
   ];
 
   it.each(cases)("%s includes an entry exactly at the cutoff", (period, days) => {
-    const loads = aggregateMuscleLoad([entry({ completedAt: daysAgo(days) })], period, NOW);
-    expect(loads.abdominals).toBe(4);
+    const loads = aggregateMuscleExercises([entry({ completedAt: daysAgo(days) })], period, NOW);
+    expect(loads.abdominals).toBe(1);
   });
 
   it.each(cases)("%s excludes an entry one second past the cutoff", (period, days) => {
     const stale = new Date(NOW - days * DAY_MS - 1000).toISOString();
-    expect(aggregateMuscleLoad([entry({ completedAt: stale })], period, NOW)).toEqual({});
+    expect(aggregateMuscleExercises([entry({ completedAt: stale })], period, NOW)).toEqual({});
   });
 
   it("counts an old session only in the longer periods", () => {
     const history = [entry({ completedAt: daysAgo(45) })];
-    expect(aggregateMuscleLoad(history, "week", NOW)).toEqual({});
-    expect(aggregateMuscleLoad(history, "month", NOW)).toEqual({});
-    expect(aggregateMuscleLoad(history, "quarter", NOW).abdominals).toBe(4);
-    expect(aggregateMuscleLoad(history, "year", NOW).abdominals).toBe(4);
-  });
-
-  it("sums only the sessions inside the window", () => {
-    const history = [
-      entry({ id: "recent", setCount: 3, completedAt: daysAgo(2) }),
-      entry({ id: "old", setCount: 5, completedAt: daysAgo(20) }),
-    ];
-    expect(aggregateMuscleLoad(history, "week", NOW).abdominals).toBe(3);
-    expect(aggregateMuscleLoad(history, "month", NOW).abdominals).toBe(8);
+    expect(aggregateMuscleExercises(history, "month", NOW)).toEqual({});
+    expect(aggregateMuscleExercises(history, "quarter", NOW).abdominals).toBe(1);
   });
 });
 
-describe("strongestWeightPerGroup", () => {
+describe("aggregateBodyView", () => {
+  it("routes overall to decayed load and periods to exercise counts", () => {
+    const history = [entry({ setCount: 4, exerciseIds: ["hollow_hold"] })];
+    expect(aggregateBodyView(history, "overall", NOW).abdominals).toBe(4);
+    expect(aggregateBodyView(history, "month", NOW).abdominals).toBe(1);
+  });
+
+  it("throws on an unknown period", () => {
+    expect(() => aggregateBodyView([entry()], "decade" as BodyPeriod, NOW)).toThrow(
+      /Unknown body period/,
+    );
+  });
+});
+
+describe("strongestWeightPerGroup and muscleGroupsOf", () => {
+  const exercise = {
+    muscles: [
+      { group: "lats", role: "secondary" },
+      { group: "lats", role: "primary" },
+      { group: "biceps", role: "stabilizer" },
+    ],
+  } as Exercise;
+
   it("credits a repeated group once at its strongest role", () => {
-    const exercise = {
-      muscles: [
-        { group: "lats", role: "secondary" },
-        { group: "lats", role: "primary" },
-        { group: "biceps", role: "stabilizer" },
-      ],
-    } as Exercise;
     const weights = strongestWeightPerGroup(exercise);
     expect(weights.get("lats")).toBe(1);
     expect(weights.get("biceps")).toBe(0.25);
     expect(weights.size).toBe(2);
   });
+
+  it("lists each muscle group once when counting exercises", () => {
+    expect(muscleGroupsOf(exercise).sort()).toEqual(["biceps", "lats"]);
+  });
 });
 
-describe("topMuscles and maxLoad", () => {
-  const loads = { chest: 2, lats: 8, glutes: 5 };
-
-  it("orders by score and honours the limit", () => {
-    expect(topMuscles(loads, 2)).toEqual([
-      ["lats", 8],
-      ["glutes", 5],
-    ]);
-  });
-
-  it("reports the largest score, or 0 when empty", () => {
-    expect(maxLoad(loads)).toBe(8);
-    expect(maxLoad({})).toBe(0);
+describe("isBodyViewMode", () => {
+  it("accepts overall and period chips only", () => {
+    expect(isBodyViewMode("overall")).toBe(true);
+    expect(isBodyViewMode("month")).toBe(true);
+    expect(isBodyViewMode("week")).toBe(false);
+    expect(isBodyViewMode("decade")).toBe(false);
   });
 });

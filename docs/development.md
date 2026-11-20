@@ -82,8 +82,6 @@ Full security (CodeQL, npm audit high+, Trivy HIGH+, Gitleaks) is a merge gate o
 
 Release APKs are signed on a developer machine. The keystore stays out of Git and out of CI (`android/keystore.properties.example`). Confirm a downloaded APK’s certificate SHA-256 as described in the README Install details.
 
-Version shown in the README and Android `versionName` for this line: **0.1.2**. Release notes: [RELEASE_NOTES.md](RELEASE_NOTES.md).
-
 ## Device snapshots
 
 Optional fixture for tests and docs:
@@ -92,7 +90,19 @@ Optional fixture for tests and docs:
 node scripts/pull-device-snapshot.mjs
 ```
 
-Requires USB debugging and a debuggable build. Snapshots used for Help / tutorial screenshots live under `.device-snapshots/` and are **not** shipped in the APK.
+Requires USB debugging and a debuggable build. Snapshots live under `.device-snapshots/` and are **not** shipped in the APK. They hold real training data, so never use them for public screenshots.
+
+## Help screenshots
+
+The README and tutorial screenshots in `docs/help/screenshots/` come from a script, not from a phone:
+
+```bash
+node scripts/help-screenshots.mjs
+```
+
+It starts Vite on the first free port from 5351, opens the app in Google Chrome at phone size (390 × 844, device scale 2, `en-GB`, Europe/London), seeds `localStorage` from `scripts/fixtures/help-sample.json`, walks first-run setup (Upper body) and every tab, writes the PNGs and stops Vite. The clock is pinned to the fixture's `now`, so the weeks and "this week" stay the same on every run. Set `HELP_SHOTS_CHANNEL=chromium` to use Playwright's own Chromium instead of Chrome.
+
+The fixture is invented sample data: eight weeks of Upper body · B and Lower body · A sessions (the oldest two weeks summary-only, the rest with set logs, the last four weeks with heart-rate averages), a generic bodyweight and heart-rate bands, and no joint history. It is deliberately push-only, so Body shows an uneven pair. Never copy values from `.device-snapshots/` or `tests/fixtures/device/` into it: the README is public. Look at each PNG before committing.
 
 ## Troubleshooting
 

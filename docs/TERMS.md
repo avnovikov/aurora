@@ -1,6 +1,6 @@
 # Terms & Conditions — Aurora · Rassvet
 
-**Version:** 0.1.2  
+**Version:** 0.1.3  
 **Effective:** public release line from `v0.1.0` (package id `com.aurora.alvorada` from `v0.1.1`)
 
 These terms apply when you install or use Aurora (Rassvet), including the Android APK distributed from GitHub Releases.

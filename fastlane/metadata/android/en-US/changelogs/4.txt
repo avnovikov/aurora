@@ -1,0 +1,1 @@
+Strip ACCESS_COARSE/FINE_LOCATION and INTERNET from the merged APK (library merges use tools:node=remove). BLE scan keeps neverForLocation for the optional Pulse HR strap. Prep for a future F-Droid listing.

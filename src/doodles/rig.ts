@@ -24,6 +24,23 @@ export interface JointHint {
   at?: Point;
 }
 
+/** A knee given by direction (resolved by `resolveSideways`): the thigh points `dir` degrees from the hip (0 = +x, 90 = down). */
+export interface KneeHint extends JointHint {
+  dir?: number;
+  /** Thigh length to use (default BONES.thigh). */
+  length?: number;
+}
+
+/**
+ * A foot given by direction: from the knee along `dir` (a shin, default
+ * BONES.shin) when the knee is pinned, otherwise a straight leg from the pelvis
+ * (default BONES.thigh + BONES.shin).
+ */
+export interface FootHint {
+  dir: number;
+  length?: number;
+}
+
 /** v2 authoring surface: pin only the joints the move needs. */
 export interface Pose {
   /** Root. Defaults to the previous keyframe's pelvis. */
@@ -70,7 +87,7 @@ export interface LegacyPose {
 }
 
 export interface Keyframe {
-  pose: Pose | LegacyPose;
+  pose: AuthoredPose | LegacyPose;
   /** Seconds to hold this pose. */
   hold: number;
   /**
@@ -83,6 +100,101 @@ export interface Keyframe {
   mirror?: number;
   /** Dual-view specs only: sideways (z) positions for this keyframe; see `Sideways`. */
   sideways?: Sideways;
+  /**
+   * With `kettlebell`, where the bells sit this keyframe (blended over the
+   * transitions like the limbs): `hang` (default) straight below the grip;
+   * `swing` on in the line of the forearm, flung out beyond the hand (swings,
+   * snatch pulls); `rack` resting on the back of the forearm by the wrist
+   * (front rack, overhead, behind the forearm in the side view).
+   * Per hand: `{ near: "rack", far: "hang" }` (a hand left out hangs).
+   * `horns`: both hands on one bell by the horns, the bell beyond the joined
+   * hands along the forearms (halo, overhead triceps extension).
+   */
+  bell?: BellMode | "horns" | Partial<Record<Side, BellMode>>;
+  /**
+   * With one `kettlebell`, the hand holding it from this keyframe on (until
+   * another keyframe says otherwise, round the loop). The keyframe where it
+   * changes is the hand-off: both hands are together on the bell there.
+   */
+  bellIn?: Side;
+  /**
+   * Which way the head faces (blended over the transitions); draws a small
+   * nose tick on the head. Leave it out and no tick is drawn. See `Face`.
+   */
+  face?: Face;
+}
+
+/**
+ * Head orientation in degrees, relative to the torso (waist to chest): all
+ * zero faces square ahead of the chest (+x for a standing figure).
+ * - `turn` (yaw, about the neck): + towards the far side (+z, the figure's
+ *   left), - towards the near side (the side view's camera). Up to 90.
+ * - `tilt` (ear to shoulder): + towards the far shoulder (+z). It swings the
+ *   head sideways on the neck, so it shows only from the front (`views` or
+ *   `view: "front"`). Up to 45.
+ * - `nod`: + chin down to the chest, - looking up. It turns the head forward
+ *   or back about the neck joint unless the pose pins `head` (then only the
+ *   face turns: a chin tuck pins the head back and keeps `nod` near 0). Up to 60.
+ */
+export interface Face {
+  turn?: number;
+  tilt?: number;
+  nod?: number;
+}
+
+/** Turn / tilt / nod limits (degrees) the validator enforces. */
+export const FACE_LIMITS = { turn: 90, tilt: 45, nod: 60 } as const;
+
+export type BellMode = "hang" | "swing" | "rack";
+
+/**
+ * Straps hanging from one fixed anchor down to the hands (`ring`: gymnastic
+ * rings, `handle`: suspension trainer), or a band stretched from the anchor
+ * (`band`: seated band row, terminal knee extension).
+ */
+export interface Straps {
+  /** The hang point (side view). Rings and handles hang from above the hands; a band anchors anywhere. */
+  anchor: Point;
+  end: "ring" | "handle" | "band";
+  /** Which hands (knees, feet) hold one (default both). */
+  sides?: readonly Side[];
+  /**
+   * What it holds (default the hands): the upper arms just above the elbows (a
+   * band looped round the arm: single-arm band row), the knees (a band behind
+   * the knee) or the feet (ankles in the cradles: suspended push-up, pike).
+   */
+  to?: "hands" | "elbows" | "knees" | "feet";
+  /**
+   * Two views: the front panel's anchors sit this far either side of the
+   * centre line (near at z = -width, far at +width; 0: one shared anchor).
+   * Default: above where each strap's hand (knee, ankle) is in the first keyframe.
+   */
+  width?: number;
+}
+
+/** Kettlebells hanging from gripping hands (`size`: bell radius, default KETTLEBELL.size). */
+export interface Kettlebells {
+  hands: readonly Side[];
+  size?: number;
+}
+
+/** Kettlebell proportions: bell radius, and the grip's height above the bell's centre as a share of it. */
+export const KETTLEBELL = { size: 14, grip: 1.85 } as const;
+
+/**
+ * Hand height that sets a hanging kettlebell of radius `size` down on the floor
+ * (deadlift bottom, swing set-up): the bell's bottom at y = 0.
+ */
+export const kettlebellOnFloor = (size: number = KETTLEBELL.size): number => -size * (1 + KETTLEBELL.grip);
+
+/**
+ * A hand on a strap of `length` from `anchor`, swung `angle` degrees from
+ * straight down (positive towards +x). Pin hands with it so the strap keeps
+ * its length (the validator checks rings and handles don't stretch).
+ */
+export function onStrap(anchor: Point, length: number, angle = 0): Point {
+  const r = (angle * Math.PI) / 180;
+  return [Math.round((anchor[0] + Math.sin(r) * length) * 1000) / 1000, Math.round((anchor[1] + Math.cos(r) * length) * 1000) / 1000];
 }
 
 /** Sideways position of a knee or elbow pin, and how far its bend plane rolls outward. */
@@ -94,6 +206,21 @@ export interface SidewaysHint {
 }
 
 /**
+ * One shoulder's girdle offset from the chest, in rig units in the chest's own
+ * frame: `up` along the spine towards the head (+ shrug, - depress), `forward`
+ * towards the chest's front (+ protract, - retract). The collar line (chest to
+ * shoulder) and the whole arm move with it.
+ */
+export interface Girdle {
+  up?: number;
+  forward?: number;
+}
+
+/** Validator limits: girdle offsets (rig units); roll between hips and shoulders, and of either line (degrees). */
+export const GIRDLE_LIMITS = { up: 14, forward: 12 } as const;
+export const TWIST_LIMITS = { spine: 90, roll: 180 } as const;
+
+/**
  * Dual-view specs: absolute sideways positions (z). Near side is negative, far
  * side positive; the front panel draws near on the viewer's left. Anything not
  * given keeps its chain's natural width (shoulders ±22, hips ±8, spine at the pelvis z).
@@ -101,10 +228,177 @@ export interface SidewaysHint {
 export interface Sideways {
   /** Shifts the whole spine sideways. */
   pelvis?: number;
+  /**
+   * z of the chest (the shoulders' centre); default: the pelvis z. Different
+   * from `pelvis`, the spine leans sideways: the lower spine turns rigidly
+   * about `pivot` until pelvis and chest sit at their z, so it draws shorter in
+   * the side view and tilts in the front view. Give the same `pivot` on every
+   * keyframe of a move.
+   */
+  chest?: number;
+  /**
+   * The spine end that keeps its side-view (x, y) when the spine leans.
+   * "pelvis" (default): the whole spine turns about the pelvis, the chest comes
+   * down and in, the shoulders and head tilt with it, the hips stay level (a
+   * standing side bend, windmill). "chest": the chest, shoulders and head stay
+   * put and square, the pelvis swings out under them and draws closer to the
+   * chest in the side view (plank hip dips); arm pins stay valid.
+   */
+  pivot?: "pelvis" | "chest";
+  /**
+   * Spine roll (axial rotation, degrees): the shoulder line turns about the
+   * upper spine, + bringing the far shoulder forward (towards the chest's
+   * front, +x for an upright figure) and the near shoulder back. The arms hang
+   * from the turned shoulders, and a `face` turns with the chest. Blended over
+   * the transitions (linearly, so a keyframe step past 180 sweeps round).
+   */
+  twist?: number;
+  /** The same roll for the hip line, about the lower spine (+ far hip forward). */
+  hipTwist?: number;
+  /** Shoulder girdle: each shoulder moved relative to the chest (shrug, protraction); see `Girdle`. */
+  shoulders?: Partial<Record<Side, Girdle>>;
   hands?: Partial<Record<Side, number>>;
   feet?: Partial<Record<Side, number>>;
   elbows?: Partial<Record<Side, SidewaysHint>>;
   knees?: Partial<Record<Side, SidewaysHint>>;
+  /**
+   * Sideways toe angle (degrees): the foot turns out of the side view's plane,
+   * + towards +z (the far side), keeping its side-view direction (`pose.toes`,
+   * or square to the shin). Turns the near foot's toe in, the far foot's out
+   * (ankle circles, inversion / eversion). Blended over the transitions; the
+   * side view sees the foot shorter. Up to `END_TURN_LIMIT`.
+   */
+  toes?: Partial<Record<Side, number>>;
+  /**
+   * Sideways wrist angle (degrees, radial / ulnar deviation): the hand turns
+   * out of the side view's plane, + towards +z, keeping its side-view direction
+   * (`pose.wrists`, which this needs). Blended; up to `END_TURN_LIMIT`.
+   */
+  wrists?: Partial<Record<Side, number>>;
+}
+
+/** Largest sideways toe or wrist angle (degrees) the validator allows. */
+export const END_TURN_LIMIT = 60;
+
+/** What keyframes hold: a `Pose` whose knees and feet may be direction hints, resolved against the keyframe's `sideways`. */
+export type AuthoredPose = Omit<Pose, "knees" | "feet"> & {
+  knees?: Partial<Record<Side, KneeHint>>;
+  feet?: Partial<Record<Side, FootPin>>;
+  /** Planted feet (points) slide in so straight legs keep their 2D length with their sideways z. */
+  spreadFeet?: boolean;
+};
+
+/**
+ * A joint `length` from `root` (3D: x, y and z) heading along the 2D angle
+ * `degrees` (0 = +x, 90 = down) while it sits `dz` sideways from the root: the
+ * 2D point is foreshortened so the 3D bone keeps its length.
+ */
+export function reach3(root: Point, degrees: number, length: number, dz: number): Point {
+  const flat = Math.sqrt(Math.max(0, length * length - dz * dz));
+  const r = (degrees * Math.PI) / 180;
+  return [Math.round((root[0] + Math.cos(r) * flat) * 1000) / 1000, Math.round((root[1] + Math.sin(r) * flat) * 1000) / 1000];
+}
+
+type FootPin = Point | FootHint;
+
+const isPoint = (foot: FootPin | undefined): foot is Point => Array.isArray(foot);
+
+function hasHints(pose: AuthoredPose): boolean {
+  if (pose.spreadFeet) return true;
+  return (["near", "far"] as Side[]).some(
+    (side) => pose.knees?.[side]?.dir !== undefined || (pose.feet?.[side] !== undefined && !isPoint(pose.feet[side])),
+  );
+}
+
+/** Planted (point) feet slide along the floor towards the hip so the 3D leg keeps its 2D length. */
+function spreadPlanted(
+  pelvis: Point,
+  feet: Partial<Record<Side, FootPin>>,
+  sw: Sideways,
+): Partial<Record<Side, FootPin>> {
+  const out = { ...feet };
+  for (const side of ["near", "far"] as Side[]) {
+    const foot = feet[side];
+    if (!foot || !isPoint(foot)) continue;
+    const hipZ = (sw.pelvis ?? 0) + zOut(side) * HIP_SIDE;
+    const dz = (sw.feet?.[side] ?? hipZ) - hipZ;
+    const leg = Math.hypot(foot[0] - pelvis[0], foot[1] - pelvis[1]) - 0.2;
+    const flat = Math.sqrt(Math.max(0, leg * leg - dz * dz - (foot[1] - pelvis[1]) ** 2));
+    out[side] = [Math.round((pelvis[0] - flat) * 100) / 100, foot[1]];
+  }
+  return out;
+}
+
+/** A knee hint with its direction resolved to a pin. */
+function resolveKnee(pelvis: Point, hipZ: number, kneeZ: number, hint: KneeHint): JointHint {
+  const { dir, length, ...joint } = hint;
+  if (dir !== undefined && hint.at) throw new Error("knee hint has both dir and at");
+  const at = dir === undefined ? hint.at : reach3(pelvis, dir, length ?? BONES.thigh, kneeZ - hipZ);
+  return at ? { ...joint, at } : joint;
+}
+
+/** A foot as a point: points pass through, hints resolve from the knee pin when there is one, else straight from the pelvis. */
+function resolveFoot(
+  pelvis: Point,
+  hipZ: number,
+  kneeZ: number,
+  knee: Point | undefined,
+  foot: FootPin | undefined,
+  footZ: number,
+): Point | undefined {
+  if (!foot) return undefined;
+  if (isPoint(foot)) return foot;
+  if (knee) return reach3(knee, foot.dir, foot.length ?? BONES.shin, footZ - kneeZ);
+  return reach3(pelvis, foot.dir, foot.length ?? BONES.thigh + BONES.shin, footZ - hipZ);
+}
+
+/** One leg's hints resolved: the knee pin (if any) and the foot point (if any). */
+function resolveLeg(
+  pelvis: Point,
+  side: Side,
+  sw: Sideways,
+  hint: KneeHint | undefined,
+  foot: FootPin | undefined,
+): { knee?: JointHint; foot?: Point } {
+  const hipZ = (sw.pelvis ?? 0) + zOut(side) * HIP_SIDE;
+  const kneeZ = sw.knees?.[side]?.at ?? hipZ;
+  const knee = hint && resolveKnee(pelvis, hipZ, kneeZ, hint);
+  return { knee, foot: resolveFoot(pelvis, hipZ, kneeZ, knee?.at, foot, sw.feet?.[side] ?? hipZ) };
+}
+
+/** Per-side knee pins and foot points gathered from resolved legs. */
+function collectLegs(legs: readonly (readonly [Side, { knee?: JointHint; foot?: Point }])[]): {
+  knees: Partial<Record<Side, JointHint>>;
+  feet: Partial<Record<Side, Point>>;
+} {
+  const knees: Partial<Record<Side, JointHint>> = {};
+  const feet: Partial<Record<Side, Point>> = {};
+  for (const [side, leg] of legs) {
+    if (leg.knee) knees[side] = leg.knee;
+    if (leg.foot) feet[side] = leg.foot;
+  }
+  return { knees, feet };
+}
+
+/**
+ * Turns an authored pose's sideways hints into plain pins (see `AuthoredPose`),
+ * foreshortening each by its joint's z from `sideways`: hips at
+ * `pelvis +/- HIP_SIDE`, a knee or foot without its own z at its hip's z (as the
+ * 3D solve defaults). A pose without hints comes back as the same object.
+ */
+export function resolveSideways(pose: AuthoredPose, sideways: Sideways = {}): Pose {
+  if (!hasHints(pose)) return pose as Pose;
+  const pelvis = pose.pelvis;
+  if (!pelvis) throw new Error("sideways hints (knee/foot dir, spreadFeet) need an explicit pelvis");
+  const { spreadFeet: spread, knees: kneeHints, feet: footHints, ...rest } = pose;
+  const planted = spread ? spreadPlanted(pelvis, footHints ?? {}, sideways) : { ...footHints };
+  const legs = (["near", "far"] as Side[]).map((side) => [side, resolveLeg(pelvis, side, sideways, kneeHints?.[side], planted[side])] as const);
+  const { knees, feet } = collectLegs(legs);
+  return {
+    ...rest,
+    ...(kneeHints ? { knees } : {}),
+    ...(footHints ? { feet } : {}),
+  };
 }
 
 export type Prop =
@@ -122,8 +416,66 @@ export type Prop =
   | { kind: "floor" }
   /** A straight sloped plank from `from` to `to`; `posts` (default true) stand a little in from each end down to the floor. */
   | { kind: "board"; from: Point; to: Point; posts?: boolean }
-  | { kind: "parallelBars"; y: number; x1: number; x2: number }
+  | {
+      kind: "parallelBars";
+      y: number;
+      x1: number;
+      x2: number;
+      /** Two views: each rail's sideways distance from the centre (default 30); put the hands' z on it. */
+      frontHalf?: number;
+    }
+  /** Two views: each hand's parallette is drawn end-on at that hand's z in the first keyframe. */
   | { kind: "parallettes"; y: number; xs: number[] };
+
+/** A rigid stick held in both hands (shoulder dislocates): the line through both hand tips, `overhang` past each (default STICK_OVERHANG). */
+export interface HeldStick {
+  overhang?: number;
+}
+
+/**
+ * A towel or strap held in both hands: taut from hand to hand, or (`around`)
+ * looped round one foot's sole and back, hands to foot to hands (lying
+ * hamstring stretch with a strap).
+ */
+export interface Towel {
+  around?: "near-foot" | "far-foot";
+}
+
+/** A partner keyframe: a pose (and two-view `sideways`, `face`) on the exerciser's clock. */
+export interface PartnerFrame {
+  pose: AuthoredPose;
+  sideways?: Sideways;
+  face?: Face;
+}
+
+/** Exerciser joints a partner can hold: joints as drawn, or the middle of a bone (`thigh.near`). */
+export type BodyJoint =
+  | "pelvis"
+  | "waist"
+  | "chest"
+  | "neck"
+  | "head"
+  | `${"shoulder" | "elbow" | "wrist" | "hand" | "hip" | "knee" | "ankle" | "toe" | "upperArm" | "forearm" | "thigh" | "shin"}.${Side}`;
+
+/** A partner's hand kept on an exerciser's joint at every sample (`offset`: side-view nudge off the joint). */
+export interface PartnerHold {
+  hand: Side;
+  on: BodyJoint;
+  offset?: Point;
+}
+
+/**
+ * A second figure (partner-assisted stretches), drawn paler and thinner
+ * behind the exerciser. One keyframe per exerciser keyframe, same holds and
+ * transitions. Author it facing +x like any pose; `mirror` draws it reflected
+ * about x = mirror (facing -x, towards the exerciser). `holds` pin its hands to
+ * the exerciser's joints on every sample (don't pin those hands yourself).
+ */
+export interface Partner {
+  frames: PartnerFrame[];
+  mirror?: number;
+  holds?: PartnerHold[];
+}
 
 export interface DoodleSpec {
   id: string;
@@ -147,11 +499,30 @@ export interface DoodleSpec {
    * hand that rolls with it. Pin the hands at y = -radius so it sits on the floor.
    */
   wheel?: number;
+  /** Rings, suspension-trainer handles or an anchored band (see `Straps`). */
+  straps?: Straps;
+  /** A resistance band stretched from hand to hand (band pull-apart). */
+  handBand?: boolean;
+  /** Kettlebells in these hands, hanging under gravity unless a keyframe sets `bell`. */
+  kettlebell?: Kettlebells;
+  /** A stick held in both hands (see `HeldStick`). */
+  stick?: HeldStick;
+  /** A towel or strap held in both hands, optionally round a foot (see `Towel`). */
+  towel?: Towel;
+  /** A partner figure (see `Partner`). */
+  partner?: Partner;
+  /**
+   * Two views: a forearm whose middle is behind the torso or head (as the
+   * panel looks), and a hand-off or horns bell behind it, is drawn pale behind
+   * the body instead of bright over it (front panel: forearms and bell; side
+   * panel: the bell when it is on the far side of the body). Opt-in.
+   */
+  fadeBehind?: boolean;
   /**
    * Draw the move twice, side view and front view next to each other, from one
    * 3D-solved figure (keyframe `sideways`). Only when a reviewer asks for it (ADD VIEW).
    */
-  views?: readonly ["side", "front"];
+  views?: readonly ["side", "front"] | readonly ["side", "top"];
 }
 
 export const BONES = {
@@ -283,7 +654,7 @@ export interface Solved {
 
 const SIDES: Side[] = ["near", "far"];
 
-export function isLegacyPose(pose: Pose | LegacyPose): pose is LegacyPose {
+export function isLegacyPose(pose: AuthoredPose | Pose | LegacyPose): pose is LegacyPose {
   return "hip" in pose && "shoulder" in pose;
 }
 
@@ -310,6 +681,10 @@ export function fromLegacy(pose: LegacyPose): Pose {
 }
 
 export const toPose = (pose: Pose | LegacyPose): Pose => (isLegacyPose(pose) ? fromLegacy(pose) : pose);
+
+/** A keyframe's pose as a plain `Pose`: legacy poses converted, sideways hints resolved. */
+const resolveFramePose = (pose: AuthoredPose | LegacyPose, sideways?: Sideways): Pose =>
+  isLegacyPose(pose) ? fromLegacy(pose) : resolveSideways(pose, sideways);
 
 export interface SolveContext {
   view?: "side" | "front";
@@ -651,19 +1026,47 @@ export function blendPose(a: Solved, b: Solved, pa: Pose, pb: Pose, t: number, v
 
 export const ease = (t: number): number => 0.5 - Math.cos(Math.PI * t) / 2;
 
+/**
+ * For each of `count` timeline samples (keyframe, then its transition steps,
+ * round the loop, as `sampleTimeline` lays them out): the keyframe it leaves,
+ * the one it heads for, and how far (eased; 0 at the keyframe).
+ */
+export function sampleKeys(frames: number, count: number): { from: number; to: number; t: number }[] {
+  const perFrame = (count - 1) / frames;
+  const steps = perFrame - 1;
+  return Array.from({ length: count }, (_, i) => {
+    if (i === count - 1) return { from: 0, to: 0, t: 0 };
+    const from = Math.floor(i / perFrame);
+    const s = i % perFrame;
+    return { from, to: (from + 1) % frames, t: s === 0 ? 0 : ease((s - 1) / steps) };
+  });
+}
+
 export interface ResolvedKeyframe {
   pose: Pose;
   solved: Solved;
 }
 
+/**
+ * The head turned about the neck by a keyframe's `face`, in the drawing's
+ * plane: `nod` in a side view (+ towards the face: chin down), `tilt` in a
+ * front view (+ towards the far side, +x). A pinned head stays put.
+ */
+export function faceHead(solved: Solved, pose: Pose, face: Face | undefined, view: "side" | "front" | undefined): Solved {
+  const degrees = view === "front" ? face?.tilt : face?.nod;
+  if (!degrees || pose.head) return solved;
+  const head = add(solved.neck, scale(fromAngle(angleOf(solved.neck, solved.head) + deg(degrees)), BONES.neckHead));
+  return { ...solved, head };
+}
+
 /** Solve every keyframe in order, carrying the pelvis and spine direction forward. */
 export function solveKeyframes(spec: DoodleSpec): ResolvedKeyframe[] {
-  const poses = spec.frames.map((frame) => toPose(frame.pose));
+  const poses = spec.frames.map((frame) => resolveFramePose(frame.pose, frame.sideways));
   const firstPelvis = poses.find((p) => p.pelvis)?.pelvis;
   let pelvis = [...poses].reverse().find((p) => p.pelvis)?.pelvis ?? firstPelvis;
   let spineAngle: number | undefined;
-  return poses.map((pose) => {
-    const solved = solvePose(pose, { view: spec.view, pelvis, spineAngle });
+  return poses.map((pose, k) => {
+    const solved = faceHead(solvePose(pose, { view: spec.view, pelvis, spineAngle }), pose, spec.frames[k].face, spec.view);
     pelvis = solved.pelvis;
     spineAngle = angleOf(solved.pelvis, solved.chest);
     return { pose: { ...pose, pelvis: solved.pelvis }, solved };

@@ -1,0 +1,2737 @@
+{
+  "$comment": "Invented sample data for docs/help/screenshots (scripts/help-screenshots.mjs). Not from any device.",
+  "now": "2026-11-20T07:30:00.000Z",
+  "localStorage": {
+    "aurora.poc.profile.v1": {
+      "bodyweightKg": 75,
+      "equipment": [
+        "body",
+        "bar",
+        "band"
+      ],
+      "voiceMuted": true,
+      "jointHistory": [],
+      "setupDone": false,
+      "palette": "rassvet",
+      "addWeightKg": 5,
+      "restingHeartRateBpm": 60,
+      "maxHeartRateBpm": 185
+    },
+    "aurora.poc.history.v1": [
+      {
+        "id": "hist_sample_21",
+        "completedAt": "2026-11-18T07:37:00.000Z",
+        "templateId": "gen_lowera",
+        "templateName": "Lower body · A",
+        "evaluation": "difficult",
+        "setCount": 12,
+        "exerciseIds": [
+          "bodyweight_squat",
+          "bulgarian_split",
+          "glute_bridge",
+          "calf_raise"
+        ],
+        "sets": [
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 0,
+            "prescribedReps": 22,
+            "completedReps": 22,
+            "loggedAt": "2026-11-18T07:07:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 127
+          },
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 1,
+            "prescribedReps": 22,
+            "completedReps": 22,
+            "loggedAt": "2026-11-18T07:09:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 130
+          },
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 2,
+            "prescribedReps": 22,
+            "completedReps": 21,
+            "loggedAt": "2026-11-18T07:12:00.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 133
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 0,
+            "prescribedReps": 11,
+            "completedReps": 11,
+            "loggedAt": "2026-11-18T07:14:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 139
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 1,
+            "prescribedReps": 11,
+            "completedReps": 11,
+            "loggedAt": "2026-11-18T07:17:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 142
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 2,
+            "prescribedReps": 11,
+            "completedReps": 10,
+            "loggedAt": "2026-11-18T07:19:30.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 145
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 0,
+            "prescribedReps": 16,
+            "completedReps": 16,
+            "loggedAt": "2026-11-18T07:22:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 119
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 1,
+            "prescribedReps": 16,
+            "completedReps": 16,
+            "loggedAt": "2026-11-18T07:24:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 122
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 2,
+            "prescribedReps": 16,
+            "completedReps": 15,
+            "loggedAt": "2026-11-18T07:27:00.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 125
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 0,
+            "prescribedReps": 20,
+            "completedReps": 20,
+            "loggedAt": "2026-11-18T07:29:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 116
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 1,
+            "prescribedReps": 20,
+            "completedReps": 20,
+            "loggedAt": "2026-11-18T07:32:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 119
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 2,
+            "prescribedReps": 20,
+            "completedReps": 19,
+            "loggedAt": "2026-11-18T07:34:30.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 122
+          }
+        ],
+        "pulse": {
+          "series": [
+            {
+              "t": 1794985260000,
+              "bpm": 96
+            },
+            {
+              "t": 1794985410000,
+              "bpm": 103
+            },
+            {
+              "t": 1794985560000,
+              "bpm": 110
+            },
+            {
+              "t": 1794985710000,
+              "bpm": 117
+            },
+            {
+              "t": 1794985860000,
+              "bpm": 124
+            },
+            {
+              "t": 1794986010000,
+              "bpm": 131
+            },
+            {
+              "t": 1794986160000,
+              "bpm": 98
+            },
+            {
+              "t": 1794986310000,
+              "bpm": 105
+            },
+            {
+              "t": 1794986460000,
+              "bpm": 112
+            },
+            {
+              "t": 1794986610000,
+              "bpm": 119
+            },
+            {
+              "t": 1794986760000,
+              "bpm": 126
+            },
+            {
+              "t": 1794986910000,
+              "bpm": 133
+            }
+          ],
+          "byExercise": [
+            {
+              "exerciseId": "bodyweight_squat",
+              "averageBpm": 130,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "bulgarian_split",
+              "averageBpm": 142,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "glute_bridge",
+              "averageBpm": 122,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "calf_raise",
+              "averageBpm": 119,
+              "sampleCount": 90
+            }
+          ]
+        }
+      },
+      {
+        "id": "hist_sample_20",
+        "completedAt": "2026-11-16T07:23:00.000Z",
+        "templateId": "gen_upperb",
+        "templateName": "Upper body · B",
+        "evaluation": "on_target",
+        "setCount": 12,
+        "exerciseIds": [
+          "fedb_push_up_wide",
+          "hf_19",
+          "hf_4",
+          "dead_bug"
+        ],
+        "sets": [
+          {
+            "exerciseId": "fedb_push_up_wide",
+            "setIndex": 0,
+            "prescribedReps": 16,
+            "completedReps": 16,
+            "loggedAt": "2026-11-16T06:53:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 129
+          },
+          {
+            "exerciseId": "fedb_push_up_wide",
+            "setIndex": 1,
+            "prescribedReps": 16,
+            "completedReps": 16,
+            "loggedAt": "2026-11-16T06:55:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 132
+          },
+          {
+            "exerciseId": "fedb_push_up_wide",
+            "setIndex": 2,
+            "prescribedReps": 16,
+            "completedReps": 15,
+            "loggedAt": "2026-11-16T06:58:00.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 135
+          },
+          {
+            "exerciseId": "hf_19",
+            "setIndex": 0,
+            "prescribedReps": 9,
+            "completedReps": 9,
+            "loggedAt": "2026-11-16T07:00:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 135
+          },
+          {
+            "exerciseId": "hf_19",
+            "setIndex": 1,
+            "prescribedReps": 9,
+            "completedReps": 9,
+            "loggedAt": "2026-11-16T07:03:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 138
+          },
+          {
+            "exerciseId": "hf_19",
+            "setIndex": 2,
+            "prescribedReps": 9,
+            "completedReps": 8,
+            "loggedAt": "2026-11-16T07:05:30.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 141
+          },
+          {
+            "exerciseId": "hf_4",
+            "setIndex": 0,
+            "prescribedReps": 8,
+            "completedReps": 8,
+            "loggedAt": "2026-11-16T07:08:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 132
+          },
+          {
+            "exerciseId": "hf_4",
+            "setIndex": 1,
+            "prescribedReps": 8,
+            "completedReps": 8,
+            "loggedAt": "2026-11-16T07:10:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 135
+          },
+          {
+            "exerciseId": "hf_4",
+            "setIndex": 2,
+            "prescribedReps": 8,
+            "completedReps": 7,
+            "loggedAt": "2026-11-16T07:13:00.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 138
+          },
+          {
+            "exerciseId": "dead_bug",
+            "setIndex": 0,
+            "prescribedReps": 14,
+            "completedReps": 14,
+            "loggedAt": "2026-11-16T07:15:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 113
+          },
+          {
+            "exerciseId": "dead_bug",
+            "setIndex": 1,
+            "prescribedReps": 14,
+            "completedReps": 14,
+            "loggedAt": "2026-11-16T07:18:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 116
+          },
+          {
+            "exerciseId": "dead_bug",
+            "setIndex": 2,
+            "prescribedReps": 14,
+            "completedReps": 13,
+            "loggedAt": "2026-11-16T07:20:30.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 119
+          }
+        ],
+        "pulse": {
+          "series": [
+            {
+              "t": 1794811620000,
+              "bpm": 96
+            },
+            {
+              "t": 1794811770000,
+              "bpm": 103
+            },
+            {
+              "t": 1794811920000,
+              "bpm": 110
+            },
+            {
+              "t": 1794812070000,
+              "bpm": 117
+            },
+            {
+              "t": 1794812220000,
+              "bpm": 124
+            },
+            {
+              "t": 1794812370000,
+              "bpm": 131
+            },
+            {
+              "t": 1794812520000,
+              "bpm": 98
+            },
+            {
+              "t": 1794812670000,
+              "bpm": 105
+            },
+            {
+              "t": 1794812820000,
+              "bpm": 112
+            },
+            {
+              "t": 1794812970000,
+              "bpm": 119
+            },
+            {
+              "t": 1794813120000,
+              "bpm": 126
+            },
+            {
+              "t": 1794813270000,
+              "bpm": 133
+            }
+          ],
+          "byExercise": [
+            {
+              "exerciseId": "fedb_push_up_wide",
+              "averageBpm": 132,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "hf_19",
+              "averageBpm": 138,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "hf_4",
+              "averageBpm": 135,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "dead_bug",
+              "averageBpm": 116,
+              "sampleCount": 90
+            }
+          ]
+        }
+      },
+      {
+        "id": "hist_sample_19",
+        "completedAt": "2026-11-13T07:30:00.000Z",
+        "templateId": "gen_lowera",
+        "templateName": "Lower body · A",
+        "evaluation": "easy",
+        "setCount": 12,
+        "exerciseIds": [
+          "bodyweight_squat",
+          "bulgarian_split",
+          "glute_bridge",
+          "calf_raise"
+        ],
+        "sets": [
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 0,
+            "prescribedReps": 22,
+            "completedReps": 22,
+            "loggedAt": "2026-11-13T07:00:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 126
+          },
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 1,
+            "prescribedReps": 22,
+            "completedReps": 22,
+            "loggedAt": "2026-11-13T07:02:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 129
+          },
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 2,
+            "prescribedReps": 22,
+            "completedReps": 22,
+            "loggedAt": "2026-11-13T07:05:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 132
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 0,
+            "prescribedReps": 10,
+            "completedReps": 10,
+            "loggedAt": "2026-11-13T07:07:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 138
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 1,
+            "prescribedReps": 10,
+            "completedReps": 10,
+            "loggedAt": "2026-11-13T07:10:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 141
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 2,
+            "prescribedReps": 10,
+            "completedReps": 10,
+            "loggedAt": "2026-11-13T07:12:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 144
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 0,
+            "prescribedReps": 16,
+            "completedReps": 16,
+            "loggedAt": "2026-11-13T07:15:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 118
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 1,
+            "prescribedReps": 16,
+            "completedReps": 16,
+            "loggedAt": "2026-11-13T07:17:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 121
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 2,
+            "prescribedReps": 16,
+            "completedReps": 16,
+            "loggedAt": "2026-11-13T07:20:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 124
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 0,
+            "prescribedReps": 20,
+            "completedReps": 20,
+            "loggedAt": "2026-11-13T07:22:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 115
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 1,
+            "prescribedReps": 20,
+            "completedReps": 20,
+            "loggedAt": "2026-11-13T07:25:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 118
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 2,
+            "prescribedReps": 20,
+            "completedReps": 20,
+            "loggedAt": "2026-11-13T07:27:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 121
+          }
+        ],
+        "pulse": {
+          "series": [
+            {
+              "t": 1794552840000,
+              "bpm": 96
+            },
+            {
+              "t": 1794552990000,
+              "bpm": 103
+            },
+            {
+              "t": 1794553140000,
+              "bpm": 110
+            },
+            {
+              "t": 1794553290000,
+              "bpm": 117
+            },
+            {
+              "t": 1794553440000,
+              "bpm": 124
+            },
+            {
+              "t": 1794553590000,
+              "bpm": 131
+            },
+            {
+              "t": 1794553740000,
+              "bpm": 98
+            },
+            {
+              "t": 1794553890000,
+              "bpm": 105
+            },
+            {
+              "t": 1794554040000,
+              "bpm": 112
+            },
+            {
+              "t": 1794554190000,
+              "bpm": 119
+            },
+            {
+              "t": 1794554340000,
+              "bpm": 126
+            },
+            {
+              "t": 1794554490000,
+              "bpm": 133
+            }
+          ],
+          "byExercise": [
+            {
+              "exerciseId": "bodyweight_squat",
+              "averageBpm": 129,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "bulgarian_split",
+              "averageBpm": 141,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "glute_bridge",
+              "averageBpm": 121,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "calf_raise",
+              "averageBpm": 118,
+              "sampleCount": 90
+            }
+          ]
+        }
+      },
+      {
+        "id": "hist_sample_18",
+        "completedAt": "2026-11-11T07:16:00.000Z",
+        "templateId": "gen_upperb",
+        "templateName": "Upper body · B",
+        "evaluation": "on_target",
+        "setCount": 12,
+        "exerciseIds": [
+          "fedb_push_up_wide",
+          "hf_19",
+          "hf_4",
+          "dead_bug"
+        ],
+        "sets": [
+          {
+            "exerciseId": "fedb_push_up_wide",
+            "setIndex": 0,
+            "prescribedReps": 15,
+            "completedReps": 15,
+            "loggedAt": "2026-11-11T06:46:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 128
+          },
+          {
+            "exerciseId": "fedb_push_up_wide",
+            "setIndex": 1,
+            "prescribedReps": 15,
+            "completedReps": 15,
+            "loggedAt": "2026-11-11T06:48:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 131
+          },
+          {
+            "exerciseId": "fedb_push_up_wide",
+            "setIndex": 2,
+            "prescribedReps": 15,
+            "completedReps": 14,
+            "loggedAt": "2026-11-11T06:51:00.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 134
+          },
+          {
+            "exerciseId": "hf_19",
+            "setIndex": 0,
+            "prescribedReps": 9,
+            "completedReps": 9,
+            "loggedAt": "2026-11-11T06:53:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 134
+          },
+          {
+            "exerciseId": "hf_19",
+            "setIndex": 1,
+            "prescribedReps": 9,
+            "completedReps": 9,
+            "loggedAt": "2026-11-11T06:56:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 137
+          },
+          {
+            "exerciseId": "hf_19",
+            "setIndex": 2,
+            "prescribedReps": 9,
+            "completedReps": 8,
+            "loggedAt": "2026-11-11T06:58:30.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 140
+          },
+          {
+            "exerciseId": "hf_4",
+            "setIndex": 0,
+            "prescribedReps": 8,
+            "completedReps": 8,
+            "loggedAt": "2026-11-11T07:01:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 131
+          },
+          {
+            "exerciseId": "hf_4",
+            "setIndex": 1,
+            "prescribedReps": 8,
+            "completedReps": 8,
+            "loggedAt": "2026-11-11T07:03:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 134
+          },
+          {
+            "exerciseId": "hf_4",
+            "setIndex": 2,
+            "prescribedReps": 8,
+            "completedReps": 7,
+            "loggedAt": "2026-11-11T07:06:00.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 137
+          },
+          {
+            "exerciseId": "dead_bug",
+            "setIndex": 0,
+            "prescribedReps": 14,
+            "completedReps": 14,
+            "loggedAt": "2026-11-11T07:08:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 112
+          },
+          {
+            "exerciseId": "dead_bug",
+            "setIndex": 1,
+            "prescribedReps": 14,
+            "completedReps": 14,
+            "loggedAt": "2026-11-11T07:11:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 115
+          },
+          {
+            "exerciseId": "dead_bug",
+            "setIndex": 2,
+            "prescribedReps": 14,
+            "completedReps": 13,
+            "loggedAt": "2026-11-11T07:13:30.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 118
+          }
+        ],
+        "pulse": {
+          "series": [
+            {
+              "t": 1794379200000,
+              "bpm": 96
+            },
+            {
+              "t": 1794379350000,
+              "bpm": 103
+            },
+            {
+              "t": 1794379500000,
+              "bpm": 110
+            },
+            {
+              "t": 1794379650000,
+              "bpm": 117
+            },
+            {
+              "t": 1794379800000,
+              "bpm": 124
+            },
+            {
+              "t": 1794379950000,
+              "bpm": 131
+            },
+            {
+              "t": 1794380100000,
+              "bpm": 98
+            },
+            {
+              "t": 1794380250000,
+              "bpm": 105
+            },
+            {
+              "t": 1794380400000,
+              "bpm": 112
+            },
+            {
+              "t": 1794380550000,
+              "bpm": 119
+            },
+            {
+              "t": 1794380700000,
+              "bpm": 126
+            },
+            {
+              "t": 1794380850000,
+              "bpm": 133
+            }
+          ],
+          "byExercise": [
+            {
+              "exerciseId": "fedb_push_up_wide",
+              "averageBpm": 131,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "hf_19",
+              "averageBpm": 137,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "hf_4",
+              "averageBpm": 134,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "dead_bug",
+              "averageBpm": 115,
+              "sampleCount": 90
+            }
+          ]
+        }
+      },
+      {
+        "id": "hist_sample_17",
+        "completedAt": "2026-11-09T07:37:00.000Z",
+        "templateId": "gen_lowera",
+        "templateName": "Lower body · A",
+        "evaluation": "on_target",
+        "setCount": 12,
+        "exerciseIds": [
+          "bodyweight_squat",
+          "bulgarian_split",
+          "glute_bridge",
+          "calf_raise"
+        ],
+        "sets": [
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 0,
+            "prescribedReps": 22,
+            "completedReps": 22,
+            "loggedAt": "2026-11-09T07:07:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 126
+          },
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 1,
+            "prescribedReps": 22,
+            "completedReps": 22,
+            "loggedAt": "2026-11-09T07:09:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 129
+          },
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 2,
+            "prescribedReps": 22,
+            "completedReps": 21,
+            "loggedAt": "2026-11-09T07:12:00.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 132
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 0,
+            "prescribedReps": 10,
+            "completedReps": 10,
+            "loggedAt": "2026-11-09T07:14:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 138
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 1,
+            "prescribedReps": 10,
+            "completedReps": 10,
+            "loggedAt": "2026-11-09T07:17:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 141
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 2,
+            "prescribedReps": 10,
+            "completedReps": 9,
+            "loggedAt": "2026-11-09T07:19:30.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 144
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 0,
+            "prescribedReps": 16,
+            "completedReps": 16,
+            "loggedAt": "2026-11-09T07:22:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 118
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 1,
+            "prescribedReps": 16,
+            "completedReps": 16,
+            "loggedAt": "2026-11-09T07:24:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 121
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 2,
+            "prescribedReps": 16,
+            "completedReps": 15,
+            "loggedAt": "2026-11-09T07:27:00.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 124
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 0,
+            "prescribedReps": 20,
+            "completedReps": 20,
+            "loggedAt": "2026-11-09T07:29:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 115
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 1,
+            "prescribedReps": 20,
+            "completedReps": 20,
+            "loggedAt": "2026-11-09T07:32:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 118
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 2,
+            "prescribedReps": 20,
+            "completedReps": 19,
+            "loggedAt": "2026-11-09T07:34:30.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 121
+          }
+        ],
+        "pulse": {
+          "series": [
+            {
+              "t": 1794207660000,
+              "bpm": 96
+            },
+            {
+              "t": 1794207810000,
+              "bpm": 103
+            },
+            {
+              "t": 1794207960000,
+              "bpm": 110
+            },
+            {
+              "t": 1794208110000,
+              "bpm": 117
+            },
+            {
+              "t": 1794208260000,
+              "bpm": 124
+            },
+            {
+              "t": 1794208410000,
+              "bpm": 131
+            },
+            {
+              "t": 1794208560000,
+              "bpm": 98
+            },
+            {
+              "t": 1794208710000,
+              "bpm": 105
+            },
+            {
+              "t": 1794208860000,
+              "bpm": 112
+            },
+            {
+              "t": 1794209010000,
+              "bpm": 119
+            },
+            {
+              "t": 1794209160000,
+              "bpm": 126
+            },
+            {
+              "t": 1794209310000,
+              "bpm": 133
+            }
+          ],
+          "byExercise": [
+            {
+              "exerciseId": "bodyweight_squat",
+              "averageBpm": 129,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "bulgarian_split",
+              "averageBpm": 141,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "glute_bridge",
+              "averageBpm": 121,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "calf_raise",
+              "averageBpm": 118,
+              "sampleCount": 90
+            }
+          ]
+        }
+      },
+      {
+        "id": "hist_sample_16",
+        "completedAt": "2026-11-06T07:44:00.000Z",
+        "templateId": "gen_upperb",
+        "templateName": "Upper body · B",
+        "evaluation": "difficult",
+        "setCount": 12,
+        "exerciseIds": [
+          "fedb_push_up_wide",
+          "hf_19",
+          "hf_4",
+          "dead_bug"
+        ],
+        "sets": [
+          {
+            "exerciseId": "fedb_push_up_wide",
+            "setIndex": 0,
+            "prescribedReps": 14,
+            "completedReps": 14,
+            "loggedAt": "2026-11-06T07:14:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 130
+          },
+          {
+            "exerciseId": "fedb_push_up_wide",
+            "setIndex": 1,
+            "prescribedReps": 14,
+            "completedReps": 14,
+            "loggedAt": "2026-11-06T07:16:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 133
+          },
+          {
+            "exerciseId": "fedb_push_up_wide",
+            "setIndex": 2,
+            "prescribedReps": 14,
+            "completedReps": 13,
+            "loggedAt": "2026-11-06T07:19:00.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 136
+          },
+          {
+            "exerciseId": "hf_19",
+            "setIndex": 0,
+            "prescribedReps": 8,
+            "completedReps": 8,
+            "loggedAt": "2026-11-06T07:21:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 136
+          },
+          {
+            "exerciseId": "hf_19",
+            "setIndex": 1,
+            "prescribedReps": 8,
+            "completedReps": 8,
+            "loggedAt": "2026-11-06T07:24:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 139
+          },
+          {
+            "exerciseId": "hf_19",
+            "setIndex": 2,
+            "prescribedReps": 8,
+            "completedReps": 7,
+            "loggedAt": "2026-11-06T07:26:30.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 142
+          },
+          {
+            "exerciseId": "hf_4",
+            "setIndex": 0,
+            "prescribedReps": 8,
+            "completedReps": 8,
+            "loggedAt": "2026-11-06T07:29:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 133
+          },
+          {
+            "exerciseId": "hf_4",
+            "setIndex": 1,
+            "prescribedReps": 8,
+            "completedReps": 8,
+            "loggedAt": "2026-11-06T07:31:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 136
+          },
+          {
+            "exerciseId": "hf_4",
+            "setIndex": 2,
+            "prescribedReps": 8,
+            "completedReps": 7,
+            "loggedAt": "2026-11-06T07:34:00.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 139
+          },
+          {
+            "exerciseId": "dead_bug",
+            "setIndex": 0,
+            "prescribedReps": 14,
+            "completedReps": 14,
+            "loggedAt": "2026-11-06T07:36:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 114
+          },
+          {
+            "exerciseId": "dead_bug",
+            "setIndex": 1,
+            "prescribedReps": 14,
+            "completedReps": 14,
+            "loggedAt": "2026-11-06T07:39:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 117
+          },
+          {
+            "exerciseId": "dead_bug",
+            "setIndex": 2,
+            "prescribedReps": 14,
+            "completedReps": 13,
+            "loggedAt": "2026-11-06T07:41:30.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 120
+          }
+        ],
+        "pulse": {
+          "series": [
+            {
+              "t": 1793948880000,
+              "bpm": 96
+            },
+            {
+              "t": 1793949030000,
+              "bpm": 103
+            },
+            {
+              "t": 1793949180000,
+              "bpm": 110
+            },
+            {
+              "t": 1793949330000,
+              "bpm": 117
+            },
+            {
+              "t": 1793949480000,
+              "bpm": 124
+            },
+            {
+              "t": 1793949630000,
+              "bpm": 131
+            },
+            {
+              "t": 1793949780000,
+              "bpm": 98
+            },
+            {
+              "t": 1793949930000,
+              "bpm": 105
+            },
+            {
+              "t": 1793950080000,
+              "bpm": 112
+            },
+            {
+              "t": 1793950230000,
+              "bpm": 119
+            },
+            {
+              "t": 1793950380000,
+              "bpm": 126
+            },
+            {
+              "t": 1793950530000,
+              "bpm": 133
+            }
+          ],
+          "byExercise": [
+            {
+              "exerciseId": "fedb_push_up_wide",
+              "averageBpm": 133,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "hf_19",
+              "averageBpm": 139,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "hf_4",
+              "averageBpm": 136,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "dead_bug",
+              "averageBpm": 117,
+              "sampleCount": 90
+            }
+          ]
+        }
+      },
+      {
+        "id": "hist_sample_15",
+        "completedAt": "2026-11-02T07:16:00.000Z",
+        "templateId": "gen_lowera",
+        "templateName": "Lower body · A",
+        "evaluation": "on_target",
+        "setCount": 12,
+        "exerciseIds": [
+          "bodyweight_squat",
+          "bulgarian_split",
+          "glute_bridge",
+          "calf_raise"
+        ],
+        "sets": [
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 0,
+            "prescribedReps": 20,
+            "completedReps": 20,
+            "loggedAt": "2026-11-02T06:46:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 128
+          },
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 1,
+            "prescribedReps": 20,
+            "completedReps": 20,
+            "loggedAt": "2026-11-02T06:48:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 131
+          },
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 2,
+            "prescribedReps": 20,
+            "completedReps": 19,
+            "loggedAt": "2026-11-02T06:51:00.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 134
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 0,
+            "prescribedReps": 10,
+            "completedReps": 10,
+            "loggedAt": "2026-11-02T06:53:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 140
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 1,
+            "prescribedReps": 10,
+            "completedReps": 10,
+            "loggedAt": "2026-11-02T06:56:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 143
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 2,
+            "prescribedReps": 10,
+            "completedReps": 9,
+            "loggedAt": "2026-11-02T06:58:30.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 146
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 0,
+            "prescribedReps": 15,
+            "completedReps": 15,
+            "loggedAt": "2026-11-02T07:01:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 120
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 1,
+            "prescribedReps": 15,
+            "completedReps": 15,
+            "loggedAt": "2026-11-02T07:03:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 123
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 2,
+            "prescribedReps": 15,
+            "completedReps": 14,
+            "loggedAt": "2026-11-02T07:06:00.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 126
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 0,
+            "prescribedReps": 20,
+            "completedReps": 20,
+            "loggedAt": "2026-11-02T07:08:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 117
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 1,
+            "prescribedReps": 20,
+            "completedReps": 20,
+            "loggedAt": "2026-11-02T07:11:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 120
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 2,
+            "prescribedReps": 20,
+            "completedReps": 19,
+            "loggedAt": "2026-11-02T07:13:30.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 123
+          }
+        ],
+        "pulse": {
+          "series": [
+            {
+              "t": 1793601600000,
+              "bpm": 96
+            },
+            {
+              "t": 1793601750000,
+              "bpm": 103
+            },
+            {
+              "t": 1793601900000,
+              "bpm": 110
+            },
+            {
+              "t": 1793602050000,
+              "bpm": 117
+            },
+            {
+              "t": 1793602200000,
+              "bpm": 124
+            },
+            {
+              "t": 1793602350000,
+              "bpm": 131
+            },
+            {
+              "t": 1793602500000,
+              "bpm": 98
+            },
+            {
+              "t": 1793602650000,
+              "bpm": 105
+            },
+            {
+              "t": 1793602800000,
+              "bpm": 112
+            },
+            {
+              "t": 1793602950000,
+              "bpm": 119
+            },
+            {
+              "t": 1793603100000,
+              "bpm": 126
+            },
+            {
+              "t": 1793603250000,
+              "bpm": 133
+            }
+          ],
+          "byExercise": [
+            {
+              "exerciseId": "bodyweight_squat",
+              "averageBpm": 131,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "bulgarian_split",
+              "averageBpm": 143,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "glute_bridge",
+              "averageBpm": 123,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "calf_raise",
+              "averageBpm": 120,
+              "sampleCount": 90
+            }
+          ]
+        }
+      },
+      {
+        "id": "hist_sample_14",
+        "completedAt": "2026-10-30T07:23:00.000Z",
+        "templateId": "gen_upperb",
+        "templateName": "Upper body · B",
+        "evaluation": "easy",
+        "setCount": 12,
+        "exerciseIds": [
+          "fedb_push_up_wide",
+          "hf_19",
+          "hf_4",
+          "dead_bug"
+        ],
+        "sets": [
+          {
+            "exerciseId": "fedb_push_up_wide",
+            "setIndex": 0,
+            "prescribedReps": 13,
+            "completedReps": 13,
+            "loggedAt": "2026-10-30T06:53:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 129
+          },
+          {
+            "exerciseId": "fedb_push_up_wide",
+            "setIndex": 1,
+            "prescribedReps": 13,
+            "completedReps": 13,
+            "loggedAt": "2026-10-30T06:55:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 132
+          },
+          {
+            "exerciseId": "fedb_push_up_wide",
+            "setIndex": 2,
+            "prescribedReps": 13,
+            "completedReps": 13,
+            "loggedAt": "2026-10-30T06:58:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 135
+          },
+          {
+            "exerciseId": "hf_19",
+            "setIndex": 0,
+            "prescribedReps": 8,
+            "completedReps": 8,
+            "loggedAt": "2026-10-30T07:00:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 135
+          },
+          {
+            "exerciseId": "hf_19",
+            "setIndex": 1,
+            "prescribedReps": 8,
+            "completedReps": 8,
+            "loggedAt": "2026-10-30T07:03:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 138
+          },
+          {
+            "exerciseId": "hf_19",
+            "setIndex": 2,
+            "prescribedReps": 8,
+            "completedReps": 8,
+            "loggedAt": "2026-10-30T07:05:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 141
+          },
+          {
+            "exerciseId": "hf_4",
+            "setIndex": 0,
+            "prescribedReps": 7,
+            "completedReps": 7,
+            "loggedAt": "2026-10-30T07:08:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 132
+          },
+          {
+            "exerciseId": "hf_4",
+            "setIndex": 1,
+            "prescribedReps": 7,
+            "completedReps": 7,
+            "loggedAt": "2026-10-30T07:10:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 135
+          },
+          {
+            "exerciseId": "hf_4",
+            "setIndex": 2,
+            "prescribedReps": 7,
+            "completedReps": 7,
+            "loggedAt": "2026-10-30T07:13:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 138
+          },
+          {
+            "exerciseId": "dead_bug",
+            "setIndex": 0,
+            "prescribedReps": 12,
+            "completedReps": 12,
+            "loggedAt": "2026-10-30T07:15:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 113
+          },
+          {
+            "exerciseId": "dead_bug",
+            "setIndex": 1,
+            "prescribedReps": 12,
+            "completedReps": 12,
+            "loggedAt": "2026-10-30T07:18:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 116
+          },
+          {
+            "exerciseId": "dead_bug",
+            "setIndex": 2,
+            "prescribedReps": 12,
+            "completedReps": 12,
+            "loggedAt": "2026-10-30T07:20:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 119
+          }
+        ],
+        "pulse": {
+          "series": [
+            {
+              "t": 1793342820000,
+              "bpm": 96
+            },
+            {
+              "t": 1793342970000,
+              "bpm": 103
+            },
+            {
+              "t": 1793343120000,
+              "bpm": 110
+            },
+            {
+              "t": 1793343270000,
+              "bpm": 117
+            },
+            {
+              "t": 1793343420000,
+              "bpm": 124
+            },
+            {
+              "t": 1793343570000,
+              "bpm": 131
+            },
+            {
+              "t": 1793343720000,
+              "bpm": 98
+            },
+            {
+              "t": 1793343870000,
+              "bpm": 105
+            },
+            {
+              "t": 1793344020000,
+              "bpm": 112
+            },
+            {
+              "t": 1793344170000,
+              "bpm": 119
+            },
+            {
+              "t": 1793344320000,
+              "bpm": 126
+            },
+            {
+              "t": 1793344470000,
+              "bpm": 133
+            }
+          ],
+          "byExercise": [
+            {
+              "exerciseId": "fedb_push_up_wide",
+              "averageBpm": 132,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "hf_19",
+              "averageBpm": 138,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "hf_4",
+              "averageBpm": 135,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "dead_bug",
+              "averageBpm": 116,
+              "sampleCount": 90
+            }
+          ]
+        }
+      },
+      {
+        "id": "hist_sample_13",
+        "completedAt": "2026-10-28T07:44:00.000Z",
+        "templateId": "gen_lowera",
+        "templateName": "Lower body · A",
+        "evaluation": "on_target",
+        "setCount": 12,
+        "exerciseIds": [
+          "bodyweight_squat",
+          "bulgarian_split",
+          "glute_bridge",
+          "calf_raise"
+        ],
+        "sets": [
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 0,
+            "prescribedReps": 20,
+            "completedReps": 20,
+            "loggedAt": "2026-10-28T07:14:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 127
+          },
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 1,
+            "prescribedReps": 20,
+            "completedReps": 20,
+            "loggedAt": "2026-10-28T07:16:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 130
+          },
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 2,
+            "prescribedReps": 20,
+            "completedReps": 19,
+            "loggedAt": "2026-10-28T07:19:00.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 133
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 0,
+            "prescribedReps": 10,
+            "completedReps": 10,
+            "loggedAt": "2026-10-28T07:21:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 139
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 1,
+            "prescribedReps": 10,
+            "completedReps": 10,
+            "loggedAt": "2026-10-28T07:24:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 142
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 2,
+            "prescribedReps": 10,
+            "completedReps": 9,
+            "loggedAt": "2026-10-28T07:26:30.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 145
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 0,
+            "prescribedReps": 15,
+            "completedReps": 15,
+            "loggedAt": "2026-10-28T07:29:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 119
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 1,
+            "prescribedReps": 15,
+            "completedReps": 15,
+            "loggedAt": "2026-10-28T07:31:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 122
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 2,
+            "prescribedReps": 15,
+            "completedReps": 14,
+            "loggedAt": "2026-10-28T07:34:00.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 125
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 0,
+            "prescribedReps": 18,
+            "completedReps": 18,
+            "loggedAt": "2026-10-28T07:36:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 116
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 1,
+            "prescribedReps": 18,
+            "completedReps": 18,
+            "loggedAt": "2026-10-28T07:39:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 119
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 2,
+            "prescribedReps": 18,
+            "completedReps": 17,
+            "loggedAt": "2026-10-28T07:41:30.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 122
+          }
+        ],
+        "pulse": {
+          "series": [
+            {
+              "t": 1793171280000,
+              "bpm": 96
+            },
+            {
+              "t": 1793171430000,
+              "bpm": 103
+            },
+            {
+              "t": 1793171580000,
+              "bpm": 110
+            },
+            {
+              "t": 1793171730000,
+              "bpm": 117
+            },
+            {
+              "t": 1793171880000,
+              "bpm": 124
+            },
+            {
+              "t": 1793172030000,
+              "bpm": 131
+            },
+            {
+              "t": 1793172180000,
+              "bpm": 98
+            },
+            {
+              "t": 1793172330000,
+              "bpm": 105
+            },
+            {
+              "t": 1793172480000,
+              "bpm": 112
+            },
+            {
+              "t": 1793172630000,
+              "bpm": 119
+            },
+            {
+              "t": 1793172780000,
+              "bpm": 126
+            },
+            {
+              "t": 1793172930000,
+              "bpm": 133
+            }
+          ],
+          "byExercise": [
+            {
+              "exerciseId": "bodyweight_squat",
+              "averageBpm": 130,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "bulgarian_split",
+              "averageBpm": 142,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "glute_bridge",
+              "averageBpm": 122,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "calf_raise",
+              "averageBpm": 119,
+              "sampleCount": 90
+            }
+          ]
+        }
+      },
+      {
+        "id": "hist_sample_12",
+        "completedAt": "2026-10-26T07:30:00.000Z",
+        "templateId": "gen_upperb",
+        "templateName": "Upper body · B",
+        "evaluation": "on_target",
+        "setCount": 12,
+        "exerciseIds": [
+          "fedb_push_up_wide",
+          "hf_19",
+          "hf_4",
+          "dead_bug"
+        ],
+        "sets": [
+          {
+            "exerciseId": "fedb_push_up_wide",
+            "setIndex": 0,
+            "prescribedReps": 13,
+            "completedReps": 13,
+            "loggedAt": "2026-10-26T07:00:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 129
+          },
+          {
+            "exerciseId": "fedb_push_up_wide",
+            "setIndex": 1,
+            "prescribedReps": 13,
+            "completedReps": 13,
+            "loggedAt": "2026-10-26T07:02:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 132
+          },
+          {
+            "exerciseId": "fedb_push_up_wide",
+            "setIndex": 2,
+            "prescribedReps": 13,
+            "completedReps": 12,
+            "loggedAt": "2026-10-26T07:05:00.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 135
+          },
+          {
+            "exerciseId": "hf_19",
+            "setIndex": 0,
+            "prescribedReps": 8,
+            "completedReps": 8,
+            "loggedAt": "2026-10-26T07:07:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 135
+          },
+          {
+            "exerciseId": "hf_19",
+            "setIndex": 1,
+            "prescribedReps": 8,
+            "completedReps": 8,
+            "loggedAt": "2026-10-26T07:10:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 138
+          },
+          {
+            "exerciseId": "hf_19",
+            "setIndex": 2,
+            "prescribedReps": 8,
+            "completedReps": 7,
+            "loggedAt": "2026-10-26T07:12:30.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 141
+          },
+          {
+            "exerciseId": "hf_4",
+            "setIndex": 0,
+            "prescribedReps": 7,
+            "completedReps": 7,
+            "loggedAt": "2026-10-26T07:15:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 132
+          },
+          {
+            "exerciseId": "hf_4",
+            "setIndex": 1,
+            "prescribedReps": 7,
+            "completedReps": 7,
+            "loggedAt": "2026-10-26T07:17:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 135
+          },
+          {
+            "exerciseId": "hf_4",
+            "setIndex": 2,
+            "prescribedReps": 7,
+            "completedReps": 6,
+            "loggedAt": "2026-10-26T07:20:00.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 138
+          },
+          {
+            "exerciseId": "dead_bug",
+            "setIndex": 0,
+            "prescribedReps": 12,
+            "completedReps": 12,
+            "loggedAt": "2026-10-26T07:22:30.000Z",
+            "stopReason": "completed",
+            "averageBpm": 113
+          },
+          {
+            "exerciseId": "dead_bug",
+            "setIndex": 1,
+            "prescribedReps": 12,
+            "completedReps": 12,
+            "loggedAt": "2026-10-26T07:25:00.000Z",
+            "stopReason": "completed",
+            "averageBpm": 116
+          },
+          {
+            "exerciseId": "dead_bug",
+            "setIndex": 2,
+            "prescribedReps": 12,
+            "completedReps": 11,
+            "loggedAt": "2026-10-26T07:27:30.000Z",
+            "stopReason": "muscular_failure",
+            "averageBpm": 119
+          }
+        ],
+        "pulse": {
+          "series": [
+            {
+              "t": 1792997640000,
+              "bpm": 96
+            },
+            {
+              "t": 1792997790000,
+              "bpm": 103
+            },
+            {
+              "t": 1792997940000,
+              "bpm": 110
+            },
+            {
+              "t": 1792998090000,
+              "bpm": 117
+            },
+            {
+              "t": 1792998240000,
+              "bpm": 124
+            },
+            {
+              "t": 1792998390000,
+              "bpm": 131
+            },
+            {
+              "t": 1792998540000,
+              "bpm": 98
+            },
+            {
+              "t": 1792998690000,
+              "bpm": 105
+            },
+            {
+              "t": 1792998840000,
+              "bpm": 112
+            },
+            {
+              "t": 1792998990000,
+              "bpm": 119
+            },
+            {
+              "t": 1792999140000,
+              "bpm": 126
+            },
+            {
+              "t": 1792999290000,
+              "bpm": 133
+            }
+          ],
+          "byExercise": [
+            {
+              "exerciseId": "fedb_push_up_wide",
+              "averageBpm": 132,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "hf_19",
+              "averageBpm": 138,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "hf_4",
+              "averageBpm": 135,
+              "sampleCount": 90
+            },
+            {
+              "exerciseId": "dead_bug",
+              "averageBpm": 116,
+              "sampleCount": 90
+            }
+          ]
+        }
+      },
+      {
+        "id": "hist_sample_11",
+        "completedAt": "2026-10-23T07:37:00.000Z",
+        "templateId": "gen_lowera",
+        "templateName": "Lower body · A",
+        "evaluation": "difficult",
+        "setCount": 12,
+        "exerciseIds": [
+          "bodyweight_squat",
+          "bulgarian_split",
+          "glute_bridge",
+          "calf_raise"
+        ],
+        "sets": [
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 0,
+            "prescribedReps": 18,
+            "completedReps": 18,
+            "loggedAt": "2026-10-23T07:07:00.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 1,
+            "prescribedReps": 18,
+            "completedReps": 18,
+            "loggedAt": "2026-10-23T07:09:30.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 2,
+            "prescribedReps": 18,
+            "completedReps": 17,
+            "loggedAt": "2026-10-23T07:12:00.000Z",
+            "stopReason": "muscular_failure"
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 0,
+            "prescribedReps": 9,
+            "completedReps": 9,
+            "loggedAt": "2026-10-23T07:14:30.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 1,
+            "prescribedReps": 9,
+            "completedReps": 9,
+            "loggedAt": "2026-10-23T07:17:00.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 2,
+            "prescribedReps": 9,
+            "completedReps": 8,
+            "loggedAt": "2026-10-23T07:19:30.000Z",
+            "stopReason": "muscular_failure"
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 0,
+            "prescribedReps": 14,
+            "completedReps": 14,
+            "loggedAt": "2026-10-23T07:22:00.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 1,
+            "prescribedReps": 14,
+            "completedReps": 14,
+            "loggedAt": "2026-10-23T07:24:30.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 2,
+            "prescribedReps": 14,
+            "completedReps": 13,
+            "loggedAt": "2026-10-23T07:27:00.000Z",
+            "stopReason": "muscular_failure"
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 0,
+            "prescribedReps": 18,
+            "completedReps": 18,
+            "loggedAt": "2026-10-23T07:29:30.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 1,
+            "prescribedReps": 18,
+            "completedReps": 18,
+            "loggedAt": "2026-10-23T07:32:00.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 2,
+            "prescribedReps": 18,
+            "completedReps": 17,
+            "loggedAt": "2026-10-23T07:34:30.000Z",
+            "stopReason": "muscular_failure"
+          }
+        ]
+      },
+      {
+        "id": "hist_sample_10",
+        "completedAt": "2026-10-19T07:44:00.000Z",
+        "templateId": "gen_upperb",
+        "templateName": "Upper body · B",
+        "evaluation": "on_target",
+        "setCount": 12,
+        "exerciseIds": [
+          "fedb_push_up_wide",
+          "hf_19",
+          "hf_4",
+          "dead_bug"
+        ],
+        "sets": [
+          {
+            "exerciseId": "fedb_push_up_wide",
+            "setIndex": 0,
+            "prescribedReps": 12,
+            "completedReps": 12,
+            "loggedAt": "2026-10-19T07:14:00.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "fedb_push_up_wide",
+            "setIndex": 1,
+            "prescribedReps": 12,
+            "completedReps": 12,
+            "loggedAt": "2026-10-19T07:16:30.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "fedb_push_up_wide",
+            "setIndex": 2,
+            "prescribedReps": 12,
+            "completedReps": 11,
+            "loggedAt": "2026-10-19T07:19:00.000Z",
+            "stopReason": "muscular_failure"
+          },
+          {
+            "exerciseId": "hf_19",
+            "setIndex": 0,
+            "prescribedReps": 7,
+            "completedReps": 7,
+            "loggedAt": "2026-10-19T07:21:30.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "hf_19",
+            "setIndex": 1,
+            "prescribedReps": 7,
+            "completedReps": 7,
+            "loggedAt": "2026-10-19T07:24:00.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "hf_19",
+            "setIndex": 2,
+            "prescribedReps": 7,
+            "completedReps": 6,
+            "loggedAt": "2026-10-19T07:26:30.000Z",
+            "stopReason": "muscular_failure"
+          },
+          {
+            "exerciseId": "hf_4",
+            "setIndex": 0,
+            "prescribedReps": 7,
+            "completedReps": 7,
+            "loggedAt": "2026-10-19T07:29:00.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "hf_4",
+            "setIndex": 1,
+            "prescribedReps": 7,
+            "completedReps": 7,
+            "loggedAt": "2026-10-19T07:31:30.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "hf_4",
+            "setIndex": 2,
+            "prescribedReps": 7,
+            "completedReps": 6,
+            "loggedAt": "2026-10-19T07:34:00.000Z",
+            "stopReason": "muscular_failure"
+          },
+          {
+            "exerciseId": "dead_bug",
+            "setIndex": 0,
+            "prescribedReps": 12,
+            "completedReps": 12,
+            "loggedAt": "2026-10-19T07:36:30.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "dead_bug",
+            "setIndex": 1,
+            "prescribedReps": 12,
+            "completedReps": 12,
+            "loggedAt": "2026-10-19T07:39:00.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "dead_bug",
+            "setIndex": 2,
+            "prescribedReps": 12,
+            "completedReps": 11,
+            "loggedAt": "2026-10-19T07:41:30.000Z",
+            "stopReason": "muscular_failure"
+          }
+        ]
+      },
+      {
+        "id": "hist_sample_09",
+        "completedAt": "2026-10-16T07:16:00.000Z",
+        "templateId": "gen_lowera",
+        "templateName": "Lower body · A",
+        "evaluation": "easy",
+        "setCount": 12,
+        "exerciseIds": [
+          "bodyweight_squat",
+          "bulgarian_split",
+          "glute_bridge",
+          "calf_raise"
+        ],
+        "sets": [
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 0,
+            "prescribedReps": 18,
+            "completedReps": 18,
+            "loggedAt": "2026-10-16T06:46:00.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 1,
+            "prescribedReps": 18,
+            "completedReps": 18,
+            "loggedAt": "2026-10-16T06:48:30.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 2,
+            "prescribedReps": 18,
+            "completedReps": 18,
+            "loggedAt": "2026-10-16T06:51:00.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 0,
+            "prescribedReps": 9,
+            "completedReps": 9,
+            "loggedAt": "2026-10-16T06:53:30.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 1,
+            "prescribedReps": 9,
+            "completedReps": 9,
+            "loggedAt": "2026-10-16T06:56:00.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 2,
+            "prescribedReps": 9,
+            "completedReps": 9,
+            "loggedAt": "2026-10-16T06:58:30.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 0,
+            "prescribedReps": 14,
+            "completedReps": 14,
+            "loggedAt": "2026-10-16T07:01:00.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 1,
+            "prescribedReps": 14,
+            "completedReps": 14,
+            "loggedAt": "2026-10-16T07:03:30.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 2,
+            "prescribedReps": 14,
+            "completedReps": 14,
+            "loggedAt": "2026-10-16T07:06:00.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 0,
+            "prescribedReps": 16,
+            "completedReps": 16,
+            "loggedAt": "2026-10-16T07:08:30.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 1,
+            "prescribedReps": 16,
+            "completedReps": 16,
+            "loggedAt": "2026-10-16T07:11:00.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 2,
+            "prescribedReps": 16,
+            "completedReps": 16,
+            "loggedAt": "2026-10-16T07:13:30.000Z",
+            "stopReason": "completed"
+          }
+        ]
+      },
+      {
+        "id": "hist_sample_08",
+        "completedAt": "2026-10-14T07:37:00.000Z",
+        "templateId": "gen_upperb",
+        "templateName": "Upper body · B",
+        "evaluation": "on_target",
+        "setCount": 12,
+        "exerciseIds": [
+          "fedb_push_up_wide",
+          "hf_19",
+          "hf_4",
+          "dead_bug"
+        ],
+        "sets": [
+          {
+            "exerciseId": "fedb_push_up_wide",
+            "setIndex": 0,
+            "prescribedReps": 12,
+            "completedReps": 12,
+            "loggedAt": "2026-10-14T07:07:00.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "fedb_push_up_wide",
+            "setIndex": 1,
+            "prescribedReps": 12,
+            "completedReps": 12,
+            "loggedAt": "2026-10-14T07:09:30.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "fedb_push_up_wide",
+            "setIndex": 2,
+            "prescribedReps": 12,
+            "completedReps": 11,
+            "loggedAt": "2026-10-14T07:12:00.000Z",
+            "stopReason": "muscular_failure"
+          },
+          {
+            "exerciseId": "hf_19",
+            "setIndex": 0,
+            "prescribedReps": 7,
+            "completedReps": 7,
+            "loggedAt": "2026-10-14T07:14:30.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "hf_19",
+            "setIndex": 1,
+            "prescribedReps": 7,
+            "completedReps": 7,
+            "loggedAt": "2026-10-14T07:17:00.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "hf_19",
+            "setIndex": 2,
+            "prescribedReps": 7,
+            "completedReps": 6,
+            "loggedAt": "2026-10-14T07:19:30.000Z",
+            "stopReason": "muscular_failure"
+          },
+          {
+            "exerciseId": "hf_4",
+            "setIndex": 0,
+            "prescribedReps": 6,
+            "completedReps": 6,
+            "loggedAt": "2026-10-14T07:22:00.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "hf_4",
+            "setIndex": 1,
+            "prescribedReps": 6,
+            "completedReps": 6,
+            "loggedAt": "2026-10-14T07:24:30.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "hf_4",
+            "setIndex": 2,
+            "prescribedReps": 6,
+            "completedReps": 5,
+            "loggedAt": "2026-10-14T07:27:00.000Z",
+            "stopReason": "muscular_failure"
+          },
+          {
+            "exerciseId": "dead_bug",
+            "setIndex": 0,
+            "prescribedReps": 12,
+            "completedReps": 12,
+            "loggedAt": "2026-10-14T07:29:30.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "dead_bug",
+            "setIndex": 1,
+            "prescribedReps": 12,
+            "completedReps": 12,
+            "loggedAt": "2026-10-14T07:32:00.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "dead_bug",
+            "setIndex": 2,
+            "prescribedReps": 12,
+            "completedReps": 11,
+            "loggedAt": "2026-10-14T07:34:30.000Z",
+            "stopReason": "muscular_failure"
+          }
+        ]
+      },
+      {
+        "id": "hist_sample_07",
+        "completedAt": "2026-10-12T07:23:00.000Z",
+        "templateId": "gen_lowera",
+        "templateName": "Lower body · A",
+        "evaluation": "wiped",
+        "setCount": 12,
+        "exerciseIds": [
+          "bodyweight_squat",
+          "bulgarian_split",
+          "glute_bridge",
+          "calf_raise"
+        ],
+        "sets": [
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 0,
+            "prescribedReps": 18,
+            "completedReps": 18,
+            "loggedAt": "2026-10-12T06:53:00.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 1,
+            "prescribedReps": 18,
+            "completedReps": 18,
+            "loggedAt": "2026-10-12T06:55:30.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "bodyweight_squat",
+            "setIndex": 2,
+            "prescribedReps": 18,
+            "completedReps": 17,
+            "loggedAt": "2026-10-12T06:58:00.000Z",
+            "stopReason": "muscular_failure"
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 0,
+            "prescribedReps": 9,
+            "completedReps": 9,
+            "loggedAt": "2026-10-12T07:00:30.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 1,
+            "prescribedReps": 9,
+            "completedReps": 9,
+            "loggedAt": "2026-10-12T07:03:00.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "bulgarian_split",
+            "setIndex": 2,
+            "prescribedReps": 9,
+            "completedReps": 8,
+            "loggedAt": "2026-10-12T07:05:30.000Z",
+            "stopReason": "muscular_failure"
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 0,
+            "prescribedReps": 14,
+            "completedReps": 14,
+            "loggedAt": "2026-10-12T07:08:00.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 1,
+            "prescribedReps": 14,
+            "completedReps": 14,
+            "loggedAt": "2026-10-12T07:10:30.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "glute_bridge",
+            "setIndex": 2,
+            "prescribedReps": 14,
+            "completedReps": 13,
+            "loggedAt": "2026-10-12T07:13:00.000Z",
+            "stopReason": "muscular_failure"
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 0,
+            "prescribedReps": 16,
+            "completedReps": 16,
+            "loggedAt": "2026-10-12T07:15:30.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 1,
+            "prescribedReps": 16,
+            "completedReps": 16,
+            "loggedAt": "2026-10-12T07:18:00.000Z",
+            "stopReason": "completed"
+          },
+          {
+            "exerciseId": "calf_raise",
+            "setIndex": 2,
+            "prescribedReps": 16,
+            "completedReps": 15,
+            "loggedAt": "2026-10-12T07:20:30.000Z",
+            "stopReason": "muscular_failure"
+          }
+        ]
+      },
+      {
+        "id": "hist_sample_06",
+        "completedAt": "2026-10-09T07:30:00.000Z",
+        "templateId": "gen_upperb",
+        "templateName": "Upper body · B",
+        "evaluation": "on_target",
+        "setCount": 12,
+        "exerciseIds": [
+          "fedb_push_up_wide",
+          "hf_19",
+          "hf_4",
+          "dead_bug"
+        ]
+      },
+      {
+        "id": "hist_sample_05",
+        "completedAt": "2026-10-07T07:16:00.000Z",
+        "templateId": "gen_lowera",
+        "templateName": "Lower body · A",
+        "evaluation": "on_target",
+        "setCount": 12,
+        "exerciseIds": [
+          "bodyweight_squat",
+          "bulgarian_split",
+          "glute_bridge",
+          "calf_raise"
+        ]
+      },
+      {
+        "id": "hist_sample_04",
+        "completedAt": "2026-10-05T07:37:00.000Z",
+        "templateId": "gen_upperb",
+        "templateName": "Upper body · B",
+        "evaluation": "difficult",
+        "setCount": 12,
+        "exerciseIds": [
+          "fedb_push_up_wide",
+          "hf_19",
+          "hf_4",
+          "dead_bug"
+        ]
+      },
+      {
+        "id": "hist_sample_03",
+        "completedAt": "2026-10-02T07:44:00.000Z",
+        "templateId": "gen_lowera",
+        "templateName": "Lower body · A",
+        "evaluation": "on_target",
+        "setCount": 12,
+        "exerciseIds": [
+          "bodyweight_squat",
+          "bulgarian_split",
+          "glute_bridge",
+          "calf_raise"
+        ]
+      },
+      {
+        "id": "hist_sample_02",
+        "completedAt": "2026-09-30T07:30:00.000Z",
+        "templateId": "gen_upperb",
+        "templateName": "Upper body · B",
+        "evaluation": "easy",
+        "setCount": 12,
+        "exerciseIds": [
+          "fedb_push_up_wide",
+          "hf_19",
+          "hf_4",
+          "dead_bug"
+        ]
+      },
+      {
+        "id": "hist_sample_01",
+        "completedAt": "2026-09-28T07:16:00.000Z",
+        "templateId": "gen_lowera",
+        "templateName": "Lower body · A",
+        "evaluation": "on_target",
+        "setCount": 12,
+        "exerciseIds": [
+          "bodyweight_squat",
+          "bulgarian_split",
+          "glute_bridge",
+          "calf_raise"
+        ]
+      }
+    ],
+    "aurora.poc.memory.v2": {
+      "fedb_push_up_wide": {
+        "exerciseId": "fedb_push_up_wide",
+        "sessionsAtStandard": 3,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "bestReps": 16,
+        "loggedTier": "intermediate",
+        "skillTier": "intermediate",
+        "lastSessionAt": "2026-11-16T07:23:00.000Z"
+      },
+      "hf_19": {
+        "exerciseId": "hf_19",
+        "sessionsAtStandard": 3,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "bestReps": 9,
+        "loggedTier": "intermediate",
+        "skillTier": "intermediate",
+        "lastSessionAt": "2026-11-16T07:23:00.000Z"
+      },
+      "hf_4": {
+        "exerciseId": "hf_4",
+        "sessionsAtStandard": 3,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "bestReps": 8,
+        "loggedTier": "beginner",
+        "skillTier": "beginner",
+        "lastSessionAt": "2026-11-16T07:23:00.000Z"
+      },
+      "dead_bug": {
+        "exerciseId": "dead_bug",
+        "sessionsAtStandard": 3,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "bestReps": 14,
+        "loggedTier": "intermediate",
+        "skillTier": "intermediate",
+        "lastSessionAt": "2026-11-16T07:23:00.000Z"
+      },
+      "bodyweight_squat": {
+        "exerciseId": "bodyweight_squat",
+        "sessionsAtStandard": 3,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "bestReps": 22,
+        "loggedTier": "intermediate",
+        "skillTier": "intermediate",
+        "lastSessionAt": "2026-11-18T07:37:00.000Z"
+      },
+      "bulgarian_split": {
+        "exerciseId": "bulgarian_split",
+        "sessionsAtStandard": 3,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "bestReps": 11,
+        "loggedTier": "intermediate",
+        "skillTier": "intermediate",
+        "lastSessionAt": "2026-11-18T07:37:00.000Z"
+      },
+      "glute_bridge": {
+        "exerciseId": "glute_bridge",
+        "sessionsAtStandard": 3,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "bestReps": 16,
+        "loggedTier": "intermediate",
+        "skillTier": "intermediate",
+        "lastSessionAt": "2026-11-18T07:37:00.000Z"
+      },
+      "calf_raise": {
+        "exerciseId": "calf_raise",
+        "sessionsAtStandard": 3,
+        "sessionsBelowFloor": 0,
+        "lastAddedLoadKg": 0,
+        "weakLinkSessionsRemaining": 0,
+        "bestReps": 20,
+        "loggedTier": "beginner",
+        "skillTier": "beginner",
+        "lastSessionAt": "2026-11-18T07:37:00.000Z"
+      }
+    }
+  }
+}
