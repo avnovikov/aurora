@@ -120,7 +120,7 @@ function showTab(
     renderProgressView(panel, {
       onJumpTab: (next) => tapTab(root, next),
       onOpenHistory: (filter) => {
-        nav.push(screenEntry(root, "progress"));
+        nav.push(backEntry("Progress", () => showTab(root, "progress")));
         openHistory(root, filter);
       },
     });
@@ -131,7 +131,8 @@ function showTab(
       filter: historyFilter,
       onClearFilter: () => openHistory(root, { kind: "all" }),
       onOpenExercise: (exerciseId) => {
-        nav.push(screenEntry(root, "history"));
+        const filter = historyFilter;
+        nav.push(backEntry("History", () => openHistory(root, filter)));
         openLibraryExercise(root, exerciseId);
       },
     });
@@ -154,7 +155,12 @@ function showBody(panel: HTMLElement, root: HTMLElement): void {
   renderBodyView(panel, {
     mode: bodyMode,
     onOpenExercise: (exerciseId, mode) => {
-      nav.push(bodyEntry(root, mode));
+      nav.push(
+        backEntry("Body", () => {
+          bodyMode = mode;
+          showTab(root, "body");
+        }),
+      );
       openLibraryExercise(root, exerciseId);
     },
   });
@@ -167,31 +173,13 @@ function tapTab(root: HTMLElement, tab: AppTab): void {
   showTab(root, tab);
 }
 
-/** Back entry that re-shows Progress or History (with its filter) at its scroll. */
-function screenEntry(root: HTMLElement, tab: "progress" | "history"): NavEntry {
-  const scrollY = readScrollY();
-  const filter = historyFilter;
-  return {
-    label: tab === "history" ? "History" : "Progress",
-    restore: () => {
-      if (tab === "history") {
-        openHistory(root, filter);
-      } else {
-        showTab(root, "progress");
-      }
-      restoreScrollY(scrollY);
-    },
-  };
-}
-
-/** Back entry that re-shows Body on the window that was left, at its scroll. */
-function bodyEntry(root: HTMLElement, mode: BodyViewMode): NavEntry {
+/** Back entry that runs `apply` to re-show a screen, then puts its scroll back. */
+function backEntry(label: string, apply: () => void): NavEntry {
   const scrollY = readScrollY();
   return {
-    label: "Body",
+    label,
     restore: () => {
-      bodyMode = mode;
-      showTab(root, "body");
+      apply();
       restoreScrollY(scrollY);
     },
   };

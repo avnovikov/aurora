@@ -12,6 +12,7 @@ import {
 } from "../progress/historyWeeksPresent";
 import { patternLabel } from "../progress/patternLabels";
 import { loadHistory, loadMemories } from "../session/history";
+import { prefersReducedMotion } from "./motion";
 
 export interface HistoryViewOptions {
   filter?: HistoryFilter;
@@ -62,8 +63,7 @@ export function renderHistoryView(
         return;
       }
       card.open = true;
-      const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-      card.scrollIntoView?.({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+      card.scrollIntoView?.({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
     });
   });
 

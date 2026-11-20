@@ -4,6 +4,9 @@ import {
   WINDOW_LABELS,
   areaName,
   buildBalanceModel,
+  hasWork,
+  pairLabel,
+  pairShares,
   type BalanceModel,
   type PairResult,
 } from "../body/balance";
@@ -15,6 +18,7 @@ import { loadExcluded } from "../plan/exclusions";
 import { loadHistory, loadMemories } from "../session/history";
 import { loadProfile } from "../settings/profile";
 import { renderBalanceFigure, updateBalanceFigure } from "./bodyMap";
+import { prefersReducedMotion } from "./motion";
 
 export interface BodyViewOptions {
   /** Window to open on (Back from an exercise restores the one that was left). */
@@ -78,10 +82,6 @@ export function renderBodyView(root: HTMLElement, options: BodyViewOptions = {})
   };
 
   paint();
-}
-
-function prefersReducedMotion(): boolean {
-  return typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
 function bodyHtml(model: BalanceModel, figureHtml: string): string {
@@ -157,17 +157,18 @@ function levelLines(model: BalanceModel): string {
 }
 
 function balanceRow(pair: PairResult, accent: boolean): string {
-  const hasShares = pair.kind !== "neither" && pair.kind !== "no_data";
-  const muted = hasShares ? "" : " data-muted";
-  const shares = hasShares ? `${pair.shares[0]} / ${pair.shares[1]}` : "";
+  const worked = hasWork(pair);
+  const muted = worked ? "" : " data-muted";
+  const [first, second] = pairShares(pair);
+  const shares = worked ? `${first} / ${second}` : "";
   return `
     <div class="bb-row" data-pair="${pair.id}" data-kind="${pair.kind}">
       <div class="bb-top">
-        <span class="bb-lab">${escapeHtml(pair.label)}</span>
+        <span class="bb-lab">${escapeHtml(pairLabel(pair))}</span>
         <span class="bb-word"${accent ? " data-hot" : ""}${muted}>${escapeHtml(pair.word)}</span>
         <span class="bb-sh">${shares}</span>
       </div>
-      <div class="bb-bar" aria-hidden="true"><i style="flex:${pair.shares[0]}"></i><i style="flex:${pair.shares[1]}"></i></div>
+      <div class="bb-bar" aria-hidden="true"><i style="flex:${first}"></i><i style="flex:${second}"></i></div>
     </div>`;
 }
 

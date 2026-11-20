@@ -45,8 +45,8 @@ export const AREA_ORDER: readonly MuscleGroup[] = [
 export type Level = "heavy" | "moderate" | "light" | "none";
 
 /** Heavy at 1.5× the median of trained areas or more; Moderate from 0.75×; Light above 0. */
-export const HEAVY_RATIO = 1.5;
-export const MODERATE_RATIO = 0.75;
+const HEAVY_RATIO = 1.5;
+const MODERATE_RATIO = 0.75;
 
 /**
  * `value >= bound`, forgiving float noise: legacy rows split sets into
@@ -91,10 +91,18 @@ export type PairId = "push_pull" | "upper_lower" | "front_back" | "squat_hinge" 
 export type SideId =
   | "push" | "pull" | "upper" | "lower" | "front" | "back" | "squat" | "hinge" | "abs" | "lower_back";
 
+export type CaricatureId =
+  | "mostly-push" | "mostly-pull" | "upper-heavy" | "lower-heavy" | "mostly-squat" | "mostly-hinge"
+  | "front-heavy" | "back-heavy"
+  | "push-upper" | "push-front" | "pull-upper" | "lower-squat" | "lower-hinge" | "upper-front"
+  | "even" | "untrained";
+
 interface SideSpec {
   id: SideId;
   /** "Mostly push" */
   mostly: string;
+  /** Figure when this side is the heavy one. Abs v Lower back reuses the front/back figures. */
+  caricature: CaricatureId;
   /** "No pulling" */
   none: string;
   /** Headline subject: "Pushing", "Abs". */
@@ -111,8 +119,6 @@ interface SideSpec {
 interface PairSpec {
   id: PairId;
   label: string;
-  /** "Push and pull are even." */
-  evenPhrase: string;
   basis: "pattern" | "area";
   sides: readonly [SideSpec, SideSpec];
 }
@@ -125,45 +131,45 @@ const PUSH_PATTERNS: readonly Pattern[] = ["horizontal_push", "vertical_push"];
 const PULL_PATTERNS: readonly Pattern[] = ["horizontal_pull", "vertical_pull"];
 
 /** Front v Back areas (user override); shoulders, forearms, neck, adductors and abductors sit out. */
-export const FRONT_AREAS: readonly MuscleGroup[] = ["chest", "abdominals", "quadriceps", "biceps"];
-export const BACK_AREAS: readonly MuscleGroup[] = [
+const FRONT_AREAS: readonly MuscleGroup[] = ["chest", "abdominals", "quadriceps", "biceps"];
+const BACK_AREAS: readonly MuscleGroup[] = [
   "traps", "lats", "middle back", "lower back", "glutes", "hamstrings", "calves", "triceps",
 ];
 
 export const PAIRS: readonly PairSpec[] = [
   {
-    id: "push_pull", label: "Push v Pull", evenPhrase: "Push and pull are even.", basis: "pattern",
+    id: "push_pull", label: "Push v Pull", basis: "pattern",
     sides: [
-      { id: "push", mostly: "Mostly push", none: "No pushing", subject: "Pushing", noun: "pushing", patterns: PUSH_PATTERNS, areas: PUSH_AREAS },
-      { id: "pull", mostly: "Mostly pull", none: "No pulling", subject: "Pulling", noun: "pulling", patterns: PULL_PATTERNS, areas: PULL_AREAS },
+      { id: "push", mostly: "Mostly push", caricature: "mostly-push", none: "No pushing", subject: "Pushing", noun: "pushing", patterns: PUSH_PATTERNS, areas: PUSH_AREAS },
+      { id: "pull", mostly: "Mostly pull", caricature: "mostly-pull", none: "No pulling", subject: "Pulling", noun: "pulling", patterns: PULL_PATTERNS, areas: PULL_AREAS },
     ],
   },
   {
-    id: "upper_lower", label: "Upper v Lower", evenPhrase: "Upper and lower are even.", basis: "pattern",
+    id: "upper_lower", label: "Upper v Lower", basis: "pattern",
     sides: [
-      { id: "upper", mostly: "Mostly upper", none: "No upper body", subject: "Upper body", noun: "upper-body work", patterns: [...PUSH_PATTERNS, ...PULL_PATTERNS], areas: [...PUSH_AREAS, ...PULL_AREAS] },
-      { id: "lower", mostly: "Mostly lower", none: "No lower body", subject: "Lower body", noun: "lower-body work", patterns: ["squat", "hinge"], areas: ["quadriceps", "glutes", "hamstrings", "lower back", "adductors", "calves"] },
+      { id: "upper", mostly: "Mostly upper", caricature: "upper-heavy", none: "No upper body", subject: "Upper body", noun: "upper-body work", patterns: [...PUSH_PATTERNS, ...PULL_PATTERNS], areas: [...PUSH_AREAS, ...PULL_AREAS] },
+      { id: "lower", mostly: "Mostly lower", caricature: "lower-heavy", none: "No lower body", subject: "Lower body", noun: "lower-body work", patterns: ["squat", "hinge"], areas: ["quadriceps", "glutes", "hamstrings", "lower back", "adductors", "calves"] },
     ],
   },
   {
-    id: "front_back", label: "Front v Back", evenPhrase: "Front and back are even.", basis: "area",
+    id: "front_back", label: "Front v Back", basis: "area",
     sides: [
-      { id: "front", mostly: "Mostly front", none: "No front", subject: "The front", noun: "front work", areas: FRONT_AREAS },
-      { id: "back", mostly: "Mostly back", none: "No back", subject: "The back", noun: "back work", areas: BACK_AREAS },
+      { id: "front", mostly: "Mostly front", caricature: "front-heavy", none: "No front", subject: "The front", noun: "front work", areas: FRONT_AREAS },
+      { id: "back", mostly: "Mostly back", caricature: "back-heavy", none: "No back", subject: "The back", noun: "back work", areas: BACK_AREAS },
     ],
   },
   {
-    id: "squat_hinge", label: "Squat v Hinge", evenPhrase: "Squat and hinge are even.", basis: "pattern",
+    id: "squat_hinge", label: "Squat v Hinge", basis: "pattern",
     sides: [
-      { id: "squat", mostly: "Mostly squat", none: "No squatting", subject: "Squatting", noun: "squatting", patterns: ["squat"], areas: SQUAT_AREAS },
-      { id: "hinge", mostly: "Mostly hinge", none: "No hinging", subject: "Hinging", noun: "hinging", patterns: ["hinge"], areas: HINGE_AREAS },
+      { id: "squat", mostly: "Mostly squat", caricature: "mostly-squat", none: "No squatting", subject: "Squatting", noun: "squatting", patterns: ["squat"], areas: SQUAT_AREAS },
+      { id: "hinge", mostly: "Mostly hinge", caricature: "mostly-hinge", none: "No hinging", subject: "Hinging", noun: "hinging", patterns: ["hinge"], areas: HINGE_AREAS },
     ],
   },
   {
-    id: "abs_lower_back", label: "Abs v Lower back", evenPhrase: "Abs and lower back are even.", basis: "area",
+    id: "abs_lower_back", label: "Abs v Lower back", basis: "area",
     sides: [
-      { id: "abs", mostly: "Mostly abs", none: "No ab work", subject: "Abs", noun: "ab work", plural: true, areas: ["abdominals"] },
-      { id: "lower_back", mostly: "Mostly lower back", none: "No lower back work", subject: "Lower back", noun: "lower-back work", areas: ["lower back"] },
+      { id: "abs", mostly: "Mostly abs", caricature: "front-heavy", none: "No ab work", subject: "Abs", noun: "ab work", plural: true, areas: ["abdominals"] },
+      { id: "lower_back", mostly: "Mostly lower back", caricature: "back-heavy", none: "No lower back work", subject: "Lower back", noun: "lower-back work", areas: ["lower back"] },
     ],
   },
 ];
@@ -172,11 +178,8 @@ export type TakeawayKind = "even" | "mostly" | "no" | "neither" | "no_data";
 
 export interface PairResult {
   id: PairId;
-  label: string;
   /** Raw amounts, first side then second. */
   amounts: readonly [number, number];
-  /** Whole-number shares summing to 100 (0/0 when neither side has work). */
-  shares: readonly [number, number];
   kind: TakeawayKind;
   word: string;
   /** Index of the bigger side when uneven. */
@@ -208,23 +211,36 @@ export function takeaway(
     : { kind: "mostly", word: heavy.mostly, heavySide, smallerShare };
 }
 
-function pairResult(spec: PairSpec, a: number, b: number): PairResult {
+/** "Push v Pull". */
+export function pairLabel(pair: PairResult): string {
+  return pairSpec(pair.id).label;
+}
+
+/** Whole-number shares summing to 100 (0/0 when neither side has work). */
+export function pairShares(pair: PairResult): readonly [number, number] {
+  const [a, b] = pair.amounts;
   const total = a + b;
-  const first = total > 0 ? Math.round((100 * a) / total) : 0;
-  return {
-    id: spec.id,
-    label: spec.label,
-    amounts: [a, b],
-    shares: total > 0 ? [first, 100 - first] : [0, 0],
-    ...takeaway(spec, a, b),
-  };
+  if (total <= 0) {
+    return [0, 0];
+  }
+  const first = Math.round((100 * a) / total);
+  return [first, 100 - first];
+}
+
+/** A pair with something to compare (not "neither" or "no data"). */
+export function hasWork(pair: PairResult): boolean {
+  return pair.kind !== "neither" && pair.kind !== "no_data";
+}
+
+function pairResult(spec: PairSpec, a: number, b: number): PairResult {
+  return { id: spec.id, amounts: [a, b], ...takeaway(spec, a, b) };
 }
 
 function noDataPair(spec: PairSpec): PairResult {
-  return { id: spec.id, label: spec.label, amounts: [0, 0], shares: [0, 0], kind: "no_data", word: "No data in this window" };
+  return { id: spec.id, amounts: [0, 0], kind: "no_data", word: "No data in this window" };
 }
 
-export function isUneven(pair: PairResult): boolean {
+function isUneven(pair: PairResult): boolean {
   return pair.kind === "mostly" || pair.kind === "no";
 }
 
@@ -300,41 +316,26 @@ function sessionsInWindow(history: readonly HistoryEntry[], mode: BodyViewMode, 
 
 // ---------------------------------------------------------------- caricature
 
-export type CaricatureId =
-  | "mostly-push" | "mostly-pull" | "upper-heavy" | "lower-heavy" | "mostly-squat" | "mostly-hinge"
-  | "front-heavy" | "back-heavy"
-  | "push-upper" | "push-front" | "pull-upper" | "lower-squat" | "lower-hinge" | "upper-front"
-  | "even" | "untrained";
-
-/** Single figure per heavy side. Abs v Lower back reuses the front/back figures. */
-const SINGLE_FOR_HEAVY: Readonly<Record<SideId, CaricatureId>> = {
-  push: "mostly-push",
-  pull: "mostly-pull",
-  upper: "upper-heavy",
-  lower: "lower-heavy",
-  squat: "mostly-squat",
-  hinge: "mostly-hinge",
-  front: "front-heavy",
-  back: "back-heavy",
-  abs: "front-heavy",
-  lower_back: "back-heavy",
-};
-
-const COMBINATIONS: ReadonlyArray<readonly [CaricatureId, CaricatureId, CaricatureId]> = [
-  ["mostly-push", "upper-heavy", "push-upper"],
-  ["mostly-push", "front-heavy", "push-front"],
-  ["mostly-pull", "upper-heavy", "pull-upper"],
-  ["lower-heavy", "mostly-squat", "lower-squat"],
-  ["lower-heavy", "mostly-hinge", "lower-hinge"],
-  ["upper-heavy", "front-heavy", "upper-front"],
-];
+/** Two heavy-side figures (sorted, "a+b") that have a combined figure of their own. */
+const COMBINATIONS: ReadonlyMap<string, CaricatureId> = new Map<string, CaricatureId>([
+  ["mostly-push+upper-heavy", "push-upper"],
+  ["front-heavy+mostly-push", "push-front"],
+  ["mostly-pull+upper-heavy", "pull-upper"],
+  ["lower-heavy+mostly-squat", "lower-squat"],
+  ["lower-heavy+mostly-hinge", "lower-hinge"],
+  ["front-heavy+upper-heavy", "upper-front"],
+]);
 
 function pairSpec(id: PairId): PairSpec {
   return PAIRS.find((spec) => spec.id === id)!;
 }
 
-function heavySideId(pair: PairResult): SideId {
-  return pairSpec(pair.id).sides[pair.heavySide!].id;
+function heavySide(pair: PairResult): SideSpec {
+  return pairSpec(pair.id).sides[pair.heavySide!];
+}
+
+function lightSide(pair: PairResult): SideSpec {
+  return pairSpec(pair.id).sides[1 - pair.heavySide!]!;
 }
 
 /**
@@ -342,23 +343,22 @@ function heavySideId(pair: PairResult): SideId {
  * uneven pairs when one exists (two pairs with the same figure stay single),
  * else the most uneven pair's single.
  */
-export function chooseCaricature(pairs: readonly PairResult[]): CaricatureId {
-  if (pairs.every((pair) => pair.kind === "neither" || pair.kind === "no_data")) {
+export function chooseCaricature(
+  pairs: readonly PairResult[],
+  ranked: readonly PairResult[] = unevenRanked(pairs),
+): CaricatureId {
+  if (!pairs.some(hasWork)) {
     return "untrained";
   }
-  const ranked = unevenRanked(pairs);
   if (ranked.length === 0) {
     return "even";
   }
-  const first = SINGLE_FOR_HEAVY[heavySideId(ranked[0]!)];
+  const first = heavySide(ranked[0]!).caricature;
   if (ranked.length === 1) {
     return first;
   }
-  const second = SINGLE_FOR_HEAVY[heavySideId(ranked[1]!)];
-  const combo = COMBINATIONS.find(
-    ([x, y]) => (x === first && y === second) || (x === second && y === first),
-  );
-  return combo ? combo[2] : first;
+  const second = heavySide(ranked[1]!).caricature;
+  return COMBINATIONS.get([first, second].sort().join("+")) ?? first;
 }
 
 // ---------------------------------------------------------------- text
@@ -377,10 +377,9 @@ function joinList(items: readonly string[]): string {
 const COUNT_WORDS = ["No", "One", "Two", "Three", "Four", "Five"];
 
 /** Sentence for the most uneven pair: "Pushing has no pulling to match." */
-export function unevenSentence(pair: PairResult): string {
-  const spec = pairSpec(pair.id);
-  const heavy = spec.sides[pair.heavySide!];
-  const light = spec.sides[1 - pair.heavySide!]!;
+function unevenSentence(pair: PairResult): string {
+  const heavy = heavySide(pair);
+  const light = lightSide(pair);
   if (pair.kind === "no") {
     return `${heavy.subject} ${heavy.plural ? "have" : "has"} no ${light.noun} to match.`;
   }
@@ -388,13 +387,14 @@ export function unevenSentence(pair: PairResult): string {
 }
 
 /** Balance headline: pair names only, even first, then what is missing. */
-export function headlineFor(pairs: readonly PairResult[]): string {
-  const withWork = pairs.filter((pair) => pair.kind !== "neither" && pair.kind !== "no_data");
-  if (withWork.length === 0) {
+export function headlineFor(
+  pairs: readonly PairResult[],
+  ranked: readonly PairResult[] = unevenRanked(pairs),
+): string {
+  if (!pairs.some(hasWork)) {
     return "No push, pull, squat, hinge or core work in this window.";
   }
   const even = pairs.filter((pair) => pair.kind === "even");
-  const ranked = unevenRanked(pairs);
   if (ranked.length === 0) {
     return even.length === PAIRS.length
       ? `All ${COUNT_WORDS[PAIRS.length]!.toLowerCase()} pairs are even in this window.`
@@ -403,21 +403,35 @@ export function headlineFor(pairs: readonly PairResult[]): string {
   return [evenPhrase(even), unevenSentence(ranked[0]!)].filter(Boolean).join(" ");
 }
 
+/** "Push and pull are even.", from the sides' "Mostly …" labels. */
+function evenSentence(spec: PairSpec): string {
+  const [a, b] = spec.sides.map((side) => side.mostly.replace(/^Mostly /, ""));
+  return `${a![0]!.toUpperCase()}${a!.slice(1)} and ${b} are even.`;
+}
+
 function evenPhrase(even: readonly PairResult[]): string {
   if (even.length === 0) {
     return "";
   }
-  return even.length === 1 ? pairSpec(even[0]!.id).evenPhrase : `${COUNT_WORDS[even.length]} pairs are even.`;
+  return even.length === 1 ? evenSentence(pairSpec(even[0]!.id)) : `${COUNT_WORDS[even.length]} pairs are even.`;
+}
+
+/** Areas at one level, in display order. */
+function areasAt(levels: Record<MuscleGroup, Level>, level: Level): MuscleGroup[] {
+  return AREA_ORDER.filter((area) => levels[area] === level);
 }
 
 /** Sub-line naming untrained areas, the light side's first. */
-export function sublineFor(pairs: readonly PairResult[], levels: Record<MuscleGroup, Level>): string {
-  const untrained = AREA_ORDER.filter((area) => levels[area] === "none");
+export function sublineFor(
+  pairs: readonly PairResult[],
+  levels: Record<MuscleGroup, Level>,
+  ranked: readonly PairResult[] = unevenRanked(pairs),
+): string {
+  const untrained = areasAt(levels, "none");
   if (untrained.length === 0) {
     return "Every area had some work in this window.";
   }
-  const top = unevenRanked(pairs)[0];
-  const lightAreas = top ? pairSpec(top.id).sides[1 - top.heavySide!]!.areas : [];
+  const lightAreas = ranked[0] ? lightSide(ranked[0]).areas : [];
   const focus = untrained.filter((area) => lightAreas.includes(area));
   const named = (focus.length > 0 ? focus : untrained).map((area, index) =>
     index === 0 ? areaName(area) : area,
@@ -455,10 +469,56 @@ export interface MoveInput {
   equipment: readonly EquipmentId[];
   excluded?: readonly string[];
   memories?: Readonly<Record<string, ExerciseMemory>>;
+  /** `unevenRanked(pairs)` when the caller already has it. */
+  ranked?: readonly PairResult[];
 }
 
-function primaryAreas(exercise: SeedExercise): MuscleGroup[] {
-  return [...strongestWeightPerGroup(exercise)].filter(([, weight]) => weight === 1).map(([group]) => group);
+/** A Library move that can be suggested, with what ranking needs precomputed. */
+interface Candidate {
+  exercise: SeedExercise;
+  /** Primary areas, weight 1. */
+  primaries: readonly MuscleGroup[];
+  sourceRank: number;
+  /** Position in the graph; keeps ties in graph order. */
+  order: number;
+}
+
+interface CandidateIndex {
+  all: readonly Candidate[];
+  byPattern: ReadonlyMap<Pattern, readonly Candidate[]>;
+}
+
+const candidateIndexes = new WeakMap<object, CandidateIndex>();
+
+/** Suggestable moves per pattern, built once per graph on first use. */
+function candidateIndex(graph: Readonly<Record<string, SeedExercise>>): CandidateIndex {
+  let index = candidateIndexes.get(graph);
+  if (!index) {
+    const all = Object.entries(graph)
+      .filter(([key, exercise]) => key === exercise.id && MOVE_PATTERNS.includes(exercise.pattern))
+      .map(([, exercise], order): Candidate => ({
+        exercise,
+        primaries: [...strongestWeightPerGroup(exercise)].filter(([, weight]) => weight === 1).map(([group]) => group),
+        sourceRank: sourceRank(exercise.id),
+        order,
+      }));
+    const byPattern = new Map<Pattern, Candidate[]>();
+    for (const candidate of all) {
+      byPattern.set(candidate.exercise.pattern, [...(byPattern.get(candidate.exercise.pattern) ?? []), candidate]);
+    }
+    index = { all, byPattern };
+    candidateIndexes.set(graph, index);
+  }
+  return index;
+}
+
+/** What ranking a move needs, computed once per suggestion run. */
+interface MoveContext {
+  /** The side the moves are for; none when every pair is even. */
+  side?: SideSpec;
+  /** Not trained areas, plus Light ones unless every pair is even. */
+  wanted: ReadonlySet<MuscleGroup>;
+  memories: Readonly<Record<string, ExerciseMemory>>;
 }
 
 /**
@@ -469,52 +529,53 @@ function primaryAreas(exercise: SeedExercise): MuscleGroup[] {
  * trained areas only.
  */
 export function suggestMoves(input: MoveInput): MoveSuggestion[] {
-  const target = moveTarget(input.pairs);
+  const target = moveTarget(input.pairs, input.ranked ?? unevenRanked(input.pairs));
   if (!target) {
     return [];
   }
   const { side, allEven } = target;
   const { levels, graph, equipment } = input;
   const excluded = new Set(input.excluded);
-  const memories = input.memories ?? {};
-  const wanted = (level: Level): boolean => level === "none" || (!allEven && level === "light");
-  const doable = (key: string, exercise: SeedExercise): boolean =>
-    key === exercise.id && !excluded.has(exercise.id) && missingGear(exercise, equipment).length === 0;
+  const context: MoveContext = {
+    side,
+    wanted: new Set(AREA_ORDER.filter((area) => levels[area] === "none" || (!allEven && levels[area] === "light"))),
+    memories: input.memories ?? {},
+  };
+  const index = candidateIndex(graph);
+  const candidates = side?.patterns ? side.patterns.flatMap((pattern) => index.byPattern.get(pattern) ?? []) : index.all;
 
-  const picks = Object.entries(graph)
-    .filter(([key, exercise]) => doable(key, exercise))
-    .map(([, exercise]) => rankMove(exercise, side, levels, wanted, memories))
+  const picks = candidates
+    .filter(({ exercise }) => !excluded.has(exercise.id) && missingGear(exercise, equipment).length === 0)
+    .map((candidate) => rankMove(candidate, context))
     .filter((pick): pick is RankedMove => pick !== undefined)
     .sort(compareMoves);
   return firstDistinct(picks, MAX_MOVES);
 }
 
 /** The light side of the most uneven pair; no side (Not trained areas only) when all pairs are even. */
-function moveTarget(pairs: readonly PairResult[]): { side?: SideSpec; allEven: boolean } | undefined {
-  const top = unevenRanked(pairs)[0];
-  if (top) {
-    return { side: pairSpec(top.id).sides[1 - top.heavySide!], allEven: false };
+function moveTarget(
+  pairs: readonly PairResult[],
+  ranked: readonly PairResult[],
+): { side?: SideSpec; allEven: boolean } | undefined {
+  if (ranked[0]) {
+    return { side: lightSide(ranked[0]), allEven: false };
   }
   return pairs.some((pair) => pair.kind === "even") ? { allEven: true } : undefined;
 }
 
 interface RankedMove extends MoveSuggestion {
   score: number[];
+  order: number;
 }
 
 /** The move as a suggestion for this side, or undefined when it is not on the side or covers no wanted area. */
-function rankMove(
-  exercise: SeedExercise,
-  side: SideSpec | undefined,
-  levels: Record<MuscleGroup, Level>,
-  wanted: (level: Level) => boolean,
-  memories: Readonly<Record<string, ExerciseMemory>>,
-): RankedMove | undefined {
-  const primaries = primaryAreas(exercise);
-  if (!onSide(exercise, primaries, side, levels, wanted)) {
+function rankMove({ exercise, primaries, sourceRank, order }: Candidate, context: MoveContext): RankedMove | undefined {
+  const { side, wanted, memories } = context;
+  // Pattern sides were matched by pattern; area sides (and the all-even case) need a wanted primary area.
+  if (!side?.patterns && side && !primaries.some((area) => side.areas.includes(area) && wanted.has(area))) {
     return undefined;
   }
-  const areas = AREA_ORDER.filter((area) => primaries.includes(area) && wanted(levels[area]));
+  const areas = AREA_ORDER.filter((area) => primaries.includes(area) && wanted.has(area));
   if (areas.length === 0) {
     return undefined;
   }
@@ -522,35 +583,19 @@ function rankMove(
     exerciseId: exercise.id,
     name: displayExerciseName(exercise.name),
     areas,
+    order,
     score: [
       -areas.length,
       memories[exercise.id] ? 0 : 1,
-      sourceRank(exercise.id),
+      sourceRank,
       DIFFICULTY_RANK[exercise.difficulty ?? "intermediate"],
     ],
   };
 }
 
-/** Pattern sides match by pattern; area sides (and the all-even case) by a wanted primary area. */
-function onSide(
-  exercise: SeedExercise,
-  primaries: readonly MuscleGroup[],
-  side: SideSpec | undefined,
-  levels: Record<MuscleGroup, Level>,
-  wanted: (level: Level) => boolean,
-): boolean {
-  if (side?.patterns) {
-    return side.patterns.includes(exercise.pattern);
-  }
-  if (!MOVE_PATTERNS.includes(exercise.pattern)) {
-    return false;
-  }
-  return !side || primaries.some((area) => side.areas.includes(area) && wanted(levels[area]));
-}
-
 function compareMoves(x: RankedMove, y: RankedMove): number {
   const index = x.score.findIndex((value, i) => value !== y.score[i]);
-  return index >= 0 ? x.score[index]! - y.score[index]! : x.name.localeCompare(y.name);
+  return index >= 0 ? x.score[index]! - y.score[index]! : x.name.localeCompare(y.name) || x.order - y.order;
 }
 
 /** The first `limit` moves with distinct names (imported sources repeat names). */
@@ -664,17 +709,18 @@ export function buildBalanceModel(input: BalanceInput): BalanceModel {
   const scores = input.scores ?? aggregateBodyView([...usable], mode, nowMs);
   const levels = levelsFromScores(scores);
   const pairs = computePairs(scores, patternSets(usable, mode, nowMs, input.graph));
+  const ranked = unevenRanked(pairs);
   return {
     state,
     mode,
-    headline: headlineFor(pairs),
-    subline: sublineFor(pairs, levels),
+    headline: headlineFor(pairs, ranked),
+    subline: sublineFor(pairs, levels, ranked),
     levels,
-    notTrained: AREA_ORDER.filter((area) => levels[area] === "none"),
-    lighter: AREA_ORDER.filter((area) => levels[area] === "light"),
+    notTrained: areasAt(levels, "none"),
+    lighter: areasAt(levels, "light"),
     pairs,
-    accent: unevenRanked(pairs)[0]?.id,
-    caricature: chooseCaricature(pairs),
-    moves: suggestMoves({ ...input, pairs, levels }),
+    accent: ranked[0]?.id,
+    caricature: chooseCaricature(pairs, ranked),
+    moves: suggestMoves({ ...input, pairs, levels, ranked }),
   };
 }

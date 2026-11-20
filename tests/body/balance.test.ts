@@ -6,12 +6,14 @@ import {
   chooseCaricature,
   computePairs,
   headlineFor,
+  pairShares,
   levelsFromScores,
   patternSets,
   setsPerExercise,
   suggestMoves,
   sublineFor,
   takeaway,
+  type CaricatureId,
   type Level,
   type PairId,
   type PairResult,
@@ -20,26 +22,13 @@ import type { MuscleLoadMap } from "../../src/body/aggregate";
 import { CARICATURES } from "../../src/body/caricatureSvgs";
 import { EXERCISE_GRAPH } from "../../src/data/exerciseGraph";
 import type { SeedExercise } from "../../src/data/seed";
-import type { EquipmentId, HistoryEntry } from "../../src/domain/program";
-import type { MuscleGroup, MuscleRole, Pattern } from "../../src/domain/types";
+import type { EquipmentId } from "../../src/domain/program";
+import type { MuscleGroup } from "../../src/domain/types";
+import { entry, move, sets } from "../helpers/history";
 
 const NOW = Date.parse("2026-11-20T08:00:00.000Z");
 const DAY_MS = 24 * 60 * 60 * 1000;
 const daysAgo = (days: number): string => new Date(NOW - days * DAY_MS).toISOString();
-
-function move(
-  id: string,
-  pattern: Pattern,
-  primaries: MuscleGroup[],
-  extra: Partial<SeedExercise> & { secondary?: MuscleGroup[] } = {},
-): SeedExercise {
-  const { secondary = [], ...rest } = extra;
-  const muscles = [
-    ...primaries.map((group) => ({ group, role: "primary" as MuscleRole })),
-    ...secondary.map((group) => ({ group, role: "secondary" as MuscleRole })),
-  ];
-  return { id, name: id.replaceAll("_", " "), pattern, type: "dynamic", muscles, joints: [], regions: [], cues: [], ...rest };
-}
 
 const GRAPH: Record<string, SeedExercise> = Object.fromEntries(
   [
@@ -56,30 +45,6 @@ const GRAPH: Record<string, SeedExercise> = Object.fromEntries(
     move("stretch", "mobility", ["lats"]),
   ].map((exercise) => [exercise.id, exercise]),
 );
-
-function entry(overrides: Partial<HistoryEntry> = {}): HistoryEntry {
-  return {
-    id: "h",
-    completedAt: daysAgo(1),
-    templateId: "t",
-    templateName: "T",
-    evaluation: "on_target",
-    setCount: 4,
-    exerciseIds: ["push"],
-    ...overrides,
-  };
-}
-
-function sets(exerciseId: string, count: number, stopReason = "completed") {
-  return Array.from({ length: count }, (_, index) => ({
-    exerciseId,
-    setIndex: index + 1,
-    prescribedReps: 8,
-    completedReps: 8,
-    loggedAt: daysAgo(1),
-    stopReason,
-  }));
-}
 
 function pairById(pairs: readonly PairResult[], id: PairId): PairResult {
   return pairs.find((pair) => pair.id === id)!;
@@ -183,7 +148,7 @@ describe("pairs", () => {
     expect(pairById(result, "push_pull").amounts).toEqual([4, 4]);
     expect(pairById(result, "upper_lower").amounts).toEqual([8, 4]);
     expect(pairById(result, "squat_hinge").amounts).toEqual([3, 1]);
-    expect(pairById(result, "squat_hinge").shares).toEqual([75, 25]);
+    expect(pairShares(pairById(result, "squat_hinge"))).toEqual([75, 25]);
   });
 
   it("Front v Back sums its muscle areas and leaves out shoulders, forearms, neck, adductors, abductors", () => {
@@ -311,6 +276,13 @@ describe("caricature choice", () => {
       expect(svg).toMatch(/class="cv-[a-z-]+-s"/);
     }
     expect(Object.keys(CARICATURES)).toHaveLength(16);
+    const ids: Record<CaricatureId, true> = {
+      "mostly-push": true, "mostly-pull": true, "upper-heavy": true, "lower-heavy": true,
+      "mostly-squat": true, "mostly-hinge": true, "front-heavy": true, "back-heavy": true,
+      "push-upper": true, "push-front": true, "pull-upper": true, "lower-squat": true,
+      "lower-hinge": true, "upper-front": true, "even": true, "untrained": true,
+    };
+    expect(Object.keys(CARICATURES).sort()).toEqual(Object.keys(ids).sort());
   });
 });
 
@@ -340,6 +312,20 @@ describe("headline and sub-line", () => {
       amounts[id] = [1, 1];
     }
     expect(headlineFor(pairs(amounts))).toBe(expected);
+  });
+
+  it("names each even pair from its sides", () => {
+    const phrases: Record<PairId, string> = {
+      push_pull: "Push and pull are even.",
+      upper_lower: "Upper and lower are even.",
+      front_back: "Front and back are even.",
+      squat_hinge: "Squat and hinge are even.",
+      abs_lower_back: "Abs and lower back are even.",
+    };
+    for (const id of PAIRS.map((pair) => pair.id)) {
+      const other: PairId = id === "push_pull" ? "squat_hinge" : "push_pull";
+      expect(headlineFor(pairs({ [id]: [1, 1], [other]: [5, 0] }))).toMatch(new RegExp(`^${phrases[id]}`));
+    }
   });
 
   it("includes Abs v Lower back", () => {
