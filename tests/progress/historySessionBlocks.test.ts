@@ -169,11 +169,10 @@ describe("buildHistorySessionBlocks", () => {
   });
 
   it("keeps legacy summary rows without fabricated rollups", () => {
-    const { blocks, hasLegacyOnly } = buildHistorySessionBlocks({
+    const { blocks } = buildHistorySessionBlocks({
       history: [legacySession],
       graph,
     });
-    expect(hasLegacyOnly).toBe(true);
     expect(blocks).toHaveLength(1);
     const block = blocks[0]!;
     expect(block.legacy).toBe(true);
@@ -195,13 +194,12 @@ describe("buildHistorySessionBlocks", () => {
     expect(blocks[0]?.pulse?.series).toHaveLength(2);
   });
 
-  it("keeps hasLegacyOnly when a filter excludes all legacy rows", () => {
-    const { blocks, hasLegacyOnly } = buildHistorySessionBlocks({
+  it("drops legacy sessions a filter excludes", () => {
+    const { blocks } = buildHistorySessionBlocks({
       history: [legacySession],
       graph,
       filter: { kind: "exercise", exerciseId: "a" },
     });
     expect(blocks).toHaveLength(0);
-    expect(hasLegacyOnly).toBe(true);
   });
 });

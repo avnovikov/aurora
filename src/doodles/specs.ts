@@ -34,6 +34,33 @@ import { BATCH_AD_SPECS } from "./specsBatchAD";
 import { BATCH_AJ_SPECS } from "./specsBatchAJ";
 import { BATCH_AL_SPECS } from "./specsBatchAL";
 import { BATCH_AK_SPECS } from "./specsBatchAK";
+import { BATCH_AM_SPECS } from "./specsBatchAM";
+import { BATCH_AN_SPECS } from "./specsBatchAN";
+import { BATCH_AO_SPECS } from "./specsBatchAO";
+import { BATCH_AP_SPECS } from "./specsBatchAP";
+import { BATCH_AQ_SPECS } from "./specsBatchAQ";
+import { BATCH_AR_SPECS } from "./specsBatchAR";
+import { BATCH_AS_SPECS } from "./specsBatchAS";
+import { BATCH_AT_SPECS } from "./specsBatchAT";
+import { BATCH_AU_SPECS } from "./specsBatchAU";
+import { BATCH_AW_SPECS } from "./specsBatchAW";
+import { BATCH_AV_SPECS } from "./specsBatchAV";
+import { BATCH_BA_SPECS } from "./specsBatchBA";
+import { BATCH_BB_SPECS } from "./specsBatchBB";
+import { BATCH_BC_SPECS } from "./specsBatchBC";
+import { BATCH_BD_SPECS } from "./specsBatchBD";
+import { BATCH_BE_SPECS } from "./specsBatchBE";
+import { BATCH_BF_SPECS } from "./specsBatchBF";
+import { BATCH_BG_SPECS } from "./specsBatchBG";
+import { BATCH_BH_SPECS } from "./specsBatchBH";
+import { BATCH_BI_SPECS } from "./specsBatchBI";
+import { BATCH_BJ_SPECS } from "./specsBatchBJ";
+import { BATCH_BK_SPECS } from "./specsBatchBK";
+import { BATCH_BM_SPECS } from "./specsBatchBM";
+import { BATCH_BN_SPECS } from "./specsBatchBN";
+import { BATCH_BL_SPECS } from "./specsBatchBL";
+import { BATCH_BO_SPECS } from "./specsBatchBO";
+import { BATCH_BP_SPECS } from "./specsBatchBP";
 import { STRETCH_SPECS } from "./specsStretch";
 import { proneFromAbove, WARMUP_DRILL_SPECS } from "./specsWarmup";
 import { solvePose } from "./rig";
@@ -753,7 +780,7 @@ const SESSION_MOVE_SPECS: DoodleSpec[] = [
 ];
 
 /** Session moves, then warm-up drills, then cool-down stretches. */
-export const DOODLE_SPECS: DoodleSpec[] = [...SESSION_MOVE_SPECS, ...WARMUP_DRILL_SPECS, ...STRETCH_SPECS, ...BATCH_A_SPECS, ...BATCH_B_SPECS, ...BATCH_C_SPECS, ...BATCH_D_SPECS, ...BATCH_E_SPECS, ...BATCH_F_SPECS, ...BATCH_G_SPECS, ...BATCH_H_SPECS, ...BATCH_I_SPECS, ...BATCH_J_SPECS, ...BATCH_M_SPECS, ...BATCH_N_SPECS, ...BATCH_O_SPECS, ...BATCH_P_SPECS, ...BATCH_Q_SPECS, ...BATCH_R_SPECS, ...BATCH_S_SPECS, ...BATCH_T_SPECS, ...BATCH_U_SPECS, ...BATCH_V_SPECS, ...BATCH_W_SPECS, ...BATCH_X_SPECS, ...BATCH_Y_SPECS, ...BATCH_Z_SPECS, ...BATCH_AA_SPECS, ...BATCH_AB_SPECS, ...BATCH_AC_SPECS, ...BATCH_AE_SPECS, ...BATCH_AF_SPECS, ...BATCH_AG_SPECS, ...BATCH_AH_SPECS, ...BATCH_AI_SPECS, ...BATCH_AD_SPECS, ...BATCH_AJ_SPECS, ...BATCH_AL_SPECS, ...BATCH_AK_SPECS];
+export const DOODLE_SPECS: DoodleSpec[] = [...SESSION_MOVE_SPECS, ...WARMUP_DRILL_SPECS, ...STRETCH_SPECS, ...BATCH_A_SPECS, ...BATCH_B_SPECS, ...BATCH_C_SPECS, ...BATCH_D_SPECS, ...BATCH_E_SPECS, ...BATCH_F_SPECS, ...BATCH_G_SPECS, ...BATCH_H_SPECS, ...BATCH_I_SPECS, ...BATCH_J_SPECS, ...BATCH_M_SPECS, ...BATCH_N_SPECS, ...BATCH_O_SPECS, ...BATCH_P_SPECS, ...BATCH_Q_SPECS, ...BATCH_R_SPECS, ...BATCH_S_SPECS, ...BATCH_T_SPECS, ...BATCH_U_SPECS, ...BATCH_V_SPECS, ...BATCH_W_SPECS, ...BATCH_X_SPECS, ...BATCH_Y_SPECS, ...BATCH_Z_SPECS, ...BATCH_AA_SPECS, ...BATCH_AB_SPECS, ...BATCH_AC_SPECS, ...BATCH_AE_SPECS, ...BATCH_AF_SPECS, ...BATCH_AG_SPECS, ...BATCH_AH_SPECS, ...BATCH_AI_SPECS, ...BATCH_AD_SPECS, ...BATCH_AJ_SPECS, ...BATCH_AL_SPECS, ...BATCH_AK_SPECS, ...BATCH_AM_SPECS, ...BATCH_AN_SPECS, ...BATCH_AO_SPECS, ...BATCH_AP_SPECS, ...BATCH_AQ_SPECS, ...BATCH_AR_SPECS, ...BATCH_AS_SPECS, ...BATCH_AT_SPECS, ...BATCH_AU_SPECS, ...BATCH_AW_SPECS, ...BATCH_AV_SPECS, ...BATCH_BA_SPECS, ...BATCH_BB_SPECS, ...BATCH_BC_SPECS, ...BATCH_BD_SPECS, ...BATCH_BE_SPECS, ...BATCH_BF_SPECS, ...BATCH_BG_SPECS, ...BATCH_BH_SPECS, ...BATCH_BI_SPECS, ...BATCH_BJ_SPECS, ...BATCH_BK_SPECS, ...BATCH_BM_SPECS, ...BATCH_BN_SPECS, ...BATCH_BL_SPECS, ...BATCH_BO_SPECS, ...BATCH_BP_SPECS];
 
 /** Lying on the back, straight legs pivoting at the hips; `deg` is the leg angle (-88 up, -6 near the floor). */
 function lyingLegs(deg: number): Pose {
