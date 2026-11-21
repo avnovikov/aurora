@@ -37,7 +37,7 @@ const FIGURE_SLOT = "<i data-bb-slot></i>";
 export function renderBodyView(root: HTMLElement, options: BodyViewOptions = {}): void {
   let mode: BodyViewMode = options.mode ?? "overall";
   const history = loadHistory();
-  const equipment = loadProfile().equipment;
+  const profile = loadProfile();
   const excluded = loadExcluded();
   const memories = loadMemories();
 
@@ -47,7 +47,8 @@ export function renderBodyView(root: HTMLElement, options: BodyViewOptions = {})
       nowMs: options.nowMs ?? Date.now(),
       history,
       graph: EXERCISE_GRAPH,
-      equipment,
+      equipment: profile.equipment,
+      jointHistory: profile.jointHistory,
       excluded,
       memories,
     });
