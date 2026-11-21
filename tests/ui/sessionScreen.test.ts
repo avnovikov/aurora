@@ -73,6 +73,9 @@ function workView(planned: PlannedSession, workIndex = 0): ViewState {
   state.warmupIndex = planned.warmup.length;
   state.workIndex = workIndex;
   state.setIndex = 1;
+  // Drop any leftover warmup station clock before asserting work dose UI.
+  state.holdLeft = 0;
+  state.sideSwitchLeft = 0;
   state.workState = {
     slotId: item.slotId,
     exerciseId: item.exerciseId,
@@ -218,8 +221,10 @@ describe("dose as hero", () => {
     const index = planned.work.findIndex(isHoldMove);
     expect(index).toBeGreaterThan(-1);
     const html = shellHtml(planned, workView(planned, index));
-    expect(html).toContain(`<span class="reps">${planned.work[index]!.dose.reps}</span>`);
-    expect(html).toContain('class="session-dose-unit">s<');
+    expect(html).toContain(
+      `<span class="reps" data-work-hold-left>${planned.work[index]!.dose.reps}</span>`,
+    );
+    expect(html).toContain('class="session-dose-unit" aria-hidden="true">s<');
   });
 
   it("keeps the swipe stage, Log set and steppers inside the work hero", () => {

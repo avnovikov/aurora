@@ -17,10 +17,15 @@ import { excludeExercise } from "../plan/exclusions";
 import { swapChoices, undoExclude, type ExcludeUndo } from "../plan/dayEdits";
 import { rewriteWarmupStepsAfterExclude } from "../rules/resolveWarmupStations";
 import { shellHtml, type WorkAdjustUi } from "./sessionChalk";
-import { wireSessionControls, type SessionControlHandlers } from "./sessionControls";
+import {
+  completeSet,
+  wireSessionControls,
+  type SessionControlHandlers,
+} from "./sessionControls";
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import { resolveExerciseTiming } from "../domain/timing";
 import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
+import { prescribedForNextSet } from "../session/setLog";
 import { displayExerciseName } from "../library/displayName";
 import { startRestTimer, type RestTimerHandle } from "./sessionRest";
 import {
@@ -36,6 +41,7 @@ import {
   startCooldown,
   syncWorkState,
 } from "./sessionState";
+import { startWorkHold, type WorkHoldTimerHandle } from "./sessionWorkHold";
 import { loadMemories } from "../session/history";
 import { pulseConnectedAt, pulseDisconnected } from "./pulseState";
 import { attachSessionPulse, paintPulseReading, sessionHeartRateZone } from "./sessionPulse";
@@ -135,6 +141,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   const state = initialState(options);
   let restHandle: RestTimerHandle | null = null;
   let warmupHandle: WarmupTimerHandle | null = null;
+  let workHoldHandle: WorkHoldTimerHandle | null = null;
   let pulseTimer: number | null = null;
   let clockTimer: number | null = null;
   let workAdjust: WorkAdjustChrome = { swapOpen: false };
@@ -149,11 +156,17 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     memoryFor: (exerciseId) => loadMemories()[exerciseId],
   });
 
+  const clearWorkHoldTimer = (): void => {
+    workHoldHandle?.clear();
+    workHoldHandle = null;
+  };
+
   const clearWorkTimers = (): void => {
     restHandle?.clear();
     restHandle = null;
     warmupHandle?.clear();
     warmupHandle = null;
+    clearWorkHoldTimer();
     slowSetCue.clear();
   };
 
@@ -234,6 +247,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
   };
 
   const resetCurrentSetProgress = (): void => {
+    clearWorkHoldTimer();
     state.setIndex = 1;
     state.workState = syncWorkState(options.planned, state);
   };
@@ -248,6 +262,7 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       undoWorkIndex: result.undo ? state.workIndex : undefined,
     };
     if (result.finishExercise) {
+      clearWorkHoldTimer();
       finishExercise();
       return;
     }
@@ -334,11 +349,18 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     }
     const workItem = currentWork(options.planned, state);
     const repWork = isRepWorkItem(workItem);
-    if (state.phase === "work" && state.workState && repWork) {
+    const holdWork = state.phase === "work" && isHoldWorkItem(workItem);
+    if (state.phase === "work" && state.workState && (repWork || holdWork)) {
       state.workState = ensureSetClockStarted(state.workState);
+    }
+    if (holdWork && state.workState && !workHoldHandle) {
+      state.holdLeft = prescribedForNextSet(state.workState);
     }
     root.innerHTML = shellHtml(options.planned, state, workAdjustUi());
     wireControls();
+    if (holdWork) {
+      ensureWorkHoldTimer();
+    }
     slowSetCue.scheduleIfNeeded({
       phase: state.phase,
       setIndex: state.setIndex,
@@ -589,6 +611,26 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
 
   const wireControls = (): void => {
     wireSessionControls(root, options.planned, state, handlers);
+  };
+
+  /** Start the work-hold countdown once per set; paint may rebuild DOM while it runs. */
+  const ensureWorkHoldTimer = (): void => {
+    if (workHoldHandle || !state.workState) {
+      return;
+    }
+    const item = currentWork(options.planned, state);
+    if (state.phase !== "work" || !isHoldWorkItem(item)) {
+      return;
+    }
+    const holdSeconds = prescribedForNextSet(state.workState);
+    workHoldHandle = startWorkHold(root, state, holdSeconds, {
+      onComplete: () => {
+        clearWorkHoldTimer();
+        completeSet(options.planned, state, "completed", handlers, {
+          skipSetLoggedVoice: true,
+        });
+      },
+    });
   };
 
   /** Coral from silence age, then shout once past the longer voice threshold. */

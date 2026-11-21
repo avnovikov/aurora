@@ -45,3 +45,7 @@ rest_go_on_comrade	en_GB-northern_english_male-medium.onnx	You seem rested, kahm
 rest_extend_comrade	en_GB-northern_english_male-medium.onnx	Still up, kahm-rahd. Another 30.
 change_side_comrade	en_GB-northern_english_male-medium.onnx	Change side, kahm-rahd.
 set_pace_nudge_comrade	en_GB-northern_english_male-medium.onnx	Over two minutes last time — smoother tempo, kahm-rahd.
+hold_done	en_GB-northern_english_male-medium.onnx	Stop there, mate.
+hold_done_b	en_GB-northern_english_male-medium.onnx	Enough, lad.
+hold_done_c	en_GB-northern_english_male-medium.onnx	That'll do.
+hold_done_d	en_GB-northern_english_male-medium.onnx	Done.
