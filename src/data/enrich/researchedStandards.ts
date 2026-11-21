@@ -5,12 +5,17 @@ import type { ExerciseStandards } from "../../domain/types";
 
 export type ResearchedKind = "sourced" | "derived" | "not_max_test";
 
+/** How a computed band relates to its parent's: ×1.2 (easier), ÷1.2 (harder) or unchanged. */
+export type DerivationStep = "easier" | "harder" | "same";
+
 export interface ResearchedStandard {
   kind: ResearchedKind;
   /** Absent for not_max_test: tiers do not apply. */
   standards?: ExerciseStandards;
-  /** Short Library label: "Sourced: …", "Derived from …" or "Not a max-rep test". */
+  /** Short Library label: "Sourced: …", "Derived from …", "Matched to …" or "Not a max-rep test". */
   source: string;
+  /** Computed rows only: the parent move whose band this one steps from. Absent on anchors. */
+  parent?: { id: string; step: DerivationStep };
 }
 
 /**
@@ -26,15 +31,15 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Advanced Kettlebell Windmill
   "fedb_advanced_kettlebell_windmill": { kind: "not_max_test", source: "Not a max-rep test" },
   // Air Bike
-  "fedb_air_bike": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 40, advanced: 75, elite: 120 }, source: "Derived from bicycle crunch" },
+  "fedb_air_bike": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 40, advanced: 75, elite: 120 }, parent: { id: "hf_115", step: "same" }, source: "Derived from bicycle crunch" },
   // Alternate Heel Touchers
-  "fedb_alternate_heel_touchers": { kind: "derived", standards: { novice: 19, beginner: 29, intermediate: 48, advanced: 72, elite: 102 }, source: "Derived from crunch" },
+  "fedb_alternate_heel_touchers": { kind: "derived", standards: { novice: 20, beginner: 29, intermediate: 48, advanced: 72, elite: 102 }, parent: { id: "fedb_crunches", step: "easier" }, source: "Derived from crunch" },
   // Alternate Leg Diagonal Bound
   "fedb_alternate_leg_diagonal_bound": { kind: "not_max_test", source: "Not a max-rep test" },
   // Alternating Floor Press
   "fedb_alternating_floor_press": { kind: "not_max_test", source: "Not a max-rep test" },
   // Alternating Kettlebell Press
-  "fedb_alternating_kettlebell_press": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 14, advanced: 24, elite: 38 }, source: "Derived from pike push-up" },
+  "fedb_alternating_kettlebell_press": { kind: "derived", standards: { novice: 4, beginner: 5, intermediate: 15, advanced: 29, elite: 48 }, parent: { id: "hf_19", step: "harder" }, source: "Derived from pike push-up" },
   // Alternating Kettlebell Row
   "fedb_alternating_kettlebell_row": { kind: "not_max_test", source: "Not a max-rep test" },
   // Alternating Renegade Row
@@ -42,80 +47,88 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Bench Jump
   "fedb_bench_jump": { kind: "not_max_test", source: "Not a max-rep test" },
   // Bent-Knee Hip Raise
-  "fedb_bent_knee_hip_raise": { kind: "derived", standards: { novice: 10, beginner: 15, intermediate: 26, advanced: 39, elite: 55 }, source: "Derived from reverse crunch" },
+  "fedb_bent_knee_hip_raise": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "hf_119", step: "same" }, source: "Derived from reverse crunch" },
   // Bent Press
   "fedb_bent_press": { kind: "not_max_test", source: "Not a max-rep test" },
   // Body Tricep Press
-  "fedb_body_tricep_press": { kind: "derived", standards: { novice: 10, beginner: 15, intermediate: 19, advanced: 25, elite: 30 }, source: "Derived from push-up" },
+  "fedb_body_tricep_press": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from push-up" },
   // Body-Up
-  "fedb_body_up": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 16, advanced: 21, elite: 25 }, source: "Derived from push-up" },
+  "fedb_body_up": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from push-up" },
   // Bodyweight Mid Row
   //   StrengthLevel Inverted Row (kg) <https://strengthlevel.com/strength-standards/inverted-row/kg>
   //   StrengthLevel Inverted Row (lb) <https://strengthlevel.com/strength-standards/inverted-row/lb>
   //   FitnessVolt Inverted Row <https://fitnessvolt.com/strength-standards/inverted-row>
   "fedb_bodyweight_mid_row": { kind: "sourced", standards: { novice: 6, beginner: 9, intermediate: 23, advanced: 40, elite: 59 }, source: "Sourced: StrengthLevel, FitnessVolt" },
   // Bodyweight Walking Lunge
-  "fedb_bodyweight_walking_lunge": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, source: "Derived from split squat" },
+  "fedb_bodyweight_walking_lunge": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, parent: { id: "wger_2557", step: "harder" }, source: "Derived from supported split squat" },
   // Bottoms Up
-  "fedb_bottoms_up": { kind: "derived", standards: { novice: 10, beginner: 15, intermediate: 26, advanced: 39, elite: 55 }, source: "Derived from reverse crunch" },
+  "fedb_bottoms_up": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "hf_119", step: "same" }, source: "Derived from reverse crunch" },
   // Butt-Ups
-  "fedb_butt_ups": { kind: "derived", standards: { novice: 10, beginner: 15, intermediate: 26, advanced: 39, elite: 55 }, source: "Derived from reverse crunch" },
+  "fedb_butt_ups": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "hf_119", step: "same" }, source: "Derived from reverse crunch" },
+  // Clock Push-Up
+  "fedb_clock_push_up": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
   // Cocoons
-  "fedb_cocoons": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 71 }, source: "Derived from crunch" },
+  "fedb_cocoons": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "fedb_crunches", step: "harder" }, source: "Derived from crunch" },
   // Cross-Body Crunch
-  "fedb_cross_body_crunch": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Derived from abdominal crunch" },
+  "fedb_cross_body_crunch": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, parent: { id: "wger_1933", step: "same" }, source: "Derived from abdominal crunch" },
   // Crossover Reverse Lunge
-  "fedb_crossover_reverse_lunge": { kind: "derived", standards: { novice: 3, beginner: 5, intermediate: 12, advanced: 23, elite: 37 }, source: "Derived from lunge" },
+  "fedb_crossover_reverse_lunge": { kind: "derived", standards: { novice: 3, beginner: 5, intermediate: 12, advanced: 23, elite: 37 }, parent: { id: "wger_1324", step: "harder" }, source: "Derived from lunge" },
   // Crunch - Hands Overhead
-  "fedb_crunch_hands_overhead": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 71 }, source: "Derived from abdominal crunch" },
+  "fedb_crunch_hands_overhead": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "wger_1933", step: "harder" }, source: "Derived from abdominal crunch" },
   // Crunches
   //   StrengthLevel Crunches <https://strengthlevel.com/strength-standards/crunches/lb>
   //   Cooper 1-min sit-ups men 20-29 <https://fitnessnorms.pages.dev/strength/cooper-sit-ups/male/age-20-29>
   "fedb_crunches": { kind: "sourced", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Sourced: StrengthLevel, Cooper Institute" },
   // Double Kettlebell Jerk
-  "fedb_double_kettlebell_jerk": { kind: "derived", standards: { novice: 3, beginner: 5, intermediate: 12, advanced: 20, elite: 32 }, source: "Derived from alternating kettlebell press" },
+  "fedb_double_kettlebell_jerk": { kind: "derived", standards: { novice: 3, beginner: 4, intermediate: 12, advanced: 24, elite: 40 }, parent: { id: "fedb_alternating_kettlebell_press", step: "harder" }, source: "Derived from alternating kettlebell press" },
   // Double Kettlebell Push Press
-  "fedb_double_kettlebell_push_press": { kind: "derived", standards: { novice: 3, beginner: 5, intermediate: 12, advanced: 20, elite: 32 }, source: "Derived from alternating kettlebell press" },
+  "fedb_double_kettlebell_push_press": { kind: "derived", standards: { novice: 3, beginner: 4, intermediate: 12, advanced: 24, elite: 40 }, parent: { id: "fedb_alternating_kettlebell_press", step: "harder" }, source: "Derived from alternating kettlebell press" },
   // Double Kettlebell Snatch
   "fedb_double_kettlebell_snatch": { kind: "derived", standards: { novice: 1, beginner: 4, intermediate: 8, advanced: 15, elite: 21 }, source: "Derived from kettlebell snatch" },
   // Double Kettlebell Windmill
   "fedb_double_kettlebell_windmill": { kind: "not_max_test", source: "Not a max-rep test" },
   // Elbow to Knee
-  "fedb_elbow_to_knee": { kind: "derived", standards: { novice: 10, beginner: 15, intermediate: 31, advanced: 50, elite: 74 }, source: "Derived from bicycle crunch" },
+  "fedb_elbow_to_knee": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "fedb_crunches", step: "harder" }, source: "Derived from crunch" },
   // Extended Range One-Arm Kettlebell Floor Press
   "fedb_extended_range_one_arm_kettlebell_floor_press": { kind: "not_max_test", source: "Not a max-rep test" },
   // Flat Bench Leg Pull-In
-  "fedb_flat_bench_leg_pull_in": { kind: "derived", standards: { novice: 4, beginner: 10, intermediate: 15, advanced: 18, elite: 24 }, source: "Derived from hanging knee raise" },
+  "fedb_flat_bench_leg_pull_in": { kind: "derived", standards: { novice: 4, beginner: 10, intermediate: 15, advanced: 18, elite: 24 }, parent: { id: "hanging_knee_raise", step: "easier" }, source: "Derived from hanging knee raise" },
   // Flat Bench Lying Leg Raise
-  "fedb_flat_bench_lying_leg_raise": { kind: "derived", standards: { novice: 4, beginner: 9, intermediate: 14, advanced: 17, elite: 22 }, source: "Derived from hanging knee raise" },
+  "fedb_flat_bench_lying_leg_raise": { kind: "derived", standards: { novice: 4, beginner: 10, intermediate: 15, advanced: 18, elite: 24 }, parent: { id: "hanging_knee_raise", step: "easier" }, source: "Derived from hanging knee raise" },
   // Flutter Kicks
   "fedb_flutter_kicks": { kind: "derived", standards: { novice: 13, beginner: 19, intermediate: 51, advanced: 93, elite: 145 }, source: "Derived from Strength Level flutter kicks table" },
   // Frog Sit-Ups
-  "fedb_frog_sit_ups": { kind: "derived", standards: { novice: 19, beginner: 28, intermediate: 34, advanced: 40, elite: 46 }, source: "Derived from sit-up" },
+  "fedb_frog_sit_ups": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "fedb_sit_up", step: "harder" }, source: "Derived from sit-up" },
   // Front Squats With Two Kettlebells
   "fedb_front_squats_with_two_kettlebells": { kind: "not_max_test", source: "Not a max-rep test" },
   // Gironda Sternum Chins
-  "fedb_gironda_sternum_chins": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 7, advanced: 11, elite: 15 }, source: "Derived from pull-up" },
+  "fedb_gironda_sternum_chins": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 10, elite: 15 }, parent: { id: "pullup", step: "harder" }, source: "Derived from pull-up" },
   // Glute Kickback
   "fedb_glute_kickback": { kind: "not_max_test", source: "Not a max-rep test" },
   // Goblet Squat
   "fedb_goblet_squat": { kind: "not_max_test", source: "Not a max-rep test" },
   // Gorilla Chin/Crunch
-  "fedb_gorilla_chin_crunch": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 7, advanced: 11, elite: 15 }, source: "Derived from pull-up" },
+  "fedb_gorilla_chin_crunch": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 10, elite: 15 }, parent: { id: "pullup", step: "harder" }, source: "Derived from pull-up" },
   // Hanging Pike
-  "fedb_hanging_pike": { kind: "derived", standards: { novice: 1, beginner: 5, intermediate: 8, advanced: 10, elite: 13 }, source: "Derived from hanging leg raise" },
+  "fedb_hanging_pike": { kind: "derived", standards: { novice: 1, beginner: 5, intermediate: 8, advanced: 10, elite: 13 }, parent: { id: "hf_110", step: "harder" }, source: "Derived from hanging leg raise" },
   // Hyperextensions With No Hyperextension Bench
   "fedb_hyperextensions_with_no_hyperextension_bench": { kind: "derived", standards: { novice: 12, beginner: 18, intermediate: 29, advanced: 40, elite: 50 }, source: "Derived from back-extension endurance study" },
+  // Incline Push-Up Close-Grip
+  "fedb_incline_push_up_close_grip": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 29, advanced: 54, elite: 83 }, parent: { id: "fedb_incline_push_up", step: "harder" }, source: "Derived from incline push-up" },
+  // Incline Push-Up Reverse Grip
+  "fedb_incline_push_up_reverse_grip": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 29, advanced: 54, elite: 83 }, parent: { id: "fedb_incline_push_up", step: "harder" }, source: "Derived from incline push-up" },
+  // Incline Push-Up Wide
+  "fedb_incline_push_up_wide": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 29, advanced: 54, elite: 83 }, parent: { id: "fedb_incline_push_up", step: "harder" }, source: "Derived from incline push-up" },
   // Isometric Chest Squeezes
   "fedb_isometric_chest_squeezes": { kind: "not_max_test", source: "Not a max-rep test" },
   // Isometric Wipers
   "fedb_isometric_wipers": { kind: "not_max_test", source: "Not a max-rep test" },
   // Jackknife Sit-Up
-  "fedb_jackknife_sit_up": { kind: "derived", standards: { novice: 15, beginner: 23, intermediate: 28, advanced: 33, elite: 38 }, source: "Derived from V-up" },
+  "fedb_jackknife_sit_up": { kind: "derived", standards: { novice: 10, beginner: 16, intermediate: 27, advanced: 41, elite: 58 }, parent: { id: "hf_120", step: "harder" }, source: "Derived from V-up" },
   // Janda Sit-Up
-  "fedb_janda_sit_up": { kind: "derived", standards: { novice: 18, beginner: 28, intermediate: 33, advanced: 39, elite: 46 }, source: "Derived from sit-up" },
+  "fedb_janda_sit_up": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "fedb_sit_up", step: "harder" }, source: "Derived from sit-up" },
   // Kettlebell Arnold Press
-  "fedb_kettlebell_arnold_press": { kind: "derived", standards: { novice: 3, beginner: 5, intermediate: 12, advanced: 20, elite: 32 }, source: "Derived from alternating kettlebell press" },
+  "fedb_kettlebell_arnold_press": { kind: "derived", standards: { novice: 3, beginner: 4, intermediate: 12, advanced: 24, elite: 40 }, parent: { id: "fedb_alternating_kettlebell_press", step: "harder" }, source: "Derived from alternating kettlebell press" },
   // Kettlebell Dead Clean
   "fedb_kettlebell_dead_clean": { kind: "not_max_test", source: "Not a max-rep test" },
   // Kettlebell Figure 8
@@ -133,19 +146,19 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Kettlebell Pirate Ships
   "fedb_kettlebell_pirate_ships": { kind: "not_max_test", source: "Not a max-rep test" },
   // Kettlebell Seated Press
-  "fedb_kettlebell_seated_press": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 17, advanced: 29, elite: 46 }, source: "Derived from alternating kettlebell press" },
+  "fedb_kettlebell_seated_press": { kind: "derived", standards: { novice: 5, beginner: 6, intermediate: 18, advanced: 35, elite: 58 }, parent: { id: "fedb_alternating_kettlebell_press", step: "easier" }, source: "Derived from alternating kettlebell press" },
   // Kettlebell Seesaw Press
-  "fedb_kettlebell_seesaw_press": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 14, advanced: 24, elite: 38 }, source: "Derived from alternating kettlebell press" },
+  "fedb_kettlebell_seesaw_press": { kind: "derived", standards: { novice: 4, beginner: 5, intermediate: 15, advanced: 29, elite: 48 }, parent: { id: "fedb_alternating_kettlebell_press", step: "same" }, source: "Derived from alternating kettlebell press" },
   // Kettlebell Thruster
-  "fedb_kettlebell_thruster": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 24, elite: 38 }, source: "Derived from double kettlebell push press" },
+  "fedb_kettlebell_thruster": { kind: "derived", standards: { novice: 4, beginner: 5, intermediate: 15, advanced: 29, elite: 48 }, parent: { id: "fedb_double_kettlebell_push_press", step: "easier" }, source: "Derived from double kettlebell push press" },
   // Kettlebell Turkish Get-Up (Lunge style)
   "fedb_kettlebell_turkish_get_up_lunge_style": { kind: "derived", standards: { novice: 1, beginner: 2, intermediate: 5, advanced: 8, elite: 12 }, source: "Derived from coaching prescription (3–6 reps per side)" },
   // Kettlebell Turkish Get-Up (Squat style)
-  "fedb_kettlebell_turkish_get_up_squat_style": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 10, elite: 15 }, source: "Derived from Turkish get-up (lunge style)" },
+  "fedb_kettlebell_turkish_get_up_squat_style": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 10, elite: 15 }, parent: { id: "fedb_kettlebell_turkish_get_up_lunge_style", step: "easier" }, source: "Derived from Turkish get-up (lunge style)" },
   // Kettlebell Windmill
   "fedb_kettlebell_windmill": { kind: "not_max_test", source: "Not a max-rep test" },
   // Knee/Hip Raise On Parallel Bars
-  "fedb_knee_hip_raise_on_parallel_bars": { kind: "derived", standards: { novice: 4, beginner: 10, intermediate: 15, advanced: 18, elite: 24 }, source: "Derived from hanging knee raise" },
+  "fedb_knee_hip_raise_on_parallel_bars": { kind: "derived", standards: { novice: 4, beginner: 10, intermediate: 15, advanced: 18, elite: 24 }, parent: { id: "hanging_knee_raise", step: "easier" }, source: "Derived from hanging knee raise" },
   // Knee Tuck Jump
   "fedb_knee_tuck_jump": { kind: "not_max_test", source: "Not a max-rep test" },
   // Leg Lift
@@ -153,19 +166,19 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Leg-Over Floor Press
   "fedb_leg_over_floor_press": { kind: "not_max_test", source: "Not a max-rep test" },
   // Leg Pull-In
-  "fedb_leg_pull_in": { kind: "derived", standards: { novice: 4, beginner: 10, intermediate: 15, advanced: 18, elite: 24 }, source: "Derived from hanging knee raise" },
+  "fedb_leg_pull_in": { kind: "derived", standards: { novice: 4, beginner: 10, intermediate: 15, advanced: 18, elite: 24 }, parent: { id: "hanging_knee_raise", step: "easier" }, source: "Derived from hanging knee raise" },
   // Lunge Pass Through
   "fedb_lunge_pass_through": { kind: "not_max_test", source: "Not a max-rep test" },
   // Mixed Grip Chin
-  "fedb_mixed_grip_chin": { kind: "derived", standards: { novice: 4, beginner: 5, intermediate: 10, advanced: 16, elite: 22 }, source: "Derived from pull-up" },
+  "fedb_mixed_grip_chin": { kind: "derived", standards: { novice: 4, beginner: 5, intermediate: 10, advanced: 16, elite: 22 }, parent: { id: "pullup", step: "easier" }, source: "Derived from pull-up" },
   // Oblique Crunches
-  "fedb_oblique_crunches": { kind: "derived", standards: { novice: 9, beginner: 13, intermediate: 26, advanced: 41, elite: 59 }, source: "Derived from sit-up" },
+  "fedb_oblique_crunches": { kind: "derived", standards: { novice: 20, beginner: 29, intermediate: 48, advanced: 72, elite: 102 }, parent: { id: "fedb_sit_up", step: "easier" }, source: "Derived from sit-up" },
   // Oblique Crunches - On The Floor
-  "fedb_oblique_crunches_on_the_floor": { kind: "derived", standards: { novice: 9, beginner: 13, intermediate: 26, advanced: 41, elite: 59 }, source: "Derived from crunch" },
+  "fedb_oblique_crunches_on_the_floor": { kind: "derived", standards: { novice: 20, beginner: 29, intermediate: 48, advanced: 72, elite: 102 }, parent: { id: "fedb_oblique_crunches", step: "same" }, source: "Derived from oblique crunches" },
   // One-Arm Kettlebell Clean
   "fedb_one_arm_kettlebell_clean": { kind: "not_max_test", source: "Not a max-rep test" },
   // One-Arm Kettlebell Clean and Jerk
-  "fedb_one_arm_kettlebell_clean_and_jerk": { kind: "derived", standards: { novice: 4, beginner: 7, intermediate: 15, advanced: 26, elite: 40 }, source: "Derived from alternating kettlebell press" },
+  "fedb_one_arm_kettlebell_clean_and_jerk": { kind: "derived", standards: { novice: 4, beginner: 5, intermediate: 15, advanced: 29, elite: 48 }, parent: { id: "fedb_alternating_kettlebell_press", step: "same" }, source: "Derived from alternating kettlebell press" },
   // One-Arm Kettlebell Floor Press
   "fedb_one_arm_kettlebell_floor_press": { kind: "not_max_test", source: "Not a max-rep test" },
   // One-Arm Kettlebell Jerk
@@ -189,15 +202,23 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // One-Arm Open Palm Kettlebell Clean
   "fedb_one_arm_open_palm_kettlebell_clean": { kind: "not_max_test", source: "Not a max-rep test" },
   // One-Arm Overhead Kettlebell Squats
-  "fedb_one_arm_overhead_kettlebell_squats": { kind: "derived", standards: { novice: 3, beginner: 5, intermediate: 13, advanced: 23, elite: 38 }, source: "Derived from split squat" },
+  "fedb_one_arm_overhead_kettlebell_squats": { kind: "derived", standards: { novice: 3, beginner: 5, intermediate: 12, advanced: 23, elite: 37 }, parent: { id: "fedb_split_squats", step: "harder" }, source: "Derived from split squat" },
   // Open Palm Kettlebell Clean
   "fedb_open_palm_kettlebell_clean": { kind: "not_max_test", source: "Not a max-rep test" },
   // Plyo Kettlebell Pushups
   "fedb_plyo_kettlebell_pushups": { kind: "not_max_test", source: "Not a max-rep test" },
+  // Plyo Push-up
+  "fedb_plyo_push_up": { kind: "derived", standards: { novice: 7, beginner: 11, intermediate: 15, advanced: 20, elite: 25 }, parent: { id: "hf_10", step: "harder" }, source: "Derived from hindu push-up" },
   // Push Up to Side Plank
   "fedb_push_up_to_side_plank": { kind: "not_max_test", source: "Not a max-rep test" },
+  // Push-Up Wide
+  "fedb_push_up_wide": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
+  // Push-Ups - Close Triceps Position
+  "fedb_push_ups_close_triceps_position": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
+  // Push-Ups With Feet Elevated
+  "fedb_push_ups_with_feet_elevated": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
   // Pushups (Close and Wide Hand Positions)
-  "fedb_pushups_close_and_wide_hand_positions": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, source: "Derived from push-up" },
+  "fedb_pushups_close_and_wide_hand_positions": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from push-up" },
   // Rocket Jump
   "fedb_rocket_jump": { kind: "not_max_test", source: "Not a max-rep test" },
   // Scissor Kick
@@ -205,25 +226,23 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   //   Healthline - scissor kicks <https://www.healthline.com/health/scissor-kicks>
   "fedb_scissor_kick": { kind: "sourced", standards: { novice: 15, beginner: 30, intermediate: 67, advanced: 89, elite: 134 }, source: "Sourced: FitnessVolt, Healthline" },
   // Seated Flat Bench Leg Pull-In
-  "fedb_seated_flat_bench_leg_pull_in": { kind: "derived", standards: { novice: 4, beginner: 10, intermediate: 15, advanced: 18, elite: 24 }, source: "Derived from hanging knee raise" },
+  "fedb_seated_flat_bench_leg_pull_in": { kind: "derived", standards: { novice: 4, beginner: 10, intermediate: 15, advanced: 18, elite: 24 }, parent: { id: "hanging_knee_raise", step: "easier" }, source: "Derived from hanging knee raise" },
   // Seated Leg Tucks
-  "fedb_seated_leg_tucks": { kind: "derived", standards: { novice: 4, beginner: 10, intermediate: 15, advanced: 18, elite: 24 }, source: "Derived from hanging knee raise" },
+  "fedb_seated_leg_tucks": { kind: "derived", standards: { novice: 4, beginner: 10, intermediate: 15, advanced: 18, elite: 24 }, parent: { id: "hanging_knee_raise", step: "easier" }, source: "Derived from hanging knee raise" },
   // Side Jackknife
-  "fedb_side_jackknife": { kind: "derived", standards: { novice: 18, beginner: 28, intermediate: 33, advanced: 39, elite: 46 }, source: "Derived from sit-up" },
+  "fedb_side_jackknife": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "fedb_sit_up", step: "harder" }, source: "Derived from sit-up" },
   // Side Leg Raises
   "fedb_side_leg_raises": { kind: "not_max_test", source: "Not a max-rep test" },
   // Side Standing Long Jump
   "fedb_side_standing_long_jump": { kind: "not_max_test", source: "Not a max-rep test" },
   // Side To Side Chins
-  "fedb_side_to_side_chins": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 7, advanced: 11, elite: 15 }, source: "Derived from pull-up" },
+  "fedb_side_to_side_chins": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 10, elite: 15 }, parent: { id: "pullup", step: "harder" }, source: "Derived from pull-up" },
   // Single-Leg Lateral Hop
   "fedb_single_leg_lateral_hop": { kind: "not_max_test", source: "Not a max-rep test" },
   // Sit-Up
-  //   Sit-Ups (1-Min, Cooper): Males, Age 20-29 (secondary site citing Cooper Institute 2013 monograph) <https://fitnessnorms.pages.dev/strength/cooper-sit-ups/male/age-20-29>
-  //   Police academy fitness chart (Westmoreland) <https://westmoreland.edu/academics/pdfs/police-academy/fitness-charts-curriculum-standards-7.12.23.pdf>
-  "fedb_sit_up": { kind: "sourced", standards: { novice: 22, beginner: 33, intermediate: 40, advanced: 47, elite: 55 }, source: "Sourced: Cooper Institute, Police academy chart" },
+  "fedb_sit_up": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Matched to crunches" },
   // Spider Crawl
-  "fedb_spider_crawl": { kind: "derived", standards: { novice: 18, beginner: 28, intermediate: 33, advanced: 39, elite: 46 }, source: "Derived from sit-up" },
+  "fedb_spider_crawl": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "fedb_sit_up", step: "harder" }, source: "Derived from sit-up" },
   // Standing Long Jump
   "fedb_standing_long_jump": { kind: "not_max_test", source: "Not a max-rep test" },
   // Standing Towel Triceps Extension
@@ -232,17 +251,19 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   //   Marathon Handbook - stomach vacuum exercise <https://marathonhandbook.com/stomach-vacuum-exercise/>
   "fedb_stomach_vacuum": { kind: "sourced", standards: { novice: 7, beginner: 10, intermediate: 20, advanced: 40, elite: 60 }, source: "Sourced: Marathon Handbook" },
   // Suspended Fallout
-  "fedb_suspended_fallout": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, source: "Derived from sit-up" },
+  "fedb_suspended_fallout": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "fedb_sit_up", step: "harder" }, source: "Derived from sit-up" },
+  // Suspended Push-Up
+  "fedb_suspended_push_up": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
   // Suspended Reverse Crunch
-  "fedb_suspended_reverse_crunch": { kind: "derived", standards: { novice: 27, beginner: 40, intermediate: 48, advanced: 57, elite: 66 }, source: "Derived from reverse crunch" },
+  "fedb_suspended_reverse_crunch": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 84 }, parent: { id: "hf_119", step: "easier" }, source: "Derived from reverse crunch" },
   // Suspended Row
   //   StrengthLevel Inverted Row <https://strengthlevel.com/strength-standards/inverted-row/kg>
   //   FitnessVolt Inverted Row <https://fitnessvolt.com/strength-standards/inverted-row>
   "fedb_suspended_row": { kind: "sourced", standards: { novice: 6, beginner: 9, intermediate: 23, advanced: 40, elite: 59 }, source: "Sourced: StrengthLevel, FitnessVolt" },
   // Toe Touchers
-  "fedb_toe_touchers": { kind: "derived", standards: { novice: 22, beginner: 33, intermediate: 40, advanced: 47, elite: 55 }, source: "Derived from V-up" },
+  "fedb_toe_touchers": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 84 }, parent: { id: "hf_120", step: "easier" }, source: "Derived from V-up" },
   // Tuck Crunch
-  "fedb_tuck_crunch": { kind: "derived", standards: { novice: 27, beginner: 40, intermediate: 48, advanced: 57, elite: 66 }, source: "Derived from sit-up" },
+  "fedb_tuck_crunch": { kind: "derived", standards: { novice: 20, beginner: 29, intermediate: 48, advanced: 72, elite: 102 }, parent: { id: "fedb_sit_up", step: "easier" }, source: "Derived from sit-up" },
   // Two-Arm Kettlebell Clean
   "fedb_two_arm_kettlebell_clean": { kind: "not_max_test", source: "Not a max-rep test" },
   // Two-Arm Kettlebell Jerk
@@ -252,9 +273,11 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Two-Arm Kettlebell Row
   "fedb_two_arm_kettlebell_row": { kind: "not_max_test", source: "Not a max-rep test" },
   // Wind Sprints
-  "fedb_wind_sprints": { kind: "derived", standards: { novice: 22, beginner: 33, intermediate: 40, advanced: 47, elite: 55 }, source: "Derived from sit-up" },
+  "fedb_wind_sprints": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, parent: { id: "fedb_sit_up", step: "same" }, source: "Derived from sit-up" },
+  // Hindu Push-Up
+  "hf_10": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
   // Side Plank with Rotation
-  "hf_101": { kind: "derived", standards: { novice: 4, beginner: 8, intermediate: 17, advanced: 25, elite: 33 }, source: "Derived from sit-up" },
+  "hf_101": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "fedb_sit_up", step: "harder" }, source: "Derived from sit-up" },
   // Hollow Body Rock
   "hf_103": { kind: "derived", standards: { novice: 5, beginner: 10, intermediate: 22, advanced: 30, elite: 45 }, source: "Derived from hollow hold" },
   // L-Sit
@@ -262,15 +285,17 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   //   Gymnastic Bodies forum, static hold times <https://www.gymnasticbodies.com/forum/topic/3945-static-hold-times>
   "hf_105": { kind: "sourced", standards: { novice: 5, beginner: 10, intermediate: 30, advanced: 45, elite: 60 }, source: "Sourced: Bodybuilding.com, Gymnastic Bodies forum" },
   // V-Sit
-  "hf_106": { kind: "derived", standards: { novice: 2, beginner: 5, intermediate: 10, advanced: 15, elite: 25 }, source: "Derived from straddle L-sit" },
+  "hf_106": { kind: "derived", standards: { novice: 3, beginner: 6, intermediate: 20, advanced: 25, elite: 40 }, parent: { id: "wger_1847", step: "harder" }, source: "Derived from straddle L-sit" },
   // Dragon Flag
   "hf_108": { kind: "derived", standards: { novice: 1, beginner: 2, intermediate: 4, advanced: 7, elite: 10 }, source: "Derived from coaching stage criterion" },
+  // Sphinx Push-Up
+  "hf_11": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
   // Hanging Leg Raise
   //   Strength Level Hanging Leg Raise <https://strengthlevel.com/strength-standards/hanging-leg-raise>
   //   FitnessVolt Hanging Leg Raise <https://fitnessvolt.com/strength-standards/hanging-leg-raise>
   "hf_110": { kind: "sourced", standards: { novice: 2, beginner: 6, intermediate: 10, advanced: 12, elite: 16 }, source: "Sourced: StrengthLevel, FitnessVolt" },
   // Windshield Wiper
-  "hf_111": { kind: "derived", standards: { novice: 2, beginner: 5, intermediate: 8, advanced: 11, elite: 14 }, source: "Derived from hanging knee raise" },
+  "hf_111": { kind: "derived", standards: { novice: 2, beginner: 6, intermediate: 10, advanced: 12, elite: 16 }, parent: { id: "hanging_knee_raise", step: "harder" }, source: "Derived from hanging knee raise" },
   // Human Flag
   //   Human flag (search summaries: calisthenai, Onnit, Wikipedia) <https://en.wikipedia.org/wiki/Human_flag>
   //   Calisthenai human flag <https://calisthenai.duckdns.org/en/exercises/human-flag>
@@ -301,55 +326,61 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   //   Normative study 561 adults 19-67 (via Physio-pedia/MMU) <https://www.physio-pedia.com/Biering-Sorenson_Test>
   "hf_118": { kind: "sourced", standards: { novice: 50, beginner: 75, intermediate: 115, advanced: 150, elite: 190 }, source: "Sourced: Biering-Sørensen norms, Nigerian young-adult norms, Physio-pedia" },
   // Reverse Crunch
-  "hf_119": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 25, advanced: 37, elite: 52 }, source: "Derived from abdominal crunch" },
+  "hf_119": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "wger_1933", step: "harder" }, source: "Derived from abdominal crunch" },
   // V-Up
-  "hf_120": { kind: "derived", standards: { novice: 18, beginner: 28, intermediate: 33, advanced: 39, elite: 46 }, source: "Derived from sit-up" },
+  "hf_120": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "fedb_sit_up", step: "harder" }, source: "Derived from sit-up" },
   // Mountain Climber
   //   StrengthLevel mountain climbers <https://strengthlevel.com/strength-standards/mountain-climbers/kg>
   //   FitnessVolt mountain climbers standards <https://fitnessvolt.com/strength-standards/mountain-climbers>
   //   Eat This mountain climber endurance test <https://www.eatthis.com/fitness-mountain-climbers-endurance-test>
   "hf_121": { kind: "sourced", standards: { novice: 12, beginner: 18, intermediate: 47, advanced: 75, elite: 107 }, source: "Sourced: StrengthLevel, FitnessVolt, Eat This" },
   // Lying Leg Raise
-  "hf_122": { kind: "derived", standards: { novice: 4, beginner: 10, intermediate: 15, advanced: 18, elite: 24 }, source: "Derived from hanging knee raise" },
+  "hf_122": { kind: "derived", standards: { novice: 4, beginner: 10, intermediate: 15, advanced: 18, elite: 24 }, parent: { id: "hanging_knee_raise", step: "easier" }, source: "Derived from hanging knee raise" },
   // Pike Compression
-  "hf_123": { kind: "derived", standards: { novice: 2, beginner: 6, intermediate: 8, advanced: 10, elite: 14 }, source: "Derived from hanging knee raise" },
+  "hf_123": { kind: "derived", standards: { novice: 1, beginner: 5, intermediate: 8, advanced: 10, elite: 13 }, parent: { id: "hf_110", step: "harder" }, source: "Derived from hanging leg raise" },
   // Plank Shoulder Tap
-  "hf_124": { kind: "derived", standards: { novice: 14, beginner: 21, intermediate: 27, advanced: 35, elite: 44 }, source: "Derived from push-up" },
+  "hf_124": { kind: "derived", standards: { novice: 14, beginner: 21, intermediate: 27, advanced: 35, elite: 44 }, parent: { id: "hf_2", step: "easier" }, source: "Derived from push-up" },
   // Body Saw
-  "hf_125": { kind: "derived", standards: { novice: 3, beginner: 5, intermediate: 10, advanced: 14, elite: 22 }, source: "Derived from ab wheel rollout" },
+  "hf_125": { kind: "derived", standards: { novice: 3, beginner: 5, intermediate: 10, advanced: 14, elite: 22 }, parent: { id: "hf_113", step: "same" }, source: "Derived from ab wheel rollout" },
   // Press to Handstand
-  "hf_127": { kind: "derived", standards: { novice: 1, beginner: 2, intermediate: 4, advanced: 7, elite: 12 }, source: "Derived from pistol squat" },
+  "hf_127": { kind: "derived", standards: { novice: 1, beginner: 2, intermediate: 4, advanced: 7, elite: 12 }, parent: { id: "pistol_squat", step: "harder" }, source: "Derived from pistol squat" },
   // Elbow Lever
-  "hf_128": { kind: "derived", standards: { novice: 12, beginner: 24, intermediate: 48, advanced: 72, elite: 108 }, source: "Derived from wall handstand hold" },
+  "hf_128": { kind: "derived", standards: { novice: 15, beginner: 25, intermediate: 40, advanced: 75, elite: 110 }, parent: { id: "wall_handstand", step: "easier" }, source: "Derived from wall handstand hold" },
   // Crow Pose
-  "hf_129": { kind: "derived", standards: { novice: 12, beginner: 24, intermediate: 48, advanced: 72, elite: 108 }, source: "Derived from wall handstand hold" },
+  "hf_129": { kind: "derived", standards: { novice: 15, beginner: 25, intermediate: 40, advanced: 75, elite: 110 }, parent: { id: "wall_handstand", step: "easier" }, source: "Derived from wall handstand hold" },
+  // Spiderman Push-Up
+  "hf_13": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
   // Iron Cross
   "hf_130": { kind: "derived", standards: { novice: 1, beginner: 2, intermediate: 5, advanced: 10, elite: 20 }, source: "Derived from NASM coaching note" },
   // Maltese Cross
-  "hf_131": { kind: "derived", standards: { novice: 1, beginner: 2, intermediate: 4, advanced: 8, elite: 15 }, source: "Derived from iron cross" },
+  "hf_131": { kind: "derived", standards: { novice: 1, beginner: 2, intermediate: 4, advanced: 8, elite: 15 }, parent: { id: "hf_130", step: "harder" }, source: "Derived from iron cross" },
   // Victorian Cross
-  "hf_132": { kind: "derived", standards: { novice: 1, beginner: 2, intermediate: 3, advanced: 6, elite: 12 }, source: "Derived from Maltese cross" },
+  "hf_132": { kind: "derived", standards: { novice: 1, beginner: 2, intermediate: 3, advanced: 6, elite: 10 }, parent: { id: "hf_131", step: "harder" }, source: "Derived from Maltese cross" },
   // Ring Support Hold
   //   Ring support hold (fitwill) <https://fitwill.app/exercise/7453/ring-support-hold/>
   //   Gymnastic Rings Support Hold guide <https://mark-bennett-bmd3.squarespace.com/blog/rings-top-hold-position-support-hold>
   //   Skill Track rings page <https://skill-forge-strength.pages.dev/skill-rings.html>
   "hf_133": { kind: "sourced", standards: { novice: 10, beginner: 15, intermediate: 30, advanced: 45, elite: 60 }, source: "Sourced: Fitwill, rings support-hold guide, Skill Track" },
   // Back Bridge
-  "hf_134": { kind: "derived", standards: { novice: 5, beginner: 10, intermediate: 20, advanced: 35, elite: 60 }, source: "Derived from hollow hold" },
+  "hf_134": { kind: "derived", standards: { novice: 8, beginner: 15, intermediate: 35, advanced: 50, elite: 75 }, parent: { id: "hollow_hold", step: "harder" }, source: "Derived from hollow hold" },
   // Neck Bridge
   "hf_135": { kind: "derived", standards: { novice: 5, beginner: 10, intermediate: 20, advanced: 40, elite: 90 }, source: "Derived from coaching targets" },
   // Japanese Handstand
-  "hf_136": { kind: "derived", standards: { novice: 1, beginner: 3, intermediate: 5, advanced: 10, elite: 20 }, source: "Derived from wall handstand" },
+  "hf_136": { kind: "derived", standards: { novice: 8, beginner: 15, intermediate: 25, advanced: 50, elite: 75 }, parent: { id: "wall_handstand", step: "harder" }, source: "Derived from wall handstand" },
   // Straight-Arm Press
-  "hf_137": { kind: "derived", standards: { novice: 1, beginner: 2, intermediate: 3, advanced: 6, elite: 10 }, source: "Derived from press to handstand" },
+  "hf_137": { kind: "derived", standards: { novice: 1, beginner: 2, intermediate: 3, advanced: 5, elite: 10 }, parent: { id: "hf_127", step: "harder" }, source: "Derived from press to handstand" },
+  // Dive Bomber Push-Up
+  "hf_14": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
   // Depth Jump
   "hf_141": { kind: "not_max_test", source: "Not a max-rep test" },
   // Star Jump
   "hf_150": { kind: "not_max_test", source: "Not a max-rep test" },
+  // Superman Push-Up
+  "hf_18": { kind: "derived", standards: { novice: 1, beginner: 2, intermediate: 6, advanced: 12, elite: 20 }, parent: { id: "hf_17", step: "harder" }, source: "Derived from clap push-up" },
   // Forward Lean Dip
-  "hf_26": { kind: "derived", standards: { novice: 5, beginner: 7, intermediate: 15, advanced: 25, elite: 35 }, source: "Derived from dip" },
+  "hf_26": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 25, elite: 35 }, parent: { id: "hf_25", step: "harder" }, source: "Derived from dip" },
   // Korean Dip
-  "hf_28": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 13, advanced: 21, elite: 30 }, source: "Derived from dip" },
+  "hf_28": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 25, elite: 35 }, parent: { id: "hf_25", step: "harder" }, source: "Derived from dip" },
   // L-Sit Dip
   "hf_30": { kind: "derived", standards: { novice: 5, beginner: 7, intermediate: 15, advanced: 25, elite: 35 }, source: "Derived from L-sit" },
   // Tuck Planche
@@ -367,13 +398,23 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Ring Fly
   "hf_36": { kind: "not_max_test", source: "Not a max-rep test" },
   // Inverted Row
-  "hf_39": { kind: "derived", standards: { novice: 7, beginner: 10, intermediate: 13, advanced: 20, elite: 25 }, source: "Derived from bent-knee Australian pull-up" },
+  "hf_39": { kind: "derived", standards: { novice: 6, beginner: 10, intermediate: 14, advanced: 20, elite: 25 }, parent: { id: "ntc_bent_knee_australian_pull_up", step: "harder" }, source: "Derived from bent-knee Australian pull-up" },
   // Wide-Grip Inverted Row
-  "hf_40": { kind: "derived", standards: { novice: 4, beginner: 7, intermediate: 16, advanced: 28, elite: 39 }, source: "Derived from inverted row" },
+  "hf_40": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 11, advanced: 16, elite: 20 }, parent: { id: "hf_39", step: "harder" }, source: "Derived from inverted row" },
   // Ring Row
-  "hf_41": { kind: "derived", standards: { novice: 6, beginner: 10, intermediate: 23, advanced: 40, elite: 57 }, source: "Derived from inverted row" },
+  "hf_41": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 17, advanced: 24, elite: 30 }, parent: { id: "hf_39", step: "easier" }, source: "Derived from inverted row" },
   // One-Arm Inverted Row
-  "hf_42": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 10, elite: 15 }, source: "Derived from archer Australian pull-up" },
+  "hf_42": { kind: "derived", standards: { novice: 3, beginner: 5, intermediate: 7, advanced: 10, elite: 13 }, parent: { id: "ntc_archer_inverted_row", step: "harder" }, source: "Derived from archer Australian pull-up" },
+  // L-Sit Pull-Up
+  "hf_49": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 10, elite: 15 }, parent: { id: "pullup", step: "harder" }, source: "Derived from pull-up" },
+  // Archer Pull-Up
+  "hf_50": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 10, elite: 15 }, parent: { id: "pullup", step: "harder" }, source: "Derived from pull-up" },
+  // Typewriter Pull-Up
+  "hf_51": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 10, elite: 15 }, parent: { id: "pullup", step: "harder" }, source: "Derived from pull-up" },
+  // Towel Pull-Up
+  "hf_53": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 10, elite: 15 }, parent: { id: "pullup", step: "harder" }, source: "Derived from pull-up" },
+  // Explosive Pull-Up
+  "hf_54": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 10, elite: 15 }, parent: { id: "pullup", step: "harder" }, source: "Derived from pull-up" },
   // Tuck Front Lever
   //   FitnessVolt front lever guide <https://fitnessvolt.com/front-lever-guide/>
   //   Breaking Muscle front lever build-up <https://breakingmuscle.com/how-to-build-up-to-the-front-lever/>
@@ -387,39 +428,45 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Skin the Cat
   "hf_60": { kind: "not_max_test", source: "Not a max-rep test" },
   // Tuck Back Lever
-  "hf_61": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 10, advanced: 25, elite: 35 }, source: "Derived from tuck front lever" },
+  "hf_61": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 25, elite: 40 }, parent: { id: "hf_57", step: "easier" }, source: "Derived from tuck front lever" },
   // Full Back Lever
-  "hf_62": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 5, advanced: 10, elite: 20 }, source: "Derived from front lever" },
+  "hf_62": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 5, advanced: 10, elite: 20 }, parent: { id: "hf_58", step: "easier" }, source: "Derived from front lever" },
+  // Headbanger Pull-Up
+  "hf_63": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 10, elite: 15 }, parent: { id: "pullup", step: "harder" }, source: "Derived from pull-up" },
   // Ring Bicep Curl
-  "hf_65": { kind: "derived", standards: { novice: 4, beginner: 7, intermediate: 16, advanced: 28, elite: 39 }, source: "Derived from inverted row" },
+  "hf_65": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 11, advanced: 16, elite: 20 }, parent: { id: "hf_39", step: "harder" }, source: "Derived from inverted row" },
   // Ring Face Pull
-  "hf_67": { kind: "derived", standards: { novice: 6, beginner: 10, intermediate: 23, advanced: 40, elite: 57 }, source: "Derived from inverted row" },
+  "hf_67": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 17, advanced: 24, elite: 30 }, parent: { id: "hf_39", step: "easier" }, source: "Derived from inverted row" },
+  // Typewriter Push-Up
+  "hf_7": { kind: "derived", standards: { novice: 7, beginner: 11, intermediate: 15, advanced: 20, elite: 25 }, parent: { id: "hf_10", step: "harder" }, source: "Derived from hindu push-up" },
   // Dragon Squat
-  "hf_71": { kind: "derived", standards: { novice: 1, beginner: 2, intermediate: 4, advanced: 8, elite: 13 }, source: "Derived from pistol squat" },
+  "hf_71": { kind: "derived", standards: { novice: 1, beginner: 2, intermediate: 4, advanced: 7, elite: 12 }, parent: { id: "pistol_squat", step: "harder" }, source: "Derived from pistol squat" },
   // Skater Squat
-  "hf_72": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 11, elite: 18 }, source: "Derived from pistol squat" },
+  "hf_72": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 11, elite: 18 }, parent: { id: "pistol_squat", step: "easier" }, source: "Derived from pistol squat" },
   // Sissy Squat
-  "hf_73": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 10, advanced: 13, elite: 16 }, source: "Derived from cossack squat" },
+  "hf_73": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 10, advanced: 13, elite: 16 }, parent: { id: "cossack_squat", step: "harder" }, source: "Derived from cossack squat" },
   // Archer Squat
-  "hf_75": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 11, elite: 18 }, source: "Derived from pistol squat" },
+  "hf_75": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 11, elite: 18 }, parent: { id: "pistol_squat", step: "easier" }, source: "Derived from pistol squat" },
   // Forward Lunge
-  "hf_79": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, source: "Derived from split squat" },
+  "hf_79": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, parent: { id: "wger_2557", step: "harder" }, source: "Derived from supported split squat" },
   // Curtsy Lunge
-  "hf_81": { kind: "derived", standards: { novice: 3, beginner: 5, intermediate: 12, advanced: 23, elite: 37 }, source: "Derived from lunge" },
+  "hf_81": { kind: "derived", standards: { novice: 3, beginner: 5, intermediate: 12, advanced: 23, elite: 37 }, parent: { id: "wger_1324", step: "harder" }, source: "Derived from lunge" },
   // Lateral Lunge
-  "hf_82": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 18, advanced: 34, elite: 54 }, source: "Derived from lunge" },
+  "hf_82": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 18, advanced: 34, elite: 54 }, parent: { id: "wger_1324", step: "easier" }, source: "Derived from lunge" },
   // Sliding Leg Curl
-  "hf_84": { kind: "derived", standards: { novice: 4, beginner: 7, intermediate: 15, advanced: 28, elite: 45 }, source: "Derived from single-leg romanian deadlift" },
+  "hf_84": { kind: "derived", standards: { novice: 3, beginner: 6, intermediate: 10, advanced: 13, elite: 20 }, parent: { id: "hf_85", step: "harder" }, source: "Derived from single-leg romanian deadlift" },
   // Single-Leg Romanian Deadlift
-  "hf_85": { kind: "derived", standards: { novice: 4, beginner: 8, intermediate: 12, advanced: 16, elite: 25 }, source: "Derived from hip hinge" },
+  "hf_85": { kind: "derived", standards: { novice: 4, beginner: 8, intermediate: 12, advanced: 16, elite: 25 }, parent: { id: "hip_hinge", step: "harder" }, source: "Derived from hip hinge" },
   // Hip Thrust
   "hf_87": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 18, advanced: 34, elite: 54 }, source: "Derived from single-leg bridge test" },
   // Donkey Kick
   "hf_88": { kind: "not_max_test", source: "Not a max-rep test" },
+  // Pseudo Planche Push-Up
+  "hf_9": { kind: "derived", standards: { novice: 7, beginner: 11, intermediate: 15, advanced: 20, elite: 25 }, parent: { id: "hf_10", step: "harder" }, source: "Derived from hindu push-up" },
   // Step-Up with Knee Drive
-  "hf_90": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 12, advanced: 16, elite: 20 }, source: "Derived from step-up" },
+  "hf_90": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 12, advanced: 16, elite: 20 }, parent: { id: "step_up", step: "harder" }, source: "Derived from step-up" },
   // Deficit Step-Down
-  "hf_91": { kind: "derived", standards: { novice: 3, beginner: 4, intermediate: 8, advanced: 14, elite: 22 }, source: "Derived from pistol squat" },
+  "hf_91": { kind: "derived", standards: { novice: 3, beginner: 4, intermediate: 8, advanced: 14, elite: 22 }, parent: { id: "hf_75", step: "easier" }, source: "Derived from archer squat" },
   // Jump Squat
   "hf_94": { kind: "not_max_test", source: "Not a max-rep test" },
   // Box Jump
@@ -431,85 +478,109 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Skater Bound
   "hf_98": { kind: "not_max_test", source: "Not a max-rep test" },
   // Archer Dip
-  "ntc_archer_dip": { kind: "derived", standards: { novice: 2, beginner: 4, intermediate: 9, advanced: 15, elite: 21 }, source: "Derived from dip" },
+  "ntc_archer_dip": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 25, elite: 35 }, parent: { id: "hf_25", step: "harder" }, source: "Derived from dip" },
+  // Archer Australian Pull-Up
+  "ntc_archer_inverted_row": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 9, advanced: 13, elite: 16 }, parent: { id: "ntc_feet_elevated_australian_pull_up", step: "harder" }, source: "Derived from feet-elevated australian pull-up" },
+  // Archer Straight-Bar Dip
+  "ntc_archer_straight_bar_dip": { kind: "derived", standards: { novice: 2, beginner: 4, intermediate: 10, advanced: 18, elite: 29 }, parent: { id: "hf_27", step: "harder" }, source: "Derived from straight bar dip" },
+  // Australian Chin-Up
+  "ntc_australian_chin_up": { kind: "derived", standards: { novice: 6, beginner: 10, intermediate: 14, advanced: 20, elite: 25 }, parent: { id: "ntc_bent_knee_australian_pull_up", step: "harder" }, source: "Derived from bent-knee australian pull-up" },
   // Australian Pull-Up Hold
   "ntc_australian_pull_up_hold": { kind: "derived", standards: { novice: 10, beginner: 20, intermediate: 35, advanced: 55, elite: 80 }, source: "Derived from pull-up" },
   // Bear plank hold
-  "ntc_bear_plank": { kind: "derived", standards: { novice: 55, beginner: 80, intermediate: 150, advanced: 240, elite: 390 }, source: "Derived from high plank" },
+  "ntc_bear_plank": { kind: "derived", standards: { novice: 55, beginner: 85, intermediate: 160, advanced: 240, elite: 390 }, parent: { id: "ntc_high_plank", step: "easier" }, source: "Derived from high plank" },
+  // Bent-Knee Australian Pull-Up
+  "ntc_bent_knee_australian_pull_up": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 17, advanced: 24, elite: 30 }, source: "Derived from TopEndSports bent-knee horizontal pull-up norms" },
   // Crab toe touch
-  "ntc_crab_toe_touch": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Derived from abdominal crunch" },
+  "ntc_crab_toe_touch": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, parent: { id: "wger_1933", step: "same" }, source: "Derived from abdominal crunch" },
   // Cross-body mountain climber
-  "ntc_cross_body_climber": { kind: "derived", standards: { novice: 30, beginner: 45, intermediate: 90, advanced: 140, elite: 225 }, source: "Derived from forearm plank" },
+  "ntc_cross_body_climber": { kind: "derived", standards: { novice: 30, beginner: 45, intermediate: 85, advanced: 135, elite: 225 }, parent: { id: "hf_99", step: "harder" }, source: "Derived from forearm plank" },
+  // Feet-Elevated Australian Pull-Up
+  "ntc_feet_elevated_australian_pull_up": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 11, advanced: 16, elite: 20 }, parent: { id: "hf_39", step: "harder" }, source: "Derived from inverted row" },
   // Fire hydrant
   "ntc_fire_hydrant": { kind: "not_max_test", source: "Not a max-rep test" },
   // Floor windshield wiper
-  "ntc_floor_windshield_wiper": { kind: "derived", standards: { novice: 3, beginner: 8, intermediate: 12, advanced: 15, elite: 20 }, source: "Derived from hanging knee raise" },
+  "ntc_floor_windshield_wiper": { kind: "derived", standards: { novice: 2, beginner: 6, intermediate: 10, advanced: 12, elite: 16 }, parent: { id: "hanging_knee_raise", step: "harder" }, source: "Derived from hanging knee raise" },
   // Frog pumps
   "ntc_frog_pumps": { kind: "not_max_test", source: "Not a max-rep test" },
+  // Hand-release push-up
+  "ntc_hand_release_push_up": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
   // High plank hold
-  "ntc_high_plank": { kind: "derived", standards: { novice: 45, beginner: 65, intermediate: 125, advanced: 200, elite: 325 }, source: "Derived from forearm plank" },
+  "ntc_high_plank": { kind: "derived", standards: { novice: 45, beginner: 70, intermediate: 130, advanced: 200, elite: 325 }, parent: { id: "hf_99", step: "easier" }, source: "Derived from forearm plank" },
+  // Low incline push-up
+  "ntc_incline_push_up_low": { kind: "derived", standards: { novice: 17, beginner: 26, intermediate: 33, advanced: 42, elite: 53 }, parent: { id: "ntc_knee_push_up", step: "easier" }, source: "Derived from knee push-up" },
+  // Knee push-up
+  "ntc_knee_push_up": { kind: "derived", standards: { novice: 14, beginner: 21, intermediate: 27, advanced: 35, elite: 44 }, parent: { id: "hf_2", step: "easier" }, source: "Derived from standard push-up" },
   // Lateral plank walk
   "ntc_lateral_plank_walk": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 22, advanced: 35, elite: 57 }, source: "Derived from forearm plank" },
   // Plank hip dips
-  "ntc_plank_hip_dips": { kind: "derived", standards: { novice: 10, beginner: 15, intermediate: 40, advanced: 63, elite: 90 }, source: "Derived from mountain climber" },
+  "ntc_plank_hip_dips": { kind: "derived", standards: { novice: 10, beginner: 15, intermediate: 39, advanced: 62, elite: 89 }, parent: { id: "hf_121", step: "harder" }, source: "Derived from mountain climber" },
   // Plank to downward dog
   "ntc_plank_to_down_dog": { kind: "not_max_test", source: "Not a max-rep test" },
   // Plank up-down
   "ntc_plank_up_down": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 22, advanced: 29, elite: 36 }, source: "Derived from forearm plank" },
+  // Push-up with shoulder tap
+  "ntc_push_up_shoulder_tap": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
   // Reverse lunge to knee drive
-  "ntc_reverse_lunge_knee_drive": { kind: "derived", standards: { novice: 6, beginner: 9, intermediate: 22, advanced: 41, elite: 66 }, source: "Derived from Bulgarian split squat" },
+  "ntc_reverse_lunge_knee_drive": { kind: "derived", standards: { novice: 6, beginner: 9, intermediate: 22, advanced: 41, elite: 66 }, parent: { id: "bulgarian_split", step: "easier" }, source: "Derived from Bulgarian split squat" },
   // Reverse snow angel
   "ntc_reverse_snow_angel": { kind: "not_max_test", source: "Not a max-rep test" },
   // Side plank hip lifts
-  "ntc_side_plank_hip_lift": { kind: "derived", standards: { novice: 5, beginner: 10, intermediate: 20, advanced: 30, elite: 40 }, source: "Derived from sit-up" },
+  "ntc_side_plank_hip_lift": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "fedb_sit_up", step: "harder" }, source: "Derived from sit-up" },
   // Ski hops
   "ntc_ski_hops": { kind: "not_max_test", source: "Not a max-rep test" },
   // Spiderman plank
-  "ntc_spiderman_plank": { kind: "derived", standards: { novice: 18, beginner: 28, intermediate: 33, advanced: 39, elite: 46 }, source: "Derived from sit-up" },
+  "ntc_spiderman_plank": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "fedb_sit_up", step: "harder" }, source: "Derived from sit-up" },
+  // Staggered push-up
+  "ntc_staggered_push_up": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
   // Swimmers
   "ntc_swimmers": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 27, advanced: 50, elite: 81 }, source: "Derived from superman" },
   // Wall walk-up
-  "ntc_wall_walk_up": { kind: "derived", standards: { novice: 1, beginner: 2, intermediate: 5, advanced: 9, elite: 15 }, source: "Derived from pike push-up" },
+  "ntc_wall_walk_up": { kind: "derived", standards: { novice: 4, beginner: 5, intermediate: 15, advanced: 29, elite: 48 }, parent: { id: "hf_19", step: "harder" }, source: "Derived from pike push-up" },
   // Kettlebell deadlifts
   "wger_1003": { kind: "not_max_test", source: "Not a max-rep test" },
   // Single Arm Plank to Row
   "wger_1022": { kind: "not_max_test", source: "Not a max-rep test" },
   // Vpushup
-  "wger_1090": { kind: "derived", standards: { novice: 10, beginner: 15, intermediate: 19, advanced: 25, elite: 30 }, source: "Derived from push-up" },
+  "wger_1090": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from push-up" },
   // Abduction while standing
   "wger_1096": { kind: "not_max_test", source: "Not a max-rep test" },
   // Dynamic side hold
-  "wger_1099": { kind: "derived", standards: { novice: 15, beginner: 30, intermediate: 60, advanced: 90, elite: 120 }, source: "Derived from side plank" },
+  "wger_1099": { kind: "derived", standards: { novice: 15, beginner: 30, intermediate: 60, advanced: 90, elite: 120 }, parent: { id: "hf_100", step: "same" }, source: "Derived from side plank" },
   // Walking bridge
   "wger_1103": { kind: "not_max_test", source: "Not a max-rep test" },
   // Seated Knee Tuck
-  "wger_1105": { kind: "derived", standards: { novice: 4, beginner: 10, intermediate: 15, advanced: 18, elite: 24 }, source: "Derived from hanging knee raise" },
+  "wger_1105": { kind: "derived", standards: { novice: 4, beginner: 10, intermediate: 15, advanced: 18, elite: 24 }, parent: { id: "hanging_knee_raise", step: "easier" }, source: "Derived from hanging knee raise" },
   // Arabesque
   "wger_1141": { kind: "not_max_test", source: "Not a max-rep test" },
   // Side Lying Hip Abduction
   "wger_1202": { kind: "not_max_test", source: "Not a max-rep test" },
   // Scorpion Kick
   "wger_1207": { kind: "not_max_test", source: "Not a max-rep test" },
+  // Shoulder width three-point push-up
+  "wger_1209": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
   // Skydiver with arms in T-position
-  "wger_1210": { kind: "derived", standards: { novice: 10, beginner: 15, intermediate: 25, advanced: 34, elite: 42 }, source: "Derived from hyperextension" },
+  "wger_1210": { kind: "derived", standards: { novice: 10, beginner: 15, intermediate: 24, advanced: 33, elite: 41 }, parent: { id: "fedb_hyperextensions_with_no_hyperextension_bench", step: "harder" }, source: "Derived from hyperextension" },
   // Finger Pushup
-  "wger_1217": { kind: "derived", standards: { novice: 10, beginner: 15, intermediate: 19, advanced: 25, elite: 30 }, source: "Derived from push-up" },
+  "wger_1217": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from push-up" },
   // Dumbbell Single-leg Hip Thrust
-  "wger_1234": { kind: "derived", standards: { novice: 10, beginner: 15, intermediate: 20, advanced: 24, elite: 28 }, source: "Derived from unilateral hip thrust" },
+  "wger_1234": { kind: "derived", standards: { novice: 10, beginner: 15, intermediate: 19, advanced: 23, elite: 27 }, parent: { id: "wger_1913", step: "harder" }, source: "Derived from unilateral hip thrust" },
   // TRX roll out
-  "wger_1246": { kind: "derived", standards: { novice: 4, beginner: 5, intermediate: 10, advanced: 17, elite: 30 }, source: "Derived from ab wheel rollout" },
+  "wger_1246": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 12, advanced: 17, elite: 27 }, parent: { id: "hf_113", step: "easier" }, source: "Derived from ab wheel rollout" },
+  // Front lever pull-up
+  "wger_1252": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 10, elite: 15 }, parent: { id: "pullup", step: "harder" }, source: "Derived from pull-up" },
   // Chin-up Isometric Hold
   "wger_1282": { kind: "derived", standards: { novice: 10, beginner: 20, intermediate: 35, advanced: 55, elite: 80 }, source: "Derived from flexed-arm hang" },
   // Plank Jump-In
   "wger_1286": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 26, advanced: 41, elite: 68 }, source: "Derived from forearm plank" },
   // Reach ups
-  "wger_1287": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Derived from sit-up" },
+  "wger_1287": { kind: "derived", standards: { novice: 20, beginner: 29, intermediate: 48, advanced: 72, elite: 102 }, parent: { id: "fedb_sit_up", step: "easier" }, source: "Derived from sit-up" },
   // Dynamic side plank
   "wger_1288": { kind: "derived", standards: { novice: 5, beginner: 10, intermediate: 20, advanced: 30, elite: 40 }, source: "Derived from side plank" },
   // Single-leg hamstring curl
   "wger_1294": { kind: "derived", standards: { novice: 14, beginner: 21, intermediate: 27, advanced: 33, elite: 39 }, source: "Derived from single-leg bridge test" },
   // Bodyweight lunge
-  "wger_1324": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, source: "Derived from split squat" },
+  "wger_1324": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, parent: { id: "wger_2557", step: "harder" }, source: "Derived from supported split squat" },
   // Lateral Push Off
   "wger_1325": { kind: "not_max_test", source: "Not a max-rep test" },
   // Double Kettlebell Clean and Press
@@ -535,25 +606,25 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Plank with Alternating Leg Lift
   "wger_1410": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 26, advanced: 41, elite: 68 }, source: "Derived from forearm plank" },
   // Toe Taps
-  "wger_1425": { kind: "derived", standards: { novice: 27, beginner: 40, intermediate: 48, advanced: 57, elite: 66 }, source: "Derived from sit-up" },
+  "wger_1425": { kind: "derived", standards: { novice: 20, beginner: 29, intermediate: 48, advanced: 72, elite: 102 }, parent: { id: "fedb_sit_up", step: "easier" }, source: "Derived from sit-up" },
   // Standing Side Crunches
-  "wger_1426": { kind: "derived", standards: { novice: 27, beginner: 40, intermediate: 48, advanced: 57, elite: 66 }, source: "Derived from sit-up" },
+  "wger_1426": { kind: "derived", standards: { novice: 20, beginner: 29, intermediate: 48, advanced: 72, elite: 102 }, parent: { id: "fedb_sit_up", step: "easier" }, source: "Derived from sit-up" },
   // Reverse Wood Chops
   "wger_1433": { kind: "not_max_test", source: "Not a max-rep test" },
   // Towel Superman
-  "wger_1455": { kind: "derived", standards: { novice: 10, beginner: 15, intermediate: 25, advanced: 34, elite: 42 }, source: "Derived from hyperextension" },
+  "wger_1455": { kind: "derived", standards: { novice: 10, beginner: 15, intermediate: 24, advanced: 33, elite: 41 }, parent: { id: "fedb_hyperextensions_with_no_hyperextension_bench", step: "harder" }, source: "Derived from hyperextension" },
   // W-Raise
   "wger_1474": { kind: "not_max_test", source: "Not a max-rep test" },
   // Black Widow Knee Slides
-  "wger_1475": { kind: "derived", standards: { novice: 3, beginner: 8, intermediate: 12, advanced: 15, elite: 20 }, source: "Derived from hanging knee raise" },
+  "wger_1475": { kind: "derived", standards: { novice: 3, beginner: 8, intermediate: 12, advanced: 15, elite: 20 }, parent: { id: "hanging_knee_raise", step: "same" }, source: "Derived from hanging knee raise" },
   // Butterfly Sit Up
-  "wger_1476": { kind: "derived", standards: { novice: 6, beginner: 8, intermediate: 28, advanced: 53, elite: 83 }, source: "Derived from sit-up" },
+  "wger_1476": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 27, advanced: 52, elite: 83 }, parent: { id: "fedb_3_4_sit_up", step: "harder" }, source: "Derived from 3/4 sit-up" },
   // Seated Corkscrew
-  "wger_1477": { kind: "derived", standards: { novice: 11, beginner: 16, intermediate: 42, advanced: 74, elite: 110 }, source: "Derived from Russian twist" },
+  "wger_1477": { kind: "derived", standards: { novice: 11, beginner: 16, intermediate: 42, advanced: 74, elite: 110 }, parent: { id: "hf_114", step: "same" }, source: "Derived from russian twist" },
   // Levitation Crunch
-  "wger_1478": { kind: "derived", standards: { novice: 28, beginner: 41, intermediate: 48, advanced: 56, elite: 66 }, source: "Derived from sit-up" },
+  "wger_1478": { kind: "derived", standards: { novice: 20, beginner: 29, intermediate: 48, advanced: 72, elite: 102 }, parent: { id: "fedb_sit_up", step: "easier" }, source: "Derived from sit-up" },
   // Sit Up Elbow Thrust
-  "wger_1479": { kind: "derived", standards: { novice: 18, beginner: 28, intermediate: 33, advanced: 39, elite: 46 }, source: "Derived from sit-up" },
+  "wger_1479": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "fedb_sit_up", step: "harder" }, source: "Derived from sit-up" },
   // Lateral Walk
   "wger_1514": { kind: "not_max_test", source: "Not a max-rep test" },
   // Toes to bar
@@ -574,7 +645,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Snap Down
   "wger_1576": { kind: "not_max_test", source: "Not a max-rep test" },
   // Bodyweight Biceps Curl
-  "wger_1608": { kind: "derived", standards: { novice: 4, beginner: 7, intermediate: 16, advanced: 28, elite: 39 }, source: "Derived from inverted row" },
+  "wger_1608": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 11, advanced: 16, elite: 20 }, parent: { id: "hf_39", step: "harder" }, source: "Derived from inverted row" },
   // Kettlebell sumo deadlift
   "wger_1612": { kind: "not_max_test", source: "Not a max-rep test" },
   // Dumbbell Front Squat
@@ -592,7 +663,9 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   //   L-sit exercise guide (FitnessVolt) <https://fitnessvolt.com/l-sit-exercise-guide/>
   "wger_1704": { kind: "sourced", standards: { novice: 7, beginner: 10, intermediate: 20, advanced: 30, elite: 45 }, source: "Sourced: Simonster Strength, FitnessVolt" },
   // Incline Crunches
-  "wger_171": { kind: "derived", standards: { novice: 27, beginner: 40, intermediate: 48, advanced: 57, elite: 66 }, source: "Derived from sit-up" },
+  "wger_171": { kind: "derived", standards: { novice: 20, beginner: 29, intermediate: 48, advanced: 72, elite: 102 }, parent: { id: "fedb_sit_up", step: "easier" }, source: "Derived from sit-up" },
+  // Incline Shoulder Press Up
+  "wger_1716": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 29, advanced: 54, elite: 83 }, parent: { id: "fedb_incline_push_up", step: "harder" }, source: "Derived from incline push-up" },
   // Single-Leg Lunge with Kettlebell:
   "wger_1734": { kind: "not_max_test", source: "Not a max-rep test" },
   // Single-leg side glute press
@@ -600,17 +673,19 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Single-Leg Deadlift with Dumbbell
   "wger_1736": { kind: "not_max_test", source: "Not a max-rep test" },
   // Crunches With Legs Up
-  "wger_174": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Derived from abdominal crunch" },
+  "wger_174": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, parent: { id: "wger_1933", step: "same" }, source: "Derived from abdominal crunch" },
   // Back Lever
-  "wger_1742": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 5, advanced: 10, elite: 20 }, source: "Derived from front lever" },
+  "wger_1742": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 5, advanced: 10, elite: 20 }, parent: { id: "hf_58", step: "easier" }, source: "Derived from front lever" },
   // Plank Reach
   "wger_1766": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 26, advanced: 41, elite: 68 }, source: "Derived from forearm plank" },
+  // Deficit Push ups
+  "wger_1777": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
   // Parallel Bar Hold
-  "wger_1808": { kind: "derived", standards: { novice: 15, beginner: 30, intermediate: 60, advanced: 90, elite: 120 }, source: "Derived from dead hang" },
+  "wger_1808": { kind: "derived", standards: { novice: 15, beginner: 30, intermediate: 60, advanced: 90, elite: 120 }, parent: { id: "pullup_dead_hang", step: "same" }, source: "Derived from dead hang" },
   // Reverse Hyperextension
-  "wger_1809": { kind: "derived", standards: { novice: 15, beginner: 22, intermediate: 35, advanced: 48, elite: 60 }, source: "Derived from hyperextension" },
+  "wger_1809": { kind: "derived", standards: { novice: 15, beginner: 22, intermediate: 35, advanced: 48, elite: 60 }, parent: { id: "fedb_hyperextensions_with_no_hyperextension_bench", step: "easier" }, source: "Derived from hyperextension" },
   // Double-Leg Abdominal Press
-  "wger_1827": { kind: "derived", standards: { novice: 4, beginner: 10, intermediate: 15, advanced: 18, elite: 24 }, source: "Derived from hanging knee raise" },
+  "wger_1827": { kind: "derived", standards: { novice: 4, beginner: 10, intermediate: 15, advanced: 18, elite: 24 }, parent: { id: "hanging_knee_raise", step: "easier" }, source: "Derived from hanging knee raise" },
   // Abdominal Draw-In
   //   Marathon Handbook / AthleanX / Livestrong stomach vacuum guidance <https://marathonhandbook.com/stomach-vacuum-exercise/>
   "wger_1828": { kind: "sourced", standards: { novice: 7, beginner: 10, intermediate: 20, advanced: 40, elite: 60 }, source: "Sourced: Marathon Handbook" },
@@ -619,23 +694,25 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Banded Clamshell
   "wger_1842": { kind: "not_max_test", source: "Not a max-rep test" },
   // Straddle L-Sit
-  "wger_1847": { kind: "derived", standards: { novice: 3, beginner: 5, intermediate: 15, advanced: 20, elite: 30 }, source: "Derived from L-sit" },
+  "wger_1847": { kind: "derived", standards: { novice: 4, beginner: 8, intermediate: 25, advanced: 35, elite: 50 }, parent: { id: "hf_105", step: "harder" }, source: "Derived from L-sit" },
   // L-Sit (Foot Supported)
-  "wger_1853": { kind: "derived", standards: { novice: 6, beginner: 12, intermediate: 36, advanced: 54, elite: 72 }, source: "Derived from L-sit" },
+  "wger_1853": { kind: "derived", standards: { novice: 6, beginner: 15, intermediate: 40, advanced: 55, elite: 75 }, parent: { id: "hf_105", step: "easier" }, source: "Derived from L-sit" },
   // Banded Scapular Retraction
   "wger_1877": { kind: "not_max_test", source: "Not a max-rep test" },
   // Decline Bench Leg Raise
-  "wger_1889": { kind: "derived", standards: { novice: 4, beginner: 10, intermediate: 15, advanced: 18, elite: 24 }, source: "Derived from hanging knee raise" },
+  "wger_1889": { kind: "derived", standards: { novice: 4, beginner: 10, intermediate: 15, advanced: 18, elite: 24 }, parent: { id: "hanging_knee_raise", step: "easier" }, source: "Derived from hanging knee raise" },
+  // Weighted push-ups
+  "wger_1902": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
   // Unilateral Lunges
-  "wger_1907": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 15, advanced: 28, elite: 45 }, source: "Derived from split squat" },
+  "wger_1907": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, parent: { id: "wger_2557", step: "harder" }, source: "Derived from supported split squat" },
   // Butterfly Superman
   "wger_1908": { kind: "not_max_test", source: "Not a max-rep test" },
   // Leg Wheel
-  "wger_1909": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 22, advanced: 35, elite: 57 }, source: "Derived from plank with alternating leg lift" },
+  "wger_1909": { kind: "derived", standards: { novice: 7, beginner: 11, intermediate: 21, advanced: 34, elite: 56 }, parent: { id: "wger_1410", step: "harder" }, source: "Derived from plank with alternating leg lift" },
   // Kneeling Superman
-  "wger_1910": { kind: "derived", standards: { novice: 15, beginner: 22, intermediate: 35, advanced: 48, elite: 60 }, source: "Derived from hyperextension" },
+  "wger_1910": { kind: "derived", standards: { novice: 15, beginner: 22, intermediate: 35, advanced: 48, elite: 60 }, parent: { id: "fedb_hyperextensions_with_no_hyperextension_bench", step: "easier" }, source: "Derived from hyperextension" },
   // Cat Plank
-  "wger_1911": { kind: "derived", standards: { novice: 45, beginner: 65, intermediate: 125, advanced: 200, elite: 325 }, source: "Derived from forearm plank" },
+  "wger_1911": { kind: "derived", standards: { novice: 45, beginner: 70, intermediate: 130, advanced: 200, elite: 325 }, parent: { id: "hf_99", step: "easier" }, source: "Derived from forearm plank" },
   // Unilateral Hip Thrust
   "wger_1913": { kind: "derived", standards: { novice: 12, beginner: 18, intermediate: 23, advanced: 28, elite: 33 }, source: "Derived from single-leg bridge test" },
   // Abdominal Crunch
@@ -643,11 +720,11 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   //   Cooper 1-min sit-ups men 20-29 <https://fitnessnorms.pages.dev/strength/cooper-sit-ups/male/age-20-29>
   "wger_1933": { kind: "sourced", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Sourced: StrengthLevel, Cooper Institute" },
   // 1 Leg Box Squat
-  "wger_1948": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 11, elite: 18 }, source: "Derived from pistol squat" },
+  "wger_1948": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 11, elite: 18 }, parent: { id: "pistol_squat", step: "easier" }, source: "Derived from pistol squat" },
   // Bent-knee Iron Cross
   "wger_1953": { kind: "not_max_test", source: "Not a max-rep test" },
   // Roll-overs into V-sits
-  "wger_1954": { kind: "derived", standards: { novice: 2, beginner: 6, intermediate: 8, advanced: 10, elite: 14 }, source: "Derived from hanging knee raise" },
+  "wger_1954": { kind: "derived", standards: { novice: 1, beginner: 5, intermediate: 8, advanced: 10, elite: 13 }, parent: { id: "hf_110", step: "harder" }, source: "Derived from hanging leg raise" },
   // Fire Hydrant Circles
   "wger_1956": { kind: "not_max_test", source: "Not a max-rep test" },
   // Dumbbell Lunges Walking
@@ -660,8 +737,10 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   "wger_2449": { kind: "not_max_test", source: "Not a max-rep test" },
   // Band Terminal Knee extension
   "wger_2494": { kind: "not_max_test", source: "Not a max-rep test" },
+  // Russian Push Ups
+  "wger_2530": { kind: "derived", standards: { novice: 7, beginner: 11, intermediate: 15, advanced: 20, elite: 25 }, parent: { id: "fedb_push_ups_with_feet_elevated", step: "harder" }, source: "Derived from push-ups with feet elevated" },
   // Full Sit Outs
-  "wger_260": { kind: "derived", standards: { novice: 22, beginner: 33, intermediate: 40, advanced: 47, elite: 55 }, source: "Derived from sit-up" },
+  "wger_260": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, parent: { id: "fedb_sit_up", step: "same" }, source: "Derived from sit-up" },
   // Quad Sets
   "wger_2617": { kind: "not_max_test", source: "Not a max-rep test" },
   // Single-Leg Soft-Landing Holds
@@ -671,21 +750,31 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Seated Knee Extension with Overpressure
   "wger_2664": { kind: "not_max_test", source: "Not a max-rep test" },
   // Incline Row - Rings
-  "wger_2678": { kind: "derived", standards: { novice: 6, beginner: 10, intermediate: 23, advanced: 40, elite: 57 }, source: "Derived from inverted row" },
+  "wger_2678": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 17, advanced: 24, elite: 30 }, parent: { id: "hf_39", step: "easier" }, source: "Derived from inverted row" },
+  // Tyson push-ups
+  "wger_2679": { kind: "derived", standards: { novice: 7, beginner: 11, intermediate: 15, advanced: 20, elite: 25 }, parent: { id: "fedb_push_ups_with_feet_elevated", step: "harder" }, source: "Derived from push-ups with feet elevated" },
+  // Triceps push up
+  "wger_2684": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
   // Pike Hold (Floor)
-  "wger_2691": { kind: "derived", standards: { novice: 30, beginner: 45, intermediate: 90, advanced: 140, elite: 230 }, source: "Derived from forearm plank" },
+  "wger_2691": { kind: "derived", standards: { novice: 30, beginner: 45, intermediate: 85, advanced: 135, elite: 225 }, parent: { id: "hf_99", step: "harder" }, source: "Derived from forearm plank" },
   // Feet-assisted Straight-bar Support
-  "wger_2694": { kind: "derived", standards: { novice: 20, beginner: 35, intermediate: 70, advanced: 110, elite: 145 }, source: "Derived from dead hang" },
+  "wger_2694": { kind: "derived", standards: { novice: 20, beginner: 40, intermediate: 75, advanced: 110, elite: 145 }, parent: { id: "pullup_dead_hang", step: "easier" }, source: "Derived from dead hang" },
   // Kettlebell Wrist Turnover
   "wger_2727": { kind: "not_max_test", source: "Not a max-rep test" },
+  // Slow Eccentric Pull-Up Negative
+  "wger_2730": { kind: "derived", standards: { novice: 4, beginner: 5, intermediate: 10, advanced: 16, elite: 22 }, parent: { id: "pullup", step: "easier" }, source: "Derived from pull-up" },
   // Pull-Up Top Position Hold
   //   Topend Sports Bent-Arm Hang (Eurofit) calculator <https://www.topendsports.com/testing/tests/bent-arm-hang-eurofit.htm>
   //   Topend Sports Flexed-Arm Hang (Marine-style table) <https://www.topendsports.com/testing/tests/flexed-arm-hang-ipft.htm>
   "wger_2731": { kind: "sourced", standards: { novice: 10, beginner: 15, intermediate: 30, advanced: 45, elite: 65 }, source: "Sourced: Topend Sports" },
+  // Jumping Pull-Up
+  "wger_2748": { kind: "derived", standards: { novice: 4, beginner: 5, intermediate: 10, advanced: 16, elite: 22 }, parent: { id: "pullup", step: "easier" }, source: "Derived from pull-up" },
   // Hanging Leg Raise with Hip Lift on Rings
-  "wger_2756": { kind: "derived", standards: { novice: 1, beginner: 5, intermediate: 8, advanced: 10, elite: 13 }, source: "Derived from hanging leg raise" },
+  "wger_2756": { kind: "derived", standards: { novice: 1, beginner: 5, intermediate: 8, advanced: 10, elite: 13 }, parent: { id: "hf_110", step: "harder" }, source: "Derived from hanging leg raise" },
   // TRX/Rings Chest Fly
   "wger_2763": { kind: "not_max_test", source: "Not a max-rep test" },
+  // TRX/Rings Push-Up
+  "wger_2764": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
   // TRX/Rings Y Raise
   "wger_2765": { kind: "not_max_test", source: "Not a max-rep test" },
   // TRX/Rings Face Pull
@@ -701,11 +790,13 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Renegade Row
   "wger_490": { kind: "not_max_test", source: "Not a max-rep test" },
   // Reverse Plank
-  "wger_500": { kind: "derived", standards: { novice: 35, beginner: 55, intermediate: 105, advanced: 165, elite: 270 }, source: "Derived from forearm plank" },
+  "wger_500": { kind: "derived", standards: { novice: 37, beginner: 55, intermediate: 105, advanced: 165, elite: 270 }, parent: { id: "hf_99", step: "same" }, source: "Derived from forearm plank" },
   // Shoulder Shrug
   "wger_570": { kind: "not_max_test", source: "Not a max-rep test" },
   // Side Crunch
-  "wger_576": { kind: "derived", standards: { novice: 27, beginner: 40, intermediate: 48, advanced: 57, elite: 66 }, source: "Derived from sit-up" },
+  "wger_576": { kind: "derived", standards: { novice: 20, beginner: 29, intermediate: 48, advanced: 72, elite: 102 }, parent: { id: "fedb_sit_up", step: "easier" }, source: "Derived from sit-up" },
+  // Side to Side Push Ups
+  "wger_583": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
   // Rowing with TRX band
   //   StrengthLevel Inverted Row <https://strengthlevel.com/strength-standards/inverted-row/kg>
   //   FitnessVolt Inverted Row <https://fitnessvolt.com/strength-standards/inverted-row>
@@ -722,6 +813,8 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   "wger_974": { kind: "not_max_test", source: "Not a max-rep test" },
   // One-handed kettlebell curls
   "wger_975": { kind: "not_max_test", source: "Not a max-rep test" },
+  // Push-up rotations
+  "wger_985": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
   // Kneeling kickbacks
   "wger_990": { kind: "not_max_test", source: "Not a max-rep test" },
 };

@@ -574,8 +574,11 @@ const SEED_STANDARDS: Record<string, ExerciseStandards> = {
   scapular_pull: std(3, 6, 10, 15, 20),
   /** Endura pull-up men 20–29. */
   pullup: std(3, 4, 8, 13, 18),
-  /** Endura muscle-up men 20–29. */
-  muscle_up: std(1, 2, 6, 12, 20),
+  /**
+   * Endura muscle-up men 20–29, elite capped below the pull-up (#262): Endura
+   * elite 20 sat above the pull-up's 18, so elite = floor(18 ÷ 1.2) = 15.
+   */
+  muscle_up: std(1, 2, 6, 12, 15),
 };
 
 /** Library label for each seed band (#262), from the notes above. */
@@ -602,7 +605,7 @@ const SEED_STANDARD_SOURCES: Record<string, string> = {
   pullup_dead_hang: "Coaching composite (dead hang; no adult norms)",
   scapular_pull: "Coaching composite (scapular pull-up activation)",
   pullup: "Endura pull-up men 20–29",
-  muscle_up: "Endura muscle-up men 20–29",
+  muscle_up: "Endura muscle-up men 20–29, elite capped below pull-up",
 };
 
 function withSeedStandards(exercise: SeedExercise): SeedExercise {
