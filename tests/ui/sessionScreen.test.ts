@@ -240,13 +240,13 @@ describe("dose as hero", () => {
   it("shows the rest countdown as the hero in seconds", () => {
     const planned = planLegs();
     const html = shellHtml(planned, restView(planned));
-    const dose = slice(html, '<p class="session-dose"', "</p>");
+    const dose = slice(html, '<p class="session-dose session-dose--rest"', "</p>");
     expect(dose).toContain('<span class="reps" data-rest-left>90</span>');
     expect(dose).toMatch(/class="session-dose-unit" aria-hidden="true">s</);
     expect(html).toContain("data-rest-cue");
   });
 
-  it("names the next set beside its doodle on work rest", () => {
+  it("puts the next-set doodle to the right of the countdown on work rest", () => {
     const planned = planLegs();
     const item = planned.work[0]!;
     expect(item.doodlePath).toBeTruthy();
@@ -255,10 +255,12 @@ describe("dose as hero", () => {
     expect(html).toMatch(/<p class="eyebrow session-phase">Rest<\/p>/);
     expect(html).not.toContain("Rest · next");
     expect(html).toContain('class="rest-next"');
+    expect(html).toContain('class="session-dose session-dose--rest"');
     expect(html).toContain('class="rest-next-doodle"');
     expect(html).toContain('class="doodle"');
     expect(html).toContain(`next ${next} · Set 2 of ${item.dose.sets}`);
-    expect(html.indexOf('class="rest-next"')).toBeLessThan(html.indexOf('data-rest-left'));
+    expect(html.indexOf('class="rest-next"')).toBeLessThan(html.indexOf("data-rest-left"));
+    expect(html.indexOf("data-rest-left")).toBeLessThan(html.indexOf('class="rest-next-doodle"'));
   });
 
   it("keeps the next-set line without a doodle frame when the move has none", () => {
@@ -270,6 +272,22 @@ describe("dose as hero", () => {
     expect(html).toContain(`next ${displayExerciseName(item.exerciseName)} · Set 2 of ${item.dose.sets}`);
     expect(html).not.toContain('class="rest-next-doodle"');
     expect(html).not.toContain('class="doodle"');
+  });
+
+  it("shows the upcoming station doodle beside seconds on a warmup gap", () => {
+    const planned = planLegs();
+    const next = planned.warmup[1];
+    expect(next?.doodlePath).toBeTruthy();
+    const state = warmupView(planned);
+    state.phase = "rest";
+    state.warmupIndex = 0;
+    state.restLeft = 10;
+    const html = shellHtml(planned, state);
+    expect(html).toMatch(/<p class="eyebrow session-phase">Rest<\/p>/);
+    expect(html).toContain(`next ${escapeHtml(displayExerciseName(next!.name))}`);
+    expect(html).toContain('class="session-dose session-dose--rest"');
+    expect(html.indexOf("data-rest-left")).toBeLessThan(html.indexOf('class="rest-next-doodle"'));
+    expect(html).toContain('class="doodle"');
   });
 });
 

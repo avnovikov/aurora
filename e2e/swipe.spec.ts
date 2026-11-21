@@ -28,9 +28,10 @@ test.describe("warm-up swipe", () => {
 
   test("the gap names the next station and a swipe starts it", async ({ page }) => {
     await swipeUntil(page, "rest");
-    await expect(phaseLine(page)).toHaveText(new RegExp(`^${GAP_PREFIX}`));
+    await expect(phaseLine(page)).toHaveText(/^Rest$/);
+    await expect(restNextLine(page)).toHaveText(new RegExp(`^${GAP_PREFIX}`));
     await expect(page.getByText("Next set reps")).toHaveCount(0);
-    const next = ((await phaseLine(page).textContent()) ?? "").slice(GAP_PREFIX.length);
+    const next = ((await restNextLine(page).textContent()) ?? "").slice(GAP_PREFIX.length);
     await swipe(page, stage(page, "rest"));
     await expect(stage(page, "station")).toBeVisible();
     await expect(moveName(page)).toHaveText(next);
