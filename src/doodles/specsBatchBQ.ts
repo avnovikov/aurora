@@ -1,4 +1,4 @@
-import { kettlebellOnFloor } from "./rig";
+import { kettlebellOnFloor, other } from "./rig";
 import type { DoodleSpec, Keyframe, Point, Pose, Prop, Side } from "./rig";
 import { FLOOR_PROP, along, chestOf, round, shoulderOf } from "./geom";
 import { PLANK_FOOT, lockedShoulderY, straightBody } from "./specsBatchC";
@@ -26,13 +26,12 @@ const FLOOR_HAND = round(kettlebellOnFloor(BELL));
 /** Arm reach (shoulder to fingertip), a hair short so a straight arm draws straight. */
 const REACH = 125.8;
 /** A hanging bell: grip to the bell's bottom (`KETTLEBELL.grip` radii to the centre, one more to the bottom). */
-const GRIP_TO_BOTTOM = round(BELL * 2.85);
+const GRIP_TO_BOTTOM = -FLOOR_HAND;
 
 const BENT = { near: { bend: 1 }, far: { bend: 1 } } as const;
 const FLAT = { near: 0, far: 0 } as const;
 const TWO_BELLS = { hands: ["near", "far"] as Side[], size: BELL };
 const kf = (pose: Pose, hold: number, extra: Partial<Keyframe> = {}): Keyframe => ({ pose, hold, ...extra });
-const other = (side: Side): Side => (side === "near" ? "far" : "near");
 
 /** Both arms hanging by the sides from a straight spine, a bell in each hand. */
 function sideHands(pelvis: Point, spine: number): Pick<Pose, "hands" | "elbows"> {
