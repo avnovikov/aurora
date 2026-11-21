@@ -7,6 +7,7 @@ import {
   DEFAULT_WARMUP_LEVEL,
   highestKnownTier,
   warmupLevelFor,
+  warmupLevelForTargets,
   warmupLevelFromTier,
 } from "../../src/rules/warmupLevel";
 
@@ -46,6 +47,13 @@ describe("warmupLevelFromTier", () => {
 });
 
 describe("warmupLevelFor", () => {
+  it("warmupLevelForTargets is the call-site form of the same rule", () => {
+    const memories = { pull: memory("pull", { skillTier: "elite" }) };
+    expect(warmupLevelForTargets(["pull"], memories)).toBe(
+      warmupLevelFor({ targetExerciseIds: ["pull"], memories }),
+    );
+  });
+
   it("is beginner when nothing is known about the target family", () => {
     expect(warmupLevelFor({ targetExerciseIds: ["pistol"], memories: {}, index, graph })).toBe("beginner");
     expect(

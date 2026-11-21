@@ -182,6 +182,31 @@ describe("plan level", () => {
   });
 });
 
+describe("plan warm-up level in day meta (#247)", () => {
+  const eliteSquatFamily = {
+    reverse_lunge: { ...emptyMemory("reverse_lunge"), skillTier: "elite" as const, declaredTier: "elite" as const, bestReps: 25 },
+  };
+  const planDay = (templateId: string, memories: AthleteState["memories"] = {}) =>
+    buildPlanModel({ items: [templateId] }, state({ memories }), ui()).days[0]!;
+
+  it("shows advanced warm-up on Legs when squat-family memory is elite, not the beginner default", () => {
+    const withEvidence = planDay("tmpl_legs", eliteSquatFamily);
+    const withoutEvidence = planDay("tmpl_legs");
+    expect(withEvidence.meta).toMatch(/Warm-up · advanced ·/);
+    expect(withEvidence.meta).not.toMatch(/Warm-up · beginner ·/);
+    expect(withoutEvidence.meta).toMatch(/Warm-up · beginner ·/);
+    expect(withEvidence.duration).not.toBe(withoutEvidence.duration);
+  });
+
+  it("keeps Full body at beginner when the handstand family has no evidence (lowest family wins)", () => {
+    const day = planDay("tmpl_full", {
+      ...eliteSquatFamily,
+      wger_1537: { ...emptyMemory("wger_1537"), skillTier: "intermediate" },
+    });
+    expect(day.meta).toMatch(/Warm-up · beginner ·/);
+  });
+});
+
 describe("session screen: doodle, description, what to pay attention to", () => {
   const joints = [{ joint: "knee" as const, side: "both" as const, kind: "other" as const }];
   const legs = resolveTemplate("tmpl_legs");

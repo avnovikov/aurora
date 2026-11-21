@@ -1,5 +1,5 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
-import type { PlanQueue, SessionTemplate } from "../domain/program";
+import type { PlanQueue, SessionTemplate, WarmupLevel } from "../domain/program";
 import { displayExerciseName } from "../library/displayName";
 import { exerciseMetaLine } from "../library/metaLine";
 import { AREA_KINDS, DAY_KIND_LABELS, MOBILITY_TEMPLATE_ID, dayTitle, skillTitle } from "../plan/dayKinds";
@@ -10,6 +10,7 @@ import { PLAN_LEVELS, loadPlanLevel } from "../plan/planLevel";
 import { loadPlanLevelRaiseNotice } from "../plan/planLevelRaise";
 import { listAllTemplates, resolveTemplate } from "../plan/templates";
 import { warmupCooldownLabel } from "../rules/sessionDuration";
+import { warmupLevelForTargets } from "../rules/warmupLevel";
 import { templateDurationLabel, templateTargetsLabel } from "./formatTemplate";
 import type { DayOption, PlanDayView, PlanPageModel, PlanUndoNotice, SwapOption } from "./planPage";
 
@@ -42,9 +43,9 @@ function areaOptions(): DayOption[] {
   return AREA_KINDS.map((kind) => ({ value: kind, label: DAY_KIND_LABELS[kind], type: "kind" as const }));
 }
 
-function dayMeta(template: SessionTemplate): string {
+function dayMeta(template: SessionTemplate, warmupLevel: WarmupLevel): string {
   const targets = templateTargetsLabel(template.targetExerciseIds, ", ");
-  return [targets ? `Toward ${targets}` : "", warmupCooldownLabel(template)].filter(Boolean).join(" · ");
+  return [targets ? `Toward ${targets}` : "", warmupCooldownLabel(template, warmupLevel)].filter(Boolean).join(" · ");
 }
 
 /** Key for an opened exercise description. */
@@ -69,11 +70,12 @@ function dayView(
         meta: exerciseMetaLine(exercise),
       }))
     : [];
+  const warmupLevel = warmupLevelForTargets(template.targetExerciseIds, state.memories);
   return {
     index,
     title: dayTitle(template),
-    duration: templateDurationLabel(template),
-    meta: dayMeta(template),
+    duration: templateDurationLabel(template, warmupLevel),
+    meta: dayMeta(template, warmupLevel),
     items,
     open: ui.openDays.has(index),
     swapSlotId: swapping ? swapSlotId : undefined,
