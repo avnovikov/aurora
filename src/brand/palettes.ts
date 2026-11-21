@@ -1,5 +1,5 @@
 /**
- * The six dawn palettes. Values are copied from `docs/design/DESIGN.md` (front matter,
+ * The eight dawn palettes. Values are copied from `docs/design/DESIGN.md` (front matter,
  * `palettes:`) and are already contrast-checked; change them there first.
  * Heart-rate band colours live here too: they are chosen per palette so the
  * training pulse stays readable on that palette's surface.
@@ -21,7 +21,7 @@ export const COLOUR_ROLES = [
 
 export type ColourRole = (typeof COLOUR_ROLES)[number];
 
-export const PALETTE_KEYS = ["rassvet", "alvorada", "ushas", "revontulet", "fajr", "eos"] as const;
+export const PALETTE_KEYS = ["rassvet", "alvorada", "ushas", "revontulet", "fajr", "eos", "zorya", "shachar"] as const;
 
 export type PaletteKey = (typeof PALETTE_KEYS)[number];
 
@@ -178,6 +178,54 @@ export const PALETTES: readonly Palette[] = [
       easy: "#1a4f8b",
       steady: "#146c3e",
       work: "#8a4a00",
+      hard: "#a33b00",
+      max: "#9a0058",
+    },
+  },
+  {
+    key: "zorya",
+    label: "Zorya",
+    language: "Ukrainian",
+    meaning: "The dawn star and the Slavic dawn goddess. Sky-blue page, white type, sunflower accent.",
+    colors: {
+      background: "#0057b7",
+      surface: "#004a9c",
+      foreground: "#ffffff",
+      muted: "#d6e6ff",
+      accent: "#ffd500",
+      onAccent: "#0b1a33",
+      alert: "#ffccd5",
+      edge: "#2a74c9",
+      controlEdge: "#9fc3f0",
+    },
+    heartRate: {
+      easy: "#bfe0ff",
+      steady: "#a8f0c0",
+      work: "#ffd500",
+      hard: "#ffb15a",
+      max: "#ffb0dc",
+    },
+  },
+  {
+    key: "shachar",
+    label: "Shachar",
+    language: "Hebrew",
+    meaning: "Dawn. Pastel apricot page, ink type, tekhelet blue accent.",
+    colors: {
+      background: "#ffd9c7",
+      surface: "#ffe9de",
+      foreground: "#1a0f14",
+      muted: "#5c4038",
+      accent: "#1f4fa3",
+      onAccent: "#ffffff",
+      alert: "#a3001b",
+      edge: "#f2bfa8",
+      controlEdge: "#8a6a5e",
+    },
+    heartRate: {
+      easy: "#1a4f8b",
+      steady: "#146c3e",
+      work: "#7a4a00",
       hard: "#a33b00",
       max: "#9a0058",
     },

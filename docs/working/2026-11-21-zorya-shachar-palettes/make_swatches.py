@@ -13,7 +13,8 @@ def parse_ts():
         out.append((m.group(2), roles + hr))
     return out
 
-DRAFTS = [
+DRAFTS: list = []  # both drafts shipped in #280; palettes.ts is now the source
+_OLD_DRAFTS = [
     ("Zorya (draft)", [("background","#0057b7"),("surface","#004a9c"),("foreground","#ffffff"),("muted","#d6e6ff"),("accent","#ffd500"),("onAccent","#0b1a33"),("alert","#ffccd5"),("edge","#2a74c9"),("controlEdge","#9fc3f0"),
         ("hr easy","#bfe0ff"),("hr steady","#a8f0c0"),("hr work","#ffd500"),("hr hard","#ffb15a"),("hr max","#ffb0dc")]),
     ("Shachar (draft)", [("background","#ffd9c7"),("surface","#ffe9de"),("foreground","#1a0f14"),("muted","#5c4038"),("accent","#1f4fa3"),("onAccent","#ffffff"),("alert","#a3001b"),("edge","#f2bfa8"),("controlEdge","#8a6a5e"),

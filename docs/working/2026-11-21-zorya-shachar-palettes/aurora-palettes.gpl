@@ -2,36 +2,6 @@ GIMP Palette
 Name: Aurora palettes
 Columns: 14
 #
-# Zorya (draft)
-  0  87 183	Zorya background #0057b7
-  0  74 156	Zorya surface #004a9c
-255 255 255	Zorya foreground #ffffff
-214 230 255	Zorya muted #d6e6ff
-255 213   0	Zorya accent #ffd500
- 11  26  51	Zorya onAccent #0b1a33
-255 204 213	Zorya alert #ffccd5
- 42 116 201	Zorya edge #2a74c9
-159 195 240	Zorya controlEdge #9fc3f0
-191 224 255	Zorya hr easy #bfe0ff
-168 240 192	Zorya hr steady #a8f0c0
-255 213   0	Zorya hr work #ffd500
-255 177  90	Zorya hr hard #ffb15a
-255 176 220	Zorya hr max #ffb0dc
-# Shachar (draft)
-255 217 199	Shachar background #ffd9c7
-255 233 222	Shachar surface #ffe9de
- 26  15  20	Shachar foreground #1a0f14
- 92  64  56	Shachar muted #5c4038
- 31  79 163	Shachar accent #1f4fa3
-255 255 255	Shachar onAccent #ffffff
-163   0  27	Shachar alert #a3001b
-242 191 168	Shachar edge #f2bfa8
-138 106  94	Shachar controlEdge #8a6a5e
- 26  79 139	Shachar hr easy #1a4f8b
- 20 108  62	Shachar hr steady #146c3e
-122  74   0	Shachar hr work #7a4a00
-163  59   0	Shachar hr hard #a33b00
-154   0  88	Shachar hr max #9a0058
 # Rassvet
   7   7   8	Rassvet background #070708
  18  18  20	Rassvet surface #121214
@@ -122,3 +92,33 @@ Columns: 14
 138  74   0	Eos hr work #8a4a00
 163  59   0	Eos hr hard #a33b00
 154   0  88	Eos hr max #9a0058
+# Zorya
+  0  87 183	Zorya background #0057b7
+  0  74 156	Zorya surface #004a9c
+255 255 255	Zorya foreground #ffffff
+214 230 255	Zorya muted #d6e6ff
+255 213   0	Zorya accent #ffd500
+ 11  26  51	Zorya onAccent #0b1a33
+255 204 213	Zorya alert #ffccd5
+ 42 116 201	Zorya edge #2a74c9
+159 195 240	Zorya controlEdge #9fc3f0
+191 224 255	Zorya hr easy #bfe0ff
+168 240 192	Zorya hr steady #a8f0c0
+255 213   0	Zorya hr work #ffd500
+255 177  90	Zorya hr hard #ffb15a
+255 176 220	Zorya hr max #ffb0dc
+# Shachar
+255 217 199	Shachar background #ffd9c7
+255 233 222	Shachar surface #ffe9de
+ 26  15  20	Shachar foreground #1a0f14
+ 92  64  56	Shachar muted #5c4038
+ 31  79 163	Shachar accent #1f4fa3
+255 255 255	Shachar onAccent #ffffff
+163   0  27	Shachar alert #a3001b
+242 191 168	Shachar edge #f2bfa8
+138 106  94	Shachar controlEdge #8a6a5e
+ 26  79 139	Shachar hr easy #1a4f8b
+ 20 108  62	Shachar hr steady #146c3e
+122  74   0	Shachar hr work #7a4a00
+163  59   0	Shachar hr hard #a33b00
+154   0  88	Shachar hr max #9a0058

@@ -13,7 +13,7 @@ import {
 } from "../../src/brand/palettes";
 import { HEART_RATE_ZONES } from "../../src/pulse/hrZones";
 
-const KEYS = ["rassvet", "alvorada", "ushas", "revontulet", "fajr", "eos"];
+const KEYS = ["rassvet", "alvorada", "ushas", "revontulet", "fajr", "eos", "zorya", "shachar"];
 const ROLES = [
   "background",
   "surface",
@@ -88,7 +88,7 @@ function fakeDocument(withMeta = true): FakeDoc {
 }
 
 describe("palettes", () => {
-  it("has the six palettes in order, Rassvet first and default", () => {
+  it("has the eight palettes in order, Rassvet first and default", () => {
     expect(PALETTE_KEYS).toEqual(KEYS);
     expect(PALETTES.map((p) => p.key)).toEqual(KEYS);
     expect(DEFAULT_PALETTE).toBe("rassvet");
@@ -228,7 +228,7 @@ describe("style.css color-scheme", () => {
     const light = PALETTES.filter((p) => luminance(p.colors.background) > 0.18)
       .map((p) => p.key)
       .sort();
-    expect(light).toEqual(["alvorada", "eos", "revontulet", "ushas"]);
+    expect(light).toEqual(["alvorada", "eos", "revontulet", "shachar", "ushas"]);
     expect(marked).toEqual(light);
   });
 });
