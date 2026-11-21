@@ -1,3 +1,4 @@
+import type { EquipmentId, GearNeeds, JointHistoryEntry } from "../domain/program";
 import type {
   Dose,
   Exercise,
@@ -6,6 +7,8 @@ import type {
   RuleId,
   WeakLink,
 } from "../domain/types";
+import { emptyMemory } from "../progress/levelEvidence";
+import { isUsableByAthlete } from "../safety/suitableExercise";
 import { applyLightDayDose, isLightDay } from "./lightDay";
 import {
   applySkillDose,
@@ -15,11 +18,31 @@ import {
 /** Below-floor sessions in a row before stall regression. */
 export const STALL_BELOW_FLOOR_SESSIONS = 2;
 
-function painSwap(
-  exercise: Exercise,
-  painJoints: string[],
-  graph: Record<string, Exercise>,
-): Exercise | null {
+function athleteFilters(input: ResolveInput): {
+  equipment: readonly EquipmentId[] | undefined;
+  excluded: readonly string[];
+  jointHistory: readonly JointHistoryEntry[];
+} {
+  return {
+    equipment: input.equipment,
+    excluded: input.excluded ?? [],
+    jointHistory: input.jointHistory ?? [],
+  };
+}
+
+/** Gear / exclusion / joint gate for a candidate the resolver is about to pick. */
+function canSelect(exercise: Exercise, input: ResolveInput): boolean {
+  const { equipment, excluded, jointHistory } = athleteFilters(input);
+  // No equipment list → keep legacy behaviour (unit tests without a profile).
+  if (equipment === undefined) {
+    return !excluded.includes(exercise.id);
+  }
+  return isUsableByAthlete(exercise as Exercise & GearNeeds, jointHistory, equipment, excluded);
+}
+
+function painSwap(input: ResolveInput): Exercise | null {
+  const { exercise, readiness, graph } = input;
+  const painJoints = readiness.painJoints;
   if (painJoints.length === 0) {
     return null;
   }
@@ -31,7 +54,8 @@ function painSwap(
     (candidate) =>
       candidate.id !== exercise.id &&
       candidate.pattern === exercise.pattern &&
-      !candidate.joints.some((j) => painJoints.includes(j)),
+      !candidate.joints.some((j) => painJoints.includes(j)) &&
+      canSelect(candidate, input),
   );
   return alternative ?? null;
 }
@@ -67,26 +91,24 @@ function result(
 function tryAdvance(
   exercise: Exercise,
   dose: Dose,
-  memory: ResolveInput["memory"],
-  graph: Record<string, Exercise>,
+  input: ResolveInput,
   ruleIds: RuleId[],
 ): ResolveResult | null {
-  if (!shouldAdvanceProgression(exercise, memory)) {
+  if (!shouldAdvanceProgression(exercise, input.memory)) {
     return null;
   }
-  const harder = exercise.harderId ? graph[exercise.harderId] : undefined;
+  const harder = exercise.harderId ? input.graph[exercise.harderId] : undefined;
   if (!harder) {
+    return null;
+  }
+  // Filter before selection: never advance into a move the athlete cannot do (#285).
+  if (!canSelect(harder, input)) {
     return null;
   }
   const starter = applySkillDose(
     { ...dose, reps: Math.min(dose.reps, 3) },
     harder,
-    {
-      ...memory,
-      exerciseId: harder.id,
-      sessionsAtStandard: 0,
-      bestReps: undefined,
-    },
+    emptyMemory(harder.id),
   );
   return result(
     harder.id,
@@ -123,7 +145,7 @@ function tryStall(
     return null;
   }
   const easier = input.graph[exercise.easierId];
-  if (!easier) {
+  if (!easier || !canSelect(easier, input)) {
     return null;
   }
   return result(
@@ -197,13 +219,7 @@ function applyUnpinnedResolution(
     ruleIds.push("skill_dose");
   }
   if (!holdsProgression(modifiers)) {
-    const advanced = tryAdvance(
-      input.exercise,
-      nextDose,
-      input.memory,
-      input.graph,
-      ruleIds,
-    );
+    const advanced = tryAdvance(input.exercise, nextDose, input, ruleIds);
     if (advanced) {
       return advanced;
     }
@@ -223,13 +239,14 @@ function applyUnpinnedResolution(
 
 /**
  * Resolves one slot: pain → pin → light day / deload → skill dose → advance → stall → hold.
+ * Advance / pain / stall only select moves the athlete can do when equipment is set (#285).
  * Pure; no DOM or Bluetooth.
  */
 export function resolveSlot(input: ResolveInput): ResolveResult {
   const ruleIds: RuleId[] = [];
   const doseStart: Dose = { ...input.dose };
 
-  const swap = painSwap(input.exercise, input.readiness.painJoints, input.graph);
+  const swap = painSwap(input);
   if (swap) {
     return result(
       swap.id,

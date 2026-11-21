@@ -1,3 +1,4 @@
+import type { EquipmentId, JointHistoryEntry } from "./program";
 import type { ExercisePrescription } from "./prescription";
 
 export type { ExercisePrescription } from "./prescription";
@@ -212,6 +213,15 @@ export interface ResolveInput {
   graph: Record<string, Exercise>;
   /** Manual deload week: light-day dose, no progression advance. */
   deloadActive?: boolean;
+  /**
+   * Gear the athlete owns. When set, advance / pain / stall picks only moves
+   * that need no missing gear (#285 — filter before selection).
+   */
+  equipment?: readonly EquipmentId[];
+  /** Exercise ids the athlete never wants; blocked from advance targets. */
+  excluded?: readonly string[];
+  /** Past joint injuries; avoid-moves are blocked from advance targets. */
+  jointHistory?: readonly JointHistoryEntry[];
 }
 
 export type RuleId =
