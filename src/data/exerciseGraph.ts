@@ -33,16 +33,22 @@ export function requireExercise(exerciseId: string): SeedExercise {
 
 /**
  * Work moves the planner may put in a slot: they need tier standards to dose,
- * and are not band moves (those are prehab with no ladder). Gear the user
- * lacks is filtered at planning time, not here.
+ * or are marked as not a max-rep test (#262: dosed by the slot's sets and
+ * reps, no tiers), and are not band moves (those are prehab with no ladder).
+ * Gear the user lacks is filtered at planning time, not here.
  */
 export function isPlannable(exercise: SeedExercise): boolean {
   return (
     exercise.role === "work" &&
     exercise.pattern !== "mobility" &&
-    Boolean(exercise.standards) &&
+    (Boolean(exercise.standards) || isTierless(exercise)) &&
     !exercise.requires?.includes("band")
   );
+}
+
+/** A work move tiers do not apply to (plyometrics, loaded kit, drills): no standards (#262). */
+export function isTierless(exercise: Pick<SeedExercise, "standardsSource">): boolean {
+  return exercise.standardsSource?.kind === "none";
 }
 
 export const PLANNABLE_EXERCISES: readonly SeedExercise[] = LIBRARY_CATALOGUE.filter(isPlannable);

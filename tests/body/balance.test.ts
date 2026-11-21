@@ -439,10 +439,11 @@ describe("Consider adding", () => {
       entry({ exerciseIds: ["scap_pushup"] }),
     ];
     // No-gear Library pulls are beginner; seed a pull median so difficulty filter can match.
+    // (The reverse snow angel has no tier standards since #262; use a row with a band.)
     const memories: Record<string, ExerciseMemory> = {
-      ntc_reverse_snow_angel: {
-        ...emptyMemory("ntc_reverse_snow_angel"),
-        bestReps: 20,
+      fedb_bodyweight_mid_row: {
+        ...emptyMemory("fedb_bodyweight_mid_row"),
+        bestReps: 12,
         sessionsAtStandard: 1,
       },
     };

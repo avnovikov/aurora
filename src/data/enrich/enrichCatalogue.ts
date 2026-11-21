@@ -130,13 +130,26 @@ export function enrichCatalogue(catalogue: SeedExercise[]): SeedExercise[] {
       }
     }
     if (wantsStandards(exercise, placement)) {
-      const { effort } = resolveExerciseTiming(exercise);
-      enriched.standards = standardsFor(exercise.name, effort, difficulty, placement);
-      enriched.effort = effort;
+      withStandards(enriched, difficulty, placement);
     }
     enriched.doodlePath = doodleFor(exercise.id, enriched.doodlePath);
     return withDescription(enriched);
   });
+}
+
+/** Tier band and its source (#262); a tierless move gets the source only. */
+function withStandards(
+  enriched: SeedExercise,
+  difficulty: Difficulty,
+  placement: LadderPlacement | undefined,
+): void {
+  const { effort } = resolveExerciseTiming(enriched);
+  const pick = standardsFor({ id: enriched.id, name: enriched.name, effort, difficulty, placement });
+  if (pick.standards) {
+    enriched.standards = pick.standards;
+  }
+  enriched.standardsSource = pick.source;
+  enriched.effort = effort;
 }
 
 /** Curated, merged description replaces raw source text when one exists. */

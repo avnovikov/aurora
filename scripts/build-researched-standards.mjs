@@ -1,0 +1,247 @@
+#!/usr/bin/env node
+/**
+ * Builds src/data/enrich/researchedStandards.ts from the per-exercise tier
+ * research (#262). Spec: docs/superpowers/specs/2026-11-21-researched-tier-standards-design.md
+ *
+ *   node scripts/build-researched-standards.mjs
+ *
+ * Kept: sourced and derived rows with a valid band (five tiers, ≥ 1, strictly
+ * increasing) and every not_max_test row. Dropped to the generic table: empty
+ * bands, checker rejects, no_data rows and invalid bands (printed below).
+ */
+import { readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+const INPUT = join(ROOT, "docs/superpowers/specs/2026-11-21-researched-tier-standards/tier-research.json");
+const OUTPUT = join(ROOT, "src/data/enrich/researchedStandards.ts");
+
+/**
+ * Parent moves named in derived rows' method text, in display form. The
+ * earliest match in the text wins, so "Derived from High plank hold (itself
+ * derived from forearm plank …)" names the high plank.
+ */
+const PARENTS = [
+  [/high plank/i, "high plank"],
+  [/forearm plank|dynamic plank base/i, "forearm plank"],
+  [/side plank tiers|side plank McGill|McGill side-plank|side-plank class/i, "side plank"],
+  [/single-leg bridge|SLBT/i, "single-leg bridge test"],
+  [/ab wheel/i, "ab wheel rollout"],
+  [/bicycle crunch/i, "bicycle crunch"],
+  [/abdominal crunch|crunch standard/i, "abdominal crunch"],
+  [/hanging leg raise/i, "hanging leg raise"],
+  [/hanging[- ]knee[- ]raise/i, "hanging knee raise"],
+  [/straddle L-sit/i, "straddle L-sit"],
+  [/L-sit/i, "L-sit"],
+  [/hollow hold|hollow-hold/i, "hollow hold"],
+  [/superman/i, "superman"],
+  [/mountain climber/i, "mountain climber"],
+  [/russian twist/i, "Russian twist"],
+  [/V-up/i, "V-up"],
+  [/sit-up|sit up/i, "sit-up"],
+  [/inverted row/i, "inverted row"],
+  [/flexed-arm-hang|flexed arm hang/i, "flexed-arm hang"],
+  [/tuck front lever/i, "tuck front lever"],
+  [/full front lever|front lever/i, "front lever"],
+  [/pull-up anchor|pull-up/i, "pull-up"],
+  [/dead hang|dead-hang/i, "dead hang"],
+  [/dip anchor|dip/i, "dip"],
+  [/pike push-up/i, "pike push-up"],
+  [/push-up|pushup/i, "push-up"],
+  [/maltese/i, "Maltese cross"],
+  [/iron cross/i, "iron cross"],
+  [/back bridge/i, "back bridge"],
+  [/press to handstand/i, "press to handstand"],
+  [/wall handstand/i, "wall handstand"],
+  [/pistol/i, "pistol squat"],
+  [/split squat/i, "split squat"],
+  [/single-leg RDL|single-leg romanian/i, "single-leg Romanian deadlift"],
+  [/lunge-style get-up/i, "Turkish get-up (lunge style)"],
+  [/lunge/i, "lunge"],
+  [/double push press/i, "double kettlebell push press"],
+  [/alternating (KB |kettlebell )?press/i, "alternating kettlebell press"],
+  [/single-bell snatch/i, "kettlebell snatch"],
+  [/Pavel Tsatsouline|get-up/i, "Turkish get-up"],
+];
+
+/** Method text that names no parent cleanly; set by hand from the method. */
+const PARENT_OVERRIDES = {
+  ntc_wall_walk_up: "pike push-up",
+  hf_128: "dead hang",
+  hf_129: "dead hang",
+  hf_136: "wall handstand",
+  hf_127: "pistol squat",
+  hf_108: "coaching stage criterion",
+  hf_130: "NASM coaching note",
+  wger_1954: "hanging knee raise",
+  fedb_flat_bench_lying_leg_raise: "flat bench leg pull-in",
+};
+
+const TIERS = ["novice", "beginner", "intermediate", "advanced", "elite"];
+
+function parseBand(text) {
+  const values = text.split("/").map((part) => Number(part.trim()));
+  if (values.length !== 5 || values.some((value) => !Number.isInteger(value) || value < 1)) {
+    return null;
+  }
+  for (let i = 1; i < values.length; i += 1) {
+    if (values[i] <= values[i - 1]) {
+      return null;
+    }
+  }
+  return values;
+}
+
+function parentOf(row) {
+  if (PARENT_OVERRIDES[row.id]) {
+    return PARENT_OVERRIDES[row.id];
+  }
+  let best = null;
+  for (const [pattern, label] of PARENTS) {
+    const hit = pattern.exec(row.method);
+    if (hit && (best === null || hit.index < best.index)) {
+      best = { index: hit.index, label };
+    }
+  }
+  if (!best) {
+    throw new Error(`No parent found for derived row ${row.id} (${row.name}): ${row.method}`);
+  }
+  return best.label;
+}
+
+/** "Strength Level - Ab Wheel Rollout (current table) <url>" → { title, url }. */
+function parseSources(text) {
+  return text
+    .split(" ; ")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .map((part) => {
+      const match = /^(.*?)\s*<([^>]+)>\s*$/.exec(part);
+      return match ? { title: match[1].trim(), url: match[2] } : { title: part, url: "" };
+    });
+}
+
+/** Publishers named in source titles, in Library form. First match wins. */
+const PUBLISHERS = [
+  [/strength ?level/i, "StrengthLevel"],
+  [/fitnessvolt/i, "FitnessVolt"],
+  [/cooper/i, "Cooper Institute"],
+  [/topend/i, "Topend Sports"],
+  [/fitnessnorms/i, "Fitnessnorms"],
+  [/calisthenai/i, "Calisthenai"],
+  [/gymnastic bodies/i, "Gymnastic Bodies forum"],
+  [/marathon handbook/i, "Marathon Handbook"],
+  [/healthline/i, "Healthline"],
+  [/AOL|Brewer/, "AOL (Brewer)"],
+  [/bodybuilding\.com/i, "Bodybuilding.com"],
+  [/eat ?this/i, "Eat This"],
+  [/fittux/i, "Fittux"],
+  [/fitwill/i, "Fitwill"],
+  [/simonster/i, "Simonster Strength"],
+  [/breaking muscle/i, "Breaking Muscle"],
+  [/awesome ninja/i, "Awesome Ninja Fitness"],
+  [/calisteniapp/i, "Calisteniapp"],
+  [/physio-pedia/i, "Physio-pedia"],
+  [/SRAlab|Demoulin/i, "Demoulin 2006"],
+  [/Mbada/i, "Mbada 2009"],
+  [/Biering-Sorensen young/i, "Biering-Sørensen norms"],
+  [/Nigerian young adults/i, "Nigerian young-adult norms"],
+  [/Police academy/i, "Police academy chart"],
+  [/Community training spreadsheet/i, "community spreadsheet"],
+  [/Gymnastic Rings Support Hold/i, "rings support-hold guide"],
+  [/Skill Track/i, "Skill Track"],
+];
+
+/** Short publisher name for a source title; throws for an unknown one. */
+function shortTitle(title) {
+  const hit = PUBLISHERS.find(([pattern]) => pattern.test(title));
+  if (!hit) {
+    throw new Error(`No publisher for source title: ${title}`);
+  }
+  return hit[1];
+}
+
+function sourcedLabel(sources) {
+  const names = [...new Set(sources.map((source) => shortTitle(source.title)))];
+  return `Sourced: ${names.join(", ")}`;
+}
+
+const rows = JSON.parse(readFileSync(INPUT, "utf8"));
+const kept = [];
+const dropped = [];
+
+for (const row of rows) {
+  if (row.status === "not_max_test") {
+    kept.push({ row, kind: "not_max_test", source: "Not a max-rep test" });
+    continue;
+  }
+  if (row.status === "no_data" || row.verdict === "reject" || !row.final) {
+    dropped.push({ row, reason: row.status === "no_data" ? "no_data" : row.verdict === "reject" ? "rejected" : "no band" });
+    continue;
+  }
+  const band = parseBand(row.final);
+  if (!band) {
+    dropped.push({ row, reason: `invalid band ${row.final}` });
+    continue;
+  }
+  if (row.status === "sourced") {
+    const sources = parseSources(row.sources);
+    kept.push({ row, kind: "sourced", band, sources, source: sourcedLabel(sources) });
+  } else if (row.status === "derived") {
+    kept.push({ row, kind: "derived", band, source: `Derived from ${parentOf(row)}` });
+  } else {
+    dropped.push({ row, reason: `unknown status ${row.status}` });
+  }
+}
+
+const q = (value) => JSON.stringify(value);
+const lines = kept
+  .sort((a, b) => a.row.id.localeCompare(b.row.id))
+  .map(({ row, kind, band, sources, source }) => {
+    const comment = [`  // ${row.name}`];
+    for (const item of sources ?? []) {
+      comment.push(`  //   ${item.title}${item.url ? ` <${item.url}>` : ""}`);
+    }
+    const standards = band
+      ? ` standards: { ${TIERS.map((tier, i) => `${tier}: ${band[i]}`).join(", ")} },`
+      : "";
+    return `${comment.join("\n")}\n  ${q(row.id)}: { kind: ${q(kind)},${standards} source: ${q(source)} },`;
+  });
+
+const header = `// Generated by scripts/build-researched-standards.mjs from
+// docs/superpowers/specs/2026-11-21-researched-tier-standards/tier-research.json (#262).
+// Do not edit by hand: change the research JSON and rerun the script.
+import type { ExerciseStandards } from "../../domain/types";
+
+export type ResearchedKind = "sourced" | "derived" | "not_max_test";
+
+export interface ResearchedStandard {
+  kind: ResearchedKind;
+  /** Absent for not_max_test: tiers do not apply. */
+  standards?: ExerciseStandards;
+  /** Short Library label: "Sourced: …", "Derived from …" or "Not a max-rep test". */
+  source: string;
+}
+
+/**
+ * Researched tier bands by exercise id. Applied only where Endura and the
+ * coaching list have no row (see \`standardsFor\`).
+ */
+export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> = {
+`;
+
+writeFileSync(OUTPUT, `${header}${lines.join("\n")}\n};\n`);
+
+const count = (kind) => kept.filter((item) => item.kind === kind).length;
+console.log(
+  `researchedStandards.ts: ${count("sourced")} sourced, ${count("derived")} derived, ${count("not_max_test")} not_max_test; ${dropped.length} left on generic`,
+);
+for (const { row, reason } of dropped) {
+  console.log(`  generic: ${row.id} ${row.name} (${reason})`);
+}
+if (process.argv.includes("--parents")) {
+  for (const item of kept.filter((entry) => entry.kind === "derived")) {
+    console.log(`  ${item.row.id} ${item.row.name} <- ${item.source}`);
+  }
+}

@@ -1,5 +1,11 @@
-import type { Difficulty, EffortKind, ExerciseStandards } from "../../domain/types";
-import { enduraStandardsFor } from "./enduraStandards";
+import type {
+  Difficulty,
+  EffortKind,
+  ExerciseStandards,
+  StandardsSource,
+} from "../../domain/types";
+import { enduraRuleFor } from "./enduraStandards";
+import { RESEARCHED_STANDARDS } from "./researchedStandards";
 import { hasKeyword } from "./keywords";
 import type { LadderPlacement } from "./ladder";
 
@@ -121,15 +127,30 @@ const SPECIFIC: readonly SpecificStandard[] = [
   },
 ];
 
-export function standardsFor(
-  name: string,
-  effort: EffortKind,
-  difficulty: Difficulty,
-  placement: LadderPlacement | undefined,
-): ExerciseStandards {
-  const endura = enduraStandardsFor(name, effort);
+/** A tier band and where it comes from; no standards when tiers do not apply. */
+export interface StandardsPick {
+  standards?: ExerciseStandards;
+  source: StandardsSource;
+}
+
+export interface StandardsQuery {
+  id: string;
+  name: string;
+  effort: EffortKind;
+  difficulty: Difficulty;
+  placement: LadderPlacement | undefined;
+}
+
+/**
+ * Tier band for a Library move, first hit wins: an Endura twin, the coaching
+ * list (SPECIFIC), the researched table by id (#262), then the generic table
+ * by difficulty. A researched `not_max_test` row means no standards at all.
+ */
+export function standardsFor(query: StandardsQuery): StandardsPick {
+  const { id, name, effort, difficulty, placement } = query;
+  const endura = enduraRuleFor(name, effort);
   if (endura) {
-    return endura;
+    return { standards: endura.standards, source: { kind: "endura", label: endura.source } };
   }
 
   const specific = SPECIFIC.find(
@@ -139,7 +160,18 @@ export function standardsFor(
       (!item.keywords || hasKeyword(name, item.keywords)),
   );
   if (specific) {
-    return specific.standards;
+    return { standards: specific.standards, source: { kind: "coaching", label: specific.source } };
   }
-  return (effort === "hold" ? HOLDS : REPS)[difficulty];
+
+  const researched = RESEARCHED_STANDARDS[id];
+  if (researched?.kind === "not_max_test") {
+    return { source: { kind: "none", label: researched.source } };
+  }
+  if (researched?.standards) {
+    return { standards: researched.standards, source: { kind: researched.kind, label: researched.source } };
+  }
+  return {
+    standards: (effort === "hold" ? HOLDS : REPS)[difficulty],
+    source: { kind: "generic", label: "Generic by difficulty" },
+  };
 }

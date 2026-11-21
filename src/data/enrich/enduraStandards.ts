@@ -148,8 +148,16 @@ export function enduraStandardsFor(
   name: string,
   effort: EffortKind,
 ): ExerciseStandards | null {
+  return enduraRuleFor(name, effort)?.standards ?? null;
+}
+
+/** The Endura row (band and source label) for this name, or null. */
+export function enduraRuleFor(
+  name: string,
+  effort: EffortKind,
+): { standards: ExerciseStandards; source: string } | null {
   const hit = RULES.find((rule) => rule.effort === effort && rule.match(name));
-  return hit?.standards ?? null;
+  return hit ? { standards: hit.standards, source: hit.source } : null;
 }
 
 function rule(
