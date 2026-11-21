@@ -605,7 +605,6 @@ const SEED_STANDARD_SOURCES: Record<string, string> = {
   muscle_up: "Endura muscle-up men 20–29",
 };
 
-
 function withSeedStandards(exercise: SeedExercise): SeedExercise {
   const standards = exercise.standards ?? SEED_STANDARDS[exercise.id];
   if (!standards) {

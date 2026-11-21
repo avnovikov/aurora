@@ -139,7 +139,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Kettlebell Thruster
   "fedb_kettlebell_thruster": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 24, elite: 38 }, source: "Derived from double kettlebell push press" },
   // Kettlebell Turkish Get-Up (Lunge style)
-  "fedb_kettlebell_turkish_get_up_lunge_style": { kind: "derived", standards: { novice: 1, beginner: 2, intermediate: 5, advanced: 8, elite: 12 }, source: "Derived from Turkish get-up" },
+  "fedb_kettlebell_turkish_get_up_lunge_style": { kind: "derived", standards: { novice: 1, beginner: 2, intermediate: 5, advanced: 8, elite: 12 }, source: "Derived from coaching prescription (3–6 reps per side)" },
   // Kettlebell Turkish Get-Up (Squat style)
   "fedb_kettlebell_turkish_get_up_squat_style": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 10, elite: 15 }, source: "Derived from Turkish get-up (lunge style)" },
   // Kettlebell Windmill
@@ -253,8 +253,6 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   "fedb_two_arm_kettlebell_row": { kind: "not_max_test", source: "Not a max-rep test" },
   // Wind Sprints
   "fedb_wind_sprints": { kind: "derived", standards: { novice: 22, beginner: 33, intermediate: 40, advanced: 47, elite: 55 }, source: "Derived from sit-up" },
-  // Side Plank
-  "hf_100": { kind: "derived", standards: { novice: 15, beginner: 30, intermediate: 60, advanced: 90, elite: 120 }, source: "Derived from side plank" },
   // Side Plank with Rotation
   "hf_101": { kind: "derived", standards: { novice: 18, beginner: 28, intermediate: 33, advanced: 39, elite: 46 }, source: "Derived from sit-up" },
   // Hollow Body Rock
@@ -447,7 +445,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Crab toe touch
   "ntc_crab_toe_touch": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Derived from abdominal crunch" },
   // Cross-body mountain climber
-  "ntc_cross_body_climber": { kind: "derived", standards: { novice: 30, beginner: 45, intermediate: 90, advanced: 140, elite: 225 }, source: "Derived from mountain climber" },
+  "ntc_cross_body_climber": { kind: "derived", standards: { novice: 30, beginner: 45, intermediate: 90, advanced: 140, elite: 225 }, source: "Derived from forearm plank" },
   // Fire hydrant
   "ntc_fire_hydrant": { kind: "not_max_test", source: "Not a max-rep test" },
   // Floor windshield wiper

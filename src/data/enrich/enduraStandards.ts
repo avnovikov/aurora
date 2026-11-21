@@ -144,13 +144,6 @@ const RULES: readonly EnduraRule[] = [
   ruleExact("plank", "hold", PLANK, "Endura forearm plank men 20–29"),
 ];
 
-export function enduraStandardsFor(
-  name: string,
-  effort: EffortKind,
-): ExerciseStandards | null {
-  return enduraRuleFor(name, effort)?.standards ?? null;
-}
-
 /** The Endura row (band and source label) for this name, or null. */
 export function enduraRuleFor(
   name: string,

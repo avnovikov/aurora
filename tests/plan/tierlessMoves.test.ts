@@ -94,4 +94,18 @@ describe("not_max_test moves have no tiers (#262)", () => {
     });
     expect(root.querySelector(".ex-standards [data-standards-source]")?.textContent).toBe("Band: Derived from inverted row");
   });
+
+  it("escapes the band label", () => {
+    const root = document.createElement("div");
+    const ringRow = exerciseNamed("Ring Row");
+    mountLibraryDetail(root, {
+      exercise: { ...ringRow, standardsSource: { kind: "derived", label: '<img src=x onerror="1">' } },
+      catalogueById: EXERCISE_GRAPH,
+      scrollToTop: false,
+      actions: { onBack: () => {}, onOpenExercise: () => {} },
+    });
+    const hint = root.querySelector("[data-standards-source]")!;
+    expect(hint.querySelector("img")).toBeNull();
+    expect(hint.textContent).toBe('Band: <img src=x onerror="1">');
+  });
 });

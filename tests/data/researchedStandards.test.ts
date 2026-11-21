@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { enduraStandardsFor } from "../../src/data/enrich/enduraStandards";
+import { enduraRuleFor } from "../../src/data/enrich/enduraStandards";
 import { RESEARCHED_STANDARDS } from "../../src/data/enrich/researchedStandards";
 import { standardsFor } from "../../src/data/enrich/standards";
 import { EXERCISE_GRAPH } from "../../src/data/exerciseGraph";
@@ -62,6 +62,34 @@ const KNOWN_VARIANT_ORDER_VIOLATIONS = [
   "wger_1933 > fedb_sit_up",
 ];
 
+/**
+ * The same check where one side of the pair is researched and the other is
+ * an Endura, coaching or seed band (#262). Reported in the spec, not fixed.
+ */
+const KNOWN_NEIGHBOUR_VARIANT_ORDER_VIOLATIONS = [
+  "cossack_squat > hf_73",
+  "fedb_gironda_sternum_chins > muscle_up",
+  "fedb_gorilla_chin_crunch > hf_49",
+  "fedb_side_to_side_chins > muscle_up",
+  "hf_124 > ntc_push_up_shoulder_tap",
+  "hip_hinge > hf_85",
+  "ntc_archer_dip > ntc_archer_straight_bar_dip",
+  "ntc_archer_inverted_row > hf_42",
+  "ntc_bent_knee_australian_pull_up > hf_39",
+  "ntc_incline_push_up_low > fedb_pushups_close_and_wide_hand_positions",
+  "ntc_reverse_lunge_knee_drive > bulgarian_split",
+  "reverse_lunge > ntc_reverse_lunge_knee_drive",
+  "step_up > hf_90",
+  "wger_1090 > hf_10",
+  "wger_1392 > hf_85",
+  "wger_1907 > cossack_squat",
+  "wger_2557 > fedb_bodyweight_walking_lunge",
+  "wger_2557 > fedb_crossover_reverse_lunge",
+  "wger_2557 > hf_79",
+  "wger_2557 > hf_81",
+  "wger_2557 > wger_1324",
+];
+
 describe("researched tier table (#262)", () => {
   it("every researched band has five tiers ≥ 1, strictly increasing", () => {
     for (const [id, row] of Object.entries(RESEARCHED_STANDARDS)) {
@@ -77,9 +105,13 @@ describe("researched tier table (#262)", () => {
     }
   });
 
-  it("leaves no_data, rejected and empty rows out of the table", () => {
+  it("leaves no_data, rejected, empty and coaching-covered rows out of the table", () => {
     for (const row of RESEARCH) {
-      const left = row.status === "no_data" || row.verdict === "reject" || (!row.final && row.status !== "not_max_test");
+      const left =
+        row.status === "no_data" ||
+        row.verdict === "reject" ||
+        (!row.final && row.status !== "not_max_test") ||
+        row.name === "Side Plank";
       expect(RESEARCHED_STANDARDS[row.id] === undefined, `${row.id} ${row.name}`).toBe(left);
     }
   });
@@ -126,7 +158,7 @@ describe("band precedence (#262)", () => {
 
   it("an Endura twin keeps its Endura band even when the id has a researched row", () => {
     const pick = standardsFor({ ...query, id: idNamed("Crunches"), name: "Push-up" });
-    expect(pick.standards).toEqual(enduraStandardsFor("Push-up", "reps"));
+    expect(pick.standards).toEqual(enduraRuleFor("Push-up", "reps")?.standards);
     expect(pick.source.kind).toBe("endura");
   });
 
@@ -134,15 +166,22 @@ describe("band precedence (#262)", () => {
     const pullup = LIBRARY_CATALOGUE.filter((exercise) => exercise.standardsSource?.kind === "endura");
     expect(pullup.length).toBeGreaterThan(0);
     for (const exercise of pullup) {
-      expect(exercise.standards, exercise.name).toEqual(enduraStandardsFor(exercise.name, exercise.effort!));
+      expect(exercise.standards, exercise.name).toEqual(enduraRuleFor(exercise.name, exercise.effort!)?.standards);
       expect(exercise.standardsSource!.label, exercise.name).toMatch(/Endura/);
     }
   });
 
   it("the coaching list wins over research: Side Plank stays McGill", () => {
     const sidePlank = EXERCISE_GRAPH[idNamed("Side Plank")]!;
-    expect(RESEARCHED_STANDARDS[sidePlank.id]?.kind).toBe("derived");
+    expect(RESEARCHED_STANDARDS[sidePlank.id]).toBeUndefined();
     expect(sidePlank.standardsSource).toEqual({ kind: "coaching", label: "McGill 1999" });
+  });
+
+  it("every researched row is the band its move gets: none is shadowed by Endura or the coaching list", () => {
+    for (const [id, row] of Object.entries(RESEARCHED_STANDARDS)) {
+      const exercise = EXERCISE_GRAPH[id];
+      expect(exercise?.standardsSource?.kind, id).toBe(row.kind === "not_max_test" ? "none" : row.kind);
+    }
   });
 
   it("falls through to the generic table with a generic label", () => {
@@ -152,28 +191,38 @@ describe("band precedence (#262)", () => {
   });
 });
 
+/** Easier → harder Library pairs with the same effort where the easier move has a lower number at some tier. */
+function variantOrderViolations(include: (easier: SeedExercise, harder: SeedExercise) => boolean): string[] {
+  const pairs = new Set<string>();
+  for (const exercise of LIBRARY_CATALOGUE) {
+    if (exercise.easierId) {
+      pairs.add(`${exercise.easierId} > ${exercise.id}`);
+    }
+    if (exercise.harderId) {
+      pairs.add(`${exercise.id} > ${exercise.harderId}`);
+    }
+  }
+  return [...pairs]
+    .filter((pair) => {
+      const [easierId, harderId] = pair.split(" > ");
+      const easier = EXERCISE_GRAPH[easierId!];
+      const harder = EXERCISE_GRAPH[harderId!];
+      if (!easier?.standards || !harder?.standards || easier.effort !== harder.effort || !include(easier, harder)) {
+        return false;
+      }
+      return SKILL_TIERS.some((tier) => easier.standards![tier] < harder.standards![tier]);
+    })
+    .sort();
+}
+
 describe("variant order of researched bands (#262)", () => {
   it("easier variants sit at or above harder ones, apart from the reported pairs", () => {
-    const pairs = new Set<string>();
-    for (const exercise of LIBRARY_CATALOGUE) {
-      if (exercise.easierId) {
-        pairs.add(`${exercise.easierId} > ${exercise.id}`);
-      }
-      if (exercise.harderId) {
-        pairs.add(`${exercise.id} > ${exercise.harderId}`);
-      }
-    }
-    const violations = [...pairs]
-      .filter((pair) => {
-        const [easierId, harderId] = pair.split(" > ");
-        const easier = EXERCISE_GRAPH[easierId!];
-        const harder = EXERCISE_GRAPH[harderId!];
-        if (!isResearched(easier) || !isResearched(harder) || easier.effort !== harder.effort) {
-          return false;
-        }
-        return SKILL_TIERS.some((tier) => easier.standards![tier] < harder.standards![tier]);
-      })
-      .sort();
+    const violations = variantOrderViolations((easier, harder) => isResearched(easier) && isResearched(harder));
     expect(violations).toEqual([...KNOWN_VARIANT_ORDER_VIOLATIONS].sort());
+  });
+
+  it("the same holds against Endura, coaching and seed neighbours, apart from the reported pairs", () => {
+    const violations = variantOrderViolations((easier, harder) => isResearched(easier) !== isResearched(harder));
+    expect(violations).toEqual([...KNOWN_NEIGHBOUR_VARIANT_ORDER_VIOLATIONS].sort());
   });
 });

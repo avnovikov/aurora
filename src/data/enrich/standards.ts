@@ -19,7 +19,7 @@ const std = (n: number, b: number, i: number, a: number, e: number): ExerciseSta
 
 /**
  * Generic five-tier standards by exercise difficulty (max clean reps / hold s).
- * Prefer Endura / coaching composites via `enduraStandardsFor` and SPECIFIC first.
+ * Prefer Endura / coaching composites via `enduraRuleFor` and SPECIFIC first.
  * Anchors for leftovers: CSEP push-up norms (Payne 2000), Yang 2019, USMC PFT,
  * US Army AFT 2025, Strand 2014, McGill 1999. Elite-skill rows are extrapolated.
  */
@@ -64,7 +64,7 @@ const SPECIFIC: readonly SpecificStandard[] = [
     standards: std(10, 20, 45, 60, 90),
     source: "coaching composite (hollow; Gravity + hollow tables)",
   },
-  // Forearm plank → Endura via enduraStandardsFor; side plank stays McGill.
+  // Forearm plank → Endura via enduraRuleFor; side plank stays McGill.
   { family: "side_plank", effort: "hold", standards: std(15, 30, 60, 90, 120), source: "McGill 1999" },
   { family: "squat", effort: "hold", standards: std(20, 45, 75, 120, 180), source: "by analogy with plank norms" },
   // Bilateral BW squat → Endura; other squat-family reps without Endura keep Lein-ish floor.

@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
-  enduraStandardsFor,
+  enduraRuleFor,
   fromEndura,
   scaleStandards,
 } from "../../src/data/enrich/enduraStandards";
+import type { EffortKind } from "../../src/domain/types";
+
+const enduraStandardsFor = (name: string, effort: EffortKind) => enduraRuleFor(name, effort)?.standards ?? null;
 
 describe("fromEndura / scaleStandards", () => {
   it("maps Endura N/I/A/E onto Aurora beginner…elite with novice ≈ ⅔ of N", () => {
@@ -28,7 +31,7 @@ describe("fromEndura / scaleStandards", () => {
   });
 });
 
-describe("enduraStandardsFor", () => {
+describe("enduraRuleFor", () => {
   it("uses free split squat Endura floors", () => {
     expect(enduraStandardsFor("Split Squats", "reps")).toEqual(
       fromEndura(6, 15, 28, 45),

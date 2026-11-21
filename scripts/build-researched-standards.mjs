@@ -3,11 +3,13 @@
  * Builds src/data/enrich/researchedStandards.ts from the per-exercise tier
  * research (#262). Spec: docs/superpowers/specs/2026-11-21-researched-tier-standards-design.md
  *
- *   node scripts/build-researched-standards.mjs
+ *   npm run standards:researched              (or node scripts/build-researched-standards.mjs)
+ *   npm run standards:researched -- --parents  (also print each derived row's parent)
  *
  * Kept: sourced and derived rows with a valid band (five tiers, ≥ 1, strictly
- * increasing) and every not_max_test row. Dropped to the generic table: empty
- * bands, checker rejects, no_data rows and invalid bands (printed below).
+ * increasing) and every not_max_test row. Dropped: empty bands, checker
+ * rejects, no_data rows and invalid bands (left on the generic table), and
+ * rows the coaching list already covers (printed below).
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -62,20 +64,28 @@ const PARENTS = [
   [/double push press/i, "double kettlebell push press"],
   [/alternating (KB |kettlebell )?press/i, "alternating kettlebell press"],
   [/single-bell snatch/i, "kettlebell snatch"],
-  [/Pavel Tsatsouline|get-up/i, "Turkish get-up"],
 ];
 
-/** Method text that names no parent cleanly; set by hand from the method. */
+/**
+ * Rows whose method text names no parent, or whose first-named move is not
+ * the parent; set by hand from the method.
+ */
 const PARENT_OVERRIDES = {
-  ntc_wall_walk_up: "pike push-up",
-  hf_128: "dead hang",
-  hf_129: "dead hang",
-  hf_136: "wall handstand",
-  hf_127: "pistol squat",
   hf_108: "coaching stage criterion",
   hf_130: "NASM coaching note",
   wger_1954: "hanging knee raise",
   fedb_flat_bench_lying_leg_raise: "flat bench leg pull-in",
+  ntc_cross_body_climber: "forearm plank",
+  fedb_kettlebell_turkish_get_up_lunge_style: "coaching prescription (3–6 reps per side)",
+};
+
+/**
+ * Researched rows the coaching list (`SPECIFIC` in standards.ts) already
+ * covers, so the table would never apply them. Left out to keep one band per
+ * move; `researchedStandards.test.ts` fails if another one appears.
+ */
+const COVERED_BY_COACHING = {
+  hf_100: "Side Plank keeps McGill 1999 (same numbers)",
 };
 
 const TIERS = ["novice", "beginner", "intermediate", "advanced", "elite"];
@@ -176,6 +186,10 @@ for (const row of rows) {
     kept.push({ row, kind: "not_max_test", source: "Not a max-rep test" });
     continue;
   }
+  if (COVERED_BY_COACHING[row.id]) {
+    dropped.push({ row, reason: `coaching list: ${COVERED_BY_COACHING[row.id]}` });
+    continue;
+  }
   if (row.status === "no_data" || row.verdict === "reject" || !row.final) {
     dropped.push({ row, reason: row.status === "no_data" ? "no_data" : row.verdict === "reject" ? "rejected" : "no band" });
     continue;
@@ -235,10 +249,10 @@ writeFileSync(OUTPUT, `${header}${lines.join("\n")}\n};\n`);
 
 const count = (kind) => kept.filter((item) => item.kind === kind).length;
 console.log(
-  `researchedStandards.ts: ${count("sourced")} sourced, ${count("derived")} derived, ${count("not_max_test")} not_max_test; ${dropped.length} left on generic`,
+  `researchedStandards.ts: ${count("sourced")} sourced, ${count("derived")} derived, ${count("not_max_test")} not_max_test; ${dropped.length} dropped`,
 );
 for (const { row, reason } of dropped) {
-  console.log(`  generic: ${row.id} ${row.name} (${reason})`);
+  console.log(`  dropped: ${row.id} ${row.name} (${reason})`);
 }
 if (process.argv.includes("--parents")) {
   for (const item of kept.filter((entry) => entry.kind === "derived")) {
