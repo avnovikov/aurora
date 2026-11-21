@@ -35,10 +35,31 @@ function countSpokenById(lineId: string): number {
 function restRoot(): {
   root: HTMLElement;
   left: { textContent: string };
-  cue: { textContent: string };
+  cue: {
+    textContent: string;
+    getAttribute(name: string): string | null;
+    setAttribute(name: string, value: string): void;
+    removeAttribute(name: string): void;
+    hasAttribute(name: string): boolean;
+  };
 } {
   const left = { textContent: "" };
-  const cue = { textContent: "" };
+  const attrs = new Map<string, string>();
+  const cue = {
+    textContent: "",
+    getAttribute(name: string) {
+      return attrs.has(name) ? attrs.get(name)! : null;
+    },
+    setAttribute(name: string, value: string) {
+      attrs.set(name, value);
+    },
+    removeAttribute(name: string) {
+      attrs.delete(name);
+    },
+    hasAttribute(name: string) {
+      return attrs.has(name);
+    },
+  };
   const root = {
     querySelector(selector: string) {
       if (selector === "[data-rest-left]") {
@@ -74,24 +95,25 @@ describe("rest pulse", () => {
     vi.unstubAllGlobals();
   });
 
-  it("asks on the first second above Get ready when the pulse is already steady", () => {
+  it("asks on the first second above Get ready when the pulse is already easy", () => {
     const { root, cue } = restRoot();
     const handle = startRestTimer(
       root,
       restState(GET_READY_AT_SECONDS_LEFT + 2),
       true,
       vi.fn(),
-      { readZone: () => "steady" },
+      { readZone: () => "easy" },
     );
 
     advanceSeconds(1);
     expect(cue.textContent).toBe(REST_GO_ON.text);
     expect(countSpoken(REST_GO_ON.text)).toBe(1);
+    expect(cue.hasAttribute("data-rest-cue-latch")).toBe(true);
 
     handle.clear();
   });
 
-  it("asks once when the pulse drops to steady, and does not ask again", () => {
+  it("asks once when the pulse drops to easy, and does not ask again", () => {
     const { root, cue } = restRoot();
     let zone: HeartRateZone | null = "work";
     const handle = startRestTimer(root, restState(20), true, vi.fn(), {
@@ -101,14 +123,15 @@ describe("rest pulse", () => {
     advanceSeconds(1);
     expect(countSpoken(REST_GO_ON.text)).toBe(0);
 
-    zone = "steady";
+    zone = "easy";
     advanceSeconds(1);
     expect(cue.textContent).toBe(REST_GO_ON.text);
     expect(countSpoken(REST_GO_ON.text)).toBe(1);
+    expect(cue.hasAttribute("data-rest-cue-latch")).toBe(true);
 
     zone = "work";
     advanceSeconds(1);
-    zone = "steady";
+    zone = "easy";
     advanceSeconds(5);
     expect(countSpoken(REST_GO_ON.text)).toBe(1);
     expect(cue.textContent).toBe(REST_GO_ON.text);
@@ -116,17 +139,79 @@ describe("rest pulse", () => {
     handle.clear();
   });
 
+  it("does not offer go-on when the pulse is only steady", () => {
+    const { root, cue } = restRoot();
+    const handle = startRestTimer(root, restState(20), true, vi.fn(), {
+      readZone: () => "steady",
+    });
+
+    advanceSeconds(5);
+    expect(countSpoken(REST_GO_ON.text)).toBe(0);
+    expect(cue.textContent).not.toBe(REST_GO_ON.text);
+    expect(cue.hasAttribute("data-rest-cue-latch")).toBe(false);
+
+    handle.clear();
+  });
+
   it("shows the go-on cue without speaking when voice is off", () => {
     const { root, cue } = restRoot();
     const handle = startRestTimer(root, restState(20), false, vi.fn(), {
-      readZone: () => "steady",
+      readZone: () => "easy",
     });
 
     advanceSeconds(1);
     expect(cue.textContent).toBe(REST_GO_ON.text);
     expect(speakExactLine).not.toHaveBeenCalled();
+    expect(cue.hasAttribute("data-rest-cue-latch")).toBe(true);
 
     handle.clear();
+  });
+
+  it("keeps the cue latch when Get ready replaces go-on text", () => {
+    const { root, cue } = restRoot();
+    const handle = startRestTimer(
+      root,
+      restState(GET_READY_AT_SECONDS_LEFT + 2),
+      true,
+      vi.fn(),
+      { readZone: () => "easy" },
+    );
+
+    advanceSeconds(1);
+    expect(cue.textContent).toBe(REST_GO_ON.text);
+    expect(cue.hasAttribute("data-rest-cue-latch")).toBe(true);
+
+    advanceSeconds(1);
+    expect(cue.textContent).not.toBe(REST_GO_ON.text);
+    expect(cue.hasAttribute("data-rest-cue-latch")).toBe(true);
+
+    handle.clear();
+  });
+
+  it("clears the cue latch on finish", () => {
+    const { root, cue } = restRoot();
+    const handle = startRestTimer(root, restState(20), true, vi.fn(), {
+      readZone: () => "easy",
+    });
+
+    advanceSeconds(1);
+    expect(cue.hasAttribute("data-rest-cue-latch")).toBe(true);
+    handle.finish();
+    expect(cue.hasAttribute("data-rest-cue-latch")).toBe(false);
+
+    handle.clear();
+  });
+
+  it("clears the cue latch on clear", () => {
+    const { root, cue } = restRoot();
+    const handle = startRestTimer(root, restState(20), true, vi.fn(), {
+      readZone: () => "easy",
+    });
+
+    advanceSeconds(1);
+    expect(cue.hasAttribute("data-rest-cue-latch")).toBe(true);
+    handle.clear();
+    expect(cue.hasAttribute("data-rest-cue-latch")).toBe(false);
   });
 
   it("stays quiet when the pulse only settles inside Get ready", () => {
@@ -137,7 +222,7 @@ describe("rest pulse", () => {
       restState(GET_READY_AT_SECONDS_LEFT + 1),
       true,
       onDone,
-      { readZone: () => "steady" },
+      { readZone: () => "easy" },
     );
 
     advanceSeconds(GET_READY_AT_SECONDS_LEFT + 1);

@@ -8,10 +8,10 @@ import { REST_EXTEND } from "../../src/voice/lines";
 import { GET_READY_AT_SECONDS_LEFT } from "../../src/voice/restCue";
 
 describe("shouldOfferRestedGoOn", () => {
-  it("asks when the pulse is steady just above Get ready", () => {
+  it("asks when the pulse is easy just above Get ready", () => {
     expect(
       shouldOfferRestedGoOn({
-        zone: "steady",
+        zone: "easy",
         secondsLeft: GET_READY_AT_SECONDS_LEFT + 1,
         alreadyAsked: false,
       }),
@@ -28,7 +28,7 @@ describe("shouldOfferRestedGoOn", () => {
     ).toBe(true);
   });
 
-  it.each(["work", "hard", "max"] as const)(
+  it.each(["steady", "work", "hard", "max"] as const)(
     "stays quiet in %s",
     (zone) => {
       expect(
@@ -40,7 +40,7 @@ describe("shouldOfferRestedGoOn", () => {
   it("asks only once", () => {
     expect(
       shouldOfferRestedGoOn({
-        zone: "steady",
+        zone: "easy",
         secondsLeft: 40,
         alreadyAsked: true,
       }),
@@ -50,7 +50,7 @@ describe("shouldOfferRestedGoOn", () => {
   it("stays quiet in the Get ready window", () => {
     expect(
       shouldOfferRestedGoOn({
-        zone: "steady",
+        zone: "easy",
         secondsLeft: GET_READY_AT_SECONDS_LEFT,
         alreadyAsked: false,
       }),

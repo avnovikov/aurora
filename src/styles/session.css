@@ -199,11 +199,16 @@
 }
 
 .session .rest-cue {
-  min-height: 24px;
+  --rest-cue-line: 24px;
+  min-height: var(--rest-cue-line);
   margin: 8px 0 0;
   color: var(--foreground);
   font-size: 20px;
-  line-height: 24px;
+  line-height: var(--rest-cue-line);
+}
+
+.session .rest-cue[data-rest-cue-latch] {
+  min-height: calc(2 * var(--rest-cue-line));
 }
 
 .session-hero .tagline {

@@ -58,9 +58,23 @@ function paintRest(
   left: number,
   schedule: readonly RestCueEvent[],
   heldCue: CoachLine | null,
+  goOnOffered: boolean,
 ): void {
   setText(root, "[data-rest-left]", String(Math.max(left, 0)));
   setText(root, "[data-rest-cue]", visibleRestCue(left, schedule, heldCue));
+  setCueLatch(root, goOnOffered);
+}
+
+function setCueLatch(root: HTMLElement, latched: boolean): void {
+  const el = root.querySelector("[data-rest-cue]");
+  if (!el) {
+    return;
+  }
+  if (latched) {
+    el.setAttribute("data-rest-cue-latch", "");
+  } else {
+    el.removeAttribute("data-rest-cue-latch");
+  }
 }
 
 export interface RestTimerHandle {
@@ -77,6 +91,7 @@ export interface RestTimerOptions {
 }
 
 interface RestTickState {
+  /** Go-on was offered: block a second ask and keep two-line cue height. */
   alreadyAsked: boolean;
   heldCue: CoachLine | null;
   schedule: RestCueEvent[];
@@ -103,7 +118,17 @@ export function startRestTimer(
   let finished = false;
 
   const paint = (): void => {
-    paintRest(root, state.restLeft, tickState.schedule, tickState.heldCue);
+    paintRest(
+      root,
+      state.restLeft,
+      tickState.schedule,
+      tickState.heldCue,
+      tickState.alreadyAsked,
+    );
+  };
+
+  const clearCueLatch = (): void => {
+    setCueLatch(root, false);
   };
 
   const speakLine = (line: CoachLine): void => {
@@ -127,6 +152,7 @@ export function startRestTimer(
     finished = true;
     window.clearInterval(timerId);
     state.restLeft = 0;
+    clearCueLatch();
     onDoneRest();
   };
 
@@ -182,7 +208,10 @@ export function startRestTimer(
   }, 1000);
 
   return {
-    clear: () => window.clearInterval(timerId),
+    clear: () => {
+      window.clearInterval(timerId);
+      clearCueLatch();
+    },
     finish,
   };
 }
