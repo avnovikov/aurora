@@ -1,8 +1,8 @@
+import type { JointId } from "../domain/program";
 import type { Readiness, SleepQuality } from "../domain/types";
 import { chipHtml, setChipPressed, toggleChipHtml } from "../library/chips";
-import { JOINT_LABEL } from "../settings/jointHistory";
+import { JOINT_IDS, JOINT_LABEL } from "../settings/jointHistory";
 
-const JOINTS = ["hip", "knee", "shoulder", "wrist", "lumbar"] as const;
 const SLEEP: ReadonlyArray<{ id: SleepQuality; label: string }> = [
   { id: "good", label: "Good" },
   { id: "fair", label: "Fair" },
@@ -21,7 +21,7 @@ export interface CheckInHandlers {
  */
 export function checkInHtml(startLabel: string): string {
   const sleep = SLEEP.map((item) => chipHtml("sleep-value", item.id, item.label, false)).join("");
-  const pain = JOINTS.map((joint) => toggleChipHtml("joint", joint, JOINT_LABEL[joint], false)).join("");
+  const pain = JOINT_IDS.map((joint) => toggleChipHtml("joint", joint, JOINT_LABEL[joint], false)).join("");
   return `
     <p class="chip-row-label">How did you sleep?</p>
     <div class="today-sleep" role="group" aria-label="How did you sleep?">${sleep}</div>
@@ -41,7 +41,7 @@ export function renderCheckIn(
   startLabel = "Start session",
 ): void {
   let sleep: SleepQuality | undefined;
-  const pain = new Set<string>();
+  const pain = new Set<JointId>();
   root.innerHTML = checkInHtml(startLabel);
 
   const startBtn = root.querySelector<HTMLButtonElement>("[data-start]")!;
@@ -58,7 +58,7 @@ export function renderCheckIn(
 
   root.querySelectorAll<HTMLButtonElement>("[data-joint]").forEach((button) => {
     button.addEventListener("click", () => {
-      const joint = button.dataset.joint!;
+      const joint = button.dataset.joint as JointId;
       const on = !pain.has(joint);
       if (on) {
         pain.add(joint);
