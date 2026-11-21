@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { SESSION_TEMPLATES } from "../../src/data/seed";
+import { JOINT_IDS, JOINT_LABEL } from "../../src/settings/jointHistory";
 import { checkInHtml } from "../../src/ui/checkIn";
 import { comingUpHtml } from "../../src/ui/comingUp";
 import { overrideControlsHtml } from "../../src/ui/overrideControls";
@@ -116,8 +117,15 @@ describe("check-in", () => {
   it("uses accessible chips: pick-one for sleep, toggles for pain", () => {
     expect(count(html, 'data-sleep-value="')).toBe(3);
     expect(html).toMatch(/data-sleep-value="good" class="" aria-pressed="false"/);
-    expect(count(html, 'data-kind="toggle"')).toBe(5);
+    expect(count(html, 'data-kind="toggle"')).toBe(JOINT_IDS.length);
     expect(html).toMatch(/role="group" aria-label="How did you sleep\?"/);
+  });
+
+  it("offers every joint the rest of the app knows, including Elbow", () => {
+    for (const joint of JOINT_IDS) {
+      expect(html).toContain(`data-joint="${joint}"`);
+      expect(html).toContain(`>${JOINT_LABEL[joint]}<`);
+    }
   });
 
   it("lays sleep out as a row of three and pain as a grid", () => {

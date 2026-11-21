@@ -1,4 +1,5 @@
 import { EXERCISE_GRAPH, requireExercise } from "../data/exerciseGraph";
+import type { EquipmentId } from "../domain/program";
 import { setDayExercise } from "../plan/dayEdits";
 import type { AthleteState } from "../plan/dayPreview";
 import type { PlannedSession, PlannedWorkItem } from "../rules/planSession";
@@ -8,9 +9,26 @@ import { replaceWorkMove, type WorkAdjustInput } from "./sessionWorkAdjust";
 import type { ViewState } from "./sessionTypes";
 import { currentWork } from "./sessionState";
 
+/**
+ * Cousin-swap only: kettlebell satisfies dumbbell twins. Library/plan gear stay
+ * strict — do not reuse this expansion outside Add-weight cousin checks.
+ */
+function equipmentForCousinTwin(
+  equipment: readonly EquipmentId[],
+): readonly EquipmentId[] {
+  if (equipment.includes("kettlebell") && !equipment.includes("dumbbell")) {
+    return [...equipment, "dumbbell"];
+  }
+  return equipment;
+}
+
 function athleteOwnsGearFor(exerciseId: string, athlete: AthleteState): boolean {
   const exercise = EXERCISE_GRAPH[exerciseId];
-  return exercise !== undefined && missingGear(exercise, athlete.equipment).length === 0;
+  if (exercise === undefined) {
+    return false;
+  }
+  const effectiveGear = equipmentForCousinTwin(athlete.equipment);
+  return missingGear(exercise, effectiveGear).length === 0;
 }
 
 function replaceLiveWorkItem(

@@ -42,7 +42,7 @@ type StoredHistoryEntry = Omit<HistoryEntry, "evaluation"> & {
   evaluation: LegacySessionEvaluation;
 };
 
-function isSessionEvaluation(value: string): value is SessionEvaluation {
+export function isSessionEvaluation(value: string): value is SessionEvaluation {
   return Object.hasOwn(EVALUATION_LABELS, value);
 }
 

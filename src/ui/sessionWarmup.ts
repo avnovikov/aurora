@@ -66,14 +66,19 @@ export function startStationHold(
   const switchAt = sideSwitchAt(step);
   let switchLeft = 0;
   // A per-side station already speaks "Change side" at its halfway point.
+  // Warmup one-sided holds match work holds: halfway (when it fits) + 5→1 + hold_done.
+  // Cool-down stays halfway-only (silent end).
   const kettlebellContext = isKettlebellExercise(step);
   setKettlebellCoachContext(kettlebellContext);
+  const endVoice = stationPhase === "warmup";
   const schedule =
     switchAt === null
       ? holdCueSchedule(step.holdSeconds, {
           random: Math.random,
           effort: stationEffort(step),
           kettlebellContext,
+          includeCountdown: endVoice,
+          includeHoldDone: endVoice,
         })
       : [];
   const spoken = new Set<number>();
