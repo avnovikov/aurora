@@ -55,11 +55,13 @@ describe("pure kettlebell import (#171)", () => {
     expect(isWgerCandidate(wger({ equipment: ["Dumbbell"] }))).toBe(false);
   });
 
-  it("ships kettlebell-required Library moves and no dumbbell-required imports", () => {
+  it("ships kettlebell-required Library moves; dumbbell-required only as curated weighted cousins (#251)", () => {
     const kettlebell = LIBRARY_CATALOGUE.filter((ex) => (ex.requires ?? []).includes("kettlebell"));
     const dumbbell = LIBRARY_CATALOGUE.filter((ex) => (ex.requires ?? []).includes("dumbbell"));
     expect(kettlebell.length).toBeGreaterThanOrEqual(40);
-    expect(dumbbell).toEqual([]);
+    expect(dumbbell.length).toBeGreaterThanOrEqual(12);
+    expect(dumbbell.every((ex) => ex.id.startsWith("wger_"))).toBe(true);
+    expect(dumbbell.every((ex) => !ex.easierId && !ex.harderId)).toBe(true);
     expect(kettlebell.every((ex) => ex.id.startsWith("fedb_") || ex.id.startsWith("wger_"))).toBe(true);
     expect(kettlebell.every((ex) => !ex.easierId && !ex.harderId)).toBe(true);
   });

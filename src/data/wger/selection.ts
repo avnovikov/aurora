@@ -1,8 +1,12 @@
 import { stripTags } from "../enrich/stripTags";
+import { WEIGHTED_COUSIN_WGER_NAMES } from "../weightedCousins";
 import type { WgerExerciseRecord } from "./types";
 
 /** wger equipment name for resistance bands. */
 export const BAND_EQUIPMENT = "Resistance band";
+
+/** wger equipment name for dumbbells. */
+export const DUMBBELL_EQUIPMENT = "Dumbbell";
 
 /** Equipment we assume a calisthenics athlete has (wger equipment names). */
 const ALLOWED_EQUIPMENT = new Set([
@@ -147,7 +151,32 @@ export function isWgerPureKettlebell(equipment: readonly string[]): boolean {
   return equipment.every((item) => KETTLEBELL_COMPANIONS.has(item));
 }
 
+/** Curated Add-weight twins (#251): dumbbell / weighted rows outside the bodyweight allowlist. */
+export function isWeightedCousinCandidate(record: WgerExerciseRecord): boolean {
+  if (!WEIGHTED_COUSIN_WGER_NAMES.has(record.name)) {
+    return false;
+  }
+  if (WGER_DENY.includes(record.name)) {
+    return false;
+  }
+  if (stripTags(record.description).trim().length < MIN_DESCRIPTION_CHARS) {
+    return false;
+  }
+  if (record.equipment.length === 0) {
+    return true;
+  }
+  return record.equipment.every(
+    (item) =>
+      ALLOWED_EQUIPMENT.has(item) ||
+      item === DUMBBELL_EQUIPMENT ||
+      item === KETTLEBELL_EQUIPMENT,
+  );
+}
+
 export function isWgerCandidate(record: WgerExerciseRecord): boolean {
+  if (isWeightedCousinCandidate(record)) {
+    return true;
+  }
   if (WGER_DENY.includes(record.name) || DENY_PATTERN.test(record.name)) {
     return false;
   }

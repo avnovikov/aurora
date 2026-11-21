@@ -1,7 +1,6 @@
 import type { StopReason } from "../domain/types";
 import {
   appendSet,
-  editAddedLoad,
   editNextReps,
   prescribedForNextSet,
   workStateAfterLoggedSet,
@@ -23,6 +22,8 @@ import type { PlannedSession } from "../rules/planSession";
 import { speakCoachLine } from "../voice/coachVoice";
 import { pulseConnectedAt, pulseLostSim } from "./pulseState";
 import { applyConnectHeartRateResult } from "./sessionPulse";
+import { loadAthleteState } from "./athleteState";
+import { applyAddedLoadChange } from "./sessionLoadCousin";
 import type { ViewState } from "./sessionTypes";
 import { currentWork } from "./sessionState";
 import { wireSwipe } from "./sessionSwipe";
@@ -92,9 +93,9 @@ export function wireSessionControls(
     "[data-skip]": () => completeSet(planned, state, "skipped", handlers),
     "[data-reps-minus]": () => adjustNextReps(state, -1, handlers),
     "[data-reps-plus]": () => adjustNextReps(state, 1, handlers),
-    "[data-add-weight]": () => adjustAddedLoad(state, state.addWeightKg, handlers),
-    "[data-load-minus]": () => adjustAddedLoadBy(state, -1, handlers),
-    "[data-load-plus]": () => adjustAddedLoadBy(state, 1, handlers),
+    "[data-add-weight]": () => adjustAddedLoad(planned, state, state.addWeightKg, handlers),
+    "[data-load-minus]": () => adjustAddedLoadBy(planned, state, -1, handlers),
+    "[data-load-plus]": () => adjustAddedLoadBy(planned, state, 1, handlers),
     "[data-cooldown-start]": () => handlers.onStartCooldown(),
     "[data-cooldown-skip]": () => handlers.onSkipCooldown(),
   };
@@ -214,24 +215,29 @@ function adjustNextReps(
 }
 
 function adjustAddedLoad(
+  planned: PlannedSession,
   state: ViewState,
   kg: number,
   handlers: SessionControlHandlers,
 ): void {
-  updateWorkState(state, ["work"], (work) => editAddedLoad(work, kg), handlers);
+  if (!state.workState || state.phase !== "work") {
+    return;
+  }
+  planned.work = applyAddedLoadChange(planned, state, kg, loadAthleteState()).work;
+  handlers.onPaint();
 }
 
 function adjustAddedLoadBy(
+  planned: PlannedSession,
   state: ViewState,
   delta: number,
   handlers: SessionControlHandlers,
 ): void {
-  updateWorkState(
-    state,
-    ["work"],
-    (work) => editAddedLoad(work, Math.max(0, work.addedLoadKg + delta)),
-    handlers,
-  );
+  const currentKg = state.workState?.addedLoadKg;
+  if (currentKg === undefined) {
+    return;
+  }
+  adjustAddedLoad(planned, state, Math.max(0, currentKg + delta), handlers);
 }
 
 function wirePulseSimButtons(

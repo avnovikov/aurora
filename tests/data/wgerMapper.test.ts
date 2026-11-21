@@ -88,6 +88,11 @@ describe("wger mapping", () => {
     expect(isWgerCandidate(record({ equipment: [KETTLEBELL_EQUIPMENT] }))).toBe(true);
     expect(isWgerCandidate(record({ equipment: [KETTLEBELL_EQUIPMENT, "Bench"] }))).toBe(true);
     expect(isWgerCandidate(record({ equipment: ["Dumbbell"] }))).toBe(false);
+    expect(
+      isWgerCandidate(
+        record({ name: "Dumbbell Deadlift", equipment: ["Dumbbell"] }),
+      ),
+    ).toBe(true);
     expect(isWgerCandidate(record({ equipment: [KETTLEBELL_EQUIPMENT, "Dumbbell"] }))).toBe(false);
     expect(isWgerCandidate(record({ name: "Foam Roller quadriceps" }))).toBe(false);
     expect(isWgerCandidate(record({ description: "<p></p>" }))).toBe(false);

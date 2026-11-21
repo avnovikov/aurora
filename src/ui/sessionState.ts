@@ -29,11 +29,11 @@ export function initialState(options: SessionViewOptions): ViewState {
       addWeightKg: options.addWeightKg ?? DEFAULT_ADDED_LOAD_KG,
     };
     if (state.phase === "work" || state.phase === "rest") {
-      state.workState = restoreWorkState(
-        options.planned,
-        state,
-        resume.nextRepsOverride,
-      );
+      state.workState = restoreWorkState(options.planned, state, {
+        nextRepsOverride: resume.nextRepsOverride,
+        addedLoadKg: resume.addedLoadKg,
+        loadSwapFromId: resume.loadSwapFromId,
+      });
     } else if (state.phase === "warmup") {
       seedStationHold(state, options.planned.warmup[state.warmupIndex]);
     } else if (state.phase === "cooldown") {
@@ -163,15 +163,17 @@ export function syncWorkState(
     return null;
   }
   const prior = state.workState;
-  const keepClock = isSameActiveSet(prior, item, state.setIndex);
+  const sameExercise = isSameExerciseSlot(prior, item);
+  const keepClock = sameExercise && prior.setIndex === state.setIndex;
   return {
     slotId: item.slotId,
     exerciseId: item.exerciseId,
     setIndex: state.setIndex,
     prescribedReps: item.dose.reps,
-    addedLoadKg: item.dose.addedLoadKg,
-    nextRepsOverride: prior?.nextRepsOverride,
+    addedLoadKg: sameExercise ? prior.addedLoadKg : item.dose.addedLoadKg,
+    nextRepsOverride: sameExercise ? prior.nextRepsOverride : undefined,
     setStartedAtMs: keepClock ? prior.setStartedAtMs : undefined,
+    loadSwapFromId: sameExercise ? prior.loadSwapFromId : undefined,
   };
 }
 
@@ -186,29 +188,34 @@ export function ensureSetClockStarted(
   return { ...work, setStartedAtMs: nowMs };
 }
 
-function isSameActiveSet(
+function isSameExerciseSlot(
   prior: ActiveWorkState | null | undefined,
   item: PlannedWorkItem,
-  setIndex: number,
 ): prior is ActiveWorkState {
-  return (
-    prior != null &&
-    prior.slotId === item.slotId &&
-    prior.exerciseId === item.exerciseId &&
-    prior.setIndex === setIndex
-  );
+  return prior != null && prior.slotId === item.slotId && prior.exerciseId === item.exerciseId;
+}
+
+interface ResumeWorkFields {
+  nextRepsOverride?: number;
+  addedLoadKg?: number;
+  loadSwapFromId?: string;
 }
 
 function restoreWorkState(
   planned: PlannedSession,
   state: ViewState,
-  nextRepsOverride: number | undefined,
+  resume: ResumeWorkFields,
 ): ActiveWorkState | null {
   const synced = syncWorkState(planned, state);
   if (!synced) {
     return null;
   }
-  return { ...synced, nextRepsOverride };
+  return {
+    ...synced,
+    nextRepsOverride: resume.nextRepsOverride,
+    ...(resume.addedLoadKg !== undefined ? { addedLoadKg: resume.addedLoadKg } : {}),
+    ...(resume.loadSwapFromId ? { loadSwapFromId: resume.loadSwapFromId } : {}),
+  };
 }
 
 function resolveStartedAtMs(startedAt: string | undefined, savedAt: string): number {

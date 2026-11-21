@@ -90,7 +90,7 @@ describe("work screen log-set edit markup", () => {
 });
 
 describe("completeSet sticky reps", () => {
-  it("logs edited reps and sticks them for the next set without weight", () => {
+  it("logs edited reps and sticks them and added load for the next set", () => {
     const planned = planLegs();
     const item = planned.work[0]!;
     expect(item.dose.sets).toBeGreaterThan(1);
@@ -109,7 +109,7 @@ describe("completeSet sticky reps", () => {
     expect(state.phase).toBe("work");
     expect(state.workState?.prescribedReps).toBe(loggedReps);
     expect(state.workState?.nextRepsOverride).toBe(loggedReps);
-    expect(state.workState?.addedLoadKg).toBe(0);
+    expect(state.workState?.addedLoadKg).toBe(DEFAULT_ADDED_LOAD_KG);
     expect(h.onFinishExercise).not.toHaveBeenCalled();
   });
 
