@@ -15,6 +15,7 @@ import {
   takeaway,
   type CaricatureId,
   type Level,
+  type MoveSuggestion,
   type PairId,
   type PairResult,
 } from "../../src/body/balance";
@@ -22,9 +23,36 @@ import type { MuscleLoadMap } from "../../src/body/aggregate";
 import { CARICATURES } from "../../src/body/caricatureSvgs";
 import { EXERCISE_GRAPH } from "../../src/data/exerciseGraph";
 import type { SeedExercise } from "../../src/data/seed";
-import type { EquipmentId } from "../../src/domain/program";
-import type { MuscleGroup } from "../../src/domain/types";
+import type { EquipmentId, JointHistoryEntry, JointId } from "../../src/domain/program";
+import type { ExerciseMemory, ExerciseStandards, MuscleGroup } from "../../src/domain/types";
+import { emptyMemory } from "../../src/session/history";
 import { entry, move, sets } from "../helpers/history";
+
+const STANDARDS: ExerciseStandards = {
+  novice: 1,
+  beginner: 3,
+  intermediate: 8,
+  advanced: 12,
+  elite: 20,
+};
+
+function sortedMoveIds(moves: readonly MoveSuggestion[]): string[] {
+  return moves.map((m) => m.exerciseId).sort();
+}
+
+function declared(joint: JointId): JointHistoryEntry[] {
+  return [{ joint, side: "both", kind: "other" }];
+}
+
+/** Push-heavy / pull-empty suggest input with a custom pull candidate graph. */
+function pullSuggestInput(graph: Record<string, SeedExercise>) {
+  return {
+    pairs: pairs({ push_pull: [5, 0] }),
+    levels: allLevels("moderate", { lats: "none" }),
+    graph,
+    equipment: [] as EquipmentId[],
+  };
+}
 
 const NOW = Date.parse("2026-11-20T08:00:00.000Z");
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -406,13 +434,71 @@ describe("Consider adding", () => {
   });
 
   it("real Library suggestions exist and need only owned gear", () => {
-    const history = [entry({ setCount: 8, exerciseIds: ["bodyweight_squat", "glute_bridge"], sets: undefined }), entry({ exerciseIds: ["scap_pushup"] })];
-    const model = buildBalanceModel({ mode: "overall", nowMs: NOW, history, graph: EXERCISE_GRAPH, equipment: [] });
+    const history = [
+      entry({ setCount: 8, exerciseIds: ["bodyweight_squat", "glute_bridge"], sets: undefined }),
+      entry({ exerciseIds: ["scap_pushup"] }),
+    ];
+    // No-gear Library pulls are beginner; seed a pull median so difficulty filter can match.
+    const memories: Record<string, ExerciseMemory> = {
+      ntc_reverse_snow_angel: {
+        ...emptyMemory("ntc_reverse_snow_angel"),
+        bestReps: 20,
+        sessionsAtStandard: 1,
+      },
+    };
+    const model = buildBalanceModel({
+      mode: "overall",
+      nowMs: NOW,
+      history,
+      graph: EXERCISE_GRAPH,
+      equipment: [],
+      memories,
+    });
     expect(model.moves.length).toBeGreaterThan(0);
-    for (const m of model.moves) {
-      expect(EXERCISE_GRAPH[m.exerciseId]).toBeDefined();
-      expect(EXERCISE_GRAPH[m.exerciseId]!.requires ?? []).toEqual([]);
+    for (const suggestion of model.moves) {
+      const exercise = EXERCISE_GRAPH[suggestion.exerciseId];
+      expect(exercise).toBeDefined();
+      expect(exercise!.requires ?? []).toEqual([]);
+      expect(exercise!.difficulty ?? "intermediate").toBe("beginner");
     }
+  });
+
+  it("drops high catalogue load on a declared joint; keeps moderate and undeclared", () => {
+    const base = pullSuggestInput({
+      safe_row: move("safe_row", "horizontal_pull", ["lats"], { name: "Towel row", difficulty: "intermediate" }),
+      high_elbow: move("high_elbow", "horizontal_pull", ["lats"], { name: "One-arm row", difficulty: "intermediate" }),
+      mod_pull: move("mod_pull", "horizontal_pull", ["lats"], { name: "Pull-up", difficulty: "intermediate" }),
+    });
+    expect(sortedMoveIds(suggestMoves({ ...base, jointHistory: declared("elbow") }))).toEqual([
+      "mod_pull",
+      "safe_row",
+    ]);
+    expect(sortedMoveIds(suggestMoves({ ...base, jointHistory: declared("knee") }))).toEqual([
+      "high_elbow",
+      "mod_pull",
+      "safe_row",
+    ]);
+    expect(sortedMoveIds(suggestMoves(base))).toEqual(["high_elbow", "mod_pull", "safe_row"]);
+  });
+
+  it("keeps only difficulty matching By pattern median; missing pattern → intermediate; novice → beginner", () => {
+    const base = pullSuggestInput({
+      trained: move("trained", "horizontal_pull", ["lats"], {
+        name: "Trained row",
+        difficulty: "intermediate",
+        standards: STANDARDS,
+      }),
+      beg: move("beg", "horizontal_pull", ["lats"], { name: "Beginner row", difficulty: "beginner" }),
+      mid: move("mid", "horizontal_pull", ["lats"], { name: "Middle row", difficulty: "intermediate" }),
+      adv: move("adv", "horizontal_pull", ["lats"], { name: "Advanced row", difficulty: "advanced" }),
+    });
+    const withBest = (bestReps: number): Record<string, ExerciseMemory> => ({
+      trained: { ...emptyMemory("trained"), bestReps, sessionsAtStandard: 1 },
+    });
+
+    expect(sortedMoveIds(suggestMoves(base))).toEqual(["mid", "trained"]);
+    expect(sortedMoveIds(suggestMoves({ ...base, memories: withBest(10) }))).toEqual(["mid", "trained"]);
+    expect(suggestMoves({ ...base, memories: withBest(1) }).map((m) => m.exerciseId)).toEqual(["beg"]);
   });
 });
 

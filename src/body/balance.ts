@@ -1,9 +1,11 @@
-import type { EquipmentId, HistoryEntry } from "../domain/program";
+import type { EquipmentId, HistoryEntry, JointHistoryEntry, JointId } from "../domain/program";
 import type { ExerciseMemory, MuscleGroup, Pattern, SkillTier } from "../domain/types";
 import type { SeedExercise } from "../data/seed";
 import { sourceRank } from "../data/sourceRank";
 import { displayExerciseName } from "../library/displayName";
+import { buildLevelProfile } from "../progress/levelProfile";
 import { missingGear } from "../safety/gear";
+import { jointLoadsFor } from "../safety/jointLoad";
 import {
   aggregateBodyView,
   entryCompletedAtMs,
@@ -460,6 +462,9 @@ const DIFFICULTY_RANK: Readonly<Record<SkillTier, number>> = {
   novice: 0, beginner: 1, intermediate: 2, advanced: 3, elite: 4,
 };
 
+/** Catalogue / By pattern fallback when a move or pattern has no tier yet. */
+const DEFAULT_MOVE_DIFFICULTY: SkillTier = "intermediate";
+
 export const MAX_MOVES = 3;
 
 export interface MoveInput {
@@ -469,6 +474,8 @@ export interface MoveInput {
   equipment: readonly EquipmentId[];
   excluded?: readonly string[];
   memories?: Readonly<Record<string, ExerciseMemory>>;
+  /** Declared joints: high catalogue load on these drops a suggestion. */
+  jointHistory?: readonly JointHistoryEntry[];
   /** `unevenRanked(pairs)` when the caller already has it. */
   ranked?: readonly PairResult[];
 }
@@ -524,9 +531,10 @@ interface MoveContext {
 /**
  * Up to three Library moves for the light side of the most uneven pair: on
  * that side (by pattern, or by primary area for area pairs), with at least one
- * Not trained or Light primary area, doable with the owned gear, ranked by
- * how many such areas they cover. When every pair is even, moves for Not
- * trained areas only.
+ * Not trained or Light primary area, doable with the owned gear, matching the
+ * By pattern median difficulty, without high catalogue load on a declared
+ * joint, ranked by how many such areas they cover. When every pair is even,
+ * moves for Not trained areas only.
  */
 export function suggestMoves(input: MoveInput): MoveSuggestion[] {
   const target = moveTarget(input.pairs, input.ranked ?? unevenRanked(input.pairs));
@@ -536,20 +544,88 @@ export function suggestMoves(input: MoveInput): MoveSuggestion[] {
   const { side, allEven } = target;
   const { levels, graph, equipment } = input;
   const excluded = new Set(input.excluded);
+  const memories = input.memories ?? {};
+  const gates: MoveGates = {
+    excluded,
+    equipment,
+    declaredJoints: declaredJointIds(input.jointHistory),
+    difficultyByPattern: patternDifficultyTargets(graph, memories),
+  };
   const context: MoveContext = {
     side,
     wanted: new Set(AREA_ORDER.filter((area) => levels[area] === "none" || (!allEven && levels[area] === "light"))),
-    memories: input.memories ?? {},
+    memories,
   };
   const index = candidateIndex(graph);
   const candidates = side?.patterns ? side.patterns.flatMap((pattern) => index.byPattern.get(pattern) ?? []) : index.all;
 
   const picks = candidates
-    .filter(({ exercise }) => !excluded.has(exercise.id) && missingGear(exercise, equipment).length === 0)
+    .filter(({ exercise }) => passesGates(exercise, gates))
     .map((candidate) => rankMove(candidate, context))
     .filter((pick): pick is RankedMove => pick !== undefined)
     .sort(compareMoves);
   return firstDistinct(picks, MAX_MOVES);
+}
+
+/** Gear, joint-load, and difficulty checks for Consider adding. */
+interface MoveGates {
+  excluded: ReadonlySet<string>;
+  equipment: readonly EquipmentId[];
+  declaredJoints: ReadonlySet<JointId>;
+  difficultyByPattern: ReadonlyMap<Pattern, SkillTier>;
+}
+
+function passesGates(exercise: SeedExercise, gates: MoveGates): boolean {
+  if (gates.excluded.has(exercise.id)) {
+    return false;
+  }
+  if (missingGear(exercise, gates.equipment).length > 0) {
+    return false;
+  }
+  if (hasHighLoadOnDeclaredJoint(exercise.name, gates.declaredJoints)) {
+    return false;
+  }
+  return matchesPatternDifficulty(exercise, gates.difficultyByPattern);
+}
+
+function moveDifficulty(exercise: SeedExercise): SkillTier {
+  return exercise.difficulty ?? DEFAULT_MOVE_DIFFICULTY;
+}
+
+function matchesPatternDifficulty(
+  exercise: SeedExercise,
+  difficultyByPattern: ReadonlyMap<Pattern, SkillTier>,
+): boolean {
+  const target = difficultyByPattern.get(exercise.pattern) ?? DEFAULT_MOVE_DIFFICULTY;
+  return moveDifficulty(exercise) === target;
+}
+
+/** Joints the athlete has declared in Settings / setup. */
+function declaredJointIds(history: readonly JointHistoryEntry[] | undefined): ReadonlySet<JointId> {
+  return new Set((history ?? []).map((entry) => entry.joint));
+}
+
+/** True when the move has catalogue high load on a declared joint. */
+function hasHighLoadOnDeclaredJoint(name: string, declared: ReadonlySet<JointId>): boolean {
+  if (declared.size === 0) {
+    return false;
+  }
+  return jointLoadsFor(name).some((load) => load.level === "high" && declared.has(load.joint));
+}
+
+/** Map a By pattern median onto a catalogue difficulty (novice → beginner). */
+function catalogueDifficulty(tier: SkillTier): SkillTier {
+  return tier === "novice" ? "beginner" : tier;
+}
+
+/** By pattern median tiers. Missing pattern → DEFAULT_MOVE_DIFFICULTY at the gate. */
+function patternDifficultyTargets(
+  graph: Readonly<Record<string, SeedExercise>>,
+  memories: Readonly<Record<string, ExerciseMemory>>,
+): ReadonlyMap<Pattern, SkillTier> {
+  return new Map(
+    buildLevelProfile({ graph, memories }).rows.map((row) => [row.pattern, catalogueDifficulty(row.tier)]),
+  );
 }
 
 /** The light side of the most uneven pair; no side (Not trained areas only) when all pairs are even. */
@@ -588,7 +664,7 @@ function rankMove({ exercise, primaries, sourceRank, order }: Candidate, context
       -areas.length,
       memories[exercise.id] ? 0 : 1,
       sourceRank,
-      DIFFICULTY_RANK[exercise.difficulty ?? "intermediate"],
+      DIFFICULTY_RANK[moveDifficulty(exercise)],
     ],
   };
 }
@@ -624,6 +700,8 @@ export interface BalanceInput {
   equipment: readonly EquipmentId[];
   excluded?: readonly string[];
   memories?: Readonly<Record<string, ExerciseMemory>>;
+  /** Declared joints for Consider adding high-load filtering. */
+  jointHistory?: readonly JointHistoryEntry[];
   /** Per-area window scores; defaults to aggregate.ts (Overall decayed set-load, periods exercise counts). */
   scores?: MuscleLoadMap;
 }
