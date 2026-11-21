@@ -133,8 +133,10 @@ function wireWorkAdjustControls(root: HTMLElement, handlers: SessionControlHandl
     "[data-work-undo]": () => handlers.onWorkUndo(),
   };
   for (const [selector, onClick] of Object.entries(clicks)) {
-    const el = root.querySelector<HTMLElement>(selector);
-    el?.addEventListener("click", () => onClick(el));
+    // Easier appears twice (scrollable toolbar + sticky bar); wire every match.
+    root.querySelectorAll<HTMLElement>(selector).forEach((el) => {
+      el.addEventListener("click", () => onClick(el));
+    });
   }
   root.querySelectorAll<HTMLElement>("[data-work-swap-pick]").forEach((button) => {
     button.addEventListener("click", () => {
