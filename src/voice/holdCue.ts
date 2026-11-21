@@ -18,9 +18,9 @@ export interface HoldCueScheduleOptions {
   effort?: EffortKind;
   kettlebellContext?: boolean;
   random?: () => number;
-  /** Work holds: append 5–1 countdown (truncated for short holds). */
+  /** Work holds and warmup stations: append 5–1 countdown (truncated for short holds). */
   includeCountdown?: boolean;
-  /** Work holds: hold_done at 0. */
+  /** Work holds and warmup stations: hold_done at 0. */
   includeHoldDone?: boolean;
 }
 
@@ -34,9 +34,10 @@ const COUNT_LINE_IDS: Record<number, CoachLineId> = {
 
 /**
  * Pure schedule for a timed hold/station.
- * Default (stations): one halfway line when long enough.
- * Work holds may also request 5–1 + hold_done. With countdown, halfway only
- * when the mid-point is after the countdown window (mid > 5).
+ * Default: one halfway line when long enough.
+ * Work holds and warmup stations may also request 5–1 + hold_done. With
+ * countdown, halfway only when the mid-point is after the countdown window
+ * (mid > 5). Cool-down keeps the default (no end voice).
  */
 export function holdCueSchedule(
   holdSeconds: number,
