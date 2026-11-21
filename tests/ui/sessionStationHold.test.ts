@@ -90,7 +90,7 @@ describe("startStationHold halfway cue", () => {
 
     vi.advanceTimersByTime(6000);
     expect(left.textContent).toBe("6");
-    expect(cue.textContent).toMatch(/halfway|half/i);
+    expect(cue.textContent).toBe("");
     expect(speakExactLine).toHaveBeenCalledTimes(1);
 
     vi.advanceTimersByTime(1000); // 5
@@ -124,7 +124,7 @@ describe("startStationHold halfway cue", () => {
     expect(onAdvance).toHaveBeenCalledTimes(1);
     const ids = speakExactLine.mock.calls.map((call) => call[0]?.id);
     expect(ids).toEqual(["five", "four", "three", "two", "one", "hold_done"]);
-    expect(cue.textContent).not.toMatch(/halfway|half/i);
+    expect(cue.textContent).toBe("");
   });
 
   it("keeps cool-down holds silent at the end (halfway only when long enough)", () => {

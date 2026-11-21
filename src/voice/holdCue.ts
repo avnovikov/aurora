@@ -84,14 +84,6 @@ export function holdCueAt(
   return schedule.find((event) => event.atSecondsLeft === left);
 }
 
-/** On-screen hold cue copy for a given second; null when nothing is due. */
-export function holdCueText(
-  left: number,
-  schedule: readonly HoldCueEvent[],
-): string | null {
-  return holdCueAt(left, schedule)?.text ?? null;
-}
-
 function countdownCues(holdSeconds: number): HoldCueEvent[] {
   const countFrom = Math.min(HOLD_COUNTDOWN_FROM, Math.floor(holdSeconds));
   const events: HoldCueEvent[] = [];

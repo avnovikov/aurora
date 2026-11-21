@@ -11,7 +11,6 @@ import { paintHoldCountdown, speakDueHoldCue } from "./holdCuePlayback";
 import type { ViewState } from "./sessionTypes";
 
 export { sideSwitchAt };
-export { holdCueText } from "../voice/holdCue";
 
 export interface WarmupTimerHandle {
   clear: () => void;
@@ -83,7 +82,7 @@ export function startStationHold(
       : [];
   const spoken = new Set<number>();
   syncHoldProgress(state, left, switchLeft);
-  paintHoldCountdown(root, "[data-warmup-left]", left, schedule);
+  paintHoldCountdown(root, "[data-warmup-left]", left);
 
   const finishHold = (): void => {
     syncHoldProgress(state, 0, 0);
@@ -109,7 +108,7 @@ export function startStationHold(
 
   const tickHold = (): boolean => {
     left -= 1;
-    paintHoldCountdown(root, "[data-warmup-left]", left, schedule);
+    paintHoldCountdown(root, "[data-warmup-left]", left);
     speakDueHoldCue(left, schedule, spoken);
     if (left === switchAt && left > 0) {
       switchLeft = SIDE_SWITCH_SECONDS;
