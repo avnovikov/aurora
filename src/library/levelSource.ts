@@ -44,6 +44,10 @@ export function describeStandardsSource(source: StandardsSource | undefined): st
   if (source.kind === "none") {
     return "No max-rep tiers: not a max-rep test. Dosed by sets, contacts or load.";
   }
+  if (source.kind === "path_previous") {
+    // Already reads as a sentence: "Same as previous level: Tuck Hold" (decision 8).
+    return source.label;
+  }
   return `Band: ${source.label}`;
 }
 

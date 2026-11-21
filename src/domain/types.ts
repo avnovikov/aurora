@@ -59,6 +59,8 @@ export type StandardsSourceKind =
   /** A family band (#262): every ordinary member of the family shares one band. */
   | "family"
   | "generic"
+  /** A tierless skill-path move given the previous level's band (#262, user decision 8). */
+  | "path_previous"
   | "none";
 
 export interface StandardsSource {

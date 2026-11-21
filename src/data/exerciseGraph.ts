@@ -49,10 +49,37 @@ export function isPlannable(exercise: SeedExercise): boolean {
 
 export const PLANNABLE_EXERCISES: readonly SeedExercise[] = LIBRARY_CATALOGUE.filter(isPlannable);
 
+/**
+ * Work moves the athlete may choose by hand (a swap pick): every plannable
+ * move, plus tierless ones (#262). The generator never picks a tierless move;
+ * chosen by hand it keeps the slot's existing dose, since `applySkillDose`
+ * leaves a move without standards at the dose it is given.
+ */
+export function isChoosable(exercise: SeedExercise): boolean {
+  return (
+    isPlannable(exercise) ||
+    (exercise.role === "work" &&
+      exercise.pattern !== "mobility" &&
+      exercise.standardsSource?.kind === "none" &&
+      !exercise.requires?.includes("band"))
+  );
+}
+
+const CHOOSABLE_EXERCISES: readonly SeedExercise[] = LIBRARY_CATALOGUE.filter(isChoosable);
+
 /** Plannable moves grouped by pattern, curated first, then by name. */
 export function plannableByPattern(): Map<Pattern, SeedExercise[]> {
+  return byPattern(PLANNABLE_EXERCISES);
+}
+
+/** Moves the athlete may choose by hand, grouped by pattern, in the same order. */
+export function choosableByPattern(): Map<Pattern, SeedExercise[]> {
+  return byPattern(CHOOSABLE_EXERCISES);
+}
+
+function byPattern(exercises: readonly SeedExercise[]): Map<Pattern, SeedExercise[]> {
   const groups = new Map<Pattern, SeedExercise[]>();
-  for (const exercise of PLANNABLE_EXERCISES) {
+  for (const exercise of exercises) {
     const list = groups.get(exercise.pattern) ?? [];
     list.push(exercise);
     groups.set(exercise.pattern, list);

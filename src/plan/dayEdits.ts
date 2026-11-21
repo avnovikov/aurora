@@ -16,11 +16,24 @@ import { clearSlotExercise, setSlotExercise, slotExerciseOverride } from "./temp
 
 const SWAP_CHOICES = 8;
 
-/** Moves offered when swapping one out, best first (same ladder, nearest level, never harder first). */
+/**
+ * Moves offered when swapping one out, best first (same ladder, nearest level,
+ * never harder first). The athlete picks, so tierless moves are offered too
+ * (#262); one picked keeps the slot's existing dose.
+ */
 export function swapChoices(exerciseId: string, state: AthleteState, dayExerciseIds: readonly string[] = []): SeedExercise[] {
-  return substitutesFor(requireExercise(exerciseId), state.jointHistory, state.equipment, state.excluded)
-    .filter((candidate) => !dayExerciseIds.includes(candidate.id))
-    .slice(0, SWAP_CHOICES);
+  return substitutes(exerciseId, state, dayExerciseIds, true).slice(0, SWAP_CHOICES);
+}
+
+function substitutes(
+  exerciseId: string,
+  state: AthleteState,
+  dayExerciseIds: readonly string[],
+  byHand: boolean,
+): SeedExercise[] {
+  return substitutesFor(requireExercise(exerciseId), state.jointHistory, state.equipment, state.excluded, { byHand }).filter(
+    (candidate) => !dayExerciseIds.includes(candidate.id),
+  );
 }
 
 /** Point a day's slot at another exercise: a generated day directly, a seed day through its saved edits. */
@@ -97,7 +110,8 @@ export function excludeFromDay(input: {
     slot: storedSlot(input.templateId, input.slotId),
   };
   const excluded = excludeExercise(exercise.id);
-  const substitute = swapChoices(exercise.id, { ...input.state, excluded }, input.dayExerciseIds)[0];
+  // Aurora picks this substitute, not the athlete, so it is a plannable move only.
+  const substitute = substitutes(exercise.id, { ...input.state, excluded }, input.dayExerciseIds ?? [], false)[0];
   if (substitute) {
     setDayExercise(input.templateId, input.slotId, substitute.id);
   }
