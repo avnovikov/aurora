@@ -12,7 +12,7 @@ import {
 import type { SkillTier } from "../domain/types";
 import type { TierSuggestion } from "../progress/suggestTiers";
 import { RETEST_AFTER_DAYS } from "../progress/levelEvidence";
-import type { LevelSourceView } from "./levelSource";
+import { describeStandardsSource, type LevelSourceView } from "./levelSource";
 import { toggleHtml } from "./chips";
 import { displayExerciseName } from "./displayName";
 import { exerciseMetaLine } from "./metaLine";
@@ -404,8 +404,13 @@ function skillPickerHtml(
 /** Full-bleed scale, one column per tier; the user's tier is marked. */
 function standardsHtml(exercise: SeedExercise, mine: SkillTier): string {
   const standards = exercise.standards;
+  const sourceLabel = describeStandardsSource(exercise.standardsSource);
+  const sourceHtml = sourceLabel
+    ? `<p class="hint" data-standards-source>${escapeHtml(sourceLabel)}</p>`
+    : "";
   if (!standards) {
-    return "";
+    // Tierless moves (#262): no strip and no picker, only why.
+    return sourceHtml ? `<section class="ex-section ex-tierless">${sourceHtml}</section>` : "";
   }
   const unit = exercise.effort === "hold" ? "<small>s</small>" : "";
   const cells = SKILL_TIERS.map((tier) => {
@@ -419,6 +424,7 @@ function standardsHtml(exercise: SeedExercise, mine: SkillTier): string {
     <section class="ex-section ex-standards">
       <p class="eyebrow">Standards</p>
       <ul class="skill-standards">${cells}</ul>
+      ${sourceHtml}
     </section>
   `;
 }

@@ -1,5 +1,5 @@
 import { tierIndex } from "../domain/skillTier";
-import type { ExerciseMemory } from "../domain/types";
+import type { ExerciseMemory, StandardsSource } from "../domain/types";
 import { evidenceTier, liveInferredTier, needsRetest } from "../progress/levelEvidence";
 
 export interface LevelSourceView {
@@ -30,4 +30,19 @@ export function describeLevelSource(
     return { label: `Inferred from ${inferred.from.map(nameOf).join(" + ")}`, retest };
   }
   return { label: "Plan default", retest };
+}
+
+/**
+ * Where a move's tier band comes from, for the Library (#262): the Endura or
+ * coaching row, "Sourced: …", "Derived from …", or the generic table. Null
+ * when the move has no band source recorded.
+ */
+export function describeStandardsSource(source: StandardsSource | undefined): string | null {
+  if (!source) {
+    return null;
+  }
+  if (source.kind === "none") {
+    return "No tiers: not a max-rep test. Dosed by sets, contacts or load.";
+  }
+  return `Band: ${source.label}`;
 }
