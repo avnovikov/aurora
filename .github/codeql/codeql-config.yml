@@ -1,11 +1,17 @@
 name: Aurora CodeQL
 # security-and-quality alone omits kind: alert-suppression, so in-source
 # `lgtm[...]` / `codeql[...]` comments never apply. Include AlertSuppression
-# for JS and Java explicitly (see #203).
+# for JS and Java via packs (see #203 / #258).
+# Pack query paths must use `packs`, not `queries: - uses:` — the latter is
+# parsed as an external-repo specifier and breaks CodeQL init.
 queries:
   - uses: security-and-quality
-  - uses: codeql/javascript-queries:AlertSuppression.ql
-  - uses: codeql/java-queries:AlertSuppression.ql
+
+packs:
+  javascript:
+    - codeql/javascript-queries:AlertSuppression.ql
+  java:
+    - codeql/java-queries:AlertSuppression.ql
 
 # Skip dependency trees and Gradle outputs (see #206). For interpreted JS/TS
 # this drops extraction; for Java, Autobuild/manual still follows the compile
