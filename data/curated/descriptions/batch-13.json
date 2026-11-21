@@ -1,0 +1,134 @@
+[
+  {
+    "id": "wger_1706",
+    "summary": "A rear-foot-elevated split squat with dumbbells that loads one leg through a deep range.",
+    "steps": [
+      "Hold a dumbbell in each hand and place your rear foot on a bench behind you.",
+      "Bend the front knee and lower until the front thigh is about parallel to the floor.",
+      "Drive through the front foot to stand tall without locking the knee hard."
+    ],
+    "cues": ["Upright torso", "Front knee tracks over toes", "Quiet rear foot"],
+    "mistakes": ["Letting the front knee cave in", "Slamming the rear knee down"]
+  },
+  {
+    "id": "wger_2661",
+    "summary": "Standing calf raises with dumbbells at your sides to load the rise onto the toes.",
+    "steps": [
+      "Stand tall with a dumbbell in each hand and feet about hip-width apart.",
+      "Rise onto your toes as high as you can and pause briefly.",
+      "Lower your heels slowly until you feel a stretch in the calves."
+    ],
+    "cues": ["Knees soft not locked", "Even rise on both feet", "Slow lower"],
+    "mistakes": ["Bouncing at the bottom", "Leaning the torso forward"]
+  },
+  {
+    "id": "wger_1370",
+    "summary": "A controlled dumbbell hinge from the floor that loads the posterior chain without bouncing.",
+    "steps": [
+      "Stand with dumbbells outside your feet and hinge to grip them with a flat back.",
+      "Drive the floor away and stand tall by extending the hips.",
+      "Hinge again to lower the bells with control; no yanking or momentum."
+    ],
+    "cues": ["Flat back", "Hips lead the hinge", "Slow and deliberate"],
+    "mistakes": ["Rounding the lower back", "Jerking the weights up"]
+  },
+  {
+    "id": "wger_1640",
+    "summary": "A front-loaded squat holding dumbbells at the shoulders to train quads, glutes, and core.",
+    "steps": [
+      "Hold a dumbbell at each shoulder with elbows forward and feet about shoulder-width.",
+      "Sit the hips down and back until the thighs are about parallel.",
+      "Drive through the midfoot to stand without letting the elbows drop."
+    ],
+    "cues": ["Elbows up", "Chest tall", "Knees track over toes"],
+    "mistakes": ["Collapsing the elbows", "Heels lifting off the floor"]
+  },
+  {
+    "id": "wger_1642",
+    "summary": "A hip thrust with a dumbbell on the hips to strengthen the glutes through full hip extension.",
+    "steps": [
+      "Sit with upper back on a bench or the floor and rest a dumbbell across the hips.",
+      "Drive the hips up until the torso and thighs form a straight line; squeeze the glutes.",
+      "Lower the hips with control without dumping the weight."
+    ],
+    "cues": ["Ribs down", "Squeeze at the top", "Chin tucked slightly"],
+    "mistakes": ["Overarching the lower back", "Pushing through the toes only"]
+  },
+  {
+    "id": "wger_206",
+    "summary": "Walking lunges with dumbbells at the sides that step forward into alternating deep lunges.",
+    "steps": [
+      "Stand tall holding a dumbbell in each hand at your sides.",
+      "Step forward and lower until both knees bend near ninety degrees.",
+      "Drive through the front heel to bring the back foot through into the next step."
+    ],
+    "cues": ["Long enough stride", "Torso upright", "Front heel planted"],
+    "mistakes": ["Short choppy steps", "Front knee collapsing inward"]
+  },
+  {
+    "id": "wger_1651",
+    "summary": "A reverse lunge holding dumbbells that steps back to load the glutes and quads.",
+    "steps": [
+      "Stand tall with a dumbbell in each hand at your sides.",
+      "Step one foot back and lower until both knees bend near ninety degrees.",
+      "Drive through the front foot to return to standing; switch sides."
+    ],
+    "cues": ["Step back under control", "Front shin vertical", "Tall chest"],
+    "mistakes": ["Pushing off the back toes first", "Leaning the torso too far forward"]
+  },
+  {
+    "id": "wger_1234",
+    "summary": "A single-leg hip thrust with a dumbbell that isolates one glute at a time.",
+    "steps": [
+      "Place your upper back on a bench with one foot planted and a dumbbell on that hip.",
+      "Lift the free leg and drive the working hip up until the torso and thigh align.",
+      "Lower with control and finish the set before switching sides."
+    ],
+    "cues": ["Hips level", "Squeeze the working glute", "Ribs down"],
+    "mistakes": ["Twisting the open hip up", "Bouncing at the bottom"]
+  },
+  {
+    "id": "wger_490",
+    "summary": "A plank row with dumbbells that pairs a push-up with alternating one-arm rows.",
+    "steps": [
+      "Grip dumbbells on the floor and set a strong plank with hands under shoulders.",
+      "Lower into a push-up, then press up and row one bell to the ribs without twisting.",
+      "Return the bell to the floor; alternate arms each rep."
+    ],
+    "cues": ["Square hips", "Wide base with the feet", "Elbow close on the row"],
+    "mistakes": ["Hips rocking side to side", "Shrugging the rowing shoulder"]
+  },
+  {
+    "id": "wger_1736",
+    "summary": "A single-leg Romanian deadlift with a dumbbell that hinges on one foot for balance and posterior load.",
+    "steps": [
+      "Stand on one leg holding a dumbbell; soft knee on the standing side.",
+      "Hinge at the hips, sending the free leg back and the bell toward the floor with a flat back.",
+      "Drive the hips forward to stand tall; keep the hips square."
+    ],
+    "cues": ["Hips square", "Flat back", "Soft standing knee"],
+    "mistakes": ["Rounding the spine", "Opening the hips to the side"]
+  },
+  {
+    "id": "wger_1902",
+    "summary": "A standard push-up with a plate on the upper back to add load through the press.",
+    "steps": [
+      "Set a plank with a plate balanced on the upper back and hands under the shoulders.",
+      "Lower until the chest nearly reaches the floor with elbows about forty-five degrees.",
+      "Press through the palms to full arm extension without losing the plank line."
+    ],
+    "cues": ["Straight line head to heels", "Core braced", "Plate stays quiet"],
+    "mistakes": ["Hips sagging", "Flaring the elbows wide"]
+  },
+  {
+    "id": "wger_722",
+    "summary": "Loaded step-ups onto a box that drive one leg up while holding dumbbells or a kettlebell.",
+    "steps": [
+      "Stand facing a sturdy box holding your load at the sides or goblet at the chest.",
+      "Place one whole foot on the box and drive through that heel to stand tall on top.",
+      "Step down with control and alternate or finish the set on one side."
+    ],
+    "cues": ["Whole foot on the box", "Drive the standing heel", "Tall finish"],
+    "mistakes": ["Pushing off the trailing leg", "Rounding forward over the load"]
+  }
+]
