@@ -49,8 +49,8 @@ export interface BlockInput {
   newId?: () => string;
 }
 
-const LETTERS = ["A", "B", "C"] as const;
-export type BlockLetter = (typeof LETTERS)[number];
+export const BLOCK_LETTERS = ["A", "B", "C"] as const;
+export type BlockLetter = (typeof BLOCK_LETTERS)[number];
 const EMPHASIS_BY_LETTER: Record<BlockLetter, BlockEmphasis> = {
   A: "working",
   B: "easier",
@@ -61,6 +61,7 @@ const NEXT_BLOCK_LETTER: Record<BlockLetter, BlockLetter> = {
   B: "C",
   C: "A",
 };
+const LETTERS = BLOCK_LETTERS;
 const MAX_SLOTS = 5;
 
 function isBlockKind(kind: DayKind | undefined): kind is BlockKind {
@@ -381,13 +382,13 @@ export interface ContinuationInput {
 }
 
 /**
- * Next day in the same block group after `finished`: next working/easier/focus
- * letter, same `block.id` and target, fresh unique day id, slots from current
- * ladder context. Undefined when the finished day is not a generated block day
- * or no usable moves can be placed.
+ * One day of a given letter in the same block as `finished`. Undefined when the
+ * finished day is not a generated block day or no usable moves can be placed.
  */
-export function generateContinuationDay(input: ContinuationInput): SessionTemplate | undefined {
-  const { finished, context } = input;
+export function generateBlockLetterDay(
+  input: ContinuationInput & { letter: BlockLetter },
+): SessionTemplate | undefined {
+  const { finished, context, letter } = input;
   if (!finished.block || !isBlockKind(finished.kind)) {
     return undefined;
   }
@@ -396,7 +397,6 @@ export function generateContinuationDay(input: ContinuationInput): SessionTempla
   if (kind === "skill" && !target) {
     return undefined;
   }
-  const letter = nextBlockLetter(finished.block.letter);
   const base = (input.newId ?? newDayId)();
   try {
     return buildDay(
@@ -411,4 +411,49 @@ export function generateContinuationDay(input: ContinuationInput): SessionTempla
     }
     throw error;
   }
+}
+
+/**
+ * Next day in the same block group after `finished`: next working/easier/focus
+ * letter. Prefer `generateMissingBlockDays` when the queue must keep A+B+C (#287).
+ */
+export function generateContinuationDay(input: ContinuationInput): SessionTemplate | undefined {
+  if (!input.finished.block) {
+    return undefined;
+  }
+  return generateBlockLetterDay({
+    ...input,
+    letter: nextBlockLetter(input.finished.block.letter),
+  });
+}
+
+/**
+ * Days still needed so this block has A, B and C on the queue (#287).
+ * `presentLetters` are letters already queued for this block; those are skipped.
+ */
+export function generateMissingBlockDays(
+  input: ContinuationInput & { presentLetters: readonly BlockLetter[] },
+): SessionTemplate[] {
+  if (!input.finished.block || !isBlockKind(input.finished.kind)) {
+    return [];
+  }
+  const present = new Set<BlockLetter>(input.presentLetters);
+  const created: SessionTemplate[] = [];
+  let n = 0;
+  for (const letter of BLOCK_LETTERS) {
+    if (present.has(letter)) {
+      continue;
+    }
+    const day = generateBlockLetterDay({
+      ...input,
+      letter,
+      newId: input.newId ? () => `${input.newId!()}${n}` : undefined,
+    });
+    n += 1;
+    if (day) {
+      created.push(day);
+      present.add(letter);
+    }
+  }
+  return created;
 }

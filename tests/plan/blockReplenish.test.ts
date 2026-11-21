@@ -81,13 +81,11 @@ describe("advancePlanAfterSession replenish", () => {
 
     const items = loadPlanQueue().items;
     expect(items[0]).toBe("tmpl_bars");
-    const appendedId = items[items.length - 1]!;
-    expect(appendedId).not.toBe("tmpl_bars");
-    const appended = getPlanDay(appendedId);
-    expect(appended?.block?.id).toBe(finished.block!.id);
-    expect(appended?.block?.letter).toBe("B");
-    expect(appended?.block?.emphasis).toBe("easier");
-    expect(appended?.kind).toBe("lower");
+    // Solo A finished → fill missing A, B and C so the block keeps all three (#287).
+    const appended = items.slice(1).map((id) => getPlanDay(id));
+    expect(appended.map((day) => day?.block?.letter)).toEqual(["A", "B", "C"]);
+    expect(appended.every((day) => day?.block?.id === finished.block!.id)).toBe(true);
+    expect(appended.every((day) => day?.kind === "lower")).toBe(true);
   });
 
   it("does not append an extra generated day after finishing a seed day", () => {

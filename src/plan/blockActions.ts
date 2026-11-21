@@ -3,14 +3,16 @@ import type { SkillTier } from "../domain/types";
 import { loadMemories, saveMemories } from "../session/history";
 import {
   generateBlock,
-  generateContinuationDay,
+  generateMissingBlockDays,
   type BlockInput,
+  type BlockLetter,
   type ContinuationInput,
 } from "./generateBlock";
 import { generateJointCareDay } from "./jointCareDay";
 import type { StepContext } from "./ladderSteps";
 import { declareLevelForDays } from "./levelDeclare";
-import { savePlanDays } from "./planDays";
+import { getPlanDay, savePlanDays } from "./planDays";
+import { findTemplate } from "./templates";
 
 /** Sessions left between the days of one block, so an area is not trained back to back. */
 const BLOCK_SPACING = 2;
@@ -75,16 +77,35 @@ export function addJointCareDay(input: { queue: PlanQueue; context: StepContext;
   return { days: [day], queue };
 }
 
+/** Letters of this block that are still sitting on the queue. */
+function presentBlockLetters(queue: PlanQueue, blockId: string): BlockLetter[] {
+  const letters: BlockLetter[] = [];
+  for (const id of queue.items) {
+    const day = findTemplate(id) ?? getPlanDay(id);
+    if (day?.block?.id === blockId) {
+      letters.push(day.block.letter);
+    }
+  }
+  return letters;
+}
+
 /**
- * After a generated block day finishes: append the next working/easier/focus
- * day at the end of the queue (same group/target). No-op when continuation
- * cannot be built. Saves the new day before returning the extended queue.
+ * After a generated block day finishes: append any missing A/B/C days for that
+ * block so the queue always keeps all three letters (#287). No-op when the
+ * finished day is not a block day or nothing missing can be built.
  */
 export function replenishBlockOnQueue(input: ContinuationInput & { queue: PlanQueue }): PlanQueue {
-  const continuation = generateContinuationDay(input);
-  if (!continuation) {
+  const blockId = input.finished.block?.id;
+  if (!blockId) {
     return input.queue;
   }
-  persistGeneratedDays([continuation], input.context.level);
-  return { items: [...input.queue.items, continuation.id] };
+  const missing = generateMissingBlockDays({
+    ...input,
+    presentLetters: presentBlockLetters(input.queue, blockId),
+  });
+  if (missing.length === 0) {
+    return input.queue;
+  }
+  persistGeneratedDays(missing, input.context.level);
+  return { items: [...input.queue.items, ...missing.map((day) => day.id)] };
 }
