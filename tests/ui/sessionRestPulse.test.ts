@@ -167,7 +167,7 @@ describe("rest pulse", () => {
     handle.clear();
   });
 
-  it("keeps the cue latch when Get ready replaces go-on text", () => {
+  it("keeps the cue latch after go-on when Get ready is voice-only", () => {
     const { root, cue } = restRoot();
     const handle = startRestTimer(
       root,
@@ -182,7 +182,8 @@ describe("rest pulse", () => {
     expect(cue.hasAttribute("data-rest-cue-latch")).toBe(true);
 
     advanceSeconds(1);
-    expect(cue.textContent).not.toBe(REST_GO_ON.text);
+    // Schedule lines (Get ready) no longer paint; go-on held text + latch remain.
+    expect(cue.textContent).toBe(REST_GO_ON.text);
     expect(cue.hasAttribute("data-rest-cue-latch")).toBe(true);
 
     handle.clear();

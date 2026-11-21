@@ -1,4 +1,4 @@
-import { holdCueSchedule, type HoldCueEvent } from "../voice/holdCue";
+import { holdCueSchedule } from "../voice/holdCue";
 import { paintHoldCountdown, speakDueHoldCue } from "./holdCuePlayback";
 import type { ViewState } from "./sessionTypes";
 
@@ -34,7 +34,7 @@ export function startWorkHold(
     includeHoldDone: true,
   });
   const spoken = new Set<number>();
-  syncAndPaint(root, state, left, schedule);
+  syncAndPaint(root, state, left);
 
   let finished = false;
   const stop = (): void => {
@@ -48,7 +48,7 @@ export function startWorkHold(
 
   const timerId = window.setInterval(() => {
     left -= 1;
-    syncAndPaint(root, state, left, schedule);
+    syncAndPaint(root, state, left);
     speakDueHoldCue(left, schedule, spoken);
     if (left <= 0) {
       stop();
@@ -59,12 +59,7 @@ export function startWorkHold(
   return { clear: stop };
 }
 
-function syncAndPaint(
-  root: HTMLElement,
-  state: ViewState,
-  left: number,
-  schedule: readonly HoldCueEvent[],
-): void {
+function syncAndPaint(root: HTMLElement, state: ViewState, left: number): void {
   state.holdLeft = Math.max(left, 0);
-  paintHoldCountdown(root, "[data-work-hold-left]", left, schedule);
+  paintHoldCountdown(root, "[data-work-hold-left]", left);
 }

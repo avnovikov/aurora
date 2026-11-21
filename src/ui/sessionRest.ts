@@ -45,23 +45,15 @@ function speakRestCue(
   });
 }
 
-function visibleRestCue(
-  left: number,
-  schedule: readonly RestCueEvent[],
-  heldCue: CoachLine | null,
-): string {
-  return restCueText(left, schedule) ?? heldCue?.text ?? "";
-}
-
+/** Paint rest seconds and interactive held cue (go-on / +30); schedule lines stay voice-only. */
 function paintRest(
   root: HTMLElement,
   left: number,
-  schedule: readonly RestCueEvent[],
   heldCue: CoachLine | null,
   goOnOffered: boolean,
 ): void {
   setText(root, "[data-rest-left]", String(Math.max(left, 0)));
-  setText(root, "[data-rest-cue]", visibleRestCue(left, schedule, heldCue));
+  setText(root, "[data-rest-cue]", heldCue?.text ?? "");
   setCueLatch(root, goOnOffered);
 }
 
@@ -118,13 +110,7 @@ export function startRestTimer(
   let finished = false;
 
   const paint = (): void => {
-    paintRest(
-      root,
-      state.restLeft,
-      tickState.schedule,
-      tickState.heldCue,
-      tickState.alreadyAsked,
-    );
+    paintRest(root, state.restLeft, tickState.heldCue, tickState.alreadyAsked);
   };
 
   const clearCueLatch = (): void => {
