@@ -117,6 +117,22 @@ export function substitutesFor(
     .map(({ candidate }) => candidate);
 }
 
+/** True when the athlete can do this move: owned gear, not excluded, not a joint avoid. */
+export function isUsableByAthlete(
+  exercise: Candidate,
+  history: readonly JointHistoryEntry[],
+  equipment?: readonly EquipmentId[],
+  excluded: readonly string[] = [],
+): boolean {
+  if (excluded.includes(exercise.id)) {
+    return false;
+  }
+  if (missingGear(exercise, equipment).length > 0) {
+    return false;
+  }
+  return !assessExercise(exercise.name, history).avoid;
+}
+
 /**
  * Keeps the move when it suits this history, equipment and exclusions;
  * otherwise picks a plannable move of the same pattern that is not excluded,

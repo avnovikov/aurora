@@ -66,6 +66,9 @@ export function replaceWorkMove(
     weakLinks: [],
     graph: EXERCISE_GRAPH,
     deloadActive: input.planned.deload,
+    equipment: input.athlete.equipment,
+    excluded: input.athlete.excluded,
+    jointHistory: input.athlete.jointHistory,
   });
   const chosen = requireExercise(resolved.exerciseId);
   return {

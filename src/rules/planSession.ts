@@ -1,7 +1,6 @@
 import { EXERCISE_GRAPH } from "../data/exerciseGraph";
 import {
   STARTER_PROGRAM,
-  type SeedExercise,
   type SeedSlot,
   type StarterProgram,
 } from "../data/seed";
@@ -79,9 +78,9 @@ export interface PlanSessionOptions {
   deloadActive?: boolean;
   /** Past joint injuries; unsafe moves are swapped, risky ones flagged. */
   jointHistory?: readonly JointHistoryEntry[];
-  /** Gear the user owns; moves needing other gear are swapped out. */
+  /** Gear the user owns; unsuitable moves are filtered before selection (#285). */
   equipment?: readonly EquipmentId[];
-  /** Exercise ids the user never wants planned; swapped for a substitute. */
+  /** Exercise ids the user never wants planned; filtered before selection. */
   excluded?: readonly string[];
   /** Overrides the level derived from the athlete's tier in the target family. */
   warmupLevel?: WarmupLevel;
@@ -121,40 +120,11 @@ function pickWarmupLevel(
 }
 
 
-/** What joint, gear and exclusion care did to a resolved move: the final move, why, and notes. */
-interface CareOutcome {
-  chosen: SeedExercise;
-  reason: string;
-  ruleIds: RuleId[];
-  cautions: string[];
-}
-
-function applyCare(
-  resolved: ResolveResult,
-  resolvedExercise: SeedExercise,
-  varietyReason: string | undefined,
-  context: SlotContext,
-): CareOutcome {
-  const care = chooseSuitableExercise(
-    resolvedExercise,
-    context.jointHistory,
-    context.equipment,
-    context.excluded,
-  );
-  const chosen = EXERCISE_GRAPH[care.id] ?? resolvedExercise;
-  const baseReason = varietyReason ? `${resolved.reason} · ${varietyReason}` : resolved.reason;
-  if (!care.swappedFrom) {
-    return { chosen, reason: baseReason, ruleIds: resolved.ruleIds, cautions: care.cautions };
-  }
-  const swapRule = SWAP_RULE[care.cause ?? "joints"];
-  return {
-    chosen,
-    reason: `${baseReason} · ${care.reason}`,
-    ruleIds: [...resolved.ruleIds, swapRule],
-    cautions: care.cautions,
-  };
-}
-
+/**
+ * Pick a usable starting move, then resolve (advance only into usable harder
+ * moves). Suitability is filtered before selection — never resolve into an
+ * unusable harder move and fall back afterward (#285).
+ */
 function planWorkItem(
   slot: SeedSlot,
   exerciseId: string,
@@ -165,23 +135,37 @@ function planWorkItem(
   if (!exercise) {
     throw new Error(`Unknown exercise for slot ${slot.id}: ${exerciseId}`);
   }
-  const resolved = resolveSlot({
+  const baseCare = chooseSuitableExercise(
     exercise,
-    memory: context.memories[exerciseId] ?? emptyMemory(exerciseId),
+    context.jointHistory,
+    context.equipment,
+    context.excluded,
+  );
+  const start = EXERCISE_GRAPH[baseCare.id] ?? exercise;
+  const resolved = resolveSlot({
+    exercise: start,
+    memory: context.memories[start.id] ?? emptyMemory(start.id),
     readiness: context.readiness,
     dose: { ...slot.dose },
     pinned: slot.pinned,
     weakLinks: [],
     graph: EXERCISE_GRAPH,
     deloadActive: context.deloadActive,
+    equipment: context.equipment,
+    excluded: context.excluded,
+    jointHistory: context.jointHistory,
   });
-  const resolvedExercise = EXERCISE_GRAPH[resolved.exerciseId] ?? exercise;
-  const { chosen, reason, ruleIds, cautions } = applyCare(
-    resolved,
-    resolvedExercise,
-    varietyReason,
-    context,
-  );
+  const chosen = EXERCISE_GRAPH[resolved.exerciseId] ?? start;
+  const ruleIds: RuleId[] = [...resolved.ruleIds];
+  const parts: string[] = [];
+  if (baseCare.swappedFrom && baseCare.reason) {
+    ruleIds.push(SWAP_RULE[baseCare.cause ?? "joints"]);
+    parts.push(baseCare.reason);
+  }
+  parts.push(resolved.reason);
+  if (varietyReason) {
+    parts.push(varietyReason);
+  }
   return {
     slotId: slot.id,
     label: slot.label,
@@ -190,12 +174,12 @@ function planWorkItem(
     dose: resolved.dose,
     restSeconds: slot.restSeconds,
     ruleIds,
-    reason,
+    reason: parts.join(" · "),
     doodlePath: chosen.doodlePath,
     cues: chosen.cues,
     summary: chosen.description,
     steps: chosen.steps,
-    cautions,
+    cautions: baseCare.cautions,
   };
 }
 
