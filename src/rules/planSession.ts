@@ -29,7 +29,7 @@ import {
 } from "./consecutiveVariety";
 import { resolveSlot } from "./resolveSlot";
 import { resolveWarmupStations } from "./resolveWarmupStations";
-import { warmupLevelFor } from "./warmupLevel";
+import { warmupLevelForTargets } from "./warmupLevel";
 import { buildCooldownView, buildWarmupView, type WarmupStep } from "./warmupPlan";
 
 export interface PlannedWorkItem {
@@ -117,7 +117,7 @@ function pickWarmupLevel(
   memories: Record<string, ExerciseMemory>,
   override: WarmupLevel | undefined,
 ): WarmupLevel {
-  return override ?? warmupLevelFor({ targetExerciseIds: program.targetExerciseIds ?? [], memories });
+  return override ?? warmupLevelForTargets(program.targetExerciseIds ?? [], memories);
 }
 
 

@@ -11,7 +11,7 @@ import { dayTitle } from "../plan/dayKinds";
 import { loadExcluded } from "../plan/exclusions";
 import { loadScheduleOverride } from "../plan/scheduleOverride";
 import { planSession, type PlannedSession } from "../rules/planSession";
-import { warmupLevelFor } from "../rules/warmupLevel";
+import { warmupLevelForTargets } from "../rules/warmupLevel";
 import {
   appendHistory,
   loadHistory,
@@ -220,7 +220,7 @@ function showTodayHome(root: HTMLElement): void {
       deloadActive: loadDeloadActive(),
       overrideHtml: empty ? "" : overrideControlsHtml(override),
       warmupLevel: next
-        ? warmupLevelFor({ targetExerciseIds: next.targetExerciseIds, memories: loadMemories() })
+        ? warmupLevelForTargets(next.targetExerciseIds, loadMemories())
         : undefined,
     })}</div>`,
     (tab) => tapTab(root, tab),

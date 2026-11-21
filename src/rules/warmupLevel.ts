@@ -42,6 +42,13 @@ export interface WarmupLevelInput {
  * families (Full body) the lowest family wins, so no part of the warm-up is
  * pitched above the athlete's weakest area. Unknown → beginner.
  */
+export function warmupLevelForTargets(
+  targetExerciseIds: readonly string[],
+  memories: Readonly<Record<string, ExerciseMemory>>,
+): WarmupLevel {
+  return warmupLevelFor({ targetExerciseIds, memories });
+}
+
 export function warmupLevelFor(input: WarmupLevelInput): WarmupLevel {
   const index = input.index ?? libraryFamilyLadderIndex();
   const graph = input.graph ?? EXERCISE_GRAPH;
