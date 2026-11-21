@@ -80,12 +80,20 @@ const PARENT_OVERRIDES = {
   fedb_kettlebell_turkish_get_up_lunge_style: "coaching prescription (3–6 reps per side)",
   // The first-named move in the method text is not the parent:
   hf_119: "abdominal crunch",
-  hf_124: "mountain climber",
+  hf_124: "push-up",
   hf_127: "pistol squat",
   hf_134: "hollow hold",
   ntc_cross_body_climber: "forearm plank",
   ntc_floor_windshield_wiper: "hanging knee raise",
   wger_2694: "dead hang",
+  // Third pass (#262): the method names the trusted neighbour, not an anchor in PARENTS order:
+  ntc_reverse_lunge_knee_drive: "Bulgarian split squat",
+  wger_1907: "split squat",
+  wger_1324: "split squat",
+  fedb_bodyweight_walking_lunge: "split squat",
+  hf_79: "split squat",
+  hf_42: "archer Australian pull-up",
+  hf_39: "bent-knee Australian pull-up",
   // No parent move; the band comes from one data source or coaching targets:
   fedb_flutter_kicks: "Strength Level flutter kicks table",
   fedb_hyperextensions_with_no_hyperextension_bench: "back-extension endurance study",

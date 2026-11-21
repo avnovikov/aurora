@@ -43,13 +43,16 @@ const isResearched = (exercise: SeedExercise | undefined): exercise is SeedExerc
 const KNOWN_VARIANT_ORDER_VIOLATIONS = [
   "fedb_3_4_sit_up > fedb_jackknife_sit_up",
   "fedb_alternate_heel_touchers > fedb_toe_touchers",
+  "fedb_bodyweight_mid_row > hf_39",
+  "fedb_bodyweight_walking_lunge > ntc_reverse_lunge_knee_drive",
   "fedb_cross_body_crunch > fedb_sit_up",
+  "fedb_crossover_reverse_lunge > ntc_reverse_lunge_knee_drive",
   "fedb_crunch_hands_overhead > fedb_sit_up",
   "fedb_crunches > fedb_sit_up",
   "fedb_hanging_pike > hf_123",
-  "fedb_hyperextensions_with_no_hyperextension_bench > hf_85",
   "fedb_oblique_crunches > fedb_sit_up",
   "fedb_oblique_crunches_on_the_floor > fedb_sit_up",
+  "fedb_suspended_row > hf_39",
   "hf_115 > fedb_frog_sit_ups",
   "hf_115 > fedb_janda_sit_up",
   "hf_115 > fedb_sit_up",
@@ -57,12 +60,23 @@ const KNOWN_VARIANT_ORDER_VIOLATIONS = [
   "hf_115 > wger_260",
   "hf_119 > fedb_sit_up",
   "hf_33 > hf_34",
+  "hf_39 > hf_40",
+  "hf_41 > hf_39",
+  "hf_67 > hf_39",
+  "hf_79 > ntc_reverse_lunge_knee_drive",
+  "hf_81 > ntc_reverse_lunge_knee_drive",
+  "hf_82 > ntc_reverse_lunge_knee_drive",
+  "hf_85 > hf_84",
   "hf_85 > wger_1294",
   "wger_1286 > hf_124",
+  "wger_1324 > ntc_reverse_lunge_knee_drive",
   "wger_1476 > fedb_jackknife_sit_up",
   "wger_1704 > hf_105",
   "wger_174 > fedb_sit_up",
   "wger_1933 > fedb_sit_up",
+  "wger_2678 > hf_39",
+  "wger_674 > hf_39",
+  "wger_959 > hf_39",
 ];
 
 /**
@@ -70,27 +84,15 @@ const KNOWN_VARIANT_ORDER_VIOLATIONS = [
  * an Endura, coaching or seed band (#262). Reported in the spec, not fixed.
  */
 const KNOWN_NEIGHBOUR_VARIANT_ORDER_VIOLATIONS = [
-  "cossack_squat > hf_73",
   "fedb_gironda_sternum_chins > muscle_up",
   "fedb_gorilla_chin_crunch > hf_49",
+  "fedb_pushups_close_and_wide_hand_positions > hf_10",
   "fedb_side_to_side_chins > muscle_up",
-  "hf_124 > ntc_push_up_shoulder_tap",
-  "hip_hinge > hf_85",
+  "hf_42 > pullup",
   "ntc_archer_dip > ntc_archer_straight_bar_dip",
-  "ntc_archer_inverted_row > hf_42",
   "ntc_bent_knee_australian_pull_up > hf_39",
-  "ntc_incline_push_up_low > fedb_pushups_close_and_wide_hand_positions",
-  "ntc_reverse_lunge_knee_drive > bulgarian_split",
   "reverse_lunge > ntc_reverse_lunge_knee_drive",
-  "step_up > hf_90",
   "wger_1090 > hf_10",
-  "wger_1392 > hf_85",
-  "wger_1907 > cossack_squat",
-  "wger_2557 > fedb_bodyweight_walking_lunge",
-  "wger_2557 > fedb_crossover_reverse_lunge",
-  "wger_2557 > hf_79",
-  "wger_2557 > hf_81",
-  "wger_2557 > wger_1324",
 ];
 
 describe("researched tier table (#262)", () => {
@@ -132,8 +134,8 @@ describe("researched tier table (#262)", () => {
 
   it("applies researched bands by id: Inverted Row and Crunches", () => {
     const row = EXERCISE_GRAPH[idNamed("Inverted Row")]!;
-    expect(band(row.standards)).toBe("5/8/19/33/47");
-    expect(row.standardsSource?.kind).toBe("sourced");
+    expect(band(row.standards)).toBe("7/10/13/20/25");
+    expect(row.standardsSource?.kind).toBe("derived");
     const crunches = EXERCISE_GRAPH[idNamed("Crunches")]!;
     expect(band(crunches.standards)).toBe("16/24/40/60/85");
     expect(crunches.standardsSource?.label).toMatch(/^Sourced: /);

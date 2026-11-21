@@ -55,9 +55,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   //   FitnessVolt Inverted Row <https://fitnessvolt.com/strength-standards/inverted-row>
   "fedb_bodyweight_mid_row": { kind: "sourced", standards: { novice: 6, beginner: 9, intermediate: 23, advanced: 40, elite: 59 }, source: "Sourced: StrengthLevel, FitnessVolt" },
   // Bodyweight Walking Lunge
-  //   eatthis lunge test <https://www.eatthis.com/lunge-test-after-60-how-many-reps/>
-  //   fittux lunge standards <https://www.fittux.com/blogs/journal/how-many-lunges-can-the-average-person-do-real-fitness-standards>
-  "fedb_bodyweight_walking_lunge": { kind: "sourced", standards: { novice: 13, beginner: 20, intermediate: 30, advanced: 60, elite: 100 }, source: "Sourced: Eat This, Fittux" },
+  "fedb_bodyweight_walking_lunge": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, source: "Derived from split squat" },
   // Bottoms Up
   "fedb_bottoms_up": { kind: "derived", standards: { novice: 10, beginner: 15, intermediate: 26, advanced: 39, elite: 55 }, source: "Derived from reverse crunch" },
   // Butt-Ups
@@ -67,7 +65,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Cross-Body Crunch
   "fedb_cross_body_crunch": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Derived from abdominal crunch" },
   // Crossover Reverse Lunge
-  "fedb_crossover_reverse_lunge": { kind: "derived", standards: { novice: 11, beginner: 17, intermediate: 29, advanced: 50, elite: 67 }, source: "Derived from lunge" },
+  "fedb_crossover_reverse_lunge": { kind: "derived", standards: { novice: 3, beginner: 5, intermediate: 12, advanced: 23, elite: 37 }, source: "Derived from lunge" },
   // Crunch - Hands Overhead
   "fedb_crunch_hands_overhead": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 71 }, source: "Derived from abdominal crunch" },
   // Crunches
@@ -199,7 +197,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Push Up to Side Plank
   "fedb_push_up_to_side_plank": { kind: "not_max_test", source: "Not a max-rep test" },
   // Pushups (Close and Wide Hand Positions)
-  "fedb_pushups_close_and_wide_hand_positions": { kind: "derived", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Derived from push-up" },
+  "fedb_pushups_close_and_wide_hand_positions": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, source: "Derived from push-up" },
   // Rocket Jump
   "fedb_rocket_jump": { kind: "not_max_test", source: "Not a max-rep test" },
   // Scissor Kick
@@ -316,7 +314,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Pike Compression
   "hf_123": { kind: "derived", standards: { novice: 2, beginner: 6, intermediate: 8, advanced: 10, elite: 14 }, source: "Derived from hanging knee raise" },
   // Plank Shoulder Tap
-  "hf_124": { kind: "derived", standards: { novice: 10, beginner: 15, intermediate: 40, advanced: 63, elite: 90 }, source: "Derived from mountain climber" },
+  "hf_124": { kind: "derived", standards: { novice: 14, beginner: 21, intermediate: 27, advanced: 35, elite: 44 }, source: "Derived from push-up" },
   // Body Saw
   "hf_125": { kind: "derived", standards: { novice: 3, beginner: 5, intermediate: 10, advanced: 14, elite: 22 }, source: "Derived from ab wheel rollout" },
   // Press to Handstand
@@ -369,15 +367,13 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Ring Fly
   "hf_36": { kind: "not_max_test", source: "Not a max-rep test" },
   // Inverted Row
-  //   StrengthLevel inverted row standards <https://strengthlevel.com/strength-standards/inverted-row>
-  //   FitnessVolt inverted row standards <https://fitnessvolt.com/strength-standards/inverted-row>
-  "hf_39": { kind: "sourced", standards: { novice: 5, beginner: 8, intermediate: 19, advanced: 33, elite: 47 }, source: "Sourced: StrengthLevel, FitnessVolt" },
+  "hf_39": { kind: "derived", standards: { novice: 7, beginner: 10, intermediate: 13, advanced: 20, elite: 25 }, source: "Derived from bent-knee Australian pull-up" },
   // Wide-Grip Inverted Row
   "hf_40": { kind: "derived", standards: { novice: 4, beginner: 7, intermediate: 16, advanced: 28, elite: 39 }, source: "Derived from inverted row" },
   // Ring Row
   "hf_41": { kind: "derived", standards: { novice: 6, beginner: 10, intermediate: 23, advanced: 40, elite: 57 }, source: "Derived from inverted row" },
   // One-Arm Inverted Row
-  "hf_42": { kind: "derived", standards: { novice: 4, beginner: 5, intermediate: 10, advanced: 16, elite: 22 }, source: "Derived from inverted row" },
+  "hf_42": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 10, elite: 15 }, source: "Derived from archer Australian pull-up" },
   // Tuck Front Lever
   //   FitnessVolt front lever guide <https://fitnessvolt.com/front-lever-guide/>
   //   Breaking Muscle front lever build-up <https://breakingmuscle.com/how-to-build-up-to-the-front-lever/>
@@ -403,29 +399,25 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Skater Squat
   "hf_72": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 11, elite: 18 }, source: "Derived from pistol squat" },
   // Sissy Squat
-  //   StrengthLevel sissy squat <https://strengthlevel.com/strength-standards/sissy-squat>
-  //   FitnessVolt sissy squat <https://fitnessvolt.com/strength-standards/sissy-squat>
-  "hf_73": { kind: "sourced", standards: { novice: 3, beginner: 4, intermediate: 10, advanced: 18, elite: 28 }, source: "Sourced: StrengthLevel, FitnessVolt" },
+  "hf_73": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 10, advanced: 13, elite: 16 }, source: "Derived from cossack squat" },
   // Archer Squat
   "hf_75": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 11, elite: 18 }, source: "Derived from pistol squat" },
   // Forward Lunge
-  //   eatthis lunge test <https://www.eatthis.com/lunge-test-after-60-how-many-reps/>
-  //   fittux lunge standards <https://www.fittux.com/blogs/journal/how-many-lunges-can-the-average-person-do-real-fitness-standards>
-  "hf_79": { kind: "sourced", standards: { novice: 13, beginner: 20, intermediate: 30, advanced: 60, elite: 100 }, source: "Sourced: Eat This, Fittux" },
+  "hf_79": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, source: "Derived from split squat" },
   // Curtsy Lunge
-  "hf_81": { kind: "derived", standards: { novice: 11, beginner: 17, intermediate: 29, advanced: 50, elite: 67 }, source: "Derived from lunge" },
+  "hf_81": { kind: "derived", standards: { novice: 3, beginner: 5, intermediate: 12, advanced: 23, elite: 37 }, source: "Derived from lunge" },
   // Lateral Lunge
   "hf_82": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 18, advanced: 34, elite: 54 }, source: "Derived from lunge" },
   // Sliding Leg Curl
   "hf_84": { kind: "derived", standards: { novice: 4, beginner: 7, intermediate: 15, advanced: 28, elite: 45 }, source: "Derived from single-leg romanian deadlift" },
   // Single-Leg Romanian Deadlift
-  "hf_85": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 18, advanced: 34, elite: 54 }, source: "Derived from split squat" },
+  "hf_85": { kind: "derived", standards: { novice: 4, beginner: 8, intermediate: 12, advanced: 16, elite: 25 }, source: "Derived from hip hinge" },
   // Hip Thrust
   "hf_87": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 18, advanced: 34, elite: 54 }, source: "Derived from single-leg bridge test" },
   // Donkey Kick
   "hf_88": { kind: "not_max_test", source: "Not a max-rep test" },
   // Step-Up with Knee Drive
-  "hf_90": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, source: "Derived from split squat" },
+  "hf_90": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 12, advanced: 16, elite: 20 }, source: "Derived from step-up" },
   // Deficit Step-Down
   "hf_91": { kind: "derived", standards: { novice: 3, beginner: 4, intermediate: 8, advanced: 14, elite: 22 }, source: "Derived from pistol squat" },
   // Jump Squat
@@ -465,7 +457,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Plank up-down
   "ntc_plank_up_down": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 22, advanced: 29, elite: 36 }, source: "Derived from forearm plank" },
   // Reverse lunge to knee drive
-  "ntc_reverse_lunge_knee_drive": { kind: "derived", standards: { novice: 3, beginner: 5, intermediate: 13, advanced: 23, elite: 38 }, source: "Derived from lunge" },
+  "ntc_reverse_lunge_knee_drive": { kind: "derived", standards: { novice: 6, beginner: 9, intermediate: 22, advanced: 41, elite: 66 }, source: "Derived from Bulgarian split squat" },
   // Reverse snow angel
   "ntc_reverse_snow_angel": { kind: "not_max_test", source: "Not a max-rep test" },
   // Side plank hip lifts
@@ -517,9 +509,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Single-leg hamstring curl
   "wger_1294": { kind: "derived", standards: { novice: 14, beginner: 21, intermediate: 27, advanced: 33, elite: 39 }, source: "Derived from single-leg bridge test" },
   // Bodyweight lunge
-  //   If You Can Do This Many Lunges After 60 (eatthis lunge test) <https://www.eatthis.com/lunge-test-after-60-how-many-reps/>
-  //   How many lunges can the average person do (fittux) <https://www.fittux.com/blogs/journal/how-many-lunges-can-the-average-person-do-real-fitness-standards>
-  "wger_1324": { kind: "sourced", standards: { novice: 13, beginner: 20, intermediate: 30, advanced: 60, elite: 100 }, source: "Sourced: Eat This, Fittux" },
+  "wger_1324": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, source: "Derived from split squat" },
   // Lateral Push Off
   "wger_1325": { kind: "not_max_test", source: "Not a max-rep test" },
   // Double Kettlebell Clean and Press
@@ -637,7 +627,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Decline Bench Leg Raise
   "wger_1889": { kind: "derived", standards: { novice: 4, beginner: 10, intermediate: 15, advanced: 18, elite: 24 }, source: "Derived from hanging knee raise" },
   // Unilateral Lunges
-  "wger_1907": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, source: "Derived from lunge" },
+  "wger_1907": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 15, advanced: 28, elite: 45 }, source: "Derived from split squat" },
   // Butterfly Superman
   "wger_1908": { kind: "not_max_test", source: "Not a max-rep test" },
   // Leg Wheel

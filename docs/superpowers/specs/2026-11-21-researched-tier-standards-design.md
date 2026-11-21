@@ -169,6 +169,43 @@ A second check covers pairs where one move is researched and its neighbour has a
 | Supported Split Squat 5/8/18/34/54 (Endura) | Bodyweight Walking Lunge, Forward Lunge, Bodyweight lunge 13/20/30/60/100 | all |
 | Supported Split Squat (Endura) | Crossover Reverse Lunge, Curtsy Lunge 11/17/29/50/67 | all |
 
+## Third pass: untrusted sources
+
+**Why.** The user marked the sources behind the neighbour conflicts untrusted and asked for new ones. The 19 rows that conflicted with an Endura, seed or coaching neighbour were researched again (`pass3: true` in `tier-research.json`). Their old sources are kept in the `untrustedSources` field of the research files, marked untrusted. The app never shows them, and the generated table does not cite them.
+
+**Outcome.**
+
+- 0 new sourced bands. No new source gave a max-rep norm. The new finds were prescriptions (sets x reps), timed tests, distance tests (WBLT) and reliability studies.
+- All 19 rows are now `derived` from the trusted neighbour, labelled "Derived from <neighbour>" (for example Cossack squat, pull-up, split squat, Bulgarian split squat, archer Australian pull-up).
+- 12 constraints are now met and 7 are not met (Gorilla Chin/Crunch, Gironda Sternum Chins, Side To Side Chins, Archer Dip, Vpushup, Reverse lunge to knee drive, Inverted Row).
+- Pinned violations: researched pairs 22 -> 36, neighbour pairs 21 -> 9. The researched count rose because the lunge family and the inverted row were re-banded, and the new bands now clash with their own researched neighbours (the Inverted Row against the rows around it, the lunge variants against Reverse lunge to knee drive 6/9/22/41/66). Both lists are re-pinned in `tests/data/researchedStandards.test.ts`.
+
+**Finding.** Most remaining conflicts do not come from the researched bands. They come from the Endura name matcher giving the plain pull-up or push-up band to harder or easier variants:
+
+- L-Sit Pull-Up, Hindu Push-Up, Push-up with shoulder tap, the Archer Straight-Bar Dip proxy and Bent-Knee Australian Pull-Up each carry a plain band.
+- Endura muscle-up elite 20 is above its own pull-up elite 18, although a muscle-up is harder. No variant between the two can satisfy both.
+- The Endura incline push-up has novice 10 and beginner 15, below the push-up's 11 and 17, although it is easier.
+
+**Lunge units bug.** The old lunge sources counted total reps for both legs (13/20/30/60/100). The anchors are per leg. The lunge rows are now per leg: 4/6/15/28/45, from the supported split squat 5/8/18/34/54 divided by 1.2 and floored.
+
+**Confirmed misfires** (from the `anchorMisfire` fields):
+
+- fedb_gorilla_chin_crunch: Confirmed. hf_49 L-Sit Pull-Up carries the plain Endura pull-up band 3/4/8/13/18, matched by name. An L-sit pull-up, which holds hip flexion for the whole rep, is clearly harder than a strict pull-up and should be about pull-up/1.2 = 2/3/6/10/15.
+- hf_124: Confirmed. Push-up with shoulder tap carries the plain Endura push-up band 11/17/22/29/36. The tap makes it harder than a push-up, so it should be about /1.2 (10/15/19/25/30).
+- ntc_archer_dip: Confirmed in principle, with a correction. The Archer Straight-Bar Dip carries a plain two-arm straight-bar dip proxy (3/5/12/22/35), but it is near-unilateral and harder than both a straight-bar dip and a parallel-bar archer dip. Re-band the neighbour to about archer dip/1.2 = 1/3/7/12/17.
+- fedb_pushups_close_and_wide_hand_positions: Confirmed. Endura incline band 10/15/35/65/100 has novice 10 and beginner 15, below the push-up's 11/17, although an incline push-up is easier.
+- wger_1090: Confirmed. hf_10 Hindu Push-Up carries the plain Endura push-up band 11/17/22/29/36, matched by name. A Hindu push-up is harder than a standard push-up, so re-anchor hf_10 to push-up/1.2 or lower.
+- ntc_reverse_lunge_knee_drive: Confirmed. The two neighbours contradict each other: Bulgarian split squat (5/7/18/34/55) has intermediate 18, above reverse_lunge's 15. The reverse_lunge seed (6/10/15/20/25) is a coaching target, not a max test. Re-anchor it before enforcing the constraint.
+- hf_85: Partly confirmed. The Hip hinge and Good Morning neighbours (5/10/15/20/30) are coaching composites, not max tests, so both bands are unmeasured.
+- hf_90: Partly confirmed, no action needed. The step_up seed is a coaching composite; elite 25 per leg is low next to the lunge family at elite 45.
+- wger_1907: Confirmed as a note only. The cossack_squat seed is a patterning target, so the constraint binds only at novice and beginner. The 1-2 rep raise is small.
+- fedb_gironda_sternum_chins: Confirmed. The Endura muscle-up elite 20 is above its pull-up elite 18. Re-band the muscle-up advanced and elite to at most pull-up/1.2 (about 11 and 15 or lower).
+- fedb_side_to_side_chins: Confirmed. Same muscle-up calibration problem as Gironda chins.
+- hf_39: Confirmed. TopEndSports norms for the bent-knee horizontal pull-up (men 18-35) are 10-14, 15-19, 20-29, 30+, roughly twice the Endura vertical pull-up band. ntc_bent_knee_australian_pull_up should be re-banded to about 8/12/17/24/30.
+- hf_42: Partly confirmed. The Archer Australian Pull-Up carries the Endura pull-up band by name, but its values sit close to inverted row/1.2, so the misfire is minor.
+- wger_1324, fedb_bodyweight_walking_lunge, fedb_crossover_reverse_lunge, hf_81, hf_79: no anchor misfire. The conflict was the units mismatch above.
+- hf_73: not a misfire. The Cossack squat band is a coaching composite but a valid upper bound for the sissy squat.
+
 ## Follow-ups
 
 1. Resolve the 22 + 21 variant-order pairs. Either re-derive the crunch family from the sit-up, or move the sit-up off the crunch chains. Then shrink `KNOWN_VARIANT_ORDER_VIOLATIONS`.
@@ -176,3 +213,4 @@ A second check covers pairs where one move is researched and its neighbour has a
 3. Decide the 7 generic leftovers. The three skill placeholders (Manna, Ice Cream Maker, Pelican Curl) need a decision, and the rest have no data after two passes.
 4. Fix the open dosing issue above before merging: a generated tierless slot must not take the `doseFor` placeholder (sets × 8 at RIR 2). Any dose rule of their own (contacts for plyometrics, load for kettlebell moves) needs evidence first.
 5. Recheck the Crow Pose, Elbow Lever and Bear plank elite bands.
+6. Tighten the Endura name matcher in `src/data/enrich/enduraStandards.ts` so L-Sit Pull-Up, Hindu Push-Up, Push-up with shoulder tap, Archer Straight-Bar Dip and Bent-Knee Australian Pull-Up stop taking the plain pull-up, push-up or dip band. Then re-band the Endura muscle-up (elite 20 > pull-up 18) and incline push-up (novice 10 < push-up 11), and shrink both pinned lists. Not done in this task.
