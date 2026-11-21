@@ -5,12 +5,13 @@ import {
   type WarmupStep,
 } from "../rules/warmupPlan";
 import { setKettlebellCoachContext } from "../voice/coachContext";
-import { speakExactLine } from "../voice/coachVoice";
-import { holdCueSchedule, type HoldCueEvent } from "../voice/holdCue";
+import { holdCueSchedule } from "../voice/holdCue";
 import { isKettlebellExercise } from "../voice/kettlebellExercise";
+import { paintHoldCountdown, speakDueHoldCue } from "./holdCuePlayback";
 import type { ViewState } from "./sessionTypes";
 
 export { sideSwitchAt };
+export { holdCueText } from "../voice/holdCue";
 
 export interface WarmupTimerHandle {
   clear: () => void;
@@ -77,7 +78,7 @@ export function startStationHold(
       : [];
   const spoken = new Set<number>();
   syncHoldProgress(state, left, switchLeft);
-  paintHold(root, left, schedule);
+  paintHoldCountdown(root, "[data-warmup-left]", left, schedule);
 
   const finishHold = (): void => {
     syncHoldProgress(state, 0, 0);
@@ -103,8 +104,8 @@ export function startStationHold(
 
   const tickHold = (): boolean => {
     left -= 1;
-    paintHold(root, left, schedule);
-    speakHoldCue(left, schedule, spoken);
+    paintHoldCountdown(root, "[data-warmup-left]", left, schedule);
+    speakDueHoldCue(left, schedule, spoken);
     if (left === switchAt && left > 0) {
       switchLeft = SIDE_SWITCH_SECONDS;
       showSideSwitch(root, switchLeft);
@@ -146,52 +147,4 @@ export function startStationHold(
 function syncHoldProgress(state: ViewState, holdLeft: number, sideSwitchLeft: number): void {
   state.holdLeft = holdLeft;
   state.sideSwitchLeft = sideSwitchLeft;
-}
-
-/** On-screen hold cue for a given second left; null when nothing is due. */
-export function holdCueText(
-  left: number,
-  schedule: readonly HoldCueEvent[],
-): string | null {
-  return cueAt(left, schedule)?.text ?? null;
-}
-
-function paintHold(
-  root: HTMLElement,
-  left: number,
-  schedule: readonly HoldCueEvent[],
-): void {
-  setText(root, "[data-warmup-left]", String(Math.max(left, 0)));
-  setText(root, "[data-hold-cue]", holdCueText(left, schedule) ?? "");
-}
-
-function speakHoldCue(
-  left: number,
-  schedule: readonly HoldCueEvent[],
-  spoken: Set<number>,
-): void {
-  const due = cueAt(left, schedule);
-  if (!due || spoken.has(left)) {
-    return;
-  }
-  spoken.add(left);
-  void speakExactLine({
-    id: due.lineId,
-    assetKey: due.assetKey,
-    text: due.text,
-  });
-}
-
-function cueAt(
-  left: number,
-  schedule: readonly HoldCueEvent[],
-): HoldCueEvent | undefined {
-  return schedule.find((event) => event.atSecondsLeft === left);
-}
-
-function setText(root: HTMLElement, selector: string, text: string): void {
-  const el = root.querySelector(selector);
-  if (el) {
-    el.textContent = text;
-  }
 }

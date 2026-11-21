@@ -51,4 +51,33 @@ describe("holdCueSchedule", () => {
     const texts = [0, 0.5, 0.99].map((r) => holdCueSchedule(30, () => r, "hold")[0]?.text);
     expect(texts.some((text) => /\bhold\b/i.test(text ?? ""))).toBe(true);
   });
+
+  it("work hold schedule: halfway only when mid is after the countdown window", () => {
+    const short = holdCueSchedule(10, {
+      random: () => 0,
+      includeCountdown: true,
+      includeHoldDone: true,
+    });
+    expect(short.map((e) => e.atSecondsLeft)).toEqual([5, 4, 3, 2, 1, 0]);
+    expect(short.some((e) => e.lineId === "halfway")).toBe(false);
+    expect(short.at(-1)?.lineId).toBe("hold_done");
+
+    const long = holdCueSchedule(12, {
+      random: () => 0,
+      includeCountdown: true,
+      includeHoldDone: true,
+    });
+    expect(long[0]?.lineId).toBe("halfway");
+    expect(long[0]?.atSecondsLeft).toBe(6);
+    expect(long.map((e) => e.atSecondsLeft).slice(-6)).toEqual([5, 4, 3, 2, 1, 0]);
+  });
+
+  it("work hold short hold truncates the countdown", () => {
+    const events = holdCueSchedule(3, {
+      random: () => 0,
+      includeCountdown: true,
+      includeHoldDone: true,
+    });
+    expect(events.map((e) => e.atSecondsLeft)).toEqual([3, 2, 1, 0]);
+  });
 });

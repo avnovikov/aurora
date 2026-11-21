@@ -512,9 +512,17 @@ function workHtml(item: PlannedWorkItem, state: ViewState, adjust: WorkAdjustUi 
   const reps = nextSetReps(state, item.dose.reps);
   const loadKg = state.workState?.addedLoadKg ?? 0;
   const move = displayExerciseName(item.exerciseName);
-  const dose = `${workDoseHtml(reps, workUnit(item))}
+  const isTimedHold = workUnit(item) === "s";
+  const secondsShowing = state.holdLeft > 0 ? state.holdLeft : reps;
+  const doseFigure = isTimedHold
+    ? workHoldDoseHtml(secondsShowing)
+    : workDoseHtml(reps, workUnit(item));
+  const dose = `${doseFigure}
       ${doseNoteHtml(item, state.setIndex, reps)}
       ${weightControlsHtml(loadKg, state.addWeightKg)}`;
+  const hint = isTimedHold
+    ? "Timer runs the hold — Log or swipe if you finish early"
+    : "Log each set below, or swipe left to log it and rest";
   return `
     <div class="work-stage swipe-stage" data-swipe-stage="work">
       ${workAdjustHtml(adjust, move)}
@@ -532,10 +540,20 @@ function workHtml(item: PlannedWorkItem, state: ViewState, adjust: WorkAdjustUi 
           <summary>Why this dose</summary>
           <p class="reason">${escapeHtml(item.reason)}</p>
         </details>
-        <p class="hint">Log each set below, or swipe left to log it and rest</p>
+        <p class="hint">${hint}</p>
       </section>
     </div>
   `;
+}
+
+/** Timed work hold: ticking seconds + cue line (no ± while the clock runs). */
+function workHoldDoseHtml(secondsLeft: number): string {
+  return `
+      <p class="session-dose">${doseFigureHtml(
+        `<span class="reps" data-work-hold-left>${secondsLeft}</span>`,
+        SECONDS_UNIT_HTML,
+      )}</p>
+      <p class="rest-cue" data-hold-cue aria-live="polite"></p>`;
 }
 
 function restHtml(planned: PlannedSession, state: ViewState): string {

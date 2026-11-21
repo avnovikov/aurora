@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { holdCueText } from "../../src/ui/sessionWarmup";
-import type { HoldCueEvent } from "../../src/voice/holdCue";
+import { holdCueText, type HoldCueEvent } from "../../src/voice/holdCue";
 
 function cue(atSecondsLeft: number, text: string): HoldCueEvent {
   return {

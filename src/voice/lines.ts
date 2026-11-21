@@ -22,6 +22,7 @@ export type CoachLineId =
   | "rest_extend"
   | "session_start"
   | "warmup_done"
+  | "hold_done"
   | "change_side"
   | "set_logged"
   | "set_pace_nudge"
@@ -206,6 +207,26 @@ const SESSION: CoachLine[] = [
     id: "warmup_done",
     assetKey: "warmup_done_b",
     text: "Body's awake. Time for the main sets.",
+  },
+  {
+    id: "hold_done",
+    assetKey: "hold_done",
+    text: "Stop there, mate.",
+  },
+  {
+    id: "hold_done",
+    assetKey: "hold_done_b",
+    text: "Enough, lad.",
+  },
+  {
+    id: "hold_done",
+    assetKey: "hold_done_c",
+    text: "That'll do.",
+  },
+  {
+    id: "hold_done",
+    assetKey: "hold_done_d",
+    text: "Done.",
   },
   {
     id: "change_side",

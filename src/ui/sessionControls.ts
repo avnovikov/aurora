@@ -251,12 +251,18 @@ function wirePulseSimButtons(
   });
 }
 
+export interface CompleteSetOptions {
+  /** Work-hold auto timer already spoke hold_done — do not also say set_logged. */
+  skipSetLoggedVoice?: boolean;
+}
+
 /** Exported for unit tests; session wiring calls this from Log set / Failed / Skip and the forward swipe. */
 export function completeSet(
   planned: PlannedSession,
   state: ViewState,
   stopReason: SetStopReason,
   handlers: SessionControlHandlers,
+  options: CompleteSetOptions = {},
 ): void {
   const item = currentWork(planned, state);
   const work = state.workState;
@@ -287,7 +293,7 @@ export function completeSet(
     }),
   );
   persistSetMemory(item.exerciseId, completed, durationSeconds, handlers);
-  announceSetLoggedIfCompleted(stopReason);
+  announceSetLoggedIfCompleted(stopReason, options.skipSetLoggedVoice === true);
   if (isLastSetOrSkipped(state.setIndex, item.dose.sets, stopReason)) {
     handlers.onFinishExercise(
       restBeforeNextExercise(stopReason, state.workIndex, planned.work.length, item.restSeconds),
@@ -343,8 +349,11 @@ function loggedSetFields(input: {
   };
 }
 
-function announceSetLoggedIfCompleted(stopReason: SetStopReason): void {
-  if (stopReason === "completed") {
+function announceSetLoggedIfCompleted(
+  stopReason: SetStopReason,
+  skipSetLoggedVoice: boolean,
+): void {
+  if (stopReason === "completed" && !skipSetLoggedVoice) {
     void speakCoachLine("set_logged");
   }
 }
