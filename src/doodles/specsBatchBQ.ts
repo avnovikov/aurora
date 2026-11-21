@@ -53,19 +53,32 @@ function splitLegs(lead: Side, front: Point, back: Point, backToe: number): Pick
 
 const STAND: Point = [0, -172];
 const FEET: Pose["feet"] = { near: [6, 0], far: [0, 0] };
-/** Racked hands relative to the shoulder: elbows forward and up, bells on the backs of the forearms. */
-const RACK_NEAR: Point = [32, -10];
-const RACK_FAR: Point = [28, -6];
+/**
+ * Racked arms: the upper arm `RACK_UPPER` degrees forward of vertical (elbows forward,
+ * not dropped), the forearm up from the elbow, so the bell rests on the
+ * back of the forearm in front of the shoulder, clear of the head.
+ */
+const RACK_UPPER = 58;
+/** The forearm leans this far forward of vertical, carrying the bell out in front of the face. */
+const RACK_FOREARM = 20;
+const FOREARM_TIP = 65.8;
+
+function rackArm(s: Point, upper: number): { hand: Point; elbow: Point } {
+  const elbow = along(s, 90 - upper, 60);
+  return { elbow, hand: along(elbow, -90 + RACK_FOREARM, FOREARM_TIP) };
+}
 
 function frontSquat(deep: boolean): Pose {
   const pelvis: Point = deep ? [-48, -66] : STAND;
   const spine = deep ? -78 : -90;
   const s = shoulderOf(pelvis, spine);
+  const near = rackArm(s, RACK_UPPER);
+  const far = rackArm(s, RACK_UPPER - 4);
   return {
     pelvis,
     chest: chestOf(pelvis, spine),
-    hands: { near: [round(s[0] + RACK_NEAR[0]), round(s[1] + RACK_NEAR[1])], far: [round(s[0] + RACK_FAR[0]), round(s[1] + RACK_FAR[1])] },
-    elbows: BENT,
+    hands: { near: near.hand, far: far.hand },
+    elbows: { near: { at: near.elbow }, far: { at: far.elbow } },
     feet: FEET,
     toes: FLAT,
   };
@@ -211,6 +224,17 @@ const GRIP_TOP = 6;
 const GRIP_LOW = 8;
 const onHips = (pelvis: Point, dx: number): Point => [round(pelvis[0] + dx), round(pelvis[1] - GRIP_TO_BOTTOM - 4)];
 
+/** Height the resting arm lies at on the bench (the stroke sits on the box's top line). */
+const BENCH_TOP_ARM = -82;
+
+/** The far arm lying straight back along the bench top from the shoulder (single-leg thrust). */
+function benchHand(pelvis: Point): Point {
+  const [cx, cy] = THRUST_CHEST;
+  const len = Math.hypot(cx - pelvis[0], cy - pelvis[1]);
+  const shoulder: Point = [cx + ((cx - pelvis[0]) / len) * 18, cy + ((cy - pelvis[1]) / len) * 18];
+  return [round(shoulder[0] - Math.sqrt(125.4 ** 2 - (BENCH_TOP_ARM - shoulder[1]) ** 2)), BENCH_TOP_ARM];
+}
+
 /**
  * Upper back on the bench edge; `top` drives the hips up level with the shoulders.
  * Both feet planted, both hands holding the bell on the hips; single leg: the far
@@ -225,7 +249,7 @@ function hipThrust(top: boolean, singleLeg: boolean): Pose {
     pelvis,
     chest: THRUST_CHEST,
     head: THRUST_HEAD,
-    hands: { near: onHips(pelvis, grip), far: singleLeg ? [THRUST_CHEST[0] - 137, -88] : onHips(pelvis, grip - 2) },
+    hands: { near: onHips(pelvis, grip), far: singleLeg ? benchHand(pelvis) : onHips(pelvis, grip - 2) },
     elbows: BENT,
     feet: singleLeg ? { near: THRUST_ANKLE, far: along(pelvis, freeLeg, 172) } : { near: THRUST_ANKLE, far: [THRUST_ANKLE[0] - 4, 0] },
     toes: { near: 0, far: singleLeg ? freeLeg - 60 : 0 },
@@ -283,14 +307,19 @@ function renegade(shoulderY: number, row: Side | null = null): Pose {
   };
 }
 
-/** Push-up (with a midway frame so the legs stay straight), press up, then row with `side`. */
+/** Push-up (quarter-point frames so the legs stay straight), press up, then row with `side`. */
 function renegadeRep(side: Side): Keyframe[] {
-  const mid = round((RENEGADE_TOP + RENEGADE_LOW) / 2);
+  const at = (t: number): number => round(RENEGADE_TOP + (RENEGADE_LOW - RENEGADE_TOP) * t);
+  const pass = (t: number): Keyframe => kf(renegade(at(t)), 0);
   return [
     kf(renegade(RENEGADE_TOP), 0.2),
-    kf(renegade(mid), 0),
+    pass(0.25),
+    pass(0.5),
+    pass(0.75),
     kf(renegade(RENEGADE_LOW), 0.3),
-    kf(renegade(mid), 0),
+    pass(0.75),
+    pass(0.5),
+    pass(0.25),
     kf(renegade(RENEGADE_TOP), 0.15),
     kf(renegade(RENEGADE_TOP, side), 0.4),
   ];
