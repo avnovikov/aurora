@@ -1,5 +1,8 @@
-import type { Locator, Page } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 import { SWIPE_BACK_MS, SWIPE_EXIT_MS } from "../src/ui/sessionSwipe";
+
+/** Below this, a "visible" SVG is effectively collapsed (0×0 layout). */
+const MIN_PAINTED_DOODLE_PX = 8;
 
 const PROFILE_KEY = "aurora.poc.profile.v1";
 /** Fake time between two touch moves: one 60 Hz frame. */
@@ -54,6 +57,22 @@ export function phaseLine(page: Page): Locator {
 /** Work-rest next-set line (`next Name · Set n of m`), beside the compact doodle. */
 export function restNextLine(page: Page): Locator {
   return page.locator(".rest-next-line");
+}
+
+/** Compact next-move doodle on work rest. */
+export function restNextDoodle(page: Page): Locator {
+  return page.locator(".rest-next-doodle .doodle");
+}
+
+/**
+ * Assert the rest-next doodle has a real layout box.
+ * ViewBox-only SVGs with `width: auto` and only `max-height` collapse to 0×0.
+ */
+export async function expectRestNextDoodlePainted(page: Page): Promise<void> {
+  const box = await restNextDoodle(page).boundingBox();
+  expect(box, "rest-next doodle must have a layout box").toBeTruthy();
+  expect(box!.width, "rest-next doodle width").toBeGreaterThan(MIN_PAINTED_DOODLE_PX);
+  expect(box!.height, "rest-next doodle height").toBeGreaterThan(MIN_PAINTED_DOODLE_PX);
 }
 
 export function moveName(page: Page): Locator {
