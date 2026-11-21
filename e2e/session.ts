@@ -175,7 +175,7 @@ export function workHoldLeft(page: Page): Locator {
   return page.locator("[data-work-hold-left]");
 }
 
-/** On-screen hold cue under the countdown (halfway / 5–1 / hold_done). */
+/** Hold cue slot under the work countdown (schedule lines are voice-only). */
 export function workHoldCue(page: Page): Locator {
   return page.locator("[data-swipe-stage='work'] [data-hold-cue]");
 }

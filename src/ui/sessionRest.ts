@@ -1,11 +1,7 @@
 import type { HeartRateZone } from "../pulse/hrZones";
 import { speakExactLine } from "../voice/coachVoice";
 import { pickLine, type CoachLine } from "../voice/lines";
-import {
-  cueSchedule,
-  isOnScreenRestCue,
-  type RestCueEvent,
-} from "../voice/restCue";
+import { cueSchedule, type RestCueEvent } from "../voice/restCue";
 import { REST_ADD_SECONDS, shouldAddRest, shouldOfferRestedGoOn } from "./restPulse";
 import type { ViewState } from "./sessionTypes";
 
@@ -14,18 +10,6 @@ function cueAt(
   schedule: readonly RestCueEvent[],
 ): RestCueEvent | undefined {
   return schedule.find((event) => event.atSecondsLeft === left);
-}
-
-/** On-screen rest cue copy for a given second; null when only the count shows. */
-export function restCueText(
-  left: number,
-  schedule: readonly RestCueEvent[],
-): string | null {
-  const due = cueAt(left, schedule);
-  if (!due || !isOnScreenRestCue(due.kind)) {
-    return null;
-  }
-  return due.text;
 }
 
 function speakRestCue(
@@ -45,23 +29,15 @@ function speakRestCue(
   });
 }
 
-function visibleRestCue(
-  left: number,
-  schedule: readonly RestCueEvent[],
-  heldCue: CoachLine | null,
-): string {
-  return restCueText(left, schedule) ?? heldCue?.text ?? "";
-}
-
+/** Paint rest seconds and interactive held cue (go-on / +30); schedule lines stay voice-only. */
 function paintRest(
   root: HTMLElement,
   left: number,
-  schedule: readonly RestCueEvent[],
   heldCue: CoachLine | null,
   goOnOffered: boolean,
 ): void {
   setText(root, "[data-rest-left]", String(Math.max(left, 0)));
-  setText(root, "[data-rest-cue]", visibleRestCue(left, schedule, heldCue));
+  setText(root, "[data-rest-cue]", heldCue?.text ?? "");
   setCueLatch(root, goOnOffered);
 }
 
@@ -118,13 +94,7 @@ export function startRestTimer(
   let finished = false;
 
   const paint = (): void => {
-    paintRest(
-      root,
-      state.restLeft,
-      tickState.schedule,
-      tickState.heldCue,
-      tickState.alreadyAsked,
-    );
+    paintRest(root, state.restLeft, tickState.heldCue, tickState.alreadyAsked);
   };
 
   const clearCueLatch = (): void => {
