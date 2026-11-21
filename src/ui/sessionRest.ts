@@ -58,9 +58,23 @@ function paintRest(
   left: number,
   schedule: readonly RestCueEvent[],
   heldCue: CoachLine | null,
+  cueLatch: boolean,
 ): void {
   setText(root, "[data-rest-left]", String(Math.max(left, 0)));
   setText(root, "[data-rest-cue]", visibleRestCue(left, schedule, heldCue));
+  setCueLatch(root, cueLatch);
+}
+
+function setCueLatch(root: HTMLElement, latched: boolean): void {
+  const el = root.querySelector("[data-rest-cue]");
+  if (!el) {
+    return;
+  }
+  if (latched) {
+    el.setAttribute("data-rest-cue-latch", "");
+  } else {
+    el.removeAttribute("data-rest-cue-latch");
+  }
 }
 
 export interface RestTimerHandle {
@@ -78,6 +92,7 @@ export interface RestTimerOptions {
 
 interface RestTickState {
   alreadyAsked: boolean;
+  cueLatch: boolean;
   heldCue: CoachLine | null;
   schedule: RestCueEvent[];
   spokenForRest: Set<number>;
@@ -96,6 +111,7 @@ export function startRestTimer(
   const timedNext = options.timedNext === true;
   const tickState: RestTickState = {
     alreadyAsked: false,
+    cueLatch: false,
     heldCue: null,
     schedule: restSchedule(state.restLeft, withVoice, timedNext),
     spokenForRest: new Set<number>(),
@@ -103,7 +119,18 @@ export function startRestTimer(
   let finished = false;
 
   const paint = (): void => {
-    paintRest(root, state.restLeft, tickState.schedule, tickState.heldCue);
+    paintRest(
+      root,
+      state.restLeft,
+      tickState.schedule,
+      tickState.heldCue,
+      tickState.cueLatch,
+    );
+  };
+
+  const clearCueLatch = (): void => {
+    tickState.cueLatch = false;
+    setCueLatch(root, false);
   };
 
   const speakLine = (line: CoachLine): void => {
@@ -127,6 +154,7 @@ export function startRestTimer(
     finished = true;
     window.clearInterval(timerId);
     state.restLeft = 0;
+    clearCueLatch();
     onDoneRest();
   };
 
@@ -166,6 +194,7 @@ export function startRestTimer(
       })
     ) {
       tickState.alreadyAsked = true;
+      tickState.cueLatch = true;
       const goOnLine = pickLine("rest_go_on");
       tickState.heldCue = goOnLine;
       speakLine(goOnLine);
@@ -182,7 +211,10 @@ export function startRestTimer(
   }, 1000);
 
   return {
-    clear: () => window.clearInterval(timerId),
+    clear: () => {
+      window.clearInterval(timerId);
+      clearCueLatch();
+    },
     finish,
   };
 }

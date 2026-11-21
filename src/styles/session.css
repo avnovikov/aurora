@@ -206,6 +206,10 @@
   line-height: 24px;
 }
 
+.session .rest-cue[data-rest-cue-latch] {
+  min-height: 48px;
+}
+
 .session-hero .tagline {
   margin: 8px 0 0;
   color: var(--muted);
