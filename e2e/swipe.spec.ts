@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import {
   currentMove,
+  expectRestNextDoodlePainted,
   GAP_PREFIX,
   moveName,
   phaseLine,
@@ -69,6 +70,7 @@ test.describe("work swipe", () => {
     await expect(stage(page, "rest")).toBeVisible();
     await expect(phaseLine(page)).toHaveText(/^Rest$/);
     await expect(restNextLine(page)).toHaveText(/^next .* Set 2 of \d+/i);
+    await expectRestNextDoodlePainted(page);
     await swipe(page, stage(page, "rest"));
     await expect(phaseLine(page)).toHaveText(/^Set 2 of \d+/);
   });

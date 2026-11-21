@@ -559,10 +559,12 @@ html:has(.shell.session) {
   max-height: 7rem;
 }
 
-/* Work-rest preview: override `.session .doodle` so the next row stays compact. */
+/* Work-rest preview: override `.session .doodle` so the next row stays compact.
+   ViewBox-only SVGs need a definite height — max-height alone collapses to 0×0. */
 .session .rest-next-doodle .doodle {
   display: block;
-  max-height: 2.75rem;
+  height: 2.75rem;
   width: auto;
+  max-width: 3.5rem;
   margin: 0;
 }
