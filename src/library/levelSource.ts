@@ -1,5 +1,5 @@
-import { tierIndex } from "../domain/skillTier";
-import type { ExerciseMemory, StandardsSource } from "../domain/types";
+import { SKILL_TIER_LABELS, tierIndex } from "../domain/skillTier";
+import type { ExerciseMemory, SkillTier, StandardsSource } from "../domain/types";
 import { evidenceTier, liveInferredTier, needsRetest } from "../progress/levelEvidence";
 
 export interface LevelSourceView {
@@ -42,7 +42,21 @@ export function describeStandardsSource(source: StandardsSource | undefined): st
     return null;
   }
   if (source.kind === "none") {
-    return "No tiers: not a max-rep test. Dosed by sets, contacts or load.";
+    return "No max-rep tiers: not a max-rep test. Dosed by sets, contacts or load.";
   }
   return `Band: ${source.label}`;
+}
+
+/**
+ * A tierless move's own level (#262): its catalogue difficulty, with no rep
+ * or hold numbers. Null when the move has tiers or no difficulty.
+ */
+export function describeMoveLevel(exercise: {
+  standardsSource?: StandardsSource;
+  difficulty?: SkillTier;
+}): string | null {
+  if (exercise.standardsSource?.kind !== "none" || !exercise.difficulty) {
+    return null;
+  }
+  return `Move level: ${SKILL_TIER_LABELS[exercise.difficulty]}`;
 }

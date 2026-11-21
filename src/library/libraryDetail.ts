@@ -12,7 +12,7 @@ import {
 import type { SkillTier } from "../domain/types";
 import type { TierSuggestion } from "../progress/suggestTiers";
 import { RETEST_AFTER_DAYS } from "../progress/levelEvidence";
-import { describeStandardsSource, type LevelSourceView } from "./levelSource";
+import { describeMoveLevel, describeStandardsSource, type LevelSourceView } from "./levelSource";
 import { toggleHtml } from "./chips";
 import { displayExerciseName } from "./displayName";
 import { exerciseMetaLine } from "./metaLine";
@@ -409,8 +409,10 @@ function standardsHtml(exercise: SeedExercise, mine: SkillTier): string {
     ? `<p class="hint" data-standards-source>${escapeHtml(sourceLabel)}</p>`
     : "";
   if (!standards) {
-    // Tierless moves (#262): no strip and no picker, only why.
-    return sourceHtml ? `<section class="ex-section ex-tierless">${sourceHtml}</section>` : "";
+    // Tierless moves (#262): no strip and no picker, only the move's own level and why.
+    const level = describeMoveLevel(exercise);
+    const levelHtml = level ? `<p class="hint" data-move-level>${escapeHtml(level)}</p>` : "";
+    return sourceHtml ? `<section class="ex-section ex-tierless">${levelHtml}${sourceHtml}</section>` : "";
   }
   const unit = exercise.effort === "hold" ? "<small>s</small>" : "";
   const cells = SKILL_TIERS.map((tier) => {

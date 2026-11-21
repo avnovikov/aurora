@@ -33,22 +33,18 @@ export function requireExercise(exerciseId: string): SeedExercise {
 
 /**
  * Work moves the planner may put in a slot: they need tier standards to dose,
- * or are marked as not a max-rep test (#262: dosed by the slot's sets and
- * reps, no tiers), and are not band moves (those are prehab with no ladder).
- * Gear the user lacks is filtered at planning time, not here.
+ * and are not band moves (those are prehab with no ladder). Gear the user
+ * lacks is filtered at planning time, not here. A move that is not a max-rep
+ * test has no standards (#262), so the generator never picks it: it has no
+ * library dose rule.
  */
 export function isPlannable(exercise: SeedExercise): boolean {
   return (
     exercise.role === "work" &&
     exercise.pattern !== "mobility" &&
-    (Boolean(exercise.standards) || isTierless(exercise)) &&
+    Boolean(exercise.standards) &&
     !exercise.requires?.includes("band")
   );
-}
-
-/** A work move tiers do not apply to (plyometrics, loaded kit, drills): no standards (#262). */
-export function isTierless(exercise: Pick<SeedExercise, "standardsSource">): boolean {
-  return exercise.standardsSource?.kind === "none";
 }
 
 export const PLANNABLE_EXERCISES: readonly SeedExercise[] = LIBRARY_CATALOGUE.filter(isPlannable);
