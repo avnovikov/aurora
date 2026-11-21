@@ -689,7 +689,18 @@ export const GENERATED_DOODLES: Record<string, string> = {
   "wger_1577": "/doodles/doodle-bretzel-stretch.svg",
   "fedb_plyo_kettlebell_pushups": "/doodles/doodle-plyo-kettlebell-pushups.svg",
   "wger_2727": "/doodles/doodle-kettlebell-wrist-turnover.svg",
-  "wger_2668": "/doodles/doodle-single-leg-balance-kettlebell-circles.svg"
+  "wger_2668": "/doodles/doodle-single-leg-balance-kettlebell-circles.svg",
+  "wger_1640": "/doodles/doodle-dumbbell-front-squat.svg",
+  "wger_1706": "/doodles/doodle-bulgarian-squat-with-dumbbells.svg",
+  "wger_206": "/doodles/doodle-dumbbell-lunges-walking.svg",
+  "wger_1651": "/doodles/doodle-dumbbell-rear-lunge.svg",
+  "wger_1370": "/doodles/doodle-dumbbell-deadlift.svg",
+  "wger_1736": "/doodles/doodle-single-leg-deadlift-with-dumbbell.svg",
+  "wger_1642": "/doodles/doodle-dumbbell-hip-thrust.svg",
+  "wger_1234": "/doodles/doodle-dumbbell-single-leg-hip-thrust.svg",
+  "wger_2661": "/doodles/doodle-dumbbell-calf-raise.svg",
+  "wger_490": "/doodles/doodle-renegade-row.svg",
+  "wger_722": "/doodles/doodle-weighted-step-ups.svg"
 };
 
 /** Ids whose animation replaces a hand-drawn doodle (spec `replaces: true`). */
