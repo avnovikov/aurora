@@ -240,7 +240,7 @@ describe("dose as hero", () => {
   it("shows the rest countdown as the hero in seconds", () => {
     const planned = planLegs();
     const html = shellHtml(planned, restView(planned));
-    const dose = slice(html, '<p class="session-dose session-dose--rest"', "</p>");
+    const dose = slice(html, '<div class="session-dose session-dose--rest"', "</div>");
     expect(dose).toContain('<span class="reps" data-rest-left>90</span>');
     expect(dose).toMatch(/class="session-dose-unit" aria-hidden="true">s</);
     expect(html).toContain("data-rest-cue");

@@ -356,7 +356,7 @@ function restHeroHtml(
       <section class="session-hero">
         <p class="eyebrow session-phase">${eyebrow}</p>
         ${lead}
-        <p class="session-dose session-dose--rest">${doseFigureHtml(`<span class="reps" data-rest-left>${state.restLeft}</span>`, SECONDS_UNIT_HTML)}${doodleBlock}</p>
+        <div class="session-dose session-dose--rest">${doseFigureHtml(`<span class="reps" data-rest-left>${state.restLeft}</span>`, SECONDS_UNIT_HTML)}${doodleBlock}</div>
         <p class="rest-cue" data-rest-cue></p>
         ${extra}
       </section>`;
