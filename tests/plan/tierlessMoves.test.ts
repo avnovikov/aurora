@@ -113,7 +113,7 @@ describe("not_max_test moves have no tiers (#262)", () => {
       scrollToTop: false,
       actions: { onBack: () => {}, onOpenExercise: () => {} },
     });
-    expect(root.querySelector(".ex-standards [data-standards-source]")?.textContent).toBe("Band: Derived from inverted row");
+    expect(root.querySelector(".ex-standards [data-standards-source]")?.textContent).toBe("Band: Row family band (bent-knee row norms)");
   });
 
   it("escapes the band label", () => {

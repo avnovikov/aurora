@@ -8,6 +8,7 @@ import { DESCRIPTIONS } from "../generated/descriptions";
 import { curatedEquipmentFor } from "../curatedEquipment";
 import { doodleFor } from "../doodles";
 import { weightedIdByUnweightedId } from "../weightedCousins";
+import { bandFamilyFor } from "./bandFamilies";
 import { cautionsFor } from "./cautions";
 import { placeOnLadder, type LadderPlacement } from "./ladder";
 import { wireLadderProgressions, type Placed } from "./progressions";
@@ -132,6 +133,7 @@ export function enrichCatalogue(catalogue: SeedExercise[]): SeedExercise[] {
     if (wantsStandards(exercise, placement)) {
       withStandards(enriched, difficulty, placement);
     }
+    withFamilyBand(enriched);
     enriched.doodlePath = doodleFor(exercise.id, enriched.doodlePath);
     return withDescription(enriched);
   });
@@ -150,6 +152,23 @@ function withStandards(
   }
   enriched.standardsSource = pick.source;
   enriched.effort = effort;
+}
+
+/**
+ * An ordinary member of a band family takes the family's band over its own,
+ * whatever the source (#262). A move without a band (tierless, warm-up,
+ * mobility) is never a member.
+ */
+function withFamilyBand(enriched: SeedExercise): void {
+  if (!enriched.standards) {
+    return;
+  }
+  const effort = enriched.effort ?? resolveExerciseTiming(enriched).effort;
+  const family = bandFamilyFor({ name: enriched.name, role: enriched.role, effort, difficulty: enriched.difficulty, pattern: enriched.pattern });
+  if (family) {
+    enriched.standards = family.standards;
+    enriched.standardsSource = { kind: "family", label: family.label };
+  }
 }
 
 /** Curated, merged description replaces raw source text when one exists. */

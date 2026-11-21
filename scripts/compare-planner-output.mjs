@@ -11,7 +11,11 @@ import { readFileSync } from "node:fs";
 const base = JSON.parse(readFileSync(process.argv[2], "utf8"));
 const branch = JSON.parse(readFileSync(process.argv[3], "utf8"));
 
-const bandChanged = (id) => JSON.stringify(base.bands[id]) !== JSON.stringify(branch.bands[id]);
+/** Band or effort changed, or the move became tierless. The source kind is ignored: dev records none. */
+const bandChanged = (id) =>
+  base.bands[id]?.band !== branch.bands[id]?.band ||
+  base.bands[id]?.effort !== branch.bands[id]?.effort ||
+  (branch.bands[id]?.kind === "none") !== (base.bands[id]?.kind === "none");
 const tierless = (id) => branch.bands[id]?.kind === "none";
 const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
@@ -21,6 +25,12 @@ const reasons = {};
 function note(section, key, reason) {
   reasons[reason] = (reasons[reason] ?? 0) + 1;
   summary[section].changed += 1;
+}
+
+/** The slot's move before a stall regression: the same slot in the template's plain plan. */
+function slotMoveBeforeRegress(section, key, slotId) {
+  const plain = base[section][`${key.split(" | ")[0]} | plain`];
+  return plain?.work.find((w) => w.slotId === slotId)?.exerciseId;
 }
 
 function explainPlan(section, key, a, b) {
@@ -39,13 +49,18 @@ function explainPlan(section, key, a, b) {
     if (wa.exerciseId !== wb.exerciseId || eq(wa, wb)) continue;
     if (bandChanged(wa.exerciseId)) {
       why.add(tierless(wa.exerciseId) ? "dose: tierless now (seed slot dose kept)" : "dose: band change");
+    } else if (wa.ruleIds?.includes("stall_regress") && bandChanged(slotMoveBeforeRegress(section, key, wa.slotId))) {
+      // A stall regression keeps the dose planned for the slot's own move.
+      why.add("dose: regressed from a move whose band changed");
     } else {
       const diffKeys = Object.keys({ ...wa, ...wb }).filter((k) => !eq(wa[k], wb[k]));
       unexplained.push(`${section} ${key}: ${wa.exerciseId} ${diffKeys.join(",")} ${JSON.stringify(diffKeys.map((k) => [wa[k], wb[k]]))}`);
     }
   }
   if (!eq(a.warmup, b.warmup)) {
-    why.add("warm-up");
+    // The warm-up level comes from the work moves' ladder bands (warmupLevelFor).
+    if ([...ida, ...idb].some(bandChanged)) why.add("warm-up: level from a work move's band change");
+    else unexplained.push(`${section} ${key}: warm-up differs with no band change`);
   }
   if (!eq(a.cooldown, b.cooldown)) unexplained.push(`${section} ${key}: cooldown differs`);
   for (const w of why) note(section, key, `${section}: ${w}`);
@@ -71,14 +86,24 @@ for (const key of Object.keys(base.blocks)) {
   if (!Array.isArray(a) || !Array.isArray(b)) { unexplained.push(`blocks ${key}: error state differs`); continue; }
   const sa = a.flatMap((d) => d.slots), sb = b.flatMap((d) => d.slots);
   summary.blocks.slotsTotal += sa.length;
+  // The generator rotates each slot kind through its ladder across the block's
+  // days, so a change in an earlier slot of the same kind moves later picks on.
+  const movedOn = new Set();
+  const kindOf = (slot) => slot.id.replace(/^day_[^_]+_/, "").replace(/_\d+$/, "");
   for (let i = 0; i < Math.max(sa.length, sb.length); i += 1) {
     const x = sa[i], y = sb[i];
     if (eq(x, y)) continue;
     summary.blocks.slotsChanged += 1;
     if (!x || !y) { reasons["blocks: slot count differs"] = (reasons["blocks: slot count differs"] ?? 0) + 1; continue; }
     if (x.exerciseId !== y.exerciseId) {
-      const r = tierless(x.exerciseId) ? "blocks: base move is tierless now" : bandChanged(x.exerciseId) || bandChanged(y.exerciseId) ? "blocks: move change with band change" : null;
-      if (r) reasons[r] = (reasons[r] ?? 0) + 1; else unexplained.push(`blocks ${key} slot ${i}: ${x.exerciseId} -> ${y.exerciseId} (no band change)`);
+      const r = tierless(x.exerciseId)
+        ? "blocks: base move is tierless now"
+        : bandChanged(x.exerciseId) || bandChanged(y.exerciseId)
+          ? "blocks: move change with band change"
+          : movedOn.has(kindOf(x))
+            ? "blocks: rotation moved on after an earlier slot of the same kind changed"
+            : null;
+      if (r) { reasons[r] = (reasons[r] ?? 0) + 1; movedOn.add(kindOf(x)); } else unexplained.push(`blocks ${key} slot ${i}: ${x.exerciseId} -> ${y.exerciseId} (no band change)`);
     } else if (bandChanged(x.exerciseId)) {
       reasons["blocks: dose from band change"] = (reasons["blocks: dose from band change"] ?? 0) + 1;
     } else {

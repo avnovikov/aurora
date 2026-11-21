@@ -95,8 +95,9 @@ describe("enriched library", () => {
     expect(byName("Single-Leg Calf Raise").standards?.intermediate).toBeGreaterThanOrEqual(20);
     // Endura single-leg glute bridge men 20–29
     expect(byName("Single Leg Glute Bridge").standards?.beginner).toBe(12);
+    // Lunge family band (#262): the Endura split squat band, also for the supported split squat.
     expect(byName("Supported Split Squat").standards).toEqual({
-      novice: 5, beginner: 8, intermediate: 18, advanced: 34, elite: 54,
+      novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45,
     });
     expect(byName("Split Squats").standards?.intermediate).toBe(15);
     expect(byName("Split Squats").standards?.advanced).toBe(28);

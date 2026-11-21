@@ -53,10 +53,12 @@ interface EnduraRule {
 const ASSISTED = 1.2;
 const HARDER = 1 / ASSISTED;
 
-const PUSH = fromEndura(17, 22, 29, 36);
+/** Endura push-up men 20–29; also the push-up family band (bandFamilies.ts). */
+export const ENDURA_PUSH_UP = fromEndura(17, 22, 29, 36);
 const DIP = fromEndura(8, 18, 30, 42);
 const PULL = fromEndura(4, 8, 13, 18);
-const SPLIT = fromEndura(6, 15, 28, 45);
+/** Endura split squat men 20–29; also the lunge family band (bandFamilies.ts). */
+export const ENDURA_SPLIT_SQUAT = fromEndura(6, 15, 28, 45);
 const PISTOL = fromEndura(2, 5, 9, 15);
 const PIKE = fromEndura(7, 18, 35, 58);
 const PLANK = fromEndura(55, 105, 165, 270);
@@ -73,7 +75,7 @@ const PLANK = fromEndura(55, 105, 165, 270);
  */
 const RULES: readonly EnduraRule[] = [
   // --- Push variants (Endura pages) ---
-  rule(["wall push"], "reps", scaleStandards(PUSH, ASSISTED), "Endura push-up ×1.2 (wall-assisted)"),
+  rule(["wall push"], "reps", scaleStandards(ENDURA_PUSH_UP, ASSISTED), "Endura push-up ×1.2 (wall-assisted)"),
   // Medium grip is the standard grip, so it is the same move.
   ruleExact(["incline push up", "incline push ups", "incline push up medium"], "reps", fromEndura(15, 35, 65, 100), "Endura incline push-up men 20–29"),
   rule(["decline push"], "reps", fromEndura(6, 16, 30, 48), "Endura decline push-up men 20–29"),
@@ -90,7 +92,7 @@ const RULES: readonly EnduraRule[] = [
   ruleExact(
     ["push up", "push ups", "pushup", "pushups", "standard push up", "press up", "press ups"],
     "reps",
-    PUSH,
+    ENDURA_PUSH_UP,
     "Endura push-up men 20–29",
   ),
 
@@ -121,9 +123,9 @@ const RULES: readonly EnduraRule[] = [
   ruleExact(["pull up", "pull ups", "pullup", "pullups", "standard pull up"], "reps", PULL, "Endura pull-up men 20–29"),
 
   // --- Lower body ---
-  rule(["supported split", "assisted split"], "reps", scaleStandards(SPLIT, ASSISTED), "Endura split squat ×1.2 (supported)"),
+  rule(["supported split", "assisted split"], "reps", scaleStandards(ENDURA_SPLIT_SQUAT, ASSISTED), "Endura split squat ×1.2 (supported)"),
   rule(["bulgarian"], "reps", fromEndura(7, 18, 34, 55), "Endura BW Bulgarian split squat men 20–29"),
-  rule(["split squat"], "reps", SPLIT, "Endura split squat men 20–29"),
+  rule(["split squat"], "reps", ENDURA_SPLIT_SQUAT, "Endura split squat men 20–29"),
   rule(["assisted pistol"], "reps", scaleStandards(PISTOL, ASSISTED), "Endura pistol ×1.2 (assisted)"),
   rule(["pistol"], "reps", PISTOL, "Endura pistol squat men 20–29"),
   rule(["nordic"], "reps", fromEndura(1, 3, 7, 12), "Endura BW Nordic curl men 20–29"),

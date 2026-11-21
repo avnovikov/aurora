@@ -10,9 +10,9 @@ npm run standards:researched -- --parents  # also prints each computed row's par
 npm run standards:researched -- --report   # also prints band changes and every variant-order conflict with its anchors
 ```
 
-Then run `npx vitest run tests/data/researchedStandards.test.ts tests/scripts/tierDerivation.test.ts`. The script is `scripts/build-researched-standards.mjs`, and the derivation is `scripts/lib/tierDerivation.ts`. Rerunning the script on unchanged data gives an identical file.
+Then run `npx vitest run tests/data/researchedStandards.test.ts tests/scripts/tierDerivation.test.ts`. The script is `scripts/build-researched-standards.mjs`, the derivation is `scripts/lib/tierDerivation.ts`, and the family bands are `src/data/enrich/bandFamilies.ts`. Rerunning the script on unchanged data gives an identical file.
 
-The current state is described in "Fourth step: anchors and computed derivation" below. The sections before it record the three research passes as they were made; where they give a band for a derived row, the fourth step has since recomputed it.
+The current state is described in "Fourth step: anchors and computed derivation" below, with its "Band families" subsection. The sections before it record the three research passes as they were made; where they give a band for a derived row, the fourth step has since recomputed it, and a family band replaces it for every family member.
 
 ## Problem
 
@@ -222,14 +222,17 @@ A second check covers pairs where one move is researched and its neighbour has a
 ### User decisions (2026-11-21)
 
 1. **Muscle-up capped below the pull-up.** Endura muscle-up elite 20 sat above the pull-up's 18. Elite is now floor(18 ÷ 1.2) = 15, so the band is 1/2/6/12/15, below the pull-up 3/4/8/13/18 at every tier. Changed where it is defined: the Endura rule and the seed `muscle_up` band, labelled "Endura muscle-up men 20–29, elite capped below pull-up". The Kipping Muscle Up takes the same rule.
-2. **Sit-up matched to crunches.** The sit-up takes the crunch band 16/24/40/60/85 in place of Cooper 22/33/40/47/55, labelled "Matched to crunches" (`DECISIONS` in the script). Its variants are computed from it.
+2. **Sit-up matched to crunches.** The sit-up takes the crunch band 16/24/40/60/85 in place of Cooper 22/33/40/47/55. Its harder variants are computed from it. Since decision 4 the sit-up gets this band as a member of the crunch and sit-up family (label "Crunch and sit-up family band"); the separate `DECISIONS` entry and its "Matched to crunches" label are gone.
 3. **Tierless moves are not generated.** `isPlannable` is back to the `dev` rule (a move needs standards), so the "8 reps at RIR 2" placeholder never becomes a dose. Seed-day slots keep their seed dose. The Library shows "Move level: <difficulty>" next to "No max-rep tiers: …", with no numbers and no picker.
+4. **One band per ordinary family.** "Push-ups vary by difficulty, but I expect all to be in the same band." "Lunges are also the same." The same rule then went to bodyweight rows and to crunches and sit-ups. Every ordinary member of a family takes one band, whatever its own source. "Hindu and pike are more difficult", so neither is a push-up family member. See "Band families" below.
+5. **Skills: not changed (user decision).** Straddle against full planche, tuck L-sit against L-sit, the muscle-up's advanced tier (not capped at 10), the scapular pull-up, Wall walk-up and Japanese Handstand, and the placeholder skills (Manna, Ice Cream Maker, Pelican Curl) stay exactly as they are, with their conflicts pinned.
+6. **Hip hinge against the single-leg bridge test** stays pinned and is a follow-up.
 
 ### Endura matcher fix
 
 The plain push-up, pull-up, incline push-up and straight-bar dip rules now match the exact move only (`ruleExact`): "Push-up", "Push-ups", "Pushups", "Standard Push-Up", "Press-up(s)"; "Pull-up(s)", "Pullup(s)", "Standard Pull-Up"; "Incline Push-Up(s)" and "Incline Push-Up Medium" (medium is the standard grip); "Straight Bar Dip(s)". The chin-up rule no longer matches the Australian Chin-Up, which is a row; this one was not on the user's list but is the same misfire as the Australian pull-ups. Every other rule is unchanged. A move that no longer matches falls through to the researched table, where it now has a row (`pass4: true` in the research JSON) naming its parent.
 
-48 moves changed. The muscle-up and Kipping Muscle Up keep their rule with the capped band. Maltese Push-Up and Planche Push-Up fall through to the generic table (elite 1/2/4/8/12): their only catalogue neighbour is the tuck planche hold, so they have no rep-move parent. The other 45 are below. The Bent-Knee Australian Pull-Up is an anchor from one measured table (TopEndSports bent-knee horizontal pull-up, men 18–35: 10–14, 15–19, 20–29, 30+), and the other 44 are computed.
+48 moves changed. (The table records the fix as made. Since the band families, 27 of the 45 moves below are family members and take their family's band; the rest keep the band shown, except Archer Australian Pull-Up 5/8/10/16/20 and Russian and Tyson push-ups 9/14/18/24/30, recomputed from family parents.) The muscle-up and Kipping Muscle Up keep their rule with the capped band. Maltese Push-Up and Planche Push-Up fall through to the generic table (elite 1/2/4/8/12): their only catalogue neighbour is the tuck planche hold, so they have no rep-move parent. The other 45 are below. The Bent-Knee Australian Pull-Up is an anchor from one measured table (TopEndSports bent-knee horizontal pull-up, men 18–35: 10–14, 15–19, 20–29, 30+), and the other 44 are computed.
 
 | Move | Old Endura band | New band | Parent, step |
 |---|---|---|---|
@@ -279,74 +282,135 @@ The plain push-up, pull-up, incline push-up and straight-bar dip rules now match
 | Weighted push-ups (`wger_1902`) | push-up 11/17/22/29/36 | 9/14/18/24/30 | Standard Push-Up, harder |
 | Archer Straight-Bar Dip (`ntc_archer_straight_bar_dip`) | straight-bar dip 3/5/12/22/35 | 2/4/10/18/29 | Straight Bar Dip, harder |
 
+### Band families
+
+**Rule.** A family is a name pattern on a movement pattern, with one band (`BAND_FAMILIES` in `src/data/enrich/bandFamilies.ts`). A move is a member when it is a work move counted in reps, its catalogue difficulty is beginner or intermediate, it already has a max-rep band (tierless moves stay tierless), its pattern is the family's, its name contains a family keyword, and its name contains none of the family's skill words. A member takes the family band over its own, whatever the source: Endura page, coaching list, seed band, research row or computed chain. That includes the Endura pages for the incline, wall, diamond, close-grip, decline, wide and ring push-ups, and the Endura supported and Bulgarian split squats. It is one rule per family, not a per-move override:
+
+- `enrichCatalogue` applies it to every Library move after its own band is found, so Endura and seed moves get it at run time, with source kind `family` and the family label.
+- The build script applies the same function to the research rows: a member row is an anchor with the family band (kind `family` in the generated table) and is never computed. Its computed children step from the family band.
+
+| Family | Band | Label | Pattern | Name contains | Skill words (never members) |
+|---|---|---|---|---|---|
+| Push-up | 11/17/22/29/36 (Endura push-up) | Push-up family band (Endura push-up) | horizontal push | push up, pushup, press up | one arm, single arm, archer, planche (also pseudo planche), maltese, typewriter, clap, superman, hindu, pike, handstand, hspu |
+| Lunge | 4/6/15/28/45 per leg (Endura split squat) | Lunge family band (Endura split squat) | squat | lunge, split squat | pistol, shrimp, skater, jump |
+| Row | 7/10/13/20/25 (TopEndSports bent-knee row norms with the FITNESSGRAM modified pull-up, the third pass's inverted row) | Row family band (bent-knee row norms) | horizontal or vertical pull | row, australian | one arm, single arm, archer, front lever |
+| Crunch and sit-up | 16/24/40/60/85 (the sourced crunch band) | Crunch and sit-up family band | core compression | crunch, sit up, situp | v up, jackknife, dragon, hanging, gorilla |
+
+Equal bands are consistent with the variant order (an easier move's band is at or above a harder one's at every tier), so a family can never disagree with itself.
+
+**Membership (81 moves).** `researchedStandards.test.ts` pins it (`FAMILY_MEMBERS`); a move joining or leaving a family fails the test.
+
+- **Push-up (35):** Standard Push-Up, Wall Push-Up, Incline Push-Up, Incline Push-Up Medium, Incline Push-Up Close-Grip, Incline Push-Up Reverse Grip, Incline Push-Up Wide, Incline Shoulder Press Up, Low incline push-up, Knee push-up, Diamond Push-Up, Close-grip Press-ups, Push-Ups - Close Triceps Position, Triceps push up, Wide Push-Up, Push-Up Wide, Pushups (Close and Wide Hand Positions), Decline Push-Up, Push-Ups With Feet Elevated, Deficit Push ups, Ring Push-Up, TRX/Rings Push-Up, Suspended Push-Up, Sphinx Push-Up, Spiderman Push-Up, Dive Bomber Push-Up, Hand-release push-up, Staggered push-up, Push-up with shoulder tap, Clock Push-Up, Push-up rotations, Shoulder width three-point push-up, Side to Side Push Ups, Vpushup, Weighted push-ups.
+- **Lunge (14):** Supported Split Squat, Split Squats, Side split squats, Suspended Split Squat, Bulgarian split squat, Reverse lunge, Forward Lunge, Bodyweight lunge, Bodyweight Walking Lunge, Unilateral Lunges, Curtsy Lunge, Crossover Reverse Lunge, Lateral Lunge, Reverse lunge to knee drive. The catalogue has no separate step-back lunge.
+- **Row (11):** Bent-Knee Australian Pull-Up, Inverted Row, Wide-Grip Inverted Row, Feet-Elevated Australian Pull-Up, Australian Chin-Up, Ring Row, Incline Row - Rings, Bodyweight Mid Row, Suspended Row, TRX Rows, Rowing with TRX band.
+- **Crunch and sit-up (21):** Crunches, Abdominal Crunch, Bicycle Crunch, Cross-Body Crunch, Crunch - Hands Overhead, Crunches With Legs Up, Incline Crunches, Levitation Crunch, Oblique Crunches, Oblique Crunches - On The Floor, Side Crunch, Standing Side Crunches, Tuck Crunch, Reverse Crunch, Suspended Reverse Crunch, Sit-Up, 3/4 Sit-Up, Butterfly Sit Up, Frog Sit-Ups, Janda Sit-Up, Sit Up Elbow Thrust.
+
+**Excluded, keeping their own or computed bands:**
+
+| Move | Why | Band |
+|---|---|---|
+| Hindu Push-Up | Harder (user) | push-up ÷ 1.2 = 9/14/18/24/30 |
+| Pike Push-Up | Harder (user); own Endura page | Endura pike 5/7/18/35/58 |
+| Elevated pike push-up | Pike variant (seed, pattern vertical push) | pike ÷ 1.2 = 5/6/15/30/49 |
+| Plyo Push-up, Typewriter Push-Up, Pseudo Planche Push-Up | Advanced; skill words | Hindu ÷ 1.2 = 7/11/15/20/25 |
+| Russian Push Ups, Tyson push-ups | Advanced | feet-elevated push-up (now the family band) ÷ 1.2 = 9/14/18/24/30, was 7/11/15/20/25 |
+| Finger Pushup | Advanced | push-up ÷ 1.2 = 9/14/18/24/30 |
+| Archer Push-Up, Incline Archer Push-Up, Clap Push-Up, Superman Push-Up, One-Arm Push-Up | Skill; advanced or elite | unchanged |
+| Maltese Push-Up, Planche Push-Up | Skill; elite | generic (follow-up) |
+| Handstand push-ups (box, wall, deficit, freestanding, 90-degree, tiger bend) | Not push-up pages; Endura handstand push-up | unchanged |
+| Body-Up, Body Tricep Press | Derived from the push-up but not push-ups by name | push-up ÷ 1.2 = 9/14/18/24/30 |
+| Plank Shoulder Tap | Core pattern; not a push-up | push-up × 1.2 = 14/21/27/35/44 |
+| Scapular push-up, Push-up plus | Warm-ups | unchanged |
+| Pistol squat, assisted pistol, shrimp squat, skater squat | Skill or advanced | unchanged |
+| Cossack squat, Step-up, Step-Up with Knee Drive | Not lunges by name (follow-up) | seed 5/8/12/16/20, 6/10/15/20/25; step-up ÷ 1.2 |
+| Archer Australian Pull-Up, One-Arm Inverted Row | Skill; advanced | feet-elevated row ÷ 1.2 = 5/8/10/16/20, then 4/6/8/13/16 (were 4/6/9/13/16 and 3/5/7/10/13) |
+| Front Lever Row | Elite | unchanged |
+| Australian Pull-Up Hold | A hold | unchanged (unit conversion from the pull-up) |
+| Jackknife Sit-Up, V-Up, Gorilla Chin/Crunch | Harder trunk skills | unchanged |
+| Loaded or plyometric lunges, rows and push-ups (Lunge Jump, Dumbbell and Kettlebell lunges, Kettlebell and band rows, Plyo Kettlebell Pushups) | Tierless (not a max-rep test) | no tiers |
+
+Computed children of members step from the family band: Ring Bicep Curl and Bodyweight Biceps Curl (5/8/10/16/20) and Ring Face Pull (9/12/16/24/30) from the inverted row; Air Bike (16/24/40/60/85, was 8/12/40/75/120) from the bicycle crunch; Bent-Knee Hip Raise, Bottoms Up and Butt-Ups (16/24/40/60/85, were 13/20/33/50/70) from the reverse crunch ("same"). No other non-member band changed; the skills of decision 5 are unchanged.
+
 ### Anchors
 
-An anchor's band is fixed and never computed. There are 145:
+An anchor's band is fixed and never computed. There are 201:
 
 | Anchor | Count | Notes |
 |---|---:|---|
-| Endura, coaching list, seed | 88 | Library moves outside the research table (48 Endura, 17 coaching, 23 seed), after the matcher fix and the muscle-up cap. |
-| Sourced research rows | 31 | The 32 rows with two or more sources, less the sit-up. |
-| User decision | 1 | Sit-up, matched to crunches. |
-| Single source | 12 | Derived rows whose parent is a data source or coaching target, not a move: Bent-Knee Australian Pull-Up (TopEndSports), Flutter Kicks (StrengthLevel table), Hyperextensions (back-extension study), Hip Thrust, Single-leg hamstring curl and Unilateral Hip Thrust (single-leg bridge test), Chin-up Isometric Hold (flexed-arm hang), Double Kettlebell Snatch (single-bell rank tables), Dragon Flag, Iron Cross, Neck Bridge and the lunge-style get-up (coaching targets). |
+| Endura, coaching list, seed, outside the research table | 88 | 35 Endura, 17 coaching, 21 seed, and 15 family members among them (13 Endura pages, the seed Bulgarian split squat and reverse lunge), after the matcher fix and the muscle-up cap. |
+| Family members in the research table | 66 | Take their family's band (see "Band families"). |
+| Sourced research rows | 23 | The 32 rows with two or more sources, less the 9 that are family members (the crunches, abdominal crunch, bicycle crunch, 3/4 sit-up and sit-up, and the four sourced TRX and suspended rows). |
+| Single source | 11 | Derived rows whose parent is a data source or coaching target, not a move: Flutter Kicks (StrengthLevel table), Hyperextensions (back-extension study), Hip Thrust, Single-leg hamstring curl and Unilateral Hip Thrust (single-leg bridge test), Chin-up Isometric Hold (flexed-arm hang), Double Kettlebell Snatch (single-bell rank tables), Dragon Flag, Iron Cross, Neck Bridge and the lunge-style get-up (coaching targets). The Bent-Knee Australian Pull-Up is now a row family member. |
 | Unit conversion | 13 | Derived rows whose parent has the other effort (reps from a hold, or a hold from reps, at a stated pace), all from a fixed anchor: the dynamic plank moves from the forearm plank, Dynamic side plank, Hollow Body Rock, L-Sit Dip, Front Lever Row, Australian Pull-Up Hold, Swimmers. A ×1.2 step cannot cross units, so their research band is kept; the script fails if one of their parents were computed. |
+
+The user decision on the sit-up is now a family band, so there is no separate decision anchor.
 
 ### Computed derivation
 
-The other 180 rows are computed by `deriveChains` in `scripts/lib/tierDerivation.ts`:
+The other 124 rows are computed by `deriveChains` in `scripts/lib/tierDerivation.ts`:
 
 1. **Parent.** The existing parent lookup (hand override, id in the method text, "easierId/harderId/Parent is <name>", earliest anchor name, catalogue neighbour) now returns the parent's id, through `PARENT_IDS` for anchor names. Fourth-step overrides: the lunge family hangs off the supported split squat (`wger_2557`, the catalogue easierId the research divided), Pike Compression and Roll-overs off the hanging leg raise ("HKR ÷ 1.2 twice"), Deficit Step-Down off the Archer Squat ("pistol × 1.2 twice, via archer level"), Butterfly Sit Up off the 3/4 sit-up, Oblique Crunches - On The Floor off Oblique Crunches, Elbow to Knee off Crunches.
-2. **Step.** Easier or harder comes from the catalogue: the parent is the move's `easierId` (or names it as `harderId`), or the reverse (71 rows). When the two are not linked, from the method text (90 rows): ×1.2, ×1.44 or "easier"; ÷1.2, ÷1.44 or "harder"; ×1.0, "same band" or "copied from" means the same band. 19 rows are set by hand in `STEP_OVERRIDES` because the text names both directions or none, or quotes an old factor while its numbers say otherwise (Reverse Crunch and Double Kettlebell Push Press are harder, not easier). 18 rows in all take the parent's band unchanged ("same"), each because the research says the move is the parent's band.
+2. **Step.** Easier or harder comes from the catalogue: the parent is the move's `easierId` (or names it as `harderId`), or the reverse (50 rows). When the two are not linked, from the method text (57 rows): ×1.2, ×1.44 or "easier"; ÷1.2, ÷1.44 or "harder"; ×1.0, "same band" or "copied from" means the same band. 17 rows are set by hand in `STEP_OVERRIDES` because the text names both directions or none, or quotes an old factor while its numbers say otherwise (Double Kettlebell Push Press is harder, not easier). 15 rows in all take the parent's band unchanged ("same"), each because the research says the move is the parent's band. (Overrides for rows that are family members now, such as the Reverse Crunch and Oblique Crunches - On The Floor, stay in the script but have no effect.)
 3. **Band.** Easier: parent × 1.2, rounded up. Harder: parent ÷ 1.2, rounded down, at least 1, then raised by 1 where flooring tied two tiers. Holds of 10 s or more round to 5 s in the same direction. A computed band therefore always sits at or above its parent (easier) or at or below it (harder), at every tier.
 4. **Order.** Bands are computed breadth-first from the anchors, so every parent is computed before its children. A cycle, a missing parent or a parent with another effort stops the script with an error.
 
 Each computed row in the generated table carries `parent: { id, step }`, so the tests recompute every band from its parent and walk every chain back to an anchor.
 
-**Result.** 31 sourced, 206 derived (180 computed, 25 single-source or conversion anchors, the sit-up) and 125 not_max_test rows; 8 dropped as before. The Library's 708 moves: 48 Endura, 17 coaching, 23 seed, 31 sourced, 206 derived, 13 generic (the 11 before, plus Maltese Push-Up and Planche Push-Up), 125 tierless, 245 without tiers. 92 of the research's derived proposals changed, most of them because their parent changed: the sit-up family (now from 16/24/40/60/85), the row family (now from the TopEndSports bent-knee table), the push-up and pull-up variants, and rows the research had derived by a ratio or two steps that are now one ×1.2 step. Some computed bands are ones the research had called implausible: Wall walk-up (pike push-up ÷ 1.2 = 4/5/15/29/48; research 1/2/5/9/15) and Japanese Handstand (wall handstand ÷ 1.2 = 8/15/25/50/75 s; research 1/3/5/10/20). They follow the rule and are listed as follow-ups.
+**Result.** 23 sourced, 148 derived (124 computed, 24 single-source or conversion anchors), 66 family and 125 not_max_test rows; 8 dropped as before. The Library's 708 moves: 81 family (66 research rows, 13 Endura pages, 2 seed), 35 Endura, 17 coaching, 21 seed, 23 sourced, 148 derived, 13 generic (the 11 before, plus Maltese Push-Up and Planche Push-Up), 125 tierless, 245 without tiers. Some computed bands are ones the research had called implausible: Wall walk-up (pike push-up ÷ 1.2 = 4/5/15/29/48; research 1/2/5/9/15) and Japanese Handstand (wall handstand ÷ 1.2 = 8/15/25/50/75 s; research 1/3/5/10/20). They are skills the user kept as they are (decision 5) and are listed for a separate issue.
 
 ### Remaining conflicts: data questions
 
-Every easierId/harderId pair is checked after the derivation. 56 pairs that touch a researched band still put an easier move below a harder one at some tier (29 with both moves researched, 27 with one; a further 13 pairs between Endura, coaching and seed moves were never in scope). None is inside one chain: following both moves back to their anchors gives two different anchors every time, whose bands leave no room for the moves the catalogue puts between them. The test pins these 26 anchor pairs (`KNOWN_ANCHOR_CONFLICTS`); a new one fails it. They are data questions for the user:
+Every easierId/harderId pair is checked after the derivation. In scope are pairs that touch a band this issue set (sourced, derived or family). Before the family bands, 56 move pairs in scope put an easier move below a harder one at some tier, tracing back to 26 anchor pairs. With the family bands, 19 move pairs and 11 anchor pairs remain. Over the whole catalogue (including Endura against coaching pairs never in scope, such as the bodyweight squat against the coaching squat row) it is 69 → 24 move pairs and 37 → 16 anchor pairs. None of the remaining pairs is inside one chain or one family. The test pins the 11 anchor pairs (`KNOWN_ANCHOR_CONFLICTS`); a new one fails it.
 
-| Anchors (easier > harder) | Bands | What breaks |
-|---|---|---|
-| Supported Split Squat > Bulgarian split squat | 5/8/18/34/54 vs 5/7/18/34/55 | Equal bands, but the catalogue puts the lunge family (supported ÷ 1.2 = 4/6/15/28/45) and Reverse lunge to knee drive (Bulgarian × 1.2 = 6/9/22/41/66) between them. 6 pairs. |
-| Supported Split Squat > Cossack squat | 5/8/18/34/54 vs 5/8/12/16/20 (seed) | Unilateral Lunges 4/6/15/28/45 below the cossack's novice and beginner. |
-| Reverse lunge > Bulgarian split squat | 6/10/15/20/25 (seed) vs 5/7/18/34/55 | The seed reverse lunge is a coaching target, below the knee-drive lunge from beginner up. 2 pairs. |
-| Hip hinge > single-leg bridge test | 5/10/15/20/30 (seed) vs 14/21/27/33/39 | Single-Leg Romanian Deadlift (hip hinge ÷ 1.2) below Single-leg hamstring curl. |
-| Pull-up > Muscle-up (and Kipping Muscle Up) | 3/4/8/13/18 vs 1/2/6/12/15 | The capped muscle-up's advanced 12 is above pull-up ÷ 1.2 = 10, so L-sit, archer, typewriter, towel, explosive and headbanger pull-ups and Gironda and side-to-side chins (2/3/6/10/15) fall below it at advanced. 9 pairs. Capping advanced at 10 would clear them. |
-| Scapular pull-up > Pull-up | 3/6/10/15/20 (seed) vs 3/4/8/13/18 | Jumping pull-up and pull-up negative (pull-up × 1.2 = 4/5/10/16/22) above the scapular pull-up at novice, advanced and elite. 2 pairs. |
-| Bent-Knee Australian Pull-Up > Pull-up | 8/12/17/24/30 vs 3/4/8/13/18 | Four rungs between them (inverted row, feet-elevated, archer, one-arm row) at ÷ 1.2 each leave the one-arm row 3/5/7/10/13 below the pull-up from intermediate up. |
-| Bent-Knee Australian Pull-Up > Chin-Up | 8/12/17/24/30 vs 4/6/14/24/35 (Endura) | Australian Chin-Up (bent-knee ÷ 1.2 = 6/10/14/20/25) below the chin-up at advanced and elite. |
-| Bodyweight Mid Row, Suspended Row, Rowing with TRX band, TRX Rows > Bent-Knee Australian Pull-Up | 6/9/23/40/59 (sourced) vs 8/12/17/24/30 | The sourced TRX rows are below the bent-knee table at novice and beginner. 5 pairs. |
-| Wall Push-Up > Standard Push-Up | 14/21/27/35/44 vs 11/17/22/29/36 | Wall is the push-up × 1.2 (an Aurora proxy), one step, but the catalogue puts incline, low incline and knee push-ups between them. |
-| Wall Push-Up > Incline Push-Up (and Medium) | 14/21/27/35/44 vs 10/15/35/65/100 | The Endura incline's novice and beginner are below the wall push-up. 6 pairs with its grip variants. |
-| Incline Push-Up (and Medium) > Standard Push-Up | 10/15/35/65/100 vs 11/17/22/29/36 | The Endura incline's novice and beginner (10/15) are below the knee push-up (push-up × 1.2 = 14/21). 6 pairs. |
-| Ring Push-Up > Standard Push-Up | 5/8/15/24/36 (Endura proxy) vs 11/17/22/29/36 | Hindu, Sphinx and Dive Bomber push-ups (push-up ÷ 1.2) are above the ring push-up the catalogue calls easier. 3 pairs. |
-| Diamond Push-Up, Close-grip Press-ups > Standard Push-Up | 3/5/15/30/50 (Endura) vs 11/17/22/29/36 | The Endura diamond curve crosses the push-up's: far below at novice and beginner, above at elite. 2 pairs. |
-| Plank Jump-In > Standard Push-Up | 9/14/26/41/68 (forearm plank at 4 s per rep) vs 11/17/22/29/36 | Plank Shoulder Tap (push-up × 1.2 = 14/21/27/35/44) above the jump-in at novice and beginner. |
-| Bicycle Crunch > Sit-Up | 8/12/40/75/120 (sourced) vs 16/24/40/60/85 | The sourced bicycle crunch's novice and beginner are below the sit-up and its harder variants. 6 pairs. |
-| 3/4 Sit-Up > Sit-Up | 7/10/33/63/100 (sourced) vs 16/24/40/60/85 | Jackknife Sit-Up (from the sit-up) above the 3/4 sit-up at novice and beginner, also through Butterfly Sit Up. |
-| Abdominal Crunch > Sit-Up | 16/24/40/60/85 vs 16/24/40/60/85 | Matched bands, but Crunch - Hands Overhead, Reverse Crunch and Suspended Reverse Crunch sit between them in the catalogue. 3 pairs. A consequence of decision 2. |
-| Straddle Planche > Full Planche | 2/3/6/10/16 vs 2/3/8/15/30 | Both sourced; carried over. |
-| Tuck L-sit > L-Sit | 7/10/20/30/45 vs 5/10/30/45/60 | Both sourced; carried over. |
+**Gone with the family bands (19 of the 26 old anchor pairs):** the wall, incline, incline medium, diamond, close-grip and ring push-ups against the push-up, and the wall against the incline push-up (7); the supported split squat and the seed reverse lunge against the Bulgarian split squat, and the supported split squat against the cossack squat (3); the sourced mid, suspended and two TRX rows against the bent-knee row, and the bent-knee row against the pull-up and the chin-up (6); the bicycle crunch, 3/4 sit-up and abdominal crunch against the sit-up (3). The 7 others stay. 4 new anchor pairs take the place of old ones: three re-rooted on a family member (Unilateral Lunges against the cossack, the feet-elevated row against the pull-up, the Australian Chin-Up against the chin-up), and one newly in scope (the step-up against the Bulgarian split squat: it crossed before as seed against seed, out of scope, and the Bulgarian split squat is now a family member).
+
+| Anchors (easier > harder) | Bands | What breaks | Status |
+|---|---|---|---|
+| Straddle Planche > Full Planche | 2/3/6/10/16 vs 2/3/8/15/30 | Both sourced. | Skill: not changed (user decision) |
+| Tuck L-sit > L-Sit | 7/10/20/30/45 vs 5/10/30/45/60 | Both sourced. | Skill: not changed (user decision) |
+| Pull-up > Muscle-up | 3/4/8/13/18 vs 1/2/6/12/15 | The muscle-up's advanced 12 is above pull-up ÷ 1.2 = 10, so L-sit, archer, typewriter, towel, explosive and headbanger pull-ups and Gironda and side-to-side chins (2/3/6/10/15) fall below it at advanced. 8 pairs. | Skill: not changed (user decision) |
+| Pull-up > Kipping Muscle Up | 3/4/8/13/18 vs 1/2/6/12/15 | The same, through the L-sit pull-up. | Skill: not changed (user decision) |
+| Scapular pull-up > Pull-up | 3/6/10/15/20 (seed) vs 3/4/8/13/18 | Jumping pull-up and pull-up negative (pull-up × 1.2 = 4/5/10/16/22) above the scapular pull-up at novice, advanced and elite. 2 pairs. | Skill: not changed (user decision) |
+| Hip hinge > single-leg bridge test | 5/10/15/20/30 (seed) vs 14/21/27/33/39 | Single-Leg Romanian Deadlift (hip hinge ÷ 1.2) below Single-leg hamstring curl. | Follow-up |
+| Feet-Elevated Australian Pull-Up (row family) > Pull-up | 7/10/13/20/25 vs 3/4/8/13/18 | Archer row and one-arm row at ÷ 1.2 each leave the one-arm row 4/6/8/13/16 below the pull-up at elite. | For a separate issue |
+| Australian Chin-Up (row family) > Chin-Up | 7/10/13/20/25 vs 4/6/14/24/35 (Endura) | The row family band is below the Endura chin-up from intermediate up. | For a separate issue |
+| Step-up > Bulgarian split squat (lunge family) | 6/10/15/20/25 (seed) vs 4/6/15/28/45 | The seed step-up is below the lunge band at advanced and elite. | For a separate issue (step-up not in the lunge family) |
+| Unilateral Lunges (lunge family) > Cossack squat | 4/6/15/28/45 vs 5/8/12/16/20 (seed) | The lunge band is below the seed cossack at novice and beginner. | For a separate issue (cossack not in the lunge family) |
+| Plank Jump-In > Standard Push-Up | 9/14/26/41/68 (forearm plank at 4 s per rep) vs 11/17/22/29/36 | Plank Shoulder Tap (push-up × 1.2 = 14/21/27/35/44) above the jump-in at novice and beginner. | For a separate issue (core) |
 
 ### Planner audit
 
-The user's rule: no invented dosing, and every planner change must be explained. `scripts/audit-planner-output.mts` dumps the planner's output for one source tree; `scripts/compare-planner-output.mjs` compares two dumps and explains each difference. Run on the merge-base with `origin/dev` (`7ac4fd1`) and on this branch:
+The user's rule: no invented dosing, and every planner change must be explained. `scripts/audit-planner-output.mts` dumps the planner's output for one source tree; `scripts/compare-planner-output.mjs` compares two dumps and explains each difference. Run on the merge-base with `origin/dev` (`7ac4fd1`) and on this branch, with the band families in.
 
-- **Seed days:** 6 seed days × 11 scenarios (plain, poor sleep, deload, pain shoulder, pain knee, joint history, no gear, all gear, advance, stall, declared advanced) = 66 plans. 57 identical. 9 differ only in one slot's dose, each on a move whose band changed (for example Sliding Leg Curl, Floor windshield wiper, Bent-Knee Australian Pull-Up as a swap). No seed-day move selection changed.
-- **Generated blocks:** 4 area kinds and 5 skill targets × 6 contexts (plain, no gear, all gear, joint history, level beginner, level advanced) = 54 blocks, 711 slots. 301 slots differ: 117 because `dev` chose a move that is tierless now, 39 where the ladder walk moved on after such a slot dropped out, and 145 doses from a band change.
-- **Plans of generated days** (plain and deload): 324 plans, 292 differ, all explained the same way (214 dose from a band change, 154 selection because a tierless move dropped out, 10 selection with a band change).
+The compare script was tightened in this run. `dev` records no band source kind, so the old check called every move's band "changed" and any dose difference passed as explained. A band now counts as changed only when its numbers, its effort or its tierless state differ. That surfaced 12 differences the old check had passed, and two new explanations cover them. (1) The generator rotates each slot kind through its ladder across a block's days, so when an earlier slot of the same kind changed, a later pick moves on (10 core slots: hollow hold → forearm plank after a tierless move dropped out of the anti-extension rotation; they were already on the previous branch head). (2) A stall regression keeps the dose planned for the slot's own move, so its dose changes with that move's band (2 seed plans: Bodyweight squat regressed from the Bulgarian split squat). A warm-up difference now needs a band change on one of the plan's work moves (the warm-up level comes from their ladder bands); otherwise it is unexplained.
+
+- **Seed days:** 6 seed days × 11 scenarios = 66 plans. 41 identical. 25 differ in doses only: 24 with a slot on a move whose band changed (16 on the Bulgarian split squat, now the lunge family band; the others on Sliding Leg Curl, Floor windshield wiper, Japanese Handstand and Press to Handstand, whose bands changed earlier on this branch, and two row family swaps), 2 stall regressions from the Bulgarian split squat, and 1 warm-up (legs, "advance": the Bulgarian split squat's family band raises the warm-up level, so the eyes-closed balance and assisted pistol come in). No seed-day move selection changed.
+- **Generated blocks:** 4 area kinds and 5 skill targets × 6 contexts = 54 blocks, 711 slots. 310 slots differ: 117 because `dev` chose a move that is tierless now, 29 move changes with a band change, 10 rotations that moved on after an earlier slot of the same kind changed, and 154 doses from a band change.
+- **Plans of generated days** (plain and deload): 324 plans, 310 differ: 262 doses from a band change, 154 selections because a tierless move dropped out, 10 selections with a band change (a plan can have several).
+- **The families alone** (previous branch head → this branch): 20 seed plans, 115 block slots and 176 block plans differ, all doses from a band change (plus the warm-up and the 2 stall regressions above). No move selection changed anywhere.
 - **Unexplained differences: 0.** The dose rules themselves are unchanged: `git diff 7ac4fd1 -- src/rules src/plan src/progress src/safety` is empty, and `isPlannable` has `dev`'s code.
-- **No invented dose:** no generated slot holds a tierless move or a move without standards, and no generated slot or planned item has the 8 reps at RIR 2 placeholder (on the third-pass branch head, 117 slots did). Two tierless moves (Fire hydrant, `wger_468`) appear in seed days only as stall regressions, with the same dose as on `dev`.
+- **No invented dose:** no generated slot holds a tierless move, and none holds a move without standards except the joint-history care slots (`wger_578`, 12 slots, care doses as on `dev`). No generated slot or planned item has the 8 reps at RIR 2 placeholder. 5 "declared advanced" slots reach 8 reps at RIR 2 by the band rule (an advanced tier of 10 less RIR 2, on Floor windshield wiper and Sliding Leg Curl); the previous branch head had 13. Two tierless moves (Fire hydrant, `wger_468`) appear in seed days only as stall regressions, with the same dose as on `dev`.
 
 `tests/plan/tierlessMoves.test.ts` keeps the no-tierless and no-placeholder checks over every area kind as a permanent test.
 
 ## Follow-ups
 
-1. Answer the data questions above. The ones with the most pairs: the supported split squat against the Bulgarian split squat (equal anchors), the muscle-up's advanced tier (12 against the pull-up's 10 after one step), the wall, incline and knee push-up ladder, and the sourced TRX rows against the bent-knee table.
-2. Replace or drop the AOL/Brewer citation on the two ab wheel rows (404).
-3. Decide the generic leftovers. The three skill placeholders (Manna, Ice Cream Maker, Pelican Curl), Maltese Push-Up and Planche Push-Up need a decision; the rest have no data after two passes.
-4. Recheck the computed bands the research called implausible (Wall walk-up, Japanese Handstand), and the Crow Pose, Elbow Lever and Bear plank elite bands.
-5. Any dose rule of their own for tierless moves (contacts for plyometrics, load for kettlebell moves) needs evidence first; until then the generator does not pick them.
+1. Replace or drop the AOL/Brewer citation on the two ab wheel rows (404).
+2. Decide the generic leftovers: Maltese Push-Up and Planche Push-Up (skill push-ups with no rep-move parent); the rest have no data after two passes. The placeholder skills (Manna, Ice Cream Maker, Pelican Curl) are skills the user kept as they are.
+3. Recheck the Crow Pose, Elbow Lever and Bear plank elite bands.
+4. Any dose rule of their own for tierless moves (contacts for plyometrics, load for kettlebell moves) needs evidence first; until then the generator does not pick them.
+5. Check the family memberships the rule gives at the edges: Weighted push-ups (beginner, takes the push-up band), the TRX/Rings and suspended push-ups, and the Wide-Grip Inverted Row and Feet-Elevated Australian Pull-Up (intermediate, take the row band).
+
+**Skills: not changed (user decision).** Straddle against full planche, tuck L-sit against L-sit, the muscle-up's advanced tier, the scapular pull-up, Wall walk-up and Japanese Handstand, and the placeholder skills (Manna, Ice Cream Maker, Pelican Curl). Their conflicts stay pinned.
+
+**For a separate issue:**
+
+1. The remaining anchor-against-anchor conflicts:
+   - rows: the row family against the pull-up (one-arm row below the pull-up at elite) and the Australian Chin-Up against the Endura chin-up;
+   - lunges and squats: Step-up and Cossack squat are not lunge family members, and their seed bands cross the lunge band (step-up below at advanced and elite, cossack above at novice and beginner);
+   - core: Plank Jump-In against Plank Shoulder Tap;
+   - planche and L-sit: straddle against full planche, tuck L-sit against L-sit;
+   - the scapular pull-up against the jumping pull-up and the pull-up negative;
+   - the muscle-up's advanced tier against pull-up ÷ 1.2.
+2. Wall walk-up (4/5/15/29/48) and Japanese Handstand (8/15/25/50/75 s): check plausibility. The research called both too high.
+3. Hip hinge against the single-leg bridge test (Single-Leg Romanian Deadlift below Single-leg hamstring curl).

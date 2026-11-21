@@ -3,7 +3,7 @@
 // Do not edit by hand: change the research JSON and rerun the script.
 import type { ExerciseStandards } from "../../domain/types";
 
-export type ResearchedKind = "sourced" | "derived" | "not_max_test";
+export type ResearchedKind = "sourced" | "derived" | "family" | "not_max_test";
 
 /** How a computed band relates to its parent's: ×1.2 (easier), ÷1.2 (harder) or unchanged. */
 export type DerivationStep = "easier" | "harder" | "same";
@@ -12,7 +12,7 @@ export interface ResearchedStandard {
   kind: ResearchedKind;
   /** Absent for not_max_test: tiers do not apply. */
   standards?: ExerciseStandards;
-  /** Short Library label: "Sourced: …", "Derived from …", "Matched to …" or "Not a max-rep test". */
+  /** Short Library label: "Sourced: …", "Derived from …", a family band label or "Not a max-rep test". */
   source: string;
   /** Computed rows only: the parent move whose band this one steps from. Absent on anchors. */
   parent?: { id: string; step: DerivationStep };
@@ -24,14 +24,11 @@ export interface ResearchedStandard {
  */
 export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> = {
   // 3/4 Sit-Up
-  //   Sit-Ups (1-Min, Cooper): Males, Age 20-29 <https://fitnessnorms.pages.dev/strength/cooper-sit-ups/male/age-20-29>
-  //   StrengthLevel Sit Ups standards <https://strengthlevel.com/strength-standards/sit-ups/lb>
-  //   StrengthLevel Crunches standards <https://strengthlevel.com/strength-standards/crunches/lb>
-  "fedb_3_4_sit_up": { kind: "sourced", standards: { novice: 7, beginner: 10, intermediate: 33, advanced: 63, elite: 100 }, source: "Sourced: Cooper Institute, StrengthLevel" },
+  "fedb_3_4_sit_up": { kind: "family", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Crunch and sit-up family band" },
   // Advanced Kettlebell Windmill
   "fedb_advanced_kettlebell_windmill": { kind: "not_max_test", source: "Not a max-rep test" },
   // Air Bike
-  "fedb_air_bike": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 40, advanced: 75, elite: 120 }, parent: { id: "hf_115", step: "same" }, source: "Derived from bicycle crunch" },
+  "fedb_air_bike": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, parent: { id: "hf_115", step: "same" }, source: "Derived from bicycle crunch" },
   // Alternate Heel Touchers
   "fedb_alternate_heel_touchers": { kind: "derived", standards: { novice: 20, beginner: 29, intermediate: 48, advanced: 72, elite: 102 }, parent: { id: "fedb_crunches", step: "easier" }, source: "Derived from crunch" },
   // Alternate Leg Diagonal Bound
@@ -47,7 +44,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Bench Jump
   "fedb_bench_jump": { kind: "not_max_test", source: "Not a max-rep test" },
   // Bent-Knee Hip Raise
-  "fedb_bent_knee_hip_raise": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "hf_119", step: "same" }, source: "Derived from reverse crunch" },
+  "fedb_bent_knee_hip_raise": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, parent: { id: "hf_119", step: "same" }, source: "Derived from reverse crunch" },
   // Bent Press
   "fedb_bent_press": { kind: "not_max_test", source: "Not a max-rep test" },
   // Body Tricep Press
@@ -55,30 +52,25 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Body-Up
   "fedb_body_up": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from push-up" },
   // Bodyweight Mid Row
-  //   StrengthLevel Inverted Row (kg) <https://strengthlevel.com/strength-standards/inverted-row/kg>
-  //   StrengthLevel Inverted Row (lb) <https://strengthlevel.com/strength-standards/inverted-row/lb>
-  //   FitnessVolt Inverted Row <https://fitnessvolt.com/strength-standards/inverted-row>
-  "fedb_bodyweight_mid_row": { kind: "sourced", standards: { novice: 6, beginner: 9, intermediate: 23, advanced: 40, elite: 59 }, source: "Sourced: StrengthLevel, FitnessVolt" },
+  "fedb_bodyweight_mid_row": { kind: "family", standards: { novice: 7, beginner: 10, intermediate: 13, advanced: 20, elite: 25 }, source: "Row family band (bent-knee row norms)" },
   // Bodyweight Walking Lunge
-  "fedb_bodyweight_walking_lunge": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, parent: { id: "wger_2557", step: "harder" }, source: "Derived from supported split squat" },
+  "fedb_bodyweight_walking_lunge": { kind: "family", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, source: "Lunge family band (Endura split squat)" },
   // Bottoms Up
-  "fedb_bottoms_up": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "hf_119", step: "same" }, source: "Derived from reverse crunch" },
+  "fedb_bottoms_up": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, parent: { id: "hf_119", step: "same" }, source: "Derived from reverse crunch" },
   // Butt-Ups
-  "fedb_butt_ups": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "hf_119", step: "same" }, source: "Derived from reverse crunch" },
+  "fedb_butt_ups": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, parent: { id: "hf_119", step: "same" }, source: "Derived from reverse crunch" },
   // Clock Push-Up
-  "fedb_clock_push_up": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
+  "fedb_clock_push_up": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Cocoons
   "fedb_cocoons": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "fedb_crunches", step: "harder" }, source: "Derived from crunch" },
   // Cross-Body Crunch
-  "fedb_cross_body_crunch": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, parent: { id: "wger_1933", step: "same" }, source: "Derived from abdominal crunch" },
+  "fedb_cross_body_crunch": { kind: "family", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Crunch and sit-up family band" },
   // Crossover Reverse Lunge
-  "fedb_crossover_reverse_lunge": { kind: "derived", standards: { novice: 3, beginner: 5, intermediate: 12, advanced: 23, elite: 37 }, parent: { id: "wger_1324", step: "harder" }, source: "Derived from lunge" },
+  "fedb_crossover_reverse_lunge": { kind: "family", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, source: "Lunge family band (Endura split squat)" },
   // Crunch - Hands Overhead
-  "fedb_crunch_hands_overhead": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "wger_1933", step: "harder" }, source: "Derived from abdominal crunch" },
+  "fedb_crunch_hands_overhead": { kind: "family", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Crunch and sit-up family band" },
   // Crunches
-  //   StrengthLevel Crunches <https://strengthlevel.com/strength-standards/crunches/lb>
-  //   Cooper 1-min sit-ups men 20-29 <https://fitnessnorms.pages.dev/strength/cooper-sit-ups/male/age-20-29>
-  "fedb_crunches": { kind: "sourced", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Sourced: StrengthLevel, Cooper Institute" },
+  "fedb_crunches": { kind: "family", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Crunch and sit-up family band" },
   // Double Kettlebell Jerk
   "fedb_double_kettlebell_jerk": { kind: "derived", standards: { novice: 3, beginner: 4, intermediate: 12, advanced: 24, elite: 40 }, parent: { id: "fedb_alternating_kettlebell_press", step: "harder" }, source: "Derived from alternating kettlebell press" },
   // Double Kettlebell Push Press
@@ -98,7 +90,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Flutter Kicks
   "fedb_flutter_kicks": { kind: "derived", standards: { novice: 13, beginner: 19, intermediate: 51, advanced: 93, elite: 145 }, source: "Derived from Strength Level flutter kicks table" },
   // Frog Sit-Ups
-  "fedb_frog_sit_ups": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "fedb_sit_up", step: "harder" }, source: "Derived from sit-up" },
+  "fedb_frog_sit_ups": { kind: "family", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Crunch and sit-up family band" },
   // Front Squats With Two Kettlebells
   "fedb_front_squats_with_two_kettlebells": { kind: "not_max_test", source: "Not a max-rep test" },
   // Gironda Sternum Chins
@@ -114,11 +106,11 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Hyperextensions With No Hyperextension Bench
   "fedb_hyperextensions_with_no_hyperextension_bench": { kind: "derived", standards: { novice: 12, beginner: 18, intermediate: 29, advanced: 40, elite: 50 }, source: "Derived from back-extension endurance study" },
   // Incline Push-Up Close-Grip
-  "fedb_incline_push_up_close_grip": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 29, advanced: 54, elite: 83 }, parent: { id: "fedb_incline_push_up", step: "harder" }, source: "Derived from incline push-up" },
+  "fedb_incline_push_up_close_grip": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Incline Push-Up Reverse Grip
-  "fedb_incline_push_up_reverse_grip": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 29, advanced: 54, elite: 83 }, parent: { id: "fedb_incline_push_up", step: "harder" }, source: "Derived from incline push-up" },
+  "fedb_incline_push_up_reverse_grip": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Incline Push-Up Wide
-  "fedb_incline_push_up_wide": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 29, advanced: 54, elite: 83 }, parent: { id: "fedb_incline_push_up", step: "harder" }, source: "Derived from incline push-up" },
+  "fedb_incline_push_up_wide": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Isometric Chest Squeezes
   "fedb_isometric_chest_squeezes": { kind: "not_max_test", source: "Not a max-rep test" },
   // Isometric Wipers
@@ -126,7 +118,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Jackknife Sit-Up
   "fedb_jackknife_sit_up": { kind: "derived", standards: { novice: 10, beginner: 16, intermediate: 27, advanced: 41, elite: 58 }, parent: { id: "hf_120", step: "harder" }, source: "Derived from V-up" },
   // Janda Sit-Up
-  "fedb_janda_sit_up": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "fedb_sit_up", step: "harder" }, source: "Derived from sit-up" },
+  "fedb_janda_sit_up": { kind: "family", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Crunch and sit-up family band" },
   // Kettlebell Arnold Press
   "fedb_kettlebell_arnold_press": { kind: "derived", standards: { novice: 3, beginner: 4, intermediate: 12, advanced: 24, elite: 40 }, parent: { id: "fedb_alternating_kettlebell_press", step: "harder" }, source: "Derived from alternating kettlebell press" },
   // Kettlebell Dead Clean
@@ -172,9 +164,9 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Mixed Grip Chin
   "fedb_mixed_grip_chin": { kind: "derived", standards: { novice: 4, beginner: 5, intermediate: 10, advanced: 16, elite: 22 }, parent: { id: "pullup", step: "easier" }, source: "Derived from pull-up" },
   // Oblique Crunches
-  "fedb_oblique_crunches": { kind: "derived", standards: { novice: 20, beginner: 29, intermediate: 48, advanced: 72, elite: 102 }, parent: { id: "fedb_sit_up", step: "easier" }, source: "Derived from sit-up" },
+  "fedb_oblique_crunches": { kind: "family", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Crunch and sit-up family band" },
   // Oblique Crunches - On The Floor
-  "fedb_oblique_crunches_on_the_floor": { kind: "derived", standards: { novice: 20, beginner: 29, intermediate: 48, advanced: 72, elite: 102 }, parent: { id: "fedb_oblique_crunches", step: "same" }, source: "Derived from oblique crunches" },
+  "fedb_oblique_crunches_on_the_floor": { kind: "family", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Crunch and sit-up family band" },
   // One-Arm Kettlebell Clean
   "fedb_one_arm_kettlebell_clean": { kind: "not_max_test", source: "Not a max-rep test" },
   // One-Arm Kettlebell Clean and Jerk
@@ -212,13 +204,13 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Push Up to Side Plank
   "fedb_push_up_to_side_plank": { kind: "not_max_test", source: "Not a max-rep test" },
   // Push-Up Wide
-  "fedb_push_up_wide": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
+  "fedb_push_up_wide": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Push-Ups - Close Triceps Position
-  "fedb_push_ups_close_triceps_position": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
+  "fedb_push_ups_close_triceps_position": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Push-Ups With Feet Elevated
-  "fedb_push_ups_with_feet_elevated": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
+  "fedb_push_ups_with_feet_elevated": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Pushups (Close and Wide Hand Positions)
-  "fedb_pushups_close_and_wide_hand_positions": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from push-up" },
+  "fedb_pushups_close_and_wide_hand_positions": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Rocket Jump
   "fedb_rocket_jump": { kind: "not_max_test", source: "Not a max-rep test" },
   // Scissor Kick
@@ -240,7 +232,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Single-Leg Lateral Hop
   "fedb_single_leg_lateral_hop": { kind: "not_max_test", source: "Not a max-rep test" },
   // Sit-Up
-  "fedb_sit_up": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Matched to crunches" },
+  "fedb_sit_up": { kind: "family", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Crunch and sit-up family band" },
   // Spider Crawl
   "fedb_spider_crawl": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "fedb_sit_up", step: "harder" }, source: "Derived from sit-up" },
   // Standing Long Jump
@@ -253,17 +245,15 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Suspended Fallout
   "fedb_suspended_fallout": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "fedb_sit_up", step: "harder" }, source: "Derived from sit-up" },
   // Suspended Push-Up
-  "fedb_suspended_push_up": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
+  "fedb_suspended_push_up": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Suspended Reverse Crunch
-  "fedb_suspended_reverse_crunch": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 84 }, parent: { id: "hf_119", step: "easier" }, source: "Derived from reverse crunch" },
+  "fedb_suspended_reverse_crunch": { kind: "family", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Crunch and sit-up family band" },
   // Suspended Row
-  //   StrengthLevel Inverted Row <https://strengthlevel.com/strength-standards/inverted-row/kg>
-  //   FitnessVolt Inverted Row <https://fitnessvolt.com/strength-standards/inverted-row>
-  "fedb_suspended_row": { kind: "sourced", standards: { novice: 6, beginner: 9, intermediate: 23, advanced: 40, elite: 59 }, source: "Sourced: StrengthLevel, FitnessVolt" },
+  "fedb_suspended_row": { kind: "family", standards: { novice: 7, beginner: 10, intermediate: 13, advanced: 20, elite: 25 }, source: "Row family band (bent-knee row norms)" },
   // Toe Touchers
   "fedb_toe_touchers": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 84 }, parent: { id: "hf_120", step: "easier" }, source: "Derived from V-up" },
   // Tuck Crunch
-  "fedb_tuck_crunch": { kind: "derived", standards: { novice: 20, beginner: 29, intermediate: 48, advanced: 72, elite: 102 }, parent: { id: "fedb_sit_up", step: "easier" }, source: "Derived from sit-up" },
+  "fedb_tuck_crunch": { kind: "family", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Crunch and sit-up family band" },
   // Two-Arm Kettlebell Clean
   "fedb_two_arm_kettlebell_clean": { kind: "not_max_test", source: "Not a max-rep test" },
   // Two-Arm Kettlebell Jerk
@@ -289,7 +279,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Dragon Flag
   "hf_108": { kind: "derived", standards: { novice: 1, beginner: 2, intermediate: 4, advanced: 7, elite: 10 }, source: "Derived from coaching stage criterion" },
   // Sphinx Push-Up
-  "hf_11": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
+  "hf_11": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Hanging Leg Raise
   //   Strength Level Hanging Leg Raise <https://strengthlevel.com/strength-standards/hanging-leg-raise>
   //   FitnessVolt Hanging Leg Raise <https://fitnessvolt.com/strength-standards/hanging-leg-raise>
@@ -310,9 +300,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   //   FitnessVolt Russian twist standards <https://fitnessvolt.com/strength-standards/russian-twist>
   "hf_114": { kind: "sourced", standards: { novice: 11, beginner: 16, intermediate: 42, advanced: 74, elite: 110 }, source: "Sourced: StrengthLevel, FitnessVolt" },
   // Bicycle Crunch
-  //   StrengthLevel Bicycle Crunch <https://strengthlevel.com/strength-standards/bicycle-crunch>
-  //   FitnessVolt Bicycle Crunch <https://fitnessvolt.com/strength-standards/bicycle-crunch>
-  "hf_115": { kind: "sourced", standards: { novice: 8, beginner: 12, intermediate: 40, advanced: 75, elite: 120 }, source: "Sourced: StrengthLevel, FitnessVolt" },
+  "hf_115": { kind: "family", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Crunch and sit-up family band" },
   // Bird Dog
   "hf_116": { kind: "not_max_test", source: "Not a max-rep test" },
   // Superman Hold
@@ -326,7 +314,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   //   Normative study 561 adults 19-67 (via Physio-pedia/MMU) <https://www.physio-pedia.com/Biering-Sorenson_Test>
   "hf_118": { kind: "sourced", standards: { novice: 50, beginner: 75, intermediate: 115, advanced: 150, elite: 190 }, source: "Sourced: Biering-Sørensen norms, Nigerian young-adult norms, Physio-pedia" },
   // Reverse Crunch
-  "hf_119": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "wger_1933", step: "harder" }, source: "Derived from abdominal crunch" },
+  "hf_119": { kind: "family", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Crunch and sit-up family band" },
   // V-Up
   "hf_120": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "fedb_sit_up", step: "harder" }, source: "Derived from sit-up" },
   // Mountain Climber
@@ -349,7 +337,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Crow Pose
   "hf_129": { kind: "derived", standards: { novice: 15, beginner: 25, intermediate: 40, advanced: 75, elite: 110 }, parent: { id: "wall_handstand", step: "easier" }, source: "Derived from wall handstand hold" },
   // Spiderman Push-Up
-  "hf_13": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
+  "hf_13": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Iron Cross
   "hf_130": { kind: "derived", standards: { novice: 1, beginner: 2, intermediate: 5, advanced: 10, elite: 20 }, source: "Derived from NASM coaching note" },
   // Maltese Cross
@@ -370,7 +358,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Straight-Arm Press
   "hf_137": { kind: "derived", standards: { novice: 1, beginner: 2, intermediate: 3, advanced: 5, elite: 10 }, parent: { id: "hf_127", step: "harder" }, source: "Derived from press to handstand" },
   // Dive Bomber Push-Up
-  "hf_14": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
+  "hf_14": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Depth Jump
   "hf_141": { kind: "not_max_test", source: "Not a max-rep test" },
   // Star Jump
@@ -398,13 +386,13 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Ring Fly
   "hf_36": { kind: "not_max_test", source: "Not a max-rep test" },
   // Inverted Row
-  "hf_39": { kind: "derived", standards: { novice: 6, beginner: 10, intermediate: 14, advanced: 20, elite: 25 }, parent: { id: "ntc_bent_knee_australian_pull_up", step: "harder" }, source: "Derived from bent-knee Australian pull-up" },
+  "hf_39": { kind: "family", standards: { novice: 7, beginner: 10, intermediate: 13, advanced: 20, elite: 25 }, source: "Row family band (bent-knee row norms)" },
   // Wide-Grip Inverted Row
-  "hf_40": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 11, advanced: 16, elite: 20 }, parent: { id: "hf_39", step: "harder" }, source: "Derived from inverted row" },
+  "hf_40": { kind: "family", standards: { novice: 7, beginner: 10, intermediate: 13, advanced: 20, elite: 25 }, source: "Row family band (bent-knee row norms)" },
   // Ring Row
-  "hf_41": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 17, advanced: 24, elite: 30 }, parent: { id: "hf_39", step: "easier" }, source: "Derived from inverted row" },
+  "hf_41": { kind: "family", standards: { novice: 7, beginner: 10, intermediate: 13, advanced: 20, elite: 25 }, source: "Row family band (bent-knee row norms)" },
   // One-Arm Inverted Row
-  "hf_42": { kind: "derived", standards: { novice: 3, beginner: 5, intermediate: 7, advanced: 10, elite: 13 }, parent: { id: "ntc_archer_inverted_row", step: "harder" }, source: "Derived from archer Australian pull-up" },
+  "hf_42": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 8, advanced: 13, elite: 16 }, parent: { id: "ntc_archer_inverted_row", step: "harder" }, source: "Derived from archer Australian pull-up" },
   // L-Sit Pull-Up
   "hf_49": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 10, elite: 15 }, parent: { id: "pullup", step: "harder" }, source: "Derived from pull-up" },
   // Archer Pull-Up
@@ -434,9 +422,9 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Headbanger Pull-Up
   "hf_63": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 10, elite: 15 }, parent: { id: "pullup", step: "harder" }, source: "Derived from pull-up" },
   // Ring Bicep Curl
-  "hf_65": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 11, advanced: 16, elite: 20 }, parent: { id: "hf_39", step: "harder" }, source: "Derived from inverted row" },
+  "hf_65": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 10, advanced: 16, elite: 20 }, parent: { id: "hf_39", step: "harder" }, source: "Derived from inverted row" },
   // Ring Face Pull
-  "hf_67": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 17, advanced: 24, elite: 30 }, parent: { id: "hf_39", step: "easier" }, source: "Derived from inverted row" },
+  "hf_67": { kind: "derived", standards: { novice: 9, beginner: 12, intermediate: 16, advanced: 24, elite: 30 }, parent: { id: "hf_39", step: "easier" }, source: "Derived from inverted row" },
   // Typewriter Push-Up
   "hf_7": { kind: "derived", standards: { novice: 7, beginner: 11, intermediate: 15, advanced: 20, elite: 25 }, parent: { id: "hf_10", step: "harder" }, source: "Derived from hindu push-up" },
   // Dragon Squat
@@ -448,11 +436,11 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Archer Squat
   "hf_75": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 11, elite: 18 }, parent: { id: "pistol_squat", step: "easier" }, source: "Derived from pistol squat" },
   // Forward Lunge
-  "hf_79": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, parent: { id: "wger_2557", step: "harder" }, source: "Derived from supported split squat" },
+  "hf_79": { kind: "family", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, source: "Lunge family band (Endura split squat)" },
   // Curtsy Lunge
-  "hf_81": { kind: "derived", standards: { novice: 3, beginner: 5, intermediate: 12, advanced: 23, elite: 37 }, parent: { id: "wger_1324", step: "harder" }, source: "Derived from lunge" },
+  "hf_81": { kind: "family", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, source: "Lunge family band (Endura split squat)" },
   // Lateral Lunge
-  "hf_82": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 18, advanced: 34, elite: 54 }, parent: { id: "wger_1324", step: "easier" }, source: "Derived from lunge" },
+  "hf_82": { kind: "family", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, source: "Lunge family band (Endura split squat)" },
   // Sliding Leg Curl
   "hf_84": { kind: "derived", standards: { novice: 3, beginner: 6, intermediate: 10, advanced: 13, elite: 20 }, parent: { id: "hf_85", step: "harder" }, source: "Derived from single-leg romanian deadlift" },
   // Single-Leg Romanian Deadlift
@@ -480,23 +468,23 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Archer Dip
   "ntc_archer_dip": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 25, elite: 35 }, parent: { id: "hf_25", step: "harder" }, source: "Derived from dip" },
   // Archer Australian Pull-Up
-  "ntc_archer_inverted_row": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 9, advanced: 13, elite: 16 }, parent: { id: "ntc_feet_elevated_australian_pull_up", step: "harder" }, source: "Derived from feet-elevated australian pull-up" },
+  "ntc_archer_inverted_row": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 10, advanced: 16, elite: 20 }, parent: { id: "ntc_feet_elevated_australian_pull_up", step: "harder" }, source: "Derived from feet-elevated australian pull-up" },
   // Archer Straight-Bar Dip
   "ntc_archer_straight_bar_dip": { kind: "derived", standards: { novice: 2, beginner: 4, intermediate: 10, advanced: 18, elite: 29 }, parent: { id: "hf_27", step: "harder" }, source: "Derived from straight bar dip" },
   // Australian Chin-Up
-  "ntc_australian_chin_up": { kind: "derived", standards: { novice: 6, beginner: 10, intermediate: 14, advanced: 20, elite: 25 }, parent: { id: "ntc_bent_knee_australian_pull_up", step: "harder" }, source: "Derived from bent-knee australian pull-up" },
+  "ntc_australian_chin_up": { kind: "family", standards: { novice: 7, beginner: 10, intermediate: 13, advanced: 20, elite: 25 }, source: "Row family band (bent-knee row norms)" },
   // Australian Pull-Up Hold
   "ntc_australian_pull_up_hold": { kind: "derived", standards: { novice: 10, beginner: 20, intermediate: 35, advanced: 55, elite: 80 }, source: "Derived from pull-up" },
   // Bear plank hold
   "ntc_bear_plank": { kind: "derived", standards: { novice: 55, beginner: 85, intermediate: 160, advanced: 240, elite: 390 }, parent: { id: "ntc_high_plank", step: "easier" }, source: "Derived from high plank" },
   // Bent-Knee Australian Pull-Up
-  "ntc_bent_knee_australian_pull_up": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 17, advanced: 24, elite: 30 }, source: "Derived from TopEndSports bent-knee horizontal pull-up norms" },
+  "ntc_bent_knee_australian_pull_up": { kind: "family", standards: { novice: 7, beginner: 10, intermediate: 13, advanced: 20, elite: 25 }, source: "Row family band (bent-knee row norms)" },
   // Crab toe touch
   "ntc_crab_toe_touch": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, parent: { id: "wger_1933", step: "same" }, source: "Derived from abdominal crunch" },
   // Cross-body mountain climber
   "ntc_cross_body_climber": { kind: "derived", standards: { novice: 30, beginner: 45, intermediate: 85, advanced: 135, elite: 225 }, parent: { id: "hf_99", step: "harder" }, source: "Derived from forearm plank" },
   // Feet-Elevated Australian Pull-Up
-  "ntc_feet_elevated_australian_pull_up": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 11, advanced: 16, elite: 20 }, parent: { id: "hf_39", step: "harder" }, source: "Derived from inverted row" },
+  "ntc_feet_elevated_australian_pull_up": { kind: "family", standards: { novice: 7, beginner: 10, intermediate: 13, advanced: 20, elite: 25 }, source: "Row family band (bent-knee row norms)" },
   // Fire hydrant
   "ntc_fire_hydrant": { kind: "not_max_test", source: "Not a max-rep test" },
   // Floor windshield wiper
@@ -504,13 +492,13 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Frog pumps
   "ntc_frog_pumps": { kind: "not_max_test", source: "Not a max-rep test" },
   // Hand-release push-up
-  "ntc_hand_release_push_up": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
+  "ntc_hand_release_push_up": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // High plank hold
   "ntc_high_plank": { kind: "derived", standards: { novice: 45, beginner: 70, intermediate: 130, advanced: 200, elite: 325 }, parent: { id: "hf_99", step: "easier" }, source: "Derived from forearm plank" },
   // Low incline push-up
-  "ntc_incline_push_up_low": { kind: "derived", standards: { novice: 17, beginner: 26, intermediate: 33, advanced: 42, elite: 53 }, parent: { id: "ntc_knee_push_up", step: "easier" }, source: "Derived from knee push-up" },
+  "ntc_incline_push_up_low": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Knee push-up
-  "ntc_knee_push_up": { kind: "derived", standards: { novice: 14, beginner: 21, intermediate: 27, advanced: 35, elite: 44 }, parent: { id: "hf_2", step: "easier" }, source: "Derived from standard push-up" },
+  "ntc_knee_push_up": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Lateral plank walk
   "ntc_lateral_plank_walk": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 22, advanced: 35, elite: 57 }, source: "Derived from forearm plank" },
   // Plank hip dips
@@ -520,9 +508,9 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Plank up-down
   "ntc_plank_up_down": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 22, advanced: 29, elite: 36 }, source: "Derived from forearm plank" },
   // Push-up with shoulder tap
-  "ntc_push_up_shoulder_tap": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
+  "ntc_push_up_shoulder_tap": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Reverse lunge to knee drive
-  "ntc_reverse_lunge_knee_drive": { kind: "derived", standards: { novice: 6, beginner: 9, intermediate: 22, advanced: 41, elite: 66 }, parent: { id: "bulgarian_split", step: "easier" }, source: "Derived from Bulgarian split squat" },
+  "ntc_reverse_lunge_knee_drive": { kind: "family", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, source: "Lunge family band (Endura split squat)" },
   // Reverse snow angel
   "ntc_reverse_snow_angel": { kind: "not_max_test", source: "Not a max-rep test" },
   // Side plank hip lifts
@@ -532,7 +520,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Spiderman plank
   "ntc_spiderman_plank": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "fedb_sit_up", step: "harder" }, source: "Derived from sit-up" },
   // Staggered push-up
-  "ntc_staggered_push_up": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
+  "ntc_staggered_push_up": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Swimmers
   "ntc_swimmers": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 27, advanced: 50, elite: 81 }, source: "Derived from superman" },
   // Wall walk-up
@@ -542,7 +530,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Single Arm Plank to Row
   "wger_1022": { kind: "not_max_test", source: "Not a max-rep test" },
   // Vpushup
-  "wger_1090": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from push-up" },
+  "wger_1090": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Abduction while standing
   "wger_1096": { kind: "not_max_test", source: "Not a max-rep test" },
   // Dynamic side hold
@@ -558,7 +546,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Scorpion Kick
   "wger_1207": { kind: "not_max_test", source: "Not a max-rep test" },
   // Shoulder width three-point push-up
-  "wger_1209": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
+  "wger_1209": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Skydiver with arms in T-position
   "wger_1210": { kind: "derived", standards: { novice: 10, beginner: 15, intermediate: 24, advanced: 33, elite: 41 }, parent: { id: "fedb_hyperextensions_with_no_hyperextension_bench", step: "harder" }, source: "Derived from hyperextension" },
   // Finger Pushup
@@ -580,7 +568,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Single-leg hamstring curl
   "wger_1294": { kind: "derived", standards: { novice: 14, beginner: 21, intermediate: 27, advanced: 33, elite: 39 }, source: "Derived from single-leg bridge test" },
   // Bodyweight lunge
-  "wger_1324": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, parent: { id: "wger_2557", step: "harder" }, source: "Derived from supported split squat" },
+  "wger_1324": { kind: "family", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, source: "Lunge family band (Endura split squat)" },
   // Lateral Push Off
   "wger_1325": { kind: "not_max_test", source: "Not a max-rep test" },
   // Double Kettlebell Clean and Press
@@ -608,7 +596,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Toe Taps
   "wger_1425": { kind: "derived", standards: { novice: 20, beginner: 29, intermediate: 48, advanced: 72, elite: 102 }, parent: { id: "fedb_sit_up", step: "easier" }, source: "Derived from sit-up" },
   // Standing Side Crunches
-  "wger_1426": { kind: "derived", standards: { novice: 20, beginner: 29, intermediate: 48, advanced: 72, elite: 102 }, parent: { id: "fedb_sit_up", step: "easier" }, source: "Derived from sit-up" },
+  "wger_1426": { kind: "family", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Crunch and sit-up family band" },
   // Reverse Wood Chops
   "wger_1433": { kind: "not_max_test", source: "Not a max-rep test" },
   // Towel Superman
@@ -618,13 +606,13 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Black Widow Knee Slides
   "wger_1475": { kind: "derived", standards: { novice: 3, beginner: 8, intermediate: 12, advanced: 15, elite: 20 }, parent: { id: "hanging_knee_raise", step: "same" }, source: "Derived from hanging knee raise" },
   // Butterfly Sit Up
-  "wger_1476": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 27, advanced: 52, elite: 83 }, parent: { id: "fedb_3_4_sit_up", step: "harder" }, source: "Derived from 3/4 sit-up" },
+  "wger_1476": { kind: "family", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Crunch and sit-up family band" },
   // Seated Corkscrew
   "wger_1477": { kind: "derived", standards: { novice: 11, beginner: 16, intermediate: 42, advanced: 74, elite: 110 }, parent: { id: "hf_114", step: "same" }, source: "Derived from russian twist" },
   // Levitation Crunch
-  "wger_1478": { kind: "derived", standards: { novice: 20, beginner: 29, intermediate: 48, advanced: 72, elite: 102 }, parent: { id: "fedb_sit_up", step: "easier" }, source: "Derived from sit-up" },
+  "wger_1478": { kind: "family", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Crunch and sit-up family band" },
   // Sit Up Elbow Thrust
-  "wger_1479": { kind: "derived", standards: { novice: 13, beginner: 20, intermediate: 33, advanced: 50, elite: 70 }, parent: { id: "fedb_sit_up", step: "harder" }, source: "Derived from sit-up" },
+  "wger_1479": { kind: "family", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Crunch and sit-up family band" },
   // Lateral Walk
   "wger_1514": { kind: "not_max_test", source: "Not a max-rep test" },
   // Toes to bar
@@ -645,7 +633,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Snap Down
   "wger_1576": { kind: "not_max_test", source: "Not a max-rep test" },
   // Bodyweight Biceps Curl
-  "wger_1608": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 11, advanced: 16, elite: 20 }, parent: { id: "hf_39", step: "harder" }, source: "Derived from inverted row" },
+  "wger_1608": { kind: "derived", standards: { novice: 5, beginner: 8, intermediate: 10, advanced: 16, elite: 20 }, parent: { id: "hf_39", step: "harder" }, source: "Derived from inverted row" },
   // Kettlebell sumo deadlift
   "wger_1612": { kind: "not_max_test", source: "Not a max-rep test" },
   // Dumbbell Front Squat
@@ -663,9 +651,9 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   //   L-sit exercise guide (FitnessVolt) <https://fitnessvolt.com/l-sit-exercise-guide/>
   "wger_1704": { kind: "sourced", standards: { novice: 7, beginner: 10, intermediate: 20, advanced: 30, elite: 45 }, source: "Sourced: Simonster Strength, FitnessVolt" },
   // Incline Crunches
-  "wger_171": { kind: "derived", standards: { novice: 20, beginner: 29, intermediate: 48, advanced: 72, elite: 102 }, parent: { id: "fedb_sit_up", step: "easier" }, source: "Derived from sit-up" },
+  "wger_171": { kind: "family", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Crunch and sit-up family band" },
   // Incline Shoulder Press Up
-  "wger_1716": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 29, advanced: 54, elite: 83 }, parent: { id: "fedb_incline_push_up", step: "harder" }, source: "Derived from incline push-up" },
+  "wger_1716": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Single-Leg Lunge with Kettlebell:
   "wger_1734": { kind: "not_max_test", source: "Not a max-rep test" },
   // Single-leg side glute press
@@ -673,13 +661,13 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Single-Leg Deadlift with Dumbbell
   "wger_1736": { kind: "not_max_test", source: "Not a max-rep test" },
   // Crunches With Legs Up
-  "wger_174": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, parent: { id: "wger_1933", step: "same" }, source: "Derived from abdominal crunch" },
+  "wger_174": { kind: "family", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Crunch and sit-up family band" },
   // Back Lever
   "wger_1742": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 5, advanced: 10, elite: 20 }, parent: { id: "hf_58", step: "easier" }, source: "Derived from front lever" },
   // Plank Reach
   "wger_1766": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 26, advanced: 41, elite: 68 }, source: "Derived from forearm plank" },
   // Deficit Push ups
-  "wger_1777": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
+  "wger_1777": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Parallel Bar Hold
   "wger_1808": { kind: "derived", standards: { novice: 15, beginner: 30, intermediate: 60, advanced: 90, elite: 120 }, parent: { id: "pullup_dead_hang", step: "same" }, source: "Derived from dead hang" },
   // Reverse Hyperextension
@@ -702,9 +690,9 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Decline Bench Leg Raise
   "wger_1889": { kind: "derived", standards: { novice: 4, beginner: 10, intermediate: 15, advanced: 18, elite: 24 }, parent: { id: "hanging_knee_raise", step: "easier" }, source: "Derived from hanging knee raise" },
   // Weighted push-ups
-  "wger_1902": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
+  "wger_1902": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Unilateral Lunges
-  "wger_1907": { kind: "derived", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, parent: { id: "wger_2557", step: "harder" }, source: "Derived from supported split squat" },
+  "wger_1907": { kind: "family", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, source: "Lunge family band (Endura split squat)" },
   // Butterfly Superman
   "wger_1908": { kind: "not_max_test", source: "Not a max-rep test" },
   // Leg Wheel
@@ -716,9 +704,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Unilateral Hip Thrust
   "wger_1913": { kind: "derived", standards: { novice: 12, beginner: 18, intermediate: 23, advanced: 28, elite: 33 }, source: "Derived from single-leg bridge test" },
   // Abdominal Crunch
-  //   StrengthLevel Crunches <https://strengthlevel.com/strength-standards/crunches/lb>
-  //   Cooper 1-min sit-ups men 20-29 <https://fitnessnorms.pages.dev/strength/cooper-sit-ups/male/age-20-29>
-  "wger_1933": { kind: "sourced", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Sourced: StrengthLevel, Cooper Institute" },
+  "wger_1933": { kind: "family", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Crunch and sit-up family band" },
   // 1 Leg Box Squat
   "wger_1948": { kind: "derived", standards: { novice: 2, beginner: 3, intermediate: 6, advanced: 11, elite: 18 }, parent: { id: "pistol_squat", step: "easier" }, source: "Derived from pistol squat" },
   // Bent-knee Iron Cross
@@ -738,7 +724,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Band Terminal Knee extension
   "wger_2494": { kind: "not_max_test", source: "Not a max-rep test" },
   // Russian Push Ups
-  "wger_2530": { kind: "derived", standards: { novice: 7, beginner: 11, intermediate: 15, advanced: 20, elite: 25 }, parent: { id: "fedb_push_ups_with_feet_elevated", step: "harder" }, source: "Derived from push-ups with feet elevated" },
+  "wger_2530": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "fedb_push_ups_with_feet_elevated", step: "harder" }, source: "Derived from push-ups with feet elevated" },
   // Full Sit Outs
   "wger_260": { kind: "derived", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, parent: { id: "fedb_sit_up", step: "same" }, source: "Derived from sit-up" },
   // Quad Sets
@@ -750,11 +736,11 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Seated Knee Extension with Overpressure
   "wger_2664": { kind: "not_max_test", source: "Not a max-rep test" },
   // Incline Row - Rings
-  "wger_2678": { kind: "derived", standards: { novice: 8, beginner: 12, intermediate: 17, advanced: 24, elite: 30 }, parent: { id: "hf_39", step: "easier" }, source: "Derived from inverted row" },
+  "wger_2678": { kind: "family", standards: { novice: 7, beginner: 10, intermediate: 13, advanced: 20, elite: 25 }, source: "Row family band (bent-knee row norms)" },
   // Tyson push-ups
-  "wger_2679": { kind: "derived", standards: { novice: 7, beginner: 11, intermediate: 15, advanced: 20, elite: 25 }, parent: { id: "fedb_push_ups_with_feet_elevated", step: "harder" }, source: "Derived from push-ups with feet elevated" },
+  "wger_2679": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "fedb_push_ups_with_feet_elevated", step: "harder" }, source: "Derived from push-ups with feet elevated" },
   // Triceps push up
-  "wger_2684": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
+  "wger_2684": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Pike Hold (Floor)
   "wger_2691": { kind: "derived", standards: { novice: 30, beginner: 45, intermediate: 85, advanced: 135, elite: 225 }, parent: { id: "hf_99", step: "harder" }, source: "Derived from forearm plank" },
   // Feet-assisted Straight-bar Support
@@ -774,7 +760,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // TRX/Rings Chest Fly
   "wger_2763": { kind: "not_max_test", source: "Not a max-rep test" },
   // TRX/Rings Push-Up
-  "wger_2764": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
+  "wger_2764": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // TRX/Rings Y Raise
   "wger_2765": { kind: "not_max_test", source: "Not a max-rep test" },
   // TRX/Rings Face Pull
@@ -794,27 +780,23 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Shoulder Shrug
   "wger_570": { kind: "not_max_test", source: "Not a max-rep test" },
   // Side Crunch
-  "wger_576": { kind: "derived", standards: { novice: 20, beginner: 29, intermediate: 48, advanced: 72, elite: 102 }, parent: { id: "fedb_sit_up", step: "easier" }, source: "Derived from sit-up" },
+  "wger_576": { kind: "family", standards: { novice: 16, beginner: 24, intermediate: 40, advanced: 60, elite: 85 }, source: "Crunch and sit-up family band" },
   // Side to Side Push Ups
-  "wger_583": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
+  "wger_583": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Rowing with TRX band
-  //   StrengthLevel Inverted Row <https://strengthlevel.com/strength-standards/inverted-row/kg>
-  //   FitnessVolt Inverted Row <https://fitnessvolt.com/strength-standards/inverted-row>
-  "wger_674": { kind: "sourced", standards: { novice: 6, beginner: 9, intermediate: 23, advanced: 40, elite: 59 }, source: "Sourced: StrengthLevel, FitnessVolt" },
+  "wger_674": { kind: "family", standards: { novice: 7, beginner: 10, intermediate: 13, advanced: 20, elite: 25 }, source: "Row family band (bent-knee row norms)" },
   // Weighted Step-ups
   "wger_722": { kind: "not_max_test", source: "Not a max-rep test" },
   // Biceps with TRX
   "wger_958": { kind: "not_max_test", source: "Not a max-rep test" },
   // TRX Rows
-  //   StrengthLevel Inverted Row <https://strengthlevel.com/strength-standards/inverted-row/kg>
-  //   FitnessVolt Inverted Row <https://fitnessvolt.com/strength-standards/inverted-row>
-  "wger_959": { kind: "sourced", standards: { novice: 6, beginner: 9, intermediate: 23, advanced: 40, elite: 59 }, source: "Sourced: StrengthLevel, FitnessVolt" },
+  "wger_959": { kind: "family", standards: { novice: 7, beginner: 10, intermediate: 13, advanced: 20, elite: 25 }, source: "Row family band (bent-knee row norms)" },
   // Curl with kettlebell two hands
   "wger_974": { kind: "not_max_test", source: "Not a max-rep test" },
   // One-handed kettlebell curls
   "wger_975": { kind: "not_max_test", source: "Not a max-rep test" },
   // Push-up rotations
-  "wger_985": { kind: "derived", standards: { novice: 9, beginner: 14, intermediate: 18, advanced: 24, elite: 30 }, parent: { id: "hf_2", step: "harder" }, source: "Derived from standard push-up" },
+  "wger_985": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
   // Kneeling kickbacks
   "wger_990": { kind: "not_max_test", source: "Not a max-rep test" },
 };

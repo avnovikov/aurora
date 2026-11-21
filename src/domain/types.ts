@@ -50,7 +50,16 @@ export type SkillTier =
  * Where an exercise's tier band comes from (#262). `none`: not a max-rep test
  * (plyometrics, loaded kit, drills); tiers do not apply and there are no standards.
  */
-export type StandardsSourceKind = "seed" | "endura" | "coaching" | "sourced" | "derived" | "generic" | "none";
+export type StandardsSourceKind =
+  | "seed"
+  | "endura"
+  | "coaching"
+  | "sourced"
+  | "derived"
+  /** A family band (#262): every ordinary member of the family shares one band. */
+  | "family"
+  | "generic"
+  | "none";
 
 export interface StandardsSource {
   kind: StandardsSourceKind;
