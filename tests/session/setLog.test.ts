@@ -104,7 +104,7 @@ describe("editAddedLoad", () => {
 });
 
 describe("workStateAfterLoggedSet", () => {
-  it("sticks logged reps for the next set and clears load and set clock", () => {
+  it("sticks logged reps and added load for the next set; clears set clock", () => {
     const next = workStateAfterLoggedSet(
       activeState({
         setIndex: 1,
@@ -112,6 +112,7 @@ describe("workStateAfterLoggedSet", () => {
         nextRepsOverride: 6,
         addedLoadKg: 12,
         setStartedAtMs: 1_700_000_000_000,
+        loadSwapFromId: "hip_hinge",
       }),
       2,
       6,
@@ -120,7 +121,8 @@ describe("workStateAfterLoggedSet", () => {
     expect(next.setIndex).toBe(2);
     expect(next.prescribedReps).toBe(6);
     expect(next.nextRepsOverride).toBe(6);
-    expect(next.addedLoadKg).toBe(0);
+    expect(next.addedLoadKg).toBe(12);
+    expect(next.loadSwapFromId).toBe("hip_hinge");
     expect(next.setStartedAtMs).toBeUndefined();
     expect(prescribedForNextSet(next)).toBe(6);
   });

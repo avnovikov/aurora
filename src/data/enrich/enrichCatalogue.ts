@@ -7,6 +7,7 @@ import { DESCRIPTION_SOURCES } from "../generated/descriptionSources";
 import { DESCRIPTIONS } from "../generated/descriptions";
 import { curatedEquipmentFor } from "../curatedEquipment";
 import { doodleFor } from "../doodles";
+import { weightedIdByUnweightedId } from "../weightedCousins";
 import { cautionsFor } from "./cautions";
 import { placeOnLadder, type LadderPlacement } from "./ladder";
 import { wireLadderProgressions, type Placed } from "./progressions";
@@ -99,16 +100,21 @@ export function enrichCatalogue(catalogue: SeedExercise[]): SeedExercise[] {
     );
   };
 
+  const nameToId = new Map(catalogue.map((exercise) => [exercise.name, exercise.id]));
+  const weightedLinks = weightedIdByUnweightedId(nameToId);
+
   return catalogue.map((exercise) => {
     const placement = placements.get(exercise.id);
     const difficulty = difficulties.get(exercise.id) ?? "beginner";
     const ladder = links.get(exercise.id);
     const cautions = cautionsFor(exercise, placement);
+    const weightedId = weightedLinks[exercise.id];
     const enriched: SeedExercise = {
       ...exercise,
       difficulty,
       easierId: pickLink(exercise, difficulty, "easier", exercise.easierId, ladder?.easierId),
       harderId: pickLink(exercise, difficulty, "harder", exercise.harderId, ladder?.harderId),
+      ...(weightedId ? { weightedId } : {}),
     };
     if (cautions.length > 0) {
       enriched.cautions = cautions;

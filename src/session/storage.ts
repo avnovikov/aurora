@@ -17,6 +17,10 @@ export interface PersistedSession {
   workIndex: number;
   setIndex: number;
   nextRepsOverride?: number;
+  /** Sticky added load for the current exercise (#251). */
+  addedLoadKg?: number;
+  /** Unweighted id before an Add-weight cousin swap (#251). */
+  loadSwapFromId?: string;
   /** ISO time when the athlete started this session (for the elapsed clock). */
   startedAt?: string;
   savedAt: string;

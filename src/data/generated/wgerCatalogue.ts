@@ -984,6 +984,44 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1579 (CC-BY-SA-4.0, MU5H)"
   },
   {
+    "id": "wger_1706",
+    "name": "Bulgarian Squat with Dumbbells",
+    "pattern": "squat",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "The Bulgarian split squat consists of performing a squat on one leg with the rear foot resting on a raised platform. Elevating your back leg on a bench creates instability and increases the range of motion of the exercise."
+    ],
+    "description": "The Bulgarian split squat consists of performing a squat on one leg with the rear foot resting on a raised platform. Elevating your back leg on a bench creates instability and increases the range of motion of the exercise.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1706/0c5243cc-2539-4005-aee0-d3a8c5d3a32c.jfif",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / AlucardEvil40",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1706 (CC-BY-SA-4.0, AlucardEvil40)"
+  },
+  {
     "id": "wger_1710",
     "name": "Butchers Block Stretch",
     "pattern": "mobility",
@@ -1794,6 +1832,272 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "Lie on your back with knees and hips bent at 90 degrees (tabletop). Place your hands on your thighs just above your knees. Push your hands against your knees as hard as possible while using your abs to pull your knees toward your hands. Hold for 10 seconds of maximum effort. Your abs should be shaking.",
     "attribution": "wger.de exercise 1827 (CC-BY-SA-4.0, beagle)"
+  },
+  {
+    "id": "wger_2661",
+    "name": "Dumbbell Calf Raise",
+    "pattern": "conditioning",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "calves",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "general",
+      "legs"
+    ],
+    "cues": [
+      "Stand upright with a dumbbell in each hand, arms hanging at your sides and feet hip-width apart. For a larger range of motion, stand with the balls of your feet on a step or a weight plate.",
+      "Rise up onto your toes as high as you can and pause briefly at the top. Then lower your heels slowly until you feel a stretch in your calves. Keep your knees straight but not locked and your upper body upright."
+    ],
+    "description": "Stand upright with a dumbbell in each hand, arms hanging at your sides and feet hip-width apart. For a larger range of motion, stand with the balls of your feet on a step or a weight plate. Rise up onto your toes as high as you can and pause briefly at the top. Then lower your heels slowly until you feel a stretch in your calves. Keep your knees straight but not locked and your upper body upright.",
+    "attribution": "wger.de exercise 2661 (CC-BY-SA-4.0)"
+  },
+  {
+    "id": "wger_1370",
+    "name": "Dumbbell Deadlift",
+    "pattern": "hinge",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      },
+      {
+        "group": "traps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Controlled execution",
+      "Don't use momentum",
+      "Slow execution"
+    ],
+    "description": "Controlled execution Don't use momentum Slow execution",
+    "attribution": "wger.de exercise 1370 (CC-BY-SA-4.0, Anastasious)"
+  },
+  {
+    "id": "wger_1640",
+    "name": "Dumbbell Front Squat",
+    "pattern": "squat",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      },
+      {
+        "group": "shoulders",
+        "role": "secondary"
+      },
+      {
+        "group": "abdominals",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "This exercise involves holding a dumbbell in each hand at shoulder height and performing a squat. It targets the lower body muscles, including the quads, hamstrings, and glutes, while also engaging the core and upper body."
+    ],
+    "description": "This exercise involves holding a dumbbell in each hand at shoulder height and performing a squat. It targets the lower body muscles, including the quads, hamstrings, and glutes, while also engaging the core and upper body.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1640/bdea82f1-15ef-4649-8b5a-1303cfc178e7.webp",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / AlucardEvil40",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1640 (CC-BY-SA-4.0, AlucardEvil40)"
+  },
+  {
+    "id": "wger_1642",
+    "name": "Dumbbell Hip Thrust",
+    "pattern": "hinge",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "This exercise involves sitting on the ground with a dumbbell resting on the hips, then thrusting the hips upward while squeezing the glutes. It is a great exercise for strengthening the glutes and improving hip mobility."
+    ],
+    "description": "This exercise involves sitting on the ground with a dumbbell resting on the hips, then thrusting the hips upward while squeezing the glutes. It is a great exercise for strengthening the glutes and improving hip mobility.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1642/a81ad922-caf5-47f8-99b4-640cb0717436.webp",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / AlucardEvil40",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1642 (CC-BY-SA-4.0, AlucardEvil40)"
+  },
+  {
+    "id": "wger_206",
+    "name": "Dumbbell Lunges Walking",
+    "pattern": "squat",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Starting Position: Stand with feet hip-width apart and hands either on your hips or holding dumbbells at your sides.",
+      "The Stride: Take a wide step forward with your right leg.",
+      "The Descent: Lower your hips until both knees are bent at approximately 90-degree angles .",
+      "The Transition: Drive through your front heel to stand up, bringing your back foot forward to step directly into the next lunge."
+    ],
+    "description": "Starting Position: Stand with feet hip-width apart and hands either on your hips or holding dumbbells at your sides. The Stride: Take a wide step forward with your right leg. The Descent: Lower your hips until both knees are bent at approximately 90-degree angles . The Transition: Drive through your front heel to stand up, bringing your back foot forward to step directly into the next lunge.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/113/Walking-lunges-1.png",
+        "license": "CC-BY-SA-3.0",
+        "source": "wger.de / Everkinetic",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/206/6ec66efd-e74f-4142-bed1-0a0ac74e3294.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / nishant0712",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/113/Walking-lunges-2.png",
+        "license": "CC-BY-SA-3.0",
+        "source": "wger.de / Everkinetic",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/113/Walking-lunges-3.png",
+        "license": "CC-BY-SA-3.0",
+        "source": "wger.de / Everkinetic",
+        "mediaType": "image"
+      },
+      {
+        "url": "https://wger.de/media/exercise-images/113/Walking-lunges-4.png",
+        "license": "CC-BY-SA-3.0",
+        "source": "wger.de / Everkinetic",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 206 (CC-BY-SA-3.0, wger.de)"
+  },
+  {
+    "id": "wger_1651",
+    "name": "Dumbbell Rear Lunge",
+    "pattern": "squat",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "This exercise involves holding a dumbbell in each hand and stepping back into a lunge position, then returning to standing. It primarily targets the glutes, hamstrings, and quadriceps."
+    ],
+    "description": "This exercise involves holding a dumbbell in each hand and stepping back into a lunge position, then returning to standing. It primarily targets the glutes, hamstrings, and quadriceps.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1651/04ab2679-a04d-4d05-9c85-0d36e898328c.webp",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / AlucardEvil40",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1651 (CC-BY-SA-4.0, AlucardEvil40)"
+  },
+  {
+    "id": "wger_1234",
+    "name": "Dumbbell Single-leg Hip Thrust",
+    "pattern": "hinge",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "The single-leg hip thrust is performed by placing your upper back on a weight bench, raising one leg, and extending the hip of the other leg to achieve an isolated contraction of the glute.",
+      "By working each side separately, you can fully isolate your glutes unilaterally, providing maximal training stimulus."
+    ],
+    "description": "The single-leg hip thrust is performed by placing your upper back on a weight bench, raising one leg, and extending the hip of the other leg to achieve an isolated contraction of the glute. By working each side separately, you can fully isolate your glutes unilaterally, providing maximal training stimulus.",
+    "attribution": "wger.de exercise 1234 (CC-BY-SA-4.0, carlos3c)"
   },
   {
     "id": "wger_1099",
@@ -4218,6 +4522,33 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     "attribution": "wger.de exercise 1960 (CC-BY-SA-4.0, Pete-E automation)"
   },
   {
+    "id": "wger_490",
+    "name": "Renegade Row",
+    "pattern": "horizontal_pull",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "lats",
+        "role": "primary"
+      },
+      {
+        "group": "traps",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "pull"
+    ],
+    "cues": [
+      "Get into pushup position gripping some dumbbells. Perform one pushup, then drive your left elbo up, bringing the dumbell up to your body. Return the dumbell to starting position.",
+      "Perform another pushup and then row with the other arm to complete one rep."
+    ],
+    "description": "Get into pushup position gripping some dumbbells. Perform one pushup, then drive your left elbo up, bringing the dumbell up to your body. Return the dumbell to starting position. Perform another pushup and then row with the other arm to complete one rep.",
+    "attribution": "wger.de exercise 490 (CC0, fletchgraham)"
+  },
+  {
     "id": "wger_2448",
     "name": "Reverse Clamshell",
     "pattern": "hinge",
@@ -5353,6 +5684,44 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "A balance drill that adds a moving load. Stand on one leg with the knee slightly bent, holding a kettlebell in one hand. Pass the kettlebell around your body in a circle, handing it from one hand to the other in front and behind you, while keeping your balance on the standing leg. Keep the hips level and the torso upright; the shifting weight of the bell constantly changes your centre of mass, which is what trains the hip and ankle stabilisers. Complete the prescribed number of circles, reverse direction, then switch legs. Use a light bell to start.",
     "attribution": "wger.de exercise 2668 (CC-BY-SA-4.0, trs1800)"
+  },
+  {
+    "id": "wger_1736",
+    "name": "Single-Leg Deadlift with Dumbbell",
+    "pattern": "hinge",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "hamstrings",
+        "role": "primary"
+      },
+      {
+        "group": "glutes",
+        "role": "primary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "Starting Position: Stand upright with a slight bend in your knees, holding a dumbbell in one or both hands. Shift your weight onto your supporting leg (e.g., your right leg) and lift your non-supporting foot slightly off the floor.",
+      "The Hinge: Keeping your back flat and core engaged, hinge at your hips, pushing your glutes backward. As your torso lowers, extend your non-supporting leg straight back behind you for balance, keeping your hips square to the floor. The dumbbell(s) should lower toward the ground along the line of your supporting leg.",
+      "Range of Motion: Continue lowering your torso until it is nearly parallel to the floor, or you feel an intense stretch in your supporting hamstring, ensuring your back remains neutral throughout the movement.",
+      "Return to Start: Pause at the bottom, then contract your glutes and hamstrings to slowly raise your torso back to the starting position. Your non-supporting leg should return in line with the supporting one.",
+      "Switch Sides: After completing your desired number of repetitions on one side, switch your weight and repeat the movement on the other leg."
+    ],
+    "description": "Starting Position: Stand upright with a slight bend in your knees, holding a dumbbell in one or both hands. Shift your weight onto your supporting leg (e.g., your right leg) and lift your non-supporting foot slightly off the floor. The Hinge: Keeping your back flat and core engaged, hinge at your hips, pushing your glutes backward. As your torso lowers, extend your non-supporting leg straight back behind you for balance, keeping your hips square to the floor. The dumbbell(s) should lower toward the ground along the line of your supporting leg. Range of Motion: Continue lowering your torso until it is nearly parallel to the floor, or you feel an intense stretch in your supporting hamstring, ensuring your back remains neutral throughout the movement. Return to Start: Pause at the bottom, then contract your glutes and hamstrings to slowly raise your torso back to the starting position. Your non-supporting leg should return in line with the supporting one. Switch Sides: After completing your desired number of repetitions on one side, switch your weight and repeat the movement on the other leg.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1736/aa724cc5-c485-4f3e-9d2a-0c6ae4baefbe.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / Tierrasverdes",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1736 (CC-BY-SA-4.0, Tierrasverdes)"
   },
   {
     "id": "wger_1294",
@@ -6946,6 +7315,77 @@ export const WGER_CATALOGUE: SeedExercise[] = [
     ],
     "description": "from a standing position with knees slightly bent and hands resting on the floor. From here, proceed forward with your hands keeping your buttocks contracted and without losing control of your lower back.",
     "attribution": "wger.de exercise 1103 (CC-BY-SA-4.0, clafal)"
+  },
+  {
+    "id": "wger_1902",
+    "name": "Weighted push-ups",
+    "pattern": "horizontal_push",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "chest",
+        "role": "primary"
+      },
+      {
+        "group": "triceps",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "push"
+    ],
+    "cues": [
+      "Setup: Begin in a standard plank position with a weight plate balanced securely on your upper back.",
+      "Alignment: Maintain a straight line from your head to your heels, engaging your core to prevent your back from sagging.",
+      "Execution: Lower your body until your chest nearly touches the floor, keeping your elbows at a forty-five degrees .",
+      "Ascent: Press through your palms to return to the starting position, fully extending your arms."
+    ],
+    "description": "Setup: Begin in a standard plank position with a weight plate balanced securely on your upper back. Alignment: Maintain a straight line from your head to your heels, engaging your core to prevent your back from sagging. Execution: Lower your body until your chest nearly touches the floor, keeping your elbows at a forty-five degrees . Ascent: Press through your palms to return to the starting position, fully extending your arms.",
+    "media": [
+      {
+        "url": "https://wger.de/media/exercise-images/1902/d0c3f170-543c-4be4-bc70-5c6dc606406c.png",
+        "license": "CC-BY-SA-4.0",
+        "source": "wger.de / nishant0712",
+        "mediaType": "image"
+      }
+    ],
+    "attribution": "wger.de exercise 1902 (CC-BY-SA-4.0, nishant0712)"
+  },
+  {
+    "id": "wger_722",
+    "name": "Weighted Step-ups",
+    "pattern": "squat",
+    "type": "dynamic",
+    "muscles": [
+      {
+        "group": "glutes",
+        "role": "primary"
+      },
+      {
+        "group": "quadriceps",
+        "role": "primary"
+      },
+      {
+        "group": "hamstrings",
+        "role": "secondary"
+      },
+      {
+        "group": "calves",
+        "role": "secondary"
+      }
+    ],
+    "joints": [],
+    "role": "work",
+    "regions": [
+      "legs"
+    ],
+    "cues": [
+      "box step ups w/ barbell and 45's on each side"
+    ],
+    "description": "box step ups w/ barbell and 45's on each side",
+    "attribution": "wger.de exercise 722 (CC0, jigglychipmunk)"
   },
   {
     "id": "wger_2680",

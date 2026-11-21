@@ -29,6 +29,8 @@ export interface ActiveWorkState {
   nextRepsOverride?: number;
   /** When this work screen opened (rep-set duration clock). */
   setStartedAtMs?: number;
+  /** Unweighted exercise id before an Add-weight cousin swap; cleared on restore. */
+  loadSwapFromId?: string;
 }
 
 export interface WorkoutLog {
@@ -66,7 +68,7 @@ export function editAddedLoad(state: ActiveWorkState, kg: number): ActiveWorkSta
 
 /**
  * After a completed/failed set, prepare work state for the next set of the same
- * exercise: reps stick to what was just logged; added load does not.
+ * exercise: reps and added load stick; the set clock resets.
  */
 export function workStateAfterLoggedSet(
   state: ActiveWorkState,
@@ -80,7 +82,6 @@ export function workStateAfterLoggedSet(
     setIndex: nextSetIndex,
     prescribedReps: loggedReps,
     nextRepsOverride: loggedReps,
-    addedLoadKg: 0,
     setStartedAtMs: undefined,
   };
 }

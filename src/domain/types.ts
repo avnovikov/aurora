@@ -88,6 +88,8 @@ export interface Exercise {
   muscles: MuscleEntry[];
   easierId?: string;
   harderId?: string;
+  /** Curated loaded twin for session Add weight (#251); unweighted → weighted. */
+  weightedId?: string;
   joints: string[];
   /** Optional; resolved via `resolveExerciseTiming` when absent. */
   effort?: EffortKind;

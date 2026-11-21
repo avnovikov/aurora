@@ -394,6 +394,8 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
       cooldownIndex: state.cooldownIndex,
       setIndex: state.setIndex,
       nextRepsOverride: state.workState?.nextRepsOverride,
+      addedLoadKg: state.workState?.addedLoadKg,
+      loadSwapFromId: state.workState?.loadSwapFromId,
       startedAt: new Date(state.startedAtMs).toISOString(),
       savedAt: new Date().toISOString(),
     });
