@@ -206,4 +206,11 @@ export interface HistoryEntry {
   sets?: HistorySetRecord[];
   /** Strap timeseries + per-exercise averages; absent when no samples. */
   pulse?: HistoryPulse;
+  /** Set when the entry came from another app (#291); `key` dedupes re-imports. */
+  source?: HistorySource;
+}
+
+export interface HistorySource {
+  app: "calisteniapp";
+  key: string;
 }

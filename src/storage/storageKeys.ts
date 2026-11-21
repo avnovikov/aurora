@@ -18,6 +18,8 @@ export const SCHEDULE_OVERRIDE_KEY = "aurora.poc.scheduleOverride.v1";
 export const PLAN_DAYS_KEY = "aurora.poc.planDays.v1";
 export const WARMUP_HR_KEY = "aurora.poc.warmupHr.v1";
 export const LIGHTEN_LEARNING_KEY = "aurora.poc.lightenLearning.v1";
+/** Source keys of imported sessions already applied (#291). */
+export const IMPORTED_SESSIONS_KEY = "aurora.poc.importedSessions.v1";
 
 export const STORAGE_KEYS = [
   PROFILE_KEY,
@@ -36,6 +38,7 @@ export const STORAGE_KEYS = [
   PLAN_DAYS_KEY,
   WARMUP_HR_KEY,
   LIGHTEN_LEARNING_KEY,
+  IMPORTED_SESSIONS_KEY,
 ] as const;
 
 export type StorageKey = (typeof STORAGE_KEYS)[number];

@@ -45,3 +45,6 @@ android/keystore.properties
 *.njsproj
 *.sln
 *.sw?
+
+# Athlete's own imported data for one-off local builds (#291); never committed
+src/data/private/

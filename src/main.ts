@@ -12,6 +12,7 @@ import { loadProfile } from "./settings/profile";
 import { ensureMemoryMigrated } from "./session/ensureMemoryMigrated";
 import { migratePlaintextToSecureStorage } from "./storage/migrateSecureStorage";
 import { bootApp } from "./ui/app";
+import { applyBundledImport } from "./import/applyImport";
 
 const root = document.querySelector<HTMLDivElement>("#app");
 if (!root) {
@@ -21,6 +22,8 @@ if (!root) {
 migratePlaintextToSecureStorage();
 // Memory v1 → v2 (#112) before anything reads memory.
 ensureMemoryMigrated();
+// One-off: a local build may bundle the athlete's own imported history (#291).
+applyBundledImport();
 // Before the first render, so the saved palette shows from the first frame.
 applyPalette(loadProfile().palette);
 bootApp(root);

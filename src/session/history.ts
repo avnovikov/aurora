@@ -111,15 +111,54 @@ export function loadHistory(): HistoryEntry[] {
   }));
 }
 
+/** Most history entries kept (raised from 200 for imported history, #291). */
+export const HISTORY_CAP = 1000;
+
 export function appendHistory(entry: Omit<HistoryEntry, "id">): HistoryEntry[] {
   const history = loadHistory();
   const next: HistoryEntry = {
     ...entry,
     id: `hist_${history.length + 1}_${Date.now()}`,
   };
-  const updated = [next, ...history].slice(0, 200);
+  const updated = [next, ...history].slice(0, HISTORY_CAP);
   historyStore.write(JSON.stringify(updated));
   return updated;
+}
+
+export interface MergeHistoryResult {
+  history: HistoryEntry[];
+  added: number;
+  duplicates: number;
+}
+
+/**
+ * Add imported entries (each with a `source.key`) to history: skip keys already
+ * present, keep newest first, cap at HISTORY_CAP. Pure; see saveHistory.
+ */
+export function mergeHistory(
+  history: readonly HistoryEntry[],
+  incoming: ReadonlyArray<Omit<HistoryEntry, "id">>,
+): MergeHistoryResult {
+  const seen = new Set(history.map((entry) => entry.source?.key).filter((key): key is string => key !== undefined));
+  const fresh: HistoryEntry[] = [];
+  let duplicates = 0;
+  for (const entry of incoming) {
+    const key = entry.source?.key;
+    if (key !== undefined && seen.has(key)) {
+      duplicates += 1;
+      continue;
+    }
+    if (key !== undefined) {
+      seen.add(key);
+    }
+    fresh.push({ ...entry, id: `imp_${fresh.length + 1}_${Date.parse(entry.completedAt)}` });
+  }
+  const merged = [...history, ...fresh].sort((a, b) => Date.parse(b.completedAt) - Date.parse(a.completedAt));
+  return { history: merged.slice(0, HISTORY_CAP), added: fresh.length, duplicates };
+}
+
+export function saveHistory(history: readonly HistoryEntry[]): void {
+  historyStore.write(JSON.stringify(history.slice(0, HISTORY_CAP)));
 }
 
 export function loadMemories(now: Date = new Date()): Record<string, ExerciseMemory> {
