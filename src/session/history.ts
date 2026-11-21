@@ -26,6 +26,43 @@ export { emptyMemory } from "../progress/levelEvidence";
 const historyStore = createKeyValueStore(HISTORY_KEY);
 const memoryStore = createKeyValueStore(MEMORY_V2_KEY);
 
+/** Highest of an existing logged tier and the tier implied by best reps. */
+function maxLoggedOrBestTier(
+  logged: SkillTier | undefined,
+  bestReps: number,
+  exercise: Exercise | undefined,
+): SkillTier | undefined {
+  const standards = exercise?.standards;
+  const fromBest = standards ? inferTierFromBest(bestReps, standards) : undefined;
+  return maxOf([logged, fromBest]);
+}
+
+/** Lift stale `loggedTier` to match `bestReps` + catalogue standards; never lower (#289). */
+function withLoggedTierFromBest(
+  memory: ExerciseMemory,
+  exercise: Exercise | undefined,
+): ExerciseMemory {
+  if (memory.bestReps === undefined) {
+    return memory;
+  }
+  const loggedTier = maxLoggedOrBestTier(memory.loggedTier, memory.bestReps, exercise);
+  if (loggedTier === undefined || loggedTier === memory.loggedTier) {
+    return memory;
+  }
+  return { ...memory, loggedTier };
+}
+
+function refreshLoadedMemory(
+  exerciseId: string,
+  memory: ExerciseMemory,
+  now: Date,
+): ExerciseMemory {
+  return refreshSkillTier(
+    withLoggedTierFromBest(memory, EXERCISE_GRAPH[exerciseId]),
+    now,
+  );
+}
+
 const EVALUATION_LABELS: Record<SessionEvaluation, string> = {
   easy: "Easy",
   on_target: "On target",
@@ -88,7 +125,7 @@ export function appendHistory(entry: Omit<HistoryEntry, "id">): HistoryEntry[] {
 export function loadMemories(now: Date = new Date()): Record<string, ExerciseMemory> {
   const raw = readJson(memoryStore, {} as Record<string, ExerciseMemory>);
   return Object.fromEntries(
-    Object.entries(raw).map(([id, memory]) => [id, refreshSkillTier(memory, now)]),
+    Object.entries(raw).map(([id, memory]) => [id, refreshLoadedMemory(id, memory, now)]),
   );
 }
 
@@ -333,16 +370,6 @@ export function declareSkillTier(
   };
 }
 
-function testedTierAfter(
-  logged: SkillTier | undefined,
-  bestReps: number,
-  exercise: Exercise | undefined,
-): SkillTier | undefined {
-  const standards = exercise?.standards;
-  const fromBest = standards ? inferTierFromBest(bestReps, standards) : undefined;
-  return maxOf([logged, fromBest]);
-}
-
 /** After a logged set: raise bestReps; standards turn it into a tested loggedTier. */
 export function recordBestReps(
   memories: Record<string, ExerciseMemory>,
@@ -356,7 +383,7 @@ export function recordBestReps(
   }
   const current = memories[exerciseId] ?? emptyMemory(exerciseId);
   const bestReps = Math.max(current.bestReps ?? 0, completedReps);
-  const loggedTier = testedTierAfter(current.loggedTier, bestReps, exercise);
+  const loggedTier = maxLoggedOrBestTier(current.loggedTier, bestReps, exercise);
   return {
     ...memories,
     [exerciseId]: refreshSkillTier({ ...current, bestReps, loggedTier, lastSessionAt: now.toISOString() }, now),

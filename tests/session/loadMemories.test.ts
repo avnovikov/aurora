@@ -33,3 +33,45 @@ describe("loadMemories refresh (#112)", () => {
     expect(loadMemories(NOW).live.skillTier).toBe("advanced");
   });
 });
+
+describe("loadMemories PB → loggedTier (#289)", () => {
+  describe("stale beginner with PB at intermediate standard", () => {
+    // Device: hip thrust bestReps 20, loggedTier left at beginner (standard @ 18).
+    useMemoryStorage(() => ({
+      [MEMORY_V2_KEY]: JSON.stringify({
+        hf_87: {
+          ...emptyMemory("hf_87"),
+          bestReps: 20,
+          planTier: "intermediate",
+          loggedTier: "beginner",
+          skillTier: "beginner",
+        },
+      }),
+    }));
+
+    it("raises loggedTier and skillTier to intermediate", () => {
+      const memory = loadMemories(NOW).hf_87;
+      expect(memory?.loggedTier).toBe("intermediate");
+      expect(memory?.skillTier).toBe("intermediate");
+    });
+  });
+
+  describe("loggedTier already above PB", () => {
+    useMemoryStorage(() => ({
+      [MEMORY_V2_KEY]: JSON.stringify({
+        hf_87: {
+          ...emptyMemory("hf_87"),
+          bestReps: 20,
+          loggedTier: "advanced",
+          skillTier: "advanced",
+        },
+      }),
+    }));
+
+    it("keeps the higher loggedTier", () => {
+      const memory = loadMemories(NOW).hf_87;
+      expect(memory?.loggedTier).toBe("advanced");
+      expect(memory?.skillTier).toBe("advanced");
+    });
+  });
+});
