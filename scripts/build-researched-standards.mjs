@@ -3,7 +3,7 @@
  * Builds src/data/enrich/researchedStandards.ts from the per-exercise tier
  * research (#262). Spec: docs/superpowers/specs/2026-11-21-researched-tier-standards-design.md
  *
- *   npm run standards:researched              (or node scripts/build-researched-standards.mjs)
+ *   npm run standards:researched              (or tsx scripts/build-researched-standards.mjs)
  *   npm run standards:researched -- --parents  (also print each derived row's parent)
  *
  * Kept: sourced and derived rows with a valid band (five tiers, ≥ 1, strictly
@@ -25,9 +25,10 @@ const OUTPUT = join(ROOT, "src/data/enrich/researchedStandards.ts");
  * derived from forearm plank …)" names the high plank.
  */
 const PARENTS = [
+  [/reverse crunch/i, "reverse crunch"],
   [/high plank/i, "high plank"],
   [/forearm plank|dynamic plank base/i, "forearm plank"],
-  [/side plank tiers|side plank McGill|McGill side-plank|side-plank class/i, "side plank"],
+  [/side[- ]plank/i, "side plank"],
   [/single-leg bridge|SLBT/i, "single-leg bridge test"],
   [/ab wheel/i, "ab wheel rollout"],
   [/bicycle crunch/i, "bicycle crunch"],
@@ -63,7 +64,10 @@ const PARENTS = [
   [/lunge/i, "lunge"],
   [/double push press/i, "double kettlebell push press"],
   [/alternating (KB |kettlebell )?press/i, "alternating kettlebell press"],
-  [/single-bell snatch/i, "kettlebell snatch"],
+  [/single-bell/i, "kettlebell snatch"],
+  [/hyperextension/i, "hyperextension"],
+  [/\bHLR\b/, "hanging leg raise"],
+  [/\bHKR\b/, "hanging knee raise"],
 ];
 
 /**
@@ -73,10 +77,19 @@ const PARENTS = [
 const PARENT_OVERRIDES = {
   hf_108: "coaching stage criterion",
   hf_130: "NASM coaching note",
-  wger_1954: "hanging knee raise",
-  fedb_flat_bench_lying_leg_raise: "flat bench leg pull-in",
-  ntc_cross_body_climber: "forearm plank",
   fedb_kettlebell_turkish_get_up_lunge_style: "coaching prescription (3–6 reps per side)",
+  // The first-named move in the method text is not the parent:
+  hf_119: "abdominal crunch",
+  hf_124: "mountain climber",
+  hf_127: "pistol squat",
+  hf_134: "hollow hold",
+  ntc_cross_body_climber: "forearm plank",
+  ntc_floor_windshield_wiper: "hanging knee raise",
+  wger_2694: "dead hang",
+  // No parent move; the band comes from one data source or coaching targets:
+  fedb_flutter_kicks: "Strength Level flutter kicks table",
+  fedb_hyperextensions_with_no_hyperextension_bench: "back-extension endurance study",
+  hf_135: "coaching targets",
 };
 
 /**
@@ -103,9 +116,39 @@ function parseBand(text) {
   return values;
 }
 
-function parentOf(row) {
+const ID_PATTERN = /\b(?:hf|wger|fedb|ntc)_[a-z0-9_]*[a-z0-9]/g;
+const NAMED_PATTERN =
+  /(?:easierId|harderId|\bparent(?:\s+(?:is|stays|kept))?)\s+(?:is\s+)?(?:the\s+)?([A-Za-z][A-Za-z' -]*?)(?=\s*(?:\(|,|\.|;|:|\d|\bso\b|\band\b|\bat\b|\bx\b|\/|$))/gi;
+
+const lower = (name) => name.trim().toLowerCase();
+
+/** Display form for a free-text move name: a known anchor label if one matches, else the name lowercased. */
+function labelForName(name) {
+  const hit = PARENTS.find(([pattern]) => pattern.test(name));
+  return hit ? hit[1] : lower(name);
+}
+
+/**
+ * Parent move of a derived row, most explicit first: an id in the method
+ * text, then "easierId/harderId/Parent is <name>", then the earliest known
+ * anchor name, then the catalogue's own easier/harder neighbour.
+ */
+function parentOf(row, nameById, linksById) {
   if (PARENT_OVERRIDES[row.id]) {
     return PARENT_OVERRIDES[row.id];
+  }
+  for (const id of row.method.match(ID_PATTERN) ?? []) {
+    if (id !== row.id && nameById.has(id)) {
+      return lower(nameById.get(id));
+    }
+  }
+  for (const hit of row.method.matchAll(NAMED_PATTERN)) {
+    const name = hit[1].replace(/\b(?:easierId|harderId)\b/gi, "").trim();
+    // Only a phrase that is an anchor name or a catalogue move counts; "parent kept" and the like do not.
+    const known = [...nameById.values()].some((candidate) => lower(candidate) === lower(name));
+    if (known || PARENTS.some(([pattern]) => pattern.test(name))) {
+      return labelForName(name);
+    }
   }
   let best = null;
   for (const [pattern, label] of PARENTS) {
@@ -114,10 +157,18 @@ function parentOf(row) {
       best = { index: hit.index, label };
     }
   }
-  if (!best) {
-    throw new Error(`No parent found for derived row ${row.id} (${row.name}): ${row.method}`);
+  if (best) {
+    return best.label;
   }
-  return best.label;
+  if (/\bcrunch(?:es)?\b/i.test(row.method)) {
+    return "crunch";
+  }
+  const links = linksById.get(row.id);
+  const neighbour = links?.easierId ?? links?.harderId;
+  if (neighbour && nameById.has(neighbour)) {
+    return lower(nameById.get(neighbour));
+  }
+  throw new Error(`No parent found for derived row ${row.id} (${row.name}): ${row.method}`);
 }
 
 /** "Strength Level - Ab Wheel Rollout (current table) <url>" → { title, url }. */
@@ -177,6 +228,9 @@ function sourcedLabel(sources) {
   return `Sourced: ${names.join(", ")}`;
 }
 
+const { LIBRARY_CATALOGUE } = await import("../src/data/libraryCatalogue.ts");
+const nameById = new Map(LIBRARY_CATALOGUE.map((exercise) => [exercise.id, exercise.name]));
+const linksById = new Map(LIBRARY_CATALOGUE.map((exercise) => [exercise.id, exercise]));
 const rows = JSON.parse(readFileSync(INPUT, "utf8"));
 const kept = [];
 const dropped = [];
@@ -203,7 +257,7 @@ for (const row of rows) {
     const sources = parseSources(row.sources);
     kept.push({ row, kind: "sourced", band, sources, source: sourcedLabel(sources) });
   } else if (row.status === "derived") {
-    kept.push({ row, kind: "derived", band, source: `Derived from ${parentOf(row)}` });
+    kept.push({ row, kind: "derived", band, source: `Derived from ${parentOf(row, nameById, linksById)}` });
   } else {
     dropped.push({ row, reason: `unknown status ${row.status}` });
   }

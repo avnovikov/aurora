@@ -48,11 +48,14 @@ const KNOWN_VARIANT_ORDER_VIOLATIONS = [
   "fedb_crunches > fedb_sit_up",
   "fedb_hanging_pike > hf_123",
   "fedb_hyperextensions_with_no_hyperextension_bench > hf_85",
+  "fedb_oblique_crunches > fedb_sit_up",
+  "fedb_oblique_crunches_on_the_floor > fedb_sit_up",
   "hf_115 > fedb_frog_sit_ups",
   "hf_115 > fedb_janda_sit_up",
   "hf_115 > fedb_sit_up",
   "hf_115 > wger_1479",
   "hf_115 > wger_260",
+  "hf_119 > fedb_sit_up",
   "hf_33 > hf_34",
   "hf_85 > wger_1294",
   "wger_1286 > hf_124",
@@ -149,7 +152,7 @@ describe("researched tier table (#262)", () => {
 
   it("keeps the generic table for rows the research left open", () => {
     expect(EXERCISE_GRAPH[idNamed("Manna")]!.standardsSource?.kind).toBe("generic");
-    expect(EXERCISE_GRAPH[idNamed("Torso Twist")]!.standardsSource?.kind).toBe("generic");
+    expect(EXERCISE_GRAPH[idNamed("Pelican Curl")]!.standardsSource?.kind).toBe("generic");
   });
 });
 

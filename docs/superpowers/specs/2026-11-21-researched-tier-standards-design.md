@@ -17,7 +17,7 @@ Before this change, every Library move without an Endura twin or a coaching row 
 
 ## Method
 
-Each of the 325 generic-table moves was researched on 2026-11-21, as follows:
+Each of the 325 generic-table moves was researched on 2026-11-21, as follows (a second pass followed, see below):
 
 1. **Research.** One researcher pass per movement family looked for published norms for the exact exercise. These included population norms (Cooper, Eurofit, Biering-Sørensen), community standards calculators (StrengthLevel, FitnessVolt) and coaching criteria.
 2. **At least two sources.** A band counts as **sourced** only when two or more independent sources gave numbers for the exact move.
@@ -28,19 +28,37 @@ Each of the 325 generic-table moves was researched on 2026-11-21, as follows:
 7. **Not a max-rep test.** Plyometrics, loaded kettlebell, dumbbell and band moves, and mobility or activation drills are prescribed by sets, contacts or load. These moves are **not_max_test** and get no band.
 8. **Checker.** A second agent per family checked each row. It checked that the URLs were real, that the arithmetic was right, that tiers increased strictly, and that each move stayed in order against its `easierId` and `harderId`. Each row got a verdict of accept, adjusted (numbers or status changed) or reject.
 
+## Second research pass
+
+**Why.** The first pass left 182 rows at low confidence and 14 at no_data, and the checker found direction errors in the derived chains (an easier move parented to a harder one, or the reverse). The second pass looked again for real norms before the table is applied, and re-checked every parent.
+
+**Method.** A deeper search per movement family, then a verifier agent. Each researcher searched the move and its synonyms again, followed `easierId` and `harderId` in the catalogue to pick the right parent and the right direction (an easier variant × 1.2, a harder variant ÷ 1.2), and rewrote the method text. Rows it touched carry `pass2: true` (167 of the 325). The same rules as the first pass apply: two independent sources for sourced, and no invented numbers. The verifier then opened 42 cited pages and confirmed 30.
+
+**Source types searched.** Community standards calculators (StrengthLevel, FitnessVolt), PubMed and PMC papers, journals such as IJSPT and JSSM, clinical and occupational norms (Chase et al. plank norms, Cooper, military and police tests, the weight-bearing lunge test, FMS), coaching and programming sites (NASM, ACE, Gymnastic Bodies, Fitbod, Healthline), recreational gymnastics program requirements, kettlebell sport rank tables and logged-workout sites (Exercise.com).
+
+**Result.** 0 new rows became sourced: no derived row found a second independent source. The counts are 37 sourced, 156 derived, 125 not_max_test and 7 no_data (first pass: 37, 153, 121, 14). What changed:
+
+- 46 derived rows got a better parent or a corrected easier/harder direction; 44 bands changed in all (for example the lying hip-lift moves now hang off the floor reverse crunch).
+- 10 rows changed status: Torso Twist, Single-Leg Lunge with Kettlebell and Weighted Step-ups went from derived to not_max_test; Single-Leg Deadlift with Dumbbell from no_data to not_max_test; Dumbbell Single-leg Hip Thrust, Flutter Kicks, Kneeling Superman, Skydiver with arms in T-position, Towel Superman and Reverse Hyperextension from no_data to derived.
+- The method texts changed wording ("Parent is easierId …", "harderId is …", "forearm plank anchor"), so the parent lookup in the script was rewritten (see Band source on the exercise).
+- Variant-order violations among researched pairs went from 19 to 22; pairs with an Endura, coaching or seed neighbour stayed at 21.
+- 125 moves are now tierless (121 before). `isPlannable` and the dosing code were not touched; the tierless-dosing question below is open.
+
 ## Counts
+
+After the second research pass (below). The first pass had 37 sourced, 153 derived, 121 not_max_test and 14 no_data.
 
 | Outcome | Research rows | Applied in code |
 |---|---:|---:|
 | Sourced | 37 | 37 |
-| Derived | 153 (1 rejected) | 151 (Side Plank left out: the coaching list covers it, see Precedence) |
-| Not a max-rep test | 121 | 121 (standards removed) |
-| No data | 14 | 0 (generic table) |
-| Total in the generated table | | 309 rows (37 + 151 + 121) |
+| Derived | 156 | 155 (Side Plank left out: the coaching list covers it, see Precedence) |
+| Not a max-rep test | 125 | 125 (standards removed) |
+| No data | 7 | 0 (generic table) |
+| Total in the generated table | | 317 rows (37 + 155 + 125) |
 
-The script excludes empty bands, checker rejects and every `no_data` row, including the three no_data rows where the checker proposed a placeholder band. These 15 moves stay on the generic table (listed below). Every sourced and derived band passed the band check (five integer tiers ≥ 1, strictly increasing), so the check dropped no rows.
+The script excludes empty bands, checker rejects and every `no_data` row. These 8 moves (7 no_data and Side Plank) stay out of the table; the 7 no_data moves stay on the generic table (listed below). Every sourced and derived band passed the band check (five integer tiers ≥ 1, strictly increasing), so the check dropped no rows.
 
-Across the whole Library, the band sources are now: 95 Endura, 17 coaching list, 23 seed table, 37 sourced, 151 derived, 19 generic and 121 none. The other 245 moves are warm-ups, mobility and conditioning moves that never had tiers.
+Across the whole Library (708 moves), the band sources are now: 95 Endura, 17 coaching list, 23 seed table, 37 sourced, 155 derived, 11 generic and 125 none. The other 245 moves are warm-ups, mobility and conditioning moves that never had tiers. The research rates 175 rows low confidence, 94 medium and 56 high.
 
 ## Precedence
 
@@ -58,12 +76,14 @@ The seed moves keep `SEED_STANDARDS` in `seed.ts`, labelled from its notes. Rese
 `Exercise.standardsSource` is `{ kind, label }`, where `kind` is one of `seed | endura | coaching | sourced | derived | generic | none`. The labels are:
 
 - **sourced:** "Sourced: StrengthLevel, FitnessVolt", publisher names only. Full titles and URLs are kept as comments in the generated file and in the research JSON.
-- **derived:** "Derived from <parent>", where the parent is read from the method text. Six rows are set by hand in the script (`PARENT_OVERRIDES`): their method names no parent, or the first move it names is not the parent (for example, Cross-body mountain climber names mountain climbers but derives from the forearm plank).
+- **derived:** "Derived from <parent>". The script reads the parent from the method text in this order: (1) an explicit id (`hf_…`, `wger_…`, `fedb_…`, `ntc_…`) that names a catalogue move; (2) "easierId <name>", "harderId <name>" or "Parent is <name>", where the name is a catalogue move or a known anchor; (3) the earliest known anchor name (push-up, pull-up, dip, split squat, pistol, pike push-up, forearm plank, dead hang, hollow hold, hanging knee raise, side plank, inverted row, crunches, L-sit, sit-up and the other entries in `PARENTS`), with "crunch" as the last text match; (4) the row's own `easierId` or `harderId` from the catalogue. If none match, the script stops with an error. Because step 4 reads the catalogue, the script now runs under `tsx`. Thirteen rows are set by hand in `PARENT_OVERRIDES`: the first move named is not the parent (for example, Cross-body mountain climber names mountain climbers but derives from the forearm plank), or the band comes from one data source or coaching targets and has no parent move (Flutter Kicks, Neck Bridge, Dragon Flag, Iron Cross, the lunge-style get-up and the back-extension study row). The overrides left over from the first pass that the new method texts made unnecessary (Roll-overs into V-sits, Flat Bench Lying Leg Raise) were removed.
 - **none:** "Not a max-rep test".
 
 The Library detail shows the band source under the standards strip as "Band: …", through `describeStandardsSource` in `levelSource.ts`. A tierless move shows only "No tiers: not a max-rep test. Dosed by sets, contacts or load." It has no level picker and no standards strip.
 
 ## Moves without standards
+
+After the second pass, 125 moves are tierless (121 before: Torso Twist, Single-Leg Deadlift with Dumbbell, Single-Leg Lunge with Kettlebell and Weighted Step-ups moved to not_max_test). `isPlannable` and the dosing code are unchanged by the second pass; the open dosing question below is still with the user.
 
 The consumers already guarded on `exercise.standards`: dose (`applySkillDose`), advance (`shouldAdvanceProgression`), the plan level gate (`planLevelGate` and `planLevelRaise`), level profile, readiness, weak-link board, history and memory migration, and the Library picker and strip. Mobility moves already took the same path.
 
@@ -75,44 +95,32 @@ One test fixture changed. Body balance "Consider adding" had used the reverse sn
 
 ## Left on the generic table
 
-No data (checker accepted):
+Seven moves have no data after two passes, and stay on the generic table:
 
+- `hf_107` Manna: no numbers (first pass proposed 1/2/4/6/10, not applied).
+- `hf_66` Ice Cream Maker: no numbers (proposed 1/2/4/7/10, not applied).
+- `hf_64` Pelican Curl: no numbers (proposed 1/2/4/6/10, not applied).
 - `wger_1605` Copenhagen Adduction Exercise: only a training prescription.
-- `wger_1234` Dumbbell Single-leg Hip Thrust: only a timed bridge hold, and the move is load-dependent.
-- `fedb_flutter_kicks` Flutter Kicks: only a timed cadence test.
-- `wger_1910` Kneeling Superman, `wger_1210` Skydiver with arms in T-position, `wger_1455` Towel Superman: only Sørensen hold norms.
-- `wger_1809` Reverse Hyperextension: machine or loaded.
-- `wger_1736` Single-Leg Deadlift with Dumbbell: load-dependent, arguably not_max_test.
-- `ntc_archer_push_up_hold` Archer Push-Up Hold: no hold norms.
-
-No data, where the checker proposed a placeholder band that is not applied:
-
-- `hf_107` Manna (proposed 1/2/4/6/10)
-- `hf_66` Ice Cream Maker (proposed 1/2/4/7/10)
-- `hf_64` Pelican Curl (proposed 1/2/4/6/10)
-
-Rejected by the checker:
-
-- `wger_1377` Torso Twist: should be not_max_test, since it has no point of failure.
 - `wger_1101` Horizontal traction isometry: no hold norms.
+- `ntc_archer_push_up_hold` Archer Push-Up Hold: no hold norms.
 - `hf_93` Tibialis Raise: no source and no anchor.
 
-Dropped by the band check: none.
+Moved out of this list by the second pass: Dumbbell Single-leg Hip Thrust, Flutter Kicks, Kneeling Superman, Skydiver with arms in T-position, Towel Superman and Reverse Hyperextension are now derived; Torso Twist and Single-Leg Deadlift with Dumbbell are now not_max_test. Dropped by the band check: none.
 
-These moves are not in the research set and also stay generic: `hf_31` Planche Lean, `fedb_alternating_hang_clean`, `fedb_double_kettlebell_alternating_hang_clean` and `fedb_kettlebell_hang_clean`.
+These moves are not in the research set and also stay generic: `hf_31` Planche Lean, `fedb_alternating_hang_clean`, `fedb_double_kettlebell_alternating_hang_clean` and `fedb_kettlebell_hang_clean`. That makes 11 generic moves in the Library.
 
 ## Known oddities (kept, listed)
 
 - **Sit-up 22/33/40/47/55** (`fedb_sit_up`): the Cooper percentiles are close together, so the intermediate-to-elite gaps are narrow (7–8 reps). Its derived children inherit this: Frog Sit-Ups, Full Sit Outs, Toe Touchers, Wind Sprints, Janda and Jackknife.
 - **Scissor Kick 15/30/67/89/134** (`fedb_scissor_kick`): this comes from one modelled FitnessVolt table, with Healthline as a dose reference only. The jumps are big (×2.2 from beginner to intermediate), and the source does not say whether a rep counts one leg or both.
 - **Ab wheel** (`wger_1573` 3/4/8/14/25, `hf_113` 3/5/10/14/22): the sources differ by about 160%. The community calculators report about 21 at intermediate, against 8 from coaching guidance, so the median of three was used. The AOL/Brewer coaching URL returned 404 when the checker spot-checked it.
-- **Incline Row - Rings** (`wger_2678`): the method says it is the inverted row ÷ 1.2. The band is 6/9/23/40/59, which is the ×1.2 band and the same as Ring Row. It is applied as delivered.
-- **Crow Pose** (`hf_129`): the method says elite is capped at 90 s, but the band has 108 s.
-- **Low confidence:** 182 of the 325 rows are rated low confidence by the research, against 87 medium and 56 high.
+- **Incline Row - Rings** (`wger_2678`): the band is 6/10/23/40/57, the inverted row × 1.2, the same shape as Ring Row. It is applied as delivered.
+- **Crow Pose** (`hf_129`) and **Elbow Lever** (`hf_128`): both take the wall handstand rule band 12/24/48/72/108 s. The research notes that this is generous against yoga and Hybrid Calisthenics targets (30 s top standard for the elbow lever; a source-led elbow lever band would be about 8/15/25/40/60).
+- **Bear plank hold** (`ntc_bear_plank`): elite is 390 s, a very long test; the research suggests capping at 300 s in the app. Not applied.
 
 ### Variant-order violations
 
-`tests/data/researchedStandards.test.ts` checks every easier → harder pair where both moves have researched bands and the same effort. The easier move should have numbers ≥ the harder one at every tier. These 19 pairs break that rule. They are reported here and pinned in the test (`KNOWN_VARIANT_ORDER_VIOLATIONS`), and are not fixed in code:
+`tests/data/researchedStandards.test.ts` checks every easier → harder pair where both moves have researched bands and the same effort. The easier move should have numbers ≥ the harder one at every tier. **22 pairs** break that rule after the second pass (19 after the first). They are reported here and pinned in the test (`KNOWN_VARIANT_ORDER_VIOLATIONS`), and are not fixed in code. The three new pairs come from re-parenting: Oblique Crunches and Oblique Crunches - On The Floor (now from the sit-up) and Reverse Crunch (now from the abdominal crunch), each against the Sit-Up.
 
 | Easier | Harder | Tiers where easier < harder |
 |---|---|---|
@@ -123,19 +131,22 @@ These moves are not in the research set and also stay generic: `hf_31` Planche L
 | Crunches 16/24/40/60/85 | Sit-Up | novice, beginner |
 | Crunches With Legs Up 16/24/40/60/85 | Sit-Up | novice, beginner |
 | Abdominal Crunch 16/24/40/60/85 | Sit-Up | novice, beginner |
-| Bicycle Crunch 8/12/40/75/120 | Sit-Up, Frog Sit-Ups, Full Sit Outs | novice, beginner |
+| Oblique Crunches 9/13/26/41/59 (new) | Sit-Up | novice to advanced |
+| Oblique Crunches - On The Floor 9/13/26/41/59 (new) | Sit-Up | novice to advanced |
+| Reverse Crunch 9/14/25/37/52 (new) | Sit-Up | all |
+| Bicycle Crunch 8/12/40/75/120 | Sit-Up, Frog Sit-Ups 19/28/34/40/46, Full Sit Outs 22/33/40/47/55 | novice, beginner |
 | Bicycle Crunch | Janda Sit-Up 18/28/33/39/46, Sit Up Elbow Thrust 18/28/33/39/46 | novice, beginner |
 | Butterfly Sit Up 6/8/28/53/83 | Jackknife Sit-Up | novice, beginner |
 | Hanging Pike 1/5/8/10/13 | Pike Compression 2/6/8/10/14 | novice, beginner, elite |
-| Hyperextensions (no bench) 4/11/17/21/28 | Single-Leg Romanian Deadlift 5/8/18/34/54 | novice, intermediate, advanced, elite |
-| Single-Leg Romanian Deadlift 5/8/18/34/54 | Single-leg hamstring curl 14/21/27/33/39 | novice, beginner, intermediate |
+| Hyperextensions (no bench) 12/18/29/40/50 | Single-Leg Romanian Deadlift 5/8/18/34/54 | elite |
+| Single-Leg Romanian Deadlift | Single-leg hamstring curl 14/21/27/33/39 | novice, beginner, intermediate |
 | Plank Jump-In 9/14/26/41/68 | Plank Shoulder Tap 10/15/40/63/90 | all |
 | Straddle Planche 2/3/6/10/16 | Full Planche 2/3/8/15/30 | intermediate, advanced, elite |
 | Tuck L-sit 7/10/20/30/45 | L-Sit 5/10/30/45/60 | intermediate, advanced, elite |
 
-Most are crunch-family moves sitting against the narrow sit-up band, whose Cooper novice and beginner values (22/33) are high.
+The first-pass "Hyperextensions (no bench) → Single-Leg Romanian Deadlift" pair broke four tiers; it now breaks only elite, because the second pass raised the hyperextension band from 4/11/17/21/28 to 12/18/29/40/50. Most pairs are crunch-family moves sitting against the narrow sit-up band, whose Cooper novice and beginner values (22/33) are high.
 
-A second check covers pairs where one move is researched and its neighbour has an Endura, coaching or seed band. These 21 pairs break the rule and are pinned as `KNOWN_NEIGHBOUR_VARIANT_ORDER_VIOLATIONS`:
+A second check covers pairs where one move is researched and its neighbour has an Endura, coaching or seed band. **21 pairs** break the rule (21 after the first pass; the set is the same, but several bands changed). They are pinned as `KNOWN_NEIGHBOUR_VARIANT_ORDER_VIOLATIONS`:
 
 | Easier | Harder | Tiers where easier < harder |
 |---|---|---|
@@ -147,21 +158,21 @@ A second check covers pairs where one move is researched and its neighbour has a
 | Hip hinge 5/10/15/20/30 (seed) | Single-Leg Romanian Deadlift 5/8/18/34/54 | intermediate, advanced, elite |
 | Good Morning 5/10/15/20/30 (coaching) | Single-Leg Romanian Deadlift | intermediate, advanced, elite |
 | Archer Dip 2/4/9/15/21 | Archer Straight-Bar Dip 3/5/12/22/35 (Endura) | all |
-| Archer Australian Pull-Up 3/4/8/13/18 (Endura) | One-Arm Inverted Row 3/5/10/16/22 | beginner to elite |
+| Archer Australian Pull-Up 3/4/8/13/18 (Endura) | One-Arm Inverted Row 4/5/10/16/22 | all |
 | Bent-Knee Australian Pull-Up 3/4/8/13/18 (Endura) | Inverted Row 5/8/19/33/47 | all |
 | Low incline push-up 10/15/35/65/100 (Endura) | Pushups (Close and Wide) 11/17/22/29/36 | novice, beginner |
-| Reverse lunge to knee drive 4/6/15/28/45 | Bulgarian split squat 5/7/18/34/55 (seed) | all |
+| Reverse lunge to knee drive 3/5/13/23/38 | Bulgarian split squat 5/7/18/34/55 (seed) | all |
 | Reverse lunge 6/10/15/20/25 (seed) | Reverse lunge to knee drive | advanced, elite |
 | Step-up 6/10/15/20/25 (seed) | Step-Up with Knee Drive 4/6/15/28/45 | advanced, elite |
 | Unilateral Lunges 4/6/15/28/45 | Cossack squat (seed) | novice, beginner |
-| Vpushup 9/14/18/24/30 | Hindu Push-Up 11/17/22/29/36 (Endura) | all |
+| Vpushup 10/15/19/25/30 | Hindu Push-Up 11/17/22/29/36 (Endura) | all |
 | Supported Split Squat 5/8/18/34/54 (Endura) | Bodyweight Walking Lunge, Forward Lunge, Bodyweight lunge 13/20/30/60/100 | all |
-| Supported Split Squat (Endura) | Crossover Reverse Lunge, Curtsy Lunge 11/17/25/50/83 | all |
+| Supported Split Squat (Endura) | Crossover Reverse Lunge, Curtsy Lunge 11/17/29/50/67 | all |
 
 ## Follow-ups
 
-1. Resolve the 19 + 21 variant-order pairs. Either re-derive the crunch family from the sit-up, or move the sit-up off the crunch chains. Then shrink `KNOWN_VARIANT_ORDER_VIOLATIONS`.
+1. Resolve the 22 + 21 variant-order pairs. Either re-derive the crunch family from the sit-up, or move the sit-up off the crunch chains. Then shrink `KNOWN_VARIANT_ORDER_VIOLATIONS`.
 2. Replace or drop the AOL/Brewer citation on the two ab wheel rows (404).
-3. Research the 15 generic leftovers. Torso Twist is likely not_max_test, and the three skill placeholders (Manna, Ice Cream Maker, Pelican Curl) need a decision.
+3. Decide the 7 generic leftovers. The three skill placeholders (Manna, Ice Cream Maker, Pelican Curl) need a decision, and the rest have no data after two passes.
 4. Fix the open dosing issue above before merging: a generated tierless slot must not take the `doseFor` placeholder (sets × 8 at RIR 2). Any dose rule of their own (contacts for plyometrics, load for kettlebell moves) needs evidence first.
-5. Recheck the Incline Row - Rings and Crow Pose bands against their method text.
+5. Recheck the Crow Pose, Elbow Lever and Bear plank elite bands.

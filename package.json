@@ -23,7 +23,7 @@
     "descriptions:compile": "tsx scripts/compile-descriptions.ts",
     "descriptions:fidelity": "tsx scripts/descriptions-fidelity.ts",
     "equipment:compile": "tsx scripts/compile-equipment.ts",
-    "standards:researched": "node scripts/build-researched-standards.mjs",
+    "standards:researched": "tsx scripts/build-researched-standards.mjs",
     "doodles": "tsx scripts/generate-doodles.ts",
     "doodles:check": "node scripts/measure-doodle-fit.mjs",
     "doodles:cards": "tsx scripts/doodle-cards.ts",
