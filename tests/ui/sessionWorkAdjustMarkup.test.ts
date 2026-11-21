@@ -43,20 +43,36 @@ const adjust: WorkAdjustUi = {
 };
 
 describe("work adjust toolbar markup", () => {
-  it("shows Swap, Easier, Skip today, Never again on the work stage", () => {
+  it("shows Swap, Easier, Skip today, Never again after the read section", () => {
     const planned = planLegs();
     const html = shellHtml(planned, workState(planned), adjust);
     expect(html).toContain("data-work-swap");
     expect(html).toContain("data-work-easier");
     expect(html).toContain("data-work-skip-today");
     expect(html).toContain("data-work-never");
-    expect(html.indexOf("data-work-swap")).toBeLessThan(html.indexOf("session-move"));
+    expect(html.indexOf("session-move")).toBeLessThan(html.indexOf("data-work-swap"));
+    expect(html.indexOf("session-read")).toBeLessThan(html.indexOf("data-work-swap"));
+  });
+
+  it("puts Easier in the sticky bar before Couldn't finish and Skip set", () => {
+    const planned = planLegs();
+    const html = shellHtml(planned, workState(planned), adjust);
+    const bar = html.slice(html.indexOf('<footer class="session-bar'));
+    const easier = bar.indexOf("data-work-easier");
+    const fail = bar.indexOf("data-fail-set");
+    const skip = bar.indexOf("data-skip");
+    expect(easier).toBeGreaterThan(-1);
+    expect(easier).toBeLessThan(fail);
+    expect(fail).toBeLessThan(skip);
+    expect(bar).not.toContain("data-work-swap");
   });
 
   it("disables Easier when unavailable", () => {
     const planned = planLegs();
     const html = shellHtml(planned, workState(planned), { ...adjust, easierAvailable: false });
     expect(html).toMatch(/data-work-easier[^>]*aria-disabled="true"/);
+    expect(html).toContain('id="work-no-easier"');
+    expect(html).toContain('id="work-bar-no-easier"');
   });
 
   it("lists swap picks when open", () => {

@@ -88,8 +88,18 @@ describe("work adjust controls", () => {
     const planned = planLegs();
     const h = handlers();
     const root = mount(planned, { easierAvailable: false, swapOpen: false, swapOptions: [] }, h);
-    root.querySelector<HTMLElement>("[data-work-easier]")!.click();
+    root.querySelectorAll<HTMLElement>("[data-work-easier]").forEach((button) => button.click());
     expect(h.onWorkEasier).not.toHaveBeenCalled();
+  });
+
+  it("sticky-bar Easier calls the same handler as the toolbar", () => {
+    const planned = planLegs();
+    const h = handlers();
+    const root = mount(planned, { easierAvailable: true, swapOpen: false, swapOptions: [] }, h);
+    const barEasier = root.querySelector<HTMLElement>("footer.session-bar [data-work-easier]");
+    expect(barEasier).not.toBeNull();
+    barEasier!.click();
+    expect(h.onWorkEasier).toHaveBeenCalledOnce();
   });
 
   it("Swap pick forwards the exercise id", () => {

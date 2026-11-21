@@ -65,13 +65,21 @@ export function shellHtml(
   `;
 }
 
+/** Ids for the visually-hidden “No easier step” copy when both Easier buttons are disabled. */
+const TOOLBAR_EASIER_REASON_ID = "work-no-easier";
+const STICKY_EASIER_REASON_ID = "work-bar-no-easier";
+
 /** Log set and its alternatives: pinned in the bottom bar so they are always in thumb reach. */
-const WORK_ACTIONS_HTML = `
+function workActionsHtml(adjust: WorkAdjustUi | null, move: string): string {
+  const easier = easierAdjustHtml(adjust?.easierAvailable ?? false, move, STICKY_EASIER_REASON_ID);
+  return `
         <div class="work-actions">
           <button type="button" class="cta" data-log-set>Log set</button>
+          ${easier}
           <button type="button" class="btn-quiet" data-fail-set>Couldn't finish</button>
           <button type="button" class="btn-quiet" data-skip>Skip set</button>
         </div>`;
+}
 
 /** Success copy the pulse chip already conveys — keep the status line quiet. */
 const QUIET_PULSE_SUCCESS = new Set([
@@ -218,9 +226,10 @@ function surfaceHtml(
   if (!item) {
     return offWork(`<section class="session-read"><p class="tagline">No work items.</p></section>`);
   }
+  const move = displayExerciseName(item.exerciseName);
   return {
     body: workHtml(item, state, adjust),
-    barActions: WORK_ACTIONS_HTML,
+    barActions: workActionsHtml(adjust, move),
     workToolbar: true,
   };
 }
@@ -478,16 +487,21 @@ function workAdjustAction(dataAttr: string, label: string, move: string, extra =
   return `<button type="button" class="btn-quiet" ${dataAttr}${extra} aria-label="${escapeHtml(label)}: ${escapeHtml(move)}">${label}</button>`;
 }
 
-function easierAdjustHtml(available: boolean, move: string): string {
+function easierAdjustHtml(
+  available: boolean,
+  move: string,
+  reasonId: string = TOOLBAR_EASIER_REASON_ID,
+): string {
   if (available) {
     return workAdjustAction("data-work-easier", "Easier", move);
   }
+  const safeId = escapeHtml(reasonId);
   return `${workAdjustAction(
     "data-work-easier",
     "Easier",
     move,
-    ` aria-disabled="true" aria-describedby="work-no-easier"`,
-  )}<span class="visually-hidden" id="work-no-easier">No easier step</span>`;
+    ` aria-disabled="true" aria-describedby="${safeId}"`,
+  )}<span class="visually-hidden" id="${safeId}">No easier step</span>`;
 }
 
 function swapPicksHtml(adjust: WorkAdjustUi): string {
@@ -528,7 +542,7 @@ function pendingAdjustNoticeHtml(adjust: WorkAdjustUi | null, workToolbar: boole
   return `<div class="session-work-adjust session-work-adjust-pending">${workAdjustStatusHtml(adjust)}${workAdjustUndoHtml(adjust)}</div>`;
 }
 
-/** Toolbar above the hero: Swap · Easier · Skip today · Never again. */
+/** Toolbar at the end of the scrollable work stage: Swap · Easier · Skip today · Never again. */
 function workAdjustHtml(adjust: WorkAdjustUi | null, move: string): string {
   if (!adjust) {
     return "";
@@ -563,7 +577,6 @@ function workHtml(item: PlannedWorkItem, state: ViewState, adjust: WorkAdjustUi 
     : "Log each set below, or swipe left to log it and rest";
   return `
     <div class="work-stage swipe-stage" data-swipe-stage="work">
-      ${workAdjustHtml(adjust, move)}
       ${heroHtml({
         set: formatSetLabel(state.setIndex, item.dose.sets),
         move,
@@ -580,6 +593,7 @@ function workHtml(item: PlannedWorkItem, state: ViewState, adjust: WorkAdjustUi 
         </details>
         <p class="hint">${hint}</p>
       </section>
+      ${workAdjustHtml(adjust, move)}
     </div>
   `;
 }

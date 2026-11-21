@@ -61,13 +61,16 @@ describe("your weight", () => {
 });
 
 describe("working set: Log set in thumb reach", () => {
-  it("puts Log set, Failed and Skip in the sticky bottom bar during work only", () => {
+  it("puts Log set, Easier, Couldn't finish and Skip in the sticky bottom bar during work only", () => {
     const planned = planLegs();
     const html = shellHtml(planned, view(planned, "work"));
     const bar = html.slice(html.indexOf('<footer class="session-bar'));
     expect(bar).toContain("data-log-set");
+    expect(bar).toContain("data-work-easier");
     expect(bar).toContain("data-fail-set");
     expect(bar).toContain("data-skip");
+    expect(bar.indexOf("data-log-set")).toBeLessThan(bar.indexOf("data-work-easier"));
+    expect(bar.indexOf("data-work-easier")).toBeLessThan(bar.indexOf("data-fail-set"));
     expect(shellHtml(planned, view(planned, "warmup"))).not.toContain("data-log-set");
   });
 });
