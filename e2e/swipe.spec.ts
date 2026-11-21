@@ -5,6 +5,7 @@ import {
   GAP_PREFIX,
   moveName,
   phaseLine,
+  setLine,
   restNextLine,
   stage,
   startSession,
@@ -56,7 +57,7 @@ test.describe("warm-up swipe", () => {
 
   test("the whole warm-up can be swiped through to the first set", async ({ page }) => {
     await swipeUntil(page, "work");
-    await expect(phaseLine(page)).toHaveText(/^Set 1 of \d+/);
+    await expect(setLine(page)).toHaveText(/^Set 1 of \d+/);
   });
 });
 
@@ -72,7 +73,7 @@ test.describe("work swipe", () => {
     await expect(restNextLine(page)).toHaveText(/^next .* Set 2 of \d+/i);
     await expectRestNextDoodlePainted(page);
     await swipe(page, stage(page, "rest"));
-    await expect(phaseLine(page)).toHaveText(/^Set 2 of \d+/);
+    await expect(setLine(page)).toHaveText(/^Set 2 of \d+/);
   });
 
   test("a slow, drifting thumb swipe still counts while the timers tick", async ({ page }) => {
