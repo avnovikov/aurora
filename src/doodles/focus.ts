@@ -117,6 +117,13 @@ export const FOCUS_BY_ID: Readonly<Record<string, Focus>> = {
     zoom: 3.2,
     label: "heel",
   },
+  wger_2661: {
+    joints: ["ankle.near", "toe.near"],
+    highlight: ["shin.near", "foot.near"],
+    zoom: 3.2,
+    label: "heels",
+    floor: true,
+  }, // Dumbbell calf raise (on the flat floor)
   // Hips
   fedb_kneeling_hip_flexor: { joints: [], highlight: ["thigh.far", "pelvis"] },
   hf_161: { joints: [], highlight: ["thigh.near", "pelvis"] }, // Couch stretch
