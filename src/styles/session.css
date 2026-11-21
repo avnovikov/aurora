@@ -110,11 +110,8 @@
   margin-top: 2px;
 }
 
-/* Work rest: compact doodle beside the next-set line; countdown stays the hero. */
+/* Rest: next-move text above the countdown; doodle sits in the dose row. */
 .rest-next {
-  display: flex;
-  align-items: center;
-  gap: 12px;
   margin: 8px 0 0;
   min-width: 0;
 }
@@ -138,6 +135,12 @@
   gap: 8px;
   margin: 24px 0 0;
   white-space: nowrap;
+}
+
+/* Rest: align the large doodle with the digit block (right of seconds). */
+.session-dose--rest {
+  align-items: center;
+  gap: 16px;
 }
 
 .session-dose-q {
@@ -570,12 +573,11 @@ html:has(.shell.session) {
   max-height: 7rem;
 }
 
-/* Work-rest preview: override `.session .doodle` so the next row stays compact.
-   ViewBox-only SVGs need a definite height — max-height alone collapses to 0×0. */
-.session .rest-next-doodle .doodle {
+/* Rest dose-row doodle: ~digit height. Definite height so viewBox SVGs paint. */
+.session .session-dose--rest .rest-next-doodle .doodle {
   display: block;
-  height: 2.75rem;
+  height: 95px;
   width: auto;
-  max-width: 3.5rem;
+  max-width: 7rem;
   margin: 0;
 }

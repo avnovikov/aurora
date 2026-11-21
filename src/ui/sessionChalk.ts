@@ -325,10 +325,12 @@ function stationOrGapHtml(
 
 /** The short rest between two stations: the countdown and the station that comes next. */
 function stationGapHtml(next: WarmupStep | undefined, state: ViewState): string {
-  const nextLine = next ? `next ${escapeHtml(displayExerciseName(next.name))}` : "next station";
+  const move = next ? displayExerciseName(next.name) : "";
+  const lead = restNextLineHtml(next ? `next ${escapeHtml(move)}` : "next station");
+  const doodle = next ? doodleMarkup(next.doodlePath, move) : "";
   return `
     <div class="rest-stage swipe-stage" data-swipe-stage="rest">
-      ${restHeroHtml(`Rest · ${nextLine}`, state)}
+      ${restHeroHtml("Rest", state, { lead, doodle })}
       <section class="session-read">
         <p class="hint">Swipe left to start it now</p>
       </section>
@@ -337,33 +339,44 @@ function stationGapHtml(next: WarmupStep | undefined, state: ViewState): string 
 }
 
 /**
- * Rest countdown as the hero. `lead` sits under the phase eyebrow (work rest
- * puts the next-move row there); `extra` goes after the cue.
+ * Rest countdown as the hero. `lead` is the next-move text under the phase;
+ * `doodle` sits to the right of the seconds in the dose row; `extra` after the cue.
  */
-function restHeroHtml(eyebrow: string, state: ViewState, lead = "", extra = ""): string {
+function restHeroHtml(
+  eyebrow: string,
+  state: ViewState,
+  options: { lead?: string; doodle?: string; extra?: string } = {},
+): string {
+  const lead = options.lead ?? "";
+  const doodleBlock = options.doodle
+    ? `<div class="rest-next-doodle">${options.doodle}</div>`
+    : "";
+  const extra = options.extra ?? "";
   return `
       <section class="session-hero">
         <p class="eyebrow session-phase">${eyebrow}</p>
         ${lead}
-        <p class="session-dose">${doseFigureHtml(`<span class="reps" data-rest-left>${state.restLeft}</span>`, SECONDS_UNIT_HTML)}</p>
+        <div class="session-dose session-dose--rest">${doseFigureHtml(`<span class="reps" data-rest-left>${state.restLeft}</span>`, SECONDS_UNIT_HTML)}${doodleBlock}</div>
         <p class="rest-cue" data-rest-cue></p>
         ${extra}
       </section>`;
 }
 
-/** Compact doodle + next-set line for work rest; no empty frame when the move has no doodle. */
+/** Next-move text above the countdown (no doodle — that sits in the dose row). */
+function restNextLineHtml(line: string): string {
+  return `
+    <div class="rest-next">
+      <p class="rest-next-line">${line}</p>
+    </div>`;
+}
+
+/** Work rest next-set line; doodle of the upcoming move is passed separately to the dose row. */
 function workRestNextHtml(item: PlannedWorkItem | null, state: ViewState): string {
   const move = item ? displayExerciseName(item.exerciseName) : "";
-  const doodle = item ? doodleMarkup(item.doodlePath, move) : "";
-  const picture = doodle ? `<div class="rest-next-doodle">${doodle}</div>` : "";
   const line = item
     ? `next ${escapeHtml(move)} · ${formatSetLabel(state.setIndex, item.dose.sets)}`
     : "next set";
-  return `
-    <div class="rest-next">
-      ${picture}
-      <p class="rest-next-line">${line}</p>
-    </div>`;
+  return restNextLineHtml(line);
 }
 
 interface HeroParts {
@@ -589,9 +602,15 @@ function restHtml(planned: PlannedSession, state: ViewState): string {
   const getReadyNote = getReady
     ? `<p class="tagline">Easy rest after the ramp: walk, breathe, stay warm.</p>`
     : "";
+  const move = item ? displayExerciseName(item.exerciseName) : "";
+  const doodle = item ? doodleMarkup(item.doodlePath, move) : "";
   return `
     <div class="rest-stage swipe-stage" data-swipe-stage="rest">
-      ${restHeroHtml(phase, state, workRestNextHtml(item, state), getReadyNote)}
+      ${restHeroHtml(phase, state, {
+        lead: workRestNextHtml(item, state),
+        doodle,
+        extra: getReadyNote,
+      })}
       <section class="session-read">
         <p class="tagline">Next set reps</p>
         ${repsStepperHtml("rest-reps-row", `<span class="reps-edit">${reps}</span>`)}

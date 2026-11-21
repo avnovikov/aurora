@@ -76,7 +76,9 @@ describe("the gap between warm-up stations", () => {
     const next = displayExerciseName(planned.warmup[index + 1]!.name);
     expect(html).toContain(`data-swipe-stage="rest"`);
     expect(html).toContain("data-rest-left");
-    expect(html).toContain(`Rest · next ${next}`);
+    expect(html).toMatch(/<p class="eyebrow session-phase">Rest<\/p>/);
+    expect(html).toContain(`next ${next}`);
+    expect(html).toContain('class="rest-next-line"');
     expect(html).not.toContain("Get ready");
     expect(html).not.toContain("Next set reps");
   });

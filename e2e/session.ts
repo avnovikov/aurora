@@ -11,8 +11,8 @@ const FRAME_MS = 16;
 const SETTLE_MS = Math.max(SWIPE_EXIT_MS, SWIPE_BACK_MS) + 140;
 /** More swipes than any warm-up has stations and gaps. */
 const MAX_WARMUP_SWIPES = 40;
-/** The gap rest's eyebrow starts with this, then the next station's name. */
-export const GAP_PREFIX = "Rest · next ";
+/** Station-gap next line starts with this, then the next station's name. */
+export const GAP_PREFIX = "next ";
 
 export interface StartSessionOptions {
   /** Plan block kind to add (`core` for abs holds). Default: first Add-days chip. */
@@ -70,14 +70,14 @@ export function setLine(page: Page): Locator {
   return page.locator(".session-set");
 }
 
-/** Work-rest next-set line (`next Name · Set n of m`), beside the compact doodle. */
+/** Rest next-move line (`next Name…`) above the countdown. */
 export function restNextLine(page: Page): Locator {
   return page.locator(".rest-next-line");
 }
 
-/** Compact next-move doodle on work rest. */
+/** Next-move doodle on the rest dose row (right of the seconds). */
 export function restNextDoodle(page: Page): Locator {
-  return page.locator(".rest-next-doodle .doodle");
+  return page.locator(".session-dose--rest .rest-next-doodle .doodle");
 }
 
 /**
