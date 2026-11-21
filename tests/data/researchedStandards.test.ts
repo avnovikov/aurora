@@ -5,7 +5,7 @@ import { BAND_FAMILIES, bandFamilyFor } from "../../src/data/enrich/bandFamilies
 import { enduraRuleFor } from "../../src/data/enrich/enduraStandards";
 import { RESEARCHED_STANDARDS } from "../../src/data/enrich/researchedStandards";
 import { standardsFor } from "../../src/data/enrich/standards";
-import { EXERCISE_GRAPH } from "../../src/data/exerciseGraph";
+import { EXERCISE_GRAPH, isPlannable } from "../../src/data/exerciseGraph";
 import { LIBRARY_CATALOGUE } from "../../src/data/libraryCatalogue";
 import type { SeedExercise } from "../../src/data/seed";
 import { SKILL_TIERS } from "../../src/domain/skillTier";
@@ -305,7 +305,7 @@ const FAMILY_MEMBERS: Record<string, string[]> = {
     "fedb_push_ups_with_feet_elevated", "fedb_pushups_close_and_wide_hand_positions", "fedb_suspended_push_up",
     "hf_1", "hf_11", "hf_13", "hf_14", "hf_15", "hf_2", "hf_3", "hf_4", "hf_5",
     "ntc_hand_release_push_up", "ntc_incline_push_up_low", "ntc_knee_push_up", "ntc_push_up_shoulder_tap", "ntc_staggered_push_up",
-    "wger_1086", "wger_1090", "wger_1209", "wger_1716", "wger_1777", "wger_1902", "wger_2684", "wger_2764", "wger_583", "wger_985",
+    "wger_1086", "wger_1090", "wger_1209", "wger_1716", "wger_1777", "wger_2684", "wger_2764", "wger_583", "wger_985",
   ],
   lunge: [
     "bulgarian_split", "fedb_bodyweight_walking_lunge", "fedb_crossover_reverse_lunge", "fedb_split_squats", "fedb_suspended_split_squat",
@@ -375,6 +375,13 @@ describe("band families (#262, user decisions 2026-11-21)", () => {
     expect(EXERCISE_GRAPH.hf_96!.standardsSource?.kind).toBe("none");
     expect(bandFamilyFor({ name: "Push-up", role: "work", effort: "reps", difficulty: "advanced", pattern: "horizontal_push" })).toBeNull();
     expect(bandFamilyFor({ name: "Push-up", role: "work", effort: "reps", difficulty: "beginner", pattern: "horizontal_push" })?.id).toBe("push-up");
+  });
+
+  it("weighted push-ups are tierless, not a family member: their reps depend on the load (user, 2026-11-21)", () => {
+    const weighted = EXERCISE_GRAPH.wger_1902!;
+    expect(weighted.standardsSource?.kind).toBe("none");
+    expect(weighted.standards).toBeUndefined();
+    expect(isPlannable(weighted)).toBe(false);
   });
 
   it("the row family takes no pull-up or chin-up band", () => {

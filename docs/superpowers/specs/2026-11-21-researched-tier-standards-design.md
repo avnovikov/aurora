@@ -227,12 +227,13 @@ A second check covers pairs where one move is researched and its neighbour has a
 4. **One band per ordinary family.** "Push-ups vary by difficulty, but I expect all to be in the same band." "Lunges are also the same." The same rule then went to bodyweight rows and to crunches and sit-ups. Every ordinary member of a family takes one band, whatever its own source. "Hindu and pike are more difficult", so neither is a push-up family member. See "Band families" below.
 5. **Skills: not changed (user decision).** Straddle against full planche, tuck L-sit against L-sit, the muscle-up's advanced tier (not capped at 10), the scapular pull-up, Wall walk-up and Japanese Handstand, and the placeholder skills (Manna, Ice Cream Maker, Pelican Curl) stay exactly as they are, with their conflicts pinned.
 6. **Hip hinge against the single-leg bridge test** stays pinned and is a follow-up.
+7. **Edge members confirmed.** Weighted push-ups are not a push-up family member: their reps depend on the load, so the research row is `not_max_test` (tierless) and the generator never picks them. The Wide-Grip Inverted Row and the Feet-Elevated Australian Pull-Up stay in the row family.
 
 ### Endura matcher fix
 
 The plain push-up, pull-up, incline push-up and straight-bar dip rules now match the exact move only (`ruleExact`): "Push-up", "Push-ups", "Pushups", "Standard Push-Up", "Press-up(s)"; "Pull-up(s)", "Pullup(s)", "Standard Pull-Up"; "Incline Push-Up(s)" and "Incline Push-Up Medium" (medium is the standard grip); "Straight Bar Dip(s)". The chin-up rule no longer matches the Australian Chin-Up, which is a row; this one was not on the user's list but is the same misfire as the Australian pull-ups. Every other rule is unchanged. A move that no longer matches falls through to the researched table, where it now has a row (`pass4: true` in the research JSON) naming its parent.
 
-48 moves changed. (The table records the fix as made. Since the band families, 27 of the 45 moves below are family members and take their family's band; the rest keep the band shown, except Archer Australian Pull-Up 5/8/10/16/20 and Russian and Tyson push-ups 9/14/18/24/30, recomputed from family parents.) The muscle-up and Kipping Muscle Up keep their rule with the capped band. Maltese Push-Up and Planche Push-Up fall through to the generic table (elite 1/2/4/8/12): their only catalogue neighbour is the tuck planche hold, so they have no rep-move parent. The other 45 are below. The Bent-Knee Australian Pull-Up is an anchor from one measured table (TopEndSports bent-knee horizontal pull-up, men 18–35: 10–14, 15–19, 20–29, 30+), and the other 44 are computed.
+48 moves changed. (The table records the fix as made. Since the band families, 26 of the 45 moves below are family members and take their family's band, Weighted push-ups are tierless (decision 7); the rest keep the band shown, except Archer Australian Pull-Up 5/8/10/16/20 and Russian and Tyson push-ups 9/14/18/24/30, recomputed from family parents.) The muscle-up and Kipping Muscle Up keep their rule with the capped band. Maltese Push-Up and Planche Push-Up fall through to the generic table (elite 1/2/4/8/12): their only catalogue neighbour is the tuck planche hold, so they have no rep-move parent. The other 45 are below. The Bent-Knee Australian Pull-Up is an anchor from one measured table (TopEndSports bent-knee horizontal pull-up, men 18–35: 10–14, 15–19, 20–29, 30+), and the other 44 are computed.
 
 | Move | Old Endura band | New band | Parent, step |
 |---|---|---|---|
@@ -279,7 +280,7 @@ The plain push-up, pull-up, incline push-up and straight-bar dip rules now match
 | TRX/Rings Push-Up (`wger_2764`) | push-up 11/17/22/29/36 | 9/14/18/24/30 | Standard Push-Up, harder |
 | Typewriter Push-Up (`hf_7`) | push-up 11/17/22/29/36 | 7/11/15/20/25 | Hindu Push-Up, harder |
 | Tyson push-ups (`wger_2679`) | push-up 11/17/22/29/36 | 7/11/15/20/25 | Push-Ups With Feet Elevated, harder |
-| Weighted push-ups (`wger_1902`) | push-up 11/17/22/29/36 | 9/14/18/24/30 | Standard Push-Up, harder |
+| Weighted push-ups (`wger_1902`) | push-up 11/17/22/29/36 | 9/14/18/24/30, now tierless (decision 7) | Standard Push-Up, harder |
 | Archer Straight-Bar Dip (`ntc_archer_straight_bar_dip`) | straight-bar dip 3/5/12/22/35 | 2/4/10/18/29 | Straight Bar Dip, harder |
 
 ### Band families
@@ -298,9 +299,9 @@ The plain push-up, pull-up, incline push-up and straight-bar dip rules now match
 
 Equal bands are consistent with the variant order (an easier move's band is at or above a harder one's at every tier), so a family can never disagree with itself.
 
-**Membership (81 moves).** `researchedStandards.test.ts` pins it (`FAMILY_MEMBERS`); a move joining or leaving a family fails the test.
+**Membership (80 moves).** `researchedStandards.test.ts` pins it (`FAMILY_MEMBERS`); a move joining or leaving a family fails the test.
 
-- **Push-up (35):** Standard Push-Up, Wall Push-Up, Incline Push-Up, Incline Push-Up Medium, Incline Push-Up Close-Grip, Incline Push-Up Reverse Grip, Incline Push-Up Wide, Incline Shoulder Press Up, Low incline push-up, Knee push-up, Diamond Push-Up, Close-grip Press-ups, Push-Ups - Close Triceps Position, Triceps push up, Wide Push-Up, Push-Up Wide, Pushups (Close and Wide Hand Positions), Decline Push-Up, Push-Ups With Feet Elevated, Deficit Push ups, Ring Push-Up, TRX/Rings Push-Up, Suspended Push-Up, Sphinx Push-Up, Spiderman Push-Up, Dive Bomber Push-Up, Hand-release push-up, Staggered push-up, Push-up with shoulder tap, Clock Push-Up, Push-up rotations, Shoulder width three-point push-up, Side to Side Push Ups, Vpushup, Weighted push-ups.
+- **Push-up (34):** Standard Push-Up, Wall Push-Up, Incline Push-Up, Incline Push-Up Medium, Incline Push-Up Close-Grip, Incline Push-Up Reverse Grip, Incline Push-Up Wide, Incline Shoulder Press Up, Low incline push-up, Knee push-up, Diamond Push-Up, Close-grip Press-ups, Push-Ups - Close Triceps Position, Triceps push up, Wide Push-Up, Push-Up Wide, Pushups (Close and Wide Hand Positions), Decline Push-Up, Push-Ups With Feet Elevated, Deficit Push ups, Ring Push-Up, TRX/Rings Push-Up, Suspended Push-Up, Sphinx Push-Up, Spiderman Push-Up, Dive Bomber Push-Up, Hand-release push-up, Staggered push-up, Push-up with shoulder tap, Clock Push-Up, Push-up rotations, Shoulder width three-point push-up, Side to Side Push Ups, Vpushup.
 - **Lunge (14):** Supported Split Squat, Split Squats, Side split squats, Suspended Split Squat, Bulgarian split squat, Reverse lunge, Forward Lunge, Bodyweight lunge, Bodyweight Walking Lunge, Unilateral Lunges, Curtsy Lunge, Crossover Reverse Lunge, Lateral Lunge, Reverse lunge to knee drive. The catalogue has no separate step-back lunge.
 - **Row (11):** Bent-Knee Australian Pull-Up, Inverted Row, Wide-Grip Inverted Row, Feet-Elevated Australian Pull-Up, Australian Chin-Up, Ring Row, Incline Row - Rings, Bodyweight Mid Row, Suspended Row, TRX Rows, Rowing with TRX band.
 - **Crunch and sit-up (21):** Crunches, Abdominal Crunch, Bicycle Crunch, Cross-Body Crunch, Crunch - Hands Overhead, Crunches With Legs Up, Incline Crunches, Levitation Crunch, Oblique Crunches, Oblique Crunches - On The Floor, Side Crunch, Standing Side Crunches, Tuck Crunch, Reverse Crunch, Suspended Reverse Crunch, Sit-Up, 3/4 Sit-Up, Butterfly Sit Up, Frog Sit-Ups, Janda Sit-Up, Sit Up Elbow Thrust.
@@ -319,6 +320,7 @@ Equal bands are consistent with the variant order (an easier move's band is at o
 | Maltese Push-Up, Planche Push-Up | Skill; elite | generic (follow-up) |
 | Handstand push-ups (box, wall, deficit, freestanding, 90-degree, tiger bend) | Not push-up pages; Endura handstand push-up | unchanged |
 | Body-Up, Body Tricep Press | Derived from the push-up but not push-ups by name | push-up ÷ 1.2 = 9/14/18/24/30 |
+| Weighted push-ups | Reps depend on the load (user, decision 7) | tierless (not_max_test), not generated |
 | Plank Shoulder Tap | Core pattern; not a push-up | push-up × 1.2 = 14/21/27/35/44 |
 | Scapular push-up, Push-up plus | Warm-ups | unchanged |
 | Pistol squat, assisted pistol, shrimp squat, skater squat | Skill or advanced | unchanged |
@@ -333,12 +335,12 @@ Computed children of members step from the family band: Ring Bicep Curl and Body
 
 ### Anchors
 
-An anchor's band is fixed and never computed. There are 201:
+An anchor's band is fixed and never computed. There are 200:
 
 | Anchor | Count | Notes |
 |---|---:|---|
 | Endura, coaching list, seed, outside the research table | 88 | 35 Endura, 17 coaching, 21 seed, and 15 family members among them (13 Endura pages, the seed Bulgarian split squat and reverse lunge), after the matcher fix and the muscle-up cap. |
-| Family members in the research table | 66 | Take their family's band (see "Band families"). |
+| Family members in the research table | 65 | Take their family's band (see "Band families"). |
 | Sourced research rows | 23 | The 32 rows with two or more sources, less the 9 that are family members (the crunches, abdominal crunch, bicycle crunch, 3/4 sit-up and sit-up, and the four sourced TRX and suspended rows). |
 | Single source | 11 | Derived rows whose parent is a data source or coaching target, not a move: Flutter Kicks (StrengthLevel table), Hyperextensions (back-extension study), Hip Thrust, Single-leg hamstring curl and Unilateral Hip Thrust (single-leg bridge test), Chin-up Isometric Hold (flexed-arm hang), Double Kettlebell Snatch (single-bell rank tables), Dragon Flag, Iron Cross, Neck Bridge and the lunge-style get-up (coaching targets). The Bent-Knee Australian Pull-Up is now a row family member. |
 | Unit conversion | 13 | Derived rows whose parent has the other effort (reps from a hold, or a hold from reps, at a stated pace), all from a fixed anchor: the dynamic plank moves from the forearm plank, Dynamic side plank, Hollow Body Rock, L-Sit Dip, Front Lever Row, Australian Pull-Up Hold, Swimmers. A ×1.2 step cannot cross units, so their research band is kept; the script fails if one of their parents were computed. |
@@ -356,7 +358,7 @@ The other 124 rows are computed by `deriveChains` in `scripts/lib/tierDerivation
 
 Each computed row in the generated table carries `parent: { id, step }`, so the tests recompute every band from its parent and walk every chain back to an anchor.
 
-**Result.** 23 sourced, 148 derived (124 computed, 24 single-source or conversion anchors), 66 family and 125 not_max_test rows; 8 dropped as before. The Library's 708 moves: 81 family (66 research rows, 13 Endura pages, 2 seed), 35 Endura, 17 coaching, 21 seed, 23 sourced, 148 derived, 13 generic (the 11 before, plus Maltese Push-Up and Planche Push-Up), 125 tierless, 245 without tiers. Some computed bands are ones the research had called implausible: Wall walk-up (pike push-up ÷ 1.2 = 4/5/15/29/48; research 1/2/5/9/15) and Japanese Handstand (wall handstand ÷ 1.2 = 8/15/25/50/75 s; research 1/3/5/10/20). They are skills the user kept as they are (decision 5) and are listed for a separate issue.
+**Result.** 23 sourced, 148 derived (124 computed, 24 single-source or conversion anchors), 65 family and 126 not_max_test rows; 8 dropped as before. The Library's 708 moves: 80 family (65 research rows, 13 Endura pages, 2 seed), 35 Endura, 17 coaching, 21 seed, 23 sourced, 148 derived, 13 generic (the 11 before, plus Maltese Push-Up and Planche Push-Up), 126 tierless, 245 without tiers. Some computed bands are ones the research had called implausible: Wall walk-up (pike push-up ÷ 1.2 = 4/5/15/29/48; research 1/2/5/9/15) and Japanese Handstand (wall handstand ÷ 1.2 = 8/15/25/50/75 s; research 1/3/5/10/20). They are skills the user kept as they are (decision 5) and are listed for a separate issue.
 
 ### Remaining conflicts: data questions
 
@@ -399,7 +401,6 @@ The compare script was tightened in this run. `dev` records no band source kind,
 2. Decide the generic leftovers: Maltese Push-Up and Planche Push-Up (skill push-ups with no rep-move parent); the rest have no data after two passes. The placeholder skills (Manna, Ice Cream Maker, Pelican Curl) are skills the user kept as they are.
 3. Recheck the Crow Pose, Elbow Lever and Bear plank elite bands.
 4. Any dose rule of their own for tierless moves (contacts for plyometrics, load for kettlebell moves) needs evidence first; until then the generator does not pick them.
-5. Check the family memberships the rule gives at the edges: Weighted push-ups (beginner, takes the push-up band), the TRX/Rings and suspended push-ups, and the Wide-Grip Inverted Row and Feet-Elevated Australian Pull-Up (intermediate, take the row band).
 
 **Skills: not changed (user decision).** Straddle against full planche, tuck L-sit against L-sit, the muscle-up's advanced tier, the scapular pull-up, Wall walk-up and Japanese Handstand, and the placeholder skills (Manna, Ice Cream Maker, Pelican Curl). Their conflicts stay pinned.
 

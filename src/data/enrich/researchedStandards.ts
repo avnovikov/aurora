@@ -690,7 +690,7 @@ export const RESEARCHED_STANDARDS: Readonly<Record<string, ResearchedStandard>> 
   // Decline Bench Leg Raise
   "wger_1889": { kind: "derived", standards: { novice: 4, beginner: 10, intermediate: 15, advanced: 18, elite: 24 }, parent: { id: "hanging_knee_raise", step: "easier" }, source: "Derived from hanging knee raise" },
   // Weighted push-ups
-  "wger_1902": { kind: "family", standards: { novice: 11, beginner: 17, intermediate: 22, advanced: 29, elite: 36 }, source: "Push-up family band (Endura push-up)" },
+  "wger_1902": { kind: "not_max_test", source: "Not a max-rep test" },
   // Unilateral Lunges
   "wger_1907": { kind: "family", standards: { novice: 4, beginner: 6, intermediate: 15, advanced: 28, elite: 45 }, source: "Lunge family band (Endura split squat)" },
   // Butterfly Superman
