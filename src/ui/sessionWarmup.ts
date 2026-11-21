@@ -11,7 +11,6 @@ import { paintHoldCountdown, speakDueHoldCue } from "./holdCuePlayback";
 import type { ViewState } from "./sessionTypes";
 
 export { sideSwitchAt };
-export { holdCueText } from "../voice/holdCue";
 
 export interface WarmupTimerHandle {
   clear: () => void;

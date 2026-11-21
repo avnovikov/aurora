@@ -32,8 +32,6 @@ export const GET_READY_AT_SECONDS_LEFT = 10;
 /** Full countdown starts here; shorter rests count down from `floor(rest)` only. */
 export const REST_COUNTDOWN_FROM = 5;
 
-const VOICE_ONLY_REST_CUE_KINDS = new Set<RestCueKind>(["rest_banter"]);
-
 const COUNT_LINE_IDS: Record<number, CoachLineId> = {
   5: "five",
   4: "four",
@@ -41,11 +39,6 @@ const COUNT_LINE_IDS: Record<number, CoachLineId> = {
   2: "two",
   1: "one",
 };
-
-/** True when the cue may paint into `[data-rest-cue]` (banter is voice-only). */
-export function isOnScreenRestCue(kind: RestCueKind): boolean {
-  return !VOICE_ONLY_REST_CUE_KINDS.has(kind);
-}
 
 /**
  * Pure schedule for rest voice cues.

@@ -1,11 +1,7 @@
 import type { HeartRateZone } from "../pulse/hrZones";
 import { speakExactLine } from "../voice/coachVoice";
 import { pickLine, type CoachLine } from "../voice/lines";
-import {
-  cueSchedule,
-  isOnScreenRestCue,
-  type RestCueEvent,
-} from "../voice/restCue";
+import { cueSchedule, type RestCueEvent } from "../voice/restCue";
 import { REST_ADD_SECONDS, shouldAddRest, shouldOfferRestedGoOn } from "./restPulse";
 import type { ViewState } from "./sessionTypes";
 
@@ -14,18 +10,6 @@ function cueAt(
   schedule: readonly RestCueEvent[],
 ): RestCueEvent | undefined {
   return schedule.find((event) => event.atSecondsLeft === left);
-}
-
-/** On-screen rest cue copy for a given second; null when only the count shows. */
-export function restCueText(
-  left: number,
-  schedule: readonly RestCueEvent[],
-): string | null {
-  const due = cueAt(left, schedule);
-  if (!due || !isOnScreenRestCue(due.kind)) {
-    return null;
-  }
-  return due.text;
 }
 
 function speakRestCue(
