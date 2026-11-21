@@ -167,7 +167,7 @@ describe("rest pulse", () => {
     handle.clear();
   });
 
-  it("keeps the cue latch when Get ready replaces go-on text", () => {
+  it("keeps the cue latch after go-on when Get ready is voice-only", () => {
     const { root, cue } = restRoot();
     const handle = startRestTimer(
       root,
@@ -182,10 +182,72 @@ describe("rest pulse", () => {
     expect(cue.hasAttribute("data-rest-cue-latch")).toBe(true);
 
     advanceSeconds(1);
-    expect(cue.textContent).not.toBe(REST_GO_ON.text);
+    // Schedule lines (Get ready) no longer paint; go-on held text + latch remain.
+    expect(cue.textContent).toBe(REST_GO_ON.text);
     expect(cue.hasAttribute("data-rest-cue-latch")).toBe(true);
 
     handle.clear();
+  });
+
+  it("speaks get ready / 5→1 / go with an empty cue when pulse offers no go-on", () => {
+    const { root, cue } = restRoot();
+    const onDone = vi.fn();
+    // Start at 11 so the first tick lands on get_ready (10); no easy zone → no go-on paint.
+    const handle = startRestTimer(
+      root,
+      restState(GET_READY_AT_SECONDS_LEFT + 1),
+      true,
+      onDone,
+      { readZone: () => null },
+    );
+
+    expect(cue.textContent).toBe("");
+
+    advanceSeconds(1);
+    expect(cue.textContent).toBe("");
+    expect(countSpokenById("get_ready")).toBe(1);
+
+    advanceSeconds(5);
+    expect(cue.textContent).toBe("");
+    expect(countSpokenById("five")).toBe(1);
+
+    for (const id of ["four", "three", "two", "one"] as const) {
+      advanceSeconds(1);
+      expect(cue.textContent).toBe("");
+      expect(countSpokenById(id)).toBe(1);
+    }
+
+    advanceSeconds(1);
+    expect(countSpokenById("go")).toBe(1);
+    expect(onDone).toHaveBeenCalledTimes(1);
+
+    handle.clear();
+  });
+
+  it("still paints go-on and +30 held cues on the rest cue line", () => {
+    const goOn = restRoot();
+    const goOnHandle = startRestTimer(
+      goOn.root,
+      restState(GET_READY_AT_SECONDS_LEFT + 2),
+      true,
+      vi.fn(),
+      { readZone: () => "easy" },
+    );
+    advanceSeconds(1);
+    expect(goOn.cue.textContent).toBe(REST_GO_ON.text);
+    goOnHandle.clear();
+
+    const extend = restRoot();
+    const extendHandle = startRestTimer(
+      extend.root,
+      restState(1),
+      true,
+      vi.fn(),
+      { readZone: () => "work" },
+    );
+    advanceSeconds(1);
+    expect(extend.cue.textContent).toBe(REST_EXTEND.text);
+    extendHandle.clear();
   });
 
   it("clears the cue latch on finish", () => {
