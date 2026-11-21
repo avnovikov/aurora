@@ -1,8 +1,15 @@
+import { createHash } from "node:crypto";
 import { readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { ALL_COACH_LINES } from "../../src/voice/lines";
 
 const VOICE_DIR = "public/voice";
+
+function wavMd5(assetKey: string): string {
+  return createHash("md5")
+    .update(readFileSync(`${VOICE_DIR}/${assetKey}.wav`))
+    .digest("hex");
+}
 
 /** The model `scripts/prebuild-voice.sh` bakes with by default. */
 function scriptModel(): string {
@@ -55,5 +62,12 @@ describe("coach voice pack", () => {
     expect(wavs.map((file) => file.replace(/\.wav$/, "")).sort()).toEqual(keys);
     const formats = new Set(wavs.map((file) => wavFormat(`${VOICE_DIR}/${file}`)));
     expect([...formats]).toEqual(["1 ch 22050 Hz 16 bit"]);
+  });
+
+  it("hold_done assets are not accidental copies of the count cue one.wav", () => {
+    const one = wavMd5("one");
+    for (const key of ["hold_done", "hold_done_b", "hold_done_c", "hold_done_d"] as const) {
+      expect(wavMd5(key), `${key}.wav must not equal one.wav`).not.toBe(one);
+    }
   });
 });
