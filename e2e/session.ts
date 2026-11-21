@@ -60,9 +60,14 @@ export function workSwipeSurface(page: Page): Locator {
   return page.locator("[data-swipe-stage='work'] .session-frame");
 }
 
-/** The phase eyebrow above the hero: "Warmup", "Rest", "Get ready", "Set 2 of 4". */
+/** Phase eyebrow above the hero: "Warmup", "Rest", "Get ready", "Cool-down". */
 export function phaseLine(page: Page): Locator {
   return page.locator(".session-phase");
+}
+
+/** Shared set line on warmup (multi-round) and work: "Set 2 of 4". */
+export function setLine(page: Page): Locator {
+  return page.locator(".session-set");
 }
 
 /** Work-rest next-set line (`next Name · Set n of m`), beside the compact doodle. */

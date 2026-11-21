@@ -95,6 +95,7 @@
 }
 
 .session .session-phase,
+.session .session-set,
 .rest-next-line {
   margin: 0;
   color: var(--muted);
@@ -103,6 +104,10 @@
   letter-spacing: 0.07em;
   text-transform: uppercase;
   min-width: 0;
+}
+
+.session .session-phase + .session-set {
+  margin-top: 2px;
 }
 
 /* Work rest: compact doodle beside the next-set line; countdown stays the hero. */
@@ -160,7 +165,7 @@
   letter-spacing: 0;
 }
 
-/* Work set: − / number / + on one line, the steppers at thumb size. */
+/* Work dose: − stepper / big number + unit / + stepper, all on one line. */
 .session-dose.work-reps-row {
   flex-wrap: nowrap;
   align-items: center;
@@ -169,6 +174,7 @@
   margin: 24px 0 0;
 }
 
+/* Tighter spacing on the unit when inside the stepper row. */
 .work-reps-row .session-dose-unit {
   margin-left: 8px;
 }

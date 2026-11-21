@@ -28,6 +28,7 @@ import {
   isWarmupSurface,
 } from "./sessionChalkStrip";
 import { cooldownSteps, currentWork, isGetReadyRest } from "./sessionState";
+import { formatSetLabel, warmupStationSetLabel } from "./sessionStationSet";
 import type { ViewState } from "./sessionTypes";
 import { doseNoteHtml } from "./sessionDoseNote";
 import { weightControlsHtml } from "./sessionWeightControls";
@@ -228,7 +229,7 @@ function warmupHtml(planned: PlannedSession, state: ViewState): string {
   if (!planned.warmup[state.warmupIndex]) {
     return `<section class="session-read"><p class="tagline">Warmup complete</p></section>`;
   }
-  return stationOrGapHtml("Warmup", planned.warmup, state.warmupIndex, state);
+  return stationOrGapHtml("Warmup", planned.warmup, state.warmupIndex, state, true);
 }
 
 function cooldownHtml(planned: PlannedSession, state: ViewState): string {
@@ -237,7 +238,7 @@ function cooldownHtml(planned: PlannedSession, state: ViewState): string {
     return `<section class="session-read"><p class="tagline">Cool-down complete</p></section>`;
   }
   return `
-    ${stationOrGapHtml("Cool-down", steps, state.cooldownIndex, state)}
+    ${stationOrGapHtml("Cool-down", steps, state.cooldownIndex, state, false)}
     <div class="work-actions-secondary session-end-cooldown">
       <button type="button" class="btn-quiet" data-cooldown-skip>End cool-down</button>
     </div>
@@ -263,7 +264,11 @@ const STATION_EFFORT: Record<EffortKind, { label: string; note: string }> = {
 };
 
 /** One timed station (warm-up or cool-down) with its evidence citation in small text. */
-function stationHtml(eyebrow: string, step: WarmupStep): string {
+function stationHtml(
+  eyebrow: string,
+  step: WarmupStep,
+  setLabel: string | undefined,
+): string {
   const effort = stationEffort(step);
   const source = step.source
     ? `<p class="station-source">${escapeHtml(step.source)}</p>`
@@ -278,7 +283,13 @@ function stationHtml(eyebrow: string, step: WarmupStep): string {
   const notForMe = eyebrow === "Warmup" ? warmupNotForMeHtml(exerciseId, move) : "";
   return `
     <div class="station-stage swipe-stage" data-swipe-stage="station">
-      ${heroHtml({ phase: eyebrow, move, dose, doodle: doodleMarkup(step.doodlePath, move) })}
+      ${heroHtml({
+        phase: eyebrow,
+        set: setLabel,
+        move,
+        dose,
+        doodle: doodleMarkup(step.doodlePath, move),
+      })}
       <section class="session-read">
         ${summaryHtml(EXERCISE_GRAPH[exerciseId]?.description)}
         ${attentionHtml(step.cues)}
@@ -291,18 +302,25 @@ function stationHtml(eyebrow: string, step: WarmupStep): string {
 }
 
 /**
- * Station `index` while it runs; in its gap (the timer has put the view into
- * rest, the index not yet advanced) the rest before the station after it.
+ * Station `index` while it runs; in its gap (timer put the view into rest,
+ * index not yet advanced) the rest before the station after it.
  */
 function stationOrGapHtml(
   eyebrow: string,
   steps: readonly WarmupStep[],
   index: number,
   state: ViewState,
+  withSetLine: boolean,
 ): string {
-  return state.phase === "rest"
-    ? stationGapHtml(steps[index + 1], state)
-    : stationHtml(eyebrow, steps[index]!);
+  if (state.phase === "rest") {
+    return stationGapHtml(steps[index + 1], state);
+  }
+  const step = steps[index];
+  if (!step) {
+    throw new Error(`missing station step at index ${index}`);
+  }
+  const setLabel = withSetLine ? warmupStationSetLabel(steps, index) : undefined;
+  return stationHtml(eyebrow, step, setLabel);
 }
 
 /** The short rest between two stations: the countdown and the station that comes next. */
@@ -339,7 +357,7 @@ function workRestNextHtml(item: PlannedWorkItem | null, state: ViewState): strin
   const doodle = item ? doodleMarkup(item.doodlePath, move) : "";
   const picture = doodle ? `<div class="rest-next-doodle">${doodle}</div>` : "";
   const line = item
-    ? `next ${escapeHtml(move)} · Set ${state.setIndex} of ${item.dose.sets}`
+    ? `next ${escapeHtml(move)} · ${formatSetLabel(state.setIndex, item.dose.sets)}`
     : "next set";
   return `
     <div class="rest-next">
@@ -349,8 +367,10 @@ function workRestNextHtml(item: PlannedWorkItem | null, state: ViewState): strin
 }
 
 interface HeroParts {
-  /** Phase eyebrow, already safe HTML ("Warmup", "Set 2 of 3"). */
-  phase: string;
+  /** Phase eyebrow when present ("Warmup", "Cool-down"); omitted on work. */
+  phase?: string;
+  /** Shared set line ("Set 2 of 3"); same class on warmup and work. */
+  set?: string;
   /** Move name, escaped here. */
   move: string;
   /** Dose markup: the big figure and anything that belongs with it. */
@@ -359,12 +379,17 @@ interface HeroParts {
   doodle: string;
 }
 
-/** Phase eyebrow, move name, the dose as the hero, then the doodle in its own full-width row. */
-function heroHtml({ phase, move, dose, doodle }: HeroParts): string {
+/** Optional phase + shared set line, move name, dose, then the doodle row. */
+function heroHtml({ phase, set, move, dose, doodle }: HeroParts): string {
   const frame = doodle ? `<div class="session-frame">${doodle}</div>` : "";
+  const phaseHtml = phase
+    ? `<p class="eyebrow session-phase">${escapeHtml(phase)}</p>`
+    : "";
+  const setHtml = set ? `<p class="eyebrow session-set">${escapeHtml(set)}</p>` : "";
   return `
     <section class="session-hero">
-      <p class="eyebrow session-phase">${phase}</p>
+      ${phaseHtml}
+      ${setHtml}
       <h1 class="session-move">${escapeHtml(move)}</h1>
       ${dose}
       ${frame}
@@ -527,7 +552,7 @@ function workHtml(item: PlannedWorkItem, state: ViewState, adjust: WorkAdjustUi 
     <div class="work-stage swipe-stage" data-swipe-stage="work">
       ${workAdjustHtml(adjust, move)}
       ${heroHtml({
-        phase: `Set ${state.setIndex} of ${item.dose.sets}`,
+        set: formatSetLabel(state.setIndex, item.dose.sets),
         move,
         dose,
         doodle: doodleMarkup(item.doodlePath, move),
