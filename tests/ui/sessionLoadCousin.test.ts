@@ -58,6 +58,21 @@ function planWith(exerciseId: string): { planned: PlannedSession; state: ViewSta
   return { planned, state };
 }
 
+function expectKettlebellOnlyWeightedSwap(exerciseId: string): void {
+  const { planned, state } = planWith(exerciseId);
+  const twinId = EXERCISE_GRAPH[exerciseId]!.weightedId!;
+  const next = applyAddedLoadChange(
+    planned,
+    state,
+    DEFAULT_ADDED_LOAD_KG,
+    athlete(["body", "kettlebell"]),
+  );
+  expect(next.work[0]!.exerciseId).toBe(twinId);
+  expect(state.workState?.exerciseId).toBe(twinId);
+  expect(state.workState?.addedLoadKg).toBe(DEFAULT_ADDED_LOAD_KG);
+  expect(state.workState?.loadSwapFromId).toBe(exerciseId);
+}
+
 describe("applyAddedLoadChange", () => {
   it("swaps to the weighted twin and writes the Plan slot when adding load", () => {
     const { planned, state } = planWith("hip_hinge");
@@ -82,7 +97,7 @@ describe("applyAddedLoadChange", () => {
     expect(slotExerciseOverride(planned.programId, planned.work[0]!.slotId)).toBe("glute_bridge");
   });
 
-  it("keeps sticky kg without swapping when the athlete lacks dumbbell gear", () => {
+  it("keeps sticky kg without swapping when the athlete has neither dumbbell nor kettlebell", () => {
     const { planned, state } = planWith("hip_hinge");
     const next = applyAddedLoadChange(planned, state, DEFAULT_ADDED_LOAD_KG, athlete(["body"]));
     expect(next.work[0]!.exerciseId).toBe("hip_hinge");
@@ -90,11 +105,11 @@ describe("applyAddedLoadChange", () => {
     expect(state.workState?.loadSwapFromId).toBeUndefined();
   });
 
+  it("swaps bodyweight squat when the athlete has kettlebell only", () => {
+    expectKettlebellOnlyWeightedSwap("bodyweight_squat");
+  });
+
   it("swaps step-up when the athlete has kettlebell only (orRequires)", () => {
-    const { planned, state } = planWith("step_up");
-    const twinId = EXERCISE_GRAPH.step_up!.weightedId!;
-    const next = applyAddedLoadChange(planned, state, DEFAULT_ADDED_LOAD_KG, athlete(["body", "kettlebell"]));
-    expect(next.work[0]!.exerciseId).toBe(twinId);
-    expect(state.workState?.loadSwapFromId).toBe("step_up");
+    expectKettlebellOnlyWeightedSwap("step_up");
   });
 });
