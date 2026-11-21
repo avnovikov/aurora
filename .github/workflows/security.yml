@@ -49,7 +49,9 @@ jobs:
         uses: github/codeql-action/init@v4
         with:
           languages: javascript-typescript,java
-          queries: security-and-quality
+          # Config adds AlertSuppression.ql so in-source lgtm/codeql comments apply
+          # (security-and-quality alone omits kind: alert-suppression; see #203).
+          config-file: ./.github/codeql/codeql-config.yml
           # Do not set build-mode: manual here — it applies to every language and
           # JS/TS only supports none, which aborts init for the whole job (#196).
 

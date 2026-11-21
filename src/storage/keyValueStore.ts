@@ -19,8 +19,9 @@ function hasLocalStorage(): boolean {
  * (AuroraSecure via getSecureBridgeOrAllowLocal).
  */
 function writeDevPreviewLocalStorage(key: string, value: string): void {
-  // codeql[js/clear-text-storage-of-sensitive-data] Dev/preview + Vitest only; shipped Android uses AuroraSecure.
-  localStorage.setItem(key, value);
+  // Same-line lgtm: js/clear-text-storage-of-sensitive-data flags `value` (col 29).
+  // Requires AlertSuppression.ql in CodeQL config (.github/codeql/codeql-config.yml).
+  localStorage.setItem(key, value); // lgtm[js/clear-text-storage-of-sensitive-data] Dev/preview + Vitest only; Android uses AuroraSecure.
 }
 
 export function createKeyValueStore(key: string): KeyValueStore {
