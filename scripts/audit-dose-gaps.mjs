@@ -4,9 +4,6 @@
  * - library tier standards (novice→elite)
  */
 import { readFileSync } from "node:fs";
-import { createRequire } from "node:module";
-
-const require = createRequire(import.meta.url);
 
 function parsePrescription(text) {
   const t = text.toLowerCase().replace(/×/g, "x").replace(/–/g, "-");
@@ -126,25 +123,11 @@ function auditWarmup() {
   return rows;
 }
 
-function loadDescriptions() {
-  const src = readFileSync("src/data/generated/descriptions.ts", "utf8");
-  // descriptions export is huge; eval via dynamic import of built? parse JSON-like blocks
-  const entries = [];
-  const re = /"id":\s*"([^"]+)"[\s\S]*?"steps":\s*\[([\s\S]*?)\][\s\S]*?"cues":\s*\[([\s\S]*?)\]/g;
-  // Actually curated format uses different keys - check structure
-  return { src, entries };
-}
-
 function auditDescriptionsVsStandards() {
-  // Import catalogues + graph via ts? Use generated JSON-ish by requiring through vitest env.
-  // Fall back: parse descriptions.ts for Hold 20-30 + id, and enrich standards from exercise graph via a small tsx run.
+  // Parse descriptions.ts for Hold 20-30 + id, and enrich standards from exercise graph via a small tsx run.
   const descSrc = readFileSync("src/data/generated/descriptions.ts", "utf8");
   // Format: export const DESCRIPTIONS: Record<string, CuratedDescription> = { "id": { ... }, }
   const byId = new Map();
-  const objRe = /"([^"]+)":\s*\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}/g;
-  // Too fragile. Split on id fields.
-  const parts = descSrc.split(/\n  "[^"]+": \{/);
-  // Better approach with line scan
   let currentId = null;
   let buf = [];
   const lines = descSrc.split("\n");
