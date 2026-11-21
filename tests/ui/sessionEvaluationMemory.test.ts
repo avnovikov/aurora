@@ -57,7 +57,7 @@ describe("session evaluation memory", () => {
 
   it("shows Difficult, not Difficult / failed", () => {
     const root = document.createElement("div");
-    renderEvaluationView(root, 3, () => undefined);
+    renderEvaluationView(root, 3, { onSave: () => undefined, onCancel: () => undefined });
     const labels = [...root.querySelectorAll("[data-eval]")].map((el) => el.textContent);
     expect(labels).toContain("Difficult");
     expect(labels.some((label) => label?.includes("failed"))).toBe(false);
@@ -90,27 +90,32 @@ describe("session evaluation memory", () => {
     });
   });
 
-  it("picking Difficult after arming commits through the set-log path", () => {
+  it("saving Difficult after arming commits through the set-log path", () => {
     saveMemories({
       squat: emptyMemory("squat"),
       curl: { ...emptyMemory("curl"), sessionsAtStandard: 2 },
     });
     const root = document.createElement("div");
     let committed = false;
-    renderEvaluationView(root, 1, (evaluation) => {
-      const result = commitSessionEvaluation({
-        evaluation,
-        planned: plannedStub(["squat", "curl"]),
-        log: logAtTarget("squat"),
-        memories: loadMemories(),
-      });
-      saveMemories(result.memories);
-      committed = true;
-      expect(evaluation).toBe("difficult");
+    renderEvaluationView(root, 1, {
+      onSave: (evaluation) => {
+        const result = commitSessionEvaluation({
+          evaluation,
+          planned: plannedStub(["squat", "curl"]),
+          log: logAtTarget("squat"),
+          memories: loadMemories(),
+        });
+        saveMemories(result.memories);
+        committed = true;
+        expect(evaluation).toBe("difficult");
+      },
+      onCancel: () => undefined,
     });
 
     vi.advanceTimersByTime(EVALUATION_ARM_MS);
     root.querySelector<HTMLButtonElement>('[data-eval="difficult"]')?.click();
+    expect(committed).toBe(false);
+    root.querySelector<HTMLButtonElement>("[data-eval-save]")?.click();
     expect(committed).toBe(true);
     const stored = loadMemories();
     expect(stored.squat?.sessionsAtStandard).toBe(1);

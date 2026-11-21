@@ -278,18 +278,32 @@ function showEvaluation(
   startedAtMs: number,
   pulse?: HistoryPulse,
 ): void {
-  renderEvaluationView(root, log.entries.length, (evaluation: SessionEvaluation) => {
-    const result = commitSessionEvaluation({
-      evaluation,
-      planned,
-      log,
-      memories: loadMemories(),
-      pulse,
-    });
-    appendHistory(result.history);
-    saveMemories(result.memories);
-    reinforceFromSessionEvaluation(evaluation, startedAtMs);
-    advancePlanAfterSession();
-    tapTab(root, "today");
+  renderEvaluationView(root, log.entries.length, {
+    onSave: (evaluation) => {
+      persistEvaluationClose({ evaluation, planned, log, pulse, startedAtMs });
+      tapTab(root, "today");
+    },
+    onCancel: () => tapTab(root, "today"),
   });
+}
+
+/** History + memories + plan advance — only on Save. */
+function persistEvaluationClose(input: {
+  evaluation: SessionEvaluation;
+  planned: PlannedSession;
+  log: WorkoutLog;
+  pulse?: HistoryPulse;
+  startedAtMs: number;
+}): void {
+  const result = commitSessionEvaluation({
+    evaluation: input.evaluation,
+    planned: input.planned,
+    log: input.log,
+    memories: loadMemories(),
+    pulse: input.pulse,
+  });
+  appendHistory(result.history);
+  saveMemories(result.memories);
+  reinforceFromSessionEvaluation(input.evaluation, input.startedAtMs);
+  advancePlanAfterSession();
 }
