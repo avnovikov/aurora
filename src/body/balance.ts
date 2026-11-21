@@ -462,6 +462,9 @@ const DIFFICULTY_RANK: Readonly<Record<SkillTier, number>> = {
   novice: 0, beginner: 1, intermediate: 2, advanced: 3, elite: 4,
 };
 
+/** Catalogue / By pattern fallback when a move or pattern has no tier yet. */
+const DEFAULT_MOVE_DIFFICULTY: SkillTier = "intermediate";
+
 export const MAX_MOVES = 3;
 
 export interface MoveInput {
@@ -573,14 +576,28 @@ interface MoveGates {
 }
 
 function passesGates(exercise: SeedExercise, gates: MoveGates): boolean {
-  if (gates.excluded.has(exercise.id) || missingGear(exercise, gates.equipment).length > 0) {
+  if (gates.excluded.has(exercise.id)) {
+    return false;
+  }
+  if (missingGear(exercise, gates.equipment).length > 0) {
     return false;
   }
   if (hasHighLoadOnDeclaredJoint(exercise.name, gates.declaredJoints)) {
     return false;
   }
-  const wanted = gates.difficultyByPattern.get(exercise.pattern) ?? "intermediate";
-  return (exercise.difficulty ?? "intermediate") === wanted;
+  return matchesPatternDifficulty(exercise, gates.difficultyByPattern);
+}
+
+function moveDifficulty(exercise: SeedExercise): SkillTier {
+  return exercise.difficulty ?? DEFAULT_MOVE_DIFFICULTY;
+}
+
+function matchesPatternDifficulty(
+  exercise: SeedExercise,
+  difficultyByPattern: ReadonlyMap<Pattern, SkillTier>,
+): boolean {
+  const target = difficultyByPattern.get(exercise.pattern) ?? DEFAULT_MOVE_DIFFICULTY;
+  return moveDifficulty(exercise) === target;
 }
 
 /** Joints the athlete has declared in Settings / setup. */
@@ -590,16 +607,18 @@ function declaredJointIds(history: readonly JointHistoryEntry[] | undefined): Re
 
 /** True when the move has catalogue high load on a declared joint. */
 function hasHighLoadOnDeclaredJoint(name: string, declared: ReadonlySet<JointId>): boolean {
-  return declared.size > 0
-    && jointLoadsFor(name).some((load) => load.level === "high" && declared.has(load.joint));
+  if (declared.size === 0) {
+    return false;
+  }
+  return jointLoadsFor(name).some((load) => load.level === "high" && declared.has(load.joint));
 }
 
-/** Catalogue difficulty for a By pattern median (novice maps to beginner). */
+/** Map a By pattern median onto a catalogue difficulty (novice → beginner). */
 function catalogueDifficulty(tier: SkillTier): SkillTier {
   return tier === "novice" ? "beginner" : tier;
 }
 
-/** By pattern median tiers. Missing pattern → intermediate at the gate. */
+/** By pattern median tiers. Missing pattern → DEFAULT_MOVE_DIFFICULTY at the gate. */
 function patternDifficultyTargets(
   graph: Readonly<Record<string, SeedExercise>>,
   memories: Readonly<Record<string, ExerciseMemory>>,
@@ -645,7 +664,7 @@ function rankMove({ exercise, primaries, sourceRank, order }: Candidate, context
       -areas.length,
       memories[exercise.id] ? 0 : 1,
       sourceRank,
-      DIFFICULTY_RANK[exercise.difficulty ?? "intermediate"],
+      DIFFICULTY_RANK[moveDifficulty(exercise)],
     ],
   };
 }

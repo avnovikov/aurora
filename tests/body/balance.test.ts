@@ -44,6 +44,16 @@ function declared(joint: JointId): JointHistoryEntry[] {
   return [{ joint, side: "both", kind: "other" }];
 }
 
+/** Push-heavy / pull-empty suggest input with a custom pull candidate graph. */
+function pullSuggestInput(graph: Record<string, SeedExercise>) {
+  return {
+    pairs: pairs({ push_pull: [5, 0] }),
+    levels: allLevels("moderate", { lats: "none" }),
+    graph,
+    equipment: [] as EquipmentId[],
+  };
+}
+
 const NOW = Date.parse("2026-11-20T08:00:00.000Z");
 const DAY_MS = 24 * 60 * 60 * 1000;
 const daysAgo = (days: number): string => new Date(NOW - days * DAY_MS).toISOString();
@@ -454,17 +464,11 @@ describe("Consider adding", () => {
   });
 
   it("drops high catalogue load on a declared joint; keeps moderate and undeclared", () => {
-    const graph: Record<string, SeedExercise> = {
+    const base = pullSuggestInput({
       safe_row: move("safe_row", "horizontal_pull", ["lats"], { name: "Towel row", difficulty: "intermediate" }),
       high_elbow: move("high_elbow", "horizontal_pull", ["lats"], { name: "One-arm row", difficulty: "intermediate" }),
       mod_pull: move("mod_pull", "horizontal_pull", ["lats"], { name: "Pull-up", difficulty: "intermediate" }),
-    };
-    const base = {
-      pairs: pairs({ push_pull: [5, 0] }),
-      levels: allLevels("moderate", { lats: "none" }),
-      graph,
-      equipment: [] as EquipmentId[],
-    };
+    });
     expect(sortedMoveIds(suggestMoves({ ...base, jointHistory: declared("elbow") }))).toEqual([
       "mod_pull",
       "safe_row",
@@ -478,7 +482,7 @@ describe("Consider adding", () => {
   });
 
   it("keeps only difficulty matching By pattern median; missing pattern → intermediate; novice → beginner", () => {
-    const graph: Record<string, SeedExercise> = {
+    const base = pullSuggestInput({
       trained: move("trained", "horizontal_pull", ["lats"], {
         name: "Trained row",
         difficulty: "intermediate",
@@ -487,13 +491,7 @@ describe("Consider adding", () => {
       beg: move("beg", "horizontal_pull", ["lats"], { name: "Beginner row", difficulty: "beginner" }),
       mid: move("mid", "horizontal_pull", ["lats"], { name: "Middle row", difficulty: "intermediate" }),
       adv: move("adv", "horizontal_pull", ["lats"], { name: "Advanced row", difficulty: "advanced" }),
-    };
-    const base = {
-      pairs: pairs({ push_pull: [5, 0] }),
-      levels: allLevels("moderate", { lats: "none" }),
-      graph,
-      equipment: [] as EquipmentId[],
-    };
+    });
     const withBest = (bestReps: number): Record<string, ExerciseMemory> => ({
       trained: { ...emptyMemory("trained"), bestReps, sessionsAtStandard: 1 },
     });
