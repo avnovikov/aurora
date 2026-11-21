@@ -14,12 +14,20 @@ const MAX_WARMUP_SWIPES = 40;
 /** The gap rest's eyebrow starts with this, then the next station's name. */
 export const GAP_PREFIX = "Rest · next ";
 
+export interface StartSessionOptions {
+  /** Plan block kind to add (`core` for abs holds). Default: first Add-days chip. */
+  blockKind?: "upper" | "lower" | "core" | "full";
+}
+
 /**
  * Open the app with a fake clock (timers only move when a test says so),
  * add one training day, and start a session from Today. Lands on the
  * first warm-up station.
  */
-export async function startSession(page: Page): Promise<void> {
+export async function startSession(
+  page: Page,
+  options: StartSessionOptions = {},
+): Promise<void> {
   await page.clock.install();
   await page.goto("/");
   await page.evaluate(
@@ -29,7 +37,10 @@ export async function startSession(page: Page): Promise<void> {
   await page.reload();
   await page.locator(".tab-bar").getByText("Plan").tap();
   // The add-day buttons sit in a closed menu; this test is about the session, not the menu.
-  await page.locator("[data-add-kind]").first().dispatchEvent("click");
+  const addChip = options.blockKind
+    ? page.locator(`[data-add-kind='${options.blockKind}']`)
+    : page.locator("[data-add-kind]").first();
+  await addChip.dispatchEvent("click");
   await page.locator(".tab-bar").getByText("Today").tap();
   await page.locator("[data-sleep-value='good']").tap();
   await page.locator("[data-start]").tap();
@@ -152,4 +163,43 @@ export async function swipeUntil(page: Page, kind: "rest" | "work"): Promise<voi
     await swipe(page, stage(page));
   }
   throw new Error(`no ${kind} stage after ${MAX_WARMUP_SWIPES} swipes`);
+}
+
+/** Ticking seconds on a work hold hero. */
+export function workHoldLeft(page: Page): Locator {
+  return page.locator("[data-work-hold-left]");
+}
+
+/** On-screen hold cue under the countdown (halfway / 5–1 / hold_done). */
+export function workHoldCue(page: Page): Locator {
+  return page.locator("[data-swipe-stage='work'] [data-hold-cue]");
+}
+
+const MAX_WORK_HOLDS_SWIPES = 24;
+
+/**
+ * From a warm-up station (or later), swipe forward until a work hold timer is on screen.
+ */
+export async function swipeUntilWorkHold(page: Page): Promise<number> {
+  if (!(await stage(page, "work").count())) {
+    await swipeUntil(page, "work");
+  }
+  for (let i = 0; i < MAX_WORK_HOLDS_SWIPES; i += 1) {
+    if (await stage(page, "rest").count()) {
+      await swipe(page, stage(page, "rest"));
+      continue;
+    }
+    if (!(await stage(page, "work").count())) {
+      break;
+    }
+    if (await workHoldLeft(page).count()) {
+      const seconds = Number(await workHoldLeft(page).textContent());
+      if (!Number.isFinite(seconds) || seconds <= 0) {
+        throw new Error(`work hold left is not a positive number: ${seconds}`);
+      }
+      return seconds;
+    }
+    await swipe(page, workSwipeSurface(page));
+  }
+  throw new Error(`no work hold after ${MAX_WORK_HOLDS_SWIPES} work/rest swipes`);
 }
