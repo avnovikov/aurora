@@ -4,6 +4,10 @@ import { ALL_COACH_LINES } from "../../src/voice/lines";
 
 const VOICE_DIR = "public/voice";
 
+function wavBytes(assetKey: string): Buffer {
+  return readFileSync(`${VOICE_DIR}/${assetKey}.wav`);
+}
+
 /** The model `scripts/prebuild-voice.sh` bakes with by default. */
 function scriptModel(): string {
   const script = readFileSync("scripts/prebuild-voice.sh", "utf8");
@@ -55,5 +59,12 @@ describe("coach voice pack", () => {
     expect(wavs.map((file) => file.replace(/\.wav$/, "")).sort()).toEqual(keys);
     const formats = new Set(wavs.map((file) => wavFormat(`${VOICE_DIR}/${file}`)));
     expect([...formats]).toEqual(["1 ch 22050 Hz 16 bit"]);
+  });
+
+  it("hold_done assets are not accidental copies of the count cue one.wav", () => {
+    const one = wavBytes("one");
+    for (const key of ["hold_done", "hold_done_b", "hold_done_c", "hold_done_d"] as const) {
+      expect(wavBytes(key).equals(one), `${key}.wav must not equal one.wav`).toBe(false);
+    }
   });
 });
