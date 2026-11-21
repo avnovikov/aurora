@@ -339,6 +339,18 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     persist();
   };
 
+  /** Seed holdLeft before HTML so the first paint shows the full clock. */
+  const prepareHoldWorkForPaint = (workItem: PlannedWorkItem | null): boolean => {
+    if (state.phase !== "work" || !isHoldWorkItem(workItem) || !state.workState) {
+      return false;
+    }
+    state.workState = ensureSetClockStarted(state.workState);
+    if (!workHoldHandle) {
+      state.holdLeft = prescribedForNextSet(state.workState);
+    }
+    return true;
+  };
+
   const paint = (): void => {
     if (pendingLighten) {
       paintLightenConfirm();
@@ -349,13 +361,10 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
     }
     const workItem = currentWork(options.planned, state);
     const repWork = isRepWorkItem(workItem);
-    const holdWork = state.phase === "work" && isHoldWorkItem(workItem);
-    if (state.phase === "work" && state.workState && (repWork || holdWork)) {
+    if (state.phase === "work" && state.workState && repWork) {
       state.workState = ensureSetClockStarted(state.workState);
     }
-    if (holdWork && state.workState && !workHoldHandle) {
-      state.holdLeft = prescribedForNextSet(state.workState);
-    }
+    const holdWork = prepareHoldWorkForPaint(workItem);
     root.innerHTML = shellHtml(options.planned, state, workAdjustUi());
     wireControls();
     if (holdWork) {
