@@ -441,8 +441,8 @@ export function renderSessionView(root: HTMLElement, options: SessionViewOptions
         void speakCoachLine("change_side");
       },
       onRestGap: (_gap, resume) => {
-        // Warm-up / cool-down stations are timed holds — no 4–1 countdown.
-        startRest(resume, isWarmup, true);
+        // Omit timedNext so gaps keep 5→1; cool-down silence is withVoice.
+        startRest(resume, isWarmup);
       },
     });
   };
