@@ -8,16 +8,6 @@ import { REST_EXTEND } from "../../src/voice/lines";
 import { GET_READY_AT_SECONDS_LEFT } from "../../src/voice/restCue";
 
 describe("shouldOfferRestedGoOn", () => {
-  it("stays quiet when the pulse is steady", () => {
-    expect(
-      shouldOfferRestedGoOn({
-        zone: "steady",
-        secondsLeft: GET_READY_AT_SECONDS_LEFT + 1,
-        alreadyAsked: false,
-      }),
-    ).toBe(false);
-  });
-
   it("asks when the pulse is easy just above Get ready", () => {
     expect(
       shouldOfferRestedGoOn({

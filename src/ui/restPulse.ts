@@ -4,7 +4,6 @@ import { GET_READY_AT_SECONDS_LEFT, REST_ADD_SECONDS } from "../voice/restCue";
 export { REST_ADD_SECONDS };
 
 const RESTED_ENOUGH_TO_END = new Set<HeartRateZone>(["easy", "steady"]);
-const GO_ON_ZONES = new Set<HeartRateZone>(["easy"]);
 
 export interface RestedOfferInput {
   zone: HeartRateZone | null;
@@ -23,7 +22,7 @@ export function shouldOfferRestedGoOn(input: RestedOfferInput): boolean {
   if (input.secondsLeft <= GET_READY_AT_SECONDS_LEFT) {
     return false;
   }
-  return GO_ON_ZONES.has(input.zone);
+  return input.zone === "easy";
 }
 
 /** True when expiry should add another 30 seconds instead of starting the next set. */

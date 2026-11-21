@@ -58,11 +58,11 @@ function paintRest(
   left: number,
   schedule: readonly RestCueEvent[],
   heldCue: CoachLine | null,
-  cueLatch: boolean,
+  goOnOffered: boolean,
 ): void {
   setText(root, "[data-rest-left]", String(Math.max(left, 0)));
   setText(root, "[data-rest-cue]", visibleRestCue(left, schedule, heldCue));
-  setCueLatch(root, cueLatch);
+  setCueLatch(root, goOnOffered);
 }
 
 function setCueLatch(root: HTMLElement, latched: boolean): void {
@@ -91,8 +91,8 @@ export interface RestTimerOptions {
 }
 
 interface RestTickState {
+  /** Go-on was offered: block a second ask and keep two-line cue height. */
   alreadyAsked: boolean;
-  cueLatch: boolean;
   heldCue: CoachLine | null;
   schedule: RestCueEvent[];
   spokenForRest: Set<number>;
@@ -111,7 +111,6 @@ export function startRestTimer(
   const timedNext = options.timedNext === true;
   const tickState: RestTickState = {
     alreadyAsked: false,
-    cueLatch: false,
     heldCue: null,
     schedule: restSchedule(state.restLeft, withVoice, timedNext),
     spokenForRest: new Set<number>(),
@@ -124,12 +123,11 @@ export function startRestTimer(
       state.restLeft,
       tickState.schedule,
       tickState.heldCue,
-      tickState.cueLatch,
+      tickState.alreadyAsked,
     );
   };
 
   const clearCueLatch = (): void => {
-    tickState.cueLatch = false;
     setCueLatch(root, false);
   };
 
@@ -194,7 +192,6 @@ export function startRestTimer(
       })
     ) {
       tickState.alreadyAsked = true;
-      tickState.cueLatch = true;
       const goOnLine = pickLine("rest_go_on");
       tickState.heldCue = goOnLine;
       speakLine(goOnLine);
