@@ -46,6 +46,28 @@ export type SkillTier =
   | "intermediate"
   | "advanced"
   | "elite";
+/**
+ * Where an exercise's tier band comes from (#262). `none`: not a max-rep test
+ * (plyometrics, loaded kit, drills); tiers do not apply and there are no standards.
+ */
+export type StandardsSourceKind =
+  | "seed"
+  | "endura"
+  | "coaching"
+  | "sourced"
+  | "derived"
+  /** A family band (#262): every ordinary member of the family shares one band. */
+  | "family"
+  | "generic"
+  /** A tierless skill-path move given the previous level's band (#262, user decision 8). */
+  | "path_previous"
+  | "none";
+
+export interface StandardsSource {
+  kind: StandardsSourceKind;
+  /** Short Library label, e.g. "Endura push-up men 20–29" or "Derived from sit-up". */
+  label: string;
+}
 /** Difficulty of a movement (a move is never "novice"). */
 export type Difficulty = Exclude<SkillTier, "novice">;
 export type SleepQuality = "good" | "fair" | "poor";
@@ -97,6 +119,8 @@ export interface Exercise {
   defaultRestSeconds?: number;
   /** Literature-inspired rep/hold floors per tier. */
   standards?: ExerciseStandards;
+  /** Where `standards` come from, or `none` for moves tiers do not apply to (#262). */
+  standardsSource?: StandardsSource;
   /**
    * Pre-parsed dose from description (rounds × amount, total or per side).
    * Warm-up expands it; work clamps tier-standard picks into the band.

@@ -53,10 +53,12 @@ interface EnduraRule {
 const ASSISTED = 1.2;
 const HARDER = 1 / ASSISTED;
 
-const PUSH = fromEndura(17, 22, 29, 36);
+/** Endura push-up men 20–29; also the push-up family band (bandFamilies.ts). */
+export const ENDURA_PUSH_UP = fromEndura(17, 22, 29, 36);
 const DIP = fromEndura(8, 18, 30, 42);
 const PULL = fromEndura(4, 8, 13, 18);
-const SPLIT = fromEndura(6, 15, 28, 45);
+/** Endura split squat men 20–29; also the lunge family band (bandFamilies.ts). */
+export const ENDURA_SPLIT_SQUAT = fromEndura(6, 15, 28, 45);
 const PISTOL = fromEndura(2, 5, 9, 15);
 const PIKE = fromEndura(7, 18, 35, 58);
 const PLANK = fromEndura(55, 105, 165, 270);
@@ -64,11 +66,18 @@ const PLANK = fromEndura(55, 105, 165, 270);
 /**
  * Exact Endura twins and derived assisted/harder rows. Order matters:
  * more specific names before generic "push-up" / "pull-up".
+ *
+ * The plain push-up, pull-up, incline push-up and straight-bar dip bands go to
+ * the exact twin only (#262). A harder or easier variant (Hindu push-up, L-sit
+ * pull-up, low incline push-up, archer straight-bar dip, the Australian
+ * pull-up rows) falls through and gets a band derived from its neighbour in
+ * the researched table.
  */
 const RULES: readonly EnduraRule[] = [
   // --- Push variants (Endura pages) ---
-  rule(["wall push"], "reps", scaleStandards(PUSH, ASSISTED), "Endura push-up ×1.2 (wall-assisted)"),
-  rule(["incline push"], "reps", fromEndura(15, 35, 65, 100), "Endura incline push-up men 20–29"),
+  rule(["wall push"], "reps", scaleStandards(ENDURA_PUSH_UP, ASSISTED), "Endura push-up ×1.2 (wall-assisted)"),
+  // Medium grip is the standard grip, so it is the same move.
+  ruleExact(["incline push up", "incline push ups", "incline push up medium"], "reps", fromEndura(15, 35, 65, 100), "Endura incline push-up men 20–29"),
   rule(["decline push"], "reps", fromEndura(6, 16, 30, 48), "Endura decline push-up men 20–29"),
   rule(["diamond push"], "reps", fromEndura(5, 15, 30, 50), "Endura diamond push-up men 20–29"),
   rule(["close grip push", "close-grip push", "close grip press"], "reps", fromEndura(5, 15, 30, 50), "Endura close/diamond push-up men 20–29"),
@@ -80,54 +89,43 @@ const RULES: readonly EnduraRule[] = [
   rule(["elevated pike", "feet elevated pike"], "reps", scaleStandards(PIKE, HARDER), "Endura pike ÷1.2 (elevated)"),
   rule(["pike push"], "reps", PIKE, "Endura pike push-up men 20–29"),
   rule(["handstand push", "hspu"], "reps", fromEndura(2, 6, 15, 28), "Endura handstand push-up men 20–29"),
-  {
-    effort: "reps",
-    standards: PUSH,
-    source: "Endura push-up men 20–29",
-    match: (name) => {
-      const n = normaliseForKeywords(name);
-      if (n.includes("scapular") || n.includes("pike") || n.includes("handstand")) {
-        return false;
-      }
-      return hasKeyword(name, ["standard push", "push up", "push-up", "press up", "press-up"]);
-    },
-  },
+  ruleExact(
+    ["push up", "push ups", "pushup", "pushups", "standard push up", "press up", "press ups"],
+    "reps",
+    ENDURA_PUSH_UP,
+    "Endura push-up men 20–29",
+  ),
 
   // --- Dips ---
   rule(["bench dip", "chair dip", "floor dip", "dips between two"], "reps", scaleStandards(DIP, ASSISTED), "Endura parallel dip ×1.2 (bench/chair)"),
   rule(["ring dip"], "reps", fromEndura(3, 8, 15, 25), "Endura ring dip proxy (harder than parallel)"),
-  rule(["straight bar dip", "straight-bar dip"], "reps", fromEndura(5, 12, 22, 35), "Endura straight-bar dip proxy"),
+  ruleExact(["straight bar dip", "straight bar dips"], "reps", fromEndura(5, 12, 22, 35), "Endura straight-bar dip proxy"),
   rule(["parallel bar dip", "parallel-bar dip"], "reps", DIP, "Endura bodyweight dip men 20–29"),
   // bare "Dips" / "dip" after specifics
-  ruleExact("dips", "reps", DIP, "Endura bodyweight dip men 20–29"),
-  ruleExact("dip", "reps", DIP, "Endura bodyweight dip men 20–29"),
+  ruleExact(["dips", "dip"], "reps", DIP, "Endura bodyweight dip men 20–29"),
 
   // --- Pull / chin / MU ---
   rule(["ring muscle"], "reps", fromEndura(1, 4, 8, 14), "Endura ring muscle-up men 20–29"),
-  rule(["muscle up", "muscle-up"], "reps", fromEndura(2, 6, 12, 20), "Endura muscle-up men 20–29"),
+  // Endura elite 20 sat above the pull-up's 18; capped at floor(18 ÷ 1.2) = 15 (#262).
+  rule(["muscle up", "muscle-up"], "reps", fromEndura(2, 6, 12, 15), "Endura muscle-up men 20–29, elite capped below pull-up"),
   rule(["one arm pull", "one-arm pull", "single arm pull"], "reps", fromEndura(1, 2, 4, 8), "Endura one-arm pull proxy"),
   rule(["commando pull"], "reps", fromEndura(3, 7, 12, 17), "Endura commando pull proxy"),
   rule(["close grip pull", "close-grip pull"], "reps", fromEndura(4, 9, 14, 20), "Endura close-grip pull proxy"),
   rule(["wide grip pull", "wide-grip pull"], "reps", fromEndura(3, 7, 12, 17), "Endura wide-grip pull proxy"),
-  rule(["chin up", "chin-up"], "reps", fromEndura(6, 14, 24, 35), "Endura chin-up men 20–29"),
-  rule(["neutral grip pull", "neutral-grip pull"], "reps", PULL, "Endura pull-up men 20–29 (neutral ≈ strict)"),
+  // An Australian chin-up is a row, not a chin-up (#262).
   {
     effort: "reps",
-    standards: PULL,
-    source: "Endura pull-up men 20–29",
-    match: (name) => {
-      const n = normaliseForKeywords(name);
-      if (n.includes("scapular") || n.includes("muscle")) {
-        return false;
-      }
-      return hasKeyword(name, ["pull up", "pull-up", "pullup"]);
-    },
+    standards: fromEndura(6, 14, 24, 35),
+    source: "Endura chin-up men 20–29",
+    match: (name) => !normaliseForKeywords(name).includes(" australian ") && hasKeyword(name, ["chin up", "chin-up"]),
   },
+  rule(["neutral grip pull", "neutral-grip pull"], "reps", PULL, "Endura pull-up men 20–29 (neutral ≈ strict)"),
+  ruleExact(["pull up", "pull ups", "pullup", "pullups", "standard pull up"], "reps", PULL, "Endura pull-up men 20–29"),
 
   // --- Lower body ---
-  rule(["supported split", "assisted split"], "reps", scaleStandards(SPLIT, ASSISTED), "Endura split squat ×1.2 (supported)"),
+  rule(["supported split", "assisted split"], "reps", scaleStandards(ENDURA_SPLIT_SQUAT, ASSISTED), "Endura split squat ×1.2 (supported)"),
   rule(["bulgarian"], "reps", fromEndura(7, 18, 34, 55), "Endura BW Bulgarian split squat men 20–29"),
-  rule(["split squat"], "reps", SPLIT, "Endura split squat men 20–29"),
+  rule(["split squat"], "reps", ENDURA_SPLIT_SQUAT, "Endura split squat men 20–29"),
   rule(["assisted pistol"], "reps", scaleStandards(PISTOL, ASSISTED), "Endura pistol ×1.2 (assisted)"),
   rule(["pistol"], "reps", PISTOL, "Endura pistol squat men 20–29"),
   rule(["nordic"], "reps", fromEndura(1, 3, 7, 12), "Endura BW Nordic curl men 20–29"),
@@ -137,19 +135,20 @@ const RULES: readonly EnduraRule[] = [
   rule(["calf raise"], "reps", fromEndura(25, 60, 100, 150), "Endura BW calf raise men 20–29"),
   rule(["bodyweight squat", "air squat"], "reps", fromEndura(25, 50, 85, 130), "Endura bodyweight squat men 20–29"),
   // generic "squat" only when it is clearly the bilateral BW squat name
-  ruleExact("squat", "reps", fromEndura(25, 50, 85, 130), "Endura bodyweight squat men 20–29"),
+  ruleExact(["squat"], "reps", fromEndura(25, 50, 85, 130), "Endura bodyweight squat men 20–29"),
 
   // --- Holds ---
   rule(["forearm plank", "front plank"], "hold", PLANK, "Endura forearm plank men 20–29"),
-  ruleExact("plank", "hold", PLANK, "Endura forearm plank men 20–29"),
+  ruleExact(["plank"], "hold", PLANK, "Endura forearm plank men 20–29"),
 ];
 
-export function enduraStandardsFor(
+/** The Endura row (band and source label) for this name, or null. */
+export function enduraRuleFor(
   name: string,
   effort: EffortKind,
-): ExerciseStandards | null {
+): { standards: ExerciseStandards; source: string } | null {
   const hit = RULES.find((rule) => rule.effort === effort && rule.match(name));
-  return hit?.standards ?? null;
+  return hit ? { standards: hit.standards, source: hit.source } : null;
 }
 
 function rule(
@@ -166,19 +165,19 @@ function rule(
   };
 }
 
-/** Exact normalised name only (avoids "Hindu Squat", "plank hip dips"). */
+/** Exact normalised name only (avoids "Hindu Squat", "plank hip dips", "Hindu Push-Up"). */
 function ruleExact(
-  exact: string,
+  exact: readonly string[],
   effort: EffortKind,
   standards: ExerciseStandards,
   source: string,
 ): EnduraRule {
-  const needle = exact.toLowerCase();
+  const needles = new Set(exact.map((name) => name.toLowerCase()));
   return {
     effort,
     standards,
     source,
-    match: (name) => normaliseForKeywords(name).trim() === needle,
+    match: (name) => needles.has(normaliseForKeywords(name).trim()),
   };
 }
 

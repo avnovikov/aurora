@@ -8,8 +8,10 @@ import { DESCRIPTIONS } from "../generated/descriptions";
 import { curatedEquipmentFor } from "../curatedEquipment";
 import { doodleFor } from "../doodles";
 import { weightedIdByUnweightedId } from "../weightedCousins";
+import { bandFamilyFor } from "./bandFamilies";
 import { cautionsFor } from "./cautions";
 import { placeOnLadder, type LadderPlacement } from "./ladder";
+import { pathPreviousBand, SKILL_LADDERS } from "./pathPrevious";
 import { wireLadderProgressions, type Placed } from "./progressions";
 import { standardsFor } from "./standards";
 
@@ -103,7 +105,7 @@ export function enrichCatalogue(catalogue: SeedExercise[]): SeedExercise[] {
   const nameToId = new Map(catalogue.map((exercise) => [exercise.name, exercise.id]));
   const weightedLinks = weightedIdByUnweightedId(nameToId);
 
-  return catalogue.map((exercise) => {
+  const withBands = catalogue.map((exercise) => {
     const placement = placements.get(exercise.id);
     const difficulty = difficulties.get(exercise.id) ?? "beginner";
     const ladder = links.get(exercise.id);
@@ -130,13 +132,93 @@ export function enrichCatalogue(catalogue: SeedExercise[]): SeedExercise[] {
       }
     }
     if (wantsStandards(exercise, placement)) {
-      const { effort } = resolveExerciseTiming(exercise);
-      enriched.standards = standardsFor(exercise.name, effort, difficulty, placement);
-      enriched.effort = effort;
+      withStandards(enriched, difficulty, placement);
     }
+    withFamilyBand(enriched);
     enriched.doodlePath = doodleFor(exercise.id, enriched.doodlePath);
     return withDescription(enriched);
   });
+  return withPathPreviousBands(withBands, placements);
+}
+
+/** Every move reached from `start` through easier and harder links (cycle-safe). */
+function chainOf(start: SeedExercise, byId: ReadonlyMap<string, SeedExercise>): SeedExercise[] {
+  const seen = new Set<string>();
+  const chain: SeedExercise[] = [];
+  const walk = (id: string | undefined): void => {
+    const step = id ? byId.get(id) : undefined;
+    if (!step || seen.has(step.id)) {
+      return;
+    }
+    seen.add(step.id);
+    chain.push(step);
+    walk(step.easierId);
+    walk(step.harderId);
+  };
+  walk(start.id);
+  return chain;
+}
+
+/**
+ * User decision 8 (#262): a tierless move on a skill path (a skill ladder, or
+ * a catalogue chain holding a skill-pattern move) takes the band of the
+ * previous level on that path (`pathPreviousBand`), so the generator and the
+ * planner dose it from that band like any other move. Moves that already
+ * have a band are never touched; a move the guards exclude stays tierless.
+ */
+function withPathPreviousBands(
+  catalogue: SeedExercise[],
+  placements: ReadonlyMap<string, LadderPlacement>,
+): SeedExercise[] {
+  const byId = new Map(catalogue.map((exercise) => [exercise.id, exercise]));
+  return catalogue.map((exercise) => {
+    if (exercise.standardsSource?.kind !== "none") {
+      return exercise;
+    }
+    const family = placements.get(exercise.id)?.family.id;
+    const onSkillPath =
+      (family !== undefined && SKILL_LADDERS.has(family)) ||
+      chainOf(exercise, byId).some((step) => step.pattern === "skill");
+    if (!onSkillPath) {
+      return exercise;
+    }
+    const result = pathPreviousBand(exercise, byId);
+    return "standards" in result
+      ? { ...exercise, standards: result.standards, standardsSource: result.source }
+      : exercise;
+  });
+}
+
+/** Tier band and its source (#262); a tierless move gets the source only. */
+function withStandards(
+  enriched: SeedExercise,
+  difficulty: Difficulty,
+  placement: LadderPlacement | undefined,
+): void {
+  const { effort } = resolveExerciseTiming(enriched);
+  const pick = standardsFor({ id: enriched.id, name: enriched.name, effort, difficulty, placement });
+  if (pick.standards) {
+    enriched.standards = pick.standards;
+  }
+  enriched.standardsSource = pick.source;
+  enriched.effort = effort;
+}
+
+/**
+ * An ordinary member of a band family takes the family's band over its own,
+ * whatever the source (#262). A move without a band (tierless, warm-up,
+ * mobility) is never a member.
+ */
+function withFamilyBand(enriched: SeedExercise): void {
+  if (!enriched.standards) {
+    return;
+  }
+  const effort = enriched.effort ?? resolveExerciseTiming(enriched).effort;
+  const family = bandFamilyFor({ name: enriched.name, role: enriched.role, effort, difficulty: enriched.difficulty, pattern: enriched.pattern });
+  if (family) {
+    enriched.standards = family.standards;
+    enriched.standardsSource = { kind: "family", label: family.label };
+  }
 }
 
 /** Curated, merged description replaces raw source text when one exists. */

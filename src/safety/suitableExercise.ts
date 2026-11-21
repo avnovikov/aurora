@@ -1,4 +1,4 @@
-import { EXERCISE_GRAPH, plannableByPattern } from "../data/exerciseGraph";
+import { choosableByPattern, EXERCISE_GRAPH, plannableByPattern } from "../data/exerciseGraph";
 import type { SeedExercise } from "../data/seed";
 import type { EquipmentId, GearNeeds, JointHistoryEntry } from "../domain/program";
 import { tierIndex } from "../domain/skillTier";
@@ -71,14 +71,19 @@ interface Scored {
   cautions: string[];
 }
 
-/** Same-pattern plannable moves the athlete can do: not excluded, gear owned, no joint avoid. */
+/**
+ * Same-pattern moves the athlete can do: not excluded, gear owned, no joint
+ * avoid. Plannable moves only, unless `byHand` (the athlete picks from the
+ * list): then tierless moves are offered too (#262).
+ */
 function usableAlternatives(
   exercise: Candidate,
   history: readonly JointHistoryEntry[],
   equipment: readonly EquipmentId[] | undefined,
   excluded: readonly string[],
+  byHand = false,
 ): Scored[] {
-  const pool = plannableByPattern().get(exercise.pattern) ?? [];
+  const pool = (byHand ? choosableByPattern() : plannableByPattern()).get(exercise.pattern) ?? [];
   return pool
     .filter((candidate) => candidate.id !== exercise.id && !excluded.includes(candidate.id))
     .filter((candidate) => missingGear(candidate, equipment).length === 0)
@@ -98,14 +103,16 @@ function byExclusionOrder(original: Candidate): (a: Scored, b: Scored) => number
 /**
  * Substitutes for a move the athlete does not want, best first: same ladder,
  * nearest difficulty, never harder while an equal or easier move exists.
+ * `byHand`: the athlete picks from this list, so tierless moves are offered.
  */
 export function substitutesFor(
   exercise: Candidate,
   history: readonly JointHistoryEntry[],
   equipment?: readonly EquipmentId[],
   excluded: readonly string[] = [],
+  options: { byHand?: boolean } = {},
 ): SeedExercise[] {
-  return usableAlternatives(exercise, history, equipment, excluded)
+  return usableAlternatives(exercise, history, equipment, excluded, options.byHand)
     .sort(byExclusionOrder(exercise))
     .map(({ candidate }) => candidate);
 }

@@ -1,5 +1,5 @@
-import { tierIndex } from "../domain/skillTier";
-import type { ExerciseMemory } from "../domain/types";
+import { SKILL_TIER_LABELS, tierIndex } from "../domain/skillTier";
+import type { ExerciseMemory, SkillTier, StandardsSource } from "../domain/types";
 import { evidenceTier, liveInferredTier, needsRetest } from "../progress/levelEvidence";
 
 export interface LevelSourceView {
@@ -30,4 +30,37 @@ export function describeLevelSource(
     return { label: `Inferred from ${inferred.from.map(nameOf).join(" + ")}`, retest };
   }
   return { label: "Plan default", retest };
+}
+
+/**
+ * Where a move's tier band comes from, for the Library (#262): the Endura or
+ * coaching row, "Sourced: …", "Derived from …", or the generic table. Null
+ * when the move has no band source recorded.
+ */
+export function describeStandardsSource(source: StandardsSource | undefined): string | null {
+  if (!source) {
+    return null;
+  }
+  if (source.kind === "none") {
+    return "No max-rep tiers: not a max-rep test. Dosed by sets, contacts or load.";
+  }
+  if (source.kind === "path_previous") {
+    // Already reads as a sentence: "Same as previous level: Tuck Hold" (decision 8).
+    return source.label;
+  }
+  return `Band: ${source.label}`;
+}
+
+/**
+ * A tierless move's own level (#262): its catalogue difficulty, with no rep
+ * or hold numbers. Null when the move has tiers or no difficulty.
+ */
+export function describeMoveLevel(exercise: {
+  standardsSource?: StandardsSource;
+  difficulty?: SkillTier;
+}): string | null {
+  if (exercise.standardsSource?.kind !== "none" || !exercise.difficulty) {
+    return null;
+  }
+  return `Move level: ${SKILL_TIER_LABELS[exercise.difficulty]}`;
 }

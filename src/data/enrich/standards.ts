@@ -1,5 +1,11 @@
-import type { Difficulty, EffortKind, ExerciseStandards } from "../../domain/types";
-import { enduraStandardsFor } from "./enduraStandards";
+import type {
+  Difficulty,
+  EffortKind,
+  ExerciseStandards,
+  StandardsSource,
+} from "../../domain/types";
+import { enduraRuleFor } from "./enduraStandards";
+import { RESEARCHED_STANDARDS } from "./researchedStandards";
 import { hasKeyword } from "./keywords";
 import type { LadderPlacement } from "./ladder";
 
@@ -13,7 +19,7 @@ const std = (n: number, b: number, i: number, a: number, e: number): ExerciseSta
 
 /**
  * Generic five-tier standards by exercise difficulty (max clean reps / hold s).
- * Prefer Endura / coaching composites via `enduraStandardsFor` and SPECIFIC first.
+ * Prefer Endura / coaching composites via `enduraRuleFor` and SPECIFIC first.
  * Anchors for leftovers: CSEP push-up norms (Payne 2000), Yang 2019, USMC PFT,
  * US Army AFT 2025, Strand 2014, McGill 1999. Elite-skill rows are extrapolated.
  */
@@ -58,7 +64,7 @@ const SPECIFIC: readonly SpecificStandard[] = [
     standards: std(10, 20, 45, 60, 90),
     source: "coaching composite (hollow; Gravity + hollow tables)",
   },
-  // Forearm plank → Endura via enduraStandardsFor; side plank stays McGill.
+  // Forearm plank → Endura via enduraRuleFor; side plank stays McGill.
   { family: "side_plank", effort: "hold", standards: std(15, 30, 60, 90, 120), source: "McGill 1999" },
   { family: "squat", effort: "hold", standards: std(20, 45, 75, 120, 180), source: "by analogy with plank norms" },
   // Bilateral BW squat → Endura; other squat-family reps without Endura keep Lein-ish floor.
@@ -121,15 +127,30 @@ const SPECIFIC: readonly SpecificStandard[] = [
   },
 ];
 
-export function standardsFor(
-  name: string,
-  effort: EffortKind,
-  difficulty: Difficulty,
-  placement: LadderPlacement | undefined,
-): ExerciseStandards {
-  const endura = enduraStandardsFor(name, effort);
+/** A tier band and where it comes from; no standards when tiers do not apply. */
+export interface StandardsPick {
+  standards?: ExerciseStandards;
+  source: StandardsSource;
+}
+
+export interface StandardsQuery {
+  id: string;
+  name: string;
+  effort: EffortKind;
+  difficulty: Difficulty;
+  placement: LadderPlacement | undefined;
+}
+
+/**
+ * Tier band for a Library move, first hit wins: an Endura twin, the coaching
+ * list (SPECIFIC), the researched table by id (#262), then the generic table
+ * by difficulty. A researched `not_max_test` row means no standards at all.
+ */
+export function standardsFor(query: StandardsQuery): StandardsPick {
+  const { id, name, effort, difficulty, placement } = query;
+  const endura = enduraRuleFor(name, effort);
   if (endura) {
-    return endura;
+    return { standards: endura.standards, source: { kind: "endura", label: endura.source } };
   }
 
   const specific = SPECIFIC.find(
@@ -139,7 +160,18 @@ export function standardsFor(
       (!item.keywords || hasKeyword(name, item.keywords)),
   );
   if (specific) {
-    return specific.standards;
+    return { standards: specific.standards, source: { kind: "coaching", label: specific.source } };
   }
-  return (effort === "hold" ? HOLDS : REPS)[difficulty];
+
+  const researched = RESEARCHED_STANDARDS[id];
+  if (researched?.kind === "not_max_test") {
+    return { source: { kind: "none", label: researched.source } };
+  }
+  if (researched?.standards) {
+    return { standards: researched.standards, source: { kind: researched.kind, label: researched.source } };
+  }
+  return {
+    standards: (effort === "hold" ? HOLDS : REPS)[difficulty],
+    source: { kind: "generic", label: "Generic by difficulty" },
+  };
 }

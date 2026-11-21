@@ -574,13 +574,47 @@ const SEED_STANDARDS: Record<string, ExerciseStandards> = {
   scapular_pull: std(3, 6, 10, 15, 20),
   /** Endura pull-up men 20–29. */
   pullup: std(3, 4, 8, 13, 18),
-  /** Endura muscle-up men 20–29. */
-  muscle_up: std(1, 2, 6, 12, 20),
+  /**
+   * Endura muscle-up men 20–29, elite capped below the pull-up (#262): Endura
+   * elite 20 sat above the pull-up's 18, so elite = floor(18 ÷ 1.2) = 15.
+   */
+  muscle_up: std(1, 2, 6, 12, 15),
+};
+
+/** Library label for each seed band (#262), from the notes above. */
+const SEED_STANDARD_SOURCES: Record<string, string> = {
+  scap_pushup: "Coaching composite (PT scap push 3×10–15)",
+  bodyweight_squat: "Endura bodyweight squat men 20–29",
+  bulgarian_split: "Endura BW Bulgarian split squat men 20–29",
+  pistol_squat: "Endura pistol squat men 20–29",
+  shrimp_squat: "Aurora seed (coaching composite)",
+  cossack_squat: "Aurora seed (coaching composite)",
+  step_up: "Aurora seed (coaching composite)",
+  reverse_lunge: "Aurora seed (coaching composite)",
+  hip_hinge: "Coaching composite (hip hinge patterning)",
+  nordic_curl: "Endura BW Nordic curl men 20–29",
+  calf_raise: "Endura BW calf raise men 20–29",
+  single_leg_calf_raise: "Hébert-Losier 2017 PMID 28886865: healthy median ≈ 21–24 reps",
+  wall_handstand: "Coaching composite (30s wall entry; 60s extended)",
+  elevated_pike: "Endura pike ÷ 1.2 (elevated harder; ceil per tier)",
+  freestanding_hs: "Coaching composite (FIG 2s; freestanding 10→30s)",
+  glute_bridge: "Endura glute bridge men 20–29",
+  dead_bug: "Coaching composite (dead bug programming 8–12/side)",
+  hollow_hold: "Coaching composite (hollow; Gravity + hollow tables)",
+  hanging_knee_raise: "Coaching composite (hanging knee raise entry ~10)",
+  pullup_dead_hang: "Coaching composite (dead hang; no adult norms)",
+  scapular_pull: "Coaching composite (scapular pull-up activation)",
+  pullup: "Endura pull-up men 20–29",
+  muscle_up: "Endura muscle-up men 20–29, elite capped below pull-up",
 };
 
 function withSeedStandards(exercise: SeedExercise): SeedExercise {
   const standards = exercise.standards ?? SEED_STANDARDS[exercise.id];
-  return standards ? { ...exercise, standards } : exercise;
+  if (!standards) {
+    return exercise;
+  }
+  const label = SEED_STANDARD_SOURCES[exercise.id] ?? "Aurora seed (coaching composite)";
+  return { ...exercise, standards, standardsSource: exercise.standardsSource ?? { kind: "seed", label } };
 }
 
 export const SEED_GRAPH: Record<string, SeedExercise> = Object.fromEntries(

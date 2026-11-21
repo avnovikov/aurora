@@ -222,7 +222,8 @@
   margin-right: calc(-1 * var(--ex-gutter));
 }
 
-.lib-detail .ex-standards > .eyebrow {
+.lib-detail .ex-standards > .eyebrow,
+.lib-detail .ex-standards > .hint {
   padding: 0 var(--ex-gutter);
 }
 
