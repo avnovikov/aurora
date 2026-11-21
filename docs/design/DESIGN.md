@@ -158,6 +158,36 @@ Roles:
 
 Every pair used for text meets 4.5:1, and controlEdge meets 3:1 on both background and surface, in every palette.
 
+### Draft palettes (not shipped)
+
+Two candidates (issue #280). They are kept out of the front matter until they ship, because the palette tests require the front matter to match `src/brand/palettes.ts` exactly. To ship one, move its block into `palettes:` and copy it to `palettes.ts`. Research and the contrast script are in `docs/working/2026-11-21-zorya-shachar-palettes/`.
+
+| Key | Name | Language | Meaning |
+|---|---|---|---|
+| zorya | Zorya | Ukrainian | Зоря, the dawn star and the Slavic dawn goddess. Sky-blue page, white type, sunflower accent. |
+| shachar | Shachar | Hebrew | שחר, dawn. Pastel apricot page, ink type, tekhelet blue accent. |
+
+Zorya is the loud one: a saturated page like Ushas, Revontulet and Fajr, and the first with a blue page. Shachar is the first pastel page. It works the way a screened fluorescent ink prints, a light tint that still glows, and it sits between Alvorada's paper and Ushas's orange.
+
+| Role | Zorya | Shachar |
+|---|---|---|
+| background | `#0057b7` | `#ffd9c7` |
+| surface | `#004a9c` | `#ffe9de` |
+| foreground | `#ffffff` | `#1a0f14` |
+| muted | `#d6e6ff` | `#5c4038` |
+| accent | `#ffd500` | `#1f4fa3` |
+| onAccent | `#0b1a33` | `#ffffff` |
+| alert | `#ffccd5` | `#a3001b` |
+| edge | `#2a74c9` | `#f2bfa8` |
+| controlEdge | `#9fc3f0` | `#8a6a5e` |
+| hr easy | `#bfe0ff` | `#1a4f8b` |
+| hr steady | `#a8f0c0` | `#146c3e` |
+| hr work | `#ffd500` | `#7a4a00` |
+| hr hard | `#ffb15a` | `#a33b00` |
+| hr max | `#ffb0dc` | `#9a0058` |
+
+Lowest measured contrast. Zorya: accent on background 4.85:1, alert on background 4.87:1, hard band on surface 4.75:1, controlEdge on background 3.79:1. Shachar: steady band on surface 5.54:1, accent on background 5.91:1, controlEdge on background 3.72:1. Zorya is a dark palette and Shachar a light one, for `color-scheme`.
+
 ## Type
 
 IBM Plex Sans for body text and IBM Plex Sans Condensed for headings and big numbers. Both are bundled with the app (no network font loading; the APK must work offline). Sizes come from the scale: base 16, ratio 1.25, nothing below 12px.
