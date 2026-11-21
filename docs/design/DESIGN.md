@@ -96,6 +96,34 @@ palettes:
       alert: "#b33a00"
       edge: "#f2d2de"
       controlEdge: "#8a6f7a"
+  zorya:
+    label: "Zorya"
+    language: "Ukrainian"
+    meaning: "The dawn star and the Slavic dawn goddess. Sky-blue page, white type, sunflower accent."
+    colors:
+      background: "#0057b7"
+      surface: "#004a9c"
+      foreground: "#ffffff"
+      muted: "#d6e6ff"
+      accent: "#ffd500"
+      onAccent: "#0b1a33"
+      alert: "#ffccd5"
+      edge: "#2a74c9"
+      controlEdge: "#9fc3f0"
+  shachar:
+    label: "Shachar"
+    language: "Hebrew"
+    meaning: "Dawn. Pastel apricot page, ink type, tekhelet blue accent."
+    colors:
+      background: "#ffd9c7"
+      surface: "#ffe9de"
+      foreground: "#1a0f14"
+      muted: "#5c4038"
+      accent: "#1f4fa3"
+      onAccent: "#ffffff"
+      alert: "#a3001b"
+      edge: "#f2bfa8"
+      controlEdge: "#8a6a5e"
 type:
   family: "IBM Plex Sans"
   headingFamily: "IBM Plex Sans Condensed"
@@ -133,7 +161,7 @@ Measured, plain, British. Example: "Morning training — measured, not motivated
 
 ## Palettes
 
-Six palettes share one set of roles. `colors` above is Rassvet, the default, and is what proof checks unless a job names another palette. The user picks a palette in Settings.
+Eight palettes share one set of roles. `colors` above is Rassvet, the default, and is what proof checks unless a job names another palette. The user picks a palette in Settings.
 
 | Key | Name | Language | Meaning |
 |---|---|---|---|
@@ -143,6 +171,8 @@ Six palettes share one set of roles. `colors` above is Rassvet, the default, and
 | revontulet | Revontulet | Finnish | Northern lights; lime page, web blue accent |
 | fajr | Fajr | Arabic | Pre-sunrise violet; white type, fluorescent orange accent |
 | eos | Eos | Greek | Rosy-fingered dawn; warm paper, fluorescent magenta |
+| zorya | Zorya | Ukrainian | Зоря, dawn star; sky-blue page, sunflower accent |
+| shachar | Shachar | Hebrew | שחר, dawn; pastel apricot page, tekhelet accent (first pastel) |
 
 Roles:
 
@@ -157,6 +187,8 @@ Roles:
 - **controlEdge**: borders of interactive controls.
 
 Every pair used for text meets 4.5:1, and controlEdge meets 3:1 on both background and surface, in every palette.
+
+Zorya and Shachar (issue #280): research, the contrast script and swatch files (.ase, .gpl) are in `docs/working/2026-11-21-zorya-shachar-palettes/`. Shachar is the first pastel page, modelled on how a screened fluorescent ink prints: a light tint that still glows.
 
 ## Type
 
@@ -180,7 +212,7 @@ Show every exercise name in sentence case: "Hollow body hold", not "Hollow Body 
 
 - Use the accent once per screen, on the next action or the key number.
 - Keep alert for loss or warning only.
-- Take every colour from a role. A screen must work in all six palettes without changes.
+- Take every colour from a role. A screen must work in all eight palettes without changes.
 - Design for one hand on a phone: primary actions in the lower half, targets at least 44px.
 - Write British English.
 - Show doses exactly as the coaching rules give them.

@@ -1,0 +1,124 @@
+GIMP Palette
+Name: Aurora palettes
+Columns: 14
+#
+# Rassvet
+  7   7   8	Rassvet background #070708
+ 18  18  20	Rassvet surface #121214
+232 232 234	Rassvet foreground #e8e8ea
+154 154 158	Rassvet muted #9a9a9e
+196 165 116	Rassvet accent #c4a574
+  7   7   8	Rassvet onAccent #070708
+225  90  74	Rassvet alert #e15a4a
+ 42  42  46	Rassvet edge #2a2a2e
+ 99  99 105	Rassvet controlEdge #636369
+142 182 255	Rassvet hr easy #8eb6ff
+125 206 160	Rassvet hr steady #7dcea0
+230 201 138	Rassvet hr work #e6c98a
+240 160  74	Rassvet hr hard #f0a04a
+255 122 110	Rassvet hr max #ff7a6e
+# Alvorada
+244 241 234	Alvorada background #f4f1ea
+255 255 255	Alvorada surface #ffffff
+ 22  21  20	Alvorada foreground #161514
+ 95  91  85	Alvorada muted #5f5b55
+138 100  32	Alvorada accent #8a6420
+255 255 255	Alvorada onAccent #ffffff
+179  38  30	Alvorada alert #b3261e
+220 214 202	Alvorada edge #dcd6ca
+138 132 122	Alvorada controlEdge #8a847a
+ 26  79 139	Alvorada hr easy #1a4f8b
+ 20 108  62	Alvorada hr steady #146c3e
+138  90  18	Alvorada hr work #8a5a12
+180  83   9	Alvorada hr hard #b45309
+159  29  29	Alvorada hr max #9f1d1d
+# Ushas
+255 106  26	Ushas background #ff6a1a
+255 138  69	Ushas surface #ff8a45
+ 31  10  20	Ushas foreground #1f0a14
+ 74  22   8	Ushas muted #4a1608
+ 58  18 112	Ushas accent #3a1270
+255 255 255	Ushas onAccent #ffffff
+ 92   0  48	Ushas alert #5c0030
+224  82   0	Ushas edge #e05200
+106  30   0	Ushas controlEdge #6a1e00
+ 16  42 107	Ushas hr easy #102a6b
+ 12  61  34	Ushas hr steady #0c3d22
+ 42  10  82	Ushas hr work #2a0a52
+ 58  18   0	Ushas hr hard #3a1200
+ 74   0  40	Ushas hr max #4a0028
+# Revontulet
+153 255  51	Revontulet background #99ff33
+194 255 128	Revontulet surface #c2ff80
+  0   0   0	Revontulet foreground #000000
+ 43  74  10	Revontulet muted #2b4a0a
+  0  51 204	Revontulet accent #0033cc
+255 255 255	Revontulet onAccent #ffffff
+163   0  27	Revontulet alert #a3001b
+122 214  31	Revontulet edge #7ad61f
+ 61 107  15	Revontulet controlEdge #3d6b0f
+  0  51 170	Revontulet hr easy #0033aa
+  6  74  34	Revontulet hr steady #064a22
+ 92  50   0	Revontulet hr work #5c3200
+139   0  24	Revontulet hr hard #8b0018
+ 26  10   0	Revontulet hr max #1a0a00
+# Fajr
+ 91  42 134	Fajr background #5b2a86
+ 76  32 115	Fajr surface #4c2073
+255 255 255	Fajr foreground #ffffff
+230 212 245	Fajr muted #e6d4f5
+255 154  61	Fajr accent #ff9a3d
+ 31  10  20	Fajr onAccent #1f0a14
+255 154 210	Fajr alert #ff9ad2
+122  74 168	Fajr edge #7a4aa8
+199 168 230	Fajr controlEdge #c7a8e6
+158 193 255	Fajr hr easy #9ec1ff
+158 230 184	Fajr hr steady #9ee6b8
+255 177  90	Fajr hr work #ffb15a
+255 226 122	Fajr hr hard #ffe27a
+255 176 220	Fajr hr max #ffb0dc
+# Eos
+251 246 238	Eos background #fbf6ee
+255 255 255	Eos surface #ffffff
+ 26  15  20	Eos foreground #1a0f14
+107  85  96	Eos muted #6b5560
+208   0 111	Eos accent #d0006f
+255 255 255	Eos onAccent #ffffff
+179  58   0	Eos alert #b33a00
+242 210 222	Eos edge #f2d2de
+138 111 122	Eos controlEdge #8a6f7a
+ 26  79 139	Eos hr easy #1a4f8b
+ 20 108  62	Eos hr steady #146c3e
+138  74   0	Eos hr work #8a4a00
+163  59   0	Eos hr hard #a33b00
+154   0  88	Eos hr max #9a0058
+# Zorya
+  0  87 183	Zorya background #0057b7
+  0  74 156	Zorya surface #004a9c
+255 255 255	Zorya foreground #ffffff
+214 230 255	Zorya muted #d6e6ff
+255 213   0	Zorya accent #ffd500
+ 11  26  51	Zorya onAccent #0b1a33
+255 204 213	Zorya alert #ffccd5
+ 42 116 201	Zorya edge #2a74c9
+159 195 240	Zorya controlEdge #9fc3f0
+191 224 255	Zorya hr easy #bfe0ff
+168 240 192	Zorya hr steady #a8f0c0
+255 213   0	Zorya hr work #ffd500
+255 177  90	Zorya hr hard #ffb15a
+255 176 220	Zorya hr max #ffb0dc
+# Shachar
+255 217 199	Shachar background #ffd9c7
+255 233 222	Shachar surface #ffe9de
+ 26  15  20	Shachar foreground #1a0f14
+ 92  64  56	Shachar muted #5c4038
+ 31  79 163	Shachar accent #1f4fa3
+255 255 255	Shachar onAccent #ffffff
+163   0  27	Shachar alert #a3001b
+242 191 168	Shachar edge #f2bfa8
+138 106  94	Shachar controlEdge #8a6a5e
+ 26  79 139	Shachar hr easy #1a4f8b
+ 20 108  62	Shachar hr steady #146c3e
+122  74   0	Shachar hr work #7a4a00
+163  59   0	Shachar hr hard #a33b00
+154   0  88	Shachar hr max #9a0058
