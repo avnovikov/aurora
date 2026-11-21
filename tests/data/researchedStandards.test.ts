@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { stepBand, type Band } from "../../scripts/lib/tierDerivation";
+import { stepBand, variantOrderViolations as orderViolations, type Band } from "../../scripts/lib/tierDerivation";
 import { BAND_FAMILIES, bandFamilyFor } from "../../src/data/enrich/bandFamilies";
 import { enduraRuleFor } from "../../src/data/enrich/enduraStandards";
 import { RESEARCHED_STANDARDS } from "../../src/data/enrich/researchedStandards";
@@ -204,26 +204,24 @@ function rootOf(id: string): string {
 
 /** Easier → harder Library pairs with the same effort where the easier move has a lower number at some tier. */
 function variantOrderViolations(include: (easier: SeedExercise, harder: SeedExercise) => boolean): string[] {
-  const pairs = new Set<string>();
+  const pairs: [string, string][] = [];
   for (const exercise of LIBRARY_CATALOGUE) {
     if (exercise.easierId) {
-      pairs.add(`${exercise.easierId} > ${exercise.id}`);
+      pairs.push([exercise.easierId, exercise.id]);
     }
     if (exercise.harderId) {
-      pairs.add(`${exercise.id} > ${exercise.harderId}`);
+      pairs.push([exercise.id, exercise.harderId]);
     }
   }
-  return [...pairs]
-    .filter((pair) => {
-      const [easierId, harderId] = pair.split(" > ");
-      const easier = EXERCISE_GRAPH[easierId!];
-      const harder = EXERCISE_GRAPH[harderId!];
-      if (!easier?.standards || !harder?.standards || easier.effort !== harder.effort || !include(easier, harder)) {
-        return false;
-      }
-      return SKILL_TIERS.some((tier) => easier.standards![tier] < harder.standards![tier]);
-    })
-    .sort();
+  const included = pairs.filter(([easierId, harderId]) => {
+    const [easier, harder] = [EXERCISE_GRAPH[easierId], EXERCISE_GRAPH[harderId]];
+    return easier !== undefined && harder !== undefined && include(easier, harder);
+  });
+  return orderViolations(included, (id) => {
+    const band = bandOf(id);
+    const effort = EXERCISE_GRAPH[id]?.effort;
+    return band && effort ? { band, effort } : undefined;
+  });
 }
 
 describe("computed derivation (#262, fourth step)", () => {

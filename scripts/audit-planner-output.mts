@@ -7,7 +7,10 @@
  * Run it on the base tree (git archive <base> | tar -x -C <dir>, node_modules
  * linked) and on the branch, then compare with compare-planner-output.mjs.
  */
-const ROOT = process.env.AUDIT_ROOT!;
+const ROOT = process.env.AUDIT_ROOT;
+if (!ROOT) {
+  throw new Error("Set AUDIT_ROOT to the source tree to audit");
+}
 const seed = await import(`${ROOT}/src/data/seed.ts`);
 const { planSession } = await import(`${ROOT}/src/rules/planSession.ts`);
 const { generateBlock } = await import(`${ROOT}/src/plan/generateBlock.ts`);
