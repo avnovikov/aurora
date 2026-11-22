@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { applyBundledImport, applyCalisteniappImport } from "../../src/import/applyImport";
 import type { CalisteniappSession } from "../../src/import/calisteniapp";
@@ -32,7 +33,8 @@ describe("applying a Calisteniapp import (#291)", () => {
     expect(loadHistory()).toHaveLength(3);
   });
 
-  it("does nothing when the build bundles no file", () => {
+  // A local one-off build bundles the athlete's file; CI and clean checkouts do not.
+  it.skipIf(existsSync("src/data/private/calisteniapp-history.json"))("does nothing when the build bundles no file", () => {
     expect(applyBundledImport(NOW)).toBeNull();
   });
 });
