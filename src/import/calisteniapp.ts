@@ -26,6 +26,8 @@ export interface CalisteniappExercise {
 }
 
 export interface CalisteniappSession {
+  /** Stable id (title + duration) so a corrected date does not re-import the session. */
+  id?: string;
   title: string;
   /** YYYY-MM-DD, estimated from the app's relative date. */
   date_estimated: string;
@@ -33,7 +35,11 @@ export interface CalisteniappSession {
   exercises: CalisteniappExercise[];
 }
 
-export type ImportedEntry = Omit<HistoryEntry, "id"> & { source: NonNullable<HistoryEntry["source"]> };
+export type ImportedEntry = Omit<HistoryEntry, "id"> & {
+  source: NonNullable<HistoryEntry["source"]>;
+  /** Indexes into `sets` kept for history but not levels (mapping `levels: false`); never saved. */
+  levelsSkip?: number[];
+};
 
 export interface ImportSkip {
   name: string;
@@ -91,6 +97,8 @@ const EFFORT_TO_EVALUATION: Record<string, SessionEvaluation> = {
   medium: "on_target",
   demanding: "difficult",
   hard: "difficult",
+  intense: "wiped",
+  "very easy": "easy",
   "very hard": "wiped",
 };
 
@@ -140,16 +148,21 @@ function sessionSets(
   map: Readonly<Record<string, CalisteniappMapping>>,
   graph: Readonly<Record<string, Exercise>>,
   skips: Map<string, ImportSkip>,
+  levelsSkip: number[],
 ): HistorySetRecord[] {
   const sets: HistorySetRecord[] = [];
   for (const exercise of session.exercises) {
     const baseId = map[exercise.name]?.id ?? null;
+    const historyOnly = map[exercise.name]?.levels === false;
     const prescribed = targetNumber(exercise.target);
     for (const set of exercise.sets) {
       const outcome = mapSet(baseId, set, prescribed, completedAt, graph);
       if (typeof outcome === "string") {
         addSkip(skips, exercise.name, outcome);
       } else {
+        if (historyOnly) {
+          levelsSkip.push(sets.length);
+        }
         sets.push(outcome);
       }
     }
@@ -168,11 +181,12 @@ export function planCalisteniappImport(
   const keyCounts = new Map<string, number>();
   for (const session of sessions) {
     const completedAt = `${session.date_estimated}T12:00:00.000Z`;
-    const sets = sessionSets(session, completedAt, map, graph, skips);
+    const levelsSkip: number[] = [];
+    const sets = sessionSets(session, completedAt, map, graph, skips, levelsSkip);
     if (sets.length === 0) {
       continue;
     }
-    const baseKey = `${session.date_estimated}|${session.title}`;
+    const baseKey = session.id ?? `${session.date_estimated}|${session.title}`;
     const seen = (keyCounts.get(baseKey) ?? 0) + 1;
     keyCounts.set(baseKey, seen);
     entries.push({
@@ -184,21 +198,10 @@ export function planCalisteniappImport(
       exerciseIds: [...new Set(sets.map((s) => s.exerciseId))],
       sets,
       source: { app: "calisteniapp", key: seen === 1 ? baseKey : `${baseKey}#${seen}` },
+      ...(levelsSkip.length > 0 ? { levelsSkip } : {}),
     });
   }
   return { entries, skipped: [...skips.values()] };
-}
-
-/** Library ids whose imported sets count only in history (every mapping to them says `levels: false`). */
-export function historyOnlyIds(map: Readonly<Record<string, CalisteniappMapping>>): Set<string> {
-  const counted = new Set<string>();
-  const historyOnly = new Set<string>();
-  for (const mapping of Object.values(map)) {
-    if (mapping.id) {
-      (mapping.levels === false ? historyOnly : counted).add(mapping.id);
-    }
-  }
-  return new Set([...historyOnly].filter((id) => !counted.has(id)));
 }
 
 /**
@@ -207,9 +210,8 @@ export function historyOnlyIds(map: Readonly<Record<string, CalisteniappMapping>
  * evidence is stamped with the session date.
  */
 export function replayImportedLevels(
-  entries: ReadonlyArray<Omit<HistoryEntry, "id">>,
+  entries: ReadonlyArray<Omit<HistoryEntry, "id"> & { levelsSkip?: number[] }>,
   now: Date,
-  skipIds: ReadonlySet<string> = new Set(),
 ): Record<string, ExerciseMemory> {
   let memories: Record<string, ExerciseMemory> = {};
   const ordered = [...entries].sort((a, b) => Date.parse(a.completedAt) - Date.parse(b.completedAt));
@@ -217,7 +219,8 @@ export function replayImportedLevels(
     const at = new Date(entry.completedAt);
     const weight = sessionAgeWeight(ageInDays(entry.completedAt, now));
     const log: SetLogEntry[] = [];
-    for (const set of (entry.sets ?? []).filter((s) => !skipIds.has(s.exerciseId))) {
+    const skip = new Set(entry.levelsSkip ?? []);
+    for (const set of (entry.sets ?? []).filter((_, i) => !skip.has(i))) {
       const counted = Math.floor(set.completedReps * weight);
       if (counted > 0) {
         memories = recordBestReps(memories, set.exerciseId, counted, undefined, at);

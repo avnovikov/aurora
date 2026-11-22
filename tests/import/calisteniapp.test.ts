@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   IMPORT_TEMPLATE_ID,
-  historyOnlyIds,
   mergeImportedMemories,
   parseResult,
   planCalisteniappImport,
@@ -92,6 +91,11 @@ describe("planning an import", () => {
     expect(entry.sets!.find((s) => s.exerciseId === "bodyweight_squat")).toMatchObject({ prescribedReps: 18, completedReps: 20 });
   });
 
+  it("keys on the stable id when the export has one", () => {
+    const withId = planCalisteniappImport([{ ...sessionC, id: "Phase 3 - Session C - Bigger legs|00:46:40" }], CALISTENIAPP_MAP, EXERCISE_GRAPH);
+    expect(withId.entries[0]!.source.key).toBe("Phase 3 - Session C - Bigger legs|00:46:40");
+  });
+
   it("lists skipped names with set counts", () => {
     expect(plan.skipped).toEqual([
       { name: "Isometric single leg hamstring bridge", reason: "unmapped", sets: 1 },
@@ -159,15 +163,18 @@ describe("levels from imported sessions", () => {
     expect(decayed).toBeGreaterThan(10);
   });
 
-  it("keeps history-only moves out of levels", () => {
+  it("keeps history-only sets out of levels, even on a move other names count for", () => {
     const entries = planCalisteniappImport(
-      [{ ...sessionC, exercises: [{ name: "Partial single leg squat", target: "5 sets · 15 reps", sets: [{ set: 1, result: "15 reps", weight: null, effort: null }] }] }],
+      [{ ...sessionC, exercises: [
+        { name: "Short pull-ups", target: "3 sets · 8 reps", sets: [{ set: 1, result: "8 reps", weight: null, effort: null }] },
+        { name: "Pull-ups", target: "3 sets · 3 reps", sets: [{ set: 1, result: "3 reps", weight: null, effort: null }] },
+      ] }],
       CALISTENIAPP_MAP,
       EXERCISE_GRAPH,
     ).entries;
-    expect(entries[0]!.sets![0]!.exerciseId).toBe("wger_1948");
-    expect(historyOnlyIds(CALISTENIAPP_MAP).has("wger_1948")).toBe(true);
-    expect(replayImportedLevels(entries, now, historyOnlyIds(CALISTENIAPP_MAP)).wger_1948).toBeUndefined();
+    expect(entries[0]!.sets!.map((s) => s.exerciseId)).toEqual(["pullup", "pullup"]);
+    expect(entries[0]!.levelsSkip).toEqual([0]);
+    expect(replayImportedLevels(entries, now).pullup!.bestReps).toBe(3);
   });
 
   it("stamps evidence with the session date", () => {
