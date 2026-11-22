@@ -34,7 +34,11 @@ Bring the athlete's Calisteniapp sessions into Aurora's history, so that History
 
 ## On the phone
 
-Settings → **Import history**. Pick the JSON file. Aurora shows what it will add: sessions, sets, date range, and the skipped exercise names with counts. **Import** saves history and levels; **Cancel** changes nothing.
+No import screen for now (decided 2026-11-22). A local build bundles the athlete's file from the git-ignored `src/data/private/calisteniapp-history.json`. At start-up `applyBundledImport` merges any session whose key is not yet in `aurora.poc.importedSessions.v1`, then records the keys. Builds without the file do nothing. A Settings import screen can reuse `applyCalisteniappImport` later.
+
+## Dates
+
+Calisteniapp shows relative dates. Sessions are listed newest first. "N days ago" gives the date directly. Coarser labels ("about a month ago", "3 months ago") give a range, and the sessions inside one label are spread evenly across it, newest first, at least a day apart. Every date is an estimate; a GDPR export with exact timestamps can replace them.
 
 ## Tests
 

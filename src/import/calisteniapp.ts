@@ -189,6 +189,18 @@ export function planCalisteniappImport(
   return { entries, skipped: [...skips.values()] };
 }
 
+/** Library ids whose imported sets count only in history (every mapping to them says `levels: false`). */
+export function historyOnlyIds(map: Readonly<Record<string, CalisteniappMapping>>): Set<string> {
+  const counted = new Set<string>();
+  const historyOnly = new Set<string>();
+  for (const mapping of Object.values(map)) {
+    if (mapping.id) {
+      (mapping.levels === false ? historyOnly : counted).add(mapping.id);
+    }
+  }
+  return new Set([...historyOnly].filter((id) => !counted.has(id)));
+}
+
 /**
  * Replay imported sessions oldest first through the live level path into a fresh
  * memory map. Each result is scaled by the detraining curve for its age, and
@@ -197,6 +209,7 @@ export function planCalisteniappImport(
 export function replayImportedLevels(
   entries: ReadonlyArray<Omit<HistoryEntry, "id">>,
   now: Date,
+  skipIds: ReadonlySet<string> = new Set(),
 ): Record<string, ExerciseMemory> {
   let memories: Record<string, ExerciseMemory> = {};
   const ordered = [...entries].sort((a, b) => Date.parse(a.completedAt) - Date.parse(b.completedAt));
@@ -204,7 +217,7 @@ export function replayImportedLevels(
     const at = new Date(entry.completedAt);
     const weight = sessionAgeWeight(ageInDays(entry.completedAt, now));
     const log: SetLogEntry[] = [];
-    for (const set of entry.sets ?? []) {
+    for (const set of (entry.sets ?? []).filter((s) => !skipIds.has(s.exerciseId))) {
       const counted = Math.floor(set.completedReps * weight);
       if (counted > 0) {
         memories = recordBestReps(memories, set.exerciseId, counted, undefined, at);

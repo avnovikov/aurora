@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   IMPORT_TEMPLATE_ID,
+  historyOnlyIds,
   mergeImportedMemories,
   parseResult,
   planCalisteniappImport,
@@ -156,6 +157,17 @@ describe("levels from imported sessions", () => {
     const decayed = replayImportedLevels(old, now).bodyweight_squat!.bestReps!;
     expect(decayed).toBeLessThan(20);
     expect(decayed).toBeGreaterThan(10);
+  });
+
+  it("keeps history-only moves out of levels", () => {
+    const entries = planCalisteniappImport(
+      [{ ...sessionC, exercises: [{ name: "Partial single leg squat", target: "5 sets · 15 reps", sets: [{ set: 1, result: "15 reps", weight: null, effort: null }] }] }],
+      CALISTENIAPP_MAP,
+      EXERCISE_GRAPH,
+    ).entries;
+    expect(entries[0]!.sets![0]!.exerciseId).toBe("wger_1948");
+    expect(historyOnlyIds(CALISTENIAPP_MAP).has("wger_1948")).toBe(true);
+    expect(replayImportedLevels(entries, now, historyOnlyIds(CALISTENIAPP_MAP)).wger_1948).toBeUndefined();
   });
 
   it("stamps evidence with the session date", () => {

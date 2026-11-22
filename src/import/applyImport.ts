@@ -9,6 +9,7 @@ import { loadHistory, loadMemories, mergeHistory, saveHistory, saveMemories } fr
 import { createKeyValueStore, readJson } from "../storage/keyValueStore";
 import { IMPORTED_SESSIONS_KEY } from "../storage/storageKeys";
 import {
+  historyOnlyIds,
   mergeImportedMemories,
   planCalisteniappImport,
   replayImportedLevels,
@@ -36,7 +37,7 @@ export function applyCalisteniappImport(
   }
   const merged = mergeHistory(loadHistory(), fresh);
   saveHistory(merged.history);
-  saveMemories(mergeImportedMemories(loadMemories(now), replayImportedLevels(fresh, now), now));
+  saveMemories(mergeImportedMemories(loadMemories(now), replayImportedLevels(fresh, now, historyOnlyIds(CALISTENIAPP_MAP)), now));
   for (const entry of fresh) {
     applied.add(entry.source.key);
   }

@@ -15,6 +15,8 @@ export interface CalisteniappMapping {
   id: string | null;
   confidence: "high" | "medium" | "low";
   note: string;
+  /** false: keep in history but do not count towards the move's level (an easier variant than the move's standards assume). */
+  levels?: false;
 }
 
 export const CALISTENIAPP_MAP: Readonly<Record<string, CalisteniappMapping>> = {
@@ -41,7 +43,8 @@ export const CALISTENIAPP_MAP: Readonly<Record<string, CalisteniappMapping>> = {
   "Partial single leg squat": {
     id: "wger_1948",
     confidence: "medium",
-    note: "Reduced-depth one-leg squat; 1 Leg Box Squat is the same range. Alternative: Assisted pistol squat.",
+    note: "Reduced-depth one-leg squat. History only: the box squat's standards assume full depth, so 15 partial reps would read as advanced.",
+    levels: false,
   },
   "Single leg hamstring bridge": {
     id: "fedb_single_leg_glute_bridge",
@@ -127,5 +130,58 @@ export const CALISTENIAPP_MAP: Readonly<Record<string, CalisteniappMapping>> = {
     id: "fedb_kettlebell_thruster",
     confidence: "high",
     note: "Squat into overhead press.",
+  },
+  "Pull-ups": { id: "pullup", confidence: "high", note: "Overhand pull-up." },
+  "Chin-ups": { id: "hf_44", confidence: "high", note: "Underhand chin-up." },
+  "Australian chin ups": { id: "ntc_australian_chin_up", confidence: "high", note: "Underhand inverted row." },
+  "Explosive australian pull-ups": {
+    id: "hf_39",
+    confidence: "medium",
+    note: "Explosive inverted row; the library has the plain inverted row.",
+  },
+  "Bar knee raises": { id: "hanging_knee_raise", confidence: "high", note: "Hanging knee raise." },
+  "Bar L sit raises": {
+    id: "hf_110",
+    confidence: "medium",
+    note: "Raising straight legs to an L on the bar; Hanging Leg Raise is the same move.",
+  },
+  "Isometric L sit on bar": {
+    id: "hf_105",
+    confidence: "medium",
+    note: "Hanging L hold; the library L-Sit is the support version.",
+  },
+  "Tucked front lever": { id: "hf_57", confidence: "high", note: "Tuck front lever hold." },
+  "Fallen tucked front lever": {
+    id: "hf_57",
+    confidence: "medium",
+    note: "Tuck front lever held while lowering from the top; nearest is the tuck front lever hold.",
+  },
+  "Tucked front lever raises": {
+    id: null,
+    confidence: "low",
+    note: "Raising into a tuck front lever for reps; the library has only the hold (isometric). Skipped.",
+  },
+  "Single leg dragon flag": {
+    id: null,
+    confidence: "low",
+    note: "Logged as a hold; the library Dragon Flag is a rep move. Skipped.",
+  },
+  "Kettlebell squat": { id: "fedb_goblet_squat", confidence: "high", note: "Goblet squat with one kettlebell." },
+  "Kettlebell thrusters": { id: "fedb_kettlebell_thruster", confidence: "high", note: "Kettlebell thruster." },
+  "Kettlebell snatch": { id: "fedb_one_arm_kettlebell_snatch", confidence: "high", note: "One-arm snatch." },
+  "Explosive kettlebell deadlift": {
+    id: "wger_1003",
+    confidence: "medium",
+    note: "Kettlebell deadlift done fast; same move.",
+  },
+  "Walking lunges with kettlebell": {
+    id: "wger_206",
+    confidence: "medium",
+    note: "Loaded walking lunge; the library's loaded walking lunge uses dumbbells.",
+  },
+  "Kettlebell atomic crunch": {
+    id: null,
+    confidence: "low",
+    note: "No matching crunch with a kettlebell. Skipped.",
   },
 };
